@@ -12,16 +12,35 @@ import {migrateCase} from './cases';
 import {migrateFor} from './fors';
 import {migrateIf} from './ifs';
 import {migrateSwitch} from './switches';
-import {AnalyzedFile, endI18nMarker, endMarker, MigrateError, startI18nMarker, startMarker} from './types';
-import {canRemoveCommonModule, formatTemplate, parseTemplate, processNgTemplates, removeImports, validateI18nStructure, validateMigratedTemplate} from './util';
+import {
+  AnalyzedFile,
+  endI18nMarker,
+  endMarker,
+  MigrateError,
+  startI18nMarker,
+  startMarker,
+} from './types';
+import {
+  canRemoveCommonModule,
+  formatTemplate,
+  parseTemplate,
+  processNgTemplates,
+  removeImports,
+  validateI18nStructure,
+  validateMigratedTemplate,
+} from './util';
 
 /**
  * Actually migrates a given template to the new syntax
  */
 export function migrateTemplate(
-    template: string, templateType: string, node: ts.Node, file: AnalyzedFile,
-    format: boolean = true,
-    analyzedFiles: Map<string, AnalyzedFile>|null): {migrated: string, errors: MigrateError[]} {
+  template: string,
+  templateType: string,
+  node: ts.Node,
+  file: AnalyzedFile,
+  format: boolean = true,
+  analyzedFiles: Map<string, AnalyzedFile> | null,
+): {migrated: string; errors: MigrateError[]} {
   let errors: MigrateError[] = [];
   let migrated = template;
   if (templateType === 'template' || templateType === 'templateUrl') {
@@ -38,7 +57,7 @@ export function migrateTemplate(
     }
     migrated = templateResult.migrated;
     const changed =
-        ifResult.changed || forResult.changed || switchResult.changed || caseResult.changed;
+      ifResult.changed || forResult.changed || switchResult.changed || caseResult.changed;
     if (changed) {
       // determine if migrated template is a valid structure
       // if it is not, fail out
@@ -51,8 +70,10 @@ export function migrateTemplate(
     if (format && changed) {
       migrated = formatTemplate(migrated, templateType);
     }
-    const markerRegex =
-        new RegExp(`${startMarker}|${endMarker}|${startI18nMarker}|${endI18nMarker}`, 'gm');
+    const markerRegex = new RegExp(
+      `${startMarker}|${endMarker}|${startI18nMarker}|${endI18nMarker}`,
+      'gm',
+    );
     migrated = migrated.replace(markerRegex, '');
 
     file.removeCommonModule = canRemoveCommonModule(template);
@@ -61,8 +82,11 @@ export function migrateTemplate(
     // when migrating an external template, we have to pass back
     // whether it's safe to remove the CommonModule to the
     // original component class source file
-    if (templateType === 'templateUrl' && analyzedFiles !== null &&
-        analyzedFiles.has(file.sourceFile.fileName)) {
+    if (
+      templateType === 'templateUrl' &&
+      analyzedFiles !== null &&
+      analyzedFiles.has(file.sourceFile.fileName)
+    ) {
       const componentFile = analyzedFiles.get(file.sourceFile.fileName)!;
       componentFile.getSortedRanges();
       // we have already checked the template file to see if it is safe to remove the imports

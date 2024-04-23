@@ -25,7 +25,12 @@ import {ChainedInjector} from '../component_ref';
 import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
 import {InjectedService, ProviderRecord} from '../debug/injector_profiler';
 import {getComponentDef} from '../definition';
-import {getNodeInjectorLView, getNodeInjectorTNode, getParentInjectorLocation, NodeInjector} from '../di';
+import {
+  getNodeInjectorLView,
+  getNodeInjectorTNode,
+  getParentInjectorLocation,
+  NodeInjector,
+} from '../di';
 import {NodeInjectorOffset} from '../interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
@@ -45,8 +50,9 @@ import {getNativeByTNode} from './view_utils';
  * injector.
  */
 export function getDependenciesFromInjectable<T>(
-    injector: Injector, token: Type<T>|InjectionToken<T>):
-    {instance: T; dependencies: Omit<InjectedService, 'injectedIn'>[]}|undefined {
+  injector: Injector,
+  token: Type<T> | InjectionToken<T>,
+): {instance: T; dependencies: Omit<InjectedService, 'injectedIn'>[]} | undefined {
   // First we check to see if the token given maps to an actual instance in the injector given.
   // We use `self: true` because we only want to look at the injector we were given.
   // We use `optional: true` because it's possible that the token we were given was never
@@ -59,7 +65,7 @@ export function getDependenciesFromInjectable<T>(
   const unformattedDependencies = getDependenciesForTokenInInjector(token, injector);
   const resolutionPath = getInjectorResolutionPath(injector);
 
-  const dependencies = unformattedDependencies.map(dep => {
+  const dependencies = unformattedDependencies.map((dep) => {
     // injectedIn contains private fields, so we omit it from the response
     const formattedDependency: Omit<InjectedService, 'injectedIn'> = {
       value: dep.value,
@@ -73,7 +79,6 @@ export function getDependenciesFromInjectable<T>(
       self: (InternalInjectFlags.Self & flags) === InternalInjectFlags.Self,
       skipSelf: (InternalInjectFlags.SkipSelf & flags) === InternalInjectFlags.SkipSelf,
     };
-
 
     // find the injector that provided the dependency
     for (let i = 0; i < resolutionPath.length; i++) {
@@ -89,8 +94,10 @@ export function getDependenciesFromInjectable<T>(
         break;
       }
 
-      const instance =
-          injectorToCheck.get(dep.token as Type<unknown>, null, {self: true, optional: true});
+      const instance = injectorToCheck.get(dep.token as Type<unknown>, null, {
+        self: true,
+        optional: true,
+      });
 
       if (instance !== null) {
         // if host flag is true we double check that we can get the service from the first element
@@ -99,8 +106,10 @@ export function getDependenciesFromInjectable<T>(
         // a router outlet.
         if (formattedDependency.flags.host) {
           const firstInjector = resolutionPath[0];
-          const lookupFromFirstInjector = firstInjector.get(
-              dep.token as Type<unknown>, null, {...formattedDependency.flags, optional: true});
+          const lookupFromFirstInjector = firstInjector.get(dep.token as Type<unknown>, null, {
+            ...formattedDependency.flags,
+            optional: true,
+          });
 
           if (lookupFromFirstInjector !== null) {
             formattedDependency.providedIn = injectorToCheck;
@@ -128,7 +137,9 @@ export function getDependenciesFromInjectable<T>(
 }
 
 function getDependenciesForTokenInInjector<T>(
-    token: Type<T>|InjectionToken<T>, injector: Injector): InjectedService[] {
+  token: Type<T> | InjectionToken<T>,
+  injector: Injector,
+): InjectedService[] {
   const {resolverToTokenToDependencies} = getFrameworkDIDebugData();
 
   if (!(injector instanceof NodeInjector)) {
@@ -142,7 +153,7 @@ function getDependenciesForTokenInInjector<T>(
   // In the NodeInjector case, all injections for every node are stored in the same lView.
   // We use the injectedIn field of the dependency to filter out the dependencies that
   // do not come from the same node as the instance we're looking at.
-  return dependencies.filter(dependency => {
+  return dependencies.filter((dependency) => {
     const dependencyNode = dependency.injectedIn?.tNode;
     if (dependencyNode === undefined) {
       return false;
@@ -167,7 +178,7 @@ function getDependenciesForTokenInInjector<T>(
  * @param injector Injector an injector instance
  * @returns the constructor where the `imports` array that configures this injector is located
  */
-function getProviderImportsContainer(injector: Injector): Type<unknown>|null {
+function getProviderImportsContainer(injector: Injector): Type<unknown> | null {
   const {standaloneInjectorToComponent} = getFrameworkDIDebugData();
 
   // standalone components configure providers through a component def, so we have to
@@ -230,9 +241,10 @@ function getNodeInjectorProviders(injector: NodeInjector): ProviderRecord[] {
  *     path
  *
  */
-function getProviderImportPaths(providerImportsContainer: Type<unknown>):
-    Map<SingleProvider, (Type<unknown>| InjectorType<unknown>)[]> {
-  const providerToPath = new Map<SingleProvider, (Type<unknown>| InjectorType<unknown>)[]>();
+function getProviderImportPaths(
+  providerImportsContainer: Type<unknown>,
+): Map<SingleProvider, (Type<unknown> | InjectorType<unknown>)[]> {
+  const providerToPath = new Map<SingleProvider, (Type<unknown> | InjectorType<unknown>)[]>();
   const visitedContainers = new Set<Type<unknown>>();
   const visitor = walkProviderTreeToDiscoverImportPaths(providerToPath, visitedContainers);
 
@@ -334,10 +346,10 @@ function getProviderImportPaths(providerImportsContainer: Type<unknown>):
  *     void
  */
 function walkProviderTreeToDiscoverImportPaths(
-    providerToPath: Map<SingleProvider, (Type<unknown>| InjectorType<unknown>)[]>,
-    visitedContainers: Set<Type<unknown>>):
-    (provider: SingleProvider, container: Type<unknown>|InjectorType<unknown>) => void {
-  return (provider: SingleProvider, container: Type<unknown>|InjectorType<unknown>) => {
+  providerToPath: Map<SingleProvider, (Type<unknown> | InjectorType<unknown>)[]>,
+  visitedContainers: Set<Type<unknown>>,
+): (provider: SingleProvider, container: Type<unknown> | InjectorType<unknown>) => void {
+  return (provider: SingleProvider, container: Type<unknown> | InjectorType<unknown>) => {
     // If the provider is not already in the providerToPath map,
     // add an entry with the provider as the key and an array containing the current container as
     // the value
@@ -356,8 +368,9 @@ function walkProviderTreeToDiscoverImportPaths(
 
         let containerDef = getInjectorDef(container);
         if (!containerDef) {
-          const ngModule: Type<unknown>|undefined =
-              (container as any).ngModule as Type<unknown>| undefined;
+          const ngModule: Type<unknown> | undefined = (container as any).ngModule as
+            | Type<unknown>
+            | undefined;
           containerDef = getInjectorDef(ngModule);
         }
 
@@ -373,8 +386,9 @@ function walkProviderTreeToDiscoverImportPaths(
             return;
           }
 
-          isNextStepInPath = (moduleImport as any).ngModule === lastContainerAddedToPath ||
-              moduleImport === lastContainerAddedToPath;
+          isNextStepInPath =
+            (moduleImport as any).ngModule === lastContainerAddedToPath ||
+            moduleImport === lastContainerAddedToPath;
 
           if (isNextStepInPath) {
             providerToPath.get(prov)?.unshift(container);
@@ -395,7 +409,7 @@ function walkProviderTreeToDiscoverImportPaths(
  */
 function getEnvironmentInjectorProviders(injector: EnvironmentInjector): ProviderRecord[] {
   const providerRecordsWithoutImportPaths =
-      getFrameworkDIDebugData().resolverToProviders.get(injector) ?? [];
+    getFrameworkDIDebugData().resolverToProviders.get(injector) ?? [];
 
   // platform injector has no provider imports container so can we skip trying to
   // find import paths
@@ -478,8 +492,13 @@ export function getInjectorProviders(injector: Injector): ProviderRecord[] {
  * @returns an object containing the type and source of the given injector. If the injector metadata
  *     cannot be determined, returns null.
  */
-export function getInjectorMetadata(injector: Injector): {type: 'element', source: RElement}|
-    {type: 'environment', source: string | null}|{type: 'null', source: null}|null {
+export function getInjectorMetadata(
+  injector: Injector,
+):
+  | {type: 'element'; source: RElement}
+  | {type: 'environment'; source: string | null}
+  | {type: 'null'; source: null}
+  | null {
   if (injector instanceof NodeInjector) {
     const lView = getNodeInjectorLView(injector);
     const tNode = getNodeInjectorTNode(injector)!;
@@ -506,7 +525,9 @@ export function getInjectorResolutionPath(injector: Injector): Injector[] {
 }
 
 function getInjectorResolutionPathHelper(
-    injector: Injector, resolutionPath: Injector[]): Injector[] {
+  injector: Injector,
+  resolutionPath: Injector[],
+): Injector[] {
   const parent = getInjectorParent(injector);
 
   // if getInjectorParent can't find a parent, then we've either reached the end
@@ -573,12 +594,12 @@ function getInjectorResolutionPathHelper(
  * @param injector an Injector to get the parent of
  * @returns Injector the parent of the given injector
  */
-function getInjectorParent(injector: Injector): Injector|null {
+function getInjectorParent(injector: Injector): Injector | null {
   if (injector instanceof R3Injector) {
     return injector.parent;
   }
 
-  let tNode: TElementNode|TContainerNode|TElementContainerNode|null;
+  let tNode: TElementNode | TContainerNode | TElementContainerNode | null;
   let lView: LView<unknown>;
   if (injector instanceof NodeInjector) {
     tNode = getNodeInjectorTNode(injector);
@@ -589,11 +610,14 @@ function getInjectorParent(injector: Injector): Injector|null {
     return injector.parentInjector;
   } else {
     throwError(
-        'getInjectorParent only support injectors of type R3Injector, NodeInjector, NullInjector, ChainedInjector');
+      'getInjectorParent only support injectors of type R3Injector, NodeInjector, NullInjector, ChainedInjector',
+    );
   }
 
   const parentLocation = getParentInjectorLocation(
-      tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
+    tNode as TElementNode | TContainerNode | TElementContainerNode,
+    lView,
+  );
 
   if (hasParentInjector(parentLocation)) {
     const parentInjectorIndex = getParentInjectorIndex(parentLocation);
@@ -601,7 +625,9 @@ function getInjectorParent(injector: Injector): Injector|null {
     const parentTView = parentLView[TVIEW];
     const parentTNode = parentTView.data[parentInjectorIndex + NodeInjectorOffset.TNODE] as TNode;
     return new NodeInjector(
-        parentTNode as TElementNode | TContainerNode | TElementContainerNode, parentLView);
+      parentTNode as TElementNode | TContainerNode | TElementContainerNode,
+      parentLView,
+    );
   } else {
     const chainedInjector = lView[INJECTOR] as ChainedInjector;
 
@@ -636,7 +662,7 @@ function getModuleInjectorOfNodeInjector(injector: NodeInjector): Injector {
   }
 
   const inj = lView[INJECTOR] as R3Injector | ChainedInjector;
-  const moduleInjector = (inj instanceof ChainedInjector) ? inj.parentInjector : inj.parent;
+  const moduleInjector = inj instanceof ChainedInjector ? inj.parentInjector : inj.parent;
   if (!moduleInjector) {
     throwError('NodeInjector must have some connection to the module injector tree');
   }

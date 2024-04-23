@@ -103,7 +103,7 @@ export function parseClassNameNext(text: string, index: number): number {
   if (end === index) {
     return -1;
   }
-  index = parserState.keyEnd = consumeClassToken(text, parserState.key = index, end);
+  index = parserState.keyEnd = consumeClassToken(text, (parserState.key = index), end);
   return consumeWhitespace(text, index, end);
 }
 
@@ -143,7 +143,7 @@ export function parseStyle(text: string): number {
  */
 export function parseStyleNext(text: string, startIndex: number): number {
   const end = parserState.textEnd;
-  let index = parserState.key = consumeWhitespace(text, startIndex, end);
+  let index = (parserState.key = consumeWhitespace(text, startIndex, end));
   if (end === index) {
     // we reached an end so just quit
     return -1;
@@ -208,10 +208,13 @@ export function consumeClassToken(text: string, startIndex: number, endIndex: nu
  */
 export function consumeStyleKey(text: string, startIndex: number, endIndex: number): number {
   let ch: number;
-  while (startIndex < endIndex &&
-         ((ch = text.charCodeAt(startIndex)) === CharCode.DASH || ch === CharCode.UNDERSCORE ||
-          ((ch & CharCode.UPPER_CASE) >= CharCode.A && (ch & CharCode.UPPER_CASE) <= CharCode.Z) ||
-          (ch >= CharCode.ZERO && ch <= CharCode.NINE))) {
+  while (
+    startIndex < endIndex &&
+    ((ch = text.charCodeAt(startIndex)) === CharCode.DASH ||
+      ch === CharCode.UNDERSCORE ||
+      ((ch & CharCode.UPPER_CASE) >= CharCode.A && (ch & CharCode.UPPER_CASE) <= CharCode.Z) ||
+      (ch >= CharCode.ZERO && ch <= CharCode.NINE))
+  ) {
     startIndex++;
   }
   return startIndex;
@@ -226,7 +229,11 @@ export function consumeStyleKey(text: string, startIndex: number, endIndex: numb
  * @returns Index after separator and surrounding whitespace.
  */
 export function consumeSeparator(
-    text: string, startIndex: number, endIndex: number, separator: number): number {
+  text: string,
+  startIndex: number,
+  endIndex: number,
+  separator: number,
+): number {
   startIndex = consumeWhitespace(text, startIndex, endIndex);
   if (startIndex < endIndex) {
     if (ngDevMode && text.charCodeAt(startIndex) !== separator) {
@@ -237,7 +244,6 @@ export function consumeSeparator(
   return startIndex;
 }
 
-
 /**
  * Consumes style value honoring `url()` and `""` text.
  *
@@ -247,9 +253,9 @@ export function consumeSeparator(
  * @returns Index after last style value character.
  */
 export function consumeStyleValue(text: string, startIndex: number, endIndex: number): number {
-  let ch1 = -1;  // 1st previous character
-  let ch2 = -1;  // 2nd previous character
-  let ch3 = -1;  // 3rd previous character
+  let ch1 = -1; // 1st previous character
+  let ch2 = -1; // 2nd previous character
+  let ch3 = -1; // 3rd previous character
   let i = startIndex;
   let lastChIndex = i;
   while (i < endIndex) {
@@ -259,10 +265,12 @@ export function consumeStyleValue(text: string, startIndex: number, endIndex: nu
     } else if (ch === CharCode.DOUBLE_QUOTE || ch === CharCode.SINGLE_QUOTE) {
       lastChIndex = i = consumeQuotedText(text, ch, i, endIndex);
     } else if (
-        startIndex ===
-            i - 4 &&  // We have seen only 4 characters so far "URL(" (Ignore "foo_URL()")
-        ch3 === CharCode.U &&
-        ch2 === CharCode.R && ch1 === CharCode.L && ch === CharCode.OPEN_PAREN) {
+      startIndex === i - 4 && // We have seen only 4 characters so far "URL(" (Ignore "foo_URL()")
+      ch3 === CharCode.U &&
+      ch2 === CharCode.R &&
+      ch1 === CharCode.L &&
+      ch === CharCode.OPEN_PAREN
+    ) {
       lastChIndex = i = consumeQuotedText(text, CharCode.CLOSE_PAREN, i, endIndex);
     } else if (ch > CharCode.SPACE) {
       // if we have a non-whitespace character then capture its location
@@ -285,8 +293,12 @@ export function consumeStyleValue(text: string, startIndex: number, endIndex: nu
  * @returns Index after quoted characters.
  */
 export function consumeQuotedText(
-    text: string, quoteCharCode: number, startIndex: number, endIndex: number): number {
-  let ch1 = -1;  // 1st previous character
+  text: string,
+  quoteCharCode: number,
+  startIndex: number,
+  endIndex: number,
+): number {
+  let ch1 = -1; // 1st previous character
   let index = startIndex;
   while (index < endIndex) {
     const ch = text.charCodeAt(index++);
@@ -301,14 +313,20 @@ export function consumeQuotedText(
       ch1 = ch;
     }
   }
-  throw ngDevMode ? malformedStyleError(text, String.fromCharCode(quoteCharCode), endIndex) :
-                    new Error();
+  throw ngDevMode
+    ? malformedStyleError(text, String.fromCharCode(quoteCharCode), endIndex)
+    : new Error();
 }
 
 function malformedStyleError(text: string, expecting: string, index: number): never {
   ngDevMode && assertEqual(typeof text === 'string', true, 'String expected here');
   throw throwError(
-      `Malformed style at location ${index} in string '` + text.substring(0, index) + '[>>' +
-      text.substring(index, index + 1) + '<<]' + text.slice(index + 1) +
-      `'. Expecting '${expecting}'.`);
+    `Malformed style at location ${index} in string '` +
+      text.substring(0, index) +
+      '[>>' +
+      text.substring(index, index + 1) +
+      '<<]' +
+      text.slice(index + 1) +
+      `'. Expecting '${expecting}'.`,
+  );
 }

@@ -26,7 +26,7 @@ import {internalAfterNextRender} from './after_render_hooks';
  * in production.
  */
 
-export function queueStateUpdate(callback: VoidFunction, options?: {injector?: Injector;}): void {
+export function queueStateUpdate(callback: VoidFunction, options?: {injector?: Injector}): void {
   !options && assertInInjectionContext(queueStateUpdate);
   const injector = options?.injector ?? inject(Injector);
   const appRef = injector.get(ApplicationRef);

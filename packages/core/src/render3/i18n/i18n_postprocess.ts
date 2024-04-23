@@ -20,7 +20,6 @@ const PP_TEMPLATE_ID_REGEXP = /\d+\:(\d+)/;
 // Contains the following fields: [templateId, isCloseTemplateTag, placeholder]
 type PostprocessPlaceholder = [number, boolean, string];
 
-
 /**
  * Handles message string post-processing for internationalization.
  *
@@ -42,7 +41,9 @@ type PostprocessPlaceholder = [number, boolean, string];
  * @codeGenApi
  */
 export function i18nPostprocess(
-    message: string, replacements: {[key: string]: (string|string[])} = {}): string {
+  message: string,
+  replacements: {[key: string]: string | string[]} = {},
+): string {
   /**
    * Step 1: resolve all multi-value placeholders like [�#5�|�*1:1��#2:1�|�#4:1�]
    *
@@ -112,7 +113,7 @@ export function i18nPostprocess(
    * Step 3: replace all placeholders used inside ICUs in a form of {PLACEHOLDER}
    */
   result = result.replace(PP_ICU_PLACEHOLDERS_REGEXP, (match, key): string => {
-    return replacements.hasOwnProperty(key) ? replacements[key] as string : match;
+    return replacements.hasOwnProperty(key) ? (replacements[key] as string) : match;
   });
 
   /**

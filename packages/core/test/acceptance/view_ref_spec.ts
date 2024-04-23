@@ -6,10 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, createComponent, ElementRef, EmbeddedViewRef, EnvironmentInjector, Injector, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  ComponentRef,
+  createComponent,
+  ElementRef,
+  EmbeddedViewRef,
+  EnvironmentInjector,
+  Injector,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import {ViewRef as InternalViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
-
 
 describe('ViewRef', () => {
   it('should remove nodes from DOM when the view is detached from app ref', () => {
@@ -21,7 +33,10 @@ describe('ViewRef', () => {
     @Component({template: `<span></span>`})
     class App {
       componentRef!: ComponentRef<DynamicComponent>;
-      constructor(public appRef: ApplicationRef, private injector: EnvironmentInjector) {}
+      constructor(
+        public appRef: ApplicationRef,
+        private injector: EnvironmentInjector,
+      ) {}
 
       create() {
         this.componentRef = createComponent(DynamicComponent, {environmentInjector: this.injector});
@@ -54,7 +69,7 @@ describe('ViewRef', () => {
     @Component({template: ''})
     class App {
       constructor(changeDetectorRef: ChangeDetectorRef) {
-        (changeDetectorRef as InternalViewRef<unknown>).onDestroy(() => called = true);
+        (changeDetectorRef as InternalViewRef<unknown>).onDestroy(() => (called = true));
       }
     }
 

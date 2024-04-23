@@ -48,7 +48,11 @@ describe('MultiMap', () => {
     const items: string[][] = [];
 
     map.forEach((v, k) => items.push([v, k]));
-    expect(items).toEqual([['v1', 'km'], ['v2', 'km'], ['v', 'ks']]);
+    expect(items).toEqual([
+      ['v1', 'km'],
+      ['v2', 'km'],
+      ['v', 'ks'],
+    ]);
   });
 
   it('should throw upon detecting duplicate values', () => {

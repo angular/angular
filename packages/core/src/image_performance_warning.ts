@@ -25,15 +25,17 @@ const OVERSIZED_IMAGE_TOLERANCE = 1200;
 @Injectable({providedIn: 'root'})
 export class ImagePerformanceWarning implements OnDestroy {
   // Map of full image URLs -> original `ngSrc` values.
-  private window: Window|null = null;
-  private observer: PerformanceObserver|null = null;
+  private window: Window | null = null;
+  private observer: PerformanceObserver | null = null;
   private options: ImageConfig = inject(IMAGE_CONFIG);
   private ngZone = inject(NgZone);
   private lcpImageUrl?: string;
 
   public start() {
-    if (typeof PerformanceObserver === 'undefined' ||
-        (this.options?.disableImageSizeWarning && this.options?.disableImageLazyLoadWarning)) {
+    if (
+      typeof PerformanceObserver === 'undefined' ||
+      (this.options?.disableImageSizeWarning && this.options?.disableImageLazyLoadWarning)
+    ) {
       return;
     }
     this.observer = this.initPerformanceObserver();
@@ -67,7 +69,7 @@ export class ImagePerformanceWarning implements OnDestroy {
     this.observer?.disconnect();
   }
 
-  private initPerformanceObserver(): PerformanceObserver|null {
+  private initPerformanceObserver(): PerformanceObserver | null {
     if (typeof PerformanceObserver === 'undefined') {
       return null;
     }
@@ -94,8 +96,9 @@ export class ImagePerformanceWarning implements OnDestroy {
 
   private scanImages(): void {
     const images = getDocument().querySelectorAll('img');
-    let lcpElementFound, lcpElementLoadedCorrectly = false;
-    images.forEach(image => {
+    let lcpElementFound,
+      lcpElementLoadedCorrectly = false;
+    images.forEach((image) => {
       if (!this.options?.disableImageSizeWarning) {
         for (const image of images) {
           // Image elements using the NgOptimizedImage directive are excluded,
@@ -118,8 +121,12 @@ export class ImagePerformanceWarning implements OnDestroy {
         }
       }
     });
-    if (lcpElementFound && !lcpElementLoadedCorrectly && this.lcpImageUrl &&
-        !this.options?.disableImageLazyLoadWarning) {
+    if (
+      lcpElementFound &&
+      !lcpElementLoadedCorrectly &&
+      this.lcpImageUrl &&
+      !this.options?.disableImageLazyLoadWarning
+    ) {
       logLazyLCPWarning(this.lcpImageUrl);
     }
   }
@@ -154,29 +161,35 @@ export class ImagePerformanceWarning implements OnDestroy {
 
     const recommendedWidth = this.window.devicePixelRatio * renderedWidth;
     const recommendedHeight = this.window.devicePixelRatio * renderedHeight;
-    const oversizedWidth = (intrinsicWidth - recommendedWidth) >= OVERSIZED_IMAGE_TOLERANCE;
-    const oversizedHeight = (intrinsicHeight - recommendedHeight) >= OVERSIZED_IMAGE_TOLERANCE;
+    const oversizedWidth = intrinsicWidth - recommendedWidth >= OVERSIZED_IMAGE_TOLERANCE;
+    const oversizedHeight = intrinsicHeight - recommendedHeight >= OVERSIZED_IMAGE_TOLERANCE;
     return oversizedWidth || oversizedHeight;
   }
 }
 
 function logLazyLCPWarning(src: string) {
-  console.warn(formatRuntimeError(
+  console.warn(
+    formatRuntimeError(
       RuntimeErrorCode.IMAGE_PERFORMANCE_WARNING,
       `An image with src ${src} is the Largest Contentful Paint (LCP) element ` +
-          `but was given a "loading" value of "lazy", which can negatively impact ` +
-          `application loading performance. This warning can be addressed by ` +
-          `changing the loading value of the LCP image to "eager", or by using the ` +
-          `NgOptimizedImage directive's prioritization utilities. For more ` +
-          `information about addressing or disabling this warning, see ` +
-          `https://angular.io/errors/NG0913`));
+        `but was given a "loading" value of "lazy", which can negatively impact ` +
+        `application loading performance. This warning can be addressed by ` +
+        `changing the loading value of the LCP image to "eager", or by using the ` +
+        `NgOptimizedImage directive's prioritization utilities. For more ` +
+        `information about addressing or disabling this warning, see ` +
+        `https://angular.io/errors/NG0913`,
+    ),
+  );
 }
 
 function logOversizedImageWarning(src: string) {
-  console.warn(formatRuntimeError(
+  console.warn(
+    formatRuntimeError(
       RuntimeErrorCode.IMAGE_PERFORMANCE_WARNING,
       `An image with src ${src} has intrinsic file dimensions much larger than its ` +
-          `rendered size. This can negatively impact application loading performance. ` +
-          `For more information about addressing or disabling this warning, see ` +
-          `https://angular.io/errors/NG0913`));
+        `rendered size. This can negatively impact application loading performance. ` +
+        `For more information about addressing or disabling this warning, see ` +
+        `https://angular.io/errors/NG0913`,
+    ),
+  );
 }

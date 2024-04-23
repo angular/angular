@@ -13,8 +13,9 @@ let queue = new Set<Watch>();
 /**
  * A wrapper around `Watch` that emulates the `effect` API and allows for more streamlined testing.
  */
-export function testingEffect(effectFn: (onCleanup: (cleanupFn: WatchCleanupFn) => void) => void):
-    void {
+export function testingEffect(
+  effectFn: (onCleanup: (cleanupFn: WatchCleanupFn) => void) => void,
+): void {
   const w = createWatch(effectFn, queue.add.bind(queue), true);
 
   // Effects start dirty.

@@ -8,7 +8,13 @@
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
 import {Console} from '../console';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironmentProviders, Provider} from '../di';
+import {
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentProviders,
+  Injector,
+  makeEnvironmentProviders,
+  Provider,
+} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
@@ -25,8 +31,17 @@ import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
 
 import {cleanupDehydratedViews} from './cleanup';
-import {enableClaimDehydratedIcuCaseImpl, enablePrepareI18nBlockForHydrationImpl, isI18nHydrationEnabled, setIsI18nHydrationSupportEnabled} from './i18n';
-import {IS_HYDRATION_DOM_REUSE_ENABLED, IS_I18N_HYDRATION_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
+import {
+  enableClaimDehydratedIcuCaseImpl,
+  enablePrepareI18nBlockForHydrationImpl,
+  isI18nHydrationEnabled,
+  setIsI18nHydrationSupportEnabled,
+} from './i18n';
+import {
+  IS_HYDRATION_DOM_REUSE_ENABLED,
+  IS_I18N_HYDRATION_ENABLED,
+  PRESERVE_HOST_CONTENT,
+} from './tokens';
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 
@@ -96,14 +111,14 @@ function enableI18nHydrationRuntimeSupport() {
  */
 function printHydrationStats(injector: Injector) {
   const console = injector.get(Console);
-  const message = `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
-      `and ${ngDevMode!.hydratedNodes} node(s), ` +
-      `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
-      `Learn more at https://angular.io/guide/hydration.`;
+  const message =
+    `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
+    `and ${ngDevMode!.hydratedNodes} node(s), ` +
+    `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
+    `Learn more at https://angular.io/guide/hydration.`;
   // tslint:disable-next-line:no-console
   console.log(message);
 }
-
 
 /**
  * Returns a Promise that is resolved when an application becomes stable.
@@ -149,15 +164,16 @@ export function withDomHydration(): EnvironmentProviders {
           // hydration annotations. Otherwise, keep hydration disabled.
           const transferState = inject(TransferState, {optional: true});
           isEnabled = !!transferState?.get(NGH_DATA_KEY, null);
-          if (!isEnabled && (typeof ngDevMode !== 'undefined' && ngDevMode)) {
+          if (!isEnabled && typeof ngDevMode !== 'undefined' && ngDevMode) {
             const console = inject(Console);
             const message = formatRuntimeError(
-                RuntimeErrorCode.MISSING_HYDRATION_ANNOTATIONS,
-                'Angular hydration was requested on the client, but there was no ' +
-                    'serialized information present in the server response, ' +
-                    'thus hydration was not enabled. ' +
-                    'Make sure the `provideClientHydration()` is included into the list ' +
-                    'of providers in the server part of the application configuration.');
+              RuntimeErrorCode.MISSING_HYDRATION_ANNOTATIONS,
+              'Angular hydration was requested on the client, but there was no ' +
+                'serialized information present in the server response, ' +
+                'thus hydration was not enabled. ' +
+                'Make sure the `provideClientHydration()` is included into the list ' +
+                'of providers in the server part of the application configuration.',
+            );
             // tslint:disable-next-line:no-console
             console.warn(message);
           }
@@ -195,7 +211,7 @@ export function withDomHydration(): EnvironmentProviders {
         // On a server, an application is rendered from scratch,
         // so the host content needs to be empty.
         return isPlatformBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED);
-      }
+      },
     },
     {
       provide: APP_BOOTSTRAP_LISTENER,
@@ -219,10 +235,10 @@ export function withDomHydration(): EnvironmentProviders {
             });
           };
         }
-        return () => {};  // noop
+        return () => {}; // noop
       },
       multi: true,
-    }
+    },
   ]);
 }
 
@@ -254,10 +270,9 @@ export function withI18nSupport(): Provider[] {
  */
 function logWarningOnStableTimedout(time: number, console: Console): void {
   const message =
-      `Angular hydration expected the ApplicationRef.isStable() to emit \`true\`, but it ` +
-      `didn't happen within ${
-          time}ms. Angular hydration logic depends on the application becoming stable ` +
-      `as a signal to complete hydration process.`;
+    `Angular hydration expected the ApplicationRef.isStable() to emit \`true\`, but it ` +
+    `didn't happen within ${time}ms. Angular hydration logic depends on the application becoming stable ` +
+    `as a signal to complete hydration process.`;
 
   console.warn(formatRuntimeError(RuntimeErrorCode.HYDRATION_STABLE_TIMEDOUT, message));
 }
@@ -274,21 +289,25 @@ function logWarningOnStableTimedout(time: number, console: Console): void {
  */
 function verifySsrContentsIntegrity(): void {
   const doc = getDocument();
-  let hydrationMarker: Node|undefined;
+  let hydrationMarker: Node | undefined;
   for (const node of doc.body.childNodes) {
-    if (node.nodeType === Node.COMMENT_NODE &&
-        node.textContent?.trim() === SSR_CONTENT_INTEGRITY_MARKER) {
+    if (
+      node.nodeType === Node.COMMENT_NODE &&
+      node.textContent?.trim() === SSR_CONTENT_INTEGRITY_MARKER
+    ) {
       hydrationMarker = node;
       break;
     }
   }
   if (!hydrationMarker) {
     throw new RuntimeError(
-        RuntimeErrorCode.MISSING_SSR_CONTENT_INTEGRITY_MARKER,
-        typeof ngDevMode !== 'undefined' && ngDevMode &&
-            'Angular hydration logic detected that HTML content of this page was modified after it ' +
-                'was produced during server side rendering. Make sure that there are no optimizations ' +
-                'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
-                'relies on HTML produced by the server, including whitespaces and comment nodes.');
+      RuntimeErrorCode.MISSING_SSR_CONTENT_INTEGRITY_MARKER,
+      typeof ngDevMode !== 'undefined' &&
+        ngDevMode &&
+        'Angular hydration logic detected that HTML content of this page was modified after it ' +
+          'was produced during server side rendering. Make sure that there are no optimizations ' +
+          'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
+          'relies on HTML produced by the server, including whitespaces and comment nodes.',
+    );
   }
 }

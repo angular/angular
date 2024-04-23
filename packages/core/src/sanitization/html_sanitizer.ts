@@ -41,47 +41,59 @@ const VOID_ELEMENTS = tagSet('area,br,col,hr,img,wbr');
 // https://html.spec.whatwg.org/#optional-tags
 const OPTIONAL_END_TAG_BLOCK_ELEMENTS = tagSet('colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr');
 const OPTIONAL_END_TAG_INLINE_ELEMENTS = tagSet('rp,rt');
-const OPTIONAL_END_TAG_ELEMENTS =
-    merge(OPTIONAL_END_TAG_INLINE_ELEMENTS, OPTIONAL_END_TAG_BLOCK_ELEMENTS);
+const OPTIONAL_END_TAG_ELEMENTS = merge(
+  OPTIONAL_END_TAG_INLINE_ELEMENTS,
+  OPTIONAL_END_TAG_BLOCK_ELEMENTS,
+);
 
 // Safe Block Elements - HTML5
 const BLOCK_ELEMENTS = merge(
-    OPTIONAL_END_TAG_BLOCK_ELEMENTS,
-    tagSet(
-        'address,article,' +
-        'aside,blockquote,caption,center,del,details,dialog,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,' +
-        'h6,header,hgroup,hr,ins,main,map,menu,nav,ol,pre,section,summary,table,ul'));
+  OPTIONAL_END_TAG_BLOCK_ELEMENTS,
+  tagSet(
+    'address,article,' +
+      'aside,blockquote,caption,center,del,details,dialog,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,' +
+      'h6,header,hgroup,hr,ins,main,map,menu,nav,ol,pre,section,summary,table,ul',
+  ),
+);
 
 // Inline Elements - HTML5
 const INLINE_ELEMENTS = merge(
-    OPTIONAL_END_TAG_INLINE_ELEMENTS,
-    tagSet(
-        'a,abbr,acronym,audio,b,' +
-        'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,picture,q,ruby,rp,rt,s,' +
-        'samp,small,source,span,strike,strong,sub,sup,time,track,tt,u,var,video'));
+  OPTIONAL_END_TAG_INLINE_ELEMENTS,
+  tagSet(
+    'a,abbr,acronym,audio,b,' +
+      'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,picture,q,ruby,rp,rt,s,' +
+      'samp,small,source,span,strike,strong,sub,sup,time,track,tt,u,var,video',
+  ),
+);
 
-export const VALID_ELEMENTS =
-    merge(VOID_ELEMENTS, BLOCK_ELEMENTS, INLINE_ELEMENTS, OPTIONAL_END_TAG_ELEMENTS);
+export const VALID_ELEMENTS = merge(
+  VOID_ELEMENTS,
+  BLOCK_ELEMENTS,
+  INLINE_ELEMENTS,
+  OPTIONAL_END_TAG_ELEMENTS,
+);
 
 // Attributes that have href and hence need to be sanitized
 export const URI_ATTRS = tagSet('background,cite,href,itemtype,longdesc,poster,src,xlink:href');
 
 const HTML_ATTRS = tagSet(
-    'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
+  'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
     'compact,controls,coords,datetime,default,dir,download,face,headers,height,hidden,hreflang,hspace,' +
     'ismap,itemscope,itemprop,kind,label,lang,language,loop,media,muted,nohref,nowrap,open,preload,rel,rev,role,rows,rowspan,rules,' +
     'scope,scrolling,shape,size,sizes,span,srclang,srcset,start,summary,tabindex,target,title,translate,type,usemap,' +
-    'valign,value,vspace,width');
+    'valign,value,vspace,width',
+);
 
 // Accessibility attributes as per WAI-ARIA 1.1 (W3C Working Draft 14 December 2018)
 const ARIA_ATTRS = tagSet(
-    'aria-activedescendant,aria-atomic,aria-autocomplete,aria-busy,aria-checked,aria-colcount,aria-colindex,' +
+  'aria-activedescendant,aria-atomic,aria-autocomplete,aria-busy,aria-checked,aria-colcount,aria-colindex,' +
     'aria-colspan,aria-controls,aria-current,aria-describedby,aria-details,aria-disabled,aria-dropeffect,' +
     'aria-errormessage,aria-expanded,aria-flowto,aria-grabbed,aria-haspopup,aria-hidden,aria-invalid,' +
     'aria-keyshortcuts,aria-label,aria-labelledby,aria-level,aria-live,aria-modal,aria-multiline,' +
     'aria-multiselectable,aria-orientation,aria-owns,aria-placeholder,aria-posinset,aria-pressed,aria-readonly,' +
     'aria-relevant,aria-required,aria-roledescription,aria-rowcount,aria-rowindex,aria-rowspan,aria-selected,' +
-    'aria-setsize,aria-sort,aria-valuemax,aria-valuemin,aria-valuenow,aria-valuetext');
+    'aria-setsize,aria-sort,aria-valuemax,aria-valuemin,aria-valuenow,aria-valuetext',
+);
 
 // NB: This currently consciously doesn't support SVG. SVG sanitization has had several security
 // issues in the past, so it seems safer to leave it out if possible. If support for binding SVG via
@@ -207,15 +219,17 @@ class SanitizingHtmlSerializer {
  * accessing `.firstChild` results in an unexpected node returned.
  */
 function isClobberedElement(parentNode: Node, childNode: Node): boolean {
-  return (parentNode.compareDocumentPosition(childNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) !==
-      Node.DOCUMENT_POSITION_CONTAINED_BY;
+  return (
+    (parentNode.compareDocumentPosition(childNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) !==
+    Node.DOCUMENT_POSITION_CONTAINED_BY
+  );
 }
 
 /**
  * Retrieves next sibling node and makes sure that there is no
  * clobbering of the `nextSibling` property happening.
  */
-function getNextSibling(node: Node): Node|null {
+function getNextSibling(node: Node): Node | null {
   const nextSibling = node.nextSibling;
   // Make sure there is no `nextSibling` clobbering: navigating to
   // the next sibling and going back to the previous one should result
@@ -230,7 +244,7 @@ function getNextSibling(node: Node): Node|null {
  * Retrieves first child node and makes sure that there is no
  * clobbering of the `firstChild` property happening.
  */
-function getFirstChild(node: Node): Node|null {
+function getFirstChild(node: Node): Node | null {
   const firstChild = node.firstChild;
   if (firstChild && isClobberedElement(node, firstChild)) {
     throw clobberedElementError(firstChild);
@@ -242,12 +256,13 @@ function getFirstChild(node: Node): Node|null {
 export function getNodeName(node: Node): string {
   const nodeName = node.nodeName;
   // If the property is clobbered, assume it is an `HTMLFormElement`.
-  return (typeof nodeName === 'string') ? nodeName : 'FORM';
+  return typeof nodeName === 'string' ? nodeName : 'FORM';
 }
 
 function clobberedElementError(node: Node) {
   return new Error(
-      `Failed to sanitize html because the element is clobbered: ${(node as Element).outerHTML}`);
+    `Failed to sanitize html because the element is clobbered: ${(node as Element).outerHTML}`,
+  );
 }
 
 // Regular Expressions for parsing tags and attributes
@@ -262,21 +277,18 @@ const NON_ALPHANUMERIC_REGEXP = /([^\#-~ |!])/g;
  * @param value
  */
 function encodeEntities(value: string) {
-  return value.replace(/&/g, '&amp;')
-      .replace(
-          SURROGATE_PAIR_REGEXP,
-          function(match: string) {
-            const hi = match.charCodeAt(0);
-            const low = match.charCodeAt(1);
-            return '&#' + (((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000) + ';';
-          })
-      .replace(
-          NON_ALPHANUMERIC_REGEXP,
-          function(match: string) {
-            return '&#' + match.charCodeAt(0) + ';';
-          })
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(SURROGATE_PAIR_REGEXP, function (match: string) {
+      const hi = match.charCodeAt(0);
+      const low = match.charCodeAt(1);
+      return '&#' + ((hi - 0xd800) * 0x400 + (low - 0xdc00) + 0x10000) + ';';
+    })
+    .replace(NON_ALPHANUMERIC_REGEXP, function (match: string) {
+      return '&#' + match.charCodeAt(0) + ';';
+    })
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 let inertBodyHelper: InertBodyHelper;
@@ -285,8 +297,8 @@ let inertBodyHelper: InertBodyHelper;
  * Sanitizes the given unsafe, untrusted HTML fragment, and returns HTML text that is safe to add to
  * the DOM in a browser environment.
  */
-export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): TrustedHTML|string {
-  let inertBodyElement: HTMLElement|null = null;
+export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): TrustedHTML | string {
+  let inertBodyElement: HTMLElement | null = null;
   try {
     inertBodyHelper = inertBodyHelper || getInertBodyHelper(defaultDoc);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
@@ -311,7 +323,8 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
 
     const sanitizer = new SanitizingHtmlSerializer();
     const safeHtml = sanitizer.sanitizeChildren(
-        getTemplateContent(inertBodyElement!) as Element || inertBodyElement);
+      (getTemplateContent(inertBodyElement!) as Element) || inertBodyElement,
+    );
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && sanitizer.sanitizedSomething) {
       console.warn(`WARNING: sanitizing HTML stripped some content, see ${XSS_SECURITY_URL}`);
     }
@@ -328,10 +341,10 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
   }
 }
 
-export function getTemplateContent(el: Node): Node|null {
-  return 'content' in (el as any /** Microsoft/TypeScript#21517 */) && isTemplateElement(el) ?
-      el.content :
-      null;
+export function getTemplateContent(el: Node): Node | null {
+  return 'content' in (el as any) /** Microsoft/TypeScript#21517 */ && isTemplateElement(el)
+    ? el.content
+    : null;
 }
 function isTemplateElement(el: Node): el is HTMLTemplateElement {
   return el.nodeType === Node.ELEMENT_NODE && el.nodeName === 'TEMPLATE';

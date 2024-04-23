@@ -8,15 +8,28 @@
 
 import {visitAll} from '@angular/compiler';
 
-import {ElementCollector, ElementToMigrate, endMarker, MigrateError, Result, startMarker} from './types';
-import {calculateNesting, getMainBlock, getOriginals, getPlaceholder, hasLineBreaks, parseTemplate, PlaceholderKind, reduceNestingOffset} from './util';
+import {
+  ElementCollector,
+  ElementToMigrate,
+  endMarker,
+  MigrateError,
+  Result,
+  startMarker,
+} from './types';
+import {
+  calculateNesting,
+  getMainBlock,
+  getOriginals,
+  getPlaceholder,
+  hasLineBreaks,
+  parseTemplate,
+  PlaceholderKind,
+  reduceNestingOffset,
+} from './util';
 
 export const ngfor = '*ngFor';
 export const nakedngfor = 'ngFor';
-const fors = [
-  ngfor,
-  nakedngfor,
-];
+const fors = [ngfor, nakedngfor];
 
 export const commaSeparatedSyntax = new Map([
   ['(', ')'],
@@ -32,8 +45,11 @@ export const stringPairs = new Map([
  * Replaces structural directive ngFor instances with new for.
  * Returns null if the migration failed (e.g. there was a syntax error).
  */
-export function migrateFor(template: string):
-    {migrated: string, errors: MigrateError[], changed: boolean} {
+export function migrateFor(template: string): {
+  migrated: string;
+  errors: MigrateError[];
+  changed: boolean;
+} {
   let errors: MigrateError[] = [];
   let parsed = parseTemplate(template);
   if (parsed.tree === undefined) {
@@ -93,14 +109,15 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
   // first portion should always be the loop definition prefixed with `let`
   const condition = parts[0].replace('let ', '');
   if (condition.indexOf(' as ') > -1) {
-    let errorMessage = `Found an aliased collection on an ngFor: "${condition}".` +
-        ' Collection aliasing is not supported with @for.' +
-        ' Refactor the code to remove the `as` alias and re-run the migration.';
+    let errorMessage =
+      `Found an aliased collection on an ngFor: "${condition}".` +
+      ' Collection aliasing is not supported with @for.' +
+      ' Refactor the code to remove the `as` alias and re-run the migration.';
     throw new Error(errorMessage);
   }
   const loopVar = condition.split(' of ')[0];
   let trackBy = loopVar;
-  let aliasedIndex: string|null = null;
+  let aliasedIndex: string | null = null;
   let tmplPlaceholder = '';
   for (let i = 1; i < parts.length; i++) {
     const part = parts[i].trim();
@@ -146,7 +163,7 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
     trackBy = trackBy.replace('$index', aliasedIndex);
   }
 
-  const aliasStr = (aliases.length > 0) ? `;${aliases.join(';')}` : '';
+  const aliasStr = aliases.length > 0 ? `;${aliases.join(';')}` : '';
 
   let startBlock = `${startMarker}@for (${condition}; track ${trackBy}${aliasStr}) {${lbString}`;
   let endBlock = `${lbString}}${endMarker}`;
@@ -186,7 +203,7 @@ function migrateBoundNgFor(etm: ElementToMigrate, tmpl: string, offset: number):
       aliasedIndex = key;
     }
   }
-  const aliasStr = (aliases.length > 0) ? `;${aliases.join(';')}` : '';
+  const aliasStr = aliases.length > 0 ? `;${aliases.join(';')}` : '';
 
   let trackBy = aliasAttrs.item;
   if (forAttrs.trackBy !== '') {
@@ -220,8 +237,11 @@ function getNgForParts(expression: string): string[] {
     const isInCommaSeparated = commaSeparatedStack.length === 0;
     // Any semicolon is a delimiter, as well as any comma outside
     // of comma-separated syntax, as long as they're outside of a string.
-    if (isInString && current.length > 0 &&
-        (char === ';' || (char === ',' && isInCommaSeparated))) {
+    if (
+      isInString &&
+      current.length > 0 &&
+      (char === ';' || (char === ',' && isInCommaSeparated))
+    ) {
       parts.push(current);
       current = '';
       continue;
@@ -236,8 +256,9 @@ function getNgForParts(expression: string): string[] {
     if (commaSeparatedSyntax.has(char)) {
       commaSeparatedStack.push(commaSeparatedSyntax.get(char)!);
     } else if (
-        commaSeparatedStack.length > 0 &&
-        commaSeparatedStack[commaSeparatedStack.length - 1] === char) {
+      commaSeparatedStack.length > 0 &&
+      commaSeparatedStack[commaSeparatedStack.length - 1] === char
+    ) {
       commaSeparatedStack.pop();
     }
 

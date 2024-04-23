@@ -8,18 +8,27 @@
 
 import {assertInInjectionContext} from '../../di';
 
-import {createInputSignal, InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, InputSignal, InputSignalWithTransform} from './input_signal';
+import {
+  createInputSignal,
+  InputOptions,
+  InputOptionsWithoutTransform,
+  InputOptionsWithTransform,
+  InputSignal,
+  InputSignalWithTransform,
+} from './input_signal';
 import {REQUIRED_UNSET_VALUE} from './input_signal_node';
 
 export function inputFunction<ReadT, WriteT>(
-    initialValue?: ReadT,
-    opts?: InputOptions<ReadT, WriteT>): InputSignalWithTransform<ReadT|undefined, WriteT> {
+  initialValue?: ReadT,
+  opts?: InputOptions<ReadT, WriteT>,
+): InputSignalWithTransform<ReadT | undefined, WriteT> {
   ngDevMode && assertInInjectionContext(input);
   return createInputSignal(initialValue, opts);
 }
 
-export function inputRequiredFunction<ReadT, WriteT = ReadT>(opts?: InputOptions<ReadT, WriteT>):
-    InputSignalWithTransform<ReadT, WriteT> {
+export function inputRequiredFunction<ReadT, WriteT = ReadT>(
+  opts?: InputOptions<ReadT, WriteT>,
+): InputSignalWithTransform<ReadT, WriteT> {
   ngDevMode && assertInInjectionContext(input);
   return createInputSignal(REQUIRED_UNSET_VALUE as never, opts);
 }
@@ -39,7 +48,7 @@ export interface InputFunction {
    * Initializes an input of type `T` with an initial value of `undefined`.
    * Angular will implicitly use `undefined` as initial value.
    */
-  <T>(): InputSignal<T|undefined>;
+  <T>(): InputSignal<T | undefined>;
   /** Declares an input of type `T` with an explicit initial value. */
   <T>(initialValue: T, opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
   /**
@@ -49,8 +58,10 @@ export interface InputFunction {
    * The input accepts values of type `TransformT` and the given
    * transform function will transform the value to type `T`.
    */
-  <T, TransformT>(initialValue: T, opts: InputOptionsWithTransform<T, TransformT>):
-      InputSignalWithTransform<T, TransformT>;
+  <T, TransformT>(
+    initialValue: T,
+    opts: InputOptionsWithTransform<T, TransformT>,
+  ): InputSignalWithTransform<T, TransformT>;
 
   /**
    * Initializes a required input.
@@ -69,8 +80,9 @@ export interface InputFunction {
      * The input accepts values of type `TransformT` and the given
      * transform function will transform the value to type `T`.
      */
-    <T, TransformT>(opts: InputOptionsWithTransform<T, TransformT>):
-        InputSignalWithTransform<T, TransformT>;
+    <T, TransformT>(
+      opts: InputOptionsWithTransform<T, TransformT>,
+    ): InputSignalWithTransform<T, TransformT>;
   };
 }
 
@@ -127,5 +139,5 @@ export const input: InputFunction = (() => {
   // this assignment, unless this `input` constant export is accessed. It's a
   // self-contained side effect that is local to the user facing`input` export.
   (inputFunction as any).required = inputRequiredFunction;
-  return inputFunction as (typeof inputFunction&{required: typeof inputRequiredFunction});
+  return inputFunction as typeof inputFunction & {required: typeof inputRequiredFunction};
 })();

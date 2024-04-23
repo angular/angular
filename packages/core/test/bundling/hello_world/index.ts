@@ -9,11 +9,9 @@ import {Component, NgModule} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
 @Component({selector: 'hello-world', template: 'Hello World!'})
-export class HelloWorldComponent {
-}
+export class HelloWorldComponent {}
 
 @NgModule({declarations: [HelloWorldComponent]})
-export class HelloWorldModule {
-}
+export class HelloWorldModule {}
 
 platformBrowser().bootstrapModule(HelloWorldModule);

@@ -43,23 +43,23 @@ export class TimerScheduler {
   executingCallbacks = false;
 
   // Currently scheduled `setTimeout` id.
-  timeoutId: number|null = null;
+  timeoutId: number | null = null;
 
   // When currently scheduled timer would fire.
-  invokeTimerAt: number|null = null;
+  invokeTimerAt: number | null = null;
 
   // List of callbacks to be invoked.
   // For each callback we also store a timestamp on when the callback
   // should be invoked. We store timestamps and callback functions
   // in a flat array to avoid creating new objects for each entry.
   // [timestamp1, callback1, timestamp2, callback2, ...]
-  current: Array<number|VoidFunction> = [];
+  current: Array<number | VoidFunction> = [];
 
   // List of callbacks collected while invoking current set of callbacks.
   // Those callbacks are added to the "current" queue at the end of
   // the current callback invocation. The shape of this list is the same
   // as the shape of the `current` list.
-  deferred: Array<number|VoidFunction> = [];
+  deferred: Array<number | VoidFunction> = [];
 
   add(delay: number, callback: VoidFunction) {
     const target = this.executingCallbacks ? this.deferred : this.current;
@@ -81,7 +81,11 @@ export class TimerScheduler {
     }
   }
 
-  private addToQueue(target: Array<number|VoidFunction>, invokeAt: number, callback: VoidFunction) {
+  private addToQueue(
+    target: Array<number | VoidFunction>,
+    invokeAt: number,
+    callback: VoidFunction,
+  ) {
     let insertAtIndex = target.length;
     for (let i = 0; i < target.length; i += 2) {
       const invokeQueuedCallbackAt = target[i] as number;
@@ -97,7 +101,7 @@ export class TimerScheduler {
     arrayInsert2(target, insertAtIndex, invokeAt, callback);
   }
 
-  private removeFromQueue(target: Array<number|VoidFunction>, callback: VoidFunction) {
+  private removeFromQueue(target: Array<number | VoidFunction>, callback: VoidFunction) {
     let index = -1;
     for (let i = 0; i < target.length; i += 2) {
       const queuedCallback = target[i + 1];
@@ -174,18 +178,20 @@ export class TimerScheduler {
     // average frame duration. This is needed for better
     // batching and to avoid kicking off excessive change
     // detection cycles.
-    const FRAME_DURATION_MS = 16;  // 1000ms / 60fps
+    const FRAME_DURATION_MS = 16; // 1000ms / 60fps
 
     if (this.current.length > 0) {
       const now = Date.now();
       // First element in the queue points at the timestamp
       // of the first (earliest) event.
       const invokeAt = this.current[0] as number;
-      if (this.timeoutId === null ||
-          // Reschedule a timer in case a queue contains an item with
-          // an earlier timestamp and the delta is more than an average
-          // frame duration.
-          (this.invokeTimerAt && (this.invokeTimerAt - invokeAt > FRAME_DURATION_MS))) {
+      if (
+        this.timeoutId === null ||
+        // Reschedule a timer in case a queue contains an item with
+        // an earlier timestamp and the delta is more than an average
+        // frame duration.
+        (this.invokeTimerAt && this.invokeTimerAt - invokeAt > FRAME_DURATION_MS)
+      ) {
         // There was a timeout already, but an earlier event was added
         // into the queue. In this case we drop an old timer and setup
         // a new one with an updated (smaller) timeout.

@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionScheduler, NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
+import {
+  ChangeDetectionScheduler,
+  NotificationSource,
+} from '../change_detection/scheduling/zoneless_scheduling';
 import {assertInInjectionContext, Injector, runInInjectionContext, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {ErrorHandler} from '../error_handler';
@@ -138,7 +141,7 @@ export interface InternalAfterNextRenderOptions {
 
 /** `AfterRenderRef` that does nothing. */
 const NOOP_AFTER_RENDER_REF: AfterRenderRef = {
-  destroy() {}
+  destroy() {},
 };
 
 /**
@@ -157,7 +160,9 @@ const NOOP_AFTER_RENDER_REF: AfterRenderRef = {
  *       to be tree-shaken, and the framework shouldn't need much of the behavior.
  */
 export function internalAfterNextRender(
-    callback: VoidFunction, options?: InternalAfterNextRenderOptions) {
+  callback: VoidFunction,
+  options?: InternalAfterNextRenderOptions,
+) {
   const injector = options?.injector ?? inject(Injector);
 
   // Similarly to the public `afterNextRender` function, an internal one
@@ -218,10 +223,11 @@ export function internalAfterNextRender(
  */
 export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef {
   ngDevMode &&
-      assertNotInReactiveContext(
-          afterRender,
-          'Call `afterRender` outside of a reactive context. For example, schedule the render ' +
-              'callback inside the component constructor`.');
+    assertNotInReactiveContext(
+      afterRender,
+      'Call `afterRender` outside of a reactive context. For example, schedule the render ' +
+        'callback inside the component constructor`.',
+    );
 
   !options && assertInInjectionContext(afterRender);
   const injector = options?.injector ?? inject(Injector);
@@ -235,7 +241,8 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
-  const callbackHandler = afterRenderEventManager.handler ??= new AfterRenderCallbackHandlerImpl();
+  const callbackHandler = (afterRenderEventManager.handler ??=
+    new AfterRenderCallbackHandlerImpl());
   const phase = options?.phase ?? AfterRenderPhase.MixedReadWrite;
   const destroy = () => {
     callbackHandler.unregister(instance);
@@ -298,7 +305,9 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
  * @developerPreview
  */
 export function afterNextRender(
-    callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef {
+  callback: VoidFunction,
+  options?: AfterRenderOptions,
+): AfterRenderRef {
   !options && assertInInjectionContext(afterNextRender);
   const injector = options?.injector ?? inject(Injector);
 
@@ -311,17 +320,22 @@ export function afterNextRender(
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
-  const callbackHandler = afterRenderEventManager.handler ??= new AfterRenderCallbackHandlerImpl();
+  const callbackHandler = (afterRenderEventManager.handler ??=
+    new AfterRenderCallbackHandlerImpl());
   const phase = options?.phase ?? AfterRenderPhase.MixedReadWrite;
   const destroy = () => {
     callbackHandler.unregister(instance);
     unregisterFn();
   };
   const unregisterFn = injector.get(DestroyRef).onDestroy(destroy);
-  const instance = runInInjectionContext(injector, () => new AfterRenderCallback(phase, () => {
-                                                     destroy();
-                                                     callback();
-                                                   }));
+  const instance = runInInjectionContext(
+    injector,
+    () =>
+      new AfterRenderCallback(phase, () => {
+        destroy();
+        callback();
+      }),
+  );
 
   callbackHandler.register(instance);
   return {destroy};
@@ -333,7 +347,10 @@ export function afterNextRender(
 class AfterRenderCallback {
   private errorHandler = inject(ErrorHandler, {optional: true});
 
-  constructor(readonly phase: AfterRenderPhase, private callbackFn: VoidFunction) {
+  constructor(
+    readonly phase: AfterRenderPhase,
+    private callbackFn: VoidFunction,
+  ) {
     // Registering a callback will notify the scheduler.
     inject(ChangeDetectionScheduler, {optional: true})?.notify(NotificationSource.NewRenderHook);
   }
@@ -428,7 +445,7 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
  */
 export class AfterRenderEventManager {
   /* @internal */
-  handler: AfterRenderCallbackHandler|null = null;
+  handler: AfterRenderCallbackHandler | null = null;
 
   /* @internal */
   internalCallbacks: VoidFunction[] = [];

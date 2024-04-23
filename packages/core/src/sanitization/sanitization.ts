@@ -14,15 +14,17 @@ import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
-import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass';
+import {
+  trustedHTMLFromStringBypass,
+  trustedScriptFromStringBypass,
+  trustedScriptURLFromStringBypass,
+} from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
 import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './security';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
-
-
 
 /**
  * An `html` sanitizer which converts untrusted `html` **string** into trusted string by removing
@@ -39,7 +41,7 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
  *
  * @codeGenApi
  */
-export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML|string {
+export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML | string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return trustedHTMLFromStringBypass(sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '');
@@ -110,18 +112,20 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
  *
  * @codeGenApi
  */
-export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptURL|string {
+export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptURL | string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return trustedScriptURLFromStringBypass(
-        sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '');
+      sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '',
+    );
   }
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
     return trustedScriptURLFromStringBypass(unwrapSafeValue(unsafeResourceUrl));
   }
   throw new RuntimeError(
-      RuntimeErrorCode.UNSAFE_VALUE_IN_RESOURCE_URL,
-      ngDevMode && `unsafe value used in a resource URL context (see ${XSS_SECURITY_URL})`);
+    RuntimeErrorCode.UNSAFE_VALUE_IN_RESOURCE_URL,
+    ngDevMode && `unsafe value used in a resource URL context (see ${XSS_SECURITY_URL})`,
+  );
 }
 
 /**
@@ -136,18 +140,20 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
  *
  * @codeGenApi
  */
-export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
+export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript | string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return trustedScriptFromStringBypass(
-        sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '');
+      sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '',
+    );
   }
   if (allowSanitizationBypassAndThrow(unsafeScript, BypassType.Script)) {
     return trustedScriptFromStringBypass(unwrapSafeValue(unsafeScript));
   }
   throw new RuntimeError(
-      RuntimeErrorCode.UNSAFE_VALUE_IN_SCRIPT,
-      ngDevMode && 'unsafe value used in a script context');
+    RuntimeErrorCode.UNSAFE_VALUE_IN_SCRIPT,
+    ngDevMode && 'unsafe value used in a script context',
+  );
 }
 
 /**
@@ -163,7 +169,7 @@ export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
  *
  * @codeGenApi
  */
-export function ɵɵtrustConstantHtml(html: TemplateStringsArray): TrustedHTML|string {
+export function ɵɵtrustConstantHtml(html: TemplateStringsArray): TrustedHTML | string {
   // The following runtime check ensures that the function was called as a
   // template tag (e.g. ɵɵtrustConstantHtml`content`), without any interpolation
   // (e.g. not ɵɵtrustConstantHtml`content ${variable}`). A TemplateStringsArray
@@ -189,7 +195,7 @@ export function ɵɵtrustConstantHtml(html: TemplateStringsArray): TrustedHTML|s
  *
  * @codeGenApi
  */
-export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): TrustedScriptURL|string {
+export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): TrustedScriptURL | string {
   // The following runtime check ensures that the function was called as a
   // template tag (e.g. ɵɵtrustConstantResourceUrl`content`), without any
   // interpolation (e.g. not ɵɵtrustConstantResourceUrl`content ${variable}`). A
@@ -210,10 +216,15 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
  * If tag and prop names don't match Resource URL schema, use URL sanitizer.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
-  if ((prop === 'src' &&
-       (tag === 'embed' || tag === 'frame' || tag === 'iframe' || tag === 'media' ||
+  if (
+    (prop === 'src' &&
+      (tag === 'embed' ||
+        tag === 'frame' ||
+        tag === 'iframe' ||
+        tag === 'media' ||
         tag === 'script')) ||
-      (prop === 'href' && (tag === 'base' || tag === 'link'))) {
+    (prop === 'href' && (tag === 'base' || tag === 'link'))
+  ) {
     return ɵɵsanitizeResourceUrl;
   }
   return ɵɵsanitizeUrl;
@@ -241,10 +252,10 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
 export function validateAgainstEventProperties(name: string) {
   if (name.toLowerCase().startsWith('on')) {
     const errorMessage =
-        `Binding to event property '${name}' is disallowed for security reasons, ` +
-        `please use (${name.slice(2)})=...` +
-        `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
-        ` current module.`;
+      `Binding to event property '${name}' is disallowed for security reasons, ` +
+      `please use (${name.slice(2)})=...` +
+      `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
+      ` current module.`;
     throw new RuntimeError(RuntimeErrorCode.INVALID_EVENT_BINDING, errorMessage);
   }
 }
@@ -252,13 +263,13 @@ export function validateAgainstEventProperties(name: string) {
 export function validateAgainstEventAttributes(name: string) {
   if (name.toLowerCase().startsWith('on')) {
     const errorMessage =
-        `Binding to event attribute '${name}' is disallowed for security reasons, ` +
-        `please use (${name.slice(2)})=...`;
+      `Binding to event attribute '${name}' is disallowed for security reasons, ` +
+      `please use (${name.slice(2)})=...`;
     throw new RuntimeError(RuntimeErrorCode.INVALID_EVENT_BINDING, errorMessage);
   }
 }
 
-function getSanitizer(): Sanitizer|null {
+function getSanitizer(): Sanitizer | null {
   const lView = getLView();
   return lView && lView[ENVIRONMENT].sanitizer;
 }

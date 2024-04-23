@@ -36,7 +36,10 @@ const HTTP_TESTING_MODULES = new Set([HTTP_CLIENT_TESTING_MODULE]);
 export type RewriteFn = (startPos: number, width: number, text: string) => void;
 
 export function migrateFile(
-    sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker, rewriteFn: RewriteFn) {
+  sourceFile: ts.SourceFile,
+  typeChecker: ts.TypeChecker,
+  rewriteFn: RewriteFn,
+) {
   const changeTracker = new ChangeTracker(ts.createPrinter());
   const addedImports = new Map<string, Set<string>>([
     [COMMON_HTTP, new Set()],
@@ -44,12 +47,14 @@ export function migrateFile(
   ]);
 
   const commonHttpIdentifiers = new Set(
-      getImportSpecifiers(sourceFile, COMMON_HTTP, [...HTTP_MODULES])
-          .map((specifier) => specifier.getText()),
+    getImportSpecifiers(sourceFile, COMMON_HTTP, [...HTTP_MODULES]).map((specifier) =>
+      specifier.getText(),
+    ),
   );
   const commonHttpTestingIdentifiers = new Set(
-      getImportSpecifiers(sourceFile, COMMON_HTTP_TESTING, [...HTTP_TESTING_MODULES])
-          .map((specifier) => specifier.getText()),
+    getImportSpecifiers(sourceFile, COMMON_HTTP_TESTING, [...HTTP_TESTING_MODULES]).map(
+      (specifier) => specifier.getText(),
+    ),
   );
 
   ts.forEachChild(sourceFile, function visit(node: ts.Node) {
@@ -57,7 +62,7 @@ export function migrateFile(
 
     if (ts.isClassDeclaration(node)) {
       const decorators = getAngularDecorators(typeChecker, ts.getDecorators(node) || []);
-      decorators.forEach(decorator => {
+      decorators.forEach((decorator) => {
         migrateDecorator(decorator, commonHttpIdentifiers, addedImports, changeTracker);
       });
     }
@@ -77,9 +82,9 @@ export function migrateFile(
       ...commonHttpImports.elements.filter((current) => !symbolImportsToRemove.includes(current)),
       ...[...(addedImports.get(COMMON_HTTP) ?? [])].map((entry) => {
         return ts.factory.createImportSpecifier(
-            false,
-            undefined,
-            ts.factory.createIdentifier(entry),
+          false,
+          undefined,
+          ts.factory.createIdentifier(entry),
         );
       }),
     ]);
@@ -95,13 +100,13 @@ export function migrateFile(
 
     const newHttpTestingImports = ts.factory.updateNamedImports(commonHttpTestingImports, [
       ...commonHttpTestingImports.elements.filter(
-          (current) => !symbolImportsToRemove.includes(current),
-          ),
+        (current) => !symbolImportsToRemove.includes(current),
+      ),
       ...[...(addedImports.get(COMMON_HTTP_TESTING) ?? [])].map((entry) => {
         return ts.factory.createImportSpecifier(
-            false,
-            undefined,
-            ts.factory.createIdentifier(entry),
+          false,
+          undefined,
+          ts.factory.createIdentifier(entry),
         );
       }),
     ]);
@@ -117,12 +122,17 @@ export function migrateFile(
 }
 
 function migrateDecorator(
-    decorator: NgDecorator, commonHttpIdentifiers: Set<string>,
-    addedImports: Map<string, Set<string>>, changeTracker: ChangeTracker) {
+  decorator: NgDecorator,
+  commonHttpIdentifiers: Set<string>,
+  addedImports: Map<string, Set<string>>,
+  changeTracker: ChangeTracker,
+) {
   // Only @NgModule and @Component support `imports`.
   // Also skip decorators with no arguments.
-  if ((decorator.name !== 'NgModule' && decorator.name !== 'Component') ||
-      decorator.node.expression.arguments.length < 1) {
+  if (
+    (decorator.name !== 'NgModule' && decorator.name !== 'Component') ||
+    decorator.node.expression.arguments.length < 1
+  ) {
     return;
   }
 
@@ -163,10 +173,10 @@ function migrateDecorator(
     } else {
       addedImports.get(COMMON_HTTP)?.add(WITH_XSRF_CONFIGURATION);
       addedProviders.add(
-          createCallExpression(
-              WITH_XSRF_CONFIGURATION,
-              importedModules.xsrfOptions?.options ? [importedModules.xsrfOptions.options] : [],
-              ),
+        createCallExpression(
+          WITH_XSRF_CONFIGURATION,
+          importedModules.xsrfOptions?.options ? [importedModules.xsrfOptions.options] : [],
+        ),
       );
     }
   }
@@ -174,9 +184,11 @@ function migrateDecorator(
   // Removing the imported Http modules from the imports list
   const newImports = ts.factory.createArrayLiteralExpression([
     ...moduleImports.elements.filter(
-        (item) => item !== importedModules.client && item !== importedModules.clientJsonp &&
-            item !== importedModules.xsrf,
-        ),
+      (item) =>
+        item !== importedModules.client &&
+        item !== importedModules.clientJsonp &&
+        item !== importedModules.xsrf,
+    ),
   ]);
 
   // Adding the new providers
@@ -206,15 +218,21 @@ function migrateDecorator(
 }
 
 function migrateTestingModuleImports(
-    node: ts.Node, commonHttpTestingIdentifiers: Set<string>,
-    addedImports: Map<string, Set<string>>, changeTracker: ChangeTracker) {
+  node: ts.Node,
+  commonHttpTestingIdentifiers: Set<string>,
+  addedImports: Map<string, Set<string>>,
+  changeTracker: ChangeTracker,
+) {
   // Look for calls to `TestBed.configureTestingModule` with at least one argument.
   // TODO: this won't work if `TestBed` is aliased or type cast.
-  if (!ts.isCallExpression(node) || node.arguments.length < 1 ||
-      !ts.isPropertyAccessExpression(node.expression) ||
-      !ts.isIdentifier(node.expression.expression) ||
-      node.expression.expression.text !== 'TestBed' ||
-      node.expression.name.text !== 'configureTestingModule') {
+  if (
+    !ts.isCallExpression(node) ||
+    node.arguments.length < 1 ||
+    !ts.isPropertyAccessExpression(node.expression) ||
+    !ts.isIdentifier(node.expression.expression) ||
+    node.expression.expression.text !== 'TestBed' ||
+    node.expression.name.text !== 'configureTestingModule'
+  ) {
     return;
   }
 
@@ -232,7 +250,7 @@ function migrateTestingModuleImports(
 
   // Does the imports array contain the HttpClientTestingModule?
   const httpClientTesting = importsArray.elements.find(
-      (elt) => elt.getText() === HTTP_CLIENT_TESTING_MODULE,
+    (elt) => elt.getText() === HTTP_CLIENT_TESTING_MODULE,
   );
   if (!httpClientTesting || !commonHttpTestingIdentifiers.has(HTTP_CLIENT_TESTING_MODULE)) {
     return;
@@ -306,18 +324,18 @@ function getProvidersFromLiteralExpr(literal: ts.ObjectLiteralExpression) {
 }
 
 function getImportedHttpModules(
-    imports: ts.ArrayLiteralExpression,
-    commonHttpIdentifiers: Set<string>,
+  imports: ts.ArrayLiteralExpression,
+  commonHttpIdentifiers: Set<string>,
 ) {
-  let client: ts.Identifier|ts.CallExpression|null = null;
-  let clientJsonp: ts.Identifier|ts.CallExpression|null = null;
-  let xsrf: ts.Identifier|ts.CallExpression|null = null;
+  let client: ts.Identifier | ts.CallExpression | null = null;
+  let clientJsonp: ts.Identifier | ts.CallExpression | null = null;
+  let xsrf: ts.Identifier | ts.CallExpression | null = null;
 
   // represents respectively:
   // HttpClientXsrfModule.disable()
   // HttpClientXsrfModule.withOptions(options)
   // base HttpClientXsrfModule
-  let xsrfOptions: 'disable'|{options: ts.Expression}|null = null;
+  let xsrfOptions: 'disable' | {options: ts.Expression} | null = null;
 
   // Handling the 3 http modules from @angular/common/http and skipping the rest
   for (const item of imports.elements) {
@@ -364,8 +382,8 @@ function getImportedHttpModules(
 
 function createCallExpression(functionName: string, args: ts.Expression[] = []) {
   return ts.factory.createCallExpression(
-      ts.factory.createIdentifier(functionName),
-      undefined,
-      args,
+    ts.factory.createIdentifier(functionName),
+    undefined,
+    args,
   );
 }

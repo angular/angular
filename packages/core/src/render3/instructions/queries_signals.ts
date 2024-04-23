@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {ProviderToken} from '../../di/provider_token';
 import {QueryFlags} from '../interfaces/query';
 import {createContentQuery, createViewQuery} from '../query';
@@ -26,8 +25,12 @@ import {getCurrentQueryIndex, setCurrentQueryIndex} from '../state';
  * @codeGenApi
  */
 export function ɵɵcontentQuerySignal<T>(
-  directiveIndex: number, target: Signal<T>, predicate: ProviderToken<unknown>|string[],
-    flags: QueryFlags, read?: any): void {
+  directiveIndex: number,
+  target: Signal<T>,
+  predicate: ProviderToken<unknown> | string[],
+  flags: QueryFlags,
+  read?: any,
+): void {
   bindQueryToSignal(target, createContentQuery(directiveIndex, predicate, flags, read));
 }
 
@@ -43,8 +46,11 @@ export function ɵɵcontentQuerySignal<T>(
  * @codeGenApi
  */
 export function ɵɵviewQuerySignal(
-    target: Signal<unknown>, predicate: ProviderToken<unknown>|string[], flags: QueryFlags,
-    read?: ProviderToken<unknown>): void {
+  target: Signal<unknown>,
+  predicate: ProviderToken<unknown> | string[],
+  flags: QueryFlags,
+  read?: ProviderToken<unknown>,
+): void {
   bindQueryToSignal(target, createViewQuery(predicate, flags, read));
 }
 

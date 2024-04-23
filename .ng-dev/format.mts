@@ -18,7 +18,7 @@ export const format: FormatConfig = {
       'packages/benchpress/**/*.{js,ts}',
       'packages/common/**/*.{js,ts}',
       'packages/compiler/**/*.{js,ts}',
-      'packages/core/primitives/**/*.{js,ts}',
+      'packages/core/**/*.{js,ts}',
       'packages/docs/**/*.{js,ts}',
       'packages/elements/**/*.{js,ts}',
       'packages/examples/**/*.{js,ts}',
@@ -40,6 +40,11 @@ export const format: FormatConfig = {
       // not be modified.
       '!third_party/**',
       '!.yarn/**',
+      // Do not format the locale files which are checked-in for Google3, but generated using
+      // the `generate-locales-tool` from `packages/common/locales`.
+      '!packages/core/src/i18n/locale_en.ts',
+      '!packages/common/locales/closure-locale.ts',
+      '!packages/common/src/i18n/currencies.ts',
     ],
   },
   'clang-format': {
@@ -77,7 +82,7 @@ export const format: FormatConfig = {
       '!packages/benchpress/**/*.{js,ts}',
       '!packages/common/**/*.{js,ts}',
       '!packages/compiler/**/*.{js,ts}',
-      '!packages/core/primitives/**/*.{js,ts}',
+      '!packages/core/**/*.{js,ts}',
       '!packages/docs/**/*.{js,ts}',
       '!packages/elements/**/*.{js,ts}',
       '!packages/examples/**/*.{js,ts}',

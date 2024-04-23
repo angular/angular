@@ -18,7 +18,7 @@ export function isModuleWithProviders(value: any): value is ModuleWithProviders<
   return (value as {ngModule?: any}).ngModule !== undefined;
 }
 
-export function isNgModule<T>(value: Type<T>): value is Type<T>&{ɵmod: NgModuleDef<T>} {
+export function isNgModule<T>(value: Type<T>): value is Type<T> & {ɵmod: NgModuleDef<T>} {
   return !!getNgModuleDef(value);
 }
 
@@ -45,9 +45,13 @@ export function verifyStandaloneImport(depType: Type<unknown>, importingType: Ty
   if (isForwardRef(depType)) {
     depType = resolveForwardRef(depType);
     if (!depType) {
-      throw new Error(`Expected forwardRef function, imported from "${
-          stringifyForError(importingType)}", to return a standalone entity or NgModule but got "${
-          stringifyForError(depType) || depType}".`);
+      throw new Error(
+        `Expected forwardRef function, imported from "${stringifyForError(
+          importingType,
+        )}", to return a standalone entity or NgModule but got "${
+          stringifyForError(depType) || depType
+        }".`,
+      );
     }
   }
 
@@ -56,21 +60,28 @@ export function verifyStandaloneImport(depType: Type<unknown>, importingType: Ty
     if (def != null) {
       // if a component, directive or pipe is imported make sure that it is standalone
       if (!def.standalone) {
-        throw new Error(`The "${stringifyForError(depType)}" ${
-            getDependencyTypeForError(depType)}, imported from "${
-            stringifyForError(
-                importingType)}", is not standalone. Did you forget to add the standalone: true flag?`);
+        throw new Error(
+          `The "${stringifyForError(depType)}" ${getDependencyTypeForError(
+            depType,
+          )}, imported from "${stringifyForError(
+            importingType,
+          )}", is not standalone. Did you forget to add the standalone: true flag?`,
+        );
       }
     } else {
       // it can be either a module with provider or an unknown (not annotated) type
       if (isModuleWithProviders(depType)) {
-        throw new Error(`A module with providers was imported from "${
-            stringifyForError(
-                importingType)}". Modules with providers are not supported in standalone components imports.`);
+        throw new Error(
+          `A module with providers was imported from "${stringifyForError(
+            importingType,
+          )}". Modules with providers are not supported in standalone components imports.`,
+        );
       } else {
-        throw new Error(`The "${stringifyForError(depType)}" type, imported from "${
-            stringifyForError(
-                importingType)}", must be a standalone component / directive / pipe or an NgModule. Did you forget to add the required @Component / @Directive / @Pipe or @NgModule annotation?`);
+        throw new Error(
+          `The "${stringifyForError(depType)}" type, imported from "${stringifyForError(
+            importingType,
+          )}", must be a standalone component / directive / pipe or an NgModule. Did you forget to add the required @Component / @Directive / @Pipe or @NgModule annotation?`,
+        );
       }
     }
   }

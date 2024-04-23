@@ -16,7 +16,6 @@ import {getLView, getSelectedTNode} from '../render3/state';
 import {getNativeByTNode} from '../render3/util/view_utils';
 import {trustedHTMLFromString} from '../util/security/trusted_types';
 
-
 /**
  * Validation function invoked at runtime for each binding that might potentially
  * represent a security-sensitive attribute of an <iframe>.
@@ -44,13 +43,14 @@ export function ɵɵvalidateIframeAttribute(attrValue: any, tagName: string, att
     // Also remove the <iframe> from the document.
     nativeRemoveNode(lView[RENDERER], iframe);
 
-    const errorMessage = ngDevMode &&
-        `Angular has detected that the \`${attrName}\` was applied ` +
-            `as a binding to an <iframe>${getTemplateLocationDetails(lView)}. ` +
-            `For security reasons, the \`${attrName}\` can be set on an <iframe> ` +
-            `as a static attribute only. \n` +
-            `To fix this, switch the \`${attrName}\` binding to a static attribute ` +
-            `in a template or in host bindings section.`;
+    const errorMessage =
+      ngDevMode &&
+      `Angular has detected that the \`${attrName}\` was applied ` +
+        `as a binding to an <iframe>${getTemplateLocationDetails(lView)}. ` +
+        `For security reasons, the \`${attrName}\` can be set on an <iframe> ` +
+        `as a static attribute only. \n` +
+        `To fix this, switch the \`${attrName}\` binding to a static attribute ` +
+        `in a template or in host bindings section.`;
     throw new RuntimeError(RuntimeErrorCode.UNSAFE_IFRAME_ATTRS, errorMessage);
   }
   return attrValue;

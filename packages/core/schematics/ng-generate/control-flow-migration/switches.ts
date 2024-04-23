@@ -9,21 +9,36 @@
 import {Element, Node, Text, visitAll} from '@angular/compiler';
 
 import {cases} from './cases';
-import {ElementCollector, ElementToMigrate, endMarker, MigrateError, Result, startMarker} from './types';
-import {calculateNesting, getMainBlock, getOriginals, hasLineBreaks, parseTemplate, reduceNestingOffset} from './util';
+import {
+  ElementCollector,
+  ElementToMigrate,
+  endMarker,
+  MigrateError,
+  Result,
+  startMarker,
+} from './types';
+import {
+  calculateNesting,
+  getMainBlock,
+  getOriginals,
+  hasLineBreaks,
+  parseTemplate,
+  reduceNestingOffset,
+} from './util';
 
 export const ngswitch = '[ngSwitch]';
 
-const switches = [
-  ngswitch,
-];
+const switches = [ngswitch];
 
 /**
  * Replaces structural directive ngSwitch instances with new switch.
  * Returns null if the migration failed (e.g. there was a syntax error).
  */
-export function migrateSwitch(template: string):
-    {migrated: string, errors: MigrateError[], changed: boolean} {
+export function migrateSwitch(template: string): {
+  migrated: string;
+  errors: MigrateError[];
+  changed: boolean;
+} {
   let errors: MigrateError[] = [];
   let parsed = parseTemplate(template);
   if (parsed.tree === undefined) {
@@ -70,8 +85,9 @@ function assertValidSwitchStructure(children: Node[]): void {
   for (const child of children) {
     if (child instanceof Text && child.value.trim() !== '') {
       throw new Error(
-          `Text node: "${child.value}" would result in invalid migrated @switch block structure. ` +
-          `@switch can only have @case or @default as children.`);
+        `Text node: "${child.value}" would result in invalid migrated @switch block structure. ` +
+          `@switch can only have @case or @default as children.`,
+      );
     } else if (child instanceof Element) {
       let hasCase = false;
       for (const attr of child.attrs) {
@@ -81,9 +97,9 @@ function assertValidSwitchStructure(children: Node[]): void {
       }
       if (!hasCase) {
         throw new Error(
-            `Element node: "${
-                child.name}" would result in invalid migrated @switch block structure. ` +
-            `@switch can only have @case or @default as children.`);
+          `Element node: "${child.name}" would result in invalid migrated @switch block structure. ` +
+            `@switch can only have @case or @default as children.`,
+        );
       }
     }
   }

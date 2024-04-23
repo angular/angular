@@ -12,7 +12,7 @@ import '@angular/core/testing';
 
 describe('Shim', () => {
   it('should provide correct function.name ', () => {
-    const functionWithoutName = identity(() => function() {});
+    const functionWithoutName = identity(() => function () {});
     function foo() {}
 
     expect(functionWithoutName.name).toBeFalsy();

@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, Input, NO_ERRORS_SCHEMA, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {
+  Component,
+  Directive,
+  ElementRef,
+  Input,
+  NO_ERRORS_SCHEMA,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('ViewChild', () => {
@@ -18,9 +27,9 @@ describe('ViewChild', () => {
   });
 
   it('should support type selector', () => {
-    TestBed.overrideComponent(
-        ViewChildTypeSelectorComponent,
-        {set: {template: `<simple [marker]="'1'"></simple><simple [marker]="'2'"></simple>`}});
+    TestBed.overrideComponent(ViewChildTypeSelectorComponent, {
+      set: {template: `<simple [marker]="'1'"></simple><simple [marker]="'2'"></simple>`},
+    });
     const view = TestBed.createComponent(ViewChildTypeSelectorComponent);
 
     view.detectChanges();
@@ -29,8 +38,9 @@ describe('ViewChild', () => {
   });
 
   it('should support string selector', () => {
-    TestBed.overrideComponent(
-        ViewChildStringSelectorComponent, {set: {template: `<simple #child></simple>`}});
+    TestBed.overrideComponent(ViewChildStringSelectorComponent, {
+      set: {template: `<simple #child></simple>`},
+    });
     const view = TestBed.createComponent(ViewChildStringSelectorComponent);
 
     view.detectChanges();
@@ -41,15 +51,19 @@ describe('ViewChild', () => {
 describe('ViewChildren', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations:
-          [ViewChildrenTypeSelectorComponent, ViewChildrenStringSelectorComponent, Simple],
+      declarations: [
+        ViewChildrenTypeSelectorComponent,
+        ViewChildrenStringSelectorComponent,
+        Simple,
+      ],
       schemas: [NO_ERRORS_SCHEMA],
     });
   });
 
   it('should support type selector', () => {
-    TestBed.overrideComponent(
-        ViewChildrenTypeSelectorComponent, {set: {template: `<simple></simple><simple></simple>`}});
+    TestBed.overrideComponent(ViewChildrenTypeSelectorComponent, {
+      set: {template: `<simple></simple><simple></simple>`},
+    });
 
     const view = TestBed.createComponent(ViewChildrenTypeSelectorComponent);
     view.detectChanges();
@@ -58,21 +72,21 @@ describe('ViewChildren', () => {
   });
 
   it('should support string selector', () => {
-    TestBed.overrideComponent(
-        ViewChildrenStringSelectorComponent,
-        {set: {template: `<simple #child1></simple><simple #child2></simple>`}});
-    const view = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
-                     .createComponent(ViewChildrenStringSelectorComponent);
+    TestBed.overrideComponent(ViewChildrenStringSelectorComponent, {
+      set: {template: `<simple #child1></simple><simple #child2></simple>`},
+    });
+    const view = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(
+      ViewChildrenStringSelectorComponent,
+    );
     view.detectChanges();
     expect(view.componentInstance.children).toBeDefined();
     expect(view.componentInstance.children.length).toBe(2);
   });
 });
 
-
 @Directive({selector: 'simple'})
 class Simple {
-  @Input() marker: string|undefined;
+  @Input() marker: string | undefined;
 }
 
 @Component({selector: 'view-child-type-selector', template: ''})

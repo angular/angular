@@ -13,7 +13,7 @@ import {markAncestorsForTraversal} from './util/view_utils';
 
 let freeConsumers: ReactiveLViewConsumer[] = [];
 export interface ReactiveLViewConsumer extends ReactiveNode {
-  lView: LView|null;
+  lView: LView | null;
   slot: typeof REACTIVE_TEMPLATE_CONSUMER;
 }
 
@@ -28,7 +28,7 @@ export function getOrBorrowReactiveLViewConsumer(lView: LView): ReactiveLViewCon
 
 function borrowReactiveLViewConsumer(lView: LView): ReactiveLViewConsumer {
   const consumer: ReactiveLViewConsumer =
-      freeConsumers.pop() ?? Object.create(REACTIVE_LVIEW_CONSUMER_NODE);
+    freeConsumers.pop() ?? Object.create(REACTIVE_LVIEW_CONSUMER_NODE);
   consumer.lView = lView;
   return consumer;
 }
@@ -42,7 +42,7 @@ export function maybeReturnReactiveLViewConsumer(consumer: ReactiveLViewConsumer
   freeConsumers.push(consumer);
 }
 
-const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'|'slot'> = {
+const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView' | 'slot'> = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
   consumerMarkedDirty: (node: ReactiveLViewConsumer) => {

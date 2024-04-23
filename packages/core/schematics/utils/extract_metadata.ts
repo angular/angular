@@ -13,13 +13,15 @@ import {unwrapExpression} from './typescript/functions';
 
 /** Interface describing metadata of an Angular class. */
 export interface AngularClassMetadata {
-  type: 'component'|'directive';
+  type: 'component' | 'directive';
   node: ts.ObjectLiteralExpression;
 }
 
 /** Extracts `@Directive` or `@Component` metadata from the given class. */
 export function extractAngularClassMetadata(
-    typeChecker: ts.TypeChecker, node: ts.ClassDeclaration): AngularClassMetadata|null {
+  typeChecker: ts.TypeChecker,
+  node: ts.ClassDeclaration,
+): AngularClassMetadata | null {
   const decorators = ts.getDecorators(node);
 
   if (!decorators || !decorators.length) {
@@ -27,8 +29,8 @@ export function extractAngularClassMetadata(
   }
 
   const ngDecorators = getAngularDecorators(typeChecker, decorators);
-  const componentDecorator = ngDecorators.find(dec => dec.name === 'Component');
-  const directiveDecorator = ngDecorators.find(dec => dec.name === 'Directive');
+  const componentDecorator = ngDecorators.find((dec) => dec.name === 'Component');
+  const directiveDecorator = ngDecorators.find((dec) => dec.name === 'Directive');
   const decorator = componentDecorator ?? directiveDecorator;
 
   // In case no decorator could be found on the current class, skip.

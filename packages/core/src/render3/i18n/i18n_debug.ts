@@ -7,10 +7,23 @@
  */
 
 import {assertNumber, assertString} from '../../util/assert';
-import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes} from '../interfaces/i18n';
+import {
+  ELEMENT_MARKER,
+  I18nCreateOpCode,
+  I18nCreateOpCodes,
+  I18nRemoveOpCodes,
+  I18nUpdateOpCode,
+  I18nUpdateOpCodes,
+  ICU_MARKER,
+  IcuCreateOpCode,
+  IcuCreateOpCodes,
+} from '../interfaces/i18n';
 
-import {getInstructionFromIcuCreateOpCode, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode} from './i18n_util';
-
+import {
+  getInstructionFromIcuCreateOpCode,
+  getParentFromIcuCreateOpCode,
+  getRefFromIcuCreateOpCode,
+} from './i18n_util';
 
 /**
  * Converts `I18nCreateOpCodes` array into a human readable format.
@@ -23,18 +36,23 @@ import {getInstructionFromIcuCreateOpCode, getParentFromIcuCreateOpCode, getRefF
  * @param opcodes `I18nCreateOpCodes` if invoked as a function.
  */
 export function i18nCreateOpCodesToString(
-    this: I18nCreateOpCodes|void, opcodes?: I18nCreateOpCodes): string[] {
-  const createOpCodes: I18nCreateOpCodes = opcodes || (Array.isArray(this) ? this : [] as any);
+  this: I18nCreateOpCodes | void,
+  opcodes?: I18nCreateOpCodes,
+): string[] {
+  const createOpCodes: I18nCreateOpCodes = opcodes || (Array.isArray(this) ? this : ([] as any));
   let lines: string[] = [];
   for (let i = 0; i < createOpCodes.length; i++) {
     const opCode = createOpCodes[i++] as any;
     const text = createOpCodes[i] as string;
     const isComment = (opCode & I18nCreateOpCode.COMMENT) === I18nCreateOpCode.COMMENT;
     const appendNow =
-        (opCode & I18nCreateOpCode.APPEND_EAGERLY) === I18nCreateOpCode.APPEND_EAGERLY;
+      (opCode & I18nCreateOpCode.APPEND_EAGERLY) === I18nCreateOpCode.APPEND_EAGERLY;
     const index = opCode >>> I18nCreateOpCode.SHIFT;
-    lines.push(`lView[${index}] = document.${isComment ? 'createComment' : 'createText'}(${
-        JSON.stringify(text)});`);
+    lines.push(
+      `lView[${index}] = document.${isComment ? 'createComment' : 'createText'}(${JSON.stringify(
+        text,
+      )});`,
+    );
     if (appendNow) {
       lines.push(`parent.appendChild(lView[${index}]);`);
     }
@@ -53,7 +71,9 @@ export function i18nCreateOpCodesToString(
  * @param opcodes `I18nUpdateOpCodes` if invoked as a function.
  */
 export function i18nUpdateOpCodesToString(
-    this: I18nUpdateOpCodes|void, opcodes?: I18nUpdateOpCodes): string[] {
+  this: I18nUpdateOpCodes | void,
+  opcodes?: I18nUpdateOpCodes,
+): string[] {
   const parser = new OpCodeParser(opcodes || (Array.isArray(this) ? this : []));
   let lines: string[] = [];
 
@@ -75,7 +95,6 @@ export function i18nUpdateOpCodesToString(
     }
     throw new Error('unexpected OpCode');
   }
-
 
   while (parser.hasMore()) {
     let mask = parser.consumeNumber();
@@ -115,7 +134,9 @@ export function i18nUpdateOpCodesToString(
  * @param opcodes `I18nCreateOpCodes` if invoked as a function.
  */
 export function icuCreateOpCodesToString(
-    this: IcuCreateOpCodes|void, opcodes?: IcuCreateOpCodes): string[] {
+  this: IcuCreateOpCodes | void,
+  opcodes?: IcuCreateOpCodes,
+): string[] {
   const parser = new OpCodeParser(opcodes || (Array.isArray(this) ? this : []));
   let lines: string[] = [];
 
@@ -126,8 +147,7 @@ export function icuCreateOpCodesToString(
       case IcuCreateOpCode.AppendChild:
         return `(lView[${parent}] as Element).appendChild(lView[${lastRef}])`;
       case IcuCreateOpCode.Attr:
-        return `(lView[${ref}] as Element).setAttribute("${parser.consumeString()}", "${
-            parser.consumeString()}")`;
+        return `(lView[${ref}] as Element).setAttribute("${parser.consumeString()}", "${parser.consumeString()}")`;
     }
     throw new Error('Unexpected OpCode: ' + getInstructionFromIcuCreateOpCode(opCode));
   }
@@ -168,7 +188,9 @@ export function icuCreateOpCodesToString(
  * @param opcodes `I18nRemoveOpCodes` if invoked as a function.
  */
 export function i18nRemoveOpCodesToString(
-    this: I18nRemoveOpCodes|void, opcodes?: I18nRemoveOpCodes): string[] {
+  this: I18nRemoveOpCodes | void,
+  opcodes?: I18nRemoveOpCodes,
+): string[] {
   const removeCodes = opcodes || (Array.isArray(this) ? this : []);
   let lines: string[] = [];
 
@@ -185,7 +207,6 @@ export function i18nRemoveOpCodesToString(
 
   return lines;
 }
-
 
 class OpCodeParser {
   i: number = 0;
@@ -211,7 +232,7 @@ class OpCodeParser {
     return value;
   }
 
-  consumeFunction(): Function|null {
+  consumeFunction(): Function | null {
     let value = this.codes[this.i++];
     if (value === null || typeof value === 'function') {
       return value;
@@ -219,7 +240,7 @@ class OpCodeParser {
     throw new Error('expecting function in OpCode');
   }
 
-  consumeNumberOrString(): number|string {
+  consumeNumberOrString(): number | string {
     let value = this.codes[this.i++];
     if (typeof value === 'string') {
       return value;
@@ -228,10 +249,14 @@ class OpCodeParser {
     return value;
   }
 
-  consumeNumberStringOrMarker(): number|string|ICU_MARKER|ELEMENT_MARKER {
+  consumeNumberStringOrMarker(): number | string | ICU_MARKER | ELEMENT_MARKER {
     let value = this.codes[this.i++];
-    if (typeof value === 'string' || typeof value === 'number' || value == ICU_MARKER ||
-        value == ELEMENT_MARKER) {
+    if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      value == ICU_MARKER ||
+      value == ELEMENT_MARKER
+    ) {
       return value;
     }
     assertNumber(value, 'expecting number, string, ICU_MARKER or ELEMENT_MARKER in OpCode');

@@ -23,7 +23,7 @@ declare global {
    * - The URL contains a `ngDevMode=false` text.
    * Finally, ngDevMode may not have been defined at all.
    */
-  const ngDevMode: null|NgDevModePerfCounters;
+  const ngDevMode: null | NgDevModePerfCounters;
 
   interface NgDevModePerfCounters {
     namedConstructors: boolean;

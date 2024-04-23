@@ -24,18 +24,21 @@ export const startI18nMarker = '⚈';
 export const endI18nMarker = '⚉';
 
 export const importRemovals = [
-  'NgIf', 'NgIfElse', 'NgIfThenElse', 'NgFor', 'NgForOf', 'NgForTrackBy', 'NgSwitch',
-  'NgSwitchCase', 'NgSwitchDefault'
+  'NgIf',
+  'NgIfElse',
+  'NgIfThenElse',
+  'NgFor',
+  'NgForOf',
+  'NgForTrackBy',
+  'NgSwitch',
+  'NgSwitchCase',
+  'NgSwitchDefault',
 ];
 
 export const importWithCommonRemovals = [...importRemovals, 'CommonModule'];
 
 function allFormsOf(selector: string): string[] {
-  return [
-    selector,
-    `*${selector}`,
-    `[${selector}]`,
-  ];
+  return [selector, `*${selector}`, `[${selector}]`];
 }
 
 const commonModuleDirectives = new Set([
@@ -72,25 +75,28 @@ const commonModulePipes = [
   'titlecase',
   'percent',
   'titlecase',
-].map(name => pipeMatchRegExpFor(name));
+].map((name) => pipeMatchRegExpFor(name));
 
 /**
  * Represents a range of text within a file. Omitting the end
  * means that it's until the end of the file.
  */
 type Range = {
-  start: number,
-  end?: number, node: ts.Node, type: string, remove: boolean,
+  start: number;
+  end?: number;
+  node: ts.Node;
+  type: string;
+  remove: boolean;
 };
 
 export type Offsets = {
-  pre: number,
-  post: number,
+  pre: number;
+  post: number;
 };
 
 export type Result = {
-  tmpl: string,
-  offsets: Offsets,
+  tmpl: string;
+  offsets: Offsets;
 };
 
 export interface ForAttributes {
@@ -104,7 +110,7 @@ export interface AliasAttributes {
 }
 
 export interface ParseResult {
-  tree: ParseTreeResult|undefined;
+  tree: ParseTreeResult | undefined;
   errors: MigrateError[];
 }
 
@@ -112,8 +118,8 @@ export interface ParseResult {
  * Represents an error that happened during migration
  */
 export type MigrateError = {
-  type: string,
-  error: unknown,
+  type: string;
+  error: unknown;
 };
 
 /**
@@ -122,17 +128,21 @@ export type MigrateError = {
 export class ElementToMigrate {
   el: Element;
   attr: Attribute;
-  elseAttr: Attribute|undefined;
-  thenAttr: Attribute|undefined;
-  forAttrs: ForAttributes|undefined;
-  aliasAttrs: AliasAttributes|undefined;
+  elseAttr: Attribute | undefined;
+  thenAttr: Attribute | undefined;
+  forAttrs: ForAttributes | undefined;
+  aliasAttrs: AliasAttributes | undefined;
   nestCount = 0;
   hasLineBreaks = false;
 
   constructor(
-      el: Element, attr: Attribute, elseAttr: Attribute|undefined = undefined,
-      thenAttr: Attribute|undefined = undefined, forAttrs: ForAttributes|undefined = undefined,
-      aliasAttrs: AliasAttributes|undefined = undefined) {
+    el: Element,
+    attr: Attribute,
+    elseAttr: Attribute | undefined = undefined,
+    thenAttr: Attribute | undefined = undefined,
+    forAttrs: ForAttributes | undefined = undefined,
+    aliasAttrs: AliasAttributes | undefined = undefined,
+  ) {
     this.el = el;
     this.attr = attr;
     this.elseAttr = elseAttr;
@@ -154,15 +164,17 @@ export class ElementToMigrate {
       condition = condition.slice(0, elseIx);
     }
 
-    let letVar = chunks.find(c => c.search(/\s*let\s/) > -1);
+    let letVar = chunks.find((c) => c.search(/\s*let\s/) > -1);
     return condition + (letVar ? ';' + letVar : '');
   }
 
   getTemplateName(targetStr: string, secondStr?: string): string {
     const targetLocation = this.attr.value.indexOf(targetStr);
     const secondTargetLocation = secondStr ? this.attr.value.indexOf(secondStr) : undefined;
-    let templateName =
-        this.attr.value.slice(targetLocation + targetStr.length, secondTargetLocation);
+    let templateName = this.attr.value.slice(
+      targetLocation + targetStr.length,
+      secondTargetLocation,
+    );
     if (templateName.startsWith(':')) {
       templateName = templateName.slice(1).trim();
     }
@@ -170,24 +182,27 @@ export class ElementToMigrate {
   }
 
   getValueEnd(offset: number): number {
-    return (this.attr.valueSpan ? (this.attr.valueSpan.end.offset + 1) :
-                                  this.attr.keySpan!.end.offset) -
-        offset;
+    return (
+      (this.attr.valueSpan ? this.attr.valueSpan.end.offset + 1 : this.attr.keySpan!.end.offset) -
+      offset
+    );
   }
 
   hasChildren(): boolean {
     return this.el.children.length > 0;
   }
 
-  getChildSpan(offset: number): {childStart: number, childEnd: number} {
+  getChildSpan(offset: number): {childStart: number; childEnd: number} {
     const childStart = this.el.children[0].sourceSpan.start.offset - offset;
     const childEnd = this.el.children[this.el.children.length - 1].sourceSpan.end.offset - offset;
     return {childStart, childEnd};
   }
 
   shouldRemoveElseAttr(): boolean {
-    return (this.el.name === 'ng-template' || this.el.name === 'ng-container') &&
-        this.elseAttr !== undefined;
+    return (
+      (this.el.name === 'ng-template' || this.el.name === 'ng-container') &&
+      this.elseAttr !== undefined
+    );
   }
 
   getElseAttrStr(): string {
@@ -220,10 +235,10 @@ export class Template {
   count: number = 0;
   contents: string = '';
   children: string = '';
-  i18n: Attribute|null = null;
+  i18n: Attribute | null = null;
   attributes: Attribute[];
 
-  constructor(el: Element, name: string, i18n: Attribute|null) {
+  constructor(el: Element, name: string, i18n: Attribute | null) {
     this.el = el;
     this.name = name;
     this.attributes = el.attrs;
@@ -231,16 +246,16 @@ export class Template {
   }
 
   get isNgTemplateOutlet() {
-    return this.attributes.find(attr => attr.name === '*ngTemplateOutlet') !== undefined;
+    return this.attributes.find((attr) => attr.name === '*ngTemplateOutlet') !== undefined;
   }
 
   get outletContext() {
-    const letVar = this.attributes.find(attr => attr.name.startsWith('let-'));
+    const letVar = this.attributes.find((attr) => attr.name.startsWith('let-'));
     return letVar ? `; context: {$implicit: ${letVar.name.split('-')[1]}}` : '';
   }
 
   generateTemplateOutlet() {
-    const attr = this.attributes.find(attr => attr.name === '*ngTemplateOutlet');
+    const attr = this.attributes.find((attr) => attr.name === '*ngTemplateOutlet');
     const outletValue = attr?.value ?? this.name.slice(1);
     return `<ng-container *ngTemplateOutlet="${outletValue}${this.outletContext}"></ng-container>`;
   }
@@ -250,8 +265,9 @@ export class Template {
     this.children = '';
     if (this.el.children.length > 0) {
       this.children = tmpl.slice(
-          this.el.children[0].sourceSpan.start.offset,
-          this.el.children[this.el.children.length - 1].sourceSpan.end.offset);
+        this.el.children[0].sourceSpan.start.offset,
+        this.el.children[this.el.children.length - 1].sourceSpan.end.offset,
+      );
     }
   }
 }
@@ -272,13 +288,14 @@ export class AnalyzedFile {
   /** Returns the ranges in the order in which they should be migrated. */
   getSortedRanges(): Range[] {
     // templates first for checking on whether certain imports can be safely removed
-    this.templateRanges = this.ranges.slice()
-                              .filter(x => x.type === 'template' || x.type === 'templateUrl')
-                              .sort((aStart, bStart) => bStart.start - aStart.start);
-    this.importRanges =
-        this.ranges.slice()
-            .filter(x => x.type === 'importDecorator' || x.type === 'importDeclaration')
-            .sort((aStart, bStart) => bStart.start - aStart.start);
+    this.templateRanges = this.ranges
+      .slice()
+      .filter((x) => x.type === 'template' || x.type === 'templateUrl')
+      .sort((aStart, bStart) => bStart.start - aStart.start);
+    this.importRanges = this.ranges
+      .slice()
+      .filter((x) => x.type === 'importDecorator' || x.type === 'importDeclaration')
+      .sort((aStart, bStart) => bStart.start - aStart.start);
     return [...this.templateRanges, ...this.importRanges];
   }
 
@@ -289,8 +306,11 @@ export class AnalyzedFile {
    * @param range Range to be added.
    */
   static addRange(
-      path: string, sourceFile: ts.SourceFile, analyzedFiles: Map<string, AnalyzedFile>,
-      range: Range): void {
+    path: string,
+    sourceFile: ts.SourceFile,
+    analyzedFiles: Map<string, AnalyzedFile>,
+    range: Range,
+  ): void {
     let analysis = analyzedFiles.get(path);
 
     if (!analysis) {
@@ -298,8 +318,9 @@ export class AnalyzedFile {
       analyzedFiles.set(path, analysis);
     }
 
-    const duplicate =
-        analysis.ranges.find(current => current.start === range.start && current.end === range.end);
+    const duplicate = analysis.ranges.find(
+      (current) => current.start === range.start && current.end === range.end,
+    );
 
     if (!duplicate) {
       analysis.ranges.push(range);
@@ -311,7 +332,7 @@ export class AnalyzedFile {
    * It is only run on .ts files.
    */
   verifyCanRemoveImports() {
-    const importDeclaration = this.importRanges.find(r => r.type === 'importDeclaration');
+    const importDeclaration = this.importRanges.find((r) => r.type === 'importDeclaration');
     const instances = lookupIdentifiersInSourceFile(this.sourceFile, importWithCommonRemovals);
     let foundImportDeclaration = false;
     let count = 0;
@@ -357,7 +378,7 @@ export class CommonCollector extends RecursiveVisitor {
   }
 
   private hasPipes(input: string): boolean {
-    return commonModulePipes.some(regexp => regexp.test(input));
+    return commonModulePipes.some((regexp) => regexp.test(input));
   }
 }
 
@@ -366,7 +387,7 @@ export class i18nCollector extends RecursiveVisitor {
   readonly elements: Element[] = [];
 
   override visitElement(el: Element): void {
-    if (el.attrs.find(a => a.name === 'i18n') !== undefined) {
+    if (el.attrs.find((a) => a.name === 'i18n') !== undefined) {
       this.elements.push(el);
     }
     super.visitElement(el, null);
@@ -385,13 +406,15 @@ export class ElementCollector extends RecursiveVisitor {
     if (el.attrs.length > 0) {
       for (const attr of el.attrs) {
         if (this._attributes.includes(attr.name)) {
-          const elseAttr = el.attrs.find(x => x.name === boundngifelse);
-          const thenAttr =
-              el.attrs.find(x => x.name === boundngifthenelse || x.name === boundngifthen);
+          const elseAttr = el.attrs.find((x) => x.name === boundngifelse);
+          const thenAttr = el.attrs.find(
+            (x) => x.name === boundngifthenelse || x.name === boundngifthen,
+          );
           const forAttrs = attr.name === nakedngfor ? this.getForAttrs(el) : undefined;
           const aliasAttrs = this.getAliasAttrs(el);
           this.elements.push(
-              new ElementToMigrate(el, attr, elseAttr, thenAttr, forAttrs, aliasAttrs));
+            new ElementToMigrate(el, attr, elseAttr, thenAttr, forAttrs, aliasAttrs),
+          );
         }
       }
     }
@@ -452,8 +475,9 @@ export class TemplateCollector extends RecursiveVisitor {
         this.elements.push(new ElementToMigrate(el, templateAttr));
       } else if (templateAttr !== null) {
         throw new Error(
-            `A duplicate ng-template name "${templateAttr.name}" was found. ` +
-            `The control flow migration requires unique ng-template names within a component.`);
+          `A duplicate ng-template name "${templateAttr.name}" was found. ` +
+            `The control flow migration requires unique ng-template names within a component.`,
+        );
       }
     }
     super.visitElement(el, null);

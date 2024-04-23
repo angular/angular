@@ -34,20 +34,23 @@ import {global} from './global';
  *
  * @returns a function to cancel the scheduled callback
  */
-export function scheduleCallbackWithRafRace(callback: Function, useNativeTimers = true): () =>
-    void {
+export function scheduleCallbackWithRafRace(
+  callback: Function,
+  useNativeTimers = true,
+): () => void {
   // Note: the `scheduleCallback` is used in the `NgZone` class, but we cannot use the
   // `inject` function. The `NgZone` instance may be created manually, and thus the injection
   // context will be unavailable. This might be enough to check whether `requestAnimationFrame` is
   // available because otherwise, we'll fall back to `setTimeout`.
   const hasRequestAnimationFrame = typeof global['requestAnimationFrame'] === 'function';
-  let nativeRequestAnimationFrame =
-      hasRequestAnimationFrame ? global['requestAnimationFrame'] : null;
+  let nativeRequestAnimationFrame = hasRequestAnimationFrame
+    ? global['requestAnimationFrame']
+    : null;
   let nativeSetTimeout = global['setTimeout'];
   if (typeof Zone !== 'undefined' && useNativeTimers) {
     if (hasRequestAnimationFrame) {
       nativeRequestAnimationFrame =
-          global[Zone.__symbol__('requestAnimationFrame')] ?? nativeRequestAnimationFrame;
+        global[Zone.__symbol__('requestAnimationFrame')] ?? nativeRequestAnimationFrame;
     }
     nativeSetTimeout = global[Zone.__symbol__('setTimeout')] ?? nativeSetTimeout;
   }

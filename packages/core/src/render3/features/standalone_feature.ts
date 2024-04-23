@@ -20,21 +20,25 @@ import {createEnvironmentInjector} from '../ng_module_ref';
  * collected from the imports graph rooted at a given standalone component.
  */
 class StandaloneService implements OnDestroy {
-  cachedInjectors = new Map<ComponentDef<unknown>, EnvironmentInjector|null>();
+  cachedInjectors = new Map<ComponentDef<unknown>, EnvironmentInjector | null>();
 
   constructor(private _injector: EnvironmentInjector) {}
 
-  getOrCreateStandaloneInjector(componentDef: ComponentDef<unknown>): EnvironmentInjector|null {
+  getOrCreateStandaloneInjector(componentDef: ComponentDef<unknown>): EnvironmentInjector | null {
     if (!componentDef.standalone) {
       return null;
     }
 
     if (!this.cachedInjectors.has(componentDef)) {
       const providers = internalImportProvidersFrom(false, componentDef.type);
-      const standaloneInjector = providers.length > 0 ?
-          createEnvironmentInjector(
-              [providers], this._injector, `Standalone[${componentDef.type.name}]`) :
-          null;
+      const standaloneInjector =
+        providers.length > 0
+          ? createEnvironmentInjector(
+              [providers],
+              this._injector,
+              `Standalone[${componentDef.type.name}]`,
+            )
+          : null;
       this.cachedInjectors.set(componentDef, standaloneInjector);
     }
 
@@ -60,7 +64,6 @@ class StandaloneService implements OnDestroy {
     factory: () => new StandaloneService(inject(EnvironmentInjector)),
   });
 }
-
 
 /**
  * A feature that acts as a setup code for the {@link StandaloneService}.

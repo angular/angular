@@ -62,23 +62,29 @@ describe('r3 jit environment', () => {
   // in JIT mode.
   it('should support all r3 symbols', () => {
     Object
-        // Map over the static properties of Identifiers.
-        .values(Identifiers)
-        // A few such properties are string constants. Ignore them, and focus on ExternalReferences.
-        .filter(isExternalReference)
-        // Some references are to interface types. Only take properties which have runtime values.
-        .filter(
-            sym => !INTERFACE_EXCEPTIONS.has(sym.name) && !AOT_ONLY.has(sym.name) &&
-                !PARTIAL_ONLY.has(sym.name))
-        .forEach(sym => {
-          // Assert that angularCoreEnv has a reference to the runtime symbol.
-          expect(angularCoreEnv.hasOwnProperty(sym.name))
-              .toBe(true, `Missing symbol ${sym.name} in render3/jit/environment`);
-        });
+      // Map over the static properties of Identifiers.
+      .values(Identifiers)
+      // A few such properties are string constants. Ignore them, and focus on ExternalReferences.
+      .filter(isExternalReference)
+      // Some references are to interface types. Only take properties which have runtime values.
+      .filter(
+        (sym) =>
+          !INTERFACE_EXCEPTIONS.has(sym.name) &&
+          !AOT_ONLY.has(sym.name) &&
+          !PARTIAL_ONLY.has(sym.name),
+      )
+      .forEach((sym) => {
+        // Assert that angularCoreEnv has a reference to the runtime symbol.
+        expect(angularCoreEnv.hasOwnProperty(sym.name)).toBe(
+          true,
+          `Missing symbol ${sym.name} in render3/jit/environment`,
+        );
+      });
   });
 });
 
-function isExternalReference(sym: ExternalReference|string): sym is ExternalReference&
-    {name: string} {
+function isExternalReference(
+  sym: ExternalReference | string,
+): sym is ExternalReference & {name: string} {
   return typeof sym === 'object' && sym.name !== null && sym.moduleName !== null;
 }

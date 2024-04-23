@@ -9,7 +9,6 @@ import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
 import {getContextLView} from '../state';
 import {load} from '../util/view_utils';
 
-
 /** Store a value in the `data` at a given `index`. */
 export function store<T>(tView: TView, lView: LView, index: number, value: T): void {
   // We don't store any static data for local variables, so the first time

@@ -46,5 +46,5 @@ export interface OutputRef<T> {
    *
    * @internal
    */
-  destroyRef: DestroyRef|undefined;
+  destroyRef: DestroyRef | undefined;
 }

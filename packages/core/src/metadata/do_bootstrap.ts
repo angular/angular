@@ -8,7 +8,6 @@
 
 import {ApplicationRef} from '../application/application_ref';
 
-
 /**
  * @description
  * Hook for manual bootstrapping of the application instead of using `bootstrap` array in @NgModule

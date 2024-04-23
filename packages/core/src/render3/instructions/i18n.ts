@@ -16,9 +16,22 @@ import {i18nAttributesFirstPass, i18nStartFirstCreatePass} from '../i18n/i18n_pa
 import {i18nPostprocess} from '../i18n/i18n_postprocess';
 import {TI18n} from '../interfaces/i18n';
 import {TElementNode, TNodeType} from '../interfaces/node';
-import {DECLARATION_COMPONENT_VIEW, FLAGS, HEADER_OFFSET, LViewFlags, T_HOST, TViewType} from '../interfaces/view';
+import {
+  DECLARATION_COMPONENT_VIEW,
+  FLAGS,
+  HEADER_OFFSET,
+  LViewFlags,
+  T_HOST,
+  TViewType,
+} from '../interfaces/view';
 import {getClosestRElement} from '../node_manipulation';
-import {getCurrentParentTNode, getLView, getTView, nextBindingIndex, setInI18nBlock} from '../state';
+import {
+  getCurrentParentTNode,
+  getLView,
+  getTView,
+  nextBindingIndex,
+  setInI18nBlock,
+} from '../state';
 import {getConstant} from '../util/view_utils';
 
 /**
@@ -47,7 +60,10 @@ import {getConstant} from '../util/view_utils';
  * @codeGenApi
  */
 export function ɵɵi18nStart(
-    index: number, messageIndex: number, subTemplateIndex: number = -1): void {
+  index: number,
+  messageIndex: number,
+  subTemplateIndex: number = -1,
+): void {
   const tView = getTView();
   const lView = getLView();
   const adjustedIndex = HEADER_OFFSET + index;
@@ -56,8 +72,13 @@ export function ɵɵi18nStart(
   const parentTNode = getCurrentParentTNode() as TElementNode | null;
   if (tView.firstCreatePass) {
     i18nStartFirstCreatePass(
-        tView, parentTNode === null ? 0 : parentTNode.index, lView, adjustedIndex, message,
-        subTemplateIndex);
+      tView,
+      parentTNode === null ? 0 : parentTNode.index,
+      lView,
+      adjustedIndex,
+      message,
+      subTemplateIndex,
+    );
   }
 
   // Set a flag that this LView has i18n blocks.
@@ -77,15 +98,12 @@ export function ɵɵi18nStart(
   const parentRNode = getClosestRElement(tView, sameViewParentTNode, lView);
   // If `parentTNode` is an `ElementContainer` than it has `<!--ng-container--->`.
   // When we do inserts we have to make sure to insert in front of `<!--ng-container--->`.
-  const insertInFrontOf = parentTNode && (parentTNode.type & TNodeType.ElementContainer) ?
-      lView[parentTNode.index] :
-      null;
+  const insertInFrontOf =
+    parentTNode && parentTNode.type & TNodeType.ElementContainer ? lView[parentTNode.index] : null;
   prepareI18nBlockForHydration(lView, adjustedIndex, parentTNode, subTemplateIndex);
   applyCreateOpCodes(lView, tI18n.create, parentRNode, insertInFrontOf);
   setInI18nBlock(true);
 }
-
-
 
 /**
  * Translates a translation block marked by `i18nStart` and `i18nEnd`. It inserts the text/ICU nodes
@@ -143,7 +161,6 @@ export function ɵɵi18nAttributes(index: number, attrsIndex: number): void {
   i18nAttributesFirstPass(tView, index + HEADER_OFFSET, attrs);
 }
 
-
 /**
  * Stores the values of the bindings during each update cycle in order to determine if we need to
  * update the translated nodes.
@@ -193,6 +210,8 @@ export function ɵɵi18nApply(index: number) {
  * @codeGenApi
  */
 export function ɵɵi18nPostprocess(
-    message: string, replacements: {[key: string]: (string|string[])} = {}): string {
+  message: string,
+  replacements: {[key: string]: string | string[]} = {},
+): string {
   return i18nPostprocess(message, replacements);
 }

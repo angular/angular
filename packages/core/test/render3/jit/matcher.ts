@@ -9,11 +9,12 @@
 /**
  * Jasmine matcher to verify that a function contains the provided code fragments.
  */
-export function functionContaining(expectedFragments: Array<string|RegExp>):
-    jasmine.AsymmetricMatcher<Function> {
-  let _actual: Function|null = null;
+export function functionContaining(
+  expectedFragments: Array<string | RegExp>,
+): jasmine.AsymmetricMatcher<Function> {
+  let _actual: Function | null = null;
 
-  const matches = (code: string, fragment: string|RegExp): boolean => {
+  const matches = (code: string, fragment: string | RegExp): boolean => {
     if (typeof fragment === 'string') {
       return code.includes(fragment);
     } else {
@@ -38,19 +39,21 @@ export function functionContaining(expectedFragments: Array<string|RegExp>):
     },
     jasmineToString(pp: (value: any) => string): string {
       if (typeof _actual !== 'function') {
-        return `Expected function to contain code fragments ${pp(expectedFragments)} but got ${
-            pp(_actual)}`;
+        return `Expected function to contain code fragments ${pp(expectedFragments)} but got ${pp(
+          _actual,
+        )}`;
       }
       const errors: string[] = [];
       const code = _actual.toString();
       errors.push(
-          `The actual function with code:\n${code}\n\ndid not contain the following fragments:`);
+        `The actual function with code:\n${code}\n\ndid not contain the following fragments:`,
+      );
       for (const fragment of expectedFragments) {
         if (!matches(code, fragment)) {
           errors.push(`- ${fragment}`);
         }
       }
       return errors.join('\n');
-    }
+    },
   };
 }

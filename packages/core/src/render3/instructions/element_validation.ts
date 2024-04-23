@@ -72,8 +72,12 @@ export function ɵgetUnknownPropertyStrictMode() {
  * @param hasDirectives Boolean indicating that the element matches any directive
  */
 export function validateElementIsKnown(
-    element: RElement, lView: LView, tagName: string|null, schemas: SchemaMetadata[]|null,
-    hasDirectives: boolean): void {
+  element: RElement,
+  lView: LView,
+  tagName: string | null,
+  schemas: SchemaMetadata[] | null,
+  hasDirectives: boolean,
+): void {
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
   // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
   // defined as an array (as an empty array in case `schemas` field is not defined) and we should
@@ -86,12 +90,14 @@ export function validateElementIsKnown(
     // as a custom element. Note that unknown elements with a dash in their name won't be instances
     // of HTMLUnknownElement in browsers that support web components.
     const isUnknown =
-        // Note that we can't check for `typeof HTMLUnknownElement === 'function'` because
-        // Domino doesn't expose HTMLUnknownElement globally.
-        (typeof HTMLUnknownElement !== 'undefined' && HTMLUnknownElement &&
-         element instanceof HTMLUnknownElement) ||
-        (typeof customElements !== 'undefined' && tagName.indexOf('-') > -1 &&
-         !customElements.get(tagName));
+      // Note that we can't check for `typeof HTMLUnknownElement === 'function'` because
+      // Domino doesn't expose HTMLUnknownElement globally.
+      (typeof HTMLUnknownElement !== 'undefined' &&
+        HTMLUnknownElement &&
+        element instanceof HTMLUnknownElement) ||
+      (typeof customElements !== 'undefined' &&
+        tagName.indexOf('-') > -1 &&
+        !customElements.get(tagName));
 
     if (isUnknown && !matchingSchemas(schemas, tagName)) {
       const isHostStandalone = isHostComponentStandalone(lView);
@@ -100,15 +106,14 @@ export function validateElementIsKnown(
 
       let message = `'${tagName}' is not a known element${templateLocation}:\n`;
       message += `1. If '${tagName}' is an Angular component, then verify that it is ${
-          isHostStandalone ? 'included in the \'@Component.imports\' of this component' :
-                             'a part of an @NgModule where this component is declared'}.\n`;
+        isHostStandalone
+          ? "included in the '@Component.imports' of this component"
+          : 'a part of an @NgModule where this component is declared'
+      }.\n`;
       if (tagName && tagName.indexOf('-') > -1) {
-        message +=
-            `2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${
-                schemas} of this component to suppress this message.`;
+        message += `2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemas} of this component to suppress this message.`;
       } else {
-        message +=
-            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
+        message += `2. To allow any element add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
       }
       if (shouldThrowErrorOnUnknownElement) {
         throw new RuntimeError(RuntimeErrorCode.UNKNOWN_ELEMENT, message);
@@ -136,8 +141,11 @@ export function validateElementIsKnown(
  * @param schemas Array of schemas
  */
 export function isPropertyValid(
-    element: RElement|RComment, propName: string, tagName: string|null,
-    schemas: SchemaMetadata[]|null): boolean {
+  element: RElement | RComment,
+  propName: string,
+  tagName: string | null,
+  schemas: SchemaMetadata[] | null,
+): boolean {
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
   // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
   // defined as an array (as an empty array in case `schemas` field is not defined) and we should
@@ -163,7 +171,11 @@ export function isPropertyValid(
  * @param lView An `LView` that represents a current component
  */
 export function handleUnknownPropertyError(
-    propName: string, tagName: string|null, nodeType: TNodeType, lView: LView): void {
+  propName: string,
+  tagName: string | null,
+  nodeType: TNodeType,
+  lView: LView,
+): void {
   // Special-case a situation when a structural directive is applied to
   // an `<ng-template>` element, for example: `<ng-template *ngIf="true">`.
   // In this case the compiler generates the `ɵɵtemplate` instruction with
@@ -177,34 +189,37 @@ export function handleUnknownPropertyError(
   const isHostStandalone = isHostComponentStandalone(lView);
   const templateLocation = getTemplateLocationDetails(lView);
 
-  let message = `Can't bind to '${propName}' since it isn't a known property of '${tagName}'${
-      templateLocation}.`;
+  let message = `Can't bind to '${propName}' since it isn't a known property of '${tagName}'${templateLocation}.`;
 
   const schemas = `'${isHostStandalone ? '@Component' : '@NgModule'}.schemas'`;
-  const importLocation = isHostStandalone ?
-      'included in the \'@Component.imports\' of this component' :
-      'a part of an @NgModule where this component is declared';
+  const importLocation = isHostStandalone
+    ? "included in the '@Component.imports' of this component"
+    : 'a part of an @NgModule where this component is declared';
   if (KNOWN_CONTROL_FLOW_DIRECTIVES.has(propName)) {
     // Most likely this is a control flow directive (such as `*ngIf`) used in
     // a template, but the directive or the `CommonModule` is not imported.
     const correspondingImport = KNOWN_CONTROL_FLOW_DIRECTIVES.get(propName);
-    message += `\nIf the '${propName}' is an Angular control flow directive, ` +
-        `please make sure that either the '${
-                   correspondingImport}' directive or the 'CommonModule' is ${importLocation}.`;
+    message +=
+      `\nIf the '${propName}' is an Angular control flow directive, ` +
+      `please make sure that either the '${correspondingImport}' directive or the 'CommonModule' is ${importLocation}.`;
   } else {
     // May be an Angular component, which is not imported/declared?
-    message += `\n1. If '${tagName}' is an Angular component and it has the ` +
-        `'${propName}' input, then verify that it is ${importLocation}.`;
+    message +=
+      `\n1. If '${tagName}' is an Angular component and it has the ` +
+      `'${propName}' input, then verify that it is ${importLocation}.`;
     // May be a Web Component?
     if (tagName && tagName.indexOf('-') > -1) {
-      message += `\n2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' ` +
-          `to the ${schemas} of this component to suppress this message.`;
-      message += `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to ` +
-          `the ${schemas} of this component.`;
+      message +=
+        `\n2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' ` +
+        `to the ${schemas} of this component to suppress this message.`;
+      message +=
+        `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to ` +
+        `the ${schemas} of this component.`;
     } else {
       // If it's expected, the error can be suppressed by the `NO_ERRORS_SCHEMA` schema.
-      message += `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to ` +
-          `the ${schemas} of this component.`;
+      message +=
+        `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to ` +
+        `the ${schemas} of this component.`;
     }
   }
 
@@ -228,7 +243,7 @@ export function reportUnknownPropertyError(message: string) {
  *
  * @param lView An `LView` that represents a current component that is being rendered.
  */
-export function getDeclarationComponentDef(lView: LView): ComponentDef<unknown>|null {
+export function getDeclarationComponentDef(lView: LView): ComponentDef<unknown> | null {
   !ngDevMode && throwError('Must never be called in production mode');
 
   const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
@@ -281,20 +296,24 @@ export function getTemplateLocationDetails(lView: LView): string {
  * that the `CommonModule` should also be included.
  */
 export const KNOWN_CONTROL_FLOW_DIRECTIVES = new Map([
-  ['ngIf', 'NgIf'], ['ngFor', 'NgFor'], ['ngSwitchCase', 'NgSwitchCase'],
-  ['ngSwitchDefault', 'NgSwitchDefault']
+  ['ngIf', 'NgIf'],
+  ['ngFor', 'NgFor'],
+  ['ngSwitchCase', 'NgSwitchCase'],
+  ['ngSwitchDefault', 'NgSwitchDefault'],
 ]);
 /**
  * Returns true if the tag name is allowed by specified schemas.
  * @param schemas Array of schemas
  * @param tagName Name of the tag
  */
-export function matchingSchemas(schemas: SchemaMetadata[]|null, tagName: string|null): boolean {
+export function matchingSchemas(schemas: SchemaMetadata[] | null, tagName: string | null): boolean {
   if (schemas !== null) {
     for (let i = 0; i < schemas.length; i++) {
       const schema = schemas[i];
-      if (schema === NO_ERRORS_SCHEMA ||
-          schema === CUSTOM_ELEMENTS_SCHEMA && tagName && tagName.indexOf('-') > -1) {
+      if (
+        schema === NO_ERRORS_SCHEMA ||
+        (schema === CUSTOM_ELEMENTS_SCHEMA && tagName && tagName.indexOf('-') > -1)
+      ) {
         return true;
       }
     }

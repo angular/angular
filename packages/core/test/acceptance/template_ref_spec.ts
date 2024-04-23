@@ -31,10 +31,10 @@ describe('TemplateRef', () => {
       return embeddedView.rootNodes;
     }
 
-
     it('should return root render nodes for an embedded view instance', () => {
-      const rootNodes =
-          getRootNodes(`<ng-template #templateRef><div></div>some text<span></span></ng-template>`);
+      const rootNodes = getRootNodes(
+        `<ng-template #templateRef><div></div>some text<span></span></ng-template>`,
+      );
       expect(rootNodes.length).toBe(3);
     });
 
@@ -52,7 +52,7 @@ describe('TemplateRef', () => {
                 <ng-content></ng-content>
               </ng-template>
             `,
-        exportAs: 'menuContent'
+        exportAs: 'menuContent',
       })
       class MenuContent {
         @ViewChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
@@ -65,7 +65,7 @@ describe('TemplateRef', () => {
                 <button>Item two</button>
                 <ng-template [ngIf]="true"><button>Item three</button></ng-template>
               </menu-content>
-            `
+            `,
       })
       class App {
         @ViewChild(MenuContent) content!: MenuContent;
@@ -79,9 +79,9 @@ describe('TemplateRef', () => {
 
       const instance = fixture.componentInstance;
       const viewRef = instance.viewContainerRef.createEmbeddedView(instance.content.template);
-      const rootNodeTextContent =
-          viewRef.rootNodes.map(node => node && node.textContent.trim())
-              .filter(text => text !== '' && text.indexOf('ng-reflect-ng-if') === -1);
+      const rootNodeTextContent = viewRef.rootNodes
+        .map((node) => node && node.textContent.trim())
+        .filter((text) => text !== '' && text.indexOf('ng-reflect-ng-if') === -1);
 
       expect(rootNodeTextContent).toEqual(['Header', 'Item one', 'Item two', 'Item three']);
     });
@@ -156,25 +156,25 @@ describe('TemplateRef', () => {
         `);
 
       expect(rootNodes.length).toBe(4);
-      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);  // ng-container
-      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);     // "Updated " text
-      expect(rootNodes[2].nodeType).toBe(Node.COMMENT_NODE);  // ICU container
-      expect(rootNodes[3].nodeType).toBe(Node.TEXT_NODE);     // "one minute ago" text
+      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE); // ng-container
+      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE); // "Updated " text
+      expect(rootNodes[2].nodeType).toBe(Node.COMMENT_NODE); // ICU container
+      expect(rootNodes[3].nodeType).toBe(Node.TEXT_NODE); // "one minute ago" text
     });
 
-    it('should return an empty array for an embedded view with projection and no projectable nodes',
-       () => {
-         const rootNodes =
-             getRootNodes(`<ng-template #templateRef><ng-content></ng-content></ng-template>`);
-         expect(rootNodes.length).toBe(0);
-       });
+    it('should return an empty array for an embedded view with projection and no projectable nodes', () => {
+      const rootNodes = getRootNodes(
+        `<ng-template #templateRef><ng-content></ng-content></ng-template>`,
+      );
+      expect(rootNodes.length).toBe(0);
+    });
 
-    it('should return an empty array for an embedded view with multiple projections and no projectable nodes',
-       () => {
-         const rootNodes = getRootNodes(
-             `<ng-template #templateRef><ng-content></ng-content><ng-content select="foo"></ng-content></ng-template>`);
-         expect(rootNodes.length).toBe(0);
-       });
+    it('should return an empty array for an embedded view with multiple projections and no projectable nodes', () => {
+      const rootNodes = getRootNodes(
+        `<ng-template #templateRef><ng-content></ng-content><ng-content select="foo"></ng-content></ng-template>`,
+      );
+      expect(rootNodes.length).toBe(0);
+    });
 
     describe('projectable nodes provided to a dynamically created component', () => {
       @Component({selector: 'dynamic', template: ''})
@@ -193,14 +193,18 @@ describe('TemplateRef', () => {
 
       it('should return projectable nodes when provided', () => {
         TestBed.overrideTemplate(
-            DynamicCmp, `<ng-template #templateRef><ng-content></ng-content></ng-template>`);
+          DynamicCmp,
+          `<ng-template #templateRef><ng-content></ng-content></ng-template>`,
+        );
 
         const fixture = TestBed.createComponent(TestCmp);
         // Number of projectable nodes matches the number of slots - all nodes should be returned
         const projectableNodes = [[document.createTextNode('textNode')]];
 
-        const cmptRef = fixture.componentInstance.vcr.createComponent(
-            DynamicCmp, {injector: Injector.NULL, projectableNodes});
+        const cmptRef = fixture.componentInstance.vcr.createComponent(DynamicCmp, {
+          injector: Injector.NULL,
+          projectableNodes,
+        });
 
         const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
         expect(viewRef.rootNodes.length).toBe(1);
@@ -208,31 +212,36 @@ describe('TemplateRef', () => {
 
       it('should return an empty collection when no projectable nodes were provided', () => {
         TestBed.overrideTemplate(
-            DynamicCmp, `<ng-template #templateRef><ng-content></ng-content></ng-template>`);
+          DynamicCmp,
+          `<ng-template #templateRef><ng-content></ng-content></ng-template>`,
+        );
 
         const fixture = TestBed.createComponent(TestCmp);
 
         // There are slots but projectable nodes were not provided - nothing should be returned
-        const cmptRef = fixture.componentInstance.vcr.createComponent(
-            DynamicCmp, {injector: Injector.NULL, projectableNodes: []});
+        const cmptRef = fixture.componentInstance.vcr.createComponent(DynamicCmp, {
+          injector: Injector.NULL,
+          projectableNodes: [],
+        });
         const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
         expect(viewRef.rootNodes.length).toBe(0);
       });
 
-      it('should return an empty collection when projectable nodes were provided but there are no slots',
-         () => {
-           TestBed.overrideTemplate(DynamicCmp, `<ng-template #templateRef></ng-template>`);
+      it('should return an empty collection when projectable nodes were provided but there are no slots', () => {
+        TestBed.overrideTemplate(DynamicCmp, `<ng-template #templateRef></ng-template>`);
 
-           const fixture = TestBed.createComponent(TestCmp);
+        const fixture = TestBed.createComponent(TestCmp);
 
-           // There are no slots but projectable were provided - nothing should be returned
-           const projectableNodes = [[document.createTextNode('textNode')]];
+        // There are no slots but projectable were provided - nothing should be returned
+        const projectableNodes = [[document.createTextNode('textNode')]];
 
-           const cmptRef = fixture.componentInstance.vcr.createComponent(
-               DynamicCmp, {injector: Injector.NULL, projectableNodes});
-           const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
-           expect(viewRef.rootNodes.length).toBe(0);
-         });
+        const cmptRef = fixture.componentInstance.vcr.createComponent(DynamicCmp, {
+          injector: Injector.NULL,
+          projectableNodes,
+        });
+        const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
+        expect(viewRef.rootNodes.length).toBe(0);
+      });
     });
   });
 
@@ -241,7 +250,7 @@ describe('TemplateRef', () => {
       template: `
       <ng-template #templateRef let-name="name">{{name}}</ng-template>
       <ng-container #containerRef></ng-container>
-    `
+    `,
     })
     class App {
       @ViewChild('templateRef') templateRef!: TemplateRef<any>;
@@ -290,7 +299,7 @@ describe('TemplateRef', () => {
             <button (click)="log(name)"></button>
           </ng-template>
           <ng-container #containerRef></ng-container>
-        `
+        `,
       })
       class ListenerTest {
         @ViewChild('templateRef') templateRef!: TemplateRef<any>;
@@ -333,9 +342,11 @@ describe('TemplateRef', () => {
       fixture.detectChanges();
 
       expect(console.warn).toHaveBeenCalledTimes(1);
-      expect(console.warn)
-          .toHaveBeenCalledWith(jasmine.stringContaining(
-              'Replacing the `context` object of an `EmbeddedViewRef` is deprecated'));
+      expect(console.warn).toHaveBeenCalledWith(
+        jasmine.stringContaining(
+          'Replacing the `context` object of an `EmbeddedViewRef` is deprecated',
+        ),
+      );
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
     });
   });

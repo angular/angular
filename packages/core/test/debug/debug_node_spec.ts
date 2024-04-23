@@ -6,9 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {CommonModule, NgIfContext, ɵgetDOM as getDOM} from '@angular/common';
-import {Component, DebugElement, DebugNode, Directive, ElementRef, EmbeddedViewRef, EventEmitter, HostBinding, Injectable, Input, NgZone, NO_ERRORS_SCHEMA, OnInit, Output, Renderer2, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  DebugElement,
+  DebugNode,
+  Directive,
+  ElementRef,
+  EmbeddedViewRef,
+  EventEmitter,
+  HostBinding,
+  Injectable,
+  Input,
+  NgZone,
+  NO_ERRORS_SCHEMA,
+  OnInit,
+  Output,
+  Renderer2,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {createMouseEvent, hasClass} from '@angular/platform-browser/testing/src/browser_util';
@@ -148,8 +166,7 @@ class UsingFor {
 }
 
 @Directive({selector: '[mydir]', exportAs: 'mydir'})
-class MyDir {
-}
+class MyDir {}
 
 @Component({
   selector: 'locals-comp',
@@ -157,8 +174,7 @@ class MyDir {
    <div mydir #alice="mydir"></div>
  `,
 })
-class LocalsComp {
-}
+class LocalsComp {}
 
 @Component({
   selector: 'bank-account',
@@ -173,16 +189,16 @@ class LocalsComp {
   },
 })
 class BankAccount {
-  @Input() bank: string|undefined;
-  @Input('account') id: string|undefined;
+  @Input() bank: string | undefined;
+  @Input('account') id: string | undefined;
 
-  normalizedBankName: string|undefined;
+  normalizedBankName: string | undefined;
 }
 
 @Component({
   template: `
     <div class="content" #content>Some content</div>
- `
+ `,
 })
 class SimpleContentComp {
   @ViewChild('content') content!: ElementRef;
@@ -207,8 +223,7 @@ class TestApp {
 }
 
 @Component({selector: 'test-cmpt', template: ``})
-class TestCmpt {
-}
+class TestCmpt {}
 
 @Component({selector: 'test-cmpt-renderer', template: ``})
 class TestCmptWithRenderer {
@@ -231,7 +246,7 @@ class TestCmptWithViewContainerRef {
     [disabled]="disabled"
     [tabIndex]="tabIndex"
     [title]="title">Click me</button>
-`
+`,
 })
 class TestCmptWithPropBindings {
   disabled = true;
@@ -251,10 +266,9 @@ class TestCmptWithPropBindings {
   <button title="a{{1}}b{{2}}c{{3}}d{{4}}e{{5}}f{{6}}g{{7}}h"></button>
   <button title="a{{1}}b{{2}}c{{3}}d{{4}}e{{5}}f{{6}}g{{7}}h{{8}}i"></button>
   <button title="a{{1}}b{{2}}c{{3}}d{{4}}e{{5}}f{{6}}g{{7}}h{{8}}i{{9}}j"></button>
-`
+`,
 })
-class TestCmptWithPropInterpolation {
-}
+class TestCmptWithPropInterpolation {}
 
 describe('debug element', () => {
   let fixture: ComponentFixture<any>;
@@ -378,10 +392,13 @@ describe('debug element', () => {
     fixture.detectChanges();
     const debugElement = fixture.debugElement.children[0];
 
-    expect(debugElement.classes['present-class'])
-        .toBe(true, 'Expected bound host CSS class "present-class" to be present');
-    expect(debugElement.classes['absent-class'])
-        .toBeFalsy('Expected bound host CSS class "absent-class" to be absent');
+    expect(debugElement.classes['present-class']).toBe(
+      true,
+      'Expected bound host CSS class "present-class" to be present',
+    );
+    expect(debugElement.classes['absent-class']).toBeFalsy(
+      'Expected bound host CSS class "absent-class" to be absent',
+    );
   });
 
   it('should list classes on SVG nodes', () => {
@@ -434,29 +451,27 @@ describe('debug element', () => {
 
   it('should query projected child elements by directive', () => {
     @Directive({selector: 'example-directive-a'})
-    class ExampleDirectiveA {
-    }
+    class ExampleDirectiveA {}
 
     @Component({
       selector: 'wrapper-component',
       template: `
           <ng-content select="example-directive-a"></ng-content>
-        `
+        `,
     })
-    class WrapperComponent {
-    }
+    class WrapperComponent {}
 
     TestBed.configureTestingModule({
-      declarations: [
-        WrapperComponent,
-        ExampleDirectiveA,
-      ]
+      declarations: [WrapperComponent, ExampleDirectiveA],
     });
 
-    TestBed.overrideTemplate(TestApp, `<wrapper-component>
+    TestBed.overrideTemplate(
+      TestApp,
+      `<wrapper-component>
         <div></div>
         <example-directive-a></example-directive-a>
-       </wrapper-component>`);
+       </wrapper-component>`,
+    );
 
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
@@ -467,17 +482,15 @@ describe('debug element', () => {
 
   it('should query re-projected child elements by directive', () => {
     @Directive({selector: 'example-directive-a'})
-    class ExampleDirectiveA {
-    }
+    class ExampleDirectiveA {}
 
     @Component({
       selector: 'proxy-component',
       template: `
           <ng-content></ng-content>
-        `
+        `,
     })
-    class ProxyComponent {
-    }
+    class ProxyComponent {}
 
     @Component({
       selector: 'wrapper-component',
@@ -486,23 +499,21 @@ describe('debug element', () => {
             <ng-content select="div"></ng-content>
             <ng-content select="example-directive-a"></ng-content>
           </proxy-component>
-        `
+        `,
     })
-    class WrapperComponent {
-    }
+    class WrapperComponent {}
 
     TestBed.configureTestingModule({
-      declarations: [
-        ProxyComponent,
-        WrapperComponent,
-        ExampleDirectiveA,
-      ]
+      declarations: [ProxyComponent, WrapperComponent, ExampleDirectiveA],
     });
 
-    TestBed.overrideTemplate(TestApp, `<wrapper-component>
+    TestBed.overrideTemplate(
+      TestApp,
+      `<wrapper-component>
         <div></div>
         <example-directive-a></example-directive-a>
-       </wrapper-component>`);
+       </wrapper-component>`,
+    );
 
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
@@ -514,12 +525,14 @@ describe('debug element', () => {
   it('should query directives on containers before directives in a view', () => {
     @Directive({selector: '[text]'})
     class TextDirective {
-      @Input() text: string|undefined;
+      @Input() text: string | undefined;
     }
 
     TestBed.configureTestingModule({declarations: [TextDirective]});
     TestBed.overrideTemplate(
-        TestApp, `<ng-template text="first" [ngIf]="true"><div text="second"></div></ng-template>`);
+      TestApp,
+      `<ng-template text="first" [ngIf]="true"><div text="second"></div></ng-template>`,
+    );
 
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
@@ -533,12 +546,15 @@ describe('debug element', () => {
   it('should query directives on views moved in the DOM', () => {
     @Directive({selector: '[text]'})
     class TextDirective {
-      @Input() text: string|undefined;
+      @Input() text: string | undefined;
     }
 
     @Directive({selector: '[moveView]'})
     class ViewManipulatingDirective {
-      constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<any>) {}
+      constructor(
+        private _vcRef: ViewContainerRef,
+        private _tplRef: TemplateRef<any>,
+      ) {}
 
       insert() {
         this._vcRef.createEmbeddedView(this._tplRef);
@@ -546,7 +562,7 @@ describe('debug element', () => {
 
       removeFromTheDom() {
         const viewRef = this._vcRef.get(0) as EmbeddedViewRef<any>;
-        viewRef.rootNodes.forEach(rootNode => {
+        viewRef.rootNodes.forEach((rootNode) => {
           getDOM().remove(rootNode);
         });
       }
@@ -554,14 +570,16 @@ describe('debug element', () => {
 
     TestBed.configureTestingModule({declarations: [TextDirective, ViewManipulatingDirective]});
     TestBed.overrideTemplate(
-        TestApp, `<ng-template text="first" moveView><div text="second"></div></ng-template>`);
+      TestApp,
+      `<ng-template text="first" moveView><div text="second"></div></ng-template>`,
+    );
 
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
 
-    const viewMover =
-        fixture.debugElement.queryAllNodes(By.directive(ViewManipulatingDirective))[0].injector.get(
-            ViewManipulatingDirective);
+    const viewMover = fixture.debugElement
+      .queryAllNodes(By.directive(ViewManipulatingDirective))[0]
+      .injector.get(ViewManipulatingDirective);
 
     let debugNodes = fixture.debugElement.queryAllNodes(By.directive(TextDirective));
 
@@ -589,7 +607,7 @@ describe('debug element', () => {
       selector: '[dir]',
     })
     class MyDir {
-      @Input('dir') dir: number|undefined;
+      @Input('dir') dir: number | undefined;
 
       constructor(renderer: Renderer2, element: ElementRef) {
         const div = renderer.createElement('div');
@@ -602,8 +620,7 @@ describe('debug element', () => {
       selector: 'app-test',
       template: '<div dir></div>',
     })
-    class MyComponent {
-    }
+    class MyComponent {}
 
     TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
     const fixture = TestBed.createComponent(MyComponent);
@@ -635,7 +652,7 @@ describe('debug element', () => {
         selector: '[dir]',
       })
       class MyDir {
-        @Input('dir') dir: number|undefined;
+        @Input('dir') dir: number | undefined;
 
         constructor(renderer: Renderer2, element: ElementRef) {
           const outerDiv = renderer.createElement('div');
@@ -655,8 +672,7 @@ describe('debug element', () => {
         selector: 'app-test',
         template: '<div dir></div>',
       })
-      class MyComponent {
-      }
+      class MyComponent {}
 
       TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
       fixture = TestBed.createComponent(MyComponent);
@@ -674,7 +690,7 @@ describe('debug element', () => {
     });
   });
 
-  describe('DebugElement.query doesn\'t fail on elements outside Angular context', () => {
+  describe("DebugElement.query doesn't fail on elements outside Angular context", () => {
     @Component({template: '<div></div>'})
     class NativeEl {
       constructor(private elementRef: ElementRef) {}
@@ -688,54 +704,55 @@ describe('debug element', () => {
 
     let el: DebugElement;
     beforeEach(() => {
-      const fixture =
-          TestBed.configureTestingModule({declarations: [NativeEl]}).createComponent(NativeEl);
+      const fixture = TestBed.configureTestingModule({declarations: [NativeEl]}).createComponent(
+        NativeEl,
+      );
       fixture.detectChanges();
       el = fixture.debugElement;
     });
 
     it('when searching for elements by name', () => {
-      expect(() => el.query(e => e.name === 'any search text')).not.toThrow();
+      expect(() => el.query((e) => e.name === 'any search text')).not.toThrow();
     });
 
     it('when searching for elements by their attributes', () => {
-      expect(() => el.query(e => e.attributes!['name'] === 'any attribute')).not.toThrow();
+      expect(() => el.query((e) => e.attributes!['name'] === 'any attribute')).not.toThrow();
     });
 
     it('when searching for elements by their classes', () => {
-      expect(() => el.query(e => e.classes['any class'] === true)).not.toThrow();
+      expect(() => el.query((e) => e.classes['any class'] === true)).not.toThrow();
     });
 
     it('when searching for elements by their styles', () => {
-      expect(() => el.query(e => e.styles['any style'] === 'any value')).not.toThrow();
+      expect(() => el.query((e) => e.styles['any style'] === 'any value')).not.toThrow();
     });
 
     it('when searching for elements by their properties', () => {
-      expect(() => el.query(e => e.properties['any prop'] === 'any value')).not.toThrow();
+      expect(() => el.query((e) => e.properties['any prop'] === 'any value')).not.toThrow();
     });
 
     it('when searching by componentInstance', () => {
-      expect(() => el.query(e => e.componentInstance === null)).not.toThrow();
+      expect(() => el.query((e) => e.componentInstance === null)).not.toThrow();
     });
 
     it('when searching by context', () => {
-      expect(() => el.query(e => e.context === null)).not.toThrow();
+      expect(() => el.query((e) => e.context === null)).not.toThrow();
     });
 
     it('when searching by listeners', () => {
-      expect(() => el.query(e => e.listeners.length === 0)).not.toThrow();
+      expect(() => el.query((e) => e.listeners.length === 0)).not.toThrow();
     });
 
     it('when searching by references', () => {
-      expect(() => el.query(e => e.references === null)).not.toThrow();
+      expect(() => el.query((e) => e.references === null)).not.toThrow();
     });
 
     it('when searching by providerTokens', () => {
-      expect(() => el.query(e => e.providerTokens.length === 0)).not.toThrow();
+      expect(() => el.query((e) => e.providerTokens.length === 0)).not.toThrow();
     });
 
     it('when searching by injector', () => {
-      expect(() => el.query(e => e.injector === null)).not.toThrow();
+      expect(() => el.query((e) => e.injector === null)).not.toThrow();
     });
 
     it('when using the out-of-context element as the DebugElement query root', () => {
@@ -745,36 +762,34 @@ describe('debug element', () => {
     });
   });
 
-  it('DebugElement.queryAll should pick up both elements inserted via the view and through Renderer2',
-     () => {
-       @Directive({
-         selector: '[dir]',
-       })
-       class MyDir {
-         @Input('dir') dir: number|undefined;
+  it('DebugElement.queryAll should pick up both elements inserted via the view and through Renderer2', () => {
+    @Directive({
+      selector: '[dir]',
+    })
+    class MyDir {
+      @Input('dir') dir: number | undefined;
 
-         constructor(renderer: Renderer2, element: ElementRef) {
-           const div = renderer.createElement('div');
-           div.classList.add('myclass');
-           renderer.appendChild(element.nativeElement, div);
-         }
-       }
+      constructor(renderer: Renderer2, element: ElementRef) {
+        const div = renderer.createElement('div');
+        div.classList.add('myclass');
+        renderer.appendChild(element.nativeElement, div);
+      }
+    }
 
-       @Component({
-         selector: 'app-test',
-         template: '<div dir></div><span class="myclass"></span>',
-       })
-       class MyComponent {
-       }
+    @Component({
+      selector: 'app-test',
+      template: '<div dir></div><span class="myclass"></span>',
+    })
+    class MyComponent {}
 
-       TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
-       const fixture = TestBed.createComponent(MyComponent);
-       fixture.detectChanges();
+    TestBed.configureTestingModule({declarations: [MyComponent, MyDir]});
+    const fixture = TestBed.createComponent(MyComponent);
+    fixture.detectChanges();
 
-       const results = fixture.debugElement.queryAll(By.css('.myclass'));
+    const results = fixture.debugElement.queryAll(By.css('.myclass'));
 
-       expect(results.map(r => r.nativeElement.nodeName.toLowerCase())).toEqual(['div', 'span']);
-     });
+    expect(results.map((r) => r.nativeElement.nodeName.toLowerCase())).toEqual(['div', 'span']);
+  });
 
   it('should list providerTokens', () => {
     fixture = TestBed.createComponent(ParentComp);
@@ -794,8 +809,11 @@ describe('debug element', () => {
     fixture = TestBed.createComponent(ParentComp);
     fixture.detectChanges();
 
-    expect((<Logger>(fixture.debugElement.children[0].injector.get(Logger))).logs).toEqual([
-      'parent', 'nestedparent', 'child', 'nestedchild'
+    expect((<Logger>fixture.debugElement.children[0].injector.get(Logger)).logs).toEqual([
+      'parent',
+      'nestedparent',
+      'child',
+      'nestedchild',
     ]);
   });
 
@@ -872,7 +890,9 @@ describe('debug element', () => {
 
     it('should not include directive-shadowed properties in the properties map', () => {
       TestBed.overrideTemplate(
-          TestCmptWithPropInterpolation, `<button with-title [title]="'goes to input'"></button>`);
+        TestCmptWithPropInterpolation,
+        `<button with-title [title]="'goes to input'"></button>`,
+      );
       const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
       fixture.detectChanges();
 
@@ -891,16 +911,18 @@ describe('debug element', () => {
 
     it('should not include patched properties (starting with __) and on* properties', () => {
       TestBed.overrideTemplate(
-          TestCmptWithPropInterpolation, `<button title="myTitle" (click)="true;"></button>`);
+        TestCmptWithPropInterpolation,
+        `<button title="myTitle" (click)="true;"></button>`,
+      );
       const fixture = TestBed.createComponent(TestCmptWithPropInterpolation);
       fixture.detectChanges();
 
       const host = fixture.debugElement;
       const button = fixture.debugElement.query(By.css('button'));
-      expect(Object.keys(host.properties).filter(key => key.startsWith('__'))).toEqual([]);
-      expect(Object.keys(host.properties).filter(key => key.startsWith('on'))).toEqual([]);
-      expect(Object.keys(button.properties).filter(key => key.startsWith('__'))).toEqual([]);
-      expect(Object.keys(button.properties).filter(key => key.startsWith('on'))).toEqual([]);
+      expect(Object.keys(host.properties).filter((key) => key.startsWith('__'))).toEqual([]);
+      expect(Object.keys(host.properties).filter((key) => key.startsWith('on'))).toEqual([]);
+      expect(Object.keys(button.properties).filter((key) => key.startsWith('__'))).toEqual([]);
+      expect(Object.keys(button.properties).filter((key) => key.startsWith('on'))).toEqual([]);
     });
 
     it('should pickup all of the element properties', () => {
@@ -922,7 +944,10 @@ describe('debug element', () => {
       eventObj1: any;
       eventObj2: any;
       constructor(
-          private renderer: Renderer2, private elementRef: ElementRef, private ngZone: NgZone) {}
+        private renderer: Renderer2,
+        private elementRef: ElementRef,
+        private ngZone: NgZone,
+      ) {}
 
       ngOnInit() {
         this.renderer.listen(this.elementRef.nativeElement, 'click', (event: any) => {
@@ -987,90 +1012,84 @@ describe('debug element', () => {
       expect(debugEl.componentInstance).toBeInstanceOf(ParentComp);
     });
 
-    it('should return component associated with a node if a node is a component host (content projection)',
-       () => {
-         TestBed.overrideTemplate(TestCmpt, `<parent-comp><child-comp></child-comp></parent-comp>`);
-         fixture = TestBed.createComponent(TestCmpt);
+    it('should return component associated with a node if a node is a component host (content projection)', () => {
+      TestBed.overrideTemplate(TestCmpt, `<parent-comp><child-comp></child-comp></parent-comp>`);
+      fixture = TestBed.createComponent(TestCmpt);
 
-         const debugEl = fixture.debugElement.query(By.directive(ChildComp));
-         expect(debugEl.componentInstance).toBeInstanceOf(ChildComp);
-       });
+      const debugEl = fixture.debugElement.query(By.directive(ChildComp));
+      expect(debugEl.componentInstance).toBeInstanceOf(ChildComp);
+    });
 
-    it('should return host component instance if a node has no associated component and there is no component projecting this node',
-       () => {
-         TestBed.overrideTemplate(TestCmpt, `<div></div>`);
-         fixture = TestBed.createComponent(TestCmpt);
+    it('should return host component instance if a node has no associated component and there is no component projecting this node', () => {
+      TestBed.overrideTemplate(TestCmpt, `<div></div>`);
+      fixture = TestBed.createComponent(TestCmpt);
 
-         const debugEl = fixture.debugElement.children[0];
-         expect(debugEl.componentInstance).toBeInstanceOf(TestCmpt);
-       });
+      const debugEl = fixture.debugElement.children[0];
+      expect(debugEl.componentInstance).toBeInstanceOf(TestCmpt);
+    });
 
-    it('should return host component instance if a node has no associated component and there is no component projecting this node (nested embedded views)',
-       () => {
-         TestBed.overrideTemplate(TestCmpt, `
+    it('should return host component instance if a node has no associated component and there is no component projecting this node (nested embedded views)', () => {
+      TestBed.overrideTemplate(
+        TestCmpt,
+        `
                 <ng-template [ngIf]="true">
                   <ng-template [ngIf]="true">
                     <div mydir></div>
                   </ng-template>
-                </ng-template>`);
-         fixture = TestBed.createComponent(TestCmpt);
-         fixture.detectChanges();
+                </ng-template>`,
+      );
+      fixture = TestBed.createComponent(TestCmpt);
+      fixture.detectChanges();
 
-         const debugEl = fixture.debugElement.query(By.directive(MyDir));
-         expect(debugEl.componentInstance).toBeInstanceOf(TestCmpt);
-       });
+      const debugEl = fixture.debugElement.query(By.directive(MyDir));
+      expect(debugEl.componentInstance).toBeInstanceOf(TestCmpt);
+    });
 
-    it('should return component instance that projects a given node if a node has no associated component',
-       () => {
-         TestBed.overrideTemplate(TestCmpt, `<parent-comp><span><div></div></span></parent-comp>`);
-         fixture = TestBed.createComponent(TestCmpt);
+    it('should return component instance that projects a given node if a node has no associated component', () => {
+      TestBed.overrideTemplate(TestCmpt, `<parent-comp><span><div></div></span></parent-comp>`);
+      fixture = TestBed.createComponent(TestCmpt);
 
-         const debugEl = fixture.debugElement.children[0].children[0].children[0];  // <div>
-         expect(debugEl.componentInstance).toBeInstanceOf(ParentComp);
-       });
+      const debugEl = fixture.debugElement.children[0].children[0].children[0]; // <div>
+      expect(debugEl.componentInstance).toBeInstanceOf(ParentComp);
+    });
   });
 
   describe('context on DebugNode', () => {
-    it('should return component associated with the node if both a structural directive and a component match the node',
-       () => {
-         @Component({selector: 'example-component', template: ''})
-         class ExampleComponent {
-         }
+    it('should return component associated with the node if both a structural directive and a component match the node', () => {
+      @Component({selector: 'example-component', template: ''})
+      class ExampleComponent {}
 
-         TestBed.configureTestingModule(
-             {imports: [CommonModule], declarations: [ExampleComponent]});
-         TestBed.overrideTemplate(TestApp, '<example-component *ngIf="true"></example-component>');
+      TestBed.configureTestingModule({imports: [CommonModule], declarations: [ExampleComponent]});
+      TestBed.overrideTemplate(TestApp, '<example-component *ngIf="true"></example-component>');
 
-         const fixture = TestBed.createComponent(TestApp);
-         fixture.detectChanges();
-         const debugNode = fixture.debugElement.query(By.directive(ExampleComponent));
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      const debugNode = fixture.debugElement.query(By.directive(ExampleComponent));
 
-         expect(debugNode.context instanceof ExampleComponent).toBe(true);
-       });
+      expect(debugNode.context instanceof ExampleComponent).toBe(true);
+    });
 
-    it('should return structural directive context if there is a structural directive on the node',
-       () => {
-         TestBed.configureTestingModule({imports: [CommonModule]});
-         TestBed.overrideTemplate(TestApp, '<span *ngIf="true"></span>');
+    it('should return structural directive context if there is a structural directive on the node', () => {
+      TestBed.configureTestingModule({imports: [CommonModule]});
+      TestBed.overrideTemplate(TestApp, '<span *ngIf="true"></span>');
 
-         const fixture = TestBed.createComponent(TestApp);
-         fixture.detectChanges();
-         const debugNode = fixture.debugElement.query(By.css('span'));
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      const debugNode = fixture.debugElement.query(By.css('span'));
 
-         expect(debugNode.context instanceof NgIfContext).toBe(true);
-       });
+      expect(debugNode.context instanceof NgIfContext).toBe(true);
+    });
 
-    it('should return the containing component if there is no structural directive or component on the node',
-       () => {
-         TestBed.configureTestingModule({declarations: [MyDir]});
-         TestBed.overrideTemplate(TestApp, '<span mydir></span>');
+    it('should return the containing component if there is no structural directive or component on the node', () => {
+      TestBed.configureTestingModule({declarations: [MyDir]});
+      TestBed.overrideTemplate(TestApp, '<span mydir></span>');
 
-         const fixture = TestBed.createComponent(TestApp);
-         fixture.detectChanges();
-         const debugNode = fixture.debugElement.query(By.directive(MyDir));
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      const debugNode = fixture.debugElement.query(By.directive(MyDir));
 
-         expect(debugNode.context instanceof TestApp).toBe(true);
-       });
+      expect(debugNode.context instanceof TestApp).toBe(true);
+    });
   });
 
   it('should be able to query for elements that are not in the same DOM tree anymore', () => {
@@ -1148,10 +1167,9 @@ describe('debug element', () => {
               <span class="span.8">span.8</span>
             </p>
           </div>
-        `
+        `,
     })
-    class MyComp {
-    }
+    class MyComp {}
 
     TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
@@ -1160,8 +1178,11 @@ describe('debug element', () => {
     const firstDiv = fixture.debugElement.query(By.css('div'));
     const firstDivChildren = firstDiv.queryAll(By.css('span'));
 
-    expect(firstDivChildren.map(child => child.nativeNode.textContent.trim())).toEqual([
-      'span.1', 'span.2', 'span.3', 'span.4'
+    expect(firstDivChildren.map((child) => child.nativeNode.textContent.trim())).toEqual([
+      'span.1',
+      'span.2',
+      'span.3',
+      'span.4',
     ]);
   });
 
@@ -1171,8 +1192,7 @@ describe('debug element', () => {
       @Input() svgIcon: any = '';
     }
     @Component({template: `<my-icon svgIcon="test"></my-icon>`})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({declarations: [App, Icon]});
     const fixture = TestBed.createComponent(App);
@@ -1186,13 +1206,11 @@ describe('debug element', () => {
     expect(element.attributes['svgicon']).toBeFalsy();
   });
 
-
   it('should include namespaced attributes in DebugNode.attributes', () => {
     @Component({
       template: `<div xlink:href="foo"></div>`,
     })
-    class Comp {
-    }
+    class Comp {}
 
     TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
@@ -1257,11 +1275,11 @@ describe('debug element', () => {
 
   it('should not error when accessing node name', () => {
     @Component({template: ''})
-    class EmptyComponent {
-    }
+    class EmptyComponent {}
 
-    const fixture = TestBed.configureTestingModule({declarations: [EmptyComponent]})
-                        .createComponent(EmptyComponent);
+    const fixture = TestBed.configureTestingModule({
+      declarations: [EmptyComponent],
+    }).createComponent(EmptyComponent);
     let node = fixture.debugElement;
     let superParentName = '';
     // Traverse upwards, all the way to #document, which is not a
@@ -1275,17 +1293,16 @@ describe('debug element', () => {
 
   it('should match node name with declared casing', () => {
     @Component({template: `<div></div><myComponent></myComponent>`})
-    class Wrapper {
-    }
+    class Wrapper {}
 
     @Component({selector: 'myComponent', template: ''})
-    class MyComponent {
-    }
+    class MyComponent {}
 
-    const fixture = TestBed.configureTestingModule({declarations: [Wrapper, MyComponent]})
-                        .createComponent(Wrapper);
-    expect(fixture.debugElement.query(e => e.name === 'myComponent')).toBeTruthy();
-    expect(fixture.debugElement.query(e => e.name === 'div')).toBeTruthy();
+    const fixture = TestBed.configureTestingModule({
+      declarations: [Wrapper, MyComponent],
+    }).createComponent(Wrapper);
+    expect(fixture.debugElement.query((e) => e.name === 'myComponent')).toBeTruthy();
+    expect(fixture.debugElement.query((e) => e.name === 'div')).toBeTruthy();
   });
 
   it('does not call event listeners added outside angular context', () => {
@@ -1296,15 +1313,19 @@ describe('debug element', () => {
     }
     @Component({template: ''})
     class MyComp {
-      constructor(private readonly zone: NgZone, private readonly element: ElementRef) {}
+      constructor(
+        private readonly zone: NgZone,
+        private readonly element: ElementRef,
+      ) {}
       ngOnInit() {
         this.zone.runOutsideAngular(() => {
           this.element.nativeElement.addEventListener('mouseenter', listener);
         });
       }
     }
-    const fixture =
-        TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+    const fixture = TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(
+      MyComp,
+    );
     fixture.detectChanges();
     fixture.debugElement.triggerEventHandler('mouseenter', eventToTrigger);
     expect(listenerCalled).toBe(false);

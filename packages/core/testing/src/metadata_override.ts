@@ -12,7 +12,7 @@
  * @publicApi
  */
 export type MetadataOverride<T> = {
-  add?: Partial<T>,
-  remove?: Partial<T>,
-  set?: Partial<T>
+  add?: Partial<T>;
+  remove?: Partial<T>;
+  set?: Partial<T>;
 };

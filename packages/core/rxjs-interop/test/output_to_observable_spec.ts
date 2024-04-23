@@ -18,7 +18,7 @@ describe('outputToObservable()', () => {
     const observable = outputToObservable(outputRef);
 
     const values: number[] = [];
-    observable.subscribe({next: v => values.push(v)});
+    observable.subscribe({next: (v) => values.push(v)});
     expect(values).toEqual([]);
 
     outputRef.emit(1);
@@ -33,7 +33,7 @@ describe('outputToObservable()', () => {
 
     let completed = false;
     const subscription = observable.subscribe({
-      complete: () => completed = true,
+      complete: () => (completed = true),
     });
 
     outputRef.emit(1);
@@ -56,7 +56,7 @@ describe('outputToObservable()', () => {
       const observable = outputToObservable(outputRef);
 
       const values: number[] = [];
-      observable.subscribe({next: v => values.push(v)});
+      observable.subscribe({next: (v) => values.push(v)});
       expect(values).toEqual([]);
 
       subject.next(1);
@@ -72,7 +72,7 @@ describe('outputToObservable()', () => {
 
       let completed = false;
       const subscription = observable.subscribe({
-        complete: () => completed = true,
+        complete: () => (completed = true),
       });
 
       subject.next(1);
@@ -90,32 +90,34 @@ describe('outputToObservable()', () => {
       expect(subject.observed).toBe(false);
     });
 
-    it('may not complete the observable with an improperly ' +
-           'configured `OutputRef` without a destroy ref as source',
-       () => {
-         const outputRef = new EventEmitter<number>();
-         const observable = outputToObservable(outputRef);
+    it(
+      'may not complete the observable with an improperly ' +
+        'configured `OutputRef` without a destroy ref as source',
+      () => {
+        const outputRef = new EventEmitter<number>();
+        const observable = outputToObservable(outputRef);
 
-         let completed = false;
-         const subscription = observable.subscribe({
-           complete: () => completed = true,
-         });
+        let completed = false;
+        const subscription = observable.subscribe({
+          complete: () => (completed = true),
+        });
 
-         outputRef.next(1);
-         outputRef.next(2);
+        outputRef.next(1);
+        outputRef.next(2);
 
-         expect(completed).toBe(false);
-         expect(subscription.closed).toBe(false);
-         expect(outputRef.observed).toBe(true);
+        expect(completed).toBe(false);
+        expect(subscription.closed).toBe(false);
+        expect(outputRef.observed).toBe(true);
 
-         // destroy `EnvironmentInjector`.
-         TestBed.resetTestingModule();
+        // destroy `EnvironmentInjector`.
+        TestBed.resetTestingModule();
 
-         expect(completed)
-             .withContext('Should not be completed as there is no known time when to destroy')
-             .toBe(false);
-         expect(subscription.closed).toBe(false);
-         expect(outputRef.observed).toBe(true);
-       });
+        expect(completed)
+          .withContext('Should not be completed as there is no known time when to destroy')
+          .toBe(false);
+        expect(subscription.closed).toBe(false);
+        expect(outputRef.observed).toBe(true);
+      },
+    );
   });
 });

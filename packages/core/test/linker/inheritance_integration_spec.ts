@@ -10,8 +10,7 @@ import {Component, Directive, HostBinding} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 @Directive({selector: '[directiveA]'})
-class DirectiveA {
-}
+class DirectiveA {}
 
 @Directive({selector: '[directiveB]'})
 class DirectiveB {
@@ -19,13 +18,13 @@ class DirectiveB {
 }
 
 @Component({selector: 'component-a', template: 'ComponentA Template'})
-class ComponentA {
-}
+class ComponentA {}
 
-@Component(
-    {selector: 'component-extends-directive', template: 'ComponentExtendsDirective Template'})
-class ComponentExtendsDirective extends DirectiveA {
-}
+@Component({
+  selector: 'component-extends-directive',
+  template: 'ComponentExtendsDirective Template',
+})
+class ComponentExtendsDirective extends DirectiveA {}
 
 class ComponentWithNoAnnotation extends ComponentA {}
 
@@ -37,8 +36,7 @@ class DirectiveExtendsComponent extends ComponentA {
 class DirectiveWithNoAnnotation extends DirectiveB {}
 
 @Component({selector: 'my-app', template: '...'})
-class App {
-}
+class App {}
 
 describe('Inheritance logic', () => {
   it('should handle Components that extend Directives', () => {
@@ -72,8 +70,8 @@ describe('Inheritance logic', () => {
     TestBed.configureTestingModule({declarations: [DirectiveExtendsComponent, App]});
     const template = '<div directiveExtendsComponent>Some content</div>';
     TestBed.overrideComponent(App, {set: {template}});
-    expect(() => TestBed.createComponent(App))
-        .toThrowError(
-            'NG0903: Directives cannot inherit Components. Directive DirectiveExtendsComponent is attempting to extend component ComponentA');
+    expect(() => TestBed.createComponent(App)).toThrowError(
+      'NG0903: Directives cannot inherit Components. Directive DirectiveExtendsComponent is attempting to extend component ComponentA',
+    );
   });
 });

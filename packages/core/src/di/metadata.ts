@@ -11,7 +11,6 @@ import {makeParamDecorator} from '../util/decorators';
 import {attachInjectFlag} from './injector_compatibility';
 import {DecoratorFlags, InternalInjectFlags} from './interface/injector';
 
-
 /**
  * Type of the Inject decorator / constructor function.
  *
@@ -36,7 +35,7 @@ export interface InjectDecorator {
    *
    */
   (token: any): any;
-  new(token: any): Inject;
+  new (token: any): Inject;
 }
 
 /**
@@ -58,9 +57,11 @@ export interface Inject {
  * @publicApi
  */
 export const Inject: InjectDecorator = attachInjectFlag(
-    // Disable tslint because `DecoratorFlags` is a const enum which gets inlined.
-    // tslint:disable-next-line: no-toplevel-property-access
-    makeParamDecorator('Inject', (token: any) => ({token})), DecoratorFlags.Inject);
+  // Disable tslint because `DecoratorFlags` is a const enum which gets inlined.
+  makeParamDecorator('Inject', (token: any) => ({token})),
+  // tslint:disable-next-line: no-toplevel-property-access
+  DecoratorFlags.Inject,
+);
 
 /**
  * Type of the Optional decorator / constructor function.
@@ -86,7 +87,7 @@ export interface OptionalDecorator {
    * @see [Dependency Injection Guide](guide/di/dependency-injection.
    */
   (): any;
-  new(): Optional;
+  new (): Optional;
 }
 
 /**
@@ -103,9 +104,9 @@ export interface Optional {}
  * @publicApi
  */
 export const Optional: OptionalDecorator =
-    // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
-    // tslint:disable-next-line: no-toplevel-property-access
-    attachInjectFlag(makeParamDecorator('Optional'), InternalInjectFlags.Optional);
+  // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
+  // tslint:disable-next-line: no-toplevel-property-access
+  attachInjectFlag(makeParamDecorator('Optional'), InternalInjectFlags.Optional);
 
 /**
  * Type of the Self decorator / constructor function.
@@ -134,7 +135,7 @@ export interface SelfDecorator {
    *
    */
   (): any;
-  new(): Self;
+  new (): Self;
 }
 
 /**
@@ -151,10 +152,9 @@ export interface Self {}
  * @publicApi
  */
 export const Self: SelfDecorator =
-    // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
-    // tslint:disable-next-line: no-toplevel-property-access
-    attachInjectFlag(makeParamDecorator('Self'), InternalInjectFlags.Self);
-
+  // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
+  // tslint:disable-next-line: no-toplevel-property-access
+  attachInjectFlag(makeParamDecorator('Self'), InternalInjectFlags.Self);
 
 /**
  * Type of the `SkipSelf` decorator / constructor function.
@@ -182,7 +182,7 @@ export interface SkipSelfDecorator {
    *
    */
   (): any;
-  new(): SkipSelf;
+  new (): SkipSelf;
 }
 
 /**
@@ -199,9 +199,9 @@ export interface SkipSelf {}
  * @publicApi
  */
 export const SkipSelf: SkipSelfDecorator =
-    // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
-    // tslint:disable-next-line: no-toplevel-property-access
-    attachInjectFlag(makeParamDecorator('SkipSelf'), InternalInjectFlags.SkipSelf);
+  // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
+  // tslint:disable-next-line: no-toplevel-property-access
+  attachInjectFlag(makeParamDecorator('SkipSelf'), InternalInjectFlags.SkipSelf);
 
 /**
  * Type of the `Host` decorator / constructor function.
@@ -225,7 +225,7 @@ export interface HostDecorator {
    * Guide"](guide/di/di-in-action#optional).
    */
   (): any;
-  new(): Host;
+  new (): Host;
 }
 
 /**
@@ -242,6 +242,6 @@ export interface Host {}
  * @publicApi
  */
 export const Host: HostDecorator =
-    // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
-    // tslint:disable-next-line: no-toplevel-property-access
-    attachInjectFlag(makeParamDecorator('Host'), InternalInjectFlags.Host);
+  // Disable tslint because `InternalInjectFlags` is a const enum which gets inlined.
+  // tslint:disable-next-line: no-toplevel-property-access
+  attachInjectFlag(makeParamDecorator('Host'), InternalInjectFlags.Host);

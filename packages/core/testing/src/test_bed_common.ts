@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, SchemaMetadata, ɵDeferBlockBehavior as DeferBlockBehavior} from '@angular/core';
-
+import {
+  InjectionToken,
+  SchemaMetadata,
+  ɵDeferBlockBehavior as DeferBlockBehavior,
+} from '@angular/core';
 
 /** Whether test modules should be torn down by default. */
 export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = true;
@@ -48,7 +51,7 @@ export interface TestModuleMetadata {
   providers?: any[];
   declarations?: any[];
   imports?: any[];
-  schemas?: Array<SchemaMetadata|any[]>;
+  schemas?: Array<SchemaMetadata | any[]>;
   teardown?: ModuleTeardownOptions;
   /**
    * Whether NG0304 runtime errors should be thrown when unknown elements are present in component's

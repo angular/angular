@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -6,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 
 /**
  * Expresses a single CSS Selector.
@@ -37,7 +35,7 @@
  *
  * See more examples in node_selector_matcher_spec.ts
  */
-export type CssSelector = (string|SelectorFlags)[];
+export type CssSelector = (string | SelectorFlags)[];
 
 /**
  * A list of CssSelectors.
@@ -58,7 +56,7 @@ export type CssSelectorList = CssSelector[];
  * using {@link ViewContainerRef#createComponent}. The last slot that specifies the
  * wildcard selector will retrieve all projectable nodes which do not match any selector.
  */
-export type ProjectionSlots = (CssSelectorList|'*')[];
+export type ProjectionSlots = (CssSelectorList | '*')[];
 
 /** Flags used to build up CssSelectors */
 export const enum SelectorFlags {

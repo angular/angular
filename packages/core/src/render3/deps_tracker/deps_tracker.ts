@@ -12,11 +12,20 @@ import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
 import {flatten} from '../../util/array_utils';
 import {getComponentDef, getNgModuleDef, isStandalone} from '../definition';
-import {ComponentType, NgModuleScopeInfoFromDecorator, RawScopeInfoFromDecorator} from '../interfaces/definition';
+import {
+  ComponentType,
+  NgModuleScopeInfoFromDecorator,
+  RawScopeInfoFromDecorator,
+} from '../interfaces/definition';
 import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
 import {maybeUnwrapFn} from '../util/misc_utils';
 
-import {ComponentDependencies, DepsTrackerApi, NgModuleScope, StandaloneComponentScope} from './api';
+import {
+  ComponentDependencies,
+  DepsTrackerApi,
+  NgModuleScope,
+  StandaloneComponentScope,
+} from './api';
 
 /**
  * Indicates whether to use the runtime dependency tracker for scope calculation in JIT compilation.
@@ -61,14 +70,17 @@ class DepsTracker implements DepsTrackerApi {
   }
 
   /** @override */
-  getComponentDependencies(type: ComponentType<any>, rawImports?: RawScopeInfoFromDecorator[]):
-      ComponentDependencies {
+  getComponentDependencies(
+    type: ComponentType<any>,
+    rawImports?: RawScopeInfoFromDecorator[],
+  ): ComponentDependencies {
     this.resolveNgModulesDecls();
 
     const def = getComponentDef(type);
     if (def === null) {
       throw new Error(
-          `Attempting to get component dependencies for a type that is not a component: ${type}`);
+        `Attempting to get component dependencies for a type that is not a component: ${type}`,
+      );
     }
 
     if (def.standalone) {
@@ -83,7 +95,7 @@ class DepsTracker implements DepsTrackerApi {
           ...scope.compilation.directives,
           ...scope.compilation.pipes,
           ...scope.compilation.ngModules,
-        ]
+        ],
       };
     } else {
       if (!this.ownerNgModule.has(type)) {
@@ -99,10 +111,7 @@ class DepsTracker implements DepsTrackerApi {
       }
 
       return {
-        dependencies: [
-          ...scope.compilation.directives,
-          ...scope.compilation.pipes,
-        ],
+        dependencies: [...scope.compilation.directives, ...scope.compilation.pipes],
       };
     }
   }
@@ -164,8 +173,9 @@ class DepsTracker implements DepsTrackerApi {
         } else {
           // The standalone thing is neither a component nor a directive nor a pipe ... (what?)
           throw new RuntimeError(
-              RuntimeErrorCode.RUNTIME_DEPS_INVALID_IMPORTED_TYPE,
-              'The standalone imported type is neither a component nor a directive nor a pipe');
+            RuntimeErrorCode.RUNTIME_DEPS_INVALID_IMPORTED_TYPE,
+            'The standalone imported type is neither a component nor a directive nor a pipe',
+          );
         }
       } else {
         // The import is neither a module nor a module-with-providers nor a standalone thing. This
@@ -223,8 +233,10 @@ class DepsTracker implements DepsTrackerApi {
   }
 
   /** @override */
-  getStandaloneComponentScope(type: ComponentType<any>, rawImports?: RawScopeInfoFromDecorator[]):
-      StandaloneComponentScope {
+  getStandaloneComponentScope(
+    type: ComponentType<any>,
+    rawImports?: RawScopeInfoFromDecorator[],
+  ): StandaloneComponentScope {
     if (this.standaloneComponentsScopeCache.has(type)) {
       return this.standaloneComponentsScopeCache.get(type)!;
     }
@@ -236,8 +248,9 @@ class DepsTracker implements DepsTrackerApi {
   }
 
   private computeStandaloneComponentScope(
-      type: ComponentType<any>,
-      rawImports?: RawScopeInfoFromDecorator[]): StandaloneComponentScope {
+    type: ComponentType<any>,
+    rawImports?: RawScopeInfoFromDecorator[],
+  ): StandaloneComponentScope {
     const ans: StandaloneComponentScope = {
       compilation: {
         // Standalone components are always able to self-reference.

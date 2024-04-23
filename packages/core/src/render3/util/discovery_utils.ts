@@ -10,7 +10,13 @@ import {ChangeDetectionStrategy} from '../../change_detection/constants';
 import {Injector} from '../../di/injector';
 import {ViewEncapsulation} from '../../metadata/view';
 import {assertLView} from '../assert';
-import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext, readPatchedLView} from '../context_discovery';
+import {
+  discoverLocalRefs,
+  getComponentAtNodeIndex,
+  getDirectivesAtNodeIndex,
+  getLContext,
+  readPatchedLView,
+} from '../context_discovery';
 import {getComponentDef, getDirectiveDef} from '../definition';
 import {NodeInjector} from '../di';
 import {DirectiveDef} from '../interfaces/definition';
@@ -19,8 +25,6 @@ import {CLEANUP, CONTEXT, FLAGS, LView, LViewFlags, TVIEW, TViewType} from '../i
 
 import {getRootContext} from './view_traversal_utils';
 import {getLViewParent, unwrapRNode} from './view_utils';
-
-
 
 /**
  * Retrieves the component instance associated with a given DOM element.
@@ -49,7 +53,7 @@ import {getLViewParent, unwrapRNode} from './view_utils';
  * @publicApi
  * @globalApi ng
  */
-export function getComponent<T>(element: Element): T|null {
+export function getComponent<T>(element: Element): T | null {
   ngDevMode && assertDomElement(element);
   const context = getLContext(element);
   if (context === null) return null;
@@ -65,7 +69,6 @@ export function getComponent<T>(element: Element): T|null {
   return context.component as unknown as T;
 }
 
-
 /**
  * If inside an embedded view (e.g. `*ngIf` or `*ngFor`), retrieves the context of the embedded
  * view that the element is part of. Otherwise retrieves the instance of the component whose view
@@ -78,11 +81,11 @@ export function getComponent<T>(element: Element): T|null {
  * @publicApi
  * @globalApi ng
  */
-export function getContext<T extends {}>(element: Element): T|null {
+export function getContext<T extends {}>(element: Element): T | null {
   assertDomElement(element);
   const context = getLContext(element)!;
   const lView = context ? context.lView : null;
-  return lView === null ? null : lView[CONTEXT] as T;
+  return lView === null ? null : (lView[CONTEXT] as T);
 }
 
 /**
@@ -100,16 +103,16 @@ export function getContext<T extends {}>(element: Element): T|null {
  * @publicApi
  * @globalApi ng
  */
-export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
+export function getOwningComponent<T>(elementOrDir: Element | {}): T | null {
   const context = getLContext(elementOrDir)!;
   let lView = context ? context.lView : null;
   if (lView === null) return null;
 
-  let parent: LView|null;
+  let parent: LView | null;
   while (lView[TVIEW].type === TViewType.Embedded && (parent = getLViewParent(lView)!)) {
     lView = parent;
   }
-  return lView[FLAGS] & LViewFlags.IsRoot ? null : lView[CONTEXT] as unknown as T;
+  return lView[FLAGS] & LViewFlags.IsRoot ? null : (lView[CONTEXT] as unknown as T);
 }
 
 /**
@@ -123,7 +126,7 @@ export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
  * @publicApi
  * @globalApi ng
  */
-export function getRootComponents(elementOrDir: Element|{}): {}[] {
+export function getRootComponents(elementOrDir: Element | {}): {}[] {
   const lView = readPatchedLView<{}>(elementOrDir);
   return lView !== null ? [getRootContext(lView)] : [];
 }
@@ -138,7 +141,7 @@ export function getRootComponents(elementOrDir: Element|{}): {}[] {
  * @publicApi
  * @globalApi ng
  */
-export function getInjector(elementOrDir: Element|{}): Injector {
+export function getInjector(elementOrDir: Element | {}): Injector {
   const context = getLContext(elementOrDir)!;
   const lView = context ? context.lView : null;
   if (lView === null) return Injector.NULL;
@@ -265,8 +268,9 @@ export interface ComponentDebugMetadata extends DirectiveDebugMetadata {
  * @publicApi
  * @globalApi ng
  */
-export function getDirectiveMetadata(directiveOrComponentInstance: any): ComponentDebugMetadata|
-    DirectiveDebugMetadata|null {
+export function getDirectiveMetadata(
+  directiveOrComponentInstance: any,
+): ComponentDebugMetadata | DirectiveDebugMetadata | null {
   const {constructor} = directiveOrComponentInstance;
   if (!constructor) {
     throw new Error('Unable to find the instance constructor');
@@ -280,8 +284,9 @@ export function getDirectiveMetadata(directiveOrComponentInstance: any): Compone
       inputs,
       outputs: componentDef.outputs,
       encapsulation: componentDef.encapsulation,
-      changeDetection: componentDef.onPush ? ChangeDetectionStrategy.OnPush :
-                                             ChangeDetectionStrategy.Default
+      changeDetection: componentDef.onPush
+        ? ChangeDetectionStrategy.OnPush
+        : ChangeDetectionStrategy.Default,
     };
   }
   const directiveDef = getDirectiveDef(constructor);
@@ -361,9 +366,8 @@ export interface Listener {
   /**
    * Type of the listener (e.g. a native DOM event or a custom @Output).
    */
-  type: 'dom'|'output';
+  type: 'dom' | 'output';
 }
-
 
 /**
  * Retrieves a list of event listeners associated with a DOM element. The list does include host
@@ -407,7 +411,7 @@ export function getListeners(element: Element): Listener[] {
   const tCleanup = tView.cleanup;
   const listeners: Listener[] = [];
   if (tCleanup && lCleanup) {
-    for (let i = 0; i < tCleanup.length;) {
+    for (let i = 0; i < tCleanup.length; ) {
       const firstParam = tCleanup[i++];
       const secondParam = tCleanup[i++];
       if (typeof firstParam === 'string') {
@@ -419,7 +423,7 @@ export function getListeners(element: Element): Listener[] {
         // if useCaptureOrIndx is positive number then it in unsubscribe method
         // if useCaptureOrIndx is negative number then it is a Subscription
         const type =
-            (typeof useCaptureOrIndx === 'boolean' || useCaptureOrIndx >= 0) ? 'dom' : 'output';
+          typeof useCaptureOrIndx === 'boolean' || useCaptureOrIndx >= 0 ? 'dom' : 'output';
         const useCapture = typeof useCaptureOrIndx === 'boolean' ? useCaptureOrIndx : false;
         if (element == listenerElement) {
           listeners.push({element, name, callback, useCapture, type});
@@ -442,8 +446,11 @@ function sortListeners(a: Listener, b: Listener) {
  * See call site for more info.
  */
 function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
-  return obj.type !== undefined && obj.declaredInputs !== undefined &&
-      obj.findHostDirectiveDefs !== undefined;
+  return (
+    obj.type !== undefined &&
+    obj.declaredInputs !== undefined &&
+    obj.findHostDirectiveDefs !== undefined
+  );
 }
 
 /**

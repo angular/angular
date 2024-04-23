@@ -19,7 +19,7 @@ import {Signal} from './reactivity/api';
 import {signal, WritableSignal} from './reactivity/signal';
 import {getLView} from './state';
 
-interface QuerySignalNode<T> extends ComputedNode<T|ReadonlyArray<T>> {
+interface QuerySignalNode<T> extends ComputedNode<T | ReadonlyArray<T>> {
   _lView?: LView;
   _queryIndex?: number;
   _queryList?: QueryList<T>;
@@ -28,7 +28,7 @@ interface QuerySignalNode<T> extends ComputedNode<T|ReadonlyArray<T>> {
    * Stores the last seen, flattened results for a query. This is to avoid marking the signal result
    * computed as dirty when there was view manipulation that didn't impact final results.
    */
-  _flatValue?: T|ReadonlyArray<T>;
+  _flatValue?: T | ReadonlyArray<T>;
 }
 
 /**
@@ -55,8 +55,9 @@ function createQuerySignalFn<V>(firstOnly: boolean, required: boolean) {
 
     if (required && value === undefined) {
       throw new RuntimeError(
-          RuntimeErrorCode.REQUIRED_QUERY_NO_VALUE,
-          ngDevMode && 'Child query result is required but no value is available.');
+        RuntimeErrorCode.REQUIRED_QUERY_NO_VALUE,
+        ngDevMode && 'Child query result is required but no value is available.',
+      );
     }
 
     return value;
@@ -72,8 +73,10 @@ function createQuerySignalFn<V>(firstOnly: boolean, required: boolean) {
   return signalFn;
 }
 
-export function createSingleResultOptionalQuerySignalFn<ReadT>(): Signal<ReadT|undefined> {
-  return createQuerySignalFn(/* firstOnly */ true, /* required */ false) as Signal<ReadT|undefined>;
+export function createSingleResultOptionalQuerySignalFn<ReadT>(): Signal<ReadT | undefined> {
+  return createQuerySignalFn(/* firstOnly */ true, /* required */ false) as Signal<
+    ReadT | undefined
+  >;
 }
 
 export function createSingleResultRequiredQuerySignalFn<ReadT>(): Signal<ReadT> {
@@ -81,8 +84,9 @@ export function createSingleResultRequiredQuerySignalFn<ReadT>(): Signal<ReadT> 
 }
 
 export function createMultiResultQuerySignalFn<ReadT>(): Signal<ReadonlyArray<ReadT>> {
-  return createQuerySignalFn(/* firstOnly */ false, /* required */ false) as
-      Signal<ReadonlyArray<ReadT>>;
+  return createQuerySignalFn(/* firstOnly */ false, /* required */ false) as Signal<
+    ReadonlyArray<ReadT>
+  >;
 }
 
 export function bindQueryToSignal(target: Signal<unknown>, queryIndex: number): void {
@@ -90,10 +94,10 @@ export function bindQueryToSignal(target: Signal<unknown>, queryIndex: number): 
   node._lView = getLView();
   node._queryIndex = queryIndex;
   node._queryList = loadQueryInternal(node._lView, queryIndex);
-  node._queryList.onDirty(() => node._dirtyCounter.update(v => v + 1));
+  node._queryList.onDirty(() => node._dirtyCounter.update((v) => v + 1));
 }
 
-function refreshSignalQuery<V>(node: QuerySignalNode<V>, firstOnly: boolean): V|ReadonlyArray<V> {
+function refreshSignalQuery<V>(node: QuerySignalNode<V>, firstOnly: boolean): V | ReadonlyArray<V> {
   const lView = node._lView;
   const queryIndex = node._queryIndex;
 
@@ -108,7 +112,7 @@ function refreshSignalQuery<V>(node: QuerySignalNode<V>, firstOnly: boolean): V|
   // creation pass didn't finish) and a query might have partial results, but we don't want to
   // return those - instead we do delay results collection until all nodes had a chance of matching
   // and we can present consistent, "atomic" (on a view level) results.
-  if (lView === undefined || queryIndex === undefined || (lView[FLAGS] & LViewFlags.CreationMode)) {
+  if (lView === undefined || queryIndex === undefined || lView[FLAGS] & LViewFlags.CreationMode) {
     return (firstOnly ? undefined : EMPTY_ARRAY) as V;
   }
 
@@ -124,7 +128,7 @@ function refreshSignalQuery<V>(node: QuerySignalNode<V>, firstOnly: boolean): V|
     // QueryList in the signal-based queries (perf follow-up)
     const resultChanged = (queryList as any as {_changesDetected: boolean})._changesDetected;
     if (resultChanged || node._flatValue === undefined) {
-      return node._flatValue = queryList.toArray();
+      return (node._flatValue = queryList.toArray());
     }
     return node._flatValue;
   }

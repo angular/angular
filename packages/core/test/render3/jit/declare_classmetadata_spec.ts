@@ -29,10 +29,12 @@ describe('class metadata declaration jit compilation', () => {
     const TestClass: WithMetadata = class TestClass {};
     ɵɵngDeclareClassMetadata({
       type: TestClass,
-      decorators: [{
-        type: Injectable,
-        args: [],
-      }],
+      decorators: [
+        {
+          type: Injectable,
+          args: [],
+        },
+      ],
     });
 
     expect(TestClass.decorators!.length).toBe(1);
@@ -45,10 +47,12 @@ describe('class metadata declaration jit compilation', () => {
     const TestClass: WithMetadata = class TestClass {};
     ɵɵngDeclareClassMetadata({
       type: TestClass,
-      decorators: [{
-        type: Injectable,
-        args: [],
-      }],
+      decorators: [
+        {
+          type: Injectable,
+          args: [],
+        },
+      ],
       propDecorators: {
         test: [{type: Input, args: []}],
       },
@@ -66,10 +70,12 @@ describe('class metadata declaration jit compilation', () => {
     const TestClass: WithMetadata = class TestClass {};
     ɵɵngDeclareClassMetadata({
       type: TestClass,
-      decorators: [{
-        type: Injectable,
-        args: [],
-      }],
+      decorators: [
+        {
+          type: Injectable,
+          args: [],
+        },
+      ],
       ctorParameters: () => [{type: String}],
     });
 

@@ -7,7 +7,11 @@
  */
 import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
-import {getNgContainerSize, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
+import {
+  getNgContainerSize,
+  markRNodeAsClaimedByHydration,
+  setSegmentHead,
+} from '../../hydration/utils';
 import {isDetachedByI18n} from '../../i18n/utils';
 import {assertEqual, assertIndexInRange, assertNumber} from '../../util/assert';
 import {assertHasParent} from '../assert';
@@ -19,15 +23,36 @@ import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild, createCommentNode} from '../node_manipulation';
-import {getBindingIndex, getCurrentTNode, getLView, getTView, isCurrentTNodeParent, isInSkipHydrationBlock, lastNodeWasCreated, setCurrentTNode, setCurrentTNodeAsNotParent, wasLastNodeCreated} from '../state';
+import {
+  getBindingIndex,
+  getCurrentTNode,
+  getLView,
+  getTView,
+  isCurrentTNodeParent,
+  isInSkipHydrationBlock,
+  lastNodeWasCreated,
+  setCurrentTNode,
+  setCurrentTNodeAsNotParent,
+  wasLastNodeCreated,
+} from '../state';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getConstant} from '../util/view_utils';
 
-import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {
+  createDirectivesInstances,
+  executeContentQueries,
+  getOrCreateTNode,
+  resolveDirectives,
+  saveResolvedLocalsInData,
+} from './shared';
 
 function elementContainerStartFirstCreatePass(
-    index: number, tView: TView, lView: LView, attrsIndex?: number|null,
-    localRefsIndex?: number): TElementContainerNode {
+  index: number,
+  tView: TView,
+  lView: LView,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): TElementContainerNode {
   ngDevMode && ngDevMode.firstCreatePass++;
 
   const tViewConsts = tView.consts;
@@ -66,22 +91,25 @@ function elementContainerStartFirstCreatePass(
  * @codeGenApi
  */
 export function ɵɵelementContainerStart(
-    index: number, attrsIndex?: number|null,
-    localRefsIndex?: number): typeof ɵɵelementContainerStart {
+  index: number,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): typeof ɵɵelementContainerStart {
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
 
   ngDevMode && assertIndexInRange(lView, adjustedIndex);
   ngDevMode &&
-      assertEqual(
-          getBindingIndex(), tView.bindingStartIndex,
-          'element containers should be created before any bindings');
+    assertEqual(
+      getBindingIndex(),
+      tView.bindingStartIndex,
+      'element containers should be created before any bindings',
+    );
 
-  const tNode = tView.firstCreatePass ?
-      elementContainerStartFirstCreatePass(
-          adjustedIndex, tView, lView, attrsIndex, localRefsIndex) :
-      tView.data[adjustedIndex] as TElementContainerNode;
+  const tNode = tView.firstCreatePass
+    ? elementContainerStartFirstCreatePass(adjustedIndex, tView, lView, attrsIndex, localRefsIndex)
+    : (tView.data[adjustedIndex] as TElementContainerNode);
   setCurrentTNode(tNode, true);
 
   const comment = _locateOrCreateElementContainerNode(tView, lView, tNode, index);
@@ -144,17 +172,24 @@ export function ɵɵelementContainerEnd(): typeof ɵɵelementContainerEnd {
  * @codeGenApi
  */
 export function ɵɵelementContainer(
-    index: number, attrsIndex?: number|null, localRefsIndex?: number): typeof ɵɵelementContainer {
+  index: number,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): typeof ɵɵelementContainer {
   ɵɵelementContainerStart(index, attrsIndex, localRefsIndex);
   ɵɵelementContainerEnd();
   return ɵɵelementContainer;
 }
 
-let _locateOrCreateElementContainerNode: typeof locateOrCreateElementContainerNode =
-    (tView: TView, lView: LView, tNode: TNode, index: number) => {
-      lastNodeWasCreated(true);
-      return createCommentNode(lView[RENDERER], ngDevMode ? 'ng-container' : '');
-    };
+let _locateOrCreateElementContainerNode: typeof locateOrCreateElementContainerNode = (
+  tView: TView,
+  lView: LView,
+  tNode: TNode,
+  index: number,
+) => {
+  lastNodeWasCreated(true);
+  return createCommentNode(lView[RENDERER], ngDevMode ? 'ng-container' : '');
+};
 
 /**
  * Enables hydration code path (to lookup existing elements in DOM)
@@ -162,7 +197,11 @@ let _locateOrCreateElementContainerNode: typeof locateOrCreateElementContainerNo
  * represent <ng-container>'s anchor.
  */
 function locateOrCreateElementContainerNode(
-    tView: TView, lView: LView, tNode: TNode, index: number): RComment {
+  tView: TView,
+  lView: LView,
+  tNode: TNode,
+  index: number,
+): RComment {
   let comment: RComment;
   const hydrationInfo = lView[HYDRATION];
   const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock() || isDetachedByI18n(tNode);
@@ -180,10 +219,10 @@ function locateOrCreateElementContainerNode(
 
   const ngContainerSize = getNgContainerSize(hydrationInfo, index) as number;
   ngDevMode &&
-      assertNumber(
-          ngContainerSize,
-          'Unexpected state: hydrating an <ng-container>, ' +
-              'but no hydration info is available.');
+    assertNumber(
+      ngContainerSize,
+      'Unexpected state: hydrating an <ng-container>, ' + 'but no hydration info is available.',
+    );
 
   setSegmentHead(hydrationInfo, index, currentRNode);
   comment = siblingAfter<RComment>(ngContainerSize, currentRNode)!;

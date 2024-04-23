@@ -16,11 +16,19 @@ import {TIcu} from './interfaces/i18n';
 import {NodeInjectorOffset} from './interfaces/injector';
 import {TNode} from './interfaces/node';
 import {isLContainer, isLView} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, FLAGS, HEADER_OFFSET, LView, LViewFlags, T_HOST, TVIEW, TView} from './interfaces/view';
+import {
+  DECLARATION_COMPONENT_VIEW,
+  FLAGS,
+  HEADER_OFFSET,
+  LView,
+  LViewFlags,
+  T_HOST,
+  TVIEW,
+  TView,
+} from './interfaces/view';
 
 // [Assert functions do not constraint type when they are guarded by a truthy
 // expression.](https://github.com/microsoft/TypeScript/issues/37295)
-
 
 export function assertTNodeForLView(tNode: TNode, lView: LView) {
   assertTNodeForTView(tNode, lView[TVIEW]);
@@ -44,7 +52,6 @@ export function assertTNode(tNode: TNode) {
   }
 }
 
-
 export function assertTIcu(tIcu: TIcu) {
   assertDefined(tIcu, 'Expected TIcu to be defined');
   if (!(typeof tIcu.currentCaseLViewIndex === 'number')) {
@@ -53,16 +60,18 @@ export function assertTIcu(tIcu: TIcu) {
 }
 
 export function assertComponentType(
-    actual: any,
-    msg: string = 'Type passed in is not ComponentType, it does not have \'ɵcmp\' property.') {
+  actual: any,
+  msg: string = "Type passed in is not ComponentType, it does not have 'ɵcmp' property.",
+) {
   if (!getComponentDef(actual)) {
     throwError(msg);
   }
 }
 
 export function assertNgModuleType(
-    actual: any,
-    msg: string = 'Type passed in is not NgModuleType, it does not have \'ɵmod\' property.') {
+  actual: any,
+  msg: string = "Type passed in is not NgModuleType, it does not have 'ɵmod' property.",
+) {
   if (!getNgModuleDef(actual)) {
     throwError(msg);
   }
@@ -72,7 +81,7 @@ export function assertCurrentTNodeIsParent(isParent: boolean) {
   assertEqual(isParent, true, 'currentTNode should be a parent');
 }
 
-export function assertHasParent(tNode: TNode|null) {
+export function assertHasParent(tNode: TNode | null) {
   assertDefined(tNode, 'currentTNode should exist!');
   assertDefined(tNode!.parent, 'currentTNode should have a parent');
 }
@@ -82,7 +91,7 @@ export function assertLContainer(value: any): asserts value is LContainer {
   assertEqual(isLContainer(value), true, 'Expecting LContainer');
 }
 
-export function assertLViewOrUndefined(value: any): asserts value is LView|null|undefined {
+export function assertLViewOrUndefined(value: any): asserts value is LView | null | undefined {
   value && assertEqual(isLView(value), true, 'Expecting LView or undefined or null');
 }
 
@@ -93,12 +102,18 @@ export function assertLView(value: any): asserts value is LView {
 
 export function assertFirstCreatePass(tView: TView, errMessage?: string) {
   assertEqual(
-      tView.firstCreatePass, true, errMessage || 'Should only be called in first create pass.');
+    tView.firstCreatePass,
+    true,
+    errMessage || 'Should only be called in first create pass.',
+  );
 }
 
 export function assertFirstUpdatePass(tView: TView, errMessage?: string) {
   assertEqual(
-      tView.firstUpdatePass, true, errMessage || 'Should only be called in first update pass.');
+    tView.firstUpdatePass,
+    true,
+    errMessage || 'Should only be called in first update pass.',
+  );
 }
 
 /**
@@ -108,7 +123,8 @@ export function assertFirstUpdatePass(tView: TView, errMessage?: string) {
 export function assertDirectiveDef<T>(obj: any): asserts obj is DirectiveDef<T> {
   if (obj.type === undefined || obj.selectors == undefined || obj.inputs === undefined) {
     throwError(
-        `Expected a DirectiveDef/ComponentDef and this object does not seem to have the expected shape.`);
+      `Expected a DirectiveDef/ComponentDef and this object does not seem to have the expected shape.`,
+    );
   }
 }
 
@@ -130,15 +146,17 @@ export function assertBetween(lower: number, upper: number, index: number) {
 export function assertProjectionSlots(lView: LView, errMessage?: string) {
   assertDefined(lView[DECLARATION_COMPONENT_VIEW], 'Component views should exist.');
   assertDefined(
-      lView[DECLARATION_COMPONENT_VIEW][T_HOST]!.projection,
-      errMessage ||
-          'Components with projection nodes (<ng-content>) must have projection slots defined.');
+    lView[DECLARATION_COMPONENT_VIEW][T_HOST]!.projection,
+    errMessage ||
+      'Components with projection nodes (<ng-content>) must have projection slots defined.',
+  );
 }
 
-export function assertParentView(lView: LView|null, errMessage?: string) {
+export function assertParentView(lView: LView | null, errMessage?: string) {
   assertDefined(
-      lView,
-      errMessage || 'Component views should always have a parent view (component\'s host view)');
+    lView,
+    errMessage || "Component views should always have a parent view (component's host view)",
+  );
 }
 
 export function assertNoDuplicateDirectives(directives: DirectiveDef<unknown>[]): void {
@@ -152,9 +170,10 @@ export function assertNoDuplicateDirectives(directives: DirectiveDef<unknown>[])
   for (const current of directives) {
     if (seenDirectives.has(current)) {
       throw new RuntimeError(
-          RuntimeErrorCode.DUPLICATE_DIRECTIVE,
-          `Directive ${current.type.name} matches multiple times on the same element. ` +
-              `Directives can only match an element once.`);
+        RuntimeErrorCode.DUPLICATE_DIRECTIVE,
+        `Directive ${current.type.name} matches multiple times on the same element. ` +
+          `Directives can only match an element once.`,
+      );
     }
     seenDirectives.add(current);
   }
@@ -179,6 +198,7 @@ export function assertNodeInjector(lView: LView, injectorIndex: number) {
   assertNumber(lView[injectorIndex + 6], 'injectorIndex should point to a bloom filter');
   assertNumber(lView[injectorIndex + 7], 'injectorIndex should point to a bloom filter');
   assertNumber(
-      lView[injectorIndex + NodeInjectorOffset.PARENT],
-      'injectorIndex should point to parent injector');
+    lView[injectorIndex + NodeInjectorOffset.PARENT],
+    'injectorIndex should point to parent injector',
+  );
 }

@@ -10,7 +10,23 @@ import {Attribute, Element, HtmlParser, Node, ParseTreeResult, visitAll} from '@
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
-import {AnalyzedFile, CommonCollector, ElementCollector, ElementToMigrate, endI18nMarker, endMarker, i18nCollector, importRemovals, importWithCommonRemovals, MigrateError, ParseResult, startI18nMarker, startMarker, Template, TemplateCollector} from './types';
+import {
+  AnalyzedFile,
+  CommonCollector,
+  ElementCollector,
+  ElementToMigrate,
+  endI18nMarker,
+  endMarker,
+  i18nCollector,
+  importRemovals,
+  importWithCommonRemovals,
+  MigrateError,
+  ParseResult,
+  startI18nMarker,
+  startMarker,
+  Template,
+  TemplateCollector,
+} from './types';
 
 const startMarkerRegex = new RegExp(startMarker, 'gm');
 const endMarkerRegex = new RegExp(endMarker, 'gm');
@@ -24,7 +40,7 @@ const replaceMarkerRegex = new RegExp(`${startMarker}|${endMarker}`, 'gm');
  * @param analyzedFiles Map in which to store the results.
  */
 export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, AnalyzedFile>) {
-  forEachClass(sourceFile, node => {
+  forEachClass(sourceFile, (node) => {
     if (ts.isClassDeclaration(node)) {
       analyzeDecorators(node, sourceFile, analyzedFiles);
     } else {
@@ -34,7 +50,7 @@ export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, An
 }
 
 function checkIfShouldChange(decl: ts.ImportDeclaration, file: AnalyzedFile) {
-  const range = file.importRanges.find(r => r.type === 'importDeclaration');
+  const range = file.importRanges.find((r) => r.type === 'importDeclaration');
   if (range === undefined || !range.remove) {
     return false;
   }
@@ -44,9 +60,12 @@ function checkIfShouldChange(decl: ts.ImportDeclaration, file: AnalyzedFile) {
   // and that's the only thing there, we should do nothing.
   const clause = decl.getChildAt(1) as ts.ImportClause;
   return !(
-      !file.removeCommonModule && clause.namedBindings && ts.isNamedImports(clause.namedBindings) &&
-      clause.namedBindings.elements.length === 1 &&
-      clause.namedBindings.elements[0].getText() === 'CommonModule');
+    !file.removeCommonModule &&
+    clause.namedBindings &&
+    ts.isNamedImports(clause.namedBindings) &&
+    clause.namedBindings.elements.length === 1 &&
+    clause.namedBindings.elements[0].getText() === 'CommonModule'
+  );
 }
 
 function updateImportDeclaration(decl: ts.ImportDeclaration, removeCommonModule: boolean): string {
@@ -63,26 +82,39 @@ function updateImportDeclaration(decl: ts.ImportDeclaration, removeCommonModule:
     removeComments: true,
   });
   const updated = ts.factory.updateImportDeclaration(
-      decl, decl.modifiers, updatedClause, decl.moduleSpecifier, undefined);
+    decl,
+    decl.modifiers,
+    updatedClause,
+    decl.moduleSpecifier,
+    undefined,
+  );
   return printer.printNode(ts.EmitHint.Unspecified, updated, clause.getSourceFile());
 }
 
-function updateImportClause(clause: ts.ImportClause, removeCommonModule: boolean): ts.ImportClause|
-    null {
+function updateImportClause(
+  clause: ts.ImportClause,
+  removeCommonModule: boolean,
+): ts.ImportClause | null {
   if (clause.namedBindings && ts.isNamedImports(clause.namedBindings)) {
     const removals = removeCommonModule ? importWithCommonRemovals : importRemovals;
-    const elements = clause.namedBindings.elements.filter(el => !removals.includes(el.getText()));
+    const elements = clause.namedBindings.elements.filter((el) => !removals.includes(el.getText()));
     if (elements.length === 0) {
       return null;
     }
     clause = ts.factory.updateImportClause(
-        clause, clause.isTypeOnly, clause.name, ts.factory.createNamedImports(elements));
+      clause,
+      clause.isTypeOnly,
+      clause.name,
+      ts.factory.createNamedImports(elements),
+    );
   }
   return clause;
 }
 
 function updateClassImports(
-    propAssignment: ts.PropertyAssignment, removeCommonModule: boolean): string|null {
+  propAssignment: ts.PropertyAssignment,
+  removeCommonModule: boolean,
+): string | null {
   const printer = ts.createPrinter();
   const importList = propAssignment.initializer;
 
@@ -92,57 +124,73 @@ function updateClassImports(
   }
 
   const removals = removeCommonModule ? importWithCommonRemovals : importRemovals;
-  const elements =
-      importList.elements.filter(el => !ts.isIdentifier(el) || !removals.includes(el.text));
+  const elements = importList.elements.filter(
+    (el) => !ts.isIdentifier(el) || !removals.includes(el.text),
+  );
   if (elements.length === importList.elements.length) {
     // nothing changed
     return null;
   }
   const updatedElements = ts.factory.updateArrayLiteralExpression(importList, elements);
-  const updatedAssignment =
-      ts.factory.updatePropertyAssignment(propAssignment, propAssignment.name, updatedElements);
+  const updatedAssignment = ts.factory.updatePropertyAssignment(
+    propAssignment,
+    propAssignment.name,
+    updatedElements,
+  );
   return printer.printNode(
-      ts.EmitHint.Unspecified, updatedAssignment, updatedAssignment.getSourceFile());
+    ts.EmitHint.Unspecified,
+    updatedAssignment,
+    updatedAssignment.getSourceFile(),
+  );
 }
 
 function analyzeImportDeclarations(
-    node: ts.ImportDeclaration, sourceFile: ts.SourceFile,
-    analyzedFiles: Map<string, AnalyzedFile>) {
+  node: ts.ImportDeclaration,
+  sourceFile: ts.SourceFile,
+  analyzedFiles: Map<string, AnalyzedFile>,
+) {
   if (node.getText().indexOf('@angular/common') === -1) {
     return;
   }
   const clause = node.getChildAt(1) as ts.ImportClause;
   if (clause.namedBindings && ts.isNamedImports(clause.namedBindings)) {
-    const elements =
-        clause.namedBindings.elements.filter(el => importWithCommonRemovals.includes(el.getText()));
+    const elements = clause.namedBindings.elements.filter((el) =>
+      importWithCommonRemovals.includes(el.getText()),
+    );
     if (elements.length > 0) {
       AnalyzedFile.addRange(sourceFile.fileName, sourceFile, analyzedFiles, {
         start: node.getStart(),
         end: node.getEnd(),
         node,
         type: 'importDeclaration',
-        remove: true
+        remove: true,
       });
     }
   }
 }
 
 function analyzeDecorators(
-    node: ts.ClassDeclaration, sourceFile: ts.SourceFile,
-    analyzedFiles: Map<string, AnalyzedFile>) {
+  node: ts.ClassDeclaration,
+  sourceFile: ts.SourceFile,
+  analyzedFiles: Map<string, AnalyzedFile>,
+) {
   // Note: we have a utility to resolve the Angular decorators from a class declaration already.
   // We don't use it here, because it requires access to the type checker which makes it more
   // time-consuming to run internally.
-  const decorator = ts.getDecorators(node)?.find(dec => {
-    return ts.isCallExpression(dec.expression) && ts.isIdentifier(dec.expression.expression) &&
-        dec.expression.expression.text === 'Component';
-  }) as (ts.Decorator & {expression: ts.CallExpression}) |
-      undefined;
+  const decorator = ts.getDecorators(node)?.find((dec) => {
+    return (
+      ts.isCallExpression(dec.expression) &&
+      ts.isIdentifier(dec.expression.expression) &&
+      dec.expression.expression.text === 'Component'
+    );
+  }) as (ts.Decorator & {expression: ts.CallExpression}) | undefined;
 
-  const metadata = decorator && decorator.expression.arguments.length > 0 &&
-          ts.isObjectLiteralExpression(decorator.expression.arguments[0]) ?
-      decorator.expression.arguments[0] :
-      null;
+  const metadata =
+    decorator &&
+    decorator.expression.arguments.length > 0 &&
+    ts.isObjectLiteralExpression(decorator.expression.arguments[0])
+      ? decorator.expression.arguments[0]
+      : null;
 
   if (!metadata) {
     return;
@@ -151,8 +199,10 @@ function analyzeDecorators(
   for (const prop of metadata.properties) {
     // All the properties we care about should have static
     // names and be initialized to a static string.
-    if (!ts.isPropertyAssignment(prop) ||
-        (!ts.isIdentifier(prop.name) && !ts.isStringLiteralLike(prop.name))) {
+    if (
+      !ts.isPropertyAssignment(prop) ||
+      (!ts.isIdentifier(prop.name) && !ts.isStringLiteralLike(prop.name))
+    ) {
       continue;
     }
 
@@ -182,9 +232,12 @@ function analyzeDecorators(
         // Leave the end as undefined which means that the range is until the end of the file.
         if (ts.isStringLiteralLike(prop.initializer)) {
           const path = join(dirname(sourceFile.fileName), prop.initializer.text);
-          AnalyzedFile.addRange(
-              path, sourceFile, analyzedFiles,
-              {start: 0, node: prop, type: 'templateUrl', remove: true});
+          AnalyzedFile.addRange(path, sourceFile, analyzedFiles, {
+            start: 0,
+            node: prop,
+            type: 'templateUrl',
+            remove: true,
+          });
         }
         break;
     }
@@ -198,8 +251,10 @@ function getNestedCount(etm: ElementToMigrate, aggregator: number[]) {
   if (aggregator.length === 0) {
     return 0;
   }
-  if (etm.el.sourceSpan.start.offset < aggregator[aggregator.length - 1] &&
-      etm.el.sourceSpan.end.offset !== aggregator[aggregator.length - 1]) {
+  if (
+    etm.el.sourceSpan.start.offset < aggregator[aggregator.length - 1] &&
+    etm.el.sourceSpan.end.offset !== aggregator[aggregator.length - 1]
+  ) {
     // element is nested
     aggregator.push(etm.el.sourceSpan.end.offset);
     return aggregator.length - 1;
@@ -231,7 +286,7 @@ export function parseTemplate(template: string): ParseResult {
 
     // Don't migrate invalid templates.
     if (parsed.errors && parsed.errors.length > 0) {
-      const errors = parsed.errors.map(e => ({type: 'parse', error: e}));
+      const errors = parsed.errors.map((e) => ({type: 'parse', error: e}));
       return {tree: undefined, errors};
     }
   } catch (e: any) {
@@ -247,8 +302,9 @@ export function validateMigratedTemplate(migrated: string, fileName: string): Mi
     errors.push({
       type: 'parse',
       error: new Error(
-          `The migration resulted in invalid HTML for ${fileName}. ` +
-          `Please check the template for valid HTML structures and run the migration again.`)
+        `The migration resulted in invalid HTML for ${fileName}. ` +
+          `Please check the template for valid HTML structures and run the migration again.`,
+      ),
     });
   }
   if (parsed.tree) {
@@ -260,18 +316,19 @@ export function validateMigratedTemplate(migrated: string, fileName: string): Mi
   return errors;
 }
 
-export function validateI18nStructure(parsed: ParseTreeResult, fileName: string): Error|null {
+export function validateI18nStructure(parsed: ParseTreeResult, fileName: string): Error | null {
   const visitor = new i18nCollector();
   visitAll(visitor, parsed.rootNodes);
-  const parents = visitor.elements.filter(el => el.children.length > 0);
+  const parents = visitor.elements.filter((el) => el.children.length > 0);
   for (const p of parents) {
     for (const el of visitor.elements) {
       if (el === p) continue;
       if (isChildOf(p, el)) {
         return new Error(
-            `i18n Nesting error: The migration would result in invalid i18n nesting for ` +
+          `i18n Nesting error: The migration would result in invalid i18n nesting for ` +
             `${fileName}. Element with i18n attribute "${p.name}" would result having a child of ` +
-            `element with i18n attribute "${el.name}". Please fix and re-run the migration.`);
+            `element with i18n attribute "${el.name}". Please fix and re-run the migration.`,
+        );
       }
     }
   }
@@ -279,8 +336,10 @@ export function validateI18nStructure(parsed: ParseTreeResult, fileName: string)
 }
 
 function isChildOf(parent: Element, el: Element): boolean {
-  return parent.sourceSpan.start.offset < el.sourceSpan.start.offset &&
-      parent.sourceSpan.end.offset > el.sourceSpan.end.offset;
+  return (
+    parent.sourceSpan.start.offset < el.sourceSpan.start.offset &&
+    parent.sourceSpan.end.offset > el.sourceSpan.end.offset
+  );
 }
 
 /** Possible placeholders that can be generated by `getPlaceholder`. */
@@ -293,7 +352,9 @@ export enum PlaceholderKind {
  * Wraps a string in a placeholder that makes it easier to identify during replacement operations.
  */
 export function getPlaceholder(
-    value: string, kind: PlaceholderKind = PlaceholderKind.Default): string {
+  value: string,
+  kind: PlaceholderKind = PlaceholderKind.Default,
+): string {
   const name = `<<<ɵɵngControlFlowMigration_${kind}ɵɵ>>>`;
   return `___${name}${value}${name}___`;
 }
@@ -302,7 +363,9 @@ export function getPlaceholder(
  * calculates the level of nesting of the items in the collector
  */
 export function calculateNesting(
-    visitor: ElementCollector|TemplateCollector, hasLineBreaks: boolean): void {
+  visitor: ElementCollector | TemplateCollector,
+  hasLineBreaks: boolean,
+): void {
   // start from top of template
   // loop through each element
   let nestedQueue: number[] = [];
@@ -323,7 +386,7 @@ export function calculateNesting(
 }
 
 function escapeRegExp(val: string) {
-  return val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');  // $& means the whole matched string
+  return val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
 /**
@@ -337,7 +400,11 @@ export function hasLineBreaks(template: string): boolean {
  * properly adjusts template offsets based on current nesting levels
  */
 export function reduceNestingOffset(
-    el: ElementToMigrate, nestLevel: number, offset: number, postOffsets: number[]): number {
+  el: ElementToMigrate,
+  nestLevel: number,
+  offset: number,
+  postOffsets: number[],
+): number {
   if (el.nestCount <= nestLevel) {
     const count = nestLevel - el.nestCount;
     // reduced nesting, add postoffset
@@ -373,7 +440,9 @@ export function getTemplates(template: string): Map<string, Template> {
 }
 
 export function updateTemplates(
-    template: string, templates: Map<string, Template>): Map<string, Template> {
+  template: string,
+  templates: Map<string, Template>,
+): Map<string, Template> {
   const updatedTemplates = getTemplates(template);
   for (let [key, tmpl] of updatedTemplates) {
     templates.set(key, tmpl);
@@ -387,7 +456,9 @@ function wrapIntoI18nContainer(i18nAttr: Attribute, content: string) {
 }
 
 function generatei18nContainer(
-    i18nAttr: Attribute, middle: string): {start: string, middle: string, end: string} {
+  i18nAttr: Attribute,
+  middle: string,
+): {start: string; middle: string; end: string} {
   const i18n = i18nAttr.value === '' ? 'i18n' : `i18n="${i18nAttr.value}"`;
   return {start: `<ng-container ${i18n}>`, middle, end: `</ng-container>`};
 }
@@ -395,7 +466,7 @@ function generatei18nContainer(
 /**
  * Counts, replaces, and removes any necessary ng-templates post control flow migration
  */
-export function processNgTemplates(template: string): {migrated: string, err: Error|undefined} {
+export function processNgTemplates(template: string): {migrated: string; err: Error | undefined} {
   // count usage
   try {
     const templates = getTemplates(template);
@@ -451,10 +522,14 @@ function replaceRemainingPlaceholders(template: string): string {
   const placeholders = [...template.matchAll(replaceRegex)];
   for (let ph of placeholders) {
     const placeholder = ph[0];
-    const name =
-        placeholder.slice(placeholderStart.length, placeholder.length - placeholderEnd.length);
-    template =
-        template.replace(placeholder, `<ng-template [ngTemplateOutlet]="${name}"></ng-template>`);
+    const name = placeholder.slice(
+      placeholderStart.length,
+      placeholder.length - placeholderEnd.length,
+    );
+    template = template.replace(
+      placeholder,
+      `<ng-template [ngTemplateOutlet]="${name}"></ng-template>`,
+    );
   }
   return template;
 }
@@ -490,42 +565,49 @@ export function removeImports(template: string, node: ts.Node, file: AnalyzedFil
  * retrieves the original block of text in the template for length comparison during migration
  * processing
  */
-export function getOriginals(etm: ElementToMigrate, tmpl: string, offset: number):
-    {start: string, end: string, childLength: number, children: string[], childNodes: Node[]} {
+export function getOriginals(
+  etm: ElementToMigrate,
+  tmpl: string,
+  offset: number,
+): {start: string; end: string; childLength: number; children: string[]; childNodes: Node[]} {
   // original opening block
   if (etm.el.children.length > 0) {
     const childStart = etm.el.children[0].sourceSpan.start.offset - offset;
     const childEnd = etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset;
     const start = tmpl.slice(
-        etm.el.sourceSpan.start.offset - offset,
-        etm.el.children[0].sourceSpan.start.offset - offset);
+      etm.el.sourceSpan.start.offset - offset,
+      etm.el.children[0].sourceSpan.start.offset - offset,
+    );
     // original closing block
     const end = tmpl.slice(
-        etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset,
-        etm.el.sourceSpan.end.offset - offset);
+      etm.el.children[etm.el.children.length - 1].sourceSpan.end.offset - offset,
+      etm.el.sourceSpan.end.offset - offset,
+    );
     const childLength = childEnd - childStart;
     return {
       start,
       end,
       childLength,
       children: getOriginalChildren(etm.el.children, tmpl, offset),
-      childNodes: etm.el.children
+      childNodes: etm.el.children,
     };
   }
   // self closing or no children
-  const start =
-      tmpl.slice(etm.el.sourceSpan.start.offset - offset, etm.el.sourceSpan.end.offset - offset);
+  const start = tmpl.slice(
+    etm.el.sourceSpan.start.offset - offset,
+    etm.el.sourceSpan.end.offset - offset,
+  );
   // original closing block
   return {start, end: '', childLength: 0, children: [], childNodes: []};
 }
 
 function getOriginalChildren(children: Node[], tmpl: string, offset: number) {
-  return children.map(child => {
+  return children.map((child) => {
     return tmpl.slice(child.sourceSpan.start.offset - offset, child.sourceSpan.end.offset - offset);
   });
 }
 
-function isI18nTemplate(etm: ElementToMigrate, i18nAttr: Attribute|undefined): boolean {
+function isI18nTemplate(etm: ElementToMigrate, i18nAttr: Attribute | undefined): boolean {
   let attrCount = countAttributes(etm);
   const safeToRemove = etm.el.attrs.length === attrCount + (i18nAttr !== undefined ? 1 : 0);
   return etm.el.name === 'ng-template' && i18nAttr !== undefined && safeToRemove;
@@ -555,9 +637,12 @@ function countAttributes(etm: ElementToMigrate): number {
 /**
  * builds the proper contents of what goes inside a given control flow block after migration
  */
-export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number):
-    {start: string, middle: string, end: string} {
-  const i18nAttr = etm.el.attrs.find(x => x.name === 'i18n');
+export function getMainBlock(
+  etm: ElementToMigrate,
+  tmpl: string,
+  offset: number,
+): {start: string; middle: string; end: string} {
+  const i18nAttr = etm.el.attrs.find((x) => x.name === 'i18n');
 
   // removable containers are ng-templates or ng-containers that no longer need to exist
   // post migration
@@ -584,8 +669,9 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
   const valEnd = etm.getValueEnd(offset);
 
   // the index of the children start and end span, if they exist. Otherwise use the value end.
-  const {childStart, childEnd} =
-      etm.hasChildren() ? etm.getChildSpan(offset) : {childStart: valEnd, childEnd: valEnd};
+  const {childStart, childEnd} = etm.hasChildren()
+    ? etm.getChildSpan(offset)
+    : {childStart: valEnd, childEnd: valEnd};
 
   // the beginning of the updated string in the main block, for example: <div some="attributes">
   let start = tmpl.slice(etm.start(offset), attrStart) + tmpl.slice(valEnd, childStart);
@@ -627,8 +713,13 @@ function generateI18nMarkers(tmpl: string): string {
 function addI18nMarkers(tmpl: string, el: Element, offset: number): string {
   const startPos = el.children[0].sourceSpan.start.offset + offset;
   const endPos = el.children[el.children.length - 1].sourceSpan.end.offset + offset;
-  return tmpl.slice(0, startPos) + startI18nMarker + tmpl.slice(startPos, endPos) + endI18nMarker +
-      tmpl.slice(endPos);
+  return (
+    tmpl.slice(0, startPos) +
+    startI18nMarker +
+    tmpl.slice(startPos, endPos) +
+    endI18nMarker +
+    tmpl.slice(endPos)
+  );
 }
 
 const selfClosingList = 'input|br|img|base|wbr|area|col|embed|hr|link|meta|param|source|track';
@@ -706,18 +797,25 @@ export function formatTemplate(tmpl: string, templateType: string): string {
     let isDoubleQuotes = false;
     for (let [index, line] of lines.entries()) {
       depth +=
-          [...line.matchAll(startMarkerRegex)].length - [...line.matchAll(endMarkerRegex)].length;
+        [...line.matchAll(startMarkerRegex)].length - [...line.matchAll(endMarkerRegex)].length;
       inMigratedBlock = depth > 0;
-      i18nDepth += [...line.matchAll(startI18nMarkerRegex)].length -
-          [...line.matchAll(endI18nMarkerRegex)].length;
+      i18nDepth +=
+        [...line.matchAll(startI18nMarkerRegex)].length -
+        [...line.matchAll(endI18nMarkerRegex)].length;
 
       let lineWasMigrated = false;
       if (line.match(replaceMarkerRegex)) {
         line = line.replace(replaceMarkerRegex, '');
         lineWasMigrated = true;
       }
-      if ((line.trim() === '' && index !== 0 && index !== lines.length - 1) &&
-          (inMigratedBlock || lineWasMigrated) && !inI18nBlock && !inAttribute) {
+      if (
+        line.trim() === '' &&
+        index !== 0 &&
+        index !== lines.length - 1 &&
+        (inMigratedBlock || lineWasMigrated) &&
+        !inI18nBlock &&
+        !inAttribute
+      ) {
         // skip blank lines except if it's the first line or last line
         // this preserves leading and trailing spaces if they are already present
         continue;
@@ -726,15 +824,18 @@ export function formatTemplate(tmpl: string, templateType: string): string {
       if (templateType === 'template' && index <= 1) {
         // first real line of an inline template
         const ind = line.search(/\S/);
-        mindent = (ind > -1) ? line.slice(0, ind) : '';
+        mindent = ind > -1 ? line.slice(0, ind) : '';
       }
 
       // if a block closes, an element closes, and it's not an element on a single line or the end
       // of a self closing tag
-      if ((closeBlockRegex.test(line) ||
-           (closeElRegex.test(line) &&
-            (!singleLineElRegex.test(line) && !closeMultiLineElRegex.test(line)))) &&
-          indent !== '') {
+      if (
+        (closeBlockRegex.test(line) ||
+          (closeElRegex.test(line) &&
+            !singleLineElRegex.test(line) &&
+            !closeMultiLineElRegex.test(line))) &&
+        indent !== ''
+      ) {
         // close block, reduce indent
         indent = indent.slice(2);
       }
@@ -750,14 +851,18 @@ export function formatTemplate(tmpl: string, templateType: string): string {
         isDoubleQuotes = false;
       }
 
-      const newLine = (inI18nBlock || inAttribute) ?
-          line :
-          mindent + (line.trim() !== '' ? indent : '') + line.trim();
+      const newLine =
+        inI18nBlock || inAttribute
+          ? line
+          : mindent + (line.trim() !== '' ? indent : '') + line.trim();
       formatted.push(newLine);
 
-      if (!isOpenDoubleAttr && !isOpenSingleAttr &&
-          ((inAttribute && isDoubleQuotes && closeAttrDoubleRegex.test(line)) ||
-           (inAttribute && !isDoubleQuotes && closeAttrSingleRegex.test(line)))) {
+      if (
+        !isOpenDoubleAttr &&
+        !isOpenSingleAttr &&
+        ((inAttribute && isDoubleQuotes && closeAttrDoubleRegex.test(line)) ||
+          (inAttribute && !isDoubleQuotes && closeAttrSingleRegex.test(line)))
+      ) {
         inAttribute = false;
       }
 
@@ -778,8 +883,12 @@ export function formatTemplate(tmpl: string, templateType: string): string {
 
       // this matches an open control flow block, an open HTML element, but excludes single line
       // self closing tags
-      if ((openBlockRegex.test(line) || openElRegex.test(line)) && !singleLineElRegex.test(line) &&
-          !selfClosingRegex.test(line) && !openSelfClosingRegex.test(line)) {
+      if (
+        (openBlockRegex.test(line) || openElRegex.test(line)) &&
+        !singleLineElRegex.test(line) &&
+        !selfClosingRegex.test(line) &&
+        !openSelfClosingRegex.test(line)
+      ) {
         // open block, increase indent
         indent += '  ';
       }
@@ -799,7 +908,9 @@ export function formatTemplate(tmpl: string, templateType: string): string {
 
 /** Executes a callback on each class declaration in a file. */
 function forEachClass(
-    sourceFile: ts.SourceFile, callback: (node: ts.ClassDeclaration|ts.ImportDeclaration) => void) {
+  sourceFile: ts.SourceFile,
+  callback: (node: ts.ClassDeclaration | ts.ImportDeclaration) => void,
+) {
   sourceFile.forEachChild(function walk(node) {
     if (ts.isClassDeclaration(node) || ts.isImportDeclaration(node)) {
       callback(node);

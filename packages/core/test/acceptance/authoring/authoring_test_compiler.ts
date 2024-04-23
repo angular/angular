@@ -13,7 +13,7 @@ import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';
 
-main().catch(e => {
+main().catch((e) => {
   console.error(e);
   process.exitCode = 1;
 });
@@ -33,12 +33,14 @@ async function main() {
 
   for (const inputFileExecpath of inputFileExecpaths) {
     const outputFile = ts.transform(
-        program.getSourceFile(inputFileExecpath)!,
-        [getInitializerApiJitTransform(host, importTracker, /* isCore */ false)],
-        program.getCompilerOptions());
+      program.getSourceFile(inputFileExecpath)!,
+      [getInitializerApiJitTransform(host, importTracker, /* isCore */ false)],
+      program.getCompilerOptions(),
+    );
 
     await fs.promises.writeFile(
-        path.join(outputDirExecPath, `transformed_${path.basename(inputFileExecpath)}`),
-        ts.createPrinter().printFile(outputFile.transformed[0]));
+      path.join(outputDirExecPath, `transformed_${path.basename(inputFileExecpath)}`),
+      ts.createPrinter().printFile(outputFile.transformed[0]),
+    );
   }
 }

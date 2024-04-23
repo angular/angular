@@ -14,14 +14,14 @@ import {outputFromObservable} from '../src';
 
 describe('outputFromObservable()', () => {
   // Safety clean-up as we are patching `onUnhandledError` in this test.
-  afterEach(() => config.onUnhandledError = null);
+  afterEach(() => (config.onUnhandledError = null));
 
   it('should support emitting values via BehaviorSubject', () => {
     const subject = new BehaviorSubject(0);
     const output = TestBed.runInInjectionContext(() => outputFromObservable(subject));
 
     const values: number[] = [];
-    output.subscribe(v => values.push(v));
+    output.subscribe((v) => values.push(v));
 
     expect(values).toEqual([0]);
 
@@ -38,7 +38,7 @@ describe('outputFromObservable()', () => {
     subject.next(1);
 
     const values: number[] = [];
-    output.subscribe(v => values.push(v));
+    output.subscribe((v) => values.push(v));
 
     expect(values).toEqual([1]);
 
@@ -55,7 +55,7 @@ describe('outputFromObservable()', () => {
     subject.next(1);
 
     const values: number[] = [];
-    output.subscribe(v => values.push(v));
+    output.subscribe((v) => values.push(v));
 
     expect(values).toEqual([]);
 
@@ -72,7 +72,7 @@ describe('outputFromObservable()', () => {
     emitter.next(1);
 
     const values: number[] = [];
-    output.subscribe(v => values.push(v));
+    output.subscribe((v) => values.push(v));
 
     expect(values).toEqual([]);
 
@@ -89,7 +89,7 @@ describe('outputFromObservable()', () => {
 
     expect(subject.observed).toBe(false);
 
-    const subscription = output.subscribe(v => values.push(v));
+    const subscription = output.subscribe((v) => values.push(v));
     expect(subject.observed).toBe(true);
     expect(values).toEqual([]);
 
@@ -109,7 +109,7 @@ describe('outputFromObservable()', () => {
 
     expect(subject.observed).toBe(false);
 
-    output.subscribe(v => values.push(v));
+    output.subscribe((v) => values.push(v));
     expect(subject.observed).toBe(true);
     expect(values).toEqual([]);
 
@@ -130,17 +130,17 @@ describe('outputFromObservable()', () => {
     // initiate destroy.
     TestBed.resetTestingModule();
 
-    expect(() => output.subscribe(() => {}))
-        .toThrowError(/Unexpected subscription to destroyed `OutputRef`/);
+    expect(() => output.subscribe(() => {})).toThrowError(
+      /Unexpected subscription to destroyed `OutputRef`/,
+    );
   });
-
 
   it('should be a noop when the source observable completes', () => {
     const subject = new Subject<number>();
     const outputRef = TestBed.runInInjectionContext(() => outputFromObservable(subject));
 
     const values: number[] = [];
-    outputRef.subscribe(v => values.push(v));
+    outputRef.subscribe((v) => values.push(v));
 
     subject.next(1);
     subject.next(2);
@@ -157,13 +157,13 @@ describe('outputFromObservable()', () => {
     const outputRef = TestBed.runInInjectionContext(() => outputFromObservable(subject));
 
     const values: number[] = [];
-    outputRef.subscribe(v => values.push(v));
+    outputRef.subscribe((v) => values.push(v));
 
     subject.next(1);
     subject.next(2);
     expect(values).toEqual([1, 2]);
 
-    config.onUnhandledError = err => {
+    config.onUnhandledError = (err) => {
       config.onUnhandledError = null;
 
       expect((err as Error).message).toEqual('test error message');

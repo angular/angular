@@ -7,9 +7,12 @@
  */
 
 import {assertGreaterThan, assertNotEqual, assertNumber} from '../../util/assert';
-import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from '../interfaces/injector';
+import {
+  NO_PARENT_INJECTOR,
+  RelativeInjectorLocation,
+  RelativeInjectorLocationFlags,
+} from '../interfaces/injector';
 import {DECLARATION_VIEW, HEADER_OFFSET, LView} from '../interfaces/view';
-
 
 /// Parent Injector Utils ///////////////////////////////////////////////////////////////
 export function hasParentInjector(parentLocation: RelativeInjectorLocation): boolean {
@@ -23,7 +26,10 @@ export function getParentInjectorIndex(parentLocation: RelativeInjectorLocation)
     const parentInjectorIndex = parentLocation & RelativeInjectorLocationFlags.InjectorIndexMask;
 
     assertGreaterThan(
-        parentInjectorIndex, HEADER_OFFSET, 'Parent injector must be pointing past HEADER_OFFSET.');
+      parentInjectorIndex,
+      HEADER_OFFSET,
+      'Parent injector must be pointing past HEADER_OFFSET.',
+    );
   }
   return parentLocation & RelativeInjectorLocationFlags.InjectorIndexMask;
 }

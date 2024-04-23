@@ -6,21 +6,70 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {consumerAfterComputation, consumerBeforeComputation, consumerPollProducersForChange, ReactiveNode} from '@angular/core/primitives/signals';
+import {
+  consumerAfterComputation,
+  consumerBeforeComputation,
+  consumerPollProducersForChange,
+  ReactiveNode,
+} from '@angular/core/primitives/signals';
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertEqual} from '../../util/assert';
 import {assertLContainer} from '../assert';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
-import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags, MOVED_VIEWS} from '../interfaces/container';
+import {
+  CONTAINER_HEADER_OFFSET,
+  LContainer,
+  LContainerFlags,
+  MOVED_VIEWS,
+} from '../interfaces/container';
 import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
-import {CONTEXT, EFFECTS_TO_SCHEDULE, ENVIRONMENT, FLAGS, InitPhaseState, LView, LViewFlags, PARENT, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from '../interfaces/view';
-import {getOrBorrowReactiveLViewConsumer, maybeReturnReactiveLViewConsumer, ReactiveLViewConsumer} from '../reactive_lview_consumer';
-import {enterView, isInCheckNoChangesMode, isRefreshingViews, leaveView, setBindingIndex, setIsInCheckNoChangesMode, setIsRefreshingViews} from '../state';
+import {
+  CONTEXT,
+  EFFECTS_TO_SCHEDULE,
+  ENVIRONMENT,
+  FLAGS,
+  InitPhaseState,
+  LView,
+  LViewFlags,
+  PARENT,
+  REACTIVE_TEMPLATE_CONSUMER,
+  TVIEW,
+  TView,
+  TViewType,
+} from '../interfaces/view';
+import {
+  getOrBorrowReactiveLViewConsumer,
+  maybeReturnReactiveLViewConsumer,
+  ReactiveLViewConsumer,
+} from '../reactive_lview_consumer';
+import {
+  enterView,
+  isInCheckNoChangesMode,
+  isRefreshingViews,
+  leaveView,
+  setBindingIndex,
+  setIsInCheckNoChangesMode,
+  setIsRefreshingViews,
+} from '../state';
 import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_utils';
-import {getComponentLViewByIndex, isCreationMode, markAncestorsForTraversal, markViewForRefresh, requiresRefreshOrTraversal, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
+import {
+  getComponentLViewByIndex,
+  isCreationMode,
+  markAncestorsForTraversal,
+  markViewForRefresh,
+  requiresRefreshOrTraversal,
+  resetPreOrderHookFlags,
+  viewAttachedToChangeDetector,
+} from '../util/view_utils';
 
-import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCodes, refreshContentQueries} from './shared';
+import {
+  executeTemplate,
+  executeViewQueryFn,
+  handleError,
+  processHostBindingOpCodes,
+  refreshContentQueries,
+} from './shared';
 
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
@@ -28,7 +77,10 @@ import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCo
 export const MAXIMUM_REFRESH_RERUNS = 100;
 
 export function detectChangesInternal(
-    lView: LView, notifyErrorHandler = true, mode = ChangeDetectionMode.Global) {
+  lView: LView,
+  notifyErrorHandler = true,
+  mode = ChangeDetectionMode.Global,
+) {
   const environment = lView[ENVIRONMENT];
   const rendererFactory = environment.rendererFactory;
 
@@ -73,11 +125,12 @@ function detectChangesInViewWhileDirty(lView: LView, mode: ChangeDetectionMode) 
     while (requiresRefreshOrTraversal(lView)) {
       if (retries === MAXIMUM_REFRESH_RERUNS) {
         throw new RuntimeError(
-            RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
-            ngDevMode &&
-                'Infinite change detection while trying to refresh views. ' +
-                    'There may be components which each cause the other to require a refresh, ' +
-                    'causing an infinite loop.');
+          RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
+          ngDevMode &&
+            'Infinite change detection while trying to refresh views. ' +
+              'There may be components which each cause the other to require a refresh, ' +
+              'causing an infinite loop.',
+        );
       }
       retries++;
       // Even if this view is detached, we still detect changes in targeted mode because this was
@@ -98,7 +151,6 @@ export function checkNoChangesInternal(lView: LView, notifyErrorHandler = true) 
     setIsInCheckNoChangesMode(false);
   }
 }
-
 
 /**
  * Different modes of traversing the logical view tree during change detection.
@@ -129,7 +181,11 @@ export const enum ChangeDetectionMode {
  */
 
 export function refreshView<T>(
-    tView: TView, lView: LView, templateFn: ComponentTemplate<{}>|null, context: T) {
+  tView: TView,
+  lView: LView,
+  templateFn: ComponentTemplate<{}> | null,
+  context: T,
+) {
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
   const flags = lView[FLAGS];
   if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) return;
@@ -140,13 +196,12 @@ export function refreshView<T>(
 
   !isInCheckNoChangesPass && lView[ENVIRONMENT].inlineEffectRunner?.flush();
 
-
   // Start component reactive context
   // - We might already be in a reactive context if this is an embedded view of the host.
   // - We might be descending into a view that needs a consumer.
   enterView(lView);
-  let prevConsumer: ReactiveNode|null = null;
-  let currentConsumer: ReactiveLViewConsumer|null = null;
+  let prevConsumer: ReactiveNode | null = null;
+  let currentConsumer: ReactiveLViewConsumer | null = null;
   if (!isInCheckNoChangesPass && viewShouldHaveReactiveConsumer(tView)) {
     currentConsumer = getOrBorrowReactiveLViewConsumer(lView);
     prevConsumer = consumerBeforeComputation(currentConsumer);
@@ -161,7 +216,7 @@ export function refreshView<T>(
     }
 
     const hooksInitPhaseCompleted =
-        (flags & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
+      (flags & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
 
     // execute pre-order hooks (OnInit, OnChanges, DoCheck)
     // PERF WARNING: do NOT extract this to a separate function without running benchmarks
@@ -203,7 +258,10 @@ export function refreshView<T>(
         const contentHooks = tView.contentHooks;
         if (contentHooks !== null) {
           executeInitAndCheckHooks(
-              lView, contentHooks, InitPhaseState.AfterContentInitHooksToBeRun);
+            lView,
+            contentHooks,
+            InitPhaseState.AfterContentInitHooksToBeRun,
+          );
         }
         incrementInitPhaseFlags(lView, InitPhaseState.AfterContentInitHooksToBeRun);
       }
@@ -310,8 +368,11 @@ function viewShouldHaveReactiveConsumer(tView: TView) {
  * them by executing an associated template function.
  */
 function detectChangesInEmbeddedViews(lView: LView, mode: ChangeDetectionMode) {
-  for (let lContainer = getFirstLContainer(lView); lContainer !== null;
-       lContainer = getNextLContainer(lContainer)) {
+  for (
+    let lContainer = getFirstLContainer(lView);
+    lContainer !== null;
+    lContainer = getNextLContainer(lContainer)
+  ) {
     for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
       const embeddedLView = lContainer[i];
       detectChangesInViewIfAttached(embeddedLView, mode);
@@ -325,8 +386,11 @@ function detectChangesInEmbeddedViews(lView: LView, mode: ChangeDetectionMode) {
  * @param lView The `LView` that may have transplanted views.
  */
 function markTransplantedViewsForRefresh(lView: LView) {
-  for (let lContainer = getFirstLContainer(lView); lContainer !== null;
-       lContainer = getNextLContainer(lContainer)) {
+  for (
+    let lContainer = getFirstLContainer(lView);
+    lContainer !== null;
+    lContainer = getNextLContainer(lContainer)
+  ) {
     if (!(lContainer[FLAGS] & LContainerFlags.HasTransplantedViews)) continue;
 
     const movedViews = lContainer[MOVED_VIEWS]!;
@@ -345,7 +409,10 @@ function markTransplantedViewsForRefresh(lView: LView) {
  * @param componentHostIdx  Element index in LView[] (adjusted for HEADER_OFFSET)
  */
 function detectChangesInComponent(
-    hostLView: LView, componentHostIdx: number, mode: ChangeDetectionMode): void {
+  hostLView: LView,
+  componentHostIdx: number,
+  mode: ChangeDetectionMode,
+): void {
   ngDevMode && assertEqual(isCreationMode(hostLView), false, 'Should be run in update mode');
   const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
   detectChangesInViewIfAttached(componentView, mode);
@@ -380,8 +447,9 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   const consumer = lView[REACTIVE_TEMPLATE_CONSUMER];
 
   // Refresh CheckAlways views in Global mode.
-  let shouldRefreshView: boolean =
-      !!(mode === ChangeDetectionMode.Global && flags & LViewFlags.CheckAlways);
+  let shouldRefreshView: boolean = !!(
+    mode === ChangeDetectionMode.Global && flags & LViewFlags.CheckAlways
+  );
 
   // Refresh Dirty views in Global mode, as long as we're not in checkNoChanges.
   // CheckNoChanges never worked with `OnPush` components because the `Dirty` flag was
@@ -390,7 +458,10 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   // before the CheckNoChanges pass. We don't want existing errors that are hidden by the
   // current CheckNoChanges bug to surface when making unrelated changes.
   shouldRefreshView ||= !!(
-      flags & LViewFlags.Dirty && mode === ChangeDetectionMode.Global && !isInCheckNoChangesPass);
+    flags & LViewFlags.Dirty &&
+    mode === ChangeDetectionMode.Global &&
+    !isInCheckNoChangesPass
+  );
 
   // Always refresh views marked for refresh, regardless of mode.
   shouldRefreshView ||= !!(flags & LViewFlags.RefreshView);
@@ -418,7 +489,10 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
 
 /** Refreshes child components in the current view (update mode). */
 function detectChangesInChildComponents(
-    hostLView: LView, components: number[], mode: ChangeDetectionMode): void {
+  hostLView: LView,
+  components: number[],
+  mode: ChangeDetectionMode,
+): void {
   for (let i = 0; i < components.length; i++) {
     detectChangesInComponent(hostLView, components[i], mode);
   }

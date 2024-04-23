@@ -13,9 +13,23 @@ import {extractDirectiveDef} from '../../src/render3/definition';
 import {refreshView} from '../../src/render3/instructions/change_detection';
 import {renderView} from '../../src/render3/instructions/render';
 import {createLView, createTNode, createTView} from '../../src/render3/instructions/shared';
-import {DirectiveDef, DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory, RenderFlags} from '../../src/render3/interfaces/definition';
+import {
+  DirectiveDef,
+  DirectiveDefList,
+  DirectiveTypesOrFactory,
+  PipeDef,
+  PipeDefList,
+  PipeTypesOrFactory,
+  RenderFlags,
+} from '../../src/render3/interfaces/definition';
 import {TConstants, TElementNode, TNodeType} from '../../src/render3/interfaces/node';
-import {HEADER_OFFSET, LView, LViewFlags, TView, TViewType} from '../../src/render3/interfaces/view';
+import {
+  HEADER_OFFSET,
+  LView,
+  LViewFlags,
+  TView,
+  TViewType,
+} from '../../src/render3/interfaces/view';
 import {enterView, leaveView, specOnlyIsInstructionStateEmpty} from '../../src/render3/state';
 import {noop} from '../../src/util/noop';
 
@@ -49,36 +63,66 @@ export class ViewFixture {
 
   lView: LView;
 
-  constructor({create, update, decls, vars, consts, context, directives, sanitizer}: {
-    create?: () => void,
-    update?: () => void,
-    decls?: number,
-    vars?: number,
-    consts?: TConstants,
-    context?: {},
-    directives?: any[],
-    sanitizer?: Sanitizer
+  constructor({
+    create,
+    update,
+    decls,
+    vars,
+    consts,
+    context,
+    directives,
+    sanitizer,
+  }: {
+    create?: () => void;
+    update?: () => void;
+    decls?: number;
+    vars?: number;
+    consts?: TConstants;
+    context?: {};
+    directives?: any[];
+    sanitizer?: Sanitizer;
   } = {}) {
     this.context = context;
     this.createFn = create;
     this.updateFn = update;
 
-    const document = ((typeof global == 'object' && global || window) as any).document;
+    const document = (((typeof global == 'object' && global) || window) as any).document;
     const rendererFactory = getRendererFactory2(document);
 
     const hostRenderer = rendererFactory.createRenderer(null, null);
     this.host = hostRenderer.createElement('host-element') as HTMLElement;
-    const hostTView =
-        createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null, null);
+    const hostTView = createTView(
+      TViewType.Root,
+      null,
+      null,
+      1,
+      0,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+    );
     const hostLView = createLView(
-        null, hostTView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null, {
-          rendererFactory,
-          sanitizer: sanitizer || null,
-          afterRenderEventManager: new AfterRenderEventManager(),
-          inlineEffectRunner: null,
-          changeDetectionScheduler: null,
-        },
-        hostRenderer, null, null, null);
+      null,
+      hostTView,
+      {},
+      LViewFlags.CheckAlways | LViewFlags.IsRoot,
+      null,
+      null,
+      {
+        rendererFactory,
+        sanitizer: sanitizer || null,
+        afterRenderEventManager: new AfterRenderEventManager(),
+        inlineEffectRunner: null,
+        changeDetectionScheduler: null,
+      },
+      hostRenderer,
+      null,
+      null,
+      null,
+    );
 
     let template = noop;
     if (create) {
@@ -94,16 +138,41 @@ export class ViewFixture {
     }
 
     this.tView = createTView(
-        TViewType.Component, null, template, decls || 0, vars || 0,
-        directives ? toDefs(directives, dir => extractDirectiveDef(dir)!) : null, null, null, null,
-        consts || null, null);
-    const hostTNode =
-        createTNode(hostTView, null, TNodeType.Element, 0, 'host-element', null) as TElementNode;
+      TViewType.Component,
+      null,
+      template,
+      decls || 0,
+      vars || 0,
+      directives ? toDefs(directives, (dir) => extractDirectiveDef(dir)!) : null,
+      null,
+      null,
+      null,
+      consts || null,
+      null,
+    );
+    const hostTNode = createTNode(
+      hostTView,
+      null,
+      TNodeType.Element,
+      0,
+      'host-element',
+      null,
+    ) as TElementNode;
     // Store TNode at the first slot right after the header part
     hostTView.data[HEADER_OFFSET] = hostTNode;
     this.lView = createLView(
-        hostLView, this.tView, context || {}, LViewFlags.CheckAlways, this.host, hostTNode, null,
-        hostRenderer, null, null, null);
+      hostLView,
+      this.tView,
+      context || {},
+      LViewFlags.CheckAlways,
+      this.host,
+      hostTNode,
+      null,
+      hostRenderer,
+      null,
+      null,
+      null,
+    );
 
     if (this.createFn) {
       renderView(this.tView, this.lView, this.context);
@@ -124,9 +193,10 @@ export class ViewFixture {
     updateFn ||= this.updateFn;
     if (!updateFn) {
       throw new Error(
-          'The `ViewFixture.update` was invoked, but there was no `update` function ' +
+        'The `ViewFixture.update` was invoked, but there was no `update` function ' +
           'provided during the `ViewFixture` instantiation or specified as an argument ' +
-          'in this call.');
+          'in this call.',
+      );
     }
     refreshView(this.tView, this.lView, updateFn, this.context);
   }
@@ -154,13 +224,17 @@ export class ViewFixture {
 }
 
 function toDefs(
-    types: DirectiveTypesOrFactory|undefined|null,
-    mapFn: (type: Type<any>) => DirectiveDef<any>): DirectiveDefList|null;
-function toDefs(types: PipeTypesOrFactory|undefined|null, mapFn: (type: Type<any>) => PipeDef<any>):
-    PipeDefList|null;
+  types: DirectiveTypesOrFactory | undefined | null,
+  mapFn: (type: Type<any>) => DirectiveDef<any>,
+): DirectiveDefList | null;
 function toDefs(
-    types: Type<any>[]|(() => Type<any>[])|undefined|null,
-    mapFn: (type: Type<any>) => PipeDef<any>| DirectiveDef<any>): any {
+  types: PipeTypesOrFactory | undefined | null,
+  mapFn: (type: Type<any>) => PipeDef<any>,
+): PipeDefList | null;
+function toDefs(
+  types: Type<any>[] | (() => Type<any>[]) | undefined | null,
+  mapFn: (type: Type<any>) => PipeDef<any> | DirectiveDef<any>,
+): any {
   if (!types) return null;
   if (typeof types == 'function') {
     types = types();
@@ -173,16 +247,18 @@ function toHtml(element: Element, keepNgReflect = false): string {
     let html = stringifyElement(element);
 
     if (!keepNgReflect) {
-      html = html.replace(/\sng-reflect-\S*="[^"]*"/g, '')
-                 .replace(/<!--bindings=\{(\W.*\W\s*)?\}-->/g, '');
+      html = html
+        .replace(/\sng-reflect-\S*="[^"]*"/g, '')
+        .replace(/<!--bindings=\{(\W.*\W\s*)?\}-->/g, '');
     }
 
-    html = html.replace(/^<div host="">(.*)<\/div>$/, '$1')
-               .replace(/^<div fixture="mark">(.*)<\/div>$/, '$1')
-               .replace(/^<div host="mark">(.*)<\/div>$/, '$1')
-               .replace(' style=""', '')
-               .replace(/<!--container-->/g, '')
-               .replace(/<!--ng-container-->/g, '');
+    html = html
+      .replace(/^<div host="">(.*)<\/div>$/, '$1')
+      .replace(/^<div fixture="mark">(.*)<\/div>$/, '$1')
+      .replace(/^<div host="mark">(.*)<\/div>$/, '$1')
+      .replace(' style=""', '')
+      .replace(/<!--container-->/g, '')
+      .replace(/<!--ng-container-->/g, '');
     return html;
   } else {
     return '';

@@ -11,24 +11,59 @@ import {claimDehydratedIcuCase, isI18nHydrationSupportEnabled} from '../../hydra
 import {locateI18nRNodeByIndex} from '../../hydration/node_lookup_utils';
 import {isDisconnectedNode, markRNodeAsClaimedByHydration} from '../../hydration/utils';
 import {getPluralCase} from '../../i18n/localization';
-import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, throwError} from '../../util/assert';
+import {
+  assertDefined,
+  assertDomNode,
+  assertEqual,
+  assertGreaterThan,
+  assertIndexInRange,
+  throwError,
+} from '../../util/assert';
 import {assertIndexInExpandoRange, assertTIcu} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {elementPropertyInternal, setElementAttribute} from '../instructions/shared';
-import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes, IcuType, TI18n, TIcu} from '../interfaces/i18n';
+import {
+  ELEMENT_MARKER,
+  I18nCreateOpCode,
+  I18nCreateOpCodes,
+  I18nUpdateOpCode,
+  I18nUpdateOpCodes,
+  ICU_MARKER,
+  IcuCreateOpCode,
+  IcuCreateOpCodes,
+  IcuType,
+  TI18n,
+  TIcu,
+} from '../interfaces/i18n';
 import {TNode} from '../interfaces/node';
 import {RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
-import {createCommentNode, createElementNode, createTextNode, nativeInsertBefore, nativeParentNode, nativeRemoveNode, updateTextNode} from '../node_manipulation';
-import {getBindingIndex, isInSkipHydrationBlock, lastNodeWasCreated, wasLastNodeCreated} from '../state';
+import {
+  createCommentNode,
+  createElementNode,
+  createTextNode,
+  nativeInsertBefore,
+  nativeParentNode,
+  nativeRemoveNode,
+  updateTextNode,
+} from '../node_manipulation';
+import {
+  getBindingIndex,
+  isInSkipHydrationBlock,
+  lastNodeWasCreated,
+  wasLastNodeCreated,
+} from '../state';
 import {renderStringify} from '../util/stringify_utils';
 import {getNativeByIndex, unwrapRNode} from '../util/view_utils';
 
 import {getLocaleId} from './i18n_locale_id';
-import {getCurrentICUCaseIndex, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode, getTIcu} from './i18n_util';
-
-
+import {
+  getCurrentICUCaseIndex,
+  getParentFromIcuCreateOpCode,
+  getRefFromIcuCreateOpCode,
+  getTIcu,
+} from './i18n_util';
 
 /**
  * Keep track of which input bindings in `ɵɵi18nExp` have changed.
@@ -71,8 +106,9 @@ export function applyI18n(tView: TView, lView: LView, index: number) {
     ngDevMode && assertDefined(tView, `tView should be defined`);
     const tI18n = tView.data[index] as TI18n | I18nUpdateOpCodes;
     // When `index` points to an `ɵɵi18nAttributes` then we have an array otherwise `TI18n`
-    const updateOpCodes: I18nUpdateOpCodes =
-        Array.isArray(tI18n) ? tI18n as I18nUpdateOpCodes : (tI18n as TI18n).update;
+    const updateOpCodes: I18nUpdateOpCodes = Array.isArray(tI18n)
+      ? (tI18n as I18nUpdateOpCodes)
+      : (tI18n as TI18n).update;
     const bindingsStartIndex = getBindingIndex() - changeMaskCounter - 1;
     applyUpdateOpCodes(tView, lView, updateOpCodes, bindingsStartIndex, changeMask);
   }
@@ -82,8 +118,10 @@ export function applyI18n(tView: TView, lView: LView, index: number) {
 }
 
 function createNodeWithoutHydration(
-    lView: LView, textOrName: string,
-    nodeType: typeof Node.COMMENT_NODE|typeof Node.TEXT_NODE|typeof Node.ELEMENT_NODE) {
+  lView: LView,
+  textOrName: string,
+  nodeType: typeof Node.COMMENT_NODE | typeof Node.TEXT_NODE | typeof Node.ELEMENT_NODE,
+) {
   const renderer = lView[RENDERER];
 
   switch (nodeType) {
@@ -104,12 +142,18 @@ let _locateOrCreateNode: typeof locateOrCreateNodeImpl = (lView, index, textOrNa
 };
 
 function locateOrCreateNodeImpl(
-    lView: LView, index: number, textOrName: string,
-    nodeType: typeof Node.COMMENT_NODE|typeof Node.TEXT_NODE|typeof Node.ELEMENT_NODE) {
+  lView: LView,
+  index: number,
+  textOrName: string,
+  nodeType: typeof Node.COMMENT_NODE | typeof Node.TEXT_NODE | typeof Node.ELEMENT_NODE,
+) {
   const hydrationInfo = lView[HYDRATION];
   const noOffsetIndex = index - HEADER_OFFSET;
-  const isNodeCreationMode = !isI18nHydrationSupportEnabled() || !hydrationInfo ||
-      isInSkipHydrationBlock() || isDisconnectedNode(hydrationInfo, noOffsetIndex);
+  const isNodeCreationMode =
+    !isI18nHydrationSupportEnabled() ||
+    !hydrationInfo ||
+    isInSkipHydrationBlock() ||
+    isDisconnectedNode(hydrationInfo, noOffsetIndex);
 
   lastNodeWasCreated(isNodeCreationMode);
   if (isNodeCreationMode) {
@@ -126,10 +170,13 @@ function locateOrCreateNodeImpl(
   // need to be able to use the AST to generate a similar message.
   ngDevMode && assertDefined(native, 'expected native element');
   ngDevMode && assertEqual((native as Node).nodeType, nodeType, 'expected matching nodeType');
-  ngDevMode && nodeType === Node.ELEMENT_NODE &&
-      assertEqual(
-          (native as HTMLElement).tagName.toLowerCase(), textOrName.toLowerCase(),
-          'expecting matching tagName');
+  ngDevMode &&
+    nodeType === Node.ELEMENT_NODE &&
+    assertEqual(
+      (native as HTMLElement).tagName.toLowerCase(),
+      textOrName.toLowerCase(),
+      'expecting matching tagName',
+    );
   ngDevMode && markRNodeAsClaimedByHydration(native);
 
   return native;
@@ -151,23 +198,30 @@ export function enableLocateOrCreateI18nNodeImpl() {
  * @param insertInFrontOf DOM node that should be used as an anchor.
  */
 export function applyCreateOpCodes(
-    lView: LView, createOpCodes: I18nCreateOpCodes, parentRNode: RElement|null,
-    insertInFrontOf: RElement|null): void {
+  lView: LView,
+  createOpCodes: I18nCreateOpCodes,
+  parentRNode: RElement | null,
+  insertInFrontOf: RElement | null,
+): void {
   const renderer = lView[RENDERER];
   for (let i = 0; i < createOpCodes.length; i++) {
     const opCode = createOpCodes[i++] as any;
     const text = createOpCodes[i] as string;
     const isComment = (opCode & I18nCreateOpCode.COMMENT) === I18nCreateOpCode.COMMENT;
     const appendNow =
-        (opCode & I18nCreateOpCode.APPEND_EAGERLY) === I18nCreateOpCode.APPEND_EAGERLY;
+      (opCode & I18nCreateOpCode.APPEND_EAGERLY) === I18nCreateOpCode.APPEND_EAGERLY;
     const index = opCode >>> I18nCreateOpCode.SHIFT;
     let rNode = lView[index];
     let lastNodeWasCreated = false;
     if (rNode === null) {
       // We only create new DOM nodes if they don't already exist: If ICU switches case back to a
       // case which was already instantiated, no need to create new DOM nodes.
-      rNode = lView[index] =
-          _locateOrCreateNode(lView, index, text, isComment ? Node.COMMENT_NODE : Node.TEXT_NODE);
+      rNode = lView[index] = _locateOrCreateNode(
+        lView,
+        index,
+        text,
+        isComment ? Node.COMMENT_NODE : Node.TEXT_NODE,
+      );
       lastNodeWasCreated = wasLastNodeCreated();
     }
     if (appendNow && parentRNode !== null && lastNodeWasCreated) {
@@ -185,17 +239,21 @@ export function applyCreateOpCodes(
  * @param anchorRNode place where the i18n node should be inserted.
  */
 export function applyMutableOpCodes(
-    tView: TView, mutableOpCodes: IcuCreateOpCodes, lView: LView, anchorRNode: RNode): void {
+  tView: TView,
+  mutableOpCodes: IcuCreateOpCodes,
+  lView: LView,
+  anchorRNode: RNode,
+): void {
   ngDevMode && assertDomNode(anchorRNode);
   const renderer = lView[RENDERER];
   // `rootIdx` represents the node into which all inserts happen.
-  let rootIdx: number|null = null;
+  let rootIdx: number | null = null;
   // `rootRNode` represents the real node into which we insert. This can be different from
   // `lView[rootIdx]` if we have projection.
   //  - null we don't have a parent (as can be the case in when we are inserting into a root of
   //    LView which has no parent.)
   //  - `RElement` The element representing the root after taking projection into account.
-  let rootRNode!: RElement|null;
+  let rootRNode!: RElement | null;
   for (let i = 0; i < mutableOpCodes.length; i++) {
     const opCode = mutableOpCodes[i];
     if (typeof opCode == 'string') {
@@ -216,8 +274,8 @@ export function applyMutableOpCodes(
             rootIdx = parentIdx;
             rootRNode = nativeParentNode(renderer, anchorRNode);
           }
-          let insertInFrontOf: RNode|null;
-          let parentRNode: RElement|null;
+          let insertInFrontOf: RNode | null;
+          let parentRNode: RElement | null;
           if (parentIdx === rootIdx) {
             insertInFrontOf = anchorRNode;
             parentRNode = rootRNode;
@@ -258,14 +316,21 @@ export function applyMutableOpCodes(
           // This code is used for ICU expressions only, since we don't support
           // directives/components in ICUs, we don't need to worry about inputs here
           setElementAttribute(
-              renderer, getNativeByIndex(elementNodeIndex, lView) as RElement, null, null, attrName,
-              attrValue, null);
+            renderer,
+            getNativeByIndex(elementNodeIndex, lView) as RElement,
+            null,
+            null,
+            attrName,
+            attrValue,
+            null,
+          );
           break;
         default:
           if (ngDevMode) {
             throw new RuntimeError(
-                RuntimeErrorCode.INVALID_I18N_STRUCTURE,
-                `Unable to determine the type of mutate operation for "${opCode}"`);
+              RuntimeErrorCode.INVALID_I18N_STRUCTURE,
+              `Unable to determine the type of mutate operation for "${opCode}"`,
+            );
           }
       }
     } else {
@@ -275,13 +340,19 @@ export function applyMutableOpCodes(
           const commentNodeIndex = mutableOpCodes[++i] as number;
           if (lView[commentNodeIndex] === null) {
             ngDevMode &&
-                assertEqual(
-                    typeof commentValue, 'string',
-                    `Expected "${commentValue}" to be a comment node value`);
+              assertEqual(
+                typeof commentValue,
+                'string',
+                `Expected "${commentValue}" to be a comment node value`,
+              );
             ngDevMode && ngDevMode.rendererCreateComment++;
             ngDevMode && assertIndexInExpandoRange(lView, commentNodeIndex);
-            const commentRNode = lView[commentNodeIndex] =
-                _locateOrCreateNode(lView, commentNodeIndex, commentValue, Node.COMMENT_NODE);
+            const commentRNode = (lView[commentNodeIndex] = _locateOrCreateNode(
+              lView,
+              commentNodeIndex,
+              commentValue,
+              Node.COMMENT_NODE,
+            ));
             // FIXME(misko): Attaching patch data is only needed for the root (Also add tests)
             attachPatchData(commentRNode, lView);
           }
@@ -291,26 +362,31 @@ export function applyMutableOpCodes(
           const elementNodeIndex = mutableOpCodes[++i] as number;
           if (lView[elementNodeIndex] === null) {
             ngDevMode &&
-                assertEqual(
-                    typeof tagName, 'string',
-                    `Expected "${tagName}" to be an element node tag name`);
+              assertEqual(
+                typeof tagName,
+                'string',
+                `Expected "${tagName}" to be an element node tag name`,
+              );
 
             ngDevMode && ngDevMode.rendererCreateElement++;
             ngDevMode && assertIndexInExpandoRange(lView, elementNodeIndex);
-            const elementRNode = lView[elementNodeIndex] =
-                _locateOrCreateNode(lView, elementNodeIndex, tagName, Node.ELEMENT_NODE);
+            const elementRNode = (lView[elementNodeIndex] = _locateOrCreateNode(
+              lView,
+              elementNodeIndex,
+              tagName,
+              Node.ELEMENT_NODE,
+            ));
             // FIXME(misko): Attaching patch data is only needed for the root (Also add tests)
             attachPatchData(elementRNode, lView);
           }
           break;
         default:
           ngDevMode &&
-              throwError(`Unable to determine the type of mutate operation for "${opCode}"`);
+            throwError(`Unable to determine the type of mutate operation for "${opCode}"`);
       }
     }
   }
 }
-
 
 /**
  * Apply `I18nUpdateOpCodes` OpCodes
@@ -323,8 +399,12 @@ export function applyMutableOpCodes(
  *     `bindingsStartIndex`)
  */
 export function applyUpdateOpCodes(
-    tView: TView, lView: LView, updateOpCodes: I18nUpdateOpCodes, bindingsStartIndex: number,
-    changeMask: number) {
+  tView: TView,
+  lView: LView,
+  updateOpCodes: I18nUpdateOpCodes,
+  bindingsStartIndex: number,
+  changeMask: number,
+) {
   for (let i = 0; i < updateOpCodes.length; i++) {
     // bit code to check if we should apply the next update
     const checkBit = updateOpCodes[i] as number;
@@ -333,7 +413,7 @@ export function applyUpdateOpCodes(
     if (checkBit & changeMask) {
       // The value has been updated since last checked
       let value = '';
-      for (let j = i + 1; j <= (i + skipCodes); j++) {
+      for (let j = i + 1; j <= i + skipCodes; j++) {
         const opCode = updateOpCodes[j];
         if (typeof opCode == 'string') {
           value += opCode;
@@ -342,7 +422,7 @@ export function applyUpdateOpCodes(
             // Negative opCode represent `i18nExp` values offset.
             value += renderStringify(lView[bindingsStartIndex - opCode]);
           } else {
-            const nodeIndex = (opCode >>> I18nUpdateOpCode.SHIFT_REF);
+            const nodeIndex = opCode >>> I18nUpdateOpCode.SHIFT_REF;
             switch (opCode & I18nUpdateOpCode.MASK_OPCODE) {
               case I18nUpdateOpCode.Attr:
                 const propName = updateOpCodes[++j] as string;
@@ -354,12 +434,25 @@ export function applyUpdateOpCodes(
                   // not have TNode), in which case we know that there are no directives, and hence
                   // we use attribute setting.
                   setElementAttribute(
-                      lView[RENDERER], lView[nodeIndex], null, tNodeOrTagName, propName, value,
-                      sanitizeFn);
+                    lView[RENDERER],
+                    lView[nodeIndex],
+                    null,
+                    tNodeOrTagName,
+                    propName,
+                    value,
+                    sanitizeFn,
+                  );
                 } else {
                   elementPropertyInternal(
-                      tView, tNodeOrTagName, lView, propName, value, lView[RENDERER], sanitizeFn,
-                      false);
+                    tView,
+                    tNodeOrTagName,
+                    lView,
+                    propName,
+                    value,
+                    lView[RENDERER],
+                    sanitizeFn,
+                    false,
+                  );
                 }
                 break;
               case I18nUpdateOpCode.Text:
@@ -383,7 +476,7 @@ export function applyUpdateOpCodes(
         // we still need to execute `icuUpdateCase` because the case has changed recently due to
         // previous `icuSwitchCase` instruction. (`icuSwitchCase` and `icuUpdateCase` always come in
         // pairs.)
-        const nodeIndex = (opCode >>> I18nUpdateOpCode.SHIFT_REF);
+        const nodeIndex = opCode >>> I18nUpdateOpCode.SHIFT_REF;
         const tIcu = getTIcu(tView, nodeIndex)!;
         const currentIndex = lView[tIcu.currentCaseLViewIndex];
         if (currentIndex < 0) {
@@ -475,14 +568,13 @@ function applyIcuSwitchCaseRemove(tView: TView, tIcu: TIcu, lView: LView) {
   }
 }
 
-
 /**
  * Returns the index of the current case of an ICU expression depending on the main binding value
  *
  * @param icuExpression
  * @param bindingValue The value of the main binding used by this ICU expression
  */
-function getCaseIndex(icuExpression: TIcu, bindingValue: string): number|null {
+function getCaseIndex(icuExpression: TIcu, bindingValue: string): number | null {
   let index = icuExpression.cases.indexOf(bindingValue);
   if (index === -1) {
     switch (icuExpression.type) {

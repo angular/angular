@@ -12,11 +12,17 @@ import {RouterModule} from '@angular/router';
 
 import {BasicComponent} from './e2e/basic/basic';
 import {FillModeFailingComponent, FillModePassingComponent} from './e2e/fill-mode/fill-mode';
-import {ImageDistortionFailingComponent, ImageDistortionPassingComponent} from './e2e/image-distortion/image-distortion';
+import {
+  ImageDistortionFailingComponent,
+  ImageDistortionPassingComponent,
+} from './e2e/image-distortion/image-distortion';
 import {ImagePerfWarningsLazyComponent} from './e2e/image-perf-warnings-lazy/image-perf-warnings-lazy';
 import {ImagePerfWarningsOversizedComponent} from './e2e/image-perf-warnings-oversized/image-perf-warnings-oversized';
 import {LcpCheckComponent} from './e2e/lcp-check/lcp-check';
-import {OversizedImageComponentFailing, OversizedImageComponentPassing} from './e2e/oversized-image/oversized-image';
+import {
+  OversizedImageComponentFailing,
+  OversizedImageComponentPassing,
+} from './e2e/oversized-image/oversized-image';
 import {PreconnectCheckComponent} from './e2e/preconnect-check/preconnect-check';
 import {PlaygroundComponent} from './playground';
 
@@ -26,8 +32,7 @@ import {PlaygroundComponent} from './playground';
   imports: [RouterModule],
   template: '<router-outlet></router-outlet>',
 })
-export class RootComponent {
-}
+export class RootComponent {}
 
 const ROUTES = [
   // Paths that contain components for test/demo purposes:
@@ -49,7 +54,7 @@ const ROUTES = [
 
 bootstrapApplication(RootComponent, {
   providers: [
-    provideProtractorTestingSupport(),  //
-    importProvidersFrom(RouterModule.forRoot(ROUTES))
+    provideProtractorTestingSupport(), //
+    importProvidersFrom(RouterModule.forRoot(ROUTES)),
   ],
 });

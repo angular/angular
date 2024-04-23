@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {arrayIndexOfSorted, arrayInsert, arrayInsert2, arraySplice, flatten, KeyValueArray, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils';
+import {
+  arrayIndexOfSorted,
+  arrayInsert,
+  arrayInsert2,
+  arraySplice,
+  flatten,
+  KeyValueArray,
+  keyValueArrayDelete,
+  keyValueArrayGet,
+  keyValueArrayIndexOf,
+  keyValueArraySet,
+} from '../../src/util/array_utils';
 
 describe('array_utils', () => {
   describe('flatten', () => {
@@ -71,7 +82,12 @@ describe('array_utils', () => {
       expectArrayInsert2([0, 1, 2], 2, 'A', 'B').toEqual([0, 1, 'A', 'B', 2]);
       expectArrayInsert2([0, 1, 2], 3, 'A', 'B').toEqual([0, 1, 2, 'A', 'B']);
       expectArrayInsert2(['height', '1px', 'width', '2000px'], 0, 'color', 'red').toEqual([
-        'color', 'red', 'height', '1px', 'width', '2000px'
+        'color',
+        'red',
+        'height',
+        '1px',
+        'width',
+        '2000px',
       ]);
     });
   });

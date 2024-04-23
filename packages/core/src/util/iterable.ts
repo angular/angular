@@ -12,13 +12,18 @@ export function isIterable(obj: any): obj is Iterable<any> {
 
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
-  return Array.isArray(obj) ||
-      (!(obj instanceof Map) &&  // JS Map are iterables but return entries as [k, v]
-       Symbol.iterator in obj);  // JS Iterable have a Symbol.iterator prop
+  return (
+    Array.isArray(obj) ||
+    (!(obj instanceof Map) && // JS Map are iterables but return entries as [k, v]
+      Symbol.iterator in obj)
+  ); // JS Iterable have a Symbol.iterator prop
 }
 
 export function areIterablesEqual<T>(
-    a: Iterable<T>, b: Iterable<T>, comparator: (a: T, b: T) => boolean): boolean {
+  a: Iterable<T>,
+  b: Iterable<T>,
+  comparator: (a: T, b: T) => boolean,
+): boolean {
   const iterator1 = a[Symbol.iterator]();
   const iterator2 = b[Symbol.iterator]();
 
@@ -39,7 +44,7 @@ export function iterateListLike<T>(obj: Iterable<T>, fn: (p: T) => void) {
   } else {
     const iterator = obj[Symbol.iterator]();
     let item: IteratorResult<T, any>;
-    while (!((item = iterator.next()).done)) {
+    while (!(item = iterator.next()).done) {
       fn(item.value);
     }
   }

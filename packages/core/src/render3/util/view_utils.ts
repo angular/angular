@@ -8,15 +8,34 @@
 
 import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {assertDefined, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
+import {
+  assertDefined,
+  assertGreaterThan,
+  assertGreaterThanOrEqual,
+  assertIndexInRange,
+  assertLessThan,
+} from '../../util/assert';
 import {assertLView, assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {DECLARATION_VIEW, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, REACTIVE_TEMPLATE_CONSUMER, TData, TView} from '../interfaces/view';
-
-
+import {
+  DECLARATION_VIEW,
+  ENVIRONMENT,
+  FLAGS,
+  HEADER_OFFSET,
+  HOST,
+  LView,
+  LViewFlags,
+  ON_DESTROY_HOOKS,
+  PARENT,
+  PREORDER_HOOK_FLAGS,
+  PreOrderHookFlags,
+  REACTIVE_TEMPLATE_CONSUMER,
+  TData,
+  TView,
+} from '../interfaces/view';
 
 /**
  * For efficiency reasons we often put several different data types (`RNode`, `LView`, `LContainer`)
@@ -39,7 +58,7 @@ import {DECLARATION_VIEW, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, LView, LViewF
  * Returns `RNode`.
  * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function unwrapRNode(value: RNode|LView|LContainer): RNode {
+export function unwrapRNode(value: RNode | LView | LContainer): RNode {
   while (Array.isArray(value)) {
     value = value[HOST] as any;
   }
@@ -50,7 +69,7 @@ export function unwrapRNode(value: RNode|LView|LContainer): RNode {
  * Returns `LView` or `null` if not found.
  * @param value wrapped value of `RNode`, `LView`, `LContainer`
  */
-export function unwrapLView(value: RNode|LView|LContainer): LView|null {
+export function unwrapLView(value: RNode | LView | LContainer): LView | null {
   while (Array.isArray(value)) {
     // This check is same as `isLView()` but we don't call at as we don't want to call
     // `Array.isArray()` twice and give JITer more work for inlining.
@@ -93,16 +112,15 @@ export function getNativeByTNode(tNode: TNode, lView: LView): RNode {
  * @param tNode
  * @param lView
  */
-export function getNativeByTNodeOrNull(tNode: TNode|null, lView: LView): RNode|null {
+export function getNativeByTNodeOrNull(tNode: TNode | null, lView: LView): RNode | null {
   const index = tNode === null ? -1 : tNode.index;
   if (index !== -1) {
     ngDevMode && assertTNodeForLView(tNode!, lView);
-    const node: RNode|null = unwrapRNode(lView[index]);
+    const node: RNode | null = unwrapRNode(lView[index]);
     return node;
   }
   return null;
 }
-
 
 // fixme(misko): The return Type should be `TNode|null`
 export function getTNode(tView: TView, index: number): TNode {
@@ -114,7 +132,7 @@ export function getTNode(tView: TView, index: number): TNode {
 }
 
 /** Retrieves a value from any `LView` or `TData`. */
-export function load<T>(view: LView|TData, index: number): T {
+export function load<T>(view: LView | TData, index: number): T {
   ngDevMode && assertIndexInRange(view, index);
   return view[index];
 }
@@ -148,10 +166,16 @@ export function viewAttachedToContainer(view: LView): boolean {
 }
 
 /** Returns a constant from `TConstants` instance. */
-export function getConstant<T>(consts: TConstants|null, index: null|undefined): null;
-export function getConstant<T>(consts: TConstants, index: number): T|null;
-export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null;
-export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null {
+export function getConstant<T>(consts: TConstants | null, index: null | undefined): null;
+export function getConstant<T>(consts: TConstants, index: number): T | null;
+export function getConstant<T>(
+  consts: TConstants | null,
+  index: number | null | undefined,
+): T | null;
+export function getConstant<T>(
+  consts: TConstants | null,
+  index: number | null | undefined,
+): T | null {
   if (index === null || index === undefined) return null;
   ngDevMode && assertIndexInRange(consts!, index);
   return consts![index] as unknown as T;
@@ -187,9 +211,10 @@ export function markViewForRefresh(lView: LView) {
 export function walkUpViews(nestingLevel: number, currentView: LView): LView {
   while (nestingLevel > 0) {
     ngDevMode &&
-        assertDefined(
-            currentView[DECLARATION_VIEW],
-            'Declaration view should be defined if nesting level is greater than 0.');
+      assertDefined(
+        currentView[DECLARATION_VIEW],
+        'Declaration view should be defined if nesting level is greater than 0.',
+      );
     currentView = currentView[DECLARATION_VIEW]!;
     nestingLevel--;
   }
@@ -198,10 +223,10 @@ export function walkUpViews(nestingLevel: number, currentView: LView): LView {
 
 export function requiresRefreshOrTraversal(lView: LView) {
   return !!(
-      lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
-      lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty);
+    lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
+    lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty
+  );
 }
-
 
 /**
  * Updates the `HasChildViewsToRefresh` flag on the parents of the `LView` as well as the
@@ -248,7 +273,9 @@ export function markAncestorsForTraversal(lView: LView) {
 export function storeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
   if ((lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
     throw new RuntimeError(
-        RuntimeErrorCode.VIEW_ALREADY_DESTROYED, ngDevMode && 'View has already been destroyed.');
+      RuntimeErrorCode.VIEW_ALREADY_DESTROYED,
+      ngDevMode && 'View has already been destroyed.',
+    );
   }
   if (lView[ON_DESTROY_HOOKS] === null) {
     lView[ON_DESTROY_HOOKS] = [];
@@ -273,7 +300,7 @@ export function removeLViewOnDestroy(lView: LView, onDestroyCallback: () => void
  * that LContainer, which is an LView
  * @param lView the lView whose parent to get
  */
-export function getLViewParent(lView: LView): LView|null {
+export function getLViewParent(lView: LView): LView | null {
   ngDevMode && assertLView(lView);
   const parent = lView[PARENT];
   return isLContainer(parent) ? parent[PARENT] : parent;
