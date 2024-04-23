@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NotificationType} from '../../change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
 import {assertLView, assertTNode, assertTNodeForLView} from '../assert';
@@ -208,7 +208,7 @@ export function requiresRefreshOrTraversal(lView: LView) {
  * parents above.
  */
 export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
-  lView[ENVIRONMENT].changeDetectionScheduler?.notify(NotificationType.AfterRenderHooks);
+  lView[ENVIRONMENT].changeDetectionScheduler?.notify(NotificationSource.ViewAttached);
   if (lView[FLAGS] & LViewFlags.Dirty) {
     lView[FLAGS] |= LViewFlags.RefreshView;
   }
@@ -225,7 +225,7 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
  * flag is already `true` or the `lView` is detached.
  */
 export function markAncestorsForTraversal(lView: LView) {
-  lView[ENVIRONMENT].changeDetectionScheduler?.notify();
+  lView[ENVIRONMENT].changeDetectionScheduler?.notify(NotificationSource.MarkAncestorsForTraversal);
   let parent = getLViewParent(lView);
   while (parent !== null) {
     // We stop adding markers to the ancestors once we reach one that already has the marker. This
