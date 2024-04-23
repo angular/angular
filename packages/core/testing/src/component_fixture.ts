@@ -171,8 +171,12 @@ export abstract class ComponentFixture<T> {
  * `ApplicationRef.isStable`, and `autoDetectChanges` cannot be disabled.
  */
 export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
+  private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? true;
+
   initialize(): void {
-    this._appRef.attachView(this.componentRef.hostView);
+    if (this._autoDetect) {
+      this._appRef.attachView(this.componentRef.hostView);
+    }
   }
 
   override detectChanges(checkNoChanges: boolean = true): void {
@@ -189,7 +193,12 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
 
   override autoDetectChanges(autoDetect?: boolean|undefined): void {
     if (!autoDetect) {
-      throw new Error('Cannot disable autoDetect when using the zoneless scheduler.');
+      throw new Error(
+          'Cannot disable autoDetect after it has been enabled when using the zoneless scheduler. ' +
+          'To disable autoDetect, add `{provide: ComponentFixtureAutoDetect, useValue: false}` to the TestBed providers.');
+    } else if (!this._autoDetect) {
+      this._autoDetect = autoDetect;
+      this._appRef.attachView(this.componentRef.hostView);
     }
     this.detectChanges();
   }
