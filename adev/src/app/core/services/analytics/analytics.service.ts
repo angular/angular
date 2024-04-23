@@ -8,7 +8,7 @@
 
 import {inject, Injectable} from '@angular/core';
 
-import {WINDOW, ENVIRONMENT} from '@angular/docs';
+import {WINDOW, ENVIRONMENT, LOCAL_STORAGE, STORAGE_KEY, setCookieConsent} from '@angular/docs';
 
 import {formatErrorEventForAnalytics} from './analytics-format-error';
 
@@ -28,6 +28,7 @@ interface WindowWithAnalytics extends Window {
 export class AnalyticsService {
   private environment = inject(ENVIRONMENT);
   private window: WindowWithAnalytics = inject(WINDOW);
+  private readonly localStorage = inject(LOCAL_STORAGE);
 
   constructor() {
     this._installGlobalSiteTag();
@@ -64,6 +65,21 @@ export class AnalyticsService {
     window.gtag = function () {
       window.dataLayer?.push(arguments);
     };
+
+    // Cookie banner consent initial state
+    // This code is modified in the @angular/docs package in the cookie-popup component.
+    // Docs: https://developers.google.com/tag-platform/security/guides/consent
+    if (this.localStorage) {
+      if (this.localStorage.getItem(STORAGE_KEY) === 'true') {
+        setCookieConsent('granted');
+      } else {
+        setCookieConsent('denied');
+      }
+    } else {
+      // In case localStorage is not available, we default to denying cookies.
+      setCookieConsent('denied');
+    }
+
     window.gtag('js', new Date());
 
     // Configure properties before loading the script. This is necessary to avoid

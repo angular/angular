@@ -7,8 +7,9 @@
  */
 
 import {Injector} from '@angular/core';
-import {ENVIRONMENT, WINDOW} from '@angular/docs';
+import {ENVIRONMENT, WINDOW, LOCAL_STORAGE} from '@angular/docs';
 import {AnalyticsService} from './analytics.service';
+import {MockLocalStorage} from '@angular/docs/testing';
 
 describe('AnalyticsService', () => {
   let service: AnalyticsService;
@@ -18,6 +19,7 @@ describe('AnalyticsService', () => {
   let windowOnErrorHandler: (event: ErrorEvent) => void;
 
   let mockWindow: any;
+  let mockLocalStorage = new MockLocalStorage();
 
   beforeEach(() => {
     gtagSpy = jasmine.createSpy('gtag');
@@ -39,6 +41,7 @@ describe('AnalyticsService', () => {
         {provide: ENVIRONMENT, useValue: {}},
         {provide: AnalyticsService, deps: [WINDOW]},
         {provide: WINDOW, useFactory: () => mockWindow, deps: []},
+        {provide: LOCAL_STORAGE, useValue: mockLocalStorage},
       ],
     });
 
