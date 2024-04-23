@@ -25,14 +25,20 @@ runInEachFileSystem(() => {
     });
 
     it('should extract info from a named re-export', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export {PI} from './implementation';
-      `);
+      `,
+      );
 
-      env.write('implementation.ts', `
+      env.write(
+        'implementation.ts',
+        `
         export const PI = 3.14;
         export const TAO = 6.28;
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -42,14 +48,20 @@ runInEachFileSystem(() => {
     });
 
     it('should extract info from an aggregate re-export', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export * from './implementation';
-      `);
+      `,
+      );
 
-      env.write('implementation.ts', `
+      env.write(
+        'implementation.ts',
+        `
         export const PI = 3.14;
         export const TAO = 6.28;
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -63,17 +75,26 @@ runInEachFileSystem(() => {
     });
 
     it('should extract info from a transitive re-export', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export * from './middle';
-      `);
+      `,
+      );
 
-      env.write('middle.ts', `
+      env.write(
+        'middle.ts',
+        `
         export * from 'implementation';
-      `);
+      `,
+      );
 
-      env.write('implementation.ts', `
+      env.write(
+        'implementation.ts',
+        `
         export const PI = 3.14;
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -83,15 +104,21 @@ runInEachFileSystem(() => {
     });
 
     it('should extract info from an aliased re-export', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export * from './implementation';
-      `);
+      `,
+      );
 
-      env.write('implementation.ts', `
+      env.write(
+        'implementation.ts',
+        `
         const PI = 3.14;
 
         export {PI as PI_CONSTANT};
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 

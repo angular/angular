@@ -8,7 +8,12 @@
 
 import ts from 'typescript';
 
-import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
+import {
+  assertSuccessfulReferenceEmit,
+  ImportFlags,
+  Reference,
+  ReferenceEmitter,
+} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression} from '../../translator';
 import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from '../api';
@@ -42,8 +47,12 @@ export class Environment extends ReferenceEmitEnvironment {
   protected pipeInstStatements: ts.Statement[] = [];
 
   constructor(
-      readonly config: TypeCheckingConfig, importManager: ImportManager,
-      refEmitter: ReferenceEmitter, reflector: ReflectionHost, contextFile: ts.SourceFile) {
+    readonly config: TypeCheckingConfig,
+    importManager: ImportManager,
+    refEmitter: ReferenceEmitter,
+    reflector: ReflectionHost,
+    contextFile: ts.SourceFile,
+  ) {
     super(importManager, refEmitter, reflector, contextFile);
   }
 
@@ -126,16 +135,14 @@ export class Environment extends ReferenceEmitEnvironment {
     return translateExpression(this.contextFile, ngExpr.expression, this.importManager);
   }
 
-  private emitTypeParameters(declaration: ClassDeclaration<ts.ClassDeclaration>):
-      ts.TypeParameterDeclaration[]|undefined {
+  private emitTypeParameters(
+    declaration: ClassDeclaration<ts.ClassDeclaration>,
+  ): ts.TypeParameterDeclaration[] | undefined {
     const emitter = new TypeParameterEmitter(declaration.typeParameters, this.reflector);
-    return emitter.emit(ref => this.referenceType(ref));
+    return emitter.emit((ref) => this.referenceType(ref));
   }
 
   getPreludeStatements(): ts.Statement[] {
-    return [
-      ...this.pipeInstStatements,
-      ...this.typeCtorStatements,
-    ];
+    return [...this.pipeInstStatements, ...this.typeCtorStatements];
   }
 }

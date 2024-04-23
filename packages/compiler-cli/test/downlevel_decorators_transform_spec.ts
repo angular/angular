@@ -29,28 +29,32 @@ describe('downlevel decorator transform', () => {
       'dom_globals.d.ts': `
          declare class HTMLElement {};
          declare class Document {};
-       `
+       `,
     });
     host = new MockCompilerHost(context);
     isClosureEnabled = false;
   });
 
   function transform(
-      contents: string, compilerOptions: ts.CompilerOptions = {},
-      preTransformers: ts.TransformerFactory<ts.SourceFile>[] = []) {
+    contents: string,
+    compilerOptions: ts.CompilerOptions = {},
+    preTransformers: ts.TransformerFactory<ts.SourceFile>[] = [],
+  ) {
     context.writeFile(TEST_FILE_INPUT, contents);
     const program = ts.createProgram(
-        [TEST_FILE_INPUT, '/dom_globals.d.ts'], {
-          module: ts.ModuleKind.CommonJS,
-          importHelpers: true,
-          lib: ['dom', 'es2015'],
-          target: ts.ScriptTarget.ES2017,
-          declaration: true,
-          experimentalDecorators: true,
-          emitDecoratorMetadata: false,
-          ...compilerOptions
-        },
-        host);
+      [TEST_FILE_INPUT, '/dom_globals.d.ts'],
+      {
+        module: ts.ModuleKind.CommonJS,
+        importHelpers: true,
+        lib: ['dom', 'es2015'],
+        target: ts.ScriptTarget.ES2017,
+        declaration: true,
+        experimentalDecorators: true,
+        emitDecoratorMetadata: false,
+        ...compilerOptions,
+      },
+      host,
+    );
     const testFile = program.getSourceFile(TEST_FILE_INPUT);
     const typeChecker = program.getTypeChecker();
     const reflectionHost = new TypeScriptReflectionHost(typeChecker);
@@ -58,26 +62,34 @@ describe('downlevel decorator transform', () => {
       before: [
         ...preTransformers,
         getDownlevelDecoratorsTransform(
-            program.getTypeChecker(), reflectionHost, diagnostics,
-            /* isCore */ false, isClosureEnabled)
-      ]
+          program.getTypeChecker(),
+          reflectionHost,
+          diagnostics,
+          /* isCore */ false,
+          isClosureEnabled,
+        ),
+      ],
     };
-    let output: string|null = null;
-    let dtsOutput: string|null = null;
+    let output: string | null = null;
+    let dtsOutput: string | null = null;
     const emitResult = program.emit(
-        testFile, ((fileName, outputText) => {
-          if (fileName === TEST_FILE_OUTPUT) {
-            output = outputText;
-          } else if (fileName === TEST_FILE_DTS_OUTPUT) {
-            dtsOutput = outputText;
-          }
-        }),
-        undefined, undefined, transformers);
+      testFile,
+      (fileName, outputText) => {
+        if (fileName === TEST_FILE_OUTPUT) {
+          output = outputText;
+        } else if (fileName === TEST_FILE_DTS_OUTPUT) {
+          dtsOutput = outputText;
+        }
+      },
+      undefined,
+      undefined,
+      transformers,
+    );
     diagnostics.push(...emitResult.diagnostics);
     expect(output).not.toBeNull();
     return {
       output: omitLeadingWhitespace(output!),
-      dtsOutput: dtsOutput ? omitLeadingWhitespace(dtsOutput) : null
+      dtsOutput: dtsOutput ? omitLeadingWhitespace(dtsOutput) : null,
     };
   }
 
@@ -308,7 +320,7 @@ describe('downlevel decorator transform', () => {
   it('should capture constructor type metadata with `emitDecoratorMetadata` enabled', () => {
     context.writeFile('/other-file.ts', `export class MyOtherClass {}`);
     const {output} = transform(
-        `
+      `
        import {Directive} from '@angular/core';
        import {MyOtherClass} from './other-file';
 
@@ -317,7 +329,8 @@ describe('downlevel decorator transform', () => {
          constructor(other: MyOtherClass) {}
        }
      `,
-        {emitDecoratorMetadata: true});
+      {emitDecoratorMetadata: true},
+    );
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain('const other_file_1 = require("./other-file");');
@@ -335,7 +348,7 @@ describe('downlevel decorator transform', () => {
   it('should capture constructor type metadata with `emitDecoratorMetadata` disabled', () => {
     context.writeFile('/other-file.ts', `export class MyOtherClass {}`);
     const {output, dtsOutput} = transform(
-        `
+      `
        import {Directive} from '@angular/core';
        import {MyOtherClass} from './other-file';
 
@@ -344,7 +357,8 @@ describe('downlevel decorator transform', () => {
          constructor(other: MyOtherClass) {}
        }
      `,
-        {emitDecoratorMetadata: false});
+      {emitDecoratorMetadata: false},
+    );
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain('const other_file_1 = require("./other-file");');
@@ -484,15 +498,19 @@ describe('downlevel decorator transform', () => {
      `);
   });
 
-  it('should not retain unused type imports due to decorator downleveling with ' +
-         '`emitDecoratorMetadata` enabled.',
-     () => {
-       context.writeFile('/external.ts', `
+  it(
+    'should not retain unused type imports due to decorator downleveling with ' +
+      '`emitDecoratorMetadata` enabled.',
+    () => {
+      context.writeFile(
+        '/external.ts',
+        `
        export class ErrorHandler {}
        export class ClassInject {}
-     `);
-       const {output} = transform(
-           `
+     `,
+      );
+      const {output} = transform(
+        `
        import {Directive, Inject} from '@angular/core';
        import {ErrorHandler, ClassInject} from './external';
 
@@ -501,22 +519,28 @@ describe('downlevel decorator transform', () => {
          constructor(@Inject(ClassInject) i: ClassInject) {}
        }
      `,
-           {module: ts.ModuleKind.ES2015, emitDecoratorMetadata: true});
+        {module: ts.ModuleKind.ES2015, emitDecoratorMetadata: true},
+      );
 
-       expect(diagnostics.length).toBe(0);
-       expect(output).not.toContain('Directive');
-       expect(output).not.toContain('ErrorHandler');
-     });
+      expect(diagnostics.length).toBe(0);
+      expect(output).not.toContain('Directive');
+      expect(output).not.toContain('ErrorHandler');
+    },
+  );
 
-  it('should not retain unused type imports due to decorator downleveling with ' +
-         '`emitDecoratorMetadata` disabled',
-     () => {
-       context.writeFile('/external.ts', `
+  it(
+    'should not retain unused type imports due to decorator downleveling with ' +
+      '`emitDecoratorMetadata` disabled',
+    () => {
+      context.writeFile(
+        '/external.ts',
+        `
        export class ErrorHandler {}
        export class ClassInject {}
-     `);
-       const {output} = transform(
-           `
+     `,
+      );
+      const {output} = transform(
+        `
        import {Directive, Inject} from '@angular/core';
        import {ErrorHandler, ClassInject} from './external';
 
@@ -525,21 +549,26 @@ describe('downlevel decorator transform', () => {
          constructor(@Inject(ClassInject) i: ClassInject) {}
        }
      `,
-           {module: ts.ModuleKind.ES2015, emitDecoratorMetadata: false});
+        {module: ts.ModuleKind.ES2015, emitDecoratorMetadata: false},
+      );
 
-       expect(diagnostics.length).toBe(0);
-       expect(output).not.toContain('Directive');
-       expect(output).not.toContain('ErrorHandler');
-     });
+      expect(diagnostics.length).toBe(0);
+      expect(output).not.toContain('Directive');
+      expect(output).not.toContain('ErrorHandler');
+    },
+  );
 
   it('should not generate invalid reference due to conflicting parameter name', () => {
-    context.writeFile('/external.ts', `
+    context.writeFile(
+      '/external.ts',
+      `
        export class Dep {
          greet() {}
        }
-     `);
+     `,
+    );
     const {output} = transform(
-        `
+      `
        import {Directive} from '@angular/core';
        import {Dep} from './external';
 
@@ -550,7 +579,8 @@ describe('downlevel decorator transform', () => {
          }
        }
      `,
-        {emitDecoratorMetadata: false});
+      {emitDecoratorMetadata: false},
+    );
 
     expect(diagnostics.length).toBe(0);
     expect(output).toContain(`external_1 = require("./external");`);
@@ -600,19 +630,23 @@ describe('downlevel decorator transform', () => {
      `);
 
     expect(diagnostics.length).toBe(1);
-    expect(diagnostics[0].messageText as string)
-        .toBe(`Cannot process decorators for class element with non-analyzable name.`);
+    expect(diagnostics[0].messageText as string).toBe(
+      `Cannot process decorators for class element with non-analyzable name.`,
+    );
   });
 
   it('should not capture constructor parameter types when not resolving to a value', () => {
-    context.writeFile('/external.ts', `
+    context.writeFile(
+      '/external.ts',
+      `
        export interface IState {}
        export type IOverlay = {hello: true}&IState;
        export default interface {
          hello: false;
        }
        export const enum KeyCodes {A, B}
-     `);
+     `,
+    );
     const {output} = transform(`
        import {Directive, Inject} from '@angular/core';
        import * as angular from './external';
@@ -644,13 +678,17 @@ describe('downlevel decorator transform', () => {
   });
 
   it('should allow preceding custom transformers to strip decorators', () => {
-    const stripAllDecoratorsTransform: ts.TransformerFactory<ts.SourceFile> = context => {
+    const stripAllDecoratorsTransform: ts.TransformerFactory<ts.SourceFile> = (context) => {
       return (sourceFile: ts.SourceFile) => {
         const visitNode = (node: ts.Node): ts.Node => {
           if (ts.isClassDeclaration(node)) {
             return ts.factory.createClassDeclaration(
-                ts.getModifiers(node), node.name, node.typeParameters, node.heritageClauses,
-                node.members);
+              ts.getModifiers(node),
+              node.name,
+              node.typeParameters,
+              node.heritageClauses,
+              node.members,
+            );
           }
           return ts.visitEachChild(node, visitNode, context);
         };
@@ -659,7 +697,7 @@ describe('downlevel decorator transform', () => {
     };
 
     const {output} = transform(
-        `
+      `
        import {Directive} from '@angular/core';
 
        export class MyInjectedClass {}
@@ -669,7 +707,9 @@ describe('downlevel decorator transform', () => {
          constructor(someToken: MyInjectedClass) {}
        }
      `,
-        {}, [stripAllDecoratorsTransform]);
+      {},
+      [stripAllDecoratorsTransform],
+    );
 
     expect(diagnostics.length).toBe(0);
     expect(output).not.toContain('MyDir.decorators');
@@ -700,16 +740,18 @@ describe('downlevel decorator transform', () => {
        `);
   });
 
-  it('should allow for type-only references to be removed with `emitDecoratorMetadata` from custom decorators',
-     () => {
-       context.writeFile('/external-interface.ts', `
+  it('should allow for type-only references to be removed with `emitDecoratorMetadata` from custom decorators', () => {
+    context.writeFile(
+      '/external-interface.ts',
+      `
         export interface ExternalInterface {
           id?: string;
         }
-      `);
+      `,
+    );
 
-       const {output} = transform(
-           `
+    const {output} = transform(
+      `
             import { ExternalInterface } from './external-interface';
 
             export function CustomDecorator() {
@@ -720,19 +762,25 @@ describe('downlevel decorator transform', () => {
               @CustomDecorator() static test(): ExternalInterface { return {}; }
             }
           `,
-           {emitDecoratorMetadata: true});
+      {emitDecoratorMetadata: true},
+    );
 
-       expect(diagnostics.length).toBe(0);
-       expect(output).not.toContain('ExternalInterface');
-       expect(output).toContain('metadata("design:returntype", Object)');
-     });
+    expect(diagnostics.length).toBe(0);
+    expect(output).not.toContain('ExternalInterface');
+    expect(output).toContain('metadata("design:returntype", Object)');
+  });
 
   describe('transforming multiple files', () => {
     it('should work correctly for multiple files that import distinct declarations', () => {
-      context.writeFile('foo_service.d.ts', `
+      context.writeFile(
+        'foo_service.d.ts',
+        `
          export declare class Foo {};
-       `);
-      context.writeFile('foo.ts', `
+       `,
+      );
+      context.writeFile(
+        'foo.ts',
+        `
          import {Injectable} from '@angular/core';
          import {Foo} from './foo_service';
 
@@ -740,12 +788,18 @@ describe('downlevel decorator transform', () => {
          export class MyService {
            constructor(foo: Foo) {}
          }
-       `);
+       `,
+      );
 
-      context.writeFile('bar_service.d.ts', `
+      context.writeFile(
+        'bar_service.d.ts',
+        `
          export declare class Bar {};
-       `);
-      context.writeFile('bar.ts', `
+       `,
+      );
+      context.writeFile(
+        'bar.ts',
+        `
          import {Injectable} from '@angular/core';
          import {Bar} from './bar_service';
 
@@ -753,7 +807,8 @@ describe('downlevel decorator transform', () => {
          export class MyService {
            constructor(bar: Bar) {}
          }
-       `);
+       `,
+      );
 
       const {program, transformers} = createProgramWithTransform(['/foo.ts', '/bar.ts']);
       program.emit(undefined, undefined, undefined, undefined, transformers);
@@ -767,9 +822,12 @@ describe('downlevel decorator transform', () => {
       // repeatedly for each source file in the program, causing a stack overflow once a large
       // number of source files was reached. This test verifies that emit succeeds even when there's
       // lots of source files. See https://github.com/angular/angular/issues/40276.
-      context.writeFile('foo.d.ts', `
+      context.writeFile(
+        'foo.d.ts',
+        `
          export declare class Foo {};
-       `);
+       `,
+      );
 
       // A somewhat minimal number of source files that used to trigger a stack overflow.
       const numberOfTestFiles = 6500;
@@ -777,7 +835,9 @@ describe('downlevel decorator transform', () => {
       for (let i = 0; i < numberOfTestFiles; i++) {
         const file = `/${i}.ts`;
         files.push(file);
-        context.writeFile(file, `
+        context.writeFile(
+          file,
+          `
            import {Injectable} from '@angular/core';
            import {Foo} from './foo';
 
@@ -785,44 +845,61 @@ describe('downlevel decorator transform', () => {
            export class MyService {
              constructor(foo: Foo) {}
            }
-         `);
+         `,
+        );
       }
 
       const {program, transformers} = createProgramWithTransform(files);
 
       let written = 0;
-      program.emit(undefined, (fileName, outputText) => {
-        written++;
+      program.emit(
+        undefined,
+        (fileName, outputText) => {
+          written++;
 
-        // The below assertion throws an explicit error instead of using a Jasmine expectation,
-        // as we want to abort on the first failure, if any. This avoids as many as `numberOfFiles`
-        // expectation failures, which would bloat the test output.
-        if (!outputText.includes(`import { Foo } from './foo';`)) {
-          throw new Error(`Transform failed to preserve the import in ${fileName}:\n${outputText}`);
-        }
-      }, undefined, undefined, transformers);
+          // The below assertion throws an explicit error instead of using a Jasmine expectation,
+          // as we want to abort on the first failure, if any. This avoids as many as `numberOfFiles`
+          // expectation failures, which would bloat the test output.
+          if (!outputText.includes(`import { Foo } from './foo';`)) {
+            throw new Error(
+              `Transform failed to preserve the import in ${fileName}:\n${outputText}`,
+            );
+          }
+        },
+        undefined,
+        undefined,
+        transformers,
+      );
       expect(written).toBe(numberOfTestFiles);
     });
 
     function createProgramWithTransform(files: string[]) {
       const program = ts.createProgram(
-          files, {
-            moduleResolution: ts.ModuleResolutionKind.Node10,
-            importHelpers: true,
-            lib: [],
-            module: ts.ModuleKind.ESNext,
-            target: ts.ScriptTarget.Latest,
-            declaration: false,
-            experimentalDecorators: true,
-            emitDecoratorMetadata: false,
-          },
-          host);
+        files,
+        {
+          moduleResolution: ts.ModuleResolutionKind.Node10,
+          importHelpers: true,
+          lib: [],
+          module: ts.ModuleKind.ESNext,
+          target: ts.ScriptTarget.Latest,
+          declaration: false,
+          experimentalDecorators: true,
+          emitDecoratorMetadata: false,
+        },
+        host,
+      );
       const typeChecker = program.getTypeChecker();
       const reflectionHost = new TypeScriptReflectionHost(typeChecker);
       const transformers: ts.CustomTransformers = {
-        before: [getDownlevelDecoratorsTransform(
-            program.getTypeChecker(), reflectionHost, diagnostics,
-            /* isCore */ false, isClosureEnabled)]
+        before: [
+          getDownlevelDecoratorsTransform(
+            program.getTypeChecker(),
+            reflectionHost,
+            diagnostics,
+            /* isCore */ false,
+            isClosureEnabled,
+          ),
+        ],
       };
       return {program, transformers};
     }

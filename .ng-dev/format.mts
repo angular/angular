@@ -18,6 +18,7 @@ export const format: FormatConfig = {
       'packages/benchpress/**/*.{js,ts}',
       'packages/common/**/*.{js,ts}',
       'packages/compiler/**/*.{js,ts}',
+      'packages/compiler-cli/**/*.{js,ts}',
       'packages/core/**/*.{js,ts}',
       'packages/docs/**/*.{js,ts}',
       'packages/elements/**/*.{js,ts}',
@@ -35,6 +36,8 @@ export const format: FormatConfig = {
       'packages/upgrade/**/*.{js,ts}',
       'packages/zone.js/**/*.{js,ts}',
 
+      // Test cases contain non valid code.
+      '!packages/compiler-cli/test/compliance/test_cases/**/*.{js,ts}',
       // Do not format d.ts files as they are generated
       '!**/*.d.ts',
       // Both third_party and .yarn are directories containing copied code which should
@@ -83,6 +86,7 @@ export const format: FormatConfig = {
       '!packages/benchpress/**/*.{js,ts}',
       '!packages/common/**/*.{js,ts}',
       '!packages/compiler/**/*.{js,ts}',
+      '!packages/compiler-cli/**/*.{js,ts}',
       '!packages/core/**/*.{js,ts}',
       '!packages/docs/**/*.{js,ts}',
       '!packages/elements/**/*.{js,ts}',

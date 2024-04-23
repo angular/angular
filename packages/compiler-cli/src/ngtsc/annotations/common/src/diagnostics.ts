@@ -8,18 +8,35 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
+import {
+  ErrorCode,
+  FatalDiagnosticError,
+  makeDiagnostic,
+  makeRelatedInformation,
+} from '../../../diagnostics';
 import {Reference} from '../../../imports';
-import {ClassPropertyName, DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectiveMeta, isHostDirectiveMetaForGlobalMode, MetadataReader} from '../../../metadata';
-import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
+import {
+  ClassPropertyName,
+  DirectiveMeta,
+  flattenInheritedDirectiveMetadata,
+  HostDirectiveMeta,
+  isHostDirectiveMetaForGlobalMode,
+  MetadataReader,
+} from '../../../metadata';
+import {
+  describeResolvedType,
+  DynamicValue,
+  PartialEvaluator,
+  ResolvedValue,
+  traceDynamicValue,
+} from '../../../partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '../../../reflection';
 import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope';
 import {identifierOfNode, isFromDtsFile} from '../../../util/src/typescript';
 
 import {InjectableClassRegistry} from './injectable_registry';
 import {isAbstractClassDeclaration, readBaseClass} from './util';
-import { CompilationMode } from '../../../transform';
-
+import {CompilationMode} from '../../../transform';
 
 /**
  * Create a `ts.Diagnostic` which indicates the given class is part of the declarations of two or
@@ -29,7 +46,10 @@ import { CompilationMode } from '../../../transform';
  * the directive/pipe exists in its `declarations` (if possible).
  */
 export function makeDuplicateDeclarationError(
-    node: ClassDeclaration, data: DeclarationData[], kind: string): ts.Diagnostic {
+  node: ClassDeclaration,
+  data: DeclarationData[],
+  kind: string,
+): ts.Diagnostic {
   const context: ts.DiagnosticRelatedInformation[] = [];
   for (const decl of data) {
     if (decl.rawDeclarations === null) {
@@ -38,18 +58,22 @@ export function makeDuplicateDeclarationError(
     // Try to find the reference to the declaration within the declarations array, to hang the
     // error there. If it can't be found, fall back on using the NgModule's name.
     const contextNode = decl.ref.getOriginForDiagnostics(decl.rawDeclarations, decl.ngModule.name);
-    context.push(makeRelatedInformation(
+    context.push(
+      makeRelatedInformation(
         contextNode,
-        `'${node.name.text}' is listed in the declarations of the NgModule '${
-            decl.ngModule.name.text}'.`));
+        `'${node.name.text}' is listed in the declarations of the NgModule '${decl.ngModule.name.text}'.`,
+      ),
+    );
   }
 
   // Finally, produce the diagnostic.
   return makeDiagnostic(
-      ErrorCode.NGMODULE_DECLARATION_NOT_UNIQUE, node.name,
-      `The ${kind} '${node.name.text}' is declared by more than one NgModule.`, context);
+    ErrorCode.NGMODULE_DECLARATION_NOT_UNIQUE,
+    node.name,
+    `The ${kind} '${node.name.text}' is declared by more than one NgModule.`,
+    context,
+  );
 }
-
 
 /**
  * Creates a `FatalDiagnosticError` for a node that did not evaluate to the expected type. The
@@ -62,9 +86,12 @@ export function makeDuplicateDeclarationError(
  * @param messageText The message text of the error.
  */
 export function createValueHasWrongTypeError(
-    node: ts.Node, value: ResolvedValue, messageText: string): FatalDiagnosticError {
+  node: ts.Node,
+  value: ResolvedValue,
+  messageText: string,
+): FatalDiagnosticError {
   let chainedMessage: string;
-  let relatedInformation: ts.DiagnosticRelatedInformation[]|undefined;
+  let relatedInformation: ts.DiagnosticRelatedInformation[] | undefined;
   if (value instanceof DynamicValue) {
     chainedMessage = 'Value could not be determined statically.';
     relatedInformation = traceDynamicValue(node, value);
@@ -82,11 +109,13 @@ export function createValueHasWrongTypeError(
     messageText,
     category: ts.DiagnosticCategory.Error,
     code: 0,
-    next: [{
-      messageText: chainedMessage,
-      category: ts.DiagnosticCategory.Message,
-      code: 0,
-    }]
+    next: [
+      {
+        messageText: chainedMessage,
+        category: ts.DiagnosticCategory.Message,
+        code: 0,
+      },
+    ],
   };
 
   return new FatalDiagnosticError(ErrorCode.VALUE_HAS_WRONG_TYPE, node, chain, relatedInformation);
@@ -99,8 +128,10 @@ export function createValueHasWrongTypeError(
  * @param registry Registry that keeps track of the registered injectable classes.
  */
 export function getProviderDiagnostics(
-    providerClasses: Set<Reference<ClassDeclaration>>, providersDeclaration: ts.Expression,
-    registry: InjectableClassRegistry): ts.Diagnostic[] {
+  providerClasses: Set<Reference<ClassDeclaration>>,
+  providersDeclaration: ts.Expression,
+  registry: InjectableClassRegistry,
+): ts.Diagnostic[] {
   const diagnostics: ts.Diagnostic[] = [];
 
   for (const provider of providerClasses) {
@@ -112,29 +143,34 @@ export function getProviderDiagnostics(
     }
 
     const contextNode = provider.getOriginForDiagnostics(providersDeclaration);
-    diagnostics.push(makeDiagnostic(
-        ErrorCode.UNDECORATED_PROVIDER, contextNode,
-        `The class '${
-            provider.node.name
-                .text}' cannot be created via dependency injection, as it does not have an Angular decorator. This will result in an error at runtime.
+    diagnostics.push(
+      makeDiagnostic(
+        ErrorCode.UNDECORATED_PROVIDER,
+        contextNode,
+        `The class '${provider.node.name.text}' cannot be created via dependency injection, as it does not have an Angular decorator. This will result in an error at runtime.
 
-Either add the @Injectable() decorator to '${
-            provider.node.name
-                .text}', or configure a different provider (such as a provider with 'useFactory').
+Either add the @Injectable() decorator to '${provider.node.name.text}', or configure a different provider (such as a provider with 'useFactory').
 `,
-        [makeRelatedInformation(provider.node, `'${provider.node.name.text}' is declared here.`)]));
+        [makeRelatedInformation(provider.node, `'${provider.node.name.text}' is declared here.`)],
+      ),
+    );
   }
 
   return diagnostics;
 }
 
 export function getDirectiveDiagnostics(
-    node: ClassDeclaration, injectableRegistry: InjectableClassRegistry,
-    evaluator: PartialEvaluator, reflector: ReflectionHost, scopeRegistry: LocalModuleScopeRegistry,
-    strictInjectionParameters: boolean, kind: 'Directive'|'Component'): ts.Diagnostic[]|null {
-  let diagnostics: ts.Diagnostic[]|null = [];
+  node: ClassDeclaration,
+  injectableRegistry: InjectableClassRegistry,
+  evaluator: PartialEvaluator,
+  reflector: ReflectionHost,
+  scopeRegistry: LocalModuleScopeRegistry,
+  strictInjectionParameters: boolean,
+  kind: 'Directive' | 'Component',
+): ts.Diagnostic[] | null {
+  let diagnostics: ts.Diagnostic[] | null = [];
 
-  const addDiagnostics = (more: ts.Diagnostic|ts.Diagnostic[]|null) => {
+  const addDiagnostics = (more: ts.Diagnostic | ts.Diagnostic[] | null) => {
     if (more === null) {
       return;
     } else if (diagnostics === null) {
@@ -152,13 +188,24 @@ export function getDirectiveDiagnostics(
     addDiagnostics(makeDuplicateDeclarationError(node, duplicateDeclarations, kind));
   }
 
-  addDiagnostics(checkInheritanceOfInjectable(
-      node, injectableRegistry, reflector, evaluator, strictInjectionParameters, kind));
+  addDiagnostics(
+    checkInheritanceOfInjectable(
+      node,
+      injectableRegistry,
+      reflector,
+      evaluator,
+      strictInjectionParameters,
+      kind,
+    ),
+  );
   return diagnostics;
 }
 
 export function validateHostDirectives(
-    origin: ts.Expression, hostDirectives: HostDirectiveMeta[], metaReader: MetadataReader) {
+  origin: ts.Expression,
+  hostDirectives: HostDirectiveMeta[],
+  metaReader: MetadataReader,
+) {
   const diagnostics: ts.DiagnosticWithLocation[] = [];
 
   for (const current of hostDirectives) {
@@ -169,34 +216,48 @@ export function validateHostDirectives(
     const hostMeta = flattenInheritedDirectiveMetadata(metaReader, current.directive);
 
     if (hostMeta === null) {
-      diagnostics.push(makeDiagnostic(
-          ErrorCode.HOST_DIRECTIVE_INVALID, current.directive.getOriginForDiagnostics(origin),
-          `${
-              current.directive
-                  .debugName} must be a standalone directive to be used as a host directive`));
+      diagnostics.push(
+        makeDiagnostic(
+          ErrorCode.HOST_DIRECTIVE_INVALID,
+          current.directive.getOriginForDiagnostics(origin),
+          `${current.directive.debugName} must be a standalone directive to be used as a host directive`,
+        ),
+      );
       continue;
     }
 
     if (!hostMeta.isStandalone) {
-      diagnostics.push(makeDiagnostic(
+      diagnostics.push(
+        makeDiagnostic(
           ErrorCode.HOST_DIRECTIVE_NOT_STANDALONE,
           current.directive.getOriginForDiagnostics(origin),
-          `Host directive ${hostMeta.name} must be standalone`));
+          `Host directive ${hostMeta.name} must be standalone`,
+        ),
+      );
     }
 
     if (hostMeta.isComponent) {
-      diagnostics.push(makeDiagnostic(
-          ErrorCode.HOST_DIRECTIVE_COMPONENT, current.directive.getOriginForDiagnostics(origin),
-          `Host directive ${hostMeta.name} cannot be a component`));
+      diagnostics.push(
+        makeDiagnostic(
+          ErrorCode.HOST_DIRECTIVE_COMPONENT,
+          current.directive.getOriginForDiagnostics(origin),
+          `Host directive ${hostMeta.name} cannot be a component`,
+        ),
+      );
     }
 
     const requiredInputNames = Array.from(hostMeta.inputs)
-                                   .filter(input => input.required)
-                                   .map(input => input.classPropertyName);
+      .filter((input) => input.required)
+      .map((input) => input.classPropertyName);
 
     validateHostDirectiveMappings(
-        'input', current, hostMeta, origin, diagnostics,
-        requiredInputNames.length > 0 ? new Set(requiredInputNames) : null);
+      'input',
+      current,
+      hostMeta,
+      origin,
+      diagnostics,
+      requiredInputNames.length > 0 ? new Set(requiredInputNames) : null,
+    );
     validateHostDirectiveMappings('output', current, hostMeta, origin, diagnostics, null);
   }
 
@@ -204,16 +265,20 @@ export function validateHostDirectives(
 }
 
 function validateHostDirectiveMappings(
-    bindingType: 'input'|'output', hostDirectiveMeta: HostDirectiveMeta, meta: DirectiveMeta,
-    origin: ts.Expression, diagnostics: ts.DiagnosticWithLocation[],
-    requiredBindings: Set<ClassPropertyName>|null) {
+  bindingType: 'input' | 'output',
+  hostDirectiveMeta: HostDirectiveMeta,
+  meta: DirectiveMeta,
+  origin: ts.Expression,
+  diagnostics: ts.DiagnosticWithLocation[],
+  requiredBindings: Set<ClassPropertyName> | null,
+) {
   if (!isHostDirectiveMetaForGlobalMode(hostDirectiveMeta)) {
     throw new Error('Impossible state: diagnostics code path for local compilation');
   }
 
   const className = meta.name;
   const hostDirectiveMappings =
-      bindingType === 'input' ? hostDirectiveMeta.inputs : hostDirectiveMeta.outputs;
+    bindingType === 'input' ? hostDirectiveMeta.inputs : hostDirectiveMeta.outputs;
   const existingBindings = bindingType === 'input' ? meta.inputs : meta.outputs;
   const exposedRequiredBindings = new Set<string>();
 
@@ -222,11 +287,13 @@ function validateHostDirectiveMappings(
       const bindings = existingBindings.getByBindingPropertyName(publicName);
 
       if (bindings === null) {
-        diagnostics.push(makeDiagnostic(
+        diagnostics.push(
+          makeDiagnostic(
             ErrorCode.HOST_DIRECTIVE_UNDEFINED_BINDING,
             hostDirectiveMeta.directive.getOriginForDiagnostics(origin),
-            `Directive ${className} does not have an ${bindingType} with a public name of ${
-                publicName}.`));
+            `Directive ${className} does not have an ${bindingType} with a public name of ${publicName}.`,
+          ),
+        );
       } else if (requiredBindings !== null) {
         for (const field of bindings) {
           if (requiredBindings.has(field.classPropertyName)) {
@@ -241,12 +308,13 @@ function validateHostDirectiveMappings(
       if (bindingsForPublicName !== null) {
         for (const binding of bindingsForPublicName) {
           if (binding.bindingPropertyName !== publicName) {
-            diagnostics.push(makeDiagnostic(
+            diagnostics.push(
+              makeDiagnostic(
                 ErrorCode.HOST_DIRECTIVE_CONFLICTING_ALIAS,
                 hostDirectiveMeta.directive.getOriginForDiagnostics(origin),
-                `Cannot alias ${bindingType} ${publicName} of host directive ${className} to ${
-                    remappedPublicName}, because it already has a different ${
-                    bindingType} with the same public name.`));
+                `Cannot alias ${bindingType} ${publicName} of host directive ${className} to ${remappedPublicName}, because it already has a different ${bindingType} with the same public name.`,
+              ),
+            );
           }
         }
       }
@@ -266,27 +334,37 @@ function validateHostDirectiveMappings(
       }
     }
 
-    diagnostics.push(makeDiagnostic(
+    diagnostics.push(
+      makeDiagnostic(
         ErrorCode.HOST_DIRECTIVE_MISSING_REQUIRED_BINDING,
         hostDirectiveMeta.directive.getOriginForDiagnostics(origin),
-        `Required ${bindingType}${missingBindings.length === 1 ? '' : 's'} ${
-            missingBindings.join(', ')} from host directive ${className} must be exposed.`));
+        `Required ${bindingType}${missingBindings.length === 1 ? '' : 's'} ${missingBindings.join(
+          ', ',
+        )} from host directive ${className} must be exposed.`,
+      ),
+    );
   }
 }
 
-
-export function getUndecoratedClassWithAngularFeaturesDiagnostic(node: ClassDeclaration):
-    ts.Diagnostic {
+export function getUndecoratedClassWithAngularFeaturesDiagnostic(
+  node: ClassDeclaration,
+): ts.Diagnostic {
   return makeDiagnostic(
-      ErrorCode.UNDECORATED_CLASS_USING_ANGULAR_FEATURES, node.name,
-      `Class is using Angular features but is not decorated. Please add an explicit ` +
-          `Angular decorator.`);
+    ErrorCode.UNDECORATED_CLASS_USING_ANGULAR_FEATURES,
+    node.name,
+    `Class is using Angular features but is not decorated. Please add an explicit ` +
+      `Angular decorator.`,
+  );
 }
 
 export function checkInheritanceOfInjectable(
-    node: ClassDeclaration, injectableRegistry: InjectableClassRegistry, reflector: ReflectionHost,
-    evaluator: PartialEvaluator, strictInjectionParameters: boolean,
-    kind: 'Directive'|'Component'|'Pipe'|'Injectable'): ts.Diagnostic|null {
+  node: ClassDeclaration,
+  injectableRegistry: InjectableClassRegistry,
+  reflector: ReflectionHost,
+  evaluator: PartialEvaluator,
+  strictInjectionParameters: boolean,
+  kind: 'Directive' | 'Component' | 'Pipe' | 'Injectable',
+): ts.Diagnostic | null {
   const classWithCtor = findInheritedCtor(node, injectableRegistry, reflector, evaluator);
   if (classWithCtor === null || classWithCtor.isCtorValid) {
     // The class does not inherit a constructor, or the inherited constructor is compatible
@@ -325,8 +403,11 @@ interface ClassWithCtor {
 }
 
 export function findInheritedCtor(
-    node: ClassDeclaration, injectableRegistry: InjectableClassRegistry, reflector: ReflectionHost,
-    evaluator: PartialEvaluator): ClassWithCtor|null {
+  node: ClassDeclaration,
+  injectableRegistry: InjectableClassRegistry,
+  reflector: ReflectionHost,
+  evaluator: PartialEvaluator,
+): ClassWithCtor | null {
   if (!reflector.isClass(node) || reflector.getConstructorParameters(node) !== null) {
     // We should skip nodes that aren't classes. If a constructor exists, then no base class
     // definition is required on the runtime side - it's legal to inherit from any class.
@@ -374,52 +455,65 @@ export function findInheritedCtor(
 }
 
 function getInheritedInvalidCtorDiagnostic(
-    node: ClassDeclaration, baseClass: Reference,
-    kind: 'Directive'|'Component'|'Pipe'|'Injectable') {
+  node: ClassDeclaration,
+  baseClass: Reference,
+  kind: 'Directive' | 'Component' | 'Pipe' | 'Injectable',
+) {
   const baseClassName = baseClass.debugName;
 
   return makeDiagnostic(
-      ErrorCode.INJECTABLE_INHERITS_INVALID_CONSTRUCTOR, node.name,
-      `The ${kind.toLowerCase()} ${node.name.text} inherits its constructor from ${
-          baseClassName}, ` +
-          `but the latter has a constructor parameter that is not compatible with dependency injection. ` +
-          `Either add an explicit constructor to ${node.name.text} or change ${
-              baseClassName}'s constructor to ` +
-          `use parameters that are valid for DI.`);
+    ErrorCode.INJECTABLE_INHERITS_INVALID_CONSTRUCTOR,
+    node.name,
+    `The ${kind.toLowerCase()} ${node.name.text} inherits its constructor from ${baseClassName}, ` +
+      `but the latter has a constructor parameter that is not compatible with dependency injection. ` +
+      `Either add an explicit constructor to ${node.name.text} or change ${baseClassName}'s constructor to ` +
+      `use parameters that are valid for DI.`,
+  );
 }
 
 function getInheritedUndecoratedCtorDiagnostic(
-    node: ClassDeclaration, baseClass: Reference,
-    kind: 'Directive'|'Component'|'Pipe'|'Injectable') {
+  node: ClassDeclaration,
+  baseClass: Reference,
+  kind: 'Directive' | 'Component' | 'Pipe' | 'Injectable',
+) {
   const baseClassName = baseClass.debugName;
   const baseNeedsDecorator =
-      kind === 'Component' || kind === 'Directive' ? 'Directive' : 'Injectable';
+    kind === 'Component' || kind === 'Directive' ? 'Directive' : 'Injectable';
 
   return makeDiagnostic(
-      ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR, node.name,
-      `The ${kind.toLowerCase()} ${node.name.text} inherits its constructor from ${
-          baseClassName}, ` +
-          `but the latter does not have an Angular decorator of its own. Dependency injection will not be able to ` +
-          `resolve the parameters of ${baseClassName}'s constructor. Either add a @${
-              baseNeedsDecorator} decorator ` +
-          `to ${baseClassName}, or add an explicit constructor to ${node.name.text}.`);
+    ErrorCode.DIRECTIVE_INHERITS_UNDECORATED_CTOR,
+    node.name,
+    `The ${kind.toLowerCase()} ${node.name.text} inherits its constructor from ${baseClassName}, ` +
+      `but the latter does not have an Angular decorator of its own. Dependency injection will not be able to ` +
+      `resolve the parameters of ${baseClassName}'s constructor. Either add a @${baseNeedsDecorator} decorator ` +
+      `to ${baseClassName}, or add an explicit constructor to ${node.name.text}.`,
+  );
 }
 
 /**
- * Throws `FatalDiagnosticError` with error code `LOCAL_COMPILATION_UNRESOLVED_CONST` 
+ * Throws `FatalDiagnosticError` with error code `LOCAL_COMPILATION_UNRESOLVED_CONST`
  * if the compilation mode is local and the value is not resolved due to being imported
  * from external files. This is a common scenario for errors in local compilation mode,
  * and so this helper can be used to quickly generate the relevant errors.
- * 
- * @param nodeToHighlight Node to be highlighted in teh error message. 
- * Will default to value.node if not provided.    
+ *
+ * @param nodeToHighlight Node to be highlighted in teh error message.
+ * Will default to value.node if not provided.
  */
-export function assertLocalCompilationUnresolvedConst(compilationMode: CompilationMode, value: ResolvedValue, nodeToHighlight: ts.Node|null, errorMessage: string): void {
-  if (compilationMode === CompilationMode.LOCAL && value instanceof DynamicValue &&
-    value.isFromUnknownIdentifier()) {
+export function assertLocalCompilationUnresolvedConst(
+  compilationMode: CompilationMode,
+  value: ResolvedValue,
+  nodeToHighlight: ts.Node | null,
+  errorMessage: string,
+): void {
+  if (
+    compilationMode === CompilationMode.LOCAL &&
+    value instanceof DynamicValue &&
+    value.isFromUnknownIdentifier()
+  ) {
     throw new FatalDiagnosticError(
-        ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, 
-        nodeToHighlight ?? value.node, 
-        errorMessage);
+      ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST,
+      nodeToHighlight ?? value.node,
+      errorMessage,
+    );
   }
 }

@@ -25,10 +25,17 @@ import {ClassMemberAccessLevel, ReflectionHost} from '../../../reflection';
 
 export interface InitializerApiFunction {
   /** Module name where the initializer function is imported from. */
-  owningModule: '@angular/core'|'@angular/core/rxjs-interop';
+  owningModule: '@angular/core' | '@angular/core/rxjs-interop';
   /** Export name of the initializer function. */
-  functionName: ('input'|'model'|'output'|'outputFromObservable'|'viewChild'|'viewChildren'|
-                 'contentChild'|'contentChildren');
+  functionName:
+    | 'input'
+    | 'model'
+    | 'output'
+    | 'outputFromObservable'
+    | 'viewChild'
+    | 'viewChildren'
+    | 'contentChild'
+    | 'contentChildren';
   /** Class member access levels compatible with the API. */
   allowedAccessLevels: ClassMemberAccessLevel[];
 }
@@ -70,16 +77,19 @@ interface StaticInitializerData {
  * @returns The parsed initializer API, or null if none was found.
  */
 export function tryParseInitializerApi<Functions extends InitializerApiFunction[]>(
-    functions: Functions, expression: ts.Expression, reflector: ReflectionHost,
-    importTracker: ImportedSymbolsTracker): (InitializerFunctionMetadata&{api: Functions[number]}|
-                                             null) {
+  functions: Functions,
+  expression: ts.Expression,
+  reflector: ReflectionHost,
+  importTracker: ImportedSymbolsTracker,
+): (InitializerFunctionMetadata & {api: Functions[number]}) | null {
   if (!ts.isCallExpression(expression)) {
     return null;
   }
 
-  const staticResult = parseTopLevelCall(expression, functions, importTracker) ||
-      parseTopLevelRequiredCall(expression, functions, importTracker) ||
-      parseTopLevelCallFromNamespace(expression, functions, importTracker);
+  const staticResult =
+    parseTopLevelCall(expression, functions, importTracker) ||
+    parseTopLevelRequiredCall(expression, functions, importTracker) ||
+    parseTopLevelCallFromNamespace(expression, functions, importTracker);
 
   if (staticResult === null) {
     return null;
@@ -91,8 +101,11 @@ export function tryParseInitializerApi<Functions extends InitializerApiFunction[
   // need to verify it using the type checker which accounts for things like shadowed variables.
   // This should be done as the absolute last step since using the type check can be expensive.
   const resolvedImport = reflector.getImportOfIdentifier(apiReference);
-  if (resolvedImport === null || api.functionName !== resolvedImport.name ||
-      api.owningModule !== resolvedImport.from) {
+  if (
+    resolvedImport === null ||
+    api.functionName !== resolvedImport.name ||
+    api.owningModule !== resolvedImport.from
+  ) {
     return null;
   }
 
@@ -108,17 +121,19 @@ export function tryParseInitializerApi<Functions extends InitializerApiFunction[
  * e.g. `prop = input()`. Returns null if it can't be parsed.
  */
 function parseTopLevelCall(
-    call: ts.CallExpression, functions: InitializerApiFunction[],
-    importTracker: ImportedSymbolsTracker): StaticInitializerData|null {
+  call: ts.CallExpression,
+  functions: InitializerApiFunction[],
+  importTracker: ImportedSymbolsTracker,
+): StaticInitializerData | null {
   const node = call.expression;
 
   if (!ts.isIdentifier(node)) {
     return null;
   }
 
-  const matchingApi = functions.find(
-      fn =>
-          importTracker.isPotentialReferenceToNamedImport(node, fn.functionName, fn.owningModule));
+  const matchingApi = functions.find((fn) =>
+    importTracker.isPotentialReferenceToNamedImport(node, fn.functionName, fn.owningModule),
+  );
   if (matchingApi === undefined) {
     return null;
   }
@@ -131,19 +146,24 @@ function parseTopLevelCall(
  * e.g. `prop = input.required()`. Returns null if it can't be parsed.
  */
 function parseTopLevelRequiredCall(
-    call: ts.CallExpression, functions: InitializerApiFunction[],
-    importTracker: ImportedSymbolsTracker): StaticInitializerData|null {
+  call: ts.CallExpression,
+  functions: InitializerApiFunction[],
+  importTracker: ImportedSymbolsTracker,
+): StaticInitializerData | null {
   const node = call.expression;
 
-  if (!ts.isPropertyAccessExpression(node) || !ts.isIdentifier(node.expression) ||
-      node.name.text !== 'required') {
+  if (
+    !ts.isPropertyAccessExpression(node) ||
+    !ts.isIdentifier(node.expression) ||
+    node.name.text !== 'required'
+  ) {
     return null;
   }
 
   const expression = node.expression;
-  const matchingApi = functions.find(
-      fn => importTracker.isPotentialReferenceToNamedImport(
-          expression, fn.functionName, fn.owningModule));
+  const matchingApi = functions.find((fn) =>
+    importTracker.isPotentialReferenceToNamedImport(expression, fn.functionName, fn.owningModule),
+  );
   if (matchingApi === undefined) {
     return null;
   }
@@ -151,22 +171,23 @@ function parseTopLevelRequiredCall(
   return {api: matchingApi, apiReference: expression, isRequired: true};
 }
 
-
 /**
  * Attempts to parse a top-level call to a function referenced via a namespace import,
  * e.g. `prop = core.input.required()`. Returns null if it can't be parsed.
  */
 function parseTopLevelCallFromNamespace(
-    call: ts.CallExpression, functions: InitializerApiFunction[],
-    importTracker: ImportedSymbolsTracker): StaticInitializerData|null {
+  call: ts.CallExpression,
+  functions: InitializerApiFunction[],
+  importTracker: ImportedSymbolsTracker,
+): StaticInitializerData | null {
   const node = call.expression;
 
   if (!ts.isPropertyAccessExpression(node)) {
     return null;
   }
 
-  let apiReference: ts.Identifier|null = null;
-  let matchingApi: InitializerApiFunction|undefined = undefined;
+  let apiReference: ts.Identifier | null = null;
+  let matchingApi: InitializerApiFunction | undefined = undefined;
   let isRequired = false;
 
   // `prop = core.input()`
@@ -175,20 +196,26 @@ function parseTopLevelCallFromNamespace(
 
     apiReference = node.name;
     matchingApi = functions.find(
-        fn => node.name.text === fn.functionName &&
-            importTracker.isPotentialReferenceToNamespaceImport(namespaceRef, fn.owningModule));
+      (fn) =>
+        node.name.text === fn.functionName &&
+        importTracker.isPotentialReferenceToNamespaceImport(namespaceRef, fn.owningModule),
+    );
   } else if (
-      // `prop = core.input.required()`
-      ts.isPropertyAccessExpression(node.expression) &&
-      ts.isIdentifier(node.expression.expression) && ts.isIdentifier(node.expression.name) &&
-      node.name.text === 'required') {
+    // `prop = core.input.required()`
+    ts.isPropertyAccessExpression(node.expression) &&
+    ts.isIdentifier(node.expression.expression) &&
+    ts.isIdentifier(node.expression.name) &&
+    node.name.text === 'required'
+  ) {
     const potentialName = node.expression.name.text;
     const namespaceRef = node.expression.expression;
 
     apiReference = node.expression.name;
     matchingApi = functions.find(
-        fn => fn.functionName === potentialName &&
-            importTracker.isPotentialReferenceToNamespaceImport(namespaceRef!, fn.owningModule));
+      (fn) =>
+        fn.functionName === potentialName &&
+        importTracker.isPotentialReferenceToNamespaceImport(namespaceRef!, fn.owningModule),
+    );
     isRequired = true;
   }
 

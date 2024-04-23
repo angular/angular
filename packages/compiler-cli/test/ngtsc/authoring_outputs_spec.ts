@@ -25,14 +25,17 @@ runInEachFileSystem(() => {
     });
 
     it('should handle a basic output()', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, output} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           click = output();
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -43,7 +46,9 @@ runInEachFileSystem(() => {
     });
 
     it('should handle outputFromObservable()', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, EventEmitter} from '@angular/core';
         import {outputFromObservable} from '@angular/core/rxjs-interop';
 
@@ -51,7 +56,8 @@ runInEachFileSystem(() => {
         export class TestDir {
           click = outputFromObservable(new EventEmitter<void>());
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -62,14 +68,17 @@ runInEachFileSystem(() => {
     });
 
     it('should handle an aliased output()', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, output} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           click = output({alias: 'publicClick'});
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -80,7 +89,9 @@ runInEachFileSystem(() => {
     });
 
     it('should handle an aliased outputFromObservable()', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, EventEmitter} from '@angular/core';
         import {outputFromObservable} from '@angular/core/rxjs-interop';
 
@@ -89,7 +100,8 @@ runInEachFileSystem(() => {
           source$ = new EventEmitter<void>();
           click = outputFromObservable(this.source$, {alias: 'publicClick'});
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -101,24 +113,30 @@ runInEachFileSystem(() => {
 
     describe('diagnostics', () => {
       it('should fail when output() is used with @Output decorator', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Output, output} from '@angular/core';
 
           @Component({selector: 'test', template: ''})
           export class TestDir {
             @Output() click = output({alias: 'publicClick'});
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
 
         expect(diagnostics).toEqual([
-          jasmine.objectContaining(
-              {messageText: 'Using "@Output" with "output()" is not allowed.'}),
+          jasmine.objectContaining({
+            messageText: 'Using "@Output" with "output()" is not allowed.',
+          }),
         ]);
       });
 
       it('should fail when outputFromObservable() is used with @Output decorator', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Output, EventEmitter} from '@angular/core';
           import {outputFromObservable} from '@angular/core/rxjs-interop';
 
@@ -126,17 +144,21 @@ runInEachFileSystem(() => {
           export class TestDir {
             @Output() click = outputFromObservable(new EventEmitter());
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
 
         expect(diagnostics).toEqual([
-          jasmine.objectContaining(
-              {messageText: 'Using "@Output" with "output()" is not allowed.'}),
+          jasmine.objectContaining({
+            messageText: 'Using "@Output" with "output()" is not allowed.',
+          }),
         ]);
       });
 
       it('should fail if used with output declared in @Directive metadata', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Directive, Output, output} from '@angular/core';
 
           @Directive({
@@ -146,17 +168,21 @@ runInEachFileSystem(() => {
           export class TestDir {
             click = output({alias: 'publicClick'});
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
 
         expect(diagnostics).toEqual([
-          jasmine.objectContaining(
-              {messageText: 'Output "click" is unexpectedly declared in @Directive as well.'}),
+          jasmine.objectContaining({
+            messageText: 'Output "click" is unexpectedly declared in @Directive as well.',
+          }),
         ]);
       });
 
       it('should fail if used with output declared in @Component metadata', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Output, output} from '@angular/core';
 
           @Component({
@@ -167,17 +193,21 @@ runInEachFileSystem(() => {
           export class TestDir {
             click = output({alias: 'publicClick'});
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
 
         expect(diagnostics).toEqual([
-          jasmine.objectContaining(
-              {messageText: 'Output "click" is unexpectedly declared in @Component as well.'}),
+          jasmine.objectContaining({
+            messageText: 'Output "click" is unexpectedly declared in @Component as well.',
+          }),
         ]);
       });
 
       it('should fail if declared on a static member', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, output} from '@angular/core';
 
           @Component({
@@ -187,17 +217,21 @@ runInEachFileSystem(() => {
           export class TestDir {
             static click = output({alias: 'publicClick'});
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
 
         expect(diagnostics).toEqual([
-          jasmine.objectContaining(
-              {messageText: 'Output is incorrectly declared on a static class member.'}),
+          jasmine.objectContaining({
+            messageText: 'Output is incorrectly declared on a static class member.',
+          }),
         ]);
       });
 
       it('should fail if `.required` method is used (even though not supported via types)', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, output} from '@angular/core';
 
           @Component({
@@ -208,7 +242,8 @@ runInEachFileSystem(() => {
             // @ts-ignore
             click = output.required({alias: 'publicClick'});
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
 
         expect(diagnostics).toEqual([
@@ -217,7 +252,9 @@ runInEachFileSystem(() => {
       });
 
       it('should report an error when using an ES private field', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, output} from '@angular/core';
 
           @Component({
@@ -227,19 +264,24 @@ runInEachFileSystem(() => {
           export class TestDir {
             #click = output();
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
 
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining<ts.Diagnostic>({
-          messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-            messageText: `Cannot use "output" on a class member that is declared as ES private.`,
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining<ts.Diagnostic>({
+            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
+              messageText: `Cannot use "output" on a class member that is declared as ES private.`,
+            }),
           }),
-        })]);
+        ]);
       });
 
       it('should report an error when using a `private` field', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, output} from '@angular/core';
 
           @Component({
@@ -249,19 +291,24 @@ runInEachFileSystem(() => {
           export class TestDir {
             private click = output();
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
 
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining<ts.Diagnostic>({
-          messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-            messageText: `Cannot use "output" on a class member that is declared as private.`,
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining<ts.Diagnostic>({
+            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
+              messageText: `Cannot use "output" on a class member that is declared as private.`,
+            }),
           }),
-        })]);
+        ]);
       });
 
       it('should allow an output using a `protected` field', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, output} from '@angular/core';
 
           @Component({
@@ -271,7 +318,8 @@ runInEachFileSystem(() => {
           export class TestDir {
             protected click = output();
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(0);
       });

@@ -12,7 +12,7 @@ import ts from 'typescript';
  * origin source file into a type reference that is valid in the desired source file. If the type
  * cannot be translated to the desired source file, then null can be returned.
  */
-export type TypeReferenceTranslator = (type: ts.TypeReferenceNode) => ts.TypeReferenceNode|null;
+export type TypeReferenceTranslator = (type: ts.TypeReferenceNode) => ts.TypeReferenceNode | null;
 
 /**
  * A marker to indicate that a type reference is ineligible for emitting. This needs to be truthy
@@ -32,7 +32,9 @@ const INELIGIBLE: INELIGIBLE = {} as INELIGIBLE;
  * fail.
  */
 export function canEmitType(
-    type: ts.TypeNode, canEmit: (type: ts.TypeReferenceNode) => boolean): boolean {
+  type: ts.TypeNode,
+  canEmit: (type: ts.TypeReferenceNode) => boolean,
+): boolean {
   return canEmitTypeWorker(type);
 
   function canEmitTypeWorker(type: ts.TypeNode): boolean {
@@ -45,7 +47,7 @@ export function canEmitType(
   // that case. Otherwise, the result of visiting all child nodes determines the result. If no
   // ineligible type reference node is found then the walk returns `undefined`, indicating that
   // no type node was visited that could not be emitted.
-  function visitNode(node: ts.Node): INELIGIBLE|undefined {
+  function visitNode(node: ts.Node): INELIGIBLE | undefined {
     // `import('module')` type nodes are not supported, as it may require rewriting the module
     // specifier which is currently not done.
     if (ts.isImportTypeNode(node)) {
@@ -106,7 +108,7 @@ export class TypeEmitter {
   constructor(private translator: TypeReferenceTranslator) {}
 
   emitType(type: ts.TypeNode): ts.TypeNode {
-    const typeReferenceTransformer: ts.TransformerFactory<ts.TypeNode> = context => {
+    const typeReferenceTransformer: ts.TransformerFactory<ts.TypeNode> = (context) => {
       const visitNode = (node: ts.Node): ts.Node => {
         if (ts.isImportTypeNode(node)) {
           throw new Error('Unable to emit import type');
@@ -143,7 +145,7 @@ export class TypeEmitter {
           return ts.visitEachChild(node, visitNode, context);
         }
       };
-      return node => ts.visitNode(node, visitNode, ts.isTypeNode);
+      return (node) => ts.visitNode(node, visitNode, ts.isTypeNode);
     };
     return ts.transform(type, [typeReferenceTransformer]).transformed[0];
   }
@@ -156,10 +158,11 @@ export class TypeEmitter {
     }
 
     // Emit the type arguments, if any.
-    let typeArguments: ts.NodeArray<ts.TypeNode>|undefined = undefined;
+    let typeArguments: ts.NodeArray<ts.TypeNode> | undefined = undefined;
     if (type.typeArguments !== undefined) {
-      typeArguments =
-          ts.factory.createNodeArray(type.typeArguments.map(typeArg => this.emitType(typeArg)));
+      typeArguments = ts.factory.createNodeArray(
+        type.typeArguments.map((typeArg) => this.emitType(typeArg)),
+      );
     }
 
     return ts.factory.updateTypeReferenceNode(type, translatedType.typeName, typeArguments);

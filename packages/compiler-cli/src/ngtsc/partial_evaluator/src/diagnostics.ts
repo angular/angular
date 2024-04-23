@@ -47,7 +47,7 @@ export function describeResolvedType(value: ResolvedValue, maxDepth: number = 1)
     if (maxDepth === 0) {
       return 'Array';
     }
-    return `[${value.map(v => describeResolvedType(v, maxDepth - 1)).join(', ')}]`;
+    return `[${value.map((v) => describeResolvedType(v, maxDepth - 1)).join(', ')}]`;
   } else if (value instanceof DynamicValue) {
     return '(not statically analyzable)';
   } else if (value instanceof KnownFn) {
@@ -61,7 +61,7 @@ function quoteKey(key: string): string {
   if (/^[a-z0-9_]+$/i.test(key)) {
     return key;
   } else {
-    return `'${key.replace(/'/g, '\\\'')}'`;
+    return `'${key.replace(/'/g, "\\'")}'`;
   }
 }
 
@@ -73,52 +73,63 @@ function quoteKey(key: string): string {
  * @param value The dynamic value for which a trace should be created.
  */
 export function traceDynamicValue(
-    node: ts.Node, value: DynamicValue): ts.DiagnosticRelatedInformation[] {
+  node: ts.Node,
+  value: DynamicValue,
+): ts.DiagnosticRelatedInformation[] {
   return value.accept(new TraceDynamicValueVisitor(node));
 }
 
 class TraceDynamicValueVisitor implements DynamicValueVisitor<ts.DiagnosticRelatedInformation[]> {
-  private currentContainerNode: ts.Node|null = null;
+  private currentContainerNode: ts.Node | null = null;
 
   constructor(private node: ts.Node) {}
 
   visitDynamicInput(value: DynamicValue<DynamicValue>): ts.DiagnosticRelatedInformation[] {
     const trace = value.reason.accept(this);
     if (this.shouldTrace(value.node)) {
-      const info =
-          makeRelatedInformation(value.node, 'Unable to evaluate this expression statically.');
+      const info = makeRelatedInformation(
+        value.node,
+        'Unable to evaluate this expression statically.',
+      );
       trace.unshift(info);
     }
     return trace;
   }
 
-  visitSyntheticInput(value: DynamicValue<SyntheticValue<unknown>>):
-      ts.DiagnosticRelatedInformation[] {
+  visitSyntheticInput(
+    value: DynamicValue<SyntheticValue<unknown>>,
+  ): ts.DiagnosticRelatedInformation[] {
     return [makeRelatedInformation(value.node, 'Unable to evaluate this expression further.')];
   }
 
   visitDynamicString(value: DynamicValue): ts.DiagnosticRelatedInformation[] {
-    return [makeRelatedInformation(
-        value.node, 'A string value could not be determined statically.')];
+    return [
+      makeRelatedInformation(value.node, 'A string value could not be determined statically.'),
+    ];
   }
 
-  visitExternalReference(value: DynamicValue<Reference<ts.Declaration>>):
-      ts.DiagnosticRelatedInformation[] {
+  visitExternalReference(
+    value: DynamicValue<Reference<ts.Declaration>>,
+  ): ts.DiagnosticRelatedInformation[] {
     const name = value.reason.debugName;
     const description = name !== null ? `'${name}'` : 'an anonymous declaration';
-    return [makeRelatedInformation(
-        value.node,
-        `A value for ${
-            description} cannot be determined statically, as it is an external declaration.`)];
-  }
-
-  visitComplexFunctionCall(value: DynamicValue<FunctionDefinition>):
-      ts.DiagnosticRelatedInformation[] {
     return [
       makeRelatedInformation(
-          value.node,
-          'Unable to evaluate function call of complex function. A function must have exactly one return statement.'),
-      makeRelatedInformation(value.reason.node, 'Function is declared here.')
+        value.node,
+        `A value for ${description} cannot be determined statically, as it is an external declaration.`,
+      ),
+    ];
+  }
+
+  visitComplexFunctionCall(
+    value: DynamicValue<FunctionDefinition>,
+  ): ts.DiagnosticRelatedInformation[] {
+    return [
+      makeRelatedInformation(
+        value.node,
+        'Unable to evaluate function call of complex function. A function must have exactly one return statement.',
+      ),
+      makeRelatedInformation(value.reason.node, 'Function is declared here.'),
     ];
   }
 
@@ -171,7 +182,7 @@ class TraceDynamicValueVisitor implements DynamicValueVisitor<ts.DiagnosticRelat
  * statements and destructuring patterns are considered as container.
  */
 function getContainerNode(node: ts.Node): ts.Node {
-  let currentNode: ts.Node|undefined = node;
+  let currentNode: ts.Node | undefined = node;
   while (currentNode !== undefined) {
     switch (currentNode.kind) {
       case ts.SyntaxKind.ExpressionStatement:

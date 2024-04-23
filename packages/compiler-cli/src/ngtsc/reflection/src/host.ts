@@ -32,7 +32,7 @@ export interface Decorator {
    * Note: this field is declared using computed property syntax to work around a clang-format bug
    * that resulted in inconsistent indentation of this comment block.
    */
-  ['import']: Import|null;
+  ['import']: Import | null;
 
   /**
    * TypeScript reference to the decorator itself.
@@ -43,22 +43,25 @@ export interface Decorator {
    * Arguments of the invocation of the decorator, if the decorator is invoked, or `null`
    * otherwise.
    */
-  args: ts.Expression[]|null;
+  args: ts.Expression[] | null;
 }
 
 /**
  * A decorator is identified by either a simple identifier (e.g. `Decorator`) or, in some cases,
  * a namespaced property access (e.g. `core.Decorator`).
  */
-export type DecoratorIdentifier = ts.Identifier|NamespacedIdentifier;
-export type NamespacedIdentifier = ts.PropertyAccessExpression&{
+export type DecoratorIdentifier = ts.Identifier | NamespacedIdentifier;
+export type NamespacedIdentifier = ts.PropertyAccessExpression & {
   expression: ts.Identifier;
-  name: ts.Identifier
+  name: ts.Identifier;
 };
 export function isDecoratorIdentifier(exp: ts.Expression): exp is DecoratorIdentifier {
-  return ts.isIdentifier(exp) ||
-      ts.isPropertyAccessExpression(exp) && ts.isIdentifier(exp.expression) &&
-      ts.isIdentifier(exp.name);
+  return (
+    ts.isIdentifier(exp) ||
+    (ts.isPropertyAccessExpression(exp) &&
+      ts.isIdentifier(exp.expression) &&
+      ts.isIdentifier(exp.name))
+  );
 }
 
 /**
@@ -76,7 +79,9 @@ export function isDecoratorIdentifier(exp: ts.Expression): exp is DecoratorIdent
  * For `ReflectionHost` purposes, a class declaration should always have a `name` identifier,
  * because we need to be able to reference it in other parts of the program.
  */
-export type ClassDeclaration<T extends DeclarationNode = DeclarationNode> = T&{name: ts.Identifier};
+export type ClassDeclaration<T extends DeclarationNode = DeclarationNode> = T & {
+  name: ts.Identifier;
+};
 
 /**
  * An enumeration of possible kinds of class members.
@@ -105,7 +110,7 @@ export interface ClassMember {
   /**
    * TypeScript reference to the class member itself, or null if it is not applicable.
    */
-  node: ts.Node|null;
+  node: ts.Node | null;
 
   /**
    * Indication of which type of member this is (property, method, etc).
@@ -119,7 +124,7 @@ export interface ClassMember {
    * TypeScript `ts.TypeNode` representing the type of the member, or `null` if not present or
    * applicable.
    */
-  type: ts.TypeNode|null;
+  type: ts.TypeNode | null;
 
   /**
    * Name of the class member.
@@ -133,7 +138,7 @@ export interface ClassMember {
    * The `nameNode` is useful in writing references to this member that will be correctly source-
    * mapped back to the original file.
    */
-  nameNode: ts.Identifier|ts.PrivateIdentifier|ts.StringLiteral|null;
+  nameNode: ts.Identifier | ts.PrivateIdentifier | ts.StringLiteral | null;
 
   /**
    * TypeScript `ts.Expression` which represents the value of the member.
@@ -141,7 +146,7 @@ export interface ClassMember {
    * If the member is a property, this will be the property initializer if there is one, or null
    * otherwise.
    */
-  value: ts.Expression|null;
+  value: ts.Expression | null;
 
   /**
    * TypeScript `ts.Declaration` which represents the implementation of the member.
@@ -186,7 +191,7 @@ export interface ClassMember {
    * },
    * ```
    */
-  implementation: ts.Declaration|null;
+  implementation: ts.Declaration | null;
 
   /**
    * Whether the member is static or not.
@@ -196,7 +201,7 @@ export interface ClassMember {
   /**
    * Any `Decorator`s which are present on the member, or `null` if none are present.
    */
-  decorators: Decorator[]|null;
+  decorators: Decorator[] | null;
 }
 
 export const enum TypeValueReferenceKind {
@@ -222,7 +227,7 @@ export interface LocalTypeValueReference {
    * to track its usages, preventing the import from being elided if it was originally only used in
    * a type-position. See `DefaultImportTracker` for details.
    */
-  defaultImportStatement: ts.ImportDeclaration|null;
+  defaultImportStatement: ts.ImportDeclaration | null;
 }
 
 /**
@@ -248,10 +253,10 @@ export interface ImportedTypeValueReference {
    * If present, represents the symbol names that are referenced from the top-level import.
    * When `null` or empty, the `importedName` itself is the symbol being referenced.
    */
-  nestedPath: string[]|null;
+  nestedPath: string[] | null;
 
   // This field can be null in local compilation mode when resolving is not possible.
-  valueDeclaration: DeclarationNode|null;
+  valueDeclaration: DeclarationNode | null;
 }
 
 /**
@@ -303,7 +308,6 @@ export const enum ValueUnavailableKind {
   UNSUPPORTED,
 }
 
-
 export interface UnsupportedType {
   kind: ValueUnavailableKind.UNSUPPORTED;
   typeNode: ts.TypeNode;
@@ -312,13 +316,13 @@ export interface UnsupportedType {
 export interface NoValueDeclaration {
   kind: ValueUnavailableKind.NO_VALUE_DECLARATION;
   typeNode: ts.TypeNode;
-  decl: ts.Declaration|null;
+  decl: ts.Declaration | null;
 }
 
 export interface TypeOnlyImport {
   kind: ValueUnavailableKind.TYPE_ONLY_IMPORT;
   typeNode: ts.TypeNode;
-  node: ts.ImportClause|ts.ImportSpecifier;
+  node: ts.ImportClause | ts.ImportSpecifier;
 }
 
 export interface NamespaceImport {
@@ -340,7 +344,12 @@ export interface MissingType {
  * The various reasons why a type node may not be referred to as a value.
  */
 export type UnavailableValue =
-    UnsupportedType|NoValueDeclaration|TypeOnlyImport|NamespaceImport|UnknownReference|MissingType;
+  | UnsupportedType
+  | NoValueDeclaration
+  | TypeOnlyImport
+  | NamespaceImport
+  | UnknownReference
+  | MissingType;
 
 /**
  * A reference to a value that originated from a type position.
@@ -352,7 +361,9 @@ export type UnavailableValue =
  * See the individual types for additional information.
  */
 export type TypeValueReference =
-    LocalTypeValueReference|ImportedTypeValueReference|UnavailableTypeValueReference;
+  | LocalTypeValueReference
+  | ImportedTypeValueReference
+  | UnavailableTypeValueReference;
 
 /**
  * A parameter to a constructor.
@@ -364,7 +375,7 @@ export interface CtorParameter {
    * Some parameters don't have a simple string name (for example, parameters which are destructured
    * into multiple variables). In these cases, `name` can be `null`.
    */
-  name: string|null;
+  name: string | null;
 
   /**
    * TypeScript `ts.BindingName` representing the name of the parameter.
@@ -390,12 +401,12 @@ export interface CtorParameter {
    *
    * Can be null, if the param has no type declared.
    */
-  typeNode: ts.TypeNode|null;
+  typeNode: ts.TypeNode | null;
 
   /**
    * Any `Decorator`s which are present on the parameter, or `null` if none are present.
    */
-  decorators: Decorator[]|null;
+  decorators: Decorator[] | null;
 }
 
 /**
@@ -409,8 +420,12 @@ export interface FunctionDefinition {
   /**
    * A reference to the node which declares the function.
    */
-  node: ts.MethodDeclaration|ts.FunctionDeclaration|ts.FunctionExpression|ts.VariableDeclaration|
-      ts.ArrowFunction;
+  node:
+    | ts.MethodDeclaration
+    | ts.FunctionDeclaration
+    | ts.FunctionExpression
+    | ts.VariableDeclaration
+    | ts.ArrowFunction;
 
   /**
    * Statements of the function body, if a body is present, or null if no body is present or the
@@ -420,7 +435,7 @@ export interface FunctionDefinition {
    * This list may have been filtered to exclude statements which perform parameter default value
    * initialization.
    */
-  body: ts.Statement[]|null;
+  body: ts.Statement[] | null;
 
   /**
    * Metadata regarding the function's parameters, including possible default value expressions.
@@ -430,7 +445,7 @@ export interface FunctionDefinition {
   /**
    * Generic type parameters of the function.
    */
-  typeParameters: ts.TypeParameterDeclaration[]|null;
+  typeParameters: ts.TypeParameterDeclaration[] | null;
 
   /**
    * Number of known signatures of the function.
@@ -445,7 +460,7 @@ export interface Parameter {
   /**
    * Name of the parameter, if available.
    */
-  name: string|null;
+  name: string | null;
 
   /**
    * Declaration which created this parameter.
@@ -455,12 +470,12 @@ export interface Parameter {
   /**
    * Expression which represents the default value of the parameter, if any.
    */
-  initializer: ts.Expression|null;
+  initializer: ts.Expression | null;
 
   /**
    * Type of the parameter.
    */
-  type: ts.TypeNode|null;
+  type: ts.TypeNode | null;
 }
 
 /**
@@ -492,7 +507,7 @@ export interface Import {
 export type DeclarationNode = ts.Declaration;
 
 export type AmbientImport = {
-  __brand: 'AmbientImport'
+  __brand: 'AmbientImport';
 };
 
 /** Indicates that a declaration is referenced through an ambient type. */
@@ -508,7 +523,7 @@ export interface Declaration<T extends ts.Declaration = ts.Declaration> {
    * was imported via an absolute module (even through a chain of re-exports). If the symbol is part
    * of the application and was not imported from an absolute path, this will be `null`.
    */
-  viaModule: string|AmbientImport|null;
+  viaModule: string | AmbientImport | null;
 
   /**
    * TypeScript reference to the declaration itself, if one exists.
@@ -541,7 +556,7 @@ export interface ReflectionHost {
    * @returns an array of `Decorator` metadata if decorators are present on the declaration, or
    * `null` if either no decorators were present or if the declaration is not of a decoratable type.
    */
-  getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[]|null;
+  getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[] | null;
 
   /**
    * Examine a declaration which should be of a class, and return metadata about the members of the
@@ -567,7 +582,7 @@ export interface ReflectionHost {
    * a constructor exists. If the constructor exists and has 0 parameters, this array will be empty.
    * If the class has no constructor, this method returns `null`.
    */
-  getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null;
+  getConstructorParameters(clazz: ClassDeclaration): CtorParameter[] | null;
 
   /**
    * Reflect over a function and return metadata about its parameters and body.
@@ -589,7 +604,7 @@ export interface ReflectionHost {
    *
    * @returns a `FunctionDefinition` giving metadata about the function definition.
    */
-  getDefinitionOfFunction(fn: ts.Node): FunctionDefinition|null;
+  getDefinitionOfFunction(fn: ts.Node): FunctionDefinition | null;
 
   /**
    * Determine if an identifier was imported from another module and return `Import` metadata
@@ -600,7 +615,7 @@ export interface ReflectionHost {
    * @returns metadata about the `Import` if the identifier was imported from another module, or
    * `null` if the identifier doesn't resolve to an import but instead is locally defined.
    */
-  getImportOfIdentifier(id: ts.Identifier): Import|null;
+  getImportOfIdentifier(id: ts.Identifier): Import | null;
 
   /**
    * Trace an identifier to its declaration, if possible.
@@ -634,7 +649,7 @@ export interface ReflectionHost {
    * @returns metadata about the `Declaration` if the original declaration is found, or `null`
    * otherwise.
    */
-  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null;
+  getDeclarationOfIdentifier(id: ts.Identifier): Declaration | null;
 
   /**
    * Collect the declarations exported from a module by name.
@@ -648,7 +663,7 @@ export interface ReflectionHost {
    *
    * @returns a map of `Declaration`s for the module's exports, by name.
    */
-  getExportsOfModule(module: ts.Node): Map<string, Declaration>|null;
+  getExportsOfModule(module: ts.Node): Map<string, Declaration> | null;
 
   /**
    * Check whether the given node actually represents a class.
@@ -670,7 +685,7 @@ export interface ReflectionHost {
    *
    * @param clazz the class whose base we want to get.
    */
-  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression|null;
+  getBaseClassExpression(clazz: ClassDeclaration): ts.Expression | null;
 
   /**
    * Get the number of generic type parameters of a given class.
@@ -680,7 +695,7 @@ export interface ReflectionHost {
    * @returns the number of type parameters of the class, if known, or `null` if the declaration
    * is not a class or has an unknown number of type parameters.
    */
-  getGenericArityOfClass(clazz: ClassDeclaration): number|null;
+  getGenericArityOfClass(clazz: ClassDeclaration): number | null;
 
   /**
    * Find the assigned value of a variable declaration.
@@ -692,7 +707,7 @@ export interface ReflectionHost {
    * @returns the value of the variable, as a TypeScript expression node, or `undefined`
    * if the value cannot be computed.
    */
-  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null;
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression | null;
 
   /**
    * Returns `true` if a declaration is exported from the module in which it's defined.

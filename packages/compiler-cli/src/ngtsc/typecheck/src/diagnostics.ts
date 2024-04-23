@@ -13,7 +13,6 @@ import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {getTemplateMapping, TemplateSourceResolver} from './tcb_util';
 
-
 /**
  * Wraps the node in parenthesis such that inserted span comments become attached to the proper
  * node. This is an alias for `ts.factory.createParenthesizedExpression` with the benefit that it
@@ -43,7 +42,7 @@ export function wrapForTypeChecker(expr: ts.Expression): ts.Expression {
  * Adds a synthetic comment to the expression that represents the parse span of the provided node.
  * This comment can later be retrieved as trivia of a node to recover original source locations.
  */
-export function addParseSpanInfo(node: ts.Node, span: AbsoluteSourceSpan|ParseSourceSpan): void {
+export function addParseSpanInfo(node: ts.Node, span: AbsoluteSourceSpan | ParseSourceSpan): void {
   let commentText: string;
   if (span instanceof AbsoluteSourceSpan) {
     commentText = `${span.start},${span.end}`;
@@ -51,7 +50,11 @@ export function addParseSpanInfo(node: ts.Node, span: AbsoluteSourceSpan|ParseSo
     commentText = `${span.start.offset},${span.end.offset}`;
   }
   ts.addSyntheticTrailingComment(
-      node, ts.SyntaxKind.MultiLineCommentTrivia, commentText, /* hasTrailingNewLine */ false);
+    node,
+    ts.SyntaxKind.MultiLineCommentTrivia,
+    commentText,
+    /* hasTrailingNewLine */ false,
+  );
 }
 
 /**
@@ -90,18 +93,29 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
  * file from being reported as type-check errors.
  */
 export function translateDiagnostic(
-    diagnostic: ts.Diagnostic, resolver: TemplateSourceResolver): TemplateDiagnostic|null {
+  diagnostic: ts.Diagnostic,
+  resolver: TemplateSourceResolver,
+): TemplateDiagnostic | null {
   if (diagnostic.file === undefined || diagnostic.start === undefined) {
     return null;
   }
   const fullMapping = getTemplateMapping(
-      diagnostic.file, diagnostic.start, resolver, /*isDiagnosticsRequest*/ true);
+    diagnostic.file,
+    diagnostic.start,
+    resolver,
+    /*isDiagnosticsRequest*/ true,
+  );
   if (fullMapping === null) {
     return null;
   }
 
   const {sourceLocation, templateSourceMapping, span} = fullMapping;
   return makeTemplateDiagnostic(
-      sourceLocation.id, templateSourceMapping, span, diagnostic.category, diagnostic.code,
-      diagnostic.messageText);
+    sourceLocation.id,
+    templateSourceMapping,
+    span,
+    diagnostic.category,
+    diagnostic.code,
+    diagnostic.messageText,
+  );
 }

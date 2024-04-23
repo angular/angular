@@ -36,24 +36,30 @@ const EXTRA_CHECK_FUNCTIONS: Record<string, ExtraCheckFunction> = {
  *         https://github.com/angular/angular/issues/51647.
  */
 export function checkExpectations(
-    fs: ReadonlyFileSystem, testPath: string, failureMessage: string, expectedFiles: ExpectedFile[],
-    extraChecks: ExtraCheck[], skipMappingCheck = false): void {
+  fs: ReadonlyFileSystem,
+  testPath: string,
+  failureMessage: string,
+  expectedFiles: ExpectedFile[],
+  extraChecks: ExtraCheck[],
+  skipMappingCheck = false,
+): void {
   const builtDirectory = getBuildOutputDirectory(fs);
   for (const expectedFile of expectedFiles) {
     const expectedPath = fs.resolve(getRootDirectory(fs), expectedFile.expected);
     if (!fs.exists(expectedPath)) {
-      throw new Error(`The expected file at ${
-          expectedPath} does not exist. Please check the TEST_CASES.json file for this test case.`);
+      throw new Error(
+        `The expected file at ${expectedPath} does not exist. Please check the TEST_CASES.json file for this test case.`,
+      );
     }
 
     const generatedPath = fs.resolve(builtDirectory, expectedFile.generated);
     if (!fs.exists(generatedPath)) {
       const error = new Error(
-          `The generated file at ${generatedPath} does not exist.\n` +
+        `The generated file at ${generatedPath} does not exist.\n` +
           'Perhaps there is no matching input source file in the TEST_CASES.json file for this test case.\n' +
           'Or maybe you need to regenerate the GOLDEN_PARTIAL.js file by running:\n\n' +
-          `    yarn bazel run //packages/compiler-cli/test/compliance/test_cases:${
-              testPath}.golden.update`);
+          `    yarn bazel run //packages/compiler-cli/test/compliance/test_cases:${testPath}.golden.update`,
+      );
       // Clear the stack so that we get a nice error message
       error.stack = '';
       throw error;
@@ -62,20 +68,30 @@ export function checkExpectations(
     let expected = fs.readFile(expectedPath);
     expected = replaceMacros(expected);
     expected = stripAndCheckMappings(
-        fs, generated, generatedPath, expected, expectedPath,
-        /** skipMappingCheck */ !!skipMappingCheck);
+      fs,
+      generated,
+      generatedPath,
+      expected,
+      expectedPath,
+      /** skipMappingCheck */ !!skipMappingCheck,
+    );
 
     expectEmit(
-        generated, expected,
-        `When checking against expected file "${testPath}/${expectedFile.expected}"\n` +
-            failureMessage);
+      generated,
+      expected,
+      `When checking against expected file "${testPath}/${expectedFile.expected}"\n` +
+        failureMessage,
+    );
 
     runExtraChecks(testPath, generated, extraChecks);
   }
 }
 
 function runExtraChecks(
-    testPath: string, generated: string, extraChecks: (string|[string, ...any])[]): void {
+  testPath: string,
+  generated: string,
+  extraChecks: (string | [string, ...any])[],
+): void {
   for (const check of extraChecks) {
     let fnName: string;
     let args: any[];
@@ -88,13 +104,14 @@ function runExtraChecks(
     const fn = EXTRA_CHECK_FUNCTIONS[fnName];
     if (fn === undefined) {
       throw new Error(
-          `Unknown extra-check function: "${fnName}" in ${testPath}.\n` +
-          `Possible choices are: ${Object.keys(EXTRA_CHECK_FUNCTIONS).map(f => `\n - ${f}`)}.`);
+        `Unknown extra-check function: "${fnName}" in ${testPath}.\n` +
+          `Possible choices are: ${Object.keys(EXTRA_CHECK_FUNCTIONS).map((f) => `\n - ${f}`)}.`,
+      );
     }
     if (!fn(generated, ...args)) {
       throw new Error(
-          `Extra check ${fnName}(${args.map(arg => JSON.stringify(arg)).join(',')}) in ${
-              testPath} failed for generated code:\n\n${generated}`);
+        `Extra check ${fnName}(${args.map((arg) => JSON.stringify(arg)).join(',')}) in ${testPath} failed for generated code:\n\n${generated}`,
+      );
     }
   }
 }

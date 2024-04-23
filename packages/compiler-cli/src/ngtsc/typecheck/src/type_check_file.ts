@@ -19,8 +19,6 @@ import {OutOfBandDiagnosticRecorder} from './oob';
 import {ensureTypeCheckFilePreparationImports} from './tcb_util';
 import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 
-
-
 /**
  * An `Environment` representing the single type-checking file into which most (if not all) Type
  * Check Blocks (TCBs) will be generated.
@@ -34,28 +32,49 @@ export class TypeCheckFile extends Environment {
   private tcbStatements: ts.Statement[] = [];
 
   constructor(
-      readonly fileName: AbsoluteFsPath, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
-      reflector: ReflectionHost, compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>) {
+    readonly fileName: AbsoluteFsPath,
+    config: TypeCheckingConfig,
+    refEmitter: ReferenceEmitter,
+    reflector: ReflectionHost,
+    compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
+  ) {
     super(
-        config, new ImportManager({
-          // This minimizes noticeable changes with older versions of `ImportManager`.
-          forceGenerateNamespacesForNewImports: true,
-          // Type check block code affects code completion and fix suggestions.
-          // We want to encourage single quotes for now, like we always did.
-          shouldUseSingleQuotes: () => true
-        }),
-        refEmitter, reflector,
-        ts.createSourceFile(
-            compilerHost.getCanonicalFileName(fileName), '', ts.ScriptTarget.Latest, true));
+      config,
+      new ImportManager({
+        // This minimizes noticeable changes with older versions of `ImportManager`.
+        forceGenerateNamespacesForNewImports: true,
+        // Type check block code affects code completion and fix suggestions.
+        // We want to encourage single quotes for now, like we always did.
+        shouldUseSingleQuotes: () => true,
+      }),
+      refEmitter,
+      reflector,
+      ts.createSourceFile(
+        compilerHost.getCanonicalFileName(fileName),
+        '',
+        ts.ScriptTarget.Latest,
+        true,
+      ),
+    );
   }
 
   addTypeCheckBlock(
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, meta: TypeCheckBlockMetadata,
-      domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder,
-      genericContextBehavior: TcbGenericContextBehavior): void {
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    meta: TypeCheckBlockMetadata,
+    domSchemaChecker: DomSchemaChecker,
+    oobRecorder: OutOfBandDiagnosticRecorder,
+    genericContextBehavior: TcbGenericContextBehavior,
+  ): void {
     const fnId = ts.factory.createIdentifier(`_tcb${this.nextTcbId++}`);
     const fn = generateTypeCheckBlock(
-        this, ref, fnId, meta, domSchemaChecker, oobRecorder, genericContextBehavior);
+      this,
+      ref,
+      fnId,
+      meta,
+      domSchemaChecker,
+      oobRecorder,
+      genericContextBehavior,
+    );
     this.tcbStatements.push(fn);
   }
 
@@ -69,7 +88,8 @@ export class TypeCheckFile extends Environment {
     const importChanges = this.importManager.finalize();
     if (importChanges.updatedImports.size > 0) {
       throw new Error(
-          'AssertionError: Expected no imports to be updated for a new type check file.');
+        'AssertionError: Expected no imports to be updated for a new type check file.',
+      );
     }
 
     const printer = ts.createPrinter({removeComments});
@@ -77,8 +97,9 @@ export class TypeCheckFile extends Environment {
 
     const newImports = importChanges.newImports.get(this.contextFile.fileName);
     if (newImports !== undefined) {
-      source += newImports.map(i => printer.printNode(ts.EmitHint.Unspecified, i, this.contextFile))
-                    .join('\n');
+      source += newImports
+        .map((i) => printer.printNode(ts.EmitHint.Unspecified, i, this.contextFile))
+        .join('\n');
     }
 
     source += '\n';

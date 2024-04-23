@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EntryType, FunctionEntry, InitializerApiFunctionEntry, ParameterEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {
+  EntryType,
+  FunctionEntry,
+  InitializerApiFunctionEntry,
+  ParameterEntry,
+} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -68,12 +73,13 @@ runInEachFileSystem(() => {
       env.tsconfig();
     });
 
-    function test(input: string): InitializerApiFunctionEntry|undefined {
+    function test(input: string): InitializerApiFunctionEntry | undefined {
       env.write('index.ts', input);
-      return env.driveDocsExtraction('index.ts')
-          .find(
-              (f): f is InitializerApiFunctionEntry =>
-                  f.entryType === EntryType.InitializerApiFunction);
+      return env
+        .driveDocsExtraction('index.ts')
+        .find(
+          (f): f is InitializerApiFunctionEntry => f.entryType === EntryType.InitializerApiFunction,
+        );
     }
 
     describe('interface-based', () => {
@@ -82,13 +88,15 @@ runInEachFileSystem(() => {
       });
 
       it('should extract container description', () => {
-        expect(test(inputFixture)?.description.replace(/\n/g, ' '))
-            .toBe('This describes the overall initializer API function.');
+        expect(test(inputFixture)?.description.replace(/\n/g, ' ')).toBe(
+          'This describes the overall initializer API function.',
+        );
       });
 
       it('should extract container tags', () => {
-        expect(test(inputFixture)?.jsdocTags).toEqual([jasmine.objectContaining(
-            {name: 'initializerApiFunction'})]);
+        expect(test(inputFixture)?.jsdocTags).toEqual([
+          jasmine.objectContaining({name: 'initializerApiFunction'}),
+        ]);
       });
 
       it('should extract top-level call signatures', () => {
@@ -110,27 +118,31 @@ runInEachFileSystem(() => {
       });
 
       it('should extract sub-property call signatures', () => {
-        expect(test(inputFixture)?.subFunctions).toEqual([{
-          name: 'required',
-          implementation: null,
-          signatures: [
-            jasmine.objectContaining<FunctionEntry>({
-              generics: [{name: 'T', constraint: undefined, default: undefined}],
-              returnType: 'void',
-            }),
-            jasmine.objectContaining<FunctionEntry>({
-              generics: [
-                {name: 'T', constraint: undefined, default: undefined},
-                {name: 'TransformT', constraint: undefined, default: undefined},
-              ],
-              params: [
-                jasmine.objectContaining<ParameterEntry>(
-                    {name: 'transformFn', type: '(v: TransformT) => T'}),
-              ],
-              returnType: 'void',
-            }),
-          ],
-        }]);
+        expect(test(inputFixture)?.subFunctions).toEqual([
+          {
+            name: 'required',
+            implementation: null,
+            signatures: [
+              jasmine.objectContaining<FunctionEntry>({
+                generics: [{name: 'T', constraint: undefined, default: undefined}],
+                returnType: 'void',
+              }),
+              jasmine.objectContaining<FunctionEntry>({
+                generics: [
+                  {name: 'T', constraint: undefined, default: undefined},
+                  {name: 'TransformT', constraint: undefined, default: undefined},
+                ],
+                params: [
+                  jasmine.objectContaining<ParameterEntry>({
+                    name: 'transformFn',
+                    type: '(v: TransformT) => T',
+                  }),
+                ],
+                returnType: 'void',
+              }),
+            ],
+          },
+        ]);
       });
     });
 
@@ -140,13 +152,15 @@ runInEachFileSystem(() => {
       });
 
       it('should extract container description', () => {
-        expect(test(contentChildrenFixture)?.description.replace(/\n/g, ' '))
-            .toBe('Overall description of "contentChildren" API.');
+        expect(test(contentChildrenFixture)?.description.replace(/\n/g, ' ')).toBe(
+          'Overall description of "contentChildren" API.',
+        );
       });
 
       it('should extract container tags', () => {
-        expect(test(contentChildrenFixture)?.jsdocTags).toEqual([jasmine.objectContaining(
-            {name: 'initializerApiFunction'})]);
+        expect(test(contentChildrenFixture)?.jsdocTags).toEqual([
+          jasmine.objectContaining({name: 'initializerApiFunction'}),
+        ]);
       });
 
       it('should extract top-level call signatures', () => {
@@ -161,8 +175,11 @@ runInEachFileSystem(() => {
               generics: [{name: 'LocatorT', constraint: undefined, default: undefined}],
               params: [
                 jasmine.objectContaining<ParameterEntry>({name: 'locator', type: 'LocatorT'}),
-                jasmine.objectContaining<ParameterEntry>(
-                    {name: 'opts', isOptional: true, type: 'Options<void> | undefined'}),
+                jasmine.objectContaining<ParameterEntry>({
+                  name: 'opts',
+                  isOptional: true,
+                  type: 'Options<void> | undefined',
+                }),
               ],
               returnType: 'Signal<LocatorT>',
             }),
@@ -173,8 +190,11 @@ runInEachFileSystem(() => {
               ],
               params: [
                 jasmine.objectContaining<ParameterEntry>({name: 'locator', type: 'LocatorT'}),
-                jasmine.objectContaining<ParameterEntry>(
-                    {name: 'opts', isOptional: false, type: 'Options<ReadT>'}),
+                jasmine.objectContaining<ParameterEntry>({
+                  name: 'opts',
+                  isOptional: false,
+                  type: 'Options<ReadT>',
+                }),
               ],
               returnType: 'Signal<ReadT>',
             }),

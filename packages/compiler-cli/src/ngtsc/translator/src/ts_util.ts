@@ -11,7 +11,7 @@ import ts from 'typescript';
 /**
  * Creates a TypeScript node representing a numeric value.
  */
-export function tsNumericExpression(value: number): ts.NumericLiteral|ts.PrefixUnaryExpression {
+export function tsNumericExpression(value: number): ts.NumericLiteral | ts.PrefixUnaryExpression {
   // As of TypeScript 5.3 negative numbers are represented as `prefixUnaryOperator` and passing a
   // negative number (even as a string) into `createNumericLiteral` will result in an error.
   if (value < 0) {

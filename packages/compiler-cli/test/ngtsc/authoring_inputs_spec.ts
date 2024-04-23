@@ -25,36 +25,46 @@ runInEachFileSystem(() => {
     });
 
     it('should handle a basic, primitive valued input', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Directive, input} from '@angular/core';
 
         @Directive()
         export class TestDir {
           data = input('test');
         }
-      `);
+      `,
+      );
       env.driveMain();
       const js = env.getContents('test.js');
       expect(js).toContain('inputs: { data: [1, "data"] }');
     });
 
     it('should fail if @Input is applied on signal input member', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Directive, Input, input} from '@angular/core';
 
         @Directive()
         export class TestDir {
           @Input() data = input('test');
         }
-      `);
+      `,
+      );
       const diagnostics = env.driveDiagnostics();
-      expect(diagnostics).toEqual([jasmine.objectContaining({
-        messageText: `Using @Input with a signal input is not allowed.`,
-      })]);
+      expect(diagnostics).toEqual([
+        jasmine.objectContaining({
+          messageText: `Using @Input with a signal input is not allowed.`,
+        }),
+      ]);
     });
 
     it('should fail if signal input is also declared in `inputs` decorator field.', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Directive, input} from '@angular/core';
 
         @Directive({
@@ -63,7 +73,8 @@ runInEachFileSystem(() => {
         export class TestDir {
           data = input('test');
         }
-      `);
+      `,
+      );
       const diagnostics = env.driveDiagnostics();
       expect(diagnostics).toEqual([
         jasmine.objectContaining({
@@ -73,7 +84,9 @@ runInEachFileSystem(() => {
     });
 
     it('should fail if signal input declares a non-statically analyzable alias', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Directive, input} from '@angular/core';
 
         const ALIAS = 'bla';
@@ -84,7 +97,8 @@ runInEachFileSystem(() => {
         export class TestDir {
           data = input('test', {alias: ALIAS});
         }
-      `);
+      `,
+      );
       const diagnostics = env.driveDiagnostics();
       expect(diagnostics).toEqual([
         jasmine.objectContaining({
@@ -94,7 +108,9 @@ runInEachFileSystem(() => {
     });
 
     it('should fail if signal input declares a non-statically analyzable options', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Directive, input} from '@angular/core';
 
         const OPTIONS = {};
@@ -105,7 +121,8 @@ runInEachFileSystem(() => {
         export class TestDir {
           data = input('test', OPTIONS);
         }
-      `);
+      `,
+      );
       const diagnostics = env.driveDiagnostics();
       expect(diagnostics).toEqual([
         jasmine.objectContaining({
@@ -115,14 +132,17 @@ runInEachFileSystem(() => {
     });
 
     it('should fail if signal input is declared on static member', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Directive, input} from '@angular/core';
 
         @Directive()
         export class TestDir {
           static data = input('test');
         }
-      `);
+      `,
+      );
       const diagnostics = env.driveDiagnostics();
       expect(diagnostics).toEqual([
         jasmine.objectContaining({
@@ -132,7 +152,9 @@ runInEachFileSystem(() => {
     });
 
     it('should handle an alias configured, primitive valued input', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Directive, input} from '@angular/core';
 
         @Directive()
@@ -141,14 +163,17 @@ runInEachFileSystem(() => {
             alias: 'publicName',
           });
         }
-      `);
+      `,
+      );
       env.driveMain();
       const js = env.getContents('test.js');
       expect(js).toContain('inputs: { data: [1, "publicName", "data"] }');
     });
 
     it('should error if a required input declares an initial value', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Directive, input} from '@angular/core';
 
         @Directive()
@@ -157,16 +182,20 @@ runInEachFileSystem(() => {
             initialValue: 'bla',
           });
         }
-      `);
+      `,
+      );
       const diagnostics = env.driveDiagnostics();
-      expect(diagnostics[0].messageText).toEqual(jasmine.objectContaining({
-        messageText: 'No overload matches this call.',
-      }));
+      expect(diagnostics[0].messageText).toEqual(
+        jasmine.objectContaining({
+          messageText: 'No overload matches this call.',
+        }),
+      );
     });
 
-
     it('should handle a transform and required input', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Directive, input} from '@angular/core';
 
         @Directive()
@@ -175,32 +204,38 @@ runInEachFileSystem(() => {
             transform: (v: string|number) => 'works',
           });
         }
-      `);
+      `,
+      );
       env.driveMain();
       expect(env.getContents('test.js')).toContain(`inputs: { data: [1, "data"] }`);
       expect(env.getContents('test.d.ts')).toContain('"required": true; "isSignal": true;');
       expect(env.getContents('test.d.ts'))
-          .withContext(
-              'Expected no coercion member as input signal captures the write type of the transform')
-          .not.toContain('ngAcceptInputType');
+        .withContext(
+          'Expected no coercion member as input signal captures the write type of the transform',
+        )
+        .not.toContain('ngAcceptInputType');
     });
 
-
     it('should handle a non-primitive initial value', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Directive, input} from '@angular/core';
 
         @Directive()
         export class TestDir {
           data = input(/default pattern/);
         }
-      `);
+      `,
+      );
       env.driveMain();
       expect(env.getContents('test.js')).toContain(`inputs: { data: [1, "data"] }`);
     });
 
     it('should report mixed two-way binding with a signal input', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, Directive, input, Output, EventEmitter} from '@angular/core';
 
         @Directive({standalone: true, selector: '[dir]'})
@@ -217,7 +252,8 @@ runInEachFileSystem(() => {
         export class TestComp {
           value = 1;
         }
-      `);
+      `,
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
@@ -226,7 +262,9 @@ runInEachFileSystem(() => {
 
     describe('type checking', () => {
       it('should work', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Directive, input} from '@angular/core';
 
           @Directive({
@@ -244,16 +282,20 @@ runInEachFileSystem(() => {
           })
           export class TestComp {
           }
-        `);
+        `,
+        );
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].messageText)
-            .toBe(`Type 'boolean' is not assignable to type 'number'.`);
+        expect(diagnostics[0].messageText).toBe(
+          `Type 'boolean' is not assignable to type 'number'.`,
+        );
       });
 
       it('should work with transforms', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Directive, input} from '@angular/core';
 
           @Directive({
@@ -273,16 +315,20 @@ runInEachFileSystem(() => {
           })
           export class TestComp {
           }
-        `);
+        `,
+        );
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].messageText)
-            .toBe(`Type 'boolean' is not assignable to type 'string | number'.`);
+        expect(diagnostics[0].messageText).toBe(
+          `Type 'boolean' is not assignable to type 'string | number'.`,
+        );
       });
 
       it('should report unset required inputs', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, Directive, input} from '@angular/core';
 
           @Directive({
@@ -300,18 +346,22 @@ runInEachFileSystem(() => {
           })
           export class TestComp {
           }
-        `);
+        `,
+        );
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].messageText)
-            .toBe(`Required input 'data' from directive TestDir must be specified.`);
+        expect(diagnostics[0].messageText).toBe(
+          `Required input 'data' from directive TestDir must be specified.`,
+        );
       });
     });
 
     describe('diagnostics', () => {
       it('should error when declared using an ES private field', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Directive, input} from '@angular/core';
 
           @Directive({
@@ -321,19 +371,24 @@ runInEachFileSystem(() => {
           export class TestDir {
             #data = input.required<boolean>();
           }
-        `);
+        `,
+        );
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining<ts.Diagnostic>({
-          messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-            messageText: `Cannot use "input" on a class member that is declared as ES private.`,
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining<ts.Diagnostic>({
+            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
+              messageText: `Cannot use "input" on a class member that is declared as ES private.`,
+            }),
           }),
-        })]);
+        ]);
       });
 
       it('should error when declared using a `private` field', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Directive, input} from '@angular/core';
 
           @Directive({
@@ -343,19 +398,24 @@ runInEachFileSystem(() => {
           export class TestDir {
             private data = input.required<boolean>();
           }
-        `);
+        `,
+        );
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining<ts.Diagnostic>({
-          messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-            messageText: `Cannot use "input" on a class member that is declared as private.`,
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining<ts.Diagnostic>({
+            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
+              messageText: `Cannot use "input" on a class member that is declared as private.`,
+            }),
           }),
-        })]);
+        ]);
       });
 
       it('should allow declaring using a `protected` field', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Directive, input} from '@angular/core';
 
           @Directive({
@@ -365,7 +425,8 @@ runInEachFileSystem(() => {
           export class TestDir {
             protected data = input.required<boolean>();
           }
-        `);
+        `,
+        );
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(0);

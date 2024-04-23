@@ -11,7 +11,11 @@ import ts from 'typescript';
 
 import {isAngularDecorator, tryParseSignalInputMapping} from '../../../ngtsc/annotations';
 
-import {castAsAny, createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './transform_api';
+import {
+  castAsAny,
+  createSyntheticAngularCoreDecoratorAccess,
+  PropertyTransform,
+} from './transform_api';
 
 /**
  * Transform that will automatically add an `@Input` decorator for all signal
@@ -25,17 +29,20 @@ import {castAsAny, createSyntheticAngularCoreDecoratorAccess, PropertyTransform}
  * the class needing to be instantiated.
  */
 export const signalInputsTransform: PropertyTransform = (
-    member,
-    host,
-    factory,
-    importTracker,
-    importManager,
-    classDecorator,
-    isCore,
-    ) => {
+  member,
+  host,
+  factory,
+  importTracker,
+  importManager,
+  classDecorator,
+  isCore,
+) => {
   // If the field already is decorated, we handle this gracefully and skip it.
-  if (host.getDecoratorsOfDeclaration(member.node)
-          ?.some(d => isAngularDecorator(d, 'Input', isCore))) {
+  if (
+    host
+      .getDecoratorsOfDeclaration(member.node)
+      ?.some((d) => isAngularDecorator(d, 'Input', isCore))
+  ) {
     return member.node;
   }
 
@@ -56,27 +63,37 @@ export const signalInputsTransform: PropertyTransform = (
 
   const sourceFile = member.node.getSourceFile();
   const newDecorator = factory.createDecorator(
-      factory.createCallExpression(
-          createSyntheticAngularCoreDecoratorAccess(
-              factory, importManager, classDecorator, sourceFile, 'Input'),
-          undefined,
-          [
-            // Cast to `any` because `isSignal` will be private, and in case this
-            // transform is used directly as a pre-compilation step, the decorator should
-            // not fail. It is already validated now due to us parsing the input metadata.
-            castAsAny(
-                factory,
-                factory.createObjectLiteralExpression(Object.entries(fields).map(
-                    ([name, value]) => factory.createPropertyAssignment(name, value)))),
-          ]),
+    factory.createCallExpression(
+      createSyntheticAngularCoreDecoratorAccess(
+        factory,
+        importManager,
+        classDecorator,
+        sourceFile,
+        'Input',
+      ),
+      undefined,
+      [
+        // Cast to `any` because `isSignal` will be private, and in case this
+        // transform is used directly as a pre-compilation step, the decorator should
+        // not fail. It is already validated now due to us parsing the input metadata.
+        castAsAny(
+          factory,
+          factory.createObjectLiteralExpression(
+            Object.entries(fields).map(([name, value]) =>
+              factory.createPropertyAssignment(name, value),
+            ),
+          ),
+        ),
+      ],
+    ),
   );
 
   return factory.updatePropertyDeclaration(
-      member.node,
-      [newDecorator, ...(member.node.modifiers ?? [])],
-      member.name,
-      member.node.questionToken,
-      member.node.type,
-      member.node.initializer,
+    member.node,
+    [newDecorator, ...(member.node.modifiers ?? [])],
+    member.name,
+    member.node.questionToken,
+    member.node.type,
+    member.node.initializer,
   );
 };

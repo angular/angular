@@ -44,9 +44,9 @@ runInEachFileSystem(() => {
       const members = `users: string[];`;
       // Embedded view in question is the first node in the template (index 0).
       const {completions} = setupCompletions(template, members, 0);
-      expect(new Set(completions.templateContext.keys())).toEqual(new Set([
-        'innerRef', 'user', 'topLevelRef'
-      ]));
+      expect(new Set(completions.templateContext.keys())).toEqual(
+        new Set(['innerRef', 'user', 'topLevelRef']),
+      );
     });
 
     it('should support shadowing between outer and inner templates  ', () => {
@@ -75,68 +75,77 @@ runInEachFileSystem(() => {
   describe('TemplateTypeChecker scopes', () => {
     it('should get directives and pipes in scope for a component', () => {
       const MAIN_TS = absoluteFrom('/main.ts');
-      const {program, templateTypeChecker} = setup([{
-        fileName: MAIN_TS,
-        templates: {
-          'SomeCmp': 'Not important',
-        },
-        declarations: [
-          {
-            type: 'directive',
-            file: MAIN_TS,
-            name: 'OtherDir',
-            selector: 'other-dir',
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName: MAIN_TS,
+          templates: {
+            'SomeCmp': 'Not important',
           },
-          {
-            type: 'pipe',
-            file: MAIN_TS,
-            name: 'OtherPipe',
-            pipeName: 'otherPipe',
-          }
-        ],
-        source: `
+          declarations: [
+            {
+              type: 'directive',
+              file: MAIN_TS,
+              name: 'OtherDir',
+              selector: 'other-dir',
+            },
+            {
+              type: 'pipe',
+              file: MAIN_TS,
+              name: 'OtherPipe',
+              pipeName: 'otherPipe',
+            },
+          ],
+          source: `
             export class SomeCmp {}
             export class OtherDir {}
             export class OtherPipe {}
             export class SomeCmpModule {}
-          `
-      }]);
+          `,
+        },
+      ]);
       const sf = getSourceFileOrError(program, MAIN_TS);
       const SomeCmp = getClass(sf, 'SomeCmp');
 
       let directives = templateTypeChecker.getPotentialTemplateDirectives(SomeCmp) ?? [];
-      directives = directives.filter(d => d.isInScope);
+      directives = directives.filter((d) => d.isInScope);
       const pipes = templateTypeChecker.getPotentialPipes(SomeCmp) ?? [];
-      expect(directives.map(dir => dir.selector)).toEqual(['other-dir']);
-      expect(pipes.map(pipe => pipe.name)).toEqual(['otherPipe']);
+      expect(directives.map((dir) => dir.selector)).toEqual(['other-dir']);
+      expect(pipes.map((pipe) => pipe.name)).toEqual(['otherPipe']);
     });
   });
 });
 
 function setupCompletions(
-    template: string, componentMembers: string = '', inChildTemplateAtIndex: number|null = null): {
-  completions: GlobalCompletion,
-  program: ts.Program,
-  templateTypeChecker: TemplateTypeChecker,
-  component: ts.ClassDeclaration,
+  template: string,
+  componentMembers: string = '',
+  inChildTemplateAtIndex: number | null = null,
+): {
+  completions: GlobalCompletion;
+  program: ts.Program;
+  templateTypeChecker: TemplateTypeChecker;
+  component: ts.ClassDeclaration;
 } {
   const MAIN_TS = absoluteFrom('/main.ts');
   const {templateTypeChecker, programStrategy} = setup(
-      [{
+    [
+      {
         fileName: MAIN_TS,
         templates: {'SomeCmp': template},
         source: `export class SomeCmp { ${componentMembers} }`,
-      }],
-      ({inlining: false, config: {enableTemplateTypeChecker: true}}));
+      },
+    ],
+    {inlining: false, config: {enableTemplateTypeChecker: true}},
+  );
   const sf = getSourceFileOrError(programStrategy.getProgram(), MAIN_TS);
   const SomeCmp = getClass(sf, 'SomeCmp');
 
-  let context: TmplAstTemplate|null = null;
+  let context: TmplAstTemplate | null = null;
   if (inChildTemplateAtIndex !== null) {
     const tmpl = templateTypeChecker.getTemplate(SomeCmp)![inChildTemplateAtIndex];
     if (!(tmpl instanceof TmplAstTemplate)) {
       throw new Error(
-          `AssertionError: expected TmplAstTemplate at index ${inChildTemplateAtIndex}`);
+        `AssertionError: expected TmplAstTemplate at index ${inChildTemplateAtIndex}`,
+      );
     }
     context = tmpl;
   }

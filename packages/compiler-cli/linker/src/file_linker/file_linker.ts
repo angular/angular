@@ -26,11 +26,15 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
   private emitScopes = new Map<TConstantScope, EmitScope<TStatement, TExpression>>();
 
   constructor(
-      private linkerEnvironment: LinkerEnvironment<TStatement, TExpression>,
-      sourceUrl: AbsoluteFsPath, code: string) {
+    private linkerEnvironment: LinkerEnvironment<TStatement, TExpression>,
+    sourceUrl: AbsoluteFsPath,
+    code: string,
+  ) {
     this.linkerSelector = new PartialLinkerSelector<TExpression>(
-        createLinkerMap(this.linkerEnvironment, sourceUrl, code), this.linkerEnvironment.logger,
-        this.linkerEnvironment.options.unknownDeclarationVersionHandling);
+      createLinkerMap(this.linkerEnvironment, sourceUrl, code),
+      this.linkerEnvironment.logger,
+      this.linkerEnvironment.options.unknownDeclarationVersionHandling,
+    );
   }
 
   /**
@@ -53,16 +57,20 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
    * @param declarationScope the scope that contains this call to the declaration function.
    */
   linkPartialDeclaration(
-      declarationFn: string, args: TExpression[],
-      declarationScope: DeclarationScope<TConstantScope, TExpression>): TExpression {
+    declarationFn: string,
+    args: TExpression[],
+    declarationScope: DeclarationScope<TConstantScope, TExpression>,
+  ): TExpression {
     if (args.length !== 1) {
       throw new Error(
-          `Invalid function call: It should have only a single object literal argument, but contained ${
-              args.length}.`);
+        `Invalid function call: It should have only a single object literal argument, but contained ${args.length}.`,
+      );
     }
 
-    const metaObj =
-        AstObject.parse<R3PartialDeclaration, TExpression>(args[0], this.linkerEnvironment.host);
+    const metaObj = AstObject.parse<R3PartialDeclaration, TExpression>(
+      args[0],
+      this.linkerEnvironment.host,
+    );
     const ngImport = metaObj.getNode('ngImport');
     const emitScope = this.getEmitScope(ngImport, declarationScope);
 
@@ -78,8 +86,8 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
    * Return all the shared constant statements and their associated constant scope references, so
    * that they can be inserted into the source code.
    */
-  getConstantStatements(): {constantScope: TConstantScope, statements: TStatement[]}[] {
-    const results: {constantScope: TConstantScope, statements: TStatement[]}[] = [];
+  getConstantStatements(): {constantScope: TConstantScope; statements: TStatement[]}[] {
+    const results: {constantScope: TConstantScope; statements: TStatement[]}[] = [];
     for (const [constantScope, emitScope] of this.emitScopes.entries()) {
       const statements = emitScope.getConstantStatements();
       results.push({constantScope, statements});
@@ -88,20 +96,24 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
   }
 
   private getEmitScope(
-      ngImport: TExpression, declarationScope: DeclarationScope<TConstantScope, TExpression>):
-      EmitScope<TStatement, TExpression> {
+    ngImport: TExpression,
+    declarationScope: DeclarationScope<TConstantScope, TExpression>,
+  ): EmitScope<TStatement, TExpression> {
     const constantScope = declarationScope.getConstantScopeRef(ngImport);
     if (constantScope === null) {
       // There is no constant scope so we will emit extra statements into the definition IIFE.
       return new LocalEmitScope(
-          ngImport, this.linkerEnvironment.translator, this.linkerEnvironment.factory);
+        ngImport,
+        this.linkerEnvironment.translator,
+        this.linkerEnvironment.factory,
+      );
     }
 
     if (!this.emitScopes.has(constantScope)) {
       this.emitScopes.set(
-          constantScope,
-          new EmitScope(
-              ngImport, this.linkerEnvironment.translator, this.linkerEnvironment.factory));
+        constantScope,
+        new EmitScope(ngImport, this.linkerEnvironment.translator, this.linkerEnvironment.factory),
+      );
     }
     return this.emitScopes.get(constantScope)!;
   }

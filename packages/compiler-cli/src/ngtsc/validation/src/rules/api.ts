@@ -23,5 +23,5 @@ export interface SourceFileValidatorRule {
    * contain the issue that the rule is enforcing.
    * @param node Node to be checked.
    */
-  checkNode(node: ts.Node): ts.Diagnostic|ts.Diagnostic[]|null;
+  checkNode(node: ts.Node): ts.Diagnostic | ts.Diagnostic[] | null;
 }

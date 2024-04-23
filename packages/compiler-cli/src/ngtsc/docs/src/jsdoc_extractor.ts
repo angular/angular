@@ -15,13 +15,13 @@ import {JsDocTagEntry} from './entities';
  * decorators in JsDoc blocks so that they're not parsed as JsDoc tags.
  */
 const decoratorExpression =
-    /@(?=(Injectable|Component|Directive|Pipe|NgModule|Input|Output|HostBinding|HostListener|Inject|Optional|Self|Host|SkipSelf))/g;
+  /@(?=(Injectable|Component|Directive|Pipe|NgModule|Input|Output|HostBinding|HostListener|Inject|Optional|Self|Host|SkipSelf))/g;
 
 /** Gets the set of JsDoc tags applied to a node. */
 export function extractJsDocTags(node: ts.HasJSDoc): JsDocTagEntry[] {
   const escapedNode = getEscapedNode(node);
 
-  return ts.getJSDocTags(escapedNode).map(t => {
+  return ts.getJSDocTags(escapedNode).map((t) => {
     return {
       name: t.tagName.getText(),
       comment: unescapeAngularDecorators(ts.getTextOfJSDocComment(t.comment) ?? ''),
@@ -39,13 +39,13 @@ export function extractJsDocDescription(node: ts.HasJSDoc): string {
   // If the node is a top-level statement (const, class, function, etc.), we will get
   // a `ts.JSDoc` here. If the node is a `ts.ParameterDeclaration`, we will get
   // a `ts.JSDocParameterTag`.
-  const commentOrTag = ts.getJSDocCommentsAndTags(escapedNode).find(d => {
+  const commentOrTag = ts.getJSDocCommentsAndTags(escapedNode).find((d) => {
     return ts.isJSDoc(d) || ts.isJSDocParameterTag(d);
   });
 
   const comment = commentOrTag?.comment ?? '';
   const description =
-      typeof comment === 'string' ? comment : ts.getTextOfJSDocComment(comment) ?? '';
+    typeof comment === 'string' ? comment : ts.getTextOfJSDocComment(comment) ?? '';
 
   return unescapeAngularDecorators(description);
 }
@@ -76,7 +76,7 @@ function getEscapedNode(node: ts.HasJSDoc): ts.HasJSDoc {
   const rawComment = extractRawJsDoc(node);
   const escaped = escapeAngularDecorators(rawComment);
   const file = ts.createSourceFile('x.ts', `${escaped}class X {}`, ts.ScriptTarget.ES2020, true);
-  return file.statements.find(s => ts.isClassDeclaration(s)) as ts.ClassDeclaration;
+  return file.statements.find((s) => ts.isClassDeclaration(s)) as ts.ClassDeclaration;
 }
 
 /** Escape the `@` character for Angular decorators. */

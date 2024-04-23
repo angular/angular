@@ -42,18 +42,18 @@ const propertyTransforms: PropertyTransform[] = [
  * decorator for JIT.
  */
 export function getInitializerApiJitTransform(
-    host: ReflectionHost,
-    importTracker: ImportedSymbolsTracker,
-    isCore: boolean,
-    ): ts.TransformerFactory<ts.SourceFile> {
-  return ctx => {
-    return sourceFile => {
+  host: ReflectionHost,
+  importTracker: ImportedSymbolsTracker,
+  isCore: boolean,
+): ts.TransformerFactory<ts.SourceFile> {
+  return (ctx) => {
+    return (sourceFile) => {
       const importManager = new ImportManager();
 
       sourceFile = ts.visitNode(
-          sourceFile,
-          createTransformVisitor(ctx, host, importManager, importTracker, isCore),
-          ts.isSourceFile,
+        sourceFile,
+        createTransformVisitor(ctx, host, importManager, importTracker, isCore),
+        ts.isSourceFile,
       );
 
       return importManager.transformTsFile(ctx, sourceFile);
@@ -62,21 +62,22 @@ export function getInitializerApiJitTransform(
 }
 
 function createTransformVisitor(
-    ctx: ts.TransformationContext,
-    host: ReflectionHost,
-    importManager: ImportManager,
-    importTracker: ImportedSymbolsTracker,
-    isCore: boolean,
-    ): ts.Visitor<ts.Node, ts.Node> {
+  ctx: ts.TransformationContext,
+  host: ReflectionHost,
+  importManager: ImportManager,
+  importTracker: ImportedSymbolsTracker,
+  isCore: boolean,
+): ts.Visitor<ts.Node, ts.Node> {
   const visitor: ts.Visitor<ts.Node, ts.Node> = (node: ts.Node): ts.Node => {
     if (ts.isClassDeclaration(node) && node.name !== undefined) {
-      const angularDecorator = host.getDecoratorsOfDeclaration(node)?.find(
-          (d) => decoratorsWithInputs.some(name => isAngularDecorator(d, name, isCore)));
+      const angularDecorator = host
+        .getDecoratorsOfDeclaration(node)
+        ?.find((d) => decoratorsWithInputs.some((name) => isAngularDecorator(d, name, isCore)));
 
       if (angularDecorator !== undefined) {
         let hasChanged = false;
 
-        const members = node.members.map(memberNode => {
+        const members = node.members.map((memberNode) => {
           if (!ts.isPropertyDeclaration(memberNode)) {
             return memberNode;
           }
@@ -88,8 +89,14 @@ function createTransformVisitor(
           // Find the first matching transform and update the class member.
           for (const transform of propertyTransforms) {
             const newNode = transform(
-                {...member, node: memberNode}, host, ctx.factory, importTracker, importManager,
-                angularDecorator, isCore);
+              {...member, node: memberNode},
+              host,
+              ctx.factory,
+              importTracker,
+              importManager,
+              angularDecorator,
+              isCore,
+            );
 
             if (newNode !== member.node) {
               hasChanged = true;
@@ -102,7 +109,13 @@ function createTransformVisitor(
 
         if (hasChanged) {
           return ctx.factory.updateClassDeclaration(
-              node, node.modifiers, node.name, node.typeParameters, node.heritageClauses, members);
+            node,
+            node.modifiers,
+            node.name,
+            node.typeParameters,
+            node.heritageClauses,
+            members,
+          );
         }
       }
     }

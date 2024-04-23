@@ -35,8 +35,11 @@ export class ImportedSymbolsTracker {
    * @param exportedName Name of the exported symbol that is being searched for.
    * @param moduleName Module from which the symbol should be imported.
    */
-  isPotentialReferenceToNamedImport(node: ts.Identifier, exportedName: string, moduleName: string):
-      boolean {
+  isPotentialReferenceToNamedImport(
+    node: ts.Identifier,
+    exportedName: string,
+    moduleName: string,
+  ): boolean {
     const sourceFile = node.getSourceFile();
     this.scanImports(sourceFile);
     const fileImports = this.fileToNamedImports.get(sourceFile)!;
@@ -95,8 +98,11 @@ export class ImportedSymbolsTracker {
 
     // Only check top-level imports.
     for (const stmt of sourceFile.statements) {
-      if (!ts.isImportDeclaration(stmt) || !ts.isStringLiteralLike(stmt.moduleSpecifier) ||
-          stmt.importClause?.namedBindings === undefined) {
+      if (
+        !ts.isImportDeclaration(stmt) ||
+        !ts.isStringLiteralLike(stmt.moduleSpecifier) ||
+        stmt.importClause?.namedBindings === undefined
+      ) {
         continue;
       }
 
@@ -113,7 +119,7 @@ export class ImportedSymbolsTracker {
         for (const element of stmt.importClause.namedBindings.elements) {
           const localName = element.name.text;
           const exportedName =
-              element.propertyName === undefined ? localName : element.propertyName.text;
+            element.propertyName === undefined ? localName : element.propertyName.text;
 
           if (!namedImports.has(moduleName)) {
             namedImports.set(moduleName, new Map());

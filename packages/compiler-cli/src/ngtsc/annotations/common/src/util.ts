@@ -6,13 +6,42 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, FactoryTarget, ParseLocation, ParseSourceFile, ParseSourceSpan, R3CompiledExpression, R3FactoryMetadata, R3Reference, ReadPropExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {
+  Expression,
+  ExternalExpr,
+  FactoryTarget,
+  ParseLocation,
+  ParseSourceFile,
+  ParseSourceSpan,
+  R3CompiledExpression,
+  R3FactoryMetadata,
+  R3Reference,
+  ReadPropExpr,
+  Statement,
+  WrappedNodeExpr,
+} from '@angular/compiler';
 import ts from 'typescript';
 
-import {assertSuccessfulReferenceEmit, ImportedFile, ImportFlags, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
+import {
+  assertSuccessfulReferenceEmit,
+  ImportedFile,
+  ImportFlags,
+  ModuleResolver,
+  Reference,
+  ReferenceEmitter,
+} from '../../../imports';
 import {attachDefaultImportDeclaration} from '../../../imports/src/default';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../../partial_evaluator';
-import {ClassDeclaration, Decorator, Import, ImportedTypeValueReference, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind} from '../../../reflection';
+import {
+  ClassDeclaration,
+  Decorator,
+  Import,
+  ImportedTypeValueReference,
+  LocalTypeValueReference,
+  ReflectionHost,
+  TypeValueReference,
+  TypeValueReferenceKind,
+} from '../../../reflection';
 import {CompileResult} from '../../../transform';
 
 /** Module name of the framework core. */
@@ -25,10 +54,11 @@ export const CORE_MODULE = '@angular/core';
  * references are converted to an `ExternalExpr`. Note that this is only valid in the context of the
  * file in which the `TypeValueReference` originated.
  */
-export function valueReferenceToExpression(valueRef: LocalTypeValueReference|
-                                           ImportedTypeValueReference): Expression;
-export function valueReferenceToExpression(valueRef: TypeValueReference): Expression|null;
-export function valueReferenceToExpression(valueRef: TypeValueReference): Expression|null {
+export function valueReferenceToExpression(
+  valueRef: LocalTypeValueReference | ImportedTypeValueReference,
+): Expression;
+export function valueReferenceToExpression(valueRef: TypeValueReference): Expression | null;
+export function valueReferenceToExpression(valueRef: TypeValueReference): Expression | null {
   if (valueRef.kind === TypeValueReferenceKind.UNAVAILABLE) {
     return null;
   } else if (valueRef.kind === TypeValueReferenceKind.LOCAL) {
@@ -38,8 +68,10 @@ export function valueReferenceToExpression(valueRef: TypeValueReference): Expres
     }
     return expr;
   } else {
-    let importExpr: Expression =
-        new ExternalExpr({moduleName: valueRef.moduleName, name: valueRef.importedName});
+    let importExpr: Expression = new ExternalExpr({
+      moduleName: valueRef.moduleName,
+      name: valueRef.importedName,
+    });
     if (valueRef.nestedPath !== null) {
       for (const property of valueRef.nestedPath) {
         importExpr = new ReadPropExpr(importExpr, property);
@@ -50,13 +82,19 @@ export function valueReferenceToExpression(valueRef: TypeValueReference): Expres
 }
 
 export function toR3Reference(
-    origin: ts.Node, ref: Reference, context: ts.SourceFile,
-    refEmitter: ReferenceEmitter): R3Reference {
+  origin: ts.Node,
+  ref: Reference,
+  context: ts.SourceFile,
+  refEmitter: ReferenceEmitter,
+): R3Reference {
   const emittedValueRef = refEmitter.emit(ref, context);
   assertSuccessfulReferenceEmit(emittedValueRef, origin, 'class');
 
-  const emittedTypeRef =
-      refEmitter.emit(ref, context, ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports);
+  const emittedTypeRef = refEmitter.emit(
+    ref,
+    context,
+    ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports,
+  );
   assertSuccessfulReferenceEmit(emittedTypeRef, origin, 'class');
 
   return {
@@ -65,7 +103,7 @@ export function toR3Reference(
   };
 }
 
-export function isAngularCore(decorator: Decorator): decorator is(Decorator & {import: Import}) {
+export function isAngularCore(decorator: Decorator): decorator is Decorator & {import: Import} {
   return decorator.import !== null && decorator.import.from === CORE_MODULE;
 }
 
@@ -74,8 +112,11 @@ export function isAngularCoreReference(reference: Reference, symbolName: string)
 }
 
 export function findAngularDecorator(
-    decorators: Decorator[], name: string, isCore: boolean): Decorator|undefined {
-  return decorators.find(decorator => isAngularDecorator(decorator, name, isCore));
+  decorators: Decorator[],
+  name: string,
+  isCore: boolean,
+): Decorator | undefined {
+  return decorators.find((decorator) => isAngularDecorator(decorator, name, isCore));
 }
 
 export function isAngularDecorator(decorator: Decorator, name: string, isCore: boolean): boolean {
@@ -88,8 +129,11 @@ export function isAngularDecorator(decorator: Decorator, name: string, isCore: b
 }
 
 export function getAngularDecorators(
-    decorators: Decorator[], names: readonly string[], isCore: boolean) {
-  return decorators.filter(decorator => {
+  decorators: Decorator[],
+  names: readonly string[],
+  isCore: boolean,
+) {
+  return decorators.filter((decorator) => {
     const name = isCore ? decorator.name : decorator.import?.name;
     if (name === undefined || !names.includes(name)) {
       return false;
@@ -111,7 +155,7 @@ export function unwrapExpression(node: ts.Expression): ts.Expression {
   return node;
 }
 
-function expandForwardRef(arg: ts.Expression): ts.Expression|null {
+function expandForwardRef(arg: ts.Expression): ts.Expression | null {
   arg = unwrapExpression(arg);
   if (!ts.isArrowFunction(arg) && !ts.isFunctionExpression(arg)) {
     return null;
@@ -135,7 +179,6 @@ function expandForwardRef(arg: ts.Expression): ts.Expression|null {
   }
 }
 
-
 /**
  * If the given `node` is a forwardRef() expression then resolve its inner value, otherwise return
  * `null`.
@@ -145,15 +188,18 @@ function expandForwardRef(arg: ts.Expression): ts.Expression|null {
  * @returns the resolved expression, if the original expression was a forwardRef(), or `null`
  *     otherwise.
  */
-export function tryUnwrapForwardRef(node: ts.Expression, reflector: ReflectionHost): ts.Expression|
-    null {
+export function tryUnwrapForwardRef(
+  node: ts.Expression,
+  reflector: ReflectionHost,
+): ts.Expression | null {
   node = unwrapExpression(node);
   if (!ts.isCallExpression(node) || node.arguments.length !== 1) {
     return null;
   }
 
-  const fn =
-      ts.isPropertyAccessExpression(node.expression) ? node.expression.name : node.expression;
+  const fn = ts.isPropertyAccessExpression(node.expression)
+    ? node.expression.name
+    : node.expression;
   if (!ts.isIdentifier(fn)) {
     return null;
   }
@@ -179,18 +225,22 @@ export function tryUnwrapForwardRef(node: ts.Expression, reflector: ReflectionHo
  * @param args the arguments to the invocation of the forwardRef expression
  * @returns an unwrapped argument if `ref` pointed to forwardRef, or null otherwise
  */
-export const forwardRefResolver: ForeignFunctionResolver =
-    (fn, callExpr, resolve, unresolvable) => {
-      if (!isAngularCoreReference(fn, 'forwardRef') || callExpr.arguments.length !== 1) {
-        return unresolvable;
-      }
-      const expanded = expandForwardRef(callExpr.arguments[0]);
-      if (expanded !== null) {
-        return resolve(expanded);
-      } else {
-        return unresolvable;
-      }
-    };
+export const forwardRefResolver: ForeignFunctionResolver = (
+  fn,
+  callExpr,
+  resolve,
+  unresolvable,
+) => {
+  if (!isAngularCoreReference(fn, 'forwardRef') || callExpr.arguments.length !== 1) {
+    return unresolvable;
+  }
+  const expanded = expandForwardRef(callExpr.arguments[0]);
+  if (expanded !== null) {
+    return resolve(expanded);
+  } else {
+    return unresolvable;
+  }
+};
 
 /**
  * Combines an array of resolver functions into a one.
@@ -209,7 +259,10 @@ export function combineResolvers(resolvers: ForeignFunctionResolver[]): ForeignF
 }
 
 export function isExpressionForwardReference(
-    expr: Expression, context: ts.Node, contextSource: ts.SourceFile): boolean {
+  expr: Expression,
+  context: ts.Node,
+  contextSource: ts.SourceFile,
+): boolean {
   if (isWrappedTsNodeExpr(expr)) {
     const node = ts.getOriginalNode(expr.node);
     return node.getSourceFile() === contextSource && context.pos < node.pos;
@@ -223,8 +276,10 @@ export function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<t
 }
 
 export function readBaseClass(
-    node: ClassDeclaration, reflector: ReflectionHost,
-    evaluator: PartialEvaluator): Reference<ClassDeclaration>|'dynamic'|null {
+  node: ClassDeclaration,
+  reflector: ReflectionHost,
+  evaluator: PartialEvaluator,
+): Reference<ClassDeclaration> | 'dynamic' | null {
   const baseExpression = reflector.getBaseClassExpression(node);
   if (baseExpression !== null) {
     const baseClass = evaluator.evaluate(baseExpression);
@@ -238,17 +293,18 @@ export function readBaseClass(
   return null;
 }
 
-const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> =
-    (context: ts.TransformationContext) => {
-      const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
-        const visited = ts.visitEachChild(node, visitor, context);
-        if (ts.isArrowFunction(visited) || ts.isFunctionExpression(visited)) {
-          return ts.factory.createParenthesizedExpression(visited);
-        }
-        return visited;
-      };
-      return (node: ts.Expression) => ts.visitEachChild(node, visitor, context);
-    };
+const parensWrapperTransformerFactory: ts.TransformerFactory<ts.Expression> = (
+  context: ts.TransformationContext,
+) => {
+  const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
+    const visited = ts.visitEachChild(node, visitor, context);
+    if (ts.isArrowFunction(visited) || ts.isFunctionExpression(visited)) {
+      return ts.factory.createParenthesizedExpression(visited);
+    }
+    return visited;
+  };
+  return (node: ts.Expression) => ts.visitEachChild(node, visitor, context);
+};
 
 /**
  * Wraps all functions in a given expression in parentheses. This is needed to avoid problems
@@ -270,8 +326,10 @@ export function wrapFunctionExpressionsInParens(expression: ts.Expression): ts.E
  * @param rawProviders Expression that declared the providers array in the source.
  */
 export function resolveProvidersRequiringFactory(
-    rawProviders: ts.Expression, reflector: ReflectionHost,
-    evaluator: PartialEvaluator): Set<Reference<ClassDeclaration>> {
+  rawProviders: ts.Expression,
+  reflector: ReflectionHost,
+  evaluator: PartialEvaluator,
+): Set<Reference<ClassDeclaration>> {
   const providers = new Set<Reference<ClassDeclaration>>();
   const resolvedProviders = evaluator.evaluate(rawProviders);
 
@@ -280,7 +338,7 @@ export function resolveProvidersRequiringFactory(
   }
 
   resolvedProviders.forEach(function processProviders(provider) {
-    let tokenClass: Reference|null = null;
+    let tokenClass: Reference | null = null;
 
     if (Array.isArray(provider)) {
       // If we ran into an array, recurse into it until we've resolve all the classes.
@@ -299,8 +357,11 @@ export function resolveProvidersRequiringFactory(
     // `getConstructorParameters`, but that fix causes more classes to be recognized here as needing
     // provider checks, which is a breaking change in g3. Avoid this breakage for now by skipping
     // classes from .d.ts files here directly, until g3 can be cleaned up.
-    if (tokenClass !== null && !tokenClass.node.getSourceFile().isDeclarationFile &&
-        reflector.isClass(tokenClass.node)) {
+    if (
+      tokenClass !== null &&
+      !tokenClass.node.getSourceFile().isDeclarationFile &&
+      reflector.isClass(tokenClass.node)
+    ) {
       const constructorParameters = reflector.getConstructorParameters(tokenClass.node);
 
       // Note that we only want to capture providers with a non-trivial constructor,
@@ -336,17 +397,23 @@ export function createSourceSpan(node: ts.Node): ParseSourceSpan {
 
   // +1 because values are zero-indexed.
   return new ParseSourceSpan(
-      new ParseLocation(parseSf, startOffset, startLine + 1, startCol + 1),
-      new ParseLocation(parseSf, endOffset, endLine + 1, endCol + 1));
+    new ParseLocation(parseSf, startOffset, startLine + 1, startCol + 1),
+    new ParseLocation(parseSf, endOffset, endLine + 1, endCol + 1),
+  );
 }
 
 /**
  * Collate the factory and definition compiled results into an array of CompileResult objects.
  */
 export function compileResults(
-    fac: CompileResult, def: R3CompiledExpression, metadataStmt: Statement|null, propName: string,
-    additionalFields: CompileResult[]|null, deferrableImports: Set<ts.ImportDeclaration>|null,
-    debugInfo: Statement|null = null): CompileResult[] {
+  fac: CompileResult,
+  def: R3CompiledExpression,
+  metadataStmt: Statement | null,
+  propName: string,
+  additionalFields: CompileResult[] | null,
+  deferrableImports: Set<ts.ImportDeclaration> | null,
+  debugInfo: Statement | null = null,
+): CompileResult[] {
   const statements = def.statements;
 
   if (metadataStmt !== null) {
@@ -376,19 +443,24 @@ export function compileResults(
 }
 
 export function toFactoryMetadata(
-    meta: Omit<R3FactoryMetadata, 'target'>, target: FactoryTarget): R3FactoryMetadata {
+  meta: Omit<R3FactoryMetadata, 'target'>,
+  target: FactoryTarget,
+): R3FactoryMetadata {
   return {
     name: meta.name,
     type: meta.type,
     typeArgumentCount: meta.typeArgumentCount,
     deps: meta.deps,
-    target
+    target,
   };
 }
 
 export function resolveImportedFile(
-    moduleResolver: ModuleResolver, importedFile: ImportedFile, expr: Expression,
-    origin: ts.SourceFile): ts.SourceFile|null {
+  moduleResolver: ModuleResolver,
+  importedFile: ImportedFile,
+  expr: Expression,
+  origin: ts.SourceFile,
+): ts.SourceFile | null {
   // If `importedFile` is not 'unknown' then it accurately reflects the source file that is
   // being imported.
   if (importedFile !== 'unknown') {
@@ -406,14 +478,15 @@ export function resolveImportedFile(
   return moduleResolver.resolveModule(expr.value.moduleName!, origin.fileName);
 }
 
-
 /**
  * Determines the most appropriate expression for diagnostic reporting purposes. If `expr` is
  * contained within `container` then `expr` is used as origin node, otherwise `container` itself is
  * used.
  */
 export function getOriginNodeForDiagnostics(
-    expr: ts.Expression, container: ts.Expression): ts.Expression {
+  expr: ts.Expression,
+  container: ts.Expression,
+): ts.Expression {
   const nodeSf = expr.getSourceFile();
   const exprSf = container.getSourceFile();
 
@@ -427,7 +500,7 @@ export function getOriginNodeForDiagnostics(
 }
 
 export function isAbstractClassDeclaration(clazz: ClassDeclaration): boolean {
-  return ts.canHaveModifiers(clazz) && clazz.modifiers !== undefined ?
-      clazz.modifiers.some(mod => mod.kind === ts.SyntaxKind.AbstractKeyword) :
-      false;
+  return ts.canHaveModifiers(clazz) && clazz.modifiers !== undefined
+    ? clazz.modifiers.some((mod) => mod.kind === ts.SyntaxKind.AbstractKeyword)
+    : false;
 }

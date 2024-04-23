@@ -20,8 +20,9 @@ runInEachFileSystem(() => {
   describe('SkipHydrationNotStatic', () => {
     it('binds the error code to its extended template diagnostic name', () => {
       expect(skipHydrationNotStaticFactory.code).toBe(ErrorCode.SKIP_HYDRATION_NOT_STATIC);
-      expect(skipHydrationNotStaticFactory.name)
-          .toBe(ExtendedTemplateDiagnosticName.SKIP_HYDRATION_NOT_STATIC);
+      expect(skipHydrationNotStaticFactory.name).toBe(
+        ExtendedTemplateDiagnosticName.SKIP_HYDRATION_NOT_STATIC,
+      );
     });
 
     it('should produce class binding warning', () => {
@@ -38,8 +39,11 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [skipHydrationNotStaticFactory], {}
-          /* options */
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [skipHydrationNotStaticFactory],
+        {},
+        /* options */
       );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
@@ -62,8 +66,11 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [skipHydrationNotStaticFactory], {}
-          /* options */
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [skipHydrationNotStaticFactory],
+        {},
+        /* options */
       );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
@@ -86,8 +93,11 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [skipHydrationNotStaticFactory], {}
-          /* options */
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [skipHydrationNotStaticFactory],
+        {},
+        /* options */
       );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
@@ -110,8 +120,11 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [skipHydrationNotStaticFactory], {}
-          /* options */
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [skipHydrationNotStaticFactory],
+        {},
+        /* options */
       );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
@@ -131,8 +144,11 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [skipHydrationNotStaticFactory], {}
-          /* options */
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [skipHydrationNotStaticFactory],
+        {},
+        /* options */
       );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);

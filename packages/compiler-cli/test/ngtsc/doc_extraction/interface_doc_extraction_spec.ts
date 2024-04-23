@@ -7,7 +7,15 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ClassEntry, EntryType, InterfaceEntry, MemberTags, MemberType, MethodEntry, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {
+  ClassEntry,
+  EntryType,
+  InterfaceEntry,
+  MemberTags,
+  MemberType,
+  MethodEntry,
+  PropertyEntry,
+} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -25,11 +33,14 @@ runInEachFileSystem(() => {
     });
 
     it('should extract interfaces', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export interface UserProfile {}
 
         export interface CustomSlider {}
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(2);
@@ -40,12 +51,15 @@ runInEachFileSystem(() => {
     });
 
     it('should extract interface members', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export interface UserProfile {
           firstName(): string;
           age: number;
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const interfaceEntry = docs[0] as InterfaceEntry;
@@ -63,11 +77,14 @@ runInEachFileSystem(() => {
     });
 
     it('should extract a method with a rest parameter', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export interface UserProfile {
           getNames(prefix: string, ...ids: string[]): string[];
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const interfaceEntry = docs[0] as InterfaceEntry;
@@ -84,11 +101,14 @@ runInEachFileSystem(() => {
     });
 
     it('should extract interface method params', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export interface UserProfile {
           setPhone(num: string, area?: string): void;
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -111,13 +131,16 @@ runInEachFileSystem(() => {
     });
 
     it('should not extract private interface members', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export interface UserProfile {
             private ssn: string;
             private getSsn(): string;
             private static printSsn(): void;
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -127,7 +150,9 @@ runInEachFileSystem(() => {
 
     it('should extract member tags', () => {
       // Test both properties and methods with zero, one, and multiple tags.
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export interface UserProfile {
             eyeColor: string;
             protected name: string;
@@ -142,7 +167,8 @@ runInEachFileSystem(() => {
             static getCountry(): string;
             protected getBirthday?(): string;
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -183,7 +209,9 @@ runInEachFileSystem(() => {
 
     it('should extract getters and setters', () => {
       // Test getter-only, a getter + setter, and setter-only.
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export interface UserProfile {
           get userId(): number;
 
@@ -192,7 +220,8 @@ runInEachFileSystem(() => {
 
           set isAdmin(value: boolean);
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const interfaceEntry = docs[0] as InterfaceEntry;
@@ -200,7 +229,7 @@ runInEachFileSystem(() => {
 
       expect(interfaceEntry.members.length).toBe(4);
 
-      const [userIdGetter, userNameGetter, userNameSetter, isAdminSetter, ] = interfaceEntry.members;
+      const [userIdGetter, userNameGetter, userNameSetter, isAdminSetter] = interfaceEntry.members;
 
       expect(userIdGetter.name).toBe('userId');
       expect(userIdGetter.memberType).toBe(MemberType.Getter);
@@ -213,7 +242,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract inherited members', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         interface Ancestor {
           id: string;
           value: string|number;
@@ -231,7 +262,8 @@ runInEachFileSystem(() => {
 
           save(value: number): number;
           save(value: string|number): string|number;
-        }`);
+        }`,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -240,7 +272,7 @@ runInEachFileSystem(() => {
       expect(interfaceEntry.members.length).toBe(6);
 
       const [ageEntry, valueEntry, numberSaveEntry, unionSaveEntry, nameEntry, idEntry] =
-          interfaceEntry.members;
+        interfaceEntry.members;
 
       expect(ageEntry.name).toBe('age');
       expect(ageEntry.memberType).toBe(MemberType.Property);
@@ -274,7 +306,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract inherited getters/setters', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         interface Ancestor {
           get name(): string;
           set name(v: string);
@@ -292,7 +326,8 @@ runInEachFileSystem(() => {
 
         export interface Child extends Parent {
           get id(): string;
-        }`);
+        }`,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -301,7 +336,7 @@ runInEachFileSystem(() => {
       expect(interfaceEntry.members.length).toBe(4);
 
       const [idEntry, nameEntry, ageGetterEntry, ageSetterEntry] =
-          interfaceEntry.members as PropertyEntry[];
+        interfaceEntry.members as PropertyEntry[];
 
       // When the child interface overrides an accessor pair with another accessor, it overrides
       // *both* the getter and the setter, resulting (in this case) in just a getter.

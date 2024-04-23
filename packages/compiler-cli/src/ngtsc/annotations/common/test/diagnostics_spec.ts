@@ -27,8 +27,9 @@ runInEachFileSystem(() => {
         }
         expect(error.diagnosticMessage.messageText).toBe('Error message');
         expect(error.diagnosticMessage.next!.length).toBe(1);
-        expect(error.diagnosticMessage.next![0].messageText)
-            .toBe(`Value could not be determined statically.`);
+        expect(error.diagnosticMessage.next![0].messageText).toBe(
+          `Value could not be determined statically.`,
+        );
 
         expect(error.relatedInformation).toBeDefined();
         expect(error.relatedInformation!.length).toBe(1);
@@ -39,9 +40,9 @@ runInEachFileSystem(() => {
       });
 
       it('should include a pointer for a reference to a named declaration', () => {
-        const {error, program} = createError(
-            `import {Foo} from './foo';`, 'Foo', 'Error message',
-            [{name: _('/foo.ts'), contents: 'export class Foo {}'}]);
+        const {error, program} = createError(`import {Foo} from './foo';`, 'Foo', 'Error message', [
+          {name: _('/foo.ts'), contents: 'export class Foo {}'},
+        ]);
         const fooSf = getSourceFileOrError(program, _('/foo.ts'));
 
         if (typeof error.diagnosticMessage === 'string') {
@@ -59,9 +60,9 @@ runInEachFileSystem(() => {
       });
 
       it('should include a pointer for a reference to an anonymous declaration', () => {
-        const {error, program} = createError(
-            `import Foo from './foo';`, 'Foo', 'Error message',
-            [{name: _('/foo.ts'), contents: 'export default class {}'}]);
+        const {error, program} = createError(`import Foo from './foo';`, 'Foo', 'Error message', [
+          {name: _('/foo.ts'), contents: 'export default class {}'},
+        ]);
         const fooSf = getSourceFileOrError(program, _('/foo.ts'));
 
         if (typeof error.diagnosticMessage === 'string') {
@@ -69,8 +70,9 @@ runInEachFileSystem(() => {
         }
         expect(error.diagnosticMessage.messageText).toBe('Error message');
         expect(error.diagnosticMessage.next!.length).toBe(1);
-        expect(error.diagnosticMessage.next![0].messageText)
-            .toBe(`Value is a reference to an anonymous declaration.`);
+        expect(error.diagnosticMessage.next![0].messageText).toBe(
+          `Value is a reference to an anonymous declaration.`,
+        );
 
         expect(error.relatedInformation).toBeDefined();
         expect(error.relatedInformation!.length).toBe(1);
@@ -79,7 +81,7 @@ runInEachFileSystem(() => {
         expect(getSourceCode(error.relatedInformation![0])).toBe('export default class {}');
       });
 
-      it('should include a representation of the value\'s type', () => {
+      it("should include a representation of the value's type", () => {
         const {error} = createError('', '{a: 2}', 'Error message');
 
         if (typeof error.diagnosticMessage === 'string') {
@@ -87,8 +89,9 @@ runInEachFileSystem(() => {
         }
         expect(error.diagnosticMessage.messageText).toBe('Error message');
         expect(error.diagnosticMessage.next!.length).toBe(1);
-        expect(error.diagnosticMessage.next![0].messageText)
-            .toBe(`Value is of type '{ a: number }'.`);
+        expect(error.diagnosticMessage.next![0].messageText).toBe(
+          `Value is of type '{ a: number }'.`,
+        );
 
         expect(error.relatedInformation).not.toBeDefined();
       });
@@ -102,10 +105,17 @@ function getSourceCode(diag: ts.DiagnosticRelatedInformation): string {
 }
 
 function createError(
-    code: string, expr: string, messageText: string, supportingFiles: TestFile[] = []) {
+  code: string,
+  expr: string,
+  messageText: string,
+  supportingFiles: TestFile[] = [],
+) {
   const {program} = makeProgram(
-      [{name: _('/entry.ts'), contents: `${code}; const target$ = ${expr}`}, ...supportingFiles],
-      /* options */ undefined, /* host */ undefined, /* checkForErrors */ false);
+    [{name: _('/entry.ts'), contents: `${code}; const target$ = ${expr}`}, ...supportingFiles],
+    /* options */ undefined,
+    /* host */ undefined,
+    /* checkForErrors */ false,
+  );
   const checker = program.getTypeChecker();
   const decl = getDeclaration(program, _('/entry.ts'), 'target$', ts.isVariableDeclaration);
   const valueExpr = decl.initializer!;

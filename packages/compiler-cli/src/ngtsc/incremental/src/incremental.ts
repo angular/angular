@@ -18,7 +18,12 @@ import {IncrementalBuild} from '../api';
 import {SemanticDepGraphUpdater} from '../semantic_graph';
 
 import {FileDependencyGraph} from './dependency_tracking';
-import {AnalyzedIncrementalState, DeltaIncrementalState, IncrementalState, IncrementalStateKind} from './state';
+import {
+  AnalyzedIncrementalState,
+  DeltaIncrementalState,
+  IncrementalState,
+  IncrementalStateKind,
+} from './state';
 
 /**
  * Information about the previous compilation being used as a starting point for the current one,
@@ -58,7 +63,7 @@ interface TypeCheckAndEmitPhase {
 /**
  * Represents the current phase of a compilation.
  */
-type Phase = AnalysisPhase|TypeCheckAndEmitPhase;
+type Phase = AnalysisPhase | TypeCheckAndEmitPhase;
 
 /**
  * Manages the incremental portion of an Angular compilation, allowing for reuse of a prior
@@ -77,23 +82,29 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
   private _state: IncrementalState;
 
   private constructor(
-      state: IncrementalState, readonly depGraph: FileDependencyGraph,
-      private versions: Map<AbsoluteFsPath, string>|null, private step: IncrementalStep|null) {
+    state: IncrementalState,
+    readonly depGraph: FileDependencyGraph,
+    private versions: Map<AbsoluteFsPath, string> | null,
+    private step: IncrementalStep | null,
+  ) {
     this._state = state;
 
     // The compilation begins in analysis phase.
     this.phase = {
       kind: PhaseKind.Analysis,
-      semanticDepGraphUpdater:
-          new SemanticDepGraphUpdater(step !== null ? step.priorState.semanticDepGraph : null),
+      semanticDepGraphUpdater: new SemanticDepGraphUpdater(
+        step !== null ? step.priorState.semanticDepGraph : null,
+      ),
     };
   }
 
   /**
    * Begin a fresh `IncrementalCompilation`.
    */
-  static fresh(program: ts.Program, versions: Map<AbsoluteFsPath, string>|null):
-      IncrementalCompilation {
+  static fresh(
+    program: ts.Program,
+    versions: Map<AbsoluteFsPath, string> | null,
+  ): IncrementalCompilation {
     const state: IncrementalState = {
       kind: IncrementalStateKind.Fresh,
     };
@@ -101,13 +112,16 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
   }
 
   static incremental(
-      program: ts.Program, newVersions: Map<AbsoluteFsPath, string>|null, oldProgram: ts.Program,
-      oldState: IncrementalState, modifiedResourceFiles: Set<AbsoluteFsPath>|null,
-      perf: PerfRecorder): IncrementalCompilation {
+    program: ts.Program,
+    newVersions: Map<AbsoluteFsPath, string> | null,
+    oldProgram: ts.Program,
+    oldState: IncrementalState,
+    modifiedResourceFiles: Set<AbsoluteFsPath> | null,
+    perf: PerfRecorder,
+  ): IncrementalCompilation {
     return perf.inPhase(PerfPhase.Reconciliation, () => {
       const physicallyChangedTsFiles = new Set<AbsoluteFsPath>();
       const changedResourceFiles = new Set<AbsoluteFsPath>(modifiedResourceFiles ?? []);
-
 
       let priorAnalysis: AnalyzedIncrementalState;
       switch (oldState.kind) {
@@ -138,7 +152,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
 
       const oldFilesArray = oldProgram.getSourceFiles().map(toOriginalSourceFile);
       const oldFiles = new Set(oldFilesArray);
-      const deletedTsFiles = new Set(oldFilesArray.map(sf => absoluteFromSourceFile(sf)));
+      const deletedTsFiles = new Set(oldFilesArray.map((sf) => absoluteFromSourceFile(sf)));
 
       for (const possiblyRedirectedNewFile of program.getSourceFiles()) {
         const sf = toOriginalSourceFile(possiblyRedirectedNewFile);
@@ -160,8 +174,11 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
 
           // If a version is available for the file from both the prior and the current program, and
           // that version is the same, then this is the same file, and we can skip it.
-          if (oldVersions.has(sfPath) && newVersions.has(sfPath) &&
-              oldVersions.get(sfPath)! === newVersions.get(sfPath)!) {
+          if (
+            oldVersions.has(sfPath) &&
+            newVersions.has(sfPath) &&
+            oldVersions.get(sfPath)! === newVersions.get(sfPath)!
+          ) {
             continue;
           }
 
@@ -188,7 +205,11 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
       // files.
       const depGraph = new FileDependencyGraph();
       const logicallyChangedTsFiles = depGraph.updateWithPhysicalChanges(
-          priorAnalysis.depGraph, physicallyChangedTsFiles, deletedTsFiles, changedResourceFiles);
+        priorAnalysis.depGraph,
+        physicallyChangedTsFiles,
+        deletedTsFiles,
+        changedResourceFiles,
+      );
 
       // Physically changed files aren't necessarily counted as logically changed by the dependency
       // graph (files do not have edges to themselves), so add them to the logical changes
@@ -220,15 +241,19 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
   get semanticDepGraphUpdater(): SemanticDepGraphUpdater {
     if (this.phase.kind !== PhaseKind.Analysis) {
       throw new Error(
-          `AssertionError: Cannot update the SemanticDepGraph after analysis completes`);
+        `AssertionError: Cannot update the SemanticDepGraph after analysis completes`,
+      );
     }
     return this.phase.semanticDepGraphUpdater;
   }
 
   recordSuccessfulAnalysis(traitCompiler: TraitCompiler): void {
     if (this.phase.kind !== PhaseKind.Analysis) {
-      throw new Error(`AssertionError: Incremental compilation in phase ${
-          PhaseKind[this.phase.kind]}, expected Analysis`);
+      throw new Error(
+        `AssertionError: Incremental compilation in phase ${
+          PhaseKind[this.phase.kind]
+        }, expected Analysis`,
+      );
     }
 
     const {needsEmit, needsTypeCheckEmit, newGraph} = this.phase.semanticDepGraphUpdater.finalize();
@@ -278,13 +303,15 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
     if (this._state.kind !== IncrementalStateKind.Analyzed) {
       throw new Error(`AssertionError: Expected successfully analyzed compilation.`);
     } else if (this.phase.kind !== PhaseKind.TypeCheckAndEmit) {
-      throw new Error(`AssertionError: Incremental compilation in phase ${
-          PhaseKind[this.phase.kind]}, expected TypeCheck`);
+      throw new Error(
+        `AssertionError: Incremental compilation in phase ${
+          PhaseKind[this.phase.kind]
+        }, expected TypeCheck`,
+      );
     }
 
     this._state.typeCheckResults = results;
   }
-
 
   recordSuccessfulEmit(sf: ts.SourceFile): void {
     if (this._state.kind !== IncrementalStateKind.Analyzed) {
@@ -293,7 +320,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
     this._state.emitted.add(absoluteFromSourceFile(sf));
   }
 
-  priorAnalysisFor(sf: ts.SourceFile): ClassRecord[]|null {
+  priorAnalysisFor(sf: ts.SourceFile): ClassRecord[] | null {
     if (this.step === null) {
       return null;
     }
@@ -312,7 +339,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
     return priorAnalysis.get(sf)!;
   }
 
-  priorTypeCheckingResultsFor(sf: ts.SourceFile): FileTypeCheckingData|null {
+  priorTypeCheckingResultsFor(sf: ts.SourceFile): FileTypeCheckingData | null {
     if (this.phase.kind !== PhaseKind.TypeCheckAndEmit) {
       throw new Error(`AssertionError: Expected successfully analyzed compilation.`);
     }
@@ -325,14 +352,18 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
 
     // If the file has logically changed, or its template type-checking results have semantically
     // changed, then past type-checking results cannot be reused.
-    if (this.step.logicallyChangedTsFiles.has(sfPath) ||
-        this.phase.needsTypeCheckEmit.has(sfPath)) {
+    if (
+      this.step.logicallyChangedTsFiles.has(sfPath) ||
+      this.phase.needsTypeCheckEmit.has(sfPath)
+    ) {
       return null;
     }
 
     // Past results also cannot be reused if they're not available.
-    if (this.step.priorState.typeCheckResults === null ||
-        !this.step.priorState.typeCheckResults.has(sfPath)) {
+    if (
+      this.step.priorState.typeCheckResults === null ||
+      !this.step.priorState.typeCheckResults.has(sfPath)
+    ) {
       return null;
     }
 
@@ -360,7 +391,8 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
 
     if (this.phase.kind !== PhaseKind.TypeCheckAndEmit) {
       throw new Error(
-          `AssertionError: Expected successful analysis before attempting to emit files`);
+        `AssertionError: Expected successful analysis before attempting to emit files`,
+      );
     }
 
     // If during analysis it was determined that this file has semantically changed, it must be

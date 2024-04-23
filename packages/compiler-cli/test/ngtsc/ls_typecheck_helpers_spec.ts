@@ -12,15 +12,17 @@ import {DiagnosticCategoryLabel} from '../../src/ngtsc/core/api';
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom as _, getSourceFileOrError} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {expectCompleteReuse, getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {
+  expectCompleteReuse,
+  getSourceCodeForDiagnostic,
+  loadStandardTestFiles,
+} from '../../src/ngtsc/testing';
 import {factory as invalidBananaInBoxFactory} from '../../src/ngtsc/typecheck/extended/checks/invalid_banana_in_box';
 
 import {NgtscTestEnvironment} from './env';
 import {getClass} from './util';
 
 const testFiles = loadStandardTestFiles({fakeCommon: true});
-
-
 
 runInEachFileSystem(() => {
   describe('full type checking', () => {
@@ -33,7 +35,9 @@ runInEachFileSystem(() => {
 
     describe('supports `getPrimaryAngularDecorator()` ', () => {
       it('for components', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
 		 import {Component} from '@angular/core';
 
 		 @Component({
@@ -42,7 +46,8 @@ runInEachFileSystem(() => {
 			 template: '<div></div>',
 		 })
 		 export class TestCmp {}
-		 `);
+		 `,
+        );
         const {program, checker} = env.driveTemplateTypeChecker();
         const sf = program.getSourceFile(_('/test.ts'));
         expect(sf).not.toBeNull();
@@ -51,7 +56,9 @@ runInEachFileSystem(() => {
       });
 
       it('for pipes', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
 		 import {Pipe, PipeTransform} from '@angular/core';
 
 		 @Pipe({name: 'expPipe'})
@@ -60,7 +67,8 @@ runInEachFileSystem(() => {
 				 return Math.pow(value, exponent);
 			 }
 		 }
-		 `);
+		 `,
+        );
         const {program, checker} = env.driveTemplateTypeChecker();
         const sf = program.getSourceFile(_('/test.ts'));
         expect(sf).not.toBeNull();
@@ -69,7 +77,9 @@ runInEachFileSystem(() => {
       });
 
       it('for NgModules', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
 			 import {NgModule} from '@angular/core';
 
 			 @NgModule({
@@ -79,7 +89,8 @@ runInEachFileSystem(() => {
 				 bootstrap: []
 			 })
 			 export class AppModule {}
-		   `);
+		   `,
+        );
         const {program, checker} = env.driveTemplateTypeChecker();
         const sf = program.getSourceFile(_('/test.ts'));
         expect(sf).not.toBeNull();
@@ -90,7 +101,9 @@ runInEachFileSystem(() => {
 
     describe('supports `getOwningNgModule()` ', () => {
       it('for components', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
 			  import {Component, NgModule} from '@angular/core';
 
 			  @NgModule({
@@ -106,7 +119,8 @@ runInEachFileSystem(() => {
 				  template: '<div></div>',
 			  })
 			  export class AppCmp {}
-			`);
+			`,
+        );
         const {program, checker} = env.driveTemplateTypeChecker();
         const sf = program.getSourceFile(_('/test.ts'));
         expect(sf).not.toBeNull();
@@ -117,7 +131,9 @@ runInEachFileSystem(() => {
       });
 
       it('for standalone components (which should be null)', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
 			  import {Component, NgModule} from '@angular/core';
 
 			  @NgModule({
@@ -134,7 +150,8 @@ runInEachFileSystem(() => {
 				  standalone: true,
 			  })
 			  export class AppCmp {}
-			`);
+			`,
+        );
         const {program, checker} = env.driveTemplateTypeChecker();
         const sf = program.getSourceFile(_('/test.ts'));
         expect(sf).not.toBeNull();
@@ -145,7 +162,9 @@ runInEachFileSystem(() => {
       });
 
       it('for pipes', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
 			  import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';
 
 			  @NgModule({
@@ -161,7 +180,8 @@ runInEachFileSystem(() => {
 					  return Math.pow(value, exponent);
 				  }
 			  }
-			`);
+			`,
+        );
         const {program, checker} = env.driveTemplateTypeChecker();
         const sf = program.getSourceFile(_('/test.ts'));
         expect(sf).not.toBeNull();
@@ -174,7 +194,9 @@ runInEachFileSystem(() => {
 
     describe('can retrieve candidate directives` ', () => {
       it('which are out of scope', () => {
-        env.write('one.ts', `
+        env.write(
+          'one.ts',
+          `
 		   import {Component} from '@angular/core';
 
 		   @Component({
@@ -183,9 +205,12 @@ runInEachFileSystem(() => {
 			   template: '<div></div>',
 		   })
 		   export class OneCmp {}
-		   `);
+		   `,
+        );
 
-        env.write('two.ts', `
+        env.write(
+          'two.ts',
+          `
 		   import {Component} from '@angular/core';
 
 		   @Component({
@@ -194,18 +219,21 @@ runInEachFileSystem(() => {
 			   template: '<div></div>',
 		   })
 		   export class TwoCmp {}
-		   `);
+		   `,
+        );
         const {program, checker} = env.driveTemplateTypeChecker();
         const sf = program.getSourceFile(_('/one.ts'));
         expect(sf).not.toBeNull();
         const directives = checker.getPotentialTemplateDirectives(getClass(sf!, 'OneCmp'));
-        expect(directives.map(d => d.selector)).toContain('two-cmp');
+        expect(directives.map((d) => d.selector)).toContain('two-cmp');
       });
     });
 
     describe('can retrieve candidate pipes` ', () => {
       it('which are out of scope', () => {
-        env.write('one.ts', `
+        env.write(
+          'one.ts',
+          `
 			 import {Pipe} from '@angular/core';
 
 			 @Pipe({
@@ -214,9 +242,12 @@ runInEachFileSystem(() => {
 			  })
 			  export class OnePipe {
 			  }
-			 `);
+			 `,
+        );
 
-        env.write('two.ts', `
+        env.write(
+          'two.ts',
+          `
 			 import {Component} from '@angular/core';
 
 			 @Component({
@@ -225,18 +256,21 @@ runInEachFileSystem(() => {
 				 template: '<div></div>',
 			 })
 			 export class TwoCmp {}
-			 `);
+			 `,
+        );
         const {program, checker} = env.driveTemplateTypeChecker();
         const sf = program.getSourceFile(_('/one.ts'));
         expect(sf).not.toBeNull();
         const pipes = checker.getPotentialPipes(getClass(sf!, 'OnePipe'));
-        expect(pipes.map(p => p.name)).toContain('foo-pipe');
+        expect(pipes.map((p) => p.name)).toContain('foo-pipe');
       });
     });
 
     describe('can generate imports` ', () => {
       it('for out of scope standalone components', () => {
-        env.write('one.ts', `
+        env.write(
+          'one.ts',
+          `
 			 import {Component} from '@angular/core';
 
 			 @Component({
@@ -245,9 +279,12 @@ runInEachFileSystem(() => {
 				 template: '<div></div>',
 			 })
 			 export class OneCmp {}
-			 `);
+			 `,
+        );
 
-        env.write('two.ts', `
+        env.write(
+          'two.ts',
+          `
 			 import {Component} from '@angular/core';
 
 			 @Component({
@@ -256,16 +293,21 @@ runInEachFileSystem(() => {
 				 template: '<div></div>',
 			 })
 			 export class TwoCmp {}
-			 `);
+			 `,
+        );
         const {program, checker} = env.driveTemplateTypeChecker();
         const sfOne = program.getSourceFile(_('/one.ts'));
         expect(sfOne).not.toBeNull();
         const OneCmpClass = getClass(sfOne!, 'OneCmp');
 
-        const TwoCmpDir = checker.getPotentialTemplateDirectives(OneCmpClass)
-                              .filter(d => d.selector === 'two-cmp')[0];
-        const imports =
-            checker.getPotentialImportsFor(TwoCmpDir.ref, OneCmpClass, PotentialImportMode.Normal);
+        const TwoCmpDir = checker
+          .getPotentialTemplateDirectives(OneCmpClass)
+          .filter((d) => d.selector === 'two-cmp')[0];
+        const imports = checker.getPotentialImportsFor(
+          TwoCmpDir.ref,
+          OneCmpClass,
+          PotentialImportMode.Normal,
+        );
 
         expect(imports.length).toBe(1);
         expect(imports[0].moduleSpecifier).toBe('./two');
@@ -274,7 +316,9 @@ runInEachFileSystem(() => {
       });
 
       it('for out of scope ngModules', () => {
-        env.write('one.ts', `
+        env.write(
+          'one.ts',
+          `
 			 import {Component} from '@angular/core';
 
 			 @Component({
@@ -283,9 +327,12 @@ runInEachFileSystem(() => {
 				 template: '<div></div>',
 			 })
 			 export class OneCmp {}
-			 `);
+			 `,
+        );
 
-        env.write('two.ts', `
+        env.write(
+          'two.ts',
+          `
 			 import {Component} from '@angular/core';
 
 			 @Component({
@@ -293,9 +340,12 @@ runInEachFileSystem(() => {
 				 template: '<div></div>',
 			 })
 			 export class TwoCmp {}
-			 `);
+			 `,
+        );
 
-        env.write('twomod.ts', `
+        env.write(
+          'twomod.ts',
+          `
 			import { NgModule } from '@angular/core';
 			import { CommonModule } from '@angular/common';
 			import { TwoCmp } from './two';
@@ -312,17 +362,22 @@ runInEachFileSystem(() => {
 			]
 			})
 			export class TwoModule { }
-			 `);
+			 `,
+        );
 
         const {program, checker} = env.driveTemplateTypeChecker();
         const sfOne = program.getSourceFile(_('/one.ts'));
         expect(sfOne).not.toBeNull();
         const OneCmpClass = getClass(sfOne!, 'OneCmp');
 
-        const TwoNgMod = checker.getPotentialTemplateDirectives(OneCmpClass)
-                             .filter(d => d.selector === 'two-cmp')[0];
-        const imports =
-            checker.getPotentialImportsFor(TwoNgMod.ref, OneCmpClass, PotentialImportMode.Normal);
+        const TwoNgMod = checker
+          .getPotentialTemplateDirectives(OneCmpClass)
+          .filter((d) => d.selector === 'two-cmp')[0];
+        const imports = checker.getPotentialImportsFor(
+          TwoNgMod.ref,
+          OneCmpClass,
+          PotentialImportMode.Normal,
+        );
 
         expect(imports.length).toBe(1);
         expect(imports[0].moduleSpecifier).toBe('./twomod');
@@ -331,7 +386,9 @@ runInEachFileSystem(() => {
       });
 
       it('for forward references in the same file', () => {
-        env.write('decls.ts', `
+        env.write(
+          'decls.ts',
+          `
 					import {Component} from '@angular/core';
 
 					@Component({
@@ -347,16 +404,21 @@ runInEachFileSystem(() => {
 						template: '<div></div>',
 					})
 					export class TwoCmp {}
-			 `);
+			 `,
+        );
         const {program, checker} = env.driveTemplateTypeChecker();
         const sfOne = program.getSourceFile(_('/decls.ts'));
         expect(sfOne).not.toBeNull();
         const OneCmpClass = getClass(sfOne!, 'OneCmp');
 
-        const TwoCmpDir = checker.getPotentialTemplateDirectives(OneCmpClass)
-                              .filter(d => d.selector === 'two-cmp')[0];
-        const imports =
-            checker.getPotentialImportsFor(TwoCmpDir.ref, OneCmpClass, PotentialImportMode.Normal);
+        const TwoCmpDir = checker
+          .getPotentialTemplateDirectives(OneCmpClass)
+          .filter((d) => d.selector === 'two-cmp')[0];
+        const imports = checker.getPotentialImportsFor(
+          TwoCmpDir.ref,
+          OneCmpClass,
+          PotentialImportMode.Normal,
+        );
 
         expect(imports.length).toBe(1);
         expect(imports[0].moduleSpecifier).toBeUndefined();

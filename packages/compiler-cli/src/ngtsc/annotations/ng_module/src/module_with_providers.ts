@@ -11,7 +11,13 @@ import ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {Reference} from '../../../imports';
 import {ForeignFunctionResolver, SyntheticValue} from '../../../partial_evaluator';
-import {ClassDeclaration, entityNameToValue, isNamedClassDeclaration, ReflectionHost, typeNodeToValueExpr} from '../../../reflection';
+import {
+  ClassDeclaration,
+  entityNameToValue,
+  isNamedClassDeclaration,
+  ReflectionHost,
+  typeNodeToValueExpr,
+} from '../../../reflection';
 
 /**
  * Creates a foreign function resolver to detect a `ModuleWithProviders<T>` type in a return type
@@ -22,7 +28,9 @@ import {ClassDeclaration, entityNameToValue, isNamedClassDeclaration, Reflection
  * @param isCore Whether the @angular/core package is being compiled.
  */
 export function createModuleWithProvidersResolver(
-    reflector: ReflectionHost, isCore: boolean): ForeignFunctionResolver {
+  reflector: ReflectionHost,
+  isCore: boolean,
+): ForeignFunctionResolver {
   /**
    * Retrieve an `NgModule` identifier (T) from the specified `type`, if it is of the form:
    * `ModuleWithProviders<T>`
@@ -30,17 +38,19 @@ export function createModuleWithProvidersResolver(
    * @returns the identifier of the NgModule type if found, or null otherwise.
    */
   function _reflectModuleFromTypeParam(
-      type: ts.TypeNode,
-      node: ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression): ts.Expression|null {
+    type: ts.TypeNode,
+    node: ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression,
+  ): ts.Expression | null {
     // Examine the type of the function to see if it's a ModuleWithProviders reference.
     if (!ts.isTypeReferenceNode(type)) {
       return null;
     }
 
-    const typeName = type &&
-            (ts.isIdentifier(type.typeName) && type.typeName ||
-             ts.isQualifiedName(type.typeName) && type.typeName.right) ||
-        null;
+    const typeName =
+      (type &&
+        ((ts.isIdentifier(type.typeName) && type.typeName) ||
+          (ts.isQualifiedName(type.typeName) && type.typeName.right))) ||
+      null;
     if (typeName === null) {
       return null;
     }
@@ -61,14 +71,17 @@ export function createModuleWithProvidersResolver(
     // If there's no type parameter specified, bail.
     if (type.typeArguments === undefined || type.typeArguments.length !== 1) {
       const parent =
-          ts.isMethodDeclaration(node) && ts.isClassDeclaration(node.parent) ? node.parent : null;
-      const symbolName = (parent && parent.name ? parent.name.getText() + '.' : '') +
-          (node.name ? node.name.getText() : 'anonymous');
+        ts.isMethodDeclaration(node) && ts.isClassDeclaration(node.parent) ? node.parent : null;
+      const symbolName =
+        (parent && parent.name ? parent.name.getText() + '.' : '') +
+        (node.name ? node.name.getText() : 'anonymous');
       throw new FatalDiagnosticError(
-          ErrorCode.NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC, type,
-          `${symbolName} returns a ModuleWithProviders type without a generic type argument. ` +
-              `Please add a generic type argument to the ModuleWithProviders type. If this ` +
-              `occurrence is in library code you don't control, please contact the library authors.`);
+        ErrorCode.NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC,
+        type,
+        `${symbolName} returns a ModuleWithProviders type without a generic type argument. ` +
+          `Please add a generic type argument to the ModuleWithProviders type. If this ` +
+          `occurrence is in library code you don't control, please contact the library authors.`,
+      );
     }
 
     const arg = type.typeArguments[0];
@@ -82,18 +95,21 @@ export function createModuleWithProvidersResolver(
    * @param type The type to reflect on.
    * @returns the identifier of the NgModule type if found, or null otherwise.
    */
-  function _reflectModuleFromLiteralType(type: ts.TypeNode): ts.Expression|null {
+  function _reflectModuleFromLiteralType(type: ts.TypeNode): ts.Expression | null {
     if (!ts.isIntersectionTypeNode(type)) {
       return null;
     }
     for (const t of type.types) {
       if (ts.isTypeLiteralNode(t)) {
         for (const m of t.members) {
-          const ngModuleType = ts.isPropertySignature(m) && ts.isIdentifier(m.name) &&
-                  m.name.text === 'ngModule' && m.type ||
-              null;
+          const ngModuleType =
+            (ts.isPropertySignature(m) &&
+              ts.isIdentifier(m.name) &&
+              m.name.text === 'ngModule' &&
+              m.type) ||
+            null;
 
-          let ngModuleExpression: ts.Expression|null = null;
+          let ngModuleExpression: ts.Expression | null = null;
 
           // Handle `: typeof X` or `: X` cases.
           if (ngModuleType !== null && ts.isTypeQueryNode(ngModuleType)) {
@@ -118,7 +134,7 @@ export function createModuleWithProvidersResolver(
     }
 
     const type =
-        _reflectModuleFromTypeParam(rawType, fn.node) ?? _reflectModuleFromLiteralType(rawType);
+      _reflectModuleFromTypeParam(rawType, fn.node) ?? _reflectModuleFromLiteralType(rawType);
     if (type === null) {
       return unresolvable;
     }
@@ -139,9 +155,13 @@ export interface ResolvedModuleWithProviders {
   mwpCall: ts.CallExpression;
 }
 
-export function isResolvedModuleWithProviders(sv: SyntheticValue<unknown>):
-    sv is SyntheticValue<ResolvedModuleWithProviders> {
-  return typeof sv.value === 'object' && sv.value != null &&
-      sv.value.hasOwnProperty('ngModule' as keyof ResolvedModuleWithProviders) &&
-      sv.value.hasOwnProperty('mwpCall' as keyof ResolvedModuleWithProviders);
+export function isResolvedModuleWithProviders(
+  sv: SyntheticValue<unknown>,
+): sv is SyntheticValue<ResolvedModuleWithProviders> {
+  return (
+    typeof sv.value === 'object' &&
+    sv.value != null &&
+    sv.value.hasOwnProperty('ngModule' as keyof ResolvedModuleWithProviders) &&
+    sv.value.hasOwnProperty('mwpCall' as keyof ResolvedModuleWithProviders)
+  );
 }

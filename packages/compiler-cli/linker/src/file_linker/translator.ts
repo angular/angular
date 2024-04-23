@@ -7,7 +7,13 @@
  */
 import * as o from '@angular/compiler';
 
-import {AstFactory, Context, ExpressionTranslatorVisitor, ImportGenerator, TranslatorOptions} from '../../../src/ngtsc/translator';
+import {
+  AstFactory,
+  Context,
+  ExpressionTranslatorVisitor,
+  ImportGenerator,
+  TranslatorOptions,
+} from '../../../src/ngtsc/translator';
 
 /**
  * Generic translator helper class, which exposes methods for translating expressions and
@@ -20,23 +26,37 @@ export class Translator<TStatement, TExpression> {
    * Translate the given output AST in the context of an expression.
    */
   translateExpression(
-      expression: o.Expression, imports: ImportGenerator<null, TExpression>,
-      options: TranslatorOptions<TExpression> = {}): TExpression {
+    expression: o.Expression,
+    imports: ImportGenerator<null, TExpression>,
+    options: TranslatorOptions<TExpression> = {},
+  ): TExpression {
     return expression.visitExpression(
-        new ExpressionTranslatorVisitor<null, TStatement, TExpression>(
-            this.factory, imports, null, options),
-        new Context(false));
+      new ExpressionTranslatorVisitor<null, TStatement, TExpression>(
+        this.factory,
+        imports,
+        null,
+        options,
+      ),
+      new Context(false),
+    );
   }
 
   /**
    * Translate the given output AST in the context of a statement.
    */
   translateStatement(
-      statement: o.Statement, imports: ImportGenerator<null, TExpression>,
-      options: TranslatorOptions<TExpression> = {}): TStatement {
+    statement: o.Statement,
+    imports: ImportGenerator<null, TExpression>,
+    options: TranslatorOptions<TExpression> = {},
+  ): TStatement {
     return statement.visitStatement(
-        new ExpressionTranslatorVisitor<null, TStatement, TExpression>(
-            this.factory, imports, null, options),
-        new Context(true));
+      new ExpressionTranslatorVisitor<null, TStatement, TExpression>(
+        this.factory,
+        imports,
+        null,
+        options,
+      ),
+      new Context(true),
+    );
   }
 }

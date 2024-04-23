@@ -13,22 +13,21 @@ import {ContentOrigin} from './content_origin';
  * disk.
  */
 export interface RawSourceMap {
-  version: number|string;
+  version: number | string;
   file?: string;
   sourceRoot?: string;
   sources: string[];
   names: string[];
-  sourcesContent?: (string|null)[];
+  sourcesContent?: (string | null)[];
   mappings: string;
 }
-
 
 /**
  * The path and content of a source-map.
  */
 export interface MapAndPath {
   /** The path to the source map if it was external or `null` if it was inline. */
-  mapPath: AbsoluteFsPath|null;
+  mapPath: AbsoluteFsPath | null;
   /** The raw source map itself. */
   map: RawSourceMap;
 }

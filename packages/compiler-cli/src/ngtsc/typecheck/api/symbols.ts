@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TmplAstElement, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {
+  TmplAstElement,
+  TmplAstReference,
+  TmplAstTemplate,
+  TmplAstVariable,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -31,13 +36,22 @@ export enum SymbolKind {
 /**
  * A representation of an entity in the `TemplateAst`.
  */
-export type Symbol = InputBindingSymbol|OutputBindingSymbol|ElementSymbol|ReferenceSymbol|
-    VariableSymbol|ExpressionSymbol|DirectiveSymbol|TemplateSymbol|DomBindingSymbol|PipeSymbol;
+export type Symbol =
+  | InputBindingSymbol
+  | OutputBindingSymbol
+  | ElementSymbol
+  | ReferenceSymbol
+  | VariableSymbol
+  | ExpressionSymbol
+  | DirectiveSymbol
+  | TemplateSymbol
+  | DomBindingSymbol
+  | PipeSymbol;
 
 /**
  * A `Symbol` which declares a new named entity in the template scope.
  */
-export type TemplateDeclarationSymbol = ReferenceSymbol|VariableSymbol;
+export type TemplateDeclarationSymbol = ReferenceSymbol | VariableSymbol;
 
 /**
  * Information about where a `ts.Node` can be found in the type check file. This can either be
@@ -67,7 +81,7 @@ export interface TsNodeSymbolInfo {
   tsType: ts.Type;
 
   /** The `ts.Symbol` for the template node */
-  tsSymbol: ts.Symbol|null;
+  tsSymbol: ts.Symbol | null;
 
   /** The position of the most relevant part of the template node. */
   tcbLocation: TcbLocation;
@@ -86,7 +100,7 @@ export interface ExpressionSymbol {
    * The `ts.Symbol` of the entity. This could be `null`, for example `AST` expression
    * `{{foo.bar + foo.baz}}` does not have a `ts.Symbol` but `foo.bar` and `foo.baz` both do.
    */
-  tsSymbol: ts.Symbol|null;
+  tsSymbol: ts.Symbol | null;
 
   /** The position of the most relevant part of the expression. */
   tcbLocation: TcbLocation;
@@ -106,7 +120,7 @@ export interface BindingSymbol {
    * The `DirectiveSymbol` or `ElementSymbol` for the Directive, Component, or `HTMLElement` with
    * the binding.
    */
-  target: DirectiveSymbol|ElementSymbol|TemplateSymbol;
+  target: DirectiveSymbol | ElementSymbol | TemplateSymbol;
 
   /** The location in the shim file where the field access for the binding appears. */
   tcbLocation: TcbLocation;
@@ -162,7 +176,7 @@ export interface ReferenceSymbol {
    *  - `TmplAstTemplate` when the ref refers to an `ng-template`
    *  - `ts.ClassDeclaration` when the local ref refers to a Directive instance (#ref="myExportAs")
    */
-  target: TmplAstElement|TmplAstTemplate|ts.ClassDeclaration;
+  target: TmplAstElement | TmplAstTemplate | ts.ClassDeclaration;
 
   /**
    * The node in the `TemplateAst` where the symbol is declared. That is, node for the `#ref` or
@@ -208,7 +222,7 @@ export interface VariableSymbol {
    *
    * This will be `null` if there is no `ngTemplateContextGuard`.
    */
-  tsSymbol: ts.Symbol|null;
+  tsSymbol: ts.Symbol | null;
 
   /**
    * The node in the `TemplateAst` where the variable is declared. That is, the node for the `let-`
@@ -238,7 +252,7 @@ export interface ElementSymbol {
   tsType: ts.Type;
 
   /** The `ts.Symbol` for the `HTMLElement`. */
-  tsSymbol: ts.Symbol|null;
+  tsSymbol: ts.Symbol | null;
 
   /** A list of directives applied to the element. */
   directives: DirectiveSymbol[];
@@ -273,11 +287,13 @@ interface DirectiveSymbolBase extends PotentialDirective {
  * A representation of a directive/component whose selector matches a node in a component
  * template.
  */
-export type DirectiveSymbol = (DirectiveSymbolBase&{isHostDirective: false})|(DirectiveSymbolBase&{
-  isHostDirective: true;
-  exposedInputs: Record<string, string>|null;
-  exposedOutputs: Record<string, string>|null;
-});
+export type DirectiveSymbol =
+  | (DirectiveSymbolBase & {isHostDirective: false})
+  | (DirectiveSymbolBase & {
+      isHostDirective: true;
+      exposedInputs: Record<string, string> | null;
+      exposedOutputs: Record<string, string> | null;
+    });
 
 /**
  * A representation of an attribute on an element or template. These bindings aren't currently
@@ -288,7 +304,7 @@ export interface DomBindingSymbol {
   kind: SymbolKind.DomBinding;
 
   /** The symbol for the element or template of the text attribute. */
-  host: ElementSymbol|TemplateSymbol;
+  host: ElementSymbol | TemplateSymbol;
 }
 
 /**
@@ -304,7 +320,7 @@ export interface PipeSymbol {
    * The `ts.Symbol` for the transform call. This could be `null` when `checkTypeOfPipes` is set to
    * `false` because the transform call would be of the form `(_pipe1 as any).transform()`
    */
-  tsSymbol: ts.Symbol|null;
+  tsSymbol: ts.Symbol | null;
 
   /** The position of the transform call in the template. */
   tcbLocation: TcbLocation;

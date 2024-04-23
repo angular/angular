@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 /** Possible alias import declarations */
-export type AliasImportDeclaration = ts.ImportSpecifier|ts.NamespaceImport|ts.ImportClause;
+export type AliasImportDeclaration = ts.ImportSpecifier | ts.NamespaceImport | ts.ImportClause;
 
 /**
  * Describes a TypeScript transformation context with the internal emit
@@ -74,8 +74,9 @@ interface EmitResolver {
  * Github.
  * https://sourcegraph.com/github.com/microsoft/TypeScript@3eaa7c65f6f076a08a5f7f1946fd0df7c7430259/-/blob/src/compiler/checker.ts#L31219-31257
  */
-export function loadIsReferencedAliasDeclarationPatch(context: ts.TransformationContext):
-    Set<ts.Declaration> {
+export function loadIsReferencedAliasDeclarationPatch(
+  context: ts.TransformationContext,
+): Set<ts.Declaration> {
   // If the `getEmitResolver` method is not available, TS most likely changed the
   // internal structure of the transformation context. We will abort gracefully.
   if (!isTransformationContextWithEmitResolver(context)) {
@@ -99,13 +100,13 @@ export function loadIsReferencedAliasDeclarationPatch(context: ts.Transformation
   }
 
   const referencedAliases = new Set<AliasImportDeclaration>();
-  emitResolver.isReferencedAliasDeclaration = function(node, ...args) {
+  emitResolver.isReferencedAliasDeclaration = function (node, ...args) {
     if (isAliasImportDeclaration(node) && (referencedAliases as Set<ts.Node>).has(node)) {
       return true;
     }
     return originalIsReferencedAliasDeclaration.call(emitResolver, node, ...args);
   };
-  return emitResolver[patchedReferencedAliasesSymbol] = referencedAliases;
+  return (emitResolver[patchedReferencedAliasesSymbol] = referencedAliases);
 }
 
 /**
@@ -118,11 +119,11 @@ export function isAliasImportDeclaration(node: ts.Node): node is AliasImportDecl
 }
 
 /** Whether the transformation context exposes its emit resolver. */
-function isTransformationContextWithEmitResolver(context: ts.TransformationContext):
-    context is TransformationContextWithResolver {
+function isTransformationContextWithEmitResolver(
+  context: ts.TransformationContext,
+): context is TransformationContextWithResolver {
   return (context as Partial<TransformationContextWithResolver>).getEmitResolver !== undefined;
 }
-
 
 /**
  * Throws an error about an incompatible TypeScript version for which the alias
@@ -131,8 +132,9 @@ function isTransformationContextWithEmitResolver(context: ts.TransformationConte
  */
 function throwIncompatibleTransformationContextError(): never {
   throw Error(
-      'Angular compiler is incompatible with this version of the TypeScript compiler.\n\n' +
+    'Angular compiler is incompatible with this version of the TypeScript compiler.\n\n' +
       'If you recently updated TypeScript and this issue surfaces now, consider downgrading.\n\n' +
       'Please report an issue on the Angular repositories when this issue ' +
-      'surfaces and you are using a supposedly compatible TypeScript version.');
+      'surfaces and you are using a supposedly compatible TypeScript version.',
+  );
 }

@@ -435,7 +435,6 @@ export enum ErrorCode {
    */
   OPTIONAL_CHAIN_NOT_NULLABLE = 8107,
 
-
   /**
    * `ngSkipHydration` should not be a binding (it should be a static attribute).
    *

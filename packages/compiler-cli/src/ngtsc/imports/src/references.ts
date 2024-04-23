@@ -41,7 +41,7 @@ export class Reference<T extends ts.Node = ts.Node> {
    *
    * If `bestGuessOwningModule` is `null`, then it's likely the node came from the current program.
    */
-  readonly bestGuessOwningModule: OwningModule|null;
+  readonly bestGuessOwningModule: OwningModule | null;
 
   private identifiers: ts.Identifier[] = [];
 
@@ -53,11 +53,14 @@ export class Reference<T extends ts.Node = ts.Node> {
    */
   synthetic = false;
 
-  private _alias: Expression|null = null;
+  private _alias: Expression | null = null;
 
   readonly isAmbient: boolean;
 
-  constructor(readonly node: T, bestGuessOwningModule: OwningModule|AmbientImport|null = null) {
+  constructor(
+    readonly node: T,
+    bestGuessOwningModule: OwningModule | AmbientImport | null = null,
+  ) {
     if (bestGuessOwningModule === AmbientImport) {
       this.isAmbient = true;
       this.bestGuessOwningModule = null;
@@ -76,7 +79,7 @@ export class Reference<T extends ts.Node = ts.Node> {
    * The best guess at which module specifier owns this particular reference, or `null` if there
    * isn't one.
    */
-  get ownedByModuleGuess(): string|null {
+  get ownedByModuleGuess(): string | null {
     if (this.bestGuessOwningModule !== null) {
       return this.bestGuessOwningModule.specifier;
     } else {
@@ -99,15 +102,14 @@ export class Reference<T extends ts.Node = ts.Node> {
    * This is only suited for debugging. Any actual references to this node should be made with
    * `ts.Identifier`s (see `getIdentityIn`).
    */
-  get debugName(): string|null {
+  get debugName(): string | null {
     const id = identifierOfNode(this.node);
     return id !== null ? id.text : null;
   }
 
-  get alias(): Expression|null {
+  get alias(): Expression | null {
     return this._alias;
   }
-
 
   /**
    * Record a `ts.Identifier` by which it's valid to refer to this node, within the context of this
@@ -121,8 +123,8 @@ export class Reference<T extends ts.Node = ts.Node> {
    * Get a `ts.Identifier` within this `Reference` that can be used to refer within the context of a
    * given `ts.SourceFile`, if any.
    */
-  getIdentityIn(context: ts.SourceFile): ts.Identifier|null {
-    return this.identifiers.find(id => id.getSourceFile() === context) || null;
+  getIdentityIn(context: ts.SourceFile): ts.Identifier | null {
+    return this.identifiers.find((id) => id.getSourceFile() === context) || null;
   }
 
   /**
@@ -132,17 +134,18 @@ export class Reference<T extends ts.Node = ts.Node> {
    * extracted from some larger expression, as it can be used to pinpoint the `ts.Identifier` within
    * the expression from which the `Reference` originated.
    */
-  getIdentityInExpression(expr: ts.Expression): ts.Identifier|null {
+  getIdentityInExpression(expr: ts.Expression): ts.Identifier | null {
     const sf = expr.getSourceFile();
-    return this.identifiers.find(id => {
-      if (id.getSourceFile() !== sf) {
-        return false;
-      }
+    return (
+      this.identifiers.find((id) => {
+        if (id.getSourceFile() !== sf) {
+          return false;
+        }
 
-      // This identifier is a match if its position lies within the given expression.
-      return id.pos >= expr.pos && id.end <= expr.end;
-    }) ||
-        null;
+        // This identifier is a match if its position lies within the given expression.
+        return id.pos >= expr.pos && id.end <= expr.end;
+      }) || null
+    );
   }
 
   /**
@@ -162,23 +165,29 @@ export class Reference<T extends ts.Node = ts.Node> {
    * If no specific node can be found, then the `fallback` expression is used, which defaults to the
    * entire containing expression.
    */
-  getOriginForDiagnostics(container: ts.Expression, fallback: ts.Expression = container):
-      ts.Expression {
+  getOriginForDiagnostics(
+    container: ts.Expression,
+    fallback: ts.Expression = container,
+  ): ts.Expression {
     const id = this.getIdentityInExpression(container);
     return id !== null ? id : fallback;
   }
 
   cloneWithAlias(alias: Expression): Reference<T> {
-    const ref =
-        new Reference(this.node, this.isAmbient ? AmbientImport : this.bestGuessOwningModule);
+    const ref = new Reference(
+      this.node,
+      this.isAmbient ? AmbientImport : this.bestGuessOwningModule,
+    );
     ref.identifiers = [...this.identifiers];
     ref._alias = alias;
     return ref;
   }
 
   cloneWithNoIdentifiers(): Reference<T> {
-    const ref =
-        new Reference(this.node, this.isAmbient ? AmbientImport : this.bestGuessOwningModule);
+    const ref = new Reference(
+      this.node,
+      this.isAmbient ? AmbientImport : this.bestGuessOwningModule,
+    );
     ref._alias = this._alias;
     ref.identifiers = [];
     return ref;

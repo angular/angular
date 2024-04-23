@@ -27,9 +27,10 @@ export class HostDirectivesResolver {
       return this.cache.get(metadata.ref.node)!;
     }
 
-    const results = metadata.hostDirectives && metadata.hostDirectives.length > 0 ?
-        this.walkHostDirectives(metadata.hostDirectives, []) :
-        EMPTY_ARRAY;
+    const results =
+      metadata.hostDirectives && metadata.hostDirectives.length > 0
+        ? this.walkHostDirectives(metadata.hostDirectives, [])
+        : EMPTY_ARRAY;
     this.cache.set(metadata.ref.node, results);
     return results;
   }
@@ -39,8 +40,9 @@ export class HostDirectivesResolver {
    * directive metadata representing the host directives that apply to the host.
    */
   private walkHostDirectives(
-      directives: NonNullable<DirectiveMeta['hostDirectives']>,
-      results: DirectiveMeta[]): ReadonlyArray<DirectiveMeta> {
+    directives: NonNullable<DirectiveMeta['hostDirectives']>,
+    results: DirectiveMeta[],
+  ): ReadonlyArray<DirectiveMeta> {
     for (const current of directives) {
       if (!isHostDirectiveMetaForGlobalMode(current)) {
         throw new Error('Impossible state: resolving code path in local compilation mode');
@@ -61,9 +63,11 @@ export class HostDirectivesResolver {
         ...hostMeta,
         matchSource: MatchSource.HostDirective,
         inputs: ClassPropertyMapping.fromMappedObject(
-            this.filterMappings(hostMeta.inputs, current.inputs, resolveInput)),
+          this.filterMappings(hostMeta.inputs, current.inputs, resolveInput),
+        ),
         outputs: ClassPropertyMapping.fromMappedObject(
-            this.filterMappings(hostMeta.outputs, current.outputs, resolveOutput)),
+          this.filterMappings(hostMeta.outputs, current.outputs, resolveOutput),
+        ),
       });
     }
 
@@ -77,8 +81,10 @@ export class HostDirectivesResolver {
    * @param valueResolver Function used to resolve the value that is assigned to the final mapping.
    */
   private filterMappings<T, M extends InputOrOutput>(
-      source: ClassPropertyMapping<M>, allowedProperties: Record<string, string>|null,
-      valueResolver: (bindingName: string, binding: M) => T): Record<string, T> {
+    source: ClassPropertyMapping<M>,
+    allowedProperties: Record<string, string> | null,
+    valueResolver: (bindingName: string, binding: M) => T,
+  ): Record<string, T> {
     const result: Record<string, T> = {};
 
     if (allowedProperties !== null) {
@@ -88,8 +94,10 @@ export class HostDirectivesResolver {
 
           if (bindings !== null) {
             for (const binding of bindings) {
-              result[binding.classPropertyName] =
-                  valueResolver(allowedProperties[publicName], binding);
+              result[binding.classPropertyName] = valueResolver(
+                allowedProperties[publicName],
+                binding,
+              );
             }
           }
         }

@@ -23,14 +23,14 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(ref),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(ref)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { input } from "@angular/core";
       input;
-    `));
+    `),
+    );
   });
 
   it('should be possible to import a namespace', () => {
@@ -43,14 +43,14 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(ref),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(ref)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import * as i0 from "@angular/core";
       i0;
-    `));
+    `),
+    );
   });
 
   it('should be possible to import multiple symbols', () => {
@@ -74,11 +74,13 @@ describe('import manager', () => {
       ts.factory.createExpressionStatement(outputRef),
     ]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { input, output } from "@angular/core";
       input;
       output;
-    `));
+    `),
+    );
   });
 
   it('should be possible to import multiple namespaces', () => {
@@ -102,12 +104,14 @@ describe('import manager', () => {
       ts.factory.createExpressionStatement(interopNamespace),
     ]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import * as i0 from "@angular/core";
       import * as i1 from "@angular/core/rxjs-interop";
       i0;
       i1;
-    `));
+    `),
+    );
   });
 
   it('should be possible to generate a namespace import and re-use it for future symbols', () => {
@@ -131,11 +135,13 @@ describe('import manager', () => {
       ts.factory.createExpressionStatement(outputRef),
     ]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import * as i0 from "@angular/core";
       i0;
       i0.output;
-    `));
+    `),
+    );
   });
 
   it('should always generate a new namespace import if there is only a named import', () => {
@@ -159,12 +165,14 @@ describe('import manager', () => {
       ts.factory.createExpressionStatement(coreNamespace),
     ]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import * as i0 from "@angular/core";
       import { input } from "@angular/core";
       input;
       i0;
-    `));
+    `),
+    );
   });
 
   it('should be able to re-use existing source file namespace imports for symbols', () => {
@@ -179,14 +187,14 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(inputRef),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(inputRef)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import * as existingImport from '@angular/core';
       existingImport.input;
-    `));
+    `),
+    );
   });
 
   it('should re-use existing source file namespace imports for a namespace request', () => {
@@ -201,14 +209,14 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(coreRef),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(coreRef)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import * as existingImport from '@angular/core';
       existingImport;
-    `));
+    `),
+    );
   });
 
   it('should be able to re-use existing source named bindings', () => {
@@ -223,14 +231,14 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(inputRef),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(inputRef)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { input } from '@angular/core';
       input;
-    `));
+    `),
+    );
   });
 
   it('should be able to add symbols to an existing source file named import', () => {
@@ -247,40 +255,42 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(outputRef),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(outputRef)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { input, output } from '@angular/core';
       output;
       const x = input();
-    `));
+    `),
+    );
   });
 
-  it('should be able to add symbols to an existing source file named import, ' +
-         'while still eliding unused specifiers of the updated import',
-     () => {
-       const {testFile, emit} = createTestProgram(`
+  it(
+    'should be able to add symbols to an existing source file named import, ' +
+      'while still eliding unused specifiers of the updated import',
+    () => {
+      const {testFile, emit} = createTestProgram(`
         import {input} from '@angular/core';
       `);
-       const manager = new ImportManager();
+      const manager = new ImportManager();
 
-       const outputRef = manager.addImport({
-         exportModuleSpecifier: '@angular/core',
-         exportSymbolName: 'output',
-         requestedFile: testFile,
-       });
+      const outputRef = manager.addImport({
+        exportModuleSpecifier: '@angular/core',
+        exportSymbolName: 'output',
+        requestedFile: testFile,
+      });
 
-       const res = emit(manager, [
-         ts.factory.createExpressionStatement(outputRef),
-       ]);
+      const res = emit(manager, [ts.factory.createExpressionStatement(outputRef)]);
 
-       expect(res).toBe(omitLeadingWhitespace(`
+      expect(res).toBe(
+        omitLeadingWhitespace(`
         import { output } from '@angular/core';
         output;
-      `));
-     });
+      `),
+      );
+    },
+  );
 
   it('should not re-use an original file import if re-use is disabled', () => {
     const {testFile, emit} = createTestProgram(`
@@ -296,14 +306,14 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(outputRef),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(outputRef)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { output } from "@angular/core";
       output;
-    `));
+    `),
+    );
   });
 
   it('should not re-use an original namespace import if re-use is disabled', () => {
@@ -320,14 +330,14 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(outputRef),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(outputRef)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { output } from "@angular/core";
       output;
-    `));
+    `),
+    );
   });
 
   it('should be able to always prefer namespace imports for new imports', () => {
@@ -353,75 +363,83 @@ describe('import manager', () => {
       ts.factory.createExpressionStatement(outputRef),
     ]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import * as i0 from "@angular/core";
       i0.input;
       i0.output;
-    `));
+    `),
+    );
   });
 
-  it('should be able to always prefer namespace imports for new imports, ' +
-         'but still re-use source file namespace imports',
-     () => {
-       const {testFile, emit} = createTestProgram(`
+  it(
+    'should be able to always prefer namespace imports for new imports, ' +
+      'but still re-use source file namespace imports',
+    () => {
+      const {testFile, emit} = createTestProgram(`
         import * as existingNamespace from '@angular/core';
        `);
-       const manager = new ImportManager({
-         forceGenerateNamespacesForNewImports: true,
-       });
+      const manager = new ImportManager({
+        forceGenerateNamespacesForNewImports: true,
+      });
 
-       const inputRef = manager.addImport({
-         exportModuleSpecifier: '@angular/core',
-         exportSymbolName: 'input',
-         requestedFile: testFile,
-       });
+      const inputRef = manager.addImport({
+        exportModuleSpecifier: '@angular/core',
+        exportSymbolName: 'input',
+        requestedFile: testFile,
+      });
 
-       const outputRef = manager.addImport({
-         exportModuleSpecifier: '@angular/core',
-         exportSymbolName: 'output',
-         requestedFile: testFile,
-       });
+      const outputRef = manager.addImport({
+        exportModuleSpecifier: '@angular/core',
+        exportSymbolName: 'output',
+        requestedFile: testFile,
+      });
 
-       const res = emit(manager, [
-         ts.factory.createExpressionStatement(inputRef),
-         ts.factory.createExpressionStatement(outputRef),
-       ]);
+      const res = emit(manager, [
+        ts.factory.createExpressionStatement(inputRef),
+        ts.factory.createExpressionStatement(outputRef),
+      ]);
 
-       expect(res).toBe(omitLeadingWhitespace(`
+      expect(res).toBe(
+        omitLeadingWhitespace(`
         import * as existingNamespace from '@angular/core';
         existingNamespace.input;
         existingNamespace.output;
-      `));
-     });
+      `),
+      );
+    },
+  );
 
-  it('should be able to always prefer namespace imports for new imports, ' +
-         'but still re-use source file individual imports',
-     () => {
-       const {testFile, emit} = createTestProgram(`
+  it(
+    'should be able to always prefer namespace imports for new imports, ' +
+      'but still re-use source file individual imports',
+    () => {
+      const {testFile, emit} = createTestProgram(`
         import {Dir} from 'bla';
 
         const x = new Dir();
        `);
-       const manager = new ImportManager({
-         forceGenerateNamespacesForNewImports: true,
-       });
+      const manager = new ImportManager({
+        forceGenerateNamespacesForNewImports: true,
+      });
 
-       const blaRef = manager.addImport({
-         exportModuleSpecifier: 'bla',
-         exportSymbolName: 'Dir',
-         requestedFile: testFile,
-       });
+      const blaRef = manager.addImport({
+        exportModuleSpecifier: 'bla',
+        exportSymbolName: 'Dir',
+        requestedFile: testFile,
+      });
 
-       const res = emit(manager, [
-         ts.factory.createExpressionStatement(blaRef),
-       ]);
+      const res = emit(manager, [ts.factory.createExpressionStatement(blaRef)]);
 
-       expect(res).toBe(omitLeadingWhitespace(`
+      expect(res).toBe(
+        omitLeadingWhitespace(`
         import { Dir } from 'bla';
         Dir;
         const x = new Dir();
-      `));
-     });
+      `),
+      );
+    },
+  );
 
   it('should not change existing unrelated imports', () => {
     const {testFile, emit} = createTestProgram(`
@@ -437,16 +455,16 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(inputRef),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(inputRef)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { MyComp } from './bla';
       import { input } from "@angular/core";
       input;
       console.log(MyComp);
-    `));
+    `),
+    );
   });
 
   it('should be able to add a side effect import', () => {
@@ -457,9 +475,11 @@ describe('import manager', () => {
 
     const res = emit(manager, []);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import "@angular/core";
-    `));
+    `),
+    );
   });
 
   it('should avoid conflicts with existing top-level identifiers', () => {
@@ -474,15 +494,15 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(inputRef),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(inputRef)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { input as input_1 } from "@angular/core";
       input_1;
       const input = 1;
-    `));
+    `),
+    );
   });
 
   it('should avoid conflicts with existing deep identifiers', () => {
@@ -501,11 +521,10 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(inputRef),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(inputRef)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { input as input_1 } from "@angular/core";
       input_1;
       function x() {
@@ -513,7 +532,8 @@ describe('import manager', () => {
           const input = 1;
         };
       }
-    `));
+    `),
+    );
   });
 
   it('should avoid an import alias specifier if identifier is free to use', () => {
@@ -526,14 +546,14 @@ describe('import manager', () => {
       requestedFile: testFile,
     });
 
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(inputRef),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(inputRef)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { input } from "@angular/core";
       input;
-    `));
+    `),
+    );
   });
 
   it('should avoid collisions with generated identifiers', () => {
@@ -557,12 +577,14 @@ describe('import manager', () => {
       ts.factory.createExpressionStatement(inputRef2),
     ]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { input } from "@angular/core";
       import { input as input_1 } from "@angular/core2";
       input;
       input_1;
-    `));
+    `),
+    );
   });
 
   it('should avoid collisions with generated identifiers', () => {
@@ -586,12 +608,14 @@ describe('import manager', () => {
       ts.factory.createExpressionStatement(inputRef2),
     ]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { input } from "@angular/core";
       import { input as input_1 } from "@angular/core2";
       input;
       input_1;
-    `));
+    `),
+    );
   });
 
   it('should re-use previous similar generated imports', () => {
@@ -616,11 +640,13 @@ describe('import manager', () => {
     ]);
 
     expect(inputRef).toBe(inputRef2);
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { input } from "@angular/core";
       input;
       input;
-    `));
+    `),
+    );
   });
 
   it('should not re-use original source file type-only imports', () => {
@@ -634,14 +660,14 @@ describe('import manager', () => {
       exportSymbolName: 'bla',
       requestedFile: testFile,
     });
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(ref),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(ref)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { bla } from "@angular/core";
       bla;
-    `));
+    `),
+    );
   });
 
   it('should not re-use original source file type-only import specifiers', () => {
@@ -655,20 +681,20 @@ describe('import manager', () => {
       exportSymbolName: 'bla',
       requestedFile: testFile,
     });
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(ref),
-    ]);
+    const res = emit(manager, [ts.factory.createExpressionStatement(ref)]);
 
-    expect(res).toBe(omitLeadingWhitespace(`
+    expect(res).toBe(
+      omitLeadingWhitespace(`
       import { bla } from '@angular/core'; // existing.
       bla;
-    `));
+    `),
+    );
   });
 });
 
 function createTestProgram(text: string): {
-  testFile: ts.SourceFile,
-  emit: (manager: ImportManager, extraStatements: ts.Statement[]) => string,
+  testFile: ts.SourceFile;
+  emit: (manager: ImportManager, extraStatements: ts.Statement[]) => string;
 } {
   const fs = initMockFileSystem('Native');
   const options: ts.CompilerOptions = {
@@ -696,12 +722,18 @@ function createTestProgram(text: string): {
   const emit = (manager: ImportManager, newStatements: ts.Statement[]) => {
     const transformer = manager.toTsTransform(new Map([[testFile.fileName, newStatements]]));
 
-    let emitResult: string|null = null;
-    const {emitSkipped} = program.emit(testFile, (fileName, resultText) => {
-      if (fileName === '/test.js') {
-        emitResult = resultText;
-      }
-    }, undefined, undefined, {before: [transformer]});
+    let emitResult: string | null = null;
+    const {emitSkipped} = program.emit(
+      testFile,
+      (fileName, resultText) => {
+        if (fileName === '/test.js') {
+          emitResult = resultText;
+        }
+      },
+      undefined,
+      undefined,
+      {before: [transformer]},
+    );
 
     if (emitSkipped || emitResult === null) {
       throw new Error(`Unexpected emit failure when emitting test file.`);

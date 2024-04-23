@@ -25,7 +25,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract enum info without explicit values', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export enum PizzaTopping {
           /** It is cheese */
           Cheese,
@@ -33,7 +35,8 @@ runInEachFileSystem(() => {
           /** Or "tomato" if you are British */
           Tomato,
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -56,7 +59,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract enum info with explicit values', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export enum PizzaTopping {
           /** It is cheese */
           Cheese = 0,
@@ -64,7 +69,8 @@ runInEachFileSystem(() => {
           /** Or "tomato" if you are British */
           Tomato = "tomato",
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 

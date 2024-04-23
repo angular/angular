@@ -54,7 +54,7 @@ export interface TemplateSourceResolver {
    * `ParseSourceSpan`. The returned parse span has line and column numbers in addition to only
    * absolute offsets and gives access to the original template source.
    */
-  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null;
+  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan | null;
 }
 
 /**
@@ -82,9 +82,11 @@ export enum TcbInliningRequirement {
 }
 
 export function requiresInlineTypeCheckBlock(
-    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, env: ReferenceEmitEnvironment,
-    usedPipes: Reference<ClassDeclaration<ts.ClassDeclaration>>[],
-    reflector: ReflectionHost): TcbInliningRequirement {
+  ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+  env: ReferenceEmitEnvironment,
+  usedPipes: Reference<ClassDeclaration<ts.ClassDeclaration>>[],
+  reflector: ReflectionHost,
+): TcbInliningRequirement {
   // In order to qualify for a declared TCB (not inline) two conditions must be met:
   // 1) the class must be suitable to be referenced from `env` (e.g. it must be exported)
   // 2) it must not have contextual generic type bounds
@@ -95,7 +97,7 @@ export function requiresInlineTypeCheckBlock(
     // Condition 2 is false, the class has constrained generic types. It should be checked with an
     // inline TCB if possible, but can potentially use fallbacks to avoid inlining if not.
     return TcbInliningRequirement.ShouldInlineForGenericBounds;
-  } else if (usedPipes.some(pipeRef => !env.canReferenceType(pipeRef))) {
+  } else if (usedPipes.some((pipeRef) => !env.canReferenceType(pipeRef))) {
     // If one of the pipes used by the component is not exported, a non-inline TCB will not be able
     // to import it, so this requires an inline TCB.
     return TcbInliningRequirement.MustInline;
@@ -106,8 +108,11 @@ export function requiresInlineTypeCheckBlock(
 
 /** Maps a shim position back to a template location. */
 export function getTemplateMapping(
-    shimSf: ts.SourceFile, position: number, resolver: TemplateSourceResolver,
-    isDiagnosticRequest: boolean): FullTemplateMapping|null {
+  shimSf: ts.SourceFile,
+  position: number,
+  resolver: TemplateSourceResolver,
+  isDiagnosticRequest: boolean,
+): FullTemplateMapping | null {
   const node = getTokenAtPosition(shimSf, position);
   const sourceLocation = findSourceLocation(node, shimSf, isDiagnosticRequest);
   if (sourceLocation === null) {
@@ -125,7 +130,10 @@ export function getTemplateMapping(
 }
 
 export function findTypeCheckBlock(
-    file: ts.SourceFile, id: TemplateId, isDiagnosticRequest: boolean): ts.Node|null {
+  file: ts.SourceFile,
+  id: TemplateId,
+  isDiagnosticRequest: boolean,
+): ts.Node | null {
   for (const stmt of file.statements) {
     if (ts.isFunctionDeclaration(stmt) && getTemplateId(stmt, file, isDiagnosticRequest) === id) {
       return stmt;
@@ -141,7 +149,10 @@ export function findTypeCheckBlock(
  * returns null.
  */
 export function findSourceLocation(
-    node: ts.Node, sourceFile: ts.SourceFile, isDiagnosticsRequest: boolean): SourceLocation|null {
+  node: ts.Node,
+  sourceFile: ts.SourceFile,
+  isDiagnosticsRequest: boolean,
+): SourceLocation | null {
   // Search for comments until the TCB's function declaration is encountered.
   while (node !== undefined && !ts.isFunctionDeclaration(node)) {
     if (hasIgnoreForDiagnosticsMarker(node, sourceFile) && isDiagnosticsRequest) {
@@ -167,7 +178,10 @@ export function findSourceLocation(
 }
 
 function getTemplateId(
-    node: ts.Node, sourceFile: ts.SourceFile, isDiagnosticRequest: boolean): TemplateId|null {
+  node: ts.Node,
+  sourceFile: ts.SourceFile,
+  isDiagnosticRequest: boolean,
+): TemplateId | null {
   // Walk up to the function declaration of the TCB, the file information is attached there.
   while (!ts.isFunctionDeclaration(node)) {
     if (hasIgnoreForDiagnosticsMarker(node, sourceFile) && isDiagnosticRequest) {
@@ -183,13 +197,15 @@ function getTemplateId(
   }
 
   const start = node.getFullStart();
-  return ts.forEachLeadingCommentRange(sourceFile.text, start, (pos, end, kind) => {
-    if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
-      return null;
-    }
-    const commentText = sourceFile.text.substring(pos + 2, end - 2);
-    return commentText;
-  }) as TemplateId || null;
+  return (
+    (ts.forEachLeadingCommentRange(sourceFile.text, start, (pos, end, kind) => {
+      if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
+        return null;
+      }
+      const commentText = sourceFile.text.substring(pos + 2, end - 2);
+      return commentText;
+    }) as TemplateId) || null
+  );
 }
 
 /**
@@ -208,9 +224,11 @@ export function ensureTypeCheckFilePreparationImports(env: ReferenceEmitEnvironm
 }
 
 export function checkIfGenericTypeBoundsCanBeEmitted(
-    node: ClassDeclaration<ts.ClassDeclaration>, reflector: ReflectionHost,
-    env: ReferenceEmitEnvironment): boolean {
+  node: ClassDeclaration<ts.ClassDeclaration>,
+  reflector: ReflectionHost,
+  env: ReferenceEmitEnvironment,
+): boolean {
   // Generic type parameters are considered context free if they can be emitted into any context.
   const emitter = new TypeParameterEmitter(node.typeParameters, reflector);
-  return emitter.canEmit(ref => env.canReferenceType(ref));
+  return emitter.canEmit((ref) => env.canReferenceType(ref));
 }

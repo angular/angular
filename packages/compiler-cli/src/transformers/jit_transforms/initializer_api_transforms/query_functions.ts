@@ -6,9 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getAngularDecorators, queryDecoratorNames, QueryFunctionName, tryParseSignalQueryFromInitializer} from '../../../ngtsc/annotations';
+import {
+  getAngularDecorators,
+  queryDecoratorNames,
+  QueryFunctionName,
+  tryParseSignalQueryFromInitializer,
+} from '../../../ngtsc/annotations';
 
-import {castAsAny, createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './transform_api';
+import {
+  castAsAny,
+  createSyntheticAngularCoreDecoratorAccess,
+  PropertyTransform,
+} from './transform_api';
 
 /** Maps a query function to its decorator. */
 const queryFunctionToDecorator: Record<QueryFunctionName, string> = {
@@ -30,28 +39,24 @@ const queryFunctionToDecorator: Record<QueryFunctionName, string> = {
  * information to the class without the class needing to be instantiated.
  */
 export const queryFunctionsTransforms: PropertyTransform = (
-    member,
-    host,
-    factory,
-    importTracker,
-    importManager,
-    classDecorator,
-    isCore,
-    ) => {
+  member,
+  host,
+  factory,
+  importTracker,
+  importManager,
+  classDecorator,
+  isCore,
+) => {
   const decorators = host.getDecoratorsOfDeclaration(member.node);
 
   // If the field already is decorated, we handle this gracefully and skip it.
   const queryDecorators =
-      decorators && getAngularDecorators(decorators, queryDecoratorNames, isCore);
+    decorators && getAngularDecorators(decorators, queryDecoratorNames, isCore);
   if (queryDecorators !== null && queryDecorators.length > 0) {
     return member.node;
   }
 
-  const queryDefinition = tryParseSignalQueryFromInitializer(
-      member,
-      host,
-      importTracker,
-  );
+  const queryDefinition = tryParseSignalQueryFromInitializer(member, host, importTracker);
   if (queryDefinition === null) {
     return member.node;
   }
@@ -59,30 +64,38 @@ export const queryFunctionsTransforms: PropertyTransform = (
   const sourceFile = member.node.getSourceFile();
   const callArgs = queryDefinition.call.arguments;
   const newDecorator = factory.createDecorator(
-      factory.createCallExpression(
-          createSyntheticAngularCoreDecoratorAccess(
-              factory, importManager, classDecorator, sourceFile,
-              queryFunctionToDecorator[queryDefinition.name]),
-          undefined,
-          // All positional arguments of the query functions can be mostly re-used as is
-          // for the decorator. i.e. predicate is always first argument. Options are second.
-          [
-            queryDefinition.call.arguments[0],
-            // Note: Casting as `any` because `isSignal` is not publicly exposed and this
-            // transform might pre-transform TS sources.
-            castAsAny(factory, factory.createObjectLiteralExpression([
-              ...(callArgs.length > 1 ? [factory.createSpreadAssignment(callArgs[1])] : []),
-              factory.createPropertyAssignment('isSignal', factory.createTrue()),
-            ])),
+    factory.createCallExpression(
+      createSyntheticAngularCoreDecoratorAccess(
+        factory,
+        importManager,
+        classDecorator,
+        sourceFile,
+        queryFunctionToDecorator[queryDefinition.name],
+      ),
+      undefined,
+      // All positional arguments of the query functions can be mostly re-used as is
+      // for the decorator. i.e. predicate is always first argument. Options are second.
+      [
+        queryDefinition.call.arguments[0],
+        // Note: Casting as `any` because `isSignal` is not publicly exposed and this
+        // transform might pre-transform TS sources.
+        castAsAny(
+          factory,
+          factory.createObjectLiteralExpression([
+            ...(callArgs.length > 1 ? [factory.createSpreadAssignment(callArgs[1])] : []),
+            factory.createPropertyAssignment('isSignal', factory.createTrue()),
           ]),
+        ),
+      ],
+    ),
   );
 
   return factory.updatePropertyDeclaration(
-      member.node,
-      [newDecorator, ...(member.node.modifiers ?? [])],
-      member.node.name,
-      member.node.questionToken,
-      member.node.type,
-      member.node.initializer,
+    member.node,
+    [newDecorator, ...(member.node.modifiers ?? [])],
+    member.node.name,
+    member.node.questionToken,
+    member.node.type,
+    member.node.initializer,
   );
 };

@@ -25,9 +25,12 @@ runInEachFileSystem(() => {
     });
 
     it('should extract type aliases based on primitives', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export type SuperNumber = number | string;
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -39,12 +42,15 @@ runInEachFileSystem(() => {
     });
 
     it('should extract type aliases for objects', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export type UserProfile = {
           name: string;
           age: number;
         };
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);

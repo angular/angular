@@ -14,7 +14,6 @@ import {Declaration} from '../../reflection';
 import {DynamicValue} from './dynamic';
 import {SyntheticValue} from './synthetic';
 
-
 /**
  * A value resulting from static resolution.
  *
@@ -23,8 +22,19 @@ import {SyntheticValue} from './synthetic';
  * available statically.
  */
 export type ResolvedValue =
-    number|boolean|string|null|undefined|Reference|EnumValue|ResolvedValueArray|ResolvedValueMap|
-    ResolvedModule|KnownFn|SyntheticValue<unknown>|DynamicValue<unknown>;
+  | number
+  | boolean
+  | string
+  | null
+  | undefined
+  | Reference
+  | EnumValue
+  | ResolvedValueArray
+  | ResolvedValueMap
+  | ResolvedModule
+  | KnownFn
+  | SyntheticValue<unknown>
+  | DynamicValue<unknown>;
 
 /**
  * An array of `ResolvedValue`s.
@@ -48,8 +58,9 @@ export interface ResolvedValueMap extends Map<string, ResolvedValue> {}
  */
 export class ResolvedModule {
   constructor(
-      private exports: Map<string, Declaration>,
-      private evaluate: (decl: Declaration) => ResolvedValue) {}
+    private exports: Map<string, Declaration>,
+    private evaluate: (decl: Declaration) => ResolvedValue,
+  ) {}
 
   getExport(name: string): ResolvedValue {
     if (!this.exports.has(name)) {
@@ -75,8 +86,10 @@ export class ResolvedModule {
  */
 export class EnumValue {
   constructor(
-      readonly enumRef: Reference<ts.Declaration>, readonly name: string,
-      readonly resolved: ResolvedValue) {}
+    readonly enumRef: Reference<ts.Declaration>,
+    readonly name: string,
+    readonly resolved: ResolvedValue,
+  ) {}
 }
 
 /**

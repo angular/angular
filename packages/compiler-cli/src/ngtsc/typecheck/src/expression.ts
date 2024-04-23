@@ -6,7 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, SafeCall, SafeKeyedRead, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
+import {
+  AST,
+  AstVisitor,
+  ASTWithSource,
+  Binary,
+  BindingPipe,
+  Call,
+  Chain,
+  Conditional,
+  EmptyExpr,
+  ImplicitReceiver,
+  Interpolation,
+  KeyedRead,
+  KeyedWrite,
+  LiteralArray,
+  LiteralMap,
+  LiteralPrimitive,
+  NonNullAssert,
+  PrefixNot,
+  PropertyRead,
+  PropertyWrite,
+  SafeCall,
+  SafeKeyedRead,
+  SafePropertyRead,
+  ThisReceiver,
+  Unary,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {TypeCheckingConfig} from '../api';
@@ -15,7 +41,9 @@ import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagno
 import {tsCastToAny, tsNumericExpression} from './ts_util';
 
 export const NULL_AS_ANY = ts.factory.createAsExpression(
-    ts.factory.createNull(), ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+  ts.factory.createNull(),
+  ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+);
 const UNDEFINED = ts.factory.createIdentifier('undefined');
 
 const UNARY_OPS = new Map<string, ts.PrefixUnaryOperator>([
@@ -49,16 +77,19 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
  * AST.
  */
 export function astToTypescript(
-    ast: AST, maybeResolve: (ast: AST) => (ts.Expression | null),
-    config: TypeCheckingConfig): ts.Expression {
+  ast: AST,
+  maybeResolve: (ast: AST) => ts.Expression | null,
+  config: TypeCheckingConfig,
+): ts.Expression {
   const translator = new AstTranslator(maybeResolve, config);
   return translator.translate(ast);
 }
 
 class AstTranslator implements AstVisitor {
   constructor(
-      private maybeResolve: (ast: AST) => (ts.Expression | null),
-      private config: TypeCheckingConfig) {}
+    private maybeResolve: (ast: AST) => ts.Expression | null,
+    private config: TypeCheckingConfig,
+  ) {}
 
   translate(ast: AST): ts.Expression {
     // Skip over an `ASTWithSource` as its `visit` method calls directly into its ast's `visit`,
@@ -107,7 +138,7 @@ class AstTranslator implements AstVisitor {
   }
 
   visitChain(ast: Chain): ts.Expression {
-    const elements = ast.expressions.map(expr => this.translate(expr));
+    const elements = ast.expressions.map((expr) => this.translate(expr));
     const node = wrapForDiagnostics(ts.factory.createCommaListExpression(elements));
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
@@ -124,8 +155,9 @@ class AstTranslator implements AstVisitor {
     // `conditional /*1,2*/ ? trueExpr /*3,4*/ : falseExpr /*5,6*/`
     // This should be instead be `conditional /*1,2*/ ? trueExpr /*3,4*/ : (falseExpr /*5,6*/)`
     const falseExpr = wrapForTypeChecker(this.translate(ast.falseExp));
-    const node = ts.factory.createParenthesizedExpression(ts.factory.createConditionalExpression(
-        condExpr, undefined, trueExpr, undefined, falseExpr));
+    const node = ts.factory.createParenthesizedExpression(
+      ts.factory.createConditionalExpression(condExpr, undefined, trueExpr, undefined, falseExpr),
+    );
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -143,9 +175,14 @@ class AstTranslator implements AstVisitor {
     // interpolation's expressions. The chain is started using an actual string literal to ensure
     // the type is inferred as 'string'.
     return ast.expressions.reduce(
-        (lhs: ts.Expression, ast: AST) => ts.factory.createBinaryExpression(
-            lhs, ts.SyntaxKind.PlusToken, wrapForTypeChecker(this.translate(ast))),
-        ts.factory.createStringLiteral(''));
+      (lhs: ts.Expression, ast: AST) =>
+        ts.factory.createBinaryExpression(
+          lhs,
+          ts.SyntaxKind.PlusToken,
+          wrapForTypeChecker(this.translate(ast)),
+        ),
+      ts.factory.createStringLiteral(''),
+    );
   }
 
   visitKeyedRead(ast: KeyedRead): ts.Expression {
@@ -163,13 +200,14 @@ class AstTranslator implements AstVisitor {
     //  available on `ast`.
     const right = wrapForTypeChecker(this.translate(ast.value));
     const node = wrapForDiagnostics(
-        ts.factory.createBinaryExpression(left, ts.SyntaxKind.EqualsToken, right));
+      ts.factory.createBinaryExpression(left, ts.SyntaxKind.EqualsToken, right),
+    );
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
 
   visitLiteralArray(ast: LiteralArray): ts.Expression {
-    const elements = ast.expressions.map(expr => this.translate(expr));
+    const elements = ast.expressions.map((expr) => this.translate(expr));
     const literal = ts.factory.createArrayLiteralExpression(elements);
     // If strictLiteralTypes is disabled, array literals are cast to `any`.
     const node = this.config.strictLiteralTypes ? literal : tsCastToAny(literal);
@@ -255,7 +293,8 @@ class AstTranslator implements AstVisitor {
     // We should instead generate `e = ($event /*0,10*/)` so we know the span 0,10 matches RHS.
     const right = wrapForTypeChecker(this.translate(ast.value));
     const node = wrapForDiagnostics(
-        ts.factory.createBinaryExpression(leftWithPath, ts.SyntaxKind.EqualsToken, right));
+      ts.factory.createBinaryExpression(leftWithPath, ts.SyntaxKind.EqualsToken, right),
+    );
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -270,10 +309,13 @@ class AstTranslator implements AstVisitor {
       // "a?.b" becomes (null as any ? a!.b : undefined)
       // The type of this expression is (typeof a!.b) | undefined, which is exactly as desired.
       const expr = ts.factory.createPropertyAccessExpression(
-          ts.factory.createNonNullExpression(receiver), ast.name);
+        ts.factory.createNonNullExpression(receiver),
+        ast.name,
+      );
       addParseSpanInfo(expr, ast.nameSpan);
-      node = ts.factory.createParenthesizedExpression(ts.factory.createConditionalExpression(
-          NULL_AS_ANY, undefined, expr, undefined, UNDEFINED));
+      node = ts.factory.createParenthesizedExpression(
+        ts.factory.createConditionalExpression(NULL_AS_ANY, undefined, expr, undefined, UNDEFINED),
+      );
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // Emulate a View Engine bug where 'any' is inferred for the left-hand side of the safe
       // navigation operation. With this bug, the type of the left-hand side is regarded as any.
@@ -286,7 +328,9 @@ class AstTranslator implements AstVisitor {
       // result is still inferred as `any`.
       // "a?.b" becomes (a!.b as any)
       const expr = ts.factory.createPropertyAccessExpression(
-          ts.factory.createNonNullExpression(receiver), ast.name);
+        ts.factory.createNonNullExpression(receiver),
+        ast.name,
+      );
       addParseSpanInfo(expr, ast.nameSpan);
       node = tsCastToAny(expr);
     }
@@ -303,17 +347,22 @@ class AstTranslator implements AstVisitor {
     if (this.config.strictSafeNavigationTypes) {
       // "a?.[...]" becomes (null as any ? a![...] : undefined)
       const expr = ts.factory.createElementAccessExpression(
-          ts.factory.createNonNullExpression(receiver), key);
+        ts.factory.createNonNullExpression(receiver),
+        key,
+      );
       addParseSpanInfo(expr, ast.sourceSpan);
-      node = ts.factory.createParenthesizedExpression(ts.factory.createConditionalExpression(
-          NULL_AS_ANY, undefined, expr, undefined, UNDEFINED));
+      node = ts.factory.createParenthesizedExpression(
+        ts.factory.createConditionalExpression(NULL_AS_ANY, undefined, expr, undefined, UNDEFINED),
+      );
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // "a?.[...]" becomes (a as any)[...]
       node = ts.factory.createElementAccessExpression(tsCastToAny(receiver), key);
     } else {
       // "a?.[...]" becomes (a!.[...] as any)
       const expr = ts.factory.createElementAccessExpression(
-          ts.factory.createNonNullExpression(receiver), key);
+        ts.factory.createNonNullExpression(receiver),
+        key,
+      );
       addParseSpanInfo(expr, ast.sourceSpan);
       node = tsCastToAny(expr);
     }
@@ -322,7 +371,7 @@ class AstTranslator implements AstVisitor {
   }
 
   visitCall(ast: Call): ts.Expression {
-    const args = ast.args.map(expr => this.translate(expr));
+    const args = ast.args.map((expr) => this.translate(expr));
 
     let expr: ts.Expression;
     const receiver = ast.receiver;
@@ -358,21 +407,28 @@ class AstTranslator implements AstVisitor {
   }
 
   visitSafeCall(ast: SafeCall): ts.Expression {
-    const args = ast.args.map(expr => this.translate(expr));
+    const args = ast.args.map((expr) => this.translate(expr));
     const expr = wrapForDiagnostics(this.translate(ast.receiver));
     const node = this.convertToSafeCall(ast, expr, args);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
 
-  private convertToSafeCall(ast: Call|SafeCall, expr: ts.Expression, args: ts.Expression[]):
-      ts.Expression {
+  private convertToSafeCall(
+    ast: Call | SafeCall,
+    expr: ts.Expression,
+    args: ts.Expression[],
+  ): ts.Expression {
     if (this.config.strictSafeNavigationTypes) {
       // "a?.method(...)" becomes (null as any ? a!.method(...) : undefined)
       const call = ts.factory.createCallExpression(
-          ts.factory.createNonNullExpression(expr), undefined, args);
-      return ts.factory.createParenthesizedExpression(ts.factory.createConditionalExpression(
-          NULL_AS_ANY, undefined, call, undefined, UNDEFINED));
+        ts.factory.createNonNullExpression(expr),
+        undefined,
+        args,
+      );
+      return ts.factory.createParenthesizedExpression(
+        ts.factory.createConditionalExpression(NULL_AS_ANY, undefined, call, undefined, UNDEFINED),
+      );
     }
 
     if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
@@ -382,7 +438,8 @@ class AstTranslator implements AstVisitor {
 
     // "a?.method(...)" becomes (a!.method(...) as any)
     return tsCastToAny(
-        ts.factory.createCallExpression(ts.factory.createNonNullExpression(expr), undefined, args));
+      ts.factory.createCallExpression(ts.factory.createNonNullExpression(expr), undefined, args),
+    );
   }
 }
 
@@ -402,7 +459,7 @@ class AstTranslator implements AstVisitor {
 class VeSafeLhsInferenceBugDetector implements AstVisitor {
   private static SINGLETON = new VeSafeLhsInferenceBugDetector();
 
-  static veWillInferAnyFor(ast: Call|SafeCall|SafePropertyRead|SafeKeyedRead) {
+  static veWillInferAnyFor(ast: Call | SafeCall | SafePropertyRead | SafeKeyedRead) {
     const visitor = VeSafeLhsInferenceBugDetector.SINGLETON;
     return ast instanceof Call ? ast.visit(visitor) : ast.receiver.visit(visitor);
   }
@@ -432,7 +489,7 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return false;
   }
   visitInterpolation(ast: Interpolation): boolean {
-    return ast.expressions.some(exp => exp.visit(this));
+    return ast.expressions.some((exp) => exp.visit(this));
   }
   visitKeyedRead(ast: KeyedRead): boolean {
     return false;

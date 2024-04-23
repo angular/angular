@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
+import {
+  ParseError,
+  ParseSourceFile,
+  R3TargetBinder,
+  SchemaMetadata,
+  TmplAstNode,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -42,11 +48,17 @@ export interface TypeCheckContext {
    * whitespaces.
    */
   addTemplate(
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
-      pipes: Map<string, PipeMeta>, schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
-      file: ParseSourceFile, parseErrors: ParseError[]|null, isStandalone: boolean,
-      preserveWhitespaces: boolean): void;
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    binder: R3TargetBinder<TypeCheckableDirectiveMeta>,
+    template: TmplAstNode[],
+    pipes: Map<string, PipeMeta>,
+    schemas: SchemaMetadata[],
+    sourceMapping: TemplateSourceMapping,
+    file: ParseSourceFile,
+    parseErrors: ParseError[] | null,
+    isStandalone: boolean,
+    preserveWhitespaces: boolean,
+  ): void;
 }
 
 /**

@@ -10,8 +10,6 @@ import ts from 'typescript';
 
 import {addExpressionIdentifier, ExpressionIdentifier} from './comments';
 
-
-
 /**
  * A `Set` of `ts.SyntaxKind`s of `ts.Expression` which are safe to wrap in a `ts.AsExpression`
  * without needing to be wrapped in parentheses.
@@ -52,10 +50,10 @@ export function tsCastToAny(expr: ts.Expression): ts.Expression {
   }
 
   // The outer expression is always wrapped in parentheses.
-  return ts.factory.createParenthesizedExpression(ts.factory.createAsExpression(
-      expr, ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)));
+  return ts.factory.createParenthesizedExpression(
+    ts.factory.createAsExpression(expr, ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
+  );
 }
-
 
 /**
  * Create an expression which instantiates an element by its HTML tagName.
@@ -65,11 +63,14 @@ export function tsCastToAny(expr: ts.Expression): ts.Expression {
  */
 export function tsCreateElement(tagName: string): ts.Expression {
   const createElement = ts.factory.createPropertyAccessExpression(
-      /* expression */ ts.factory.createIdentifier('document'), 'createElement');
+    /* expression */ ts.factory.createIdentifier('document'),
+    'createElement',
+  );
   return ts.factory.createCallExpression(
-      /* expression */ createElement,
-      /* typeArguments */ undefined,
-      /* argumentsArray */[ts.factory.createStringLiteral(tagName)]);
+    /* expression */ createElement,
+    /* typeArguments */ undefined,
+    /* argumentsArray */ [ts.factory.createStringLiteral(tagName)],
+  );
 }
 
 /**
@@ -85,16 +86,20 @@ export function tsDeclareVariable(id: ts.Identifier, type: ts.TypeNode): ts.Vari
   // in the initializer, e.g. `var _t1 = null! as boolean;`.
   addExpressionIdentifier(type, ExpressionIdentifier.VARIABLE_AS_EXPRESSION);
   const initializer: ts.Expression = ts.factory.createAsExpression(
-      ts.factory.createNonNullExpression(ts.factory.createNull()), type);
+    ts.factory.createNonNullExpression(ts.factory.createNull()),
+    type,
+  );
 
   const decl = ts.factory.createVariableDeclaration(
-      /* name */ id,
-      /* exclamationToken */ undefined,
-      /* type */ undefined,
-      /* initializer */ initializer);
+    /* name */ id,
+    /* exclamationToken */ undefined,
+    /* type */ undefined,
+    /* initializer */ initializer,
+  );
   return ts.factory.createVariableStatement(
-      /* modifiers */ undefined,
-      /* declarationList */[decl]);
+    /* modifiers */ undefined,
+    /* declarationList */ [decl],
+  );
 }
 
 /**
@@ -107,9 +112,12 @@ export function tsDeclareVariable(id: ts.Identifier, type: ts.TypeNode): ts.Vari
  * @param coercedInputName The field name of the coerced input.
  */
 export function tsCreateTypeQueryForCoercedInput(
-    typeName: ts.EntityName, coercedInputName: string): ts.TypeQueryNode {
+  typeName: ts.EntityName,
+  coercedInputName: string,
+): ts.TypeQueryNode {
   return ts.factory.createTypeQueryNode(
-      ts.factory.createQualifiedName(typeName, `ngAcceptInputType_${coercedInputName}`));
+    ts.factory.createQualifiedName(typeName, `ngAcceptInputType_${coercedInputName}`),
+  );
 }
 
 /**
@@ -119,38 +127,47 @@ export function tsCreateTypeQueryForCoercedInput(
  * expression.
  */
 export function tsCreateVariable(
-    id: ts.Identifier, initializer: ts.Expression): ts.VariableStatement {
+  id: ts.Identifier,
+  initializer: ts.Expression,
+): ts.VariableStatement {
   const decl = ts.factory.createVariableDeclaration(
-      /* name */ id,
-      /* exclamationToken */ undefined,
-      /* type */ undefined,
-      /* initializer */ initializer);
+    /* name */ id,
+    /* exclamationToken */ undefined,
+    /* type */ undefined,
+    /* initializer */ initializer,
+  );
   return ts.factory.createVariableStatement(
-      /* modifiers */ undefined,
-      /* declarationList */[decl]);
+    /* modifiers */ undefined,
+    /* declarationList */ [decl],
+  );
 }
 
 /**
  * Construct a `ts.CallExpression` that calls a method on a receiver.
  */
 export function tsCallMethod(
-    receiver: ts.Expression, methodName: string, args: ts.Expression[] = []): ts.CallExpression {
+  receiver: ts.Expression,
+  methodName: string,
+  args: ts.Expression[] = [],
+): ts.CallExpression {
   const methodAccess = ts.factory.createPropertyAccessExpression(receiver, methodName);
   return ts.factory.createCallExpression(
-      /* expression */ methodAccess,
-      /* typeArguments */ undefined,
-      /* argumentsArray */ args);
+    /* expression */ methodAccess,
+    /* typeArguments */ undefined,
+    /* argumentsArray */ args,
+  );
 }
 
-export function isAccessExpression(node: ts.Node): node is ts.ElementAccessExpression|
-    ts.PropertyAccessExpression {
+export function isAccessExpression(
+  node: ts.Node,
+): node is ts.ElementAccessExpression | ts.PropertyAccessExpression {
   return ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node);
 }
 
 /**
  * Creates a TypeScript node representing a numeric value.
  */
-export function tsNumericExpression(value: number): ts.NumericLiteral|ts.PrefixUnaryExpression {
+export function tsNumericExpression(value: number): ts.NumericLiteral | ts.PrefixUnaryExpression {
   // As of TypeScript 5.3 negative numbers are represented as `prefixUnaryOperator` and passing a
   // negative number (even as a string) into `createNumericLiteral` will result in an error.
   if (value < 0) {

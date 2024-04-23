@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, CssSelector, parseTemplate, ParseTemplateOptions, R3TargetBinder, SelectorMatcher} from '@angular/compiler';
+import {
+  BoundTarget,
+  CssSelector,
+  parseTemplate,
+  ParseTemplateOptions,
+  R3TargetBinder,
+  SelectorMatcher,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
@@ -28,8 +35,11 @@ export function getComponentDeclaration(componentStr: string, className: string)
   const program = makeProgram([{name: getTestFilePath(), contents: componentStr}]);
 
   return getDeclaration(
-      program.program, getTestFilePath(), className,
-      (value: ts.Node): value is ClassDeclaration => ts.isClassDeclaration(value));
+    program.program,
+    getTestFilePath(),
+    className,
+    (value: ts.Node): value is ClassDeclaration => ts.isClassDeclaration(value),
+  );
 }
 
 /**
@@ -41,24 +51,27 @@ export function getComponentDeclaration(componentStr: string, className: string)
  * @param components components to bind to the template target
  */
 export function getBoundTemplate(
-    template: string, options: ParseTemplateOptions = {},
-    components: Array<{selector: string, declaration: ClassDeclaration}> =
-        []): BoundTarget<ComponentMeta> {
+  template: string,
+  options: ParseTemplateOptions = {},
+  components: Array<{selector: string; declaration: ClassDeclaration}> = [],
+): BoundTarget<ComponentMeta> {
   const matcher = new SelectorMatcher<ComponentMeta[]>();
   components.forEach(({selector, declaration}) => {
-    matcher.addSelectables(CssSelector.parse(selector), [{
-                             ref: new Reference(declaration),
-                             selector,
-                             name: declaration.name.getText(),
-                             isComponent: true,
-                             inputs: ClassPropertyMapping.fromMappedObject({}),
-                             outputs: ClassPropertyMapping.fromMappedObject({}),
-                             exportAs: null,
-                             isStructural: false,
-                             animationTriggerNames: null,
-                             ngContentSelectors: null,
-                             preserveWhitespaces: false,
-                           }]);
+    matcher.addSelectables(CssSelector.parse(selector), [
+      {
+        ref: new Reference(declaration),
+        selector,
+        name: declaration.name.getText(),
+        isComponent: true,
+        inputs: ClassPropertyMapping.fromMappedObject({}),
+        outputs: ClassPropertyMapping.fromMappedObject({}),
+        exportAs: null,
+        isStructural: false,
+        animationTriggerNames: null,
+        ngContentSelectors: null,
+        preserveWhitespaces: false,
+      },
+    ]);
   });
   const binder = new R3TargetBinder(matcher);
 

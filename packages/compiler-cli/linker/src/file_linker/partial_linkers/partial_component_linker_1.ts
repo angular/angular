@@ -5,7 +5,33 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {BoundTarget, ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DeferBlockDepsEmitMode, ForwardRefHandling, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentDeferMetadata, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclarePipeDependencyMetadata, R3DirectiveDependencyMetadata, R3PartialDeclaration, R3TargetBinder, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SelectorMatcher, TmplAstDeferredBlock, ViewEncapsulation} from '@angular/compiler';
+import {
+  BoundTarget,
+  ChangeDetectionStrategy,
+  compileComponentFromMetadata,
+  ConstantPool,
+  DeclarationListEmitMode,
+  DEFAULT_INTERPOLATION_CONFIG,
+  DeferBlockDepsEmitMode,
+  ForwardRefHandling,
+  InterpolationConfig,
+  makeBindingParser,
+  outputAst as o,
+  parseTemplate,
+  R3ComponentDeferMetadata,
+  R3ComponentMetadata,
+  R3DeclareComponentMetadata,
+  R3DeclareDirectiveDependencyMetadata,
+  R3DeclarePipeDependencyMetadata,
+  R3DirectiveDependencyMetadata,
+  R3PartialDeclaration,
+  R3TargetBinder,
+  R3TemplateDependencyKind,
+  R3TemplateDependencyMetadata,
+  SelectorMatcher,
+  TmplAstDeferredBlock,
+  ViewEncapsulation,
+} from '@angular/compiler';
 import semver from 'semver';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
@@ -19,39 +45,46 @@ import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {extractForwardRef, PLACEHOLDER_VERSION} from './util';
 
 function makeDirectiveMetadata<TExpression>(
-    directiveExpr: AstObject<R3DeclareDirectiveDependencyMetadata, TExpression>,
-    typeExpr: o.WrappedNodeExpr<TExpression>,
-    isComponentByDefault: true|null = null): R3DirectiveDependencyMetadata {
+  directiveExpr: AstObject<R3DeclareDirectiveDependencyMetadata, TExpression>,
+  typeExpr: o.WrappedNodeExpr<TExpression>,
+  isComponentByDefault: true | null = null,
+): R3DirectiveDependencyMetadata {
   return {
     kind: R3TemplateDependencyKind.Directive,
-    isComponent: isComponentByDefault ||
-        (directiveExpr.has('kind') && directiveExpr.getString('kind') === 'component'),
+    isComponent:
+      isComponentByDefault ||
+      (directiveExpr.has('kind') && directiveExpr.getString('kind') === 'component'),
     type: typeExpr,
     selector: directiveExpr.getString('selector'),
-    inputs: directiveExpr.has('inputs') ?
-        directiveExpr.getArray('inputs').map(input => input.getString()) :
-        [],
-    outputs: directiveExpr.has('outputs') ?
-        directiveExpr.getArray('outputs').map(input => input.getString()) :
-        [],
-    exportAs: directiveExpr.has('exportAs') ?
-        directiveExpr.getArray('exportAs').map(exportAs => exportAs.getString()) :
-        null,
+    inputs: directiveExpr.has('inputs')
+      ? directiveExpr.getArray('inputs').map((input) => input.getString())
+      : [],
+    outputs: directiveExpr.has('outputs')
+      ? directiveExpr.getArray('outputs').map((input) => input.getString())
+      : [],
+    exportAs: directiveExpr.has('exportAs')
+      ? directiveExpr.getArray('exportAs').map((exportAs) => exportAs.getString())
+      : null,
   };
 }
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareComponent()` call expressions.
  */
-export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
-    PartialLinker<TExpression> {
+export class PartialComponentLinkerVersion1<TStatement, TExpression>
+  implements PartialLinker<TExpression>
+{
   constructor(
-      private readonly getSourceFile: GetSourceFileFn, private sourceUrl: AbsoluteFsPath,
-      private code: string) {}
+    private readonly getSourceFile: GetSourceFileFn,
+    private sourceUrl: AbsoluteFsPath,
+    private code: string,
+  ) {}
 
   linkPartialDeclaration(
-      constantPool: ConstantPool, metaObj: AstObject<R3PartialDeclaration, TExpression>,
-      version: string): LinkedDefinition {
+    constantPool: ConstantPool,
+    metaObj: AstObject<R3PartialDeclaration, TExpression>,
+    version: string,
+  ): LinkedDefinition {
     const meta = this.toR3ComponentMeta(metaObj, version);
     return compileComponentFromMetadata(meta, constantPool, makeBindingParser());
   }
@@ -60,8 +93,9 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
    * This function derives the `R3ComponentMetadata` from the provided AST object.
    */
   private toR3ComponentMeta(
-      metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
-      version: string): R3ComponentMetadata<R3TemplateDependencyMetadata> {
+    metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
+    version: string,
+  ): R3ComponentMetadata<R3TemplateDependencyMetadata> {
     const interpolation = parseInterpolationConfig(metaObj);
     const templateSource = metaObj.getValue('template');
     const isInline = metaObj.has('isInline') ? metaObj.getBoolean('isInline') : false;
@@ -76,30 +110,34 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       interpolationConfig: interpolation,
       range: templateInfo.range,
       enableI18nLegacyMessageIdFormat: false,
-      preserveWhitespaces:
-          metaObj.has('preserveWhitespaces') ? metaObj.getBoolean('preserveWhitespaces') : false,
+      preserveWhitespaces: metaObj.has('preserveWhitespaces')
+        ? metaObj.getBoolean('preserveWhitespaces')
+        : false,
       // We normalize line endings if the template is was inline.
       i18nNormalizeLineEndingsInICUs: isInline,
       enableBlockSyntax,
     });
     if (template.errors !== null) {
-      const errors = template.errors.map(err => err.toString()).join('\n');
+      const errors = template.errors.map((err) => err.toString()).join('\n');
       throw new FatalLinkerError(
-          templateSource.expression, `Errors found in the template:\n${errors}`);
+        templateSource.expression,
+        `Errors found in the template:\n${errors}`,
+      );
     }
 
     const binder = new R3TargetBinder(new SelectorMatcher());
     const boundTarget = binder.bind({template: template.nodes});
     let declarationListEmitMode = DeclarationListEmitMode.Direct;
 
-    const extractDeclarationTypeExpr =
-        (type: AstValue<o.Expression|(() => o.Expression), TExpression>) => {
-          const {expression, forwardRef} = extractForwardRef(type);
-          if (forwardRef === ForwardRefHandling.Unwrapped) {
-            declarationListEmitMode = DeclarationListEmitMode.Closure;
-          }
-          return expression;
-        };
+    const extractDeclarationTypeExpr = (
+      type: AstValue<o.Expression | (() => o.Expression), TExpression>,
+    ) => {
+      const {expression, forwardRef} = extractForwardRef(type);
+      if (forwardRef === ForwardRefHandling.Unwrapped) {
+        declarationListEmitMode = DeclarationListEmitMode.Closure;
+      }
+      return expression;
+    };
 
     let declarations: R3TemplateDependencyMetadata[] = [];
 
@@ -110,21 +148,25 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
 
     // Process the old style fields:
     if (metaObj.has('components')) {
-      declarations.push(...metaObj.getArray('components').map(dir => {
-        const dirExpr = dir.getObject();
-        const typeExpr = extractDeclarationTypeExpr(dirExpr.getValue('type'));
-        return makeDirectiveMetadata(dirExpr, typeExpr, /* isComponentByDefault */ true);
-      }));
+      declarations.push(
+        ...metaObj.getArray('components').map((dir) => {
+          const dirExpr = dir.getObject();
+          const typeExpr = extractDeclarationTypeExpr(dirExpr.getValue('type'));
+          return makeDirectiveMetadata(dirExpr, typeExpr, /* isComponentByDefault */ true);
+        }),
+      );
     }
     if (metaObj.has('directives')) {
-      declarations.push(...metaObj.getArray('directives').map(dir => {
-        const dirExpr = dir.getObject();
-        const typeExpr = extractDeclarationTypeExpr(dirExpr.getValue('type'));
-        return makeDirectiveMetadata(dirExpr, typeExpr);
-      }));
+      declarations.push(
+        ...metaObj.getArray('directives').map((dir) => {
+          const dirExpr = dir.getObject();
+          const typeExpr = extractDeclarationTypeExpr(dirExpr.getValue('type'));
+          return makeDirectiveMetadata(dirExpr, typeExpr);
+        }),
+      );
     }
     if (metaObj.has('pipes')) {
-      const pipes = metaObj.getObject('pipes').toMap(pipe => pipe);
+      const pipes = metaObj.getObject('pipes').toMap((pipe) => pipe);
       for (const [name, type] of pipes) {
         const typeExpr = extractDeclarationTypeExpr(type);
         declarations.push({
@@ -147,8 +189,10 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
             declarations.push(makeDirectiveMetadata(depObj, typeExpr));
             break;
           case 'pipe':
-            const pipeObj =
-                depObj as AstObject<R3DeclarePipeDependencyMetadata&{kind: 'pipe'}, TExpression>;
+            const pipeObj = depObj as AstObject<
+              R3DeclarePipeDependencyMetadata & {kind: 'pipe'},
+              TExpression
+            >;
             declarations.push({
               kind: R3TemplateDependencyKind.Pipe,
               name: pipeObj.getString('name'),
@@ -176,16 +220,17 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
         ngContentSelectors: template.ngContentSelectors,
       },
       declarationListEmitMode,
-      styles: metaObj.has('styles') ? metaObj.getArray('styles').map(entry => entry.getString()) :
-                                      [],
+      styles: metaObj.has('styles')
+        ? metaObj.getArray('styles').map((entry) => entry.getString())
+        : [],
       defer: this.createR3ComponentDeferMetadata(metaObj, boundTarget),
-      encapsulation: metaObj.has('encapsulation') ?
-          parseEncapsulation(metaObj.getValue('encapsulation')) :
-          ViewEncapsulation.Emulated,
+      encapsulation: metaObj.has('encapsulation')
+        ? parseEncapsulation(metaObj.getValue('encapsulation'))
+        : ViewEncapsulation.Emulated,
       interpolation,
-      changeDetection: metaObj.has('changeDetection') ?
-          parseChangeDetectionStrategy(metaObj.getValue('changeDetection')) :
-          ChangeDetectionStrategy.Default,
+      changeDetection: metaObj.has('changeDetection')
+        ? parseChangeDetectionStrategy(metaObj.getValue('changeDetection'))
+        : ChangeDetectionStrategy.Default,
       animations: metaObj.has('animations') ? metaObj.getOpaque('animations') : null,
       relativeContextFilePath: this.sourceUrl,
       i18nUseExternalIds: false,
@@ -196,8 +241,10 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
   /**
    * Update the range to remove the start and end chars, which should be quotes around the template.
    */
-  private getTemplateInfo(templateNode: AstValue<unknown, TExpression>, isInline: boolean):
-      TemplateInfo {
+  private getTemplateInfo(
+    templateNode: AstValue<unknown, TExpression>,
+    isInline: boolean,
+  ): TemplateInfo {
     const range = templateNode.getRange();
 
     if (!isInline) {
@@ -214,7 +261,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
     return this.templateFromPartialCode(templateNode, range);
   }
 
-  private tryExternalTemplate(range: Range): TemplateInfo|null {
+  private tryExternalTemplate(range: Range): TemplateInfo | null {
     const sourceFile = this.getSourceFile();
     if (sourceFile === null) {
       return null;
@@ -225,12 +272,19 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
     // * the file is different to the current file
     // * the file does not end in `.js` or `.ts` (we expect it to be something like `.html`).
     // * the range starts at the beginning of the file
-    if (pos === null || pos.file === this.sourceUrl || /\.[jt]s$/.test(pos.file) ||
-        pos.line !== 0 || pos.column !== 0) {
+    if (
+      pos === null ||
+      pos.file === this.sourceUrl ||
+      /\.[jt]s$/.test(pos.file) ||
+      pos.line !== 0 ||
+      pos.column !== 0
+    ) {
       return null;
     }
 
-    const templateContents = sourceFile.sources.find(src => src?.sourcePath === pos.file)!.contents;
+    const templateContents = sourceFile.sources.find(
+      (src) => src?.sourcePath === pos.file,
+    )!.contents;
 
     return {
       code: templateContents,
@@ -241,13 +295,17 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
   }
 
   private templateFromPartialCode(
-      templateNode: AstValue<unknown, TExpression>,
-      {startPos, endPos, startLine, startCol}: Range): TemplateInfo {
+    templateNode: AstValue<unknown, TExpression>,
+    {startPos, endPos, startLine, startCol}: Range,
+  ): TemplateInfo {
     if (!/["'`]/.test(this.code[startPos]) || this.code[startPos] !== this.code[endPos - 1]) {
       throw new FatalLinkerError(
-          templateNode.expression,
-          `Expected the template string to be wrapped in quotes but got: ${
-              this.code.substring(startPos, endPos)}`);
+        templateNode.expression,
+        `Expected the template string to be wrapped in quotes but got: ${this.code.substring(
+          startPos,
+          endPos,
+        )}`,
+      );
     }
     return {
       code: this.code,
@@ -258,12 +316,14 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
   }
 
   private createR3ComponentDeferMetadata(
-      metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
-      boundTarget: BoundTarget<any>): R3ComponentDeferMetadata {
+    metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
+    boundTarget: BoundTarget<any>,
+  ): R3ComponentDeferMetadata {
     const deferredBlocks = boundTarget.getDeferBlocks();
-    const blocks = new Map<TmplAstDeferredBlock, o.Expression|null>();
-    const dependencies =
-        metaObj.has('deferBlockDependencies') ? metaObj.getArray('deferBlockDependencies') : null;
+    const blocks = new Map<TmplAstDeferredBlock, o.Expression | null>();
+    const dependencies = metaObj.has('deferBlockDependencies')
+      ? metaObj.getArray('deferBlockDependencies')
+      : null;
 
     for (let i = 0; i < deferredBlocks.length; i++) {
       const matchingDependencyFn = dependencies?.[i];
@@ -272,8 +332,9 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
         blocks.set(deferredBlocks[i], null);
       } else {
         blocks.set(
-            deferredBlocks[i],
-            matchingDependencyFn.isNull() ? null : matchingDependencyFn.getOpaque());
+          deferredBlocks[i],
+          matchingDependencyFn.isNull() ? null : matchingDependencyFn.getOpaque(),
+        );
       }
     }
 
@@ -292,17 +353,19 @@ interface TemplateInfo {
  * Extract an `InterpolationConfig` from the component declaration.
  */
 function parseInterpolationConfig<TExpression>(
-    metaObj: AstObject<R3DeclareComponentMetadata, TExpression>): InterpolationConfig {
+  metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
+): InterpolationConfig {
   if (!metaObj.has('interpolation')) {
     return DEFAULT_INTERPOLATION_CONFIG;
   }
 
   const interpolationExpr = metaObj.getValue('interpolation');
-  const values = interpolationExpr.getArray().map(entry => entry.getString());
+  const values = interpolationExpr.getArray().map((entry) => entry.getString());
   if (values.length !== 2) {
     throw new FatalLinkerError(
-        interpolationExpr.expression,
-        'Unsupported interpolation config, expected an array containing exactly two strings');
+      interpolationExpr.expression,
+      'Unsupported interpolation config, expected an array containing exactly two strings',
+    );
   }
   return InterpolationConfig.fromArray(values as [string, string]);
 }
@@ -311,11 +374,14 @@ function parseInterpolationConfig<TExpression>(
  * Determines the `ViewEncapsulation` mode from the AST value's symbol name.
  */
 function parseEncapsulation<TExpression>(
-    encapsulation: AstValue<ViewEncapsulation|undefined, TExpression>): ViewEncapsulation {
+  encapsulation: AstValue<ViewEncapsulation | undefined, TExpression>,
+): ViewEncapsulation {
   const symbolName = encapsulation.getSymbolName();
   if (symbolName === null) {
     throw new FatalLinkerError(
-        encapsulation.expression, 'Expected encapsulation to have a symbol name');
+      encapsulation.expression,
+      'Expected encapsulation to have a symbol name',
+    );
   }
   const enumValue = ViewEncapsulation[symbolName as keyof typeof ViewEncapsulation];
   if (enumValue === undefined) {
@@ -328,18 +394,21 @@ function parseEncapsulation<TExpression>(
  * Determines the `ChangeDetectionStrategy` from the AST value's symbol name.
  */
 function parseChangeDetectionStrategy<TExpression>(
-    changeDetectionStrategy: AstValue<ChangeDetectionStrategy|undefined, TExpression>):
-    ChangeDetectionStrategy {
+  changeDetectionStrategy: AstValue<ChangeDetectionStrategy | undefined, TExpression>,
+): ChangeDetectionStrategy {
   const symbolName = changeDetectionStrategy.getSymbolName();
   if (symbolName === null) {
     throw new FatalLinkerError(
-        changeDetectionStrategy.expression,
-        'Expected change detection strategy to have a symbol name');
+      changeDetectionStrategy.expression,
+      'Expected change detection strategy to have a symbol name',
+    );
   }
   const enumValue = ChangeDetectionStrategy[symbolName as keyof typeof ChangeDetectionStrategy];
   if (enumValue === undefined) {
     throw new FatalLinkerError(
-        changeDetectionStrategy.expression, 'Unsupported change detection strategy');
+      changeDetectionStrategy.expression,
+      'Unsupported change detection strategy',
+    );
   }
   return enumValue;
 }

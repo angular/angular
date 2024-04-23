@@ -19,7 +19,7 @@ export interface FileUpdate {
    * Represents the source file from the original program that is being updated. If the file update
    * targets a shim file then this is null, as shim files do not have an associated original file.
    */
-  originalFile: ts.SourceFile|null;
+  originalFile: ts.SourceFile | null;
 }
 
 export const NgOriginalFile = Symbol('NgOriginalFile');

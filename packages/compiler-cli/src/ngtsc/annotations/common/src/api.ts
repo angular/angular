@@ -47,7 +47,7 @@ export interface ResourceLoader {
    * if the file has already been loaded.
    * @throws An Error if pre-loading is not available.
    */
-  preload(resolvedUrl: string, context: ResourceLoaderContext): Promise<void>|undefined;
+  preload(resolvedUrl: string, context: ResourceLoaderContext): Promise<void> | undefined;
 
   /**
    * Preprocess the content data of an inline resource, asynchronously.
@@ -81,7 +81,7 @@ export interface ResourceLoaderContext {
    * * Resources referenced via a component's `template` or `templateUrl` properties are of type
    * `template`.
    */
-  type: 'style'|'template';
+  type: 'style' | 'template';
 
   /**
    * The absolute path to the file that contains the resource or reference to the resource.

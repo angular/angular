@@ -20,7 +20,7 @@ export class CycleAnalyzer {
    * file has not changed. This avoids visiting the import graph that is reachable from multiple
    * directives/pipes more than once.
    */
-  private cachedResults: CycleResults|null = null;
+  private cachedResults: CycleResults | null = null;
 
   constructor(private importGraph: ImportGraph) {}
 
@@ -31,7 +31,7 @@ export class CycleAnalyzer {
    * @returns a `Cycle` object if an import between `from` and `to` would create a cycle; `null`
    *     otherwise.
    */
-  wouldCreateCycle(from: ts.SourceFile, to: ts.SourceFile): Cycle|null {
+  wouldCreateCycle(from: ts.SourceFile, to: ts.SourceFile): Cycle | null {
     // Try to reuse the cached results as long as the `from` source file is the same.
     if (this.cachedResults === null || this.cachedResults.from !== from) {
       this.cachedResults = new CycleResults(from, this.importGraph);
@@ -57,7 +57,7 @@ const NgCyclicResult = Symbol('NgCyclicResult');
 type CyclicResultMarker = {
   __brand: 'CyclicResultMarker';
 };
-type CyclicSourceFile = ts.SourceFile&{[NgCyclicResult]?: CyclicResultMarker};
+type CyclicSourceFile = ts.SourceFile & {[NgCyclicResult]?: CyclicResultMarker};
 
 /**
  * Stores the results of cycle detection in a memory efficient manner. A symbol is attached to
@@ -70,7 +70,10 @@ class CycleResults {
   private readonly cyclic = {} as CyclicResultMarker;
   private readonly acyclic = {} as CyclicResultMarker;
 
-  constructor(readonly from: ts.SourceFile, private importGraph: ImportGraph) {}
+  constructor(
+    readonly from: ts.SourceFile,
+    private importGraph: ImportGraph,
+  ) {}
 
   wouldBeCyclic(sf: ts.SourceFile): boolean {
     const cached = this.getCachedResult(sf);
@@ -103,7 +106,7 @@ class CycleResults {
    * Returns whether the source file is already known to be cyclic, or `null` if the result is not
    * yet known.
    */
-  private getCachedResult(sf: CyclicSourceFile): boolean|null {
+  private getCachedResult(sf: CyclicSourceFile): boolean | null {
     const result = sf[NgCyclicResult];
     if (result === this.cyclic) {
       return true;
@@ -133,7 +136,10 @@ class CycleResults {
  */
 export class Cycle {
   constructor(
-      private importGraph: ImportGraph, readonly from: ts.SourceFile, readonly to: ts.SourceFile) {}
+    private importGraph: ImportGraph,
+    readonly from: ts.SourceFile,
+    readonly to: ts.SourceFile,
+  ) {}
 
   /**
    * Compute an array of source-files that illustrates the cyclic path between `from` and `to`.
@@ -145,7 +151,6 @@ export class Cycle {
     return [this.from, ...this.importGraph.findPath(this.to, this.from)!];
   }
 }
-
 
 /**
  * What to do if a cycle is detected.

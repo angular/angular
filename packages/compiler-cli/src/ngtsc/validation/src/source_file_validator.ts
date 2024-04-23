@@ -28,12 +28,12 @@ export class SourceFileValidator {
    * Gets the diagnostics for a specific file, or null if the file is valid.
    * @param sourceFile File to be checked.
    */
-  getDiagnosticsForFile(sourceFile: ts.SourceFile): ts.Diagnostic[]|null {
+  getDiagnosticsForFile(sourceFile: ts.SourceFile): ts.Diagnostic[] | null {
     if (sourceFile.isDeclarationFile || sourceFile.fileName.endsWith('.ngtypecheck.ts')) {
       return null;
     }
 
-    let rulesToRun: SourceFileValidatorRule[]|null = null;
+    let rulesToRun: SourceFileValidatorRule[] | null = null;
     for (const rule of this.rules) {
       if (rule.shouldCheck(sourceFile)) {
         rulesToRun ??= [];
@@ -45,7 +45,7 @@ export class SourceFileValidator {
       return null;
     }
 
-    let fileDiagnostics: ts.Diagnostic[]|null = null;
+    let fileDiagnostics: ts.Diagnostic[] | null = null;
     sourceFile.forEachChild(function walk(node) {
       // Note: non-null assertion is here because of g3.
       for (const rule of rulesToRun!) {

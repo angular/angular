@@ -20,15 +20,24 @@ import {InitializerFunctionMetadata} from './initializer_functions';
  *   incompatible.
  */
 export function validateAccessOfInitializerApiMember(
-    {api, call}: InitializerFunctionMetadata, member: Pick<ClassMember, 'accessLevel'>): void {
+  {api, call}: InitializerFunctionMetadata,
+  member: Pick<ClassMember, 'accessLevel'>,
+): void {
   if (!api.allowedAccessLevels.includes(member.accessLevel)) {
     throw new FatalDiagnosticError(
-        ErrorCode.INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY, call,
-        makeDiagnosticChain(
-            `Cannot use "${api.functionName}" on a class member that is declared as ${
-                classMemberAccessLevelToString(member.accessLevel)}.`,
-            [makeDiagnosticChain(
-                `Update the class field to be either: ` +
-                api.allowedAccessLevels.map(l => classMemberAccessLevelToString(l)).join(', '))]));
+      ErrorCode.INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY,
+      call,
+      makeDiagnosticChain(
+        `Cannot use "${api.functionName}" on a class member that is declared as ${classMemberAccessLevelToString(
+          member.accessLevel,
+        )}.`,
+        [
+          makeDiagnosticChain(
+            `Update the class field to be either: ` +
+              api.allowedAccessLevels.map((l) => classMemberAccessLevelToString(l)).join(', '),
+          ),
+        ],
+      ),
+    );
   }
 }

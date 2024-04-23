@@ -25,7 +25,7 @@ export class InvalidFileSystem implements FileSystem {
   readFileBuffer(path: AbsoluteFsPath): Uint8Array {
     throw makeError();
   }
-  writeFile(path: AbsoluteFsPath, data: string|Uint8Array, exclusive?: boolean): void {
+  writeFile(path: AbsoluteFsPath, data: string | Uint8Array, exclusive?: boolean): void {
     throw makeError();
   }
   removeFile(path: AbsoluteFsPath): void {
@@ -49,7 +49,7 @@ export class InvalidFileSystem implements FileSystem {
   chdir(path: AbsoluteFsPath): void {
     throw makeError();
   }
-  extname(path: AbsoluteFsPath|PathSegment): string {
+  extname(path: AbsoluteFsPath | PathSegment): string {
     throw makeError();
   }
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void {
@@ -82,7 +82,7 @@ export class InvalidFileSystem implements FileSystem {
   isRooted(path: string): boolean {
     throw makeError();
   }
-  relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
+  relative<T extends PathString>(from: T, to: T): PathSegment | AbsoluteFsPath {
     throw makeError();
   }
   basename(filePath: string, extension?: string): PathSegment {
@@ -101,5 +101,6 @@ export class InvalidFileSystem implements FileSystem {
 
 function makeError() {
   return new Error(
-      'FileSystem has not been configured. Please call `setFileSystem()` before calling this method.');
+    'FileSystem has not been configured. Please call `setFileSystem()` before calling this method.',
+  );
 }

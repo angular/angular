@@ -45,7 +45,10 @@ export interface AstFactory<TStatement, TExpression> {
    * @param rightOperand an expression that will appear on the right of the operator.
    */
   createBinaryExpression(
-      leftOperand: TExpression, operator: BinaryOperator, rightOperand: TExpression): TExpression;
+    leftOperand: TExpression,
+    operator: BinaryOperator,
+    rightOperand: TExpression,
+  ): TExpression;
 
   /**
    * Create a block of statements (e.g. `{ stmt1; stmt2; }`).
@@ -71,8 +74,10 @@ export interface AstFactory<TStatement, TExpression> {
    * @param elseExpression an expression that is executed if `condition` is falsy.
    */
   createConditional(
-      condition: TExpression, thenExpression: TExpression,
-      elseExpression: TExpression): TExpression;
+    condition: TExpression,
+    thenExpression: TExpression,
+    elseExpression: TExpression,
+  ): TExpression;
 
   /**
    * Create an element access (e.g. `obj[expr]`).
@@ -96,8 +101,11 @@ export interface AstFactory<TStatement, TExpression> {
    * @param parameters the names of the function's parameters.
    * @param body a statement (or a block of statements) that are the body of the function.
    */
-  createFunctionDeclaration(functionName: string, parameters: string[], body: TStatement):
-      TStatement;
+  createFunctionDeclaration(
+    functionName: string,
+    parameters: string[],
+    body: TStatement,
+  ): TStatement;
 
   /**
    * Create an expression that represents a function
@@ -107,8 +115,11 @@ export interface AstFactory<TStatement, TExpression> {
    * @param parameters the names of the function's parameters.
    * @param body a statement (or a block of statements) that are the body of the function.
    */
-  createFunctionExpression(functionName: string|null, parameters: string[], body: TStatement):
-      TExpression;
+  createFunctionExpression(
+    functionName: string | null,
+    parameters: string[],
+    body: TStatement,
+  ): TExpression;
 
   /**
    * Create an expression that represents an arrow function
@@ -117,7 +128,7 @@ export interface AstFactory<TStatement, TExpression> {
    * @param parameters the names of the function's parameters.
    * @param body an expression or block of statements that are the body of the function.
    */
-  createArrowFunctionExpression(parameters: string[], body: TExpression|TStatement): TExpression;
+  createArrowFunctionExpression(parameters: string[], body: TExpression | TStatement): TExpression;
 
   /**
    * Creates an expression that represents a dynamic import
@@ -144,15 +155,17 @@ export interface AstFactory<TStatement, TExpression> {
    *     falsy.
    */
   createIfStatement(
-      condition: TExpression, thenStatement: TStatement,
-      elseStatement: TStatement|null): TStatement;
+    condition: TExpression,
+    thenStatement: TStatement,
+    elseStatement: TStatement | null,
+  ): TStatement;
 
   /**
    * Create a simple literal (e.g. `"string"`, `123`, `false`, etc).
    *
    * @param value the value of the literal.
    */
-  createLiteral(value: string|number|boolean|null|undefined): TExpression;
+  createLiteral(value: string | number | boolean | null | undefined): TExpression;
 
   /**
    * Create an expression that is instantiating the `expression` as a class.
@@ -189,7 +202,7 @@ export interface AstFactory<TStatement, TExpression> {
    *
    * @param expression the expression to be returned.
    */
-  createReturnStatement(expression: TExpression|null): TStatement;
+  createReturnStatement(expression: TExpression | null): TStatement;
 
   /**
    * Create a tagged template literal string. E.g.
@@ -234,8 +247,10 @@ export interface AstFactory<TStatement, TExpression> {
    * @param type whether this variable should be declared as `var`, `let` or `const`.
    */
   createVariableDeclaration(
-      variableName: string, initializer: TExpression|null,
-      type: VariableDeclarationType): TStatement;
+    variableName: string,
+    initializer: TExpression | null,
+    type: VariableDeclarationType,
+  ): TStatement;
 
   /**
    * Attach a source map range to the given node.
@@ -244,25 +259,44 @@ export interface AstFactory<TStatement, TExpression> {
    * @param sourceMapRange the range to attach to the node, or null if there is no range to attach.
    * @returns the `node` with the `sourceMapRange` attached.
    */
-  setSourceMapRange<T extends TStatement|TExpression>(node: T, sourceMapRange: SourceMapRange|null):
-      T;
+  setSourceMapRange<T extends TStatement | TExpression>(
+    node: T,
+    sourceMapRange: SourceMapRange | null,
+  ): T;
 }
 
 /**
  * The type of a variable declaration.
  */
-export type VariableDeclarationType = 'const'|'let'|'var';
+export type VariableDeclarationType = 'const' | 'let' | 'var';
 
 /**
  * The unary operators supported by the `AstFactory`.
  */
-export type UnaryOperator = '+'|'-'|'!';
+export type UnaryOperator = '+' | '-' | '!';
 
 /**
  * The binary operators supported by the `AstFactory`.
  */
 export type BinaryOperator =
-    '&&'|'>'|'>='|'&'|'|'|'/'|'=='|'==='|'<'|'<='|'-'|'%'|'*'|'!='|'!=='|'||'|'+'|'??';
+  | '&&'
+  | '>'
+  | '>='
+  | '&'
+  | '|'
+  | '/'
+  | '=='
+  | '==='
+  | '<'
+  | '<='
+  | '-'
+  | '%'
+  | '*'
+  | '!='
+  | '!=='
+  | '||'
+  | '+'
+  | '??';
 
 /**
  * The original location of the start or end of a node created by the `AstFactory`.
@@ -322,7 +356,7 @@ export interface TemplateElement {
   /** The parsed string, with escape codes etc processed. */
   cooked: string;
   /** The original location of this piece of the template literal string. */
-  range: SourceMapRange|null;
+  range: SourceMapRange | null;
 }
 
 /**
