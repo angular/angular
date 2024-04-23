@@ -2097,6 +2097,9 @@
     "name": "isNodeMatchingSelectorList"
   },
   {
+    "name": "isPlatformBrowser"
+  },
+  {
     "name": "isPlatformServer"
   },
   {
