@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {createInjector} from './create_injector';
 import {THROW_IF_NOT_FOUND, ɵɵinject} from './injector_compatibility';
 import {InjectorMarkers} from './injector_marker';
@@ -43,7 +42,7 @@ import {ProviderToken} from './provider_token';
  */
 export abstract class Injector {
   static THROW_IF_NOT_FOUND = THROW_IF_NOT_FOUND;
-  static NULL: Injector = (/* @__PURE__ */ new NullInjector());
+  static NULL: Injector = /* @__PURE__ */ new NullInjector();
 
   /**
    * Internal note on the `options?: InjectOptions|InjectFlags` override of the `get`
@@ -57,23 +56,33 @@ export abstract class Injector {
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
-  abstract get<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions&{
-    optional?: false;
-  }): T;
+  abstract get<T>(
+    token: ProviderToken<T>,
+    notFoundValue: undefined,
+    options: InjectOptions & {
+      optional?: false;
+    },
+  ): T;
   /**
    * Retrieves an instance from the injector based on the provided token.
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
-  abstract get<T>(token: ProviderToken<T>, notFoundValue: null|undefined, options: InjectOptions): T
-      |null;
+  abstract get<T>(
+    token: ProviderToken<T>,
+    notFoundValue: null | undefined,
+    options: InjectOptions,
+  ): T | null;
   /**
    * Retrieves an instance from the injector based on the provided token.
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
-  abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions|InjectFlags):
-      T;
+  abstract get<T>(
+    token: ProviderToken<T>,
+    notFoundValue?: T,
+    options?: InjectOptions | InjectFlags,
+  ): T;
   /**
    * Retrieves an instance from the injector based on the provided token.
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
@@ -104,15 +113,18 @@ export abstract class Injector {
    * @returns The new injector instance.
    *
    */
-  static create(options:
-                    {providers: Array<Provider|StaticProvider>, parent?: Injector, name?: string}):
-      Injector;
-
+  static create(options: {
+    providers: Array<Provider | StaticProvider>;
+    parent?: Injector;
+    name?: string;
+  }): Injector;
 
   static create(
-      options: StaticProvider[]|
-      {providers: Array<Provider|StaticProvider>, parent?: Injector, name?: string},
-      parent?: Injector): Injector {
+    options:
+      | StaticProvider[]
+      | {providers: Array<Provider | StaticProvider>; parent?: Injector; name?: string},
+    parent?: Injector,
+  ): Injector {
     if (Array.isArray(options)) {
       return createInjector({name: ''}, parent, options, '');
     } else {

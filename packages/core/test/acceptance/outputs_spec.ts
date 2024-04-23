@@ -7,7 +7,15 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, EventEmitter, Input, OnDestroy, Output, ViewChild} from '@angular/core';
+import {
+  Component,
+  Directive,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('outputs', () => {
@@ -61,8 +69,9 @@ describe('outputs', () => {
     let counter = 0;
     let resetCounter = 0;
 
-    @Component(
-        {template: '<button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle>'})
+    @Component({
+      template: '<button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle>',
+    })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
       onChange() {
@@ -103,8 +112,9 @@ describe('outputs', () => {
   it('should unsubscribe from output when view is destroyed', () => {
     let counter = 0;
 
-    @Component(
-        {template: '<button-toggle *ngIf="condition" (change)="onChange()"></button-toggle>'})
+    @Component({
+      template: '<button-toggle *ngIf="condition" (change)="onChange()"></button-toggle>',
+    })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
       condition = true;
@@ -136,7 +146,7 @@ describe('outputs', () => {
         <div *ngIf="condition">
           <button-toggle *ngIf="condition2" (change)="onChange()"></button-toggle>
         </div>
-      `
+      `,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -173,7 +183,7 @@ describe('outputs', () => {
           <button-toggle (change)="onChange()"></button-toggle>
           <destroy-comp></destroy-comp>
         </div>
-      `
+      `,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -187,8 +197,10 @@ describe('outputs', () => {
         changeCounter++;
       }
     }
-    TestBed.configureTestingModule(
-        {imports: [CommonModule], declarations: [App, ButtonToggle, DestroyComp]});
+    TestBed.configureTestingModule({
+      imports: [CommonModule],
+      declarations: [App, ButtonToggle, DestroyComp],
+    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const {buttonToggle, destroyComp} = fixture.componentInstance;
@@ -269,7 +281,7 @@ describe('outputs', () => {
 
     @Component({
       template:
-          '<button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle>'
+        '<button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle>',
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;

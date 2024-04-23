@@ -15,7 +15,6 @@ import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex}
 import {listenerInternal} from './listener';
 import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
 
-
 /**
  * Update a two-way bound property on a selected element.
  *
@@ -30,8 +29,10 @@ import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
  * @codeGenApi
  */
 export function ɵɵtwoWayProperty<T>(
-    propName: string, value: T|WritableSignal<T>,
-    sanitizer?: SanitizerFn|null): typeof ɵɵtwoWayProperty {
+  propName: string,
+  value: T | WritableSignal<T>,
+  sanitizer?: SanitizerFn | null,
+): typeof ɵɵtwoWayProperty {
   // TODO(crisbeto): perf impact of re-evaluating this on each change detection?
   if (isWritableSignal(value)) {
     value = value();
@@ -43,7 +44,15 @@ export function ɵɵtwoWayProperty<T>(
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, value, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      value,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
 
@@ -73,8 +82,10 @@ export function ɵɵtwoWayBindingSet<T>(target: unknown, value: T): boolean {
  * @codeGenApi
  */
 export function ɵɵtwoWayListener(
-    eventName: string, listenerFn: (e?: any) => any): typeof ɵɵtwoWayListener {
-  const lView = getLView<{}|null>();
+  eventName: string,
+  listenerFn: (e?: any) => any,
+): typeof ɵɵtwoWayListener {
+  const lView = getLView<{} | null>();
   const tView = getTView();
   const tNode = getCurrentTNode()!;
   listenerInternal(tView, lView, lView[RENDERER], tNode, eventName, listenerFn);

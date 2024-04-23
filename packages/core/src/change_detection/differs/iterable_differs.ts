@@ -12,14 +12,12 @@ import {Optional, SkipSelf} from '../../di/metadata';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DefaultIterableDifferFactory} from '../differs/default_iterable_differ';
 
-
-
 /**
  * A type describing supported iterable types.
  *
  * @publicApi
  */
-export type NgIterable<T> = Array<T>|Iterable<T>;
+export type NgIterable<T> = Array<T> | Iterable<T>;
 
 /**
  * A strategy for tracking changes over time to an iterable. Used by {@link NgForOf} to
@@ -35,7 +33,7 @@ export interface IterableDiffer<V> {
    * @returns an object describing the difference. The return value is only valid until the next
    * `diff()` invocation.
    */
-  diff(object: NgIterable<V>|undefined|null): IterableChanges<V>|null;
+  diff(object: NgIterable<V> | undefined | null): IterableChanges<V> | null;
 }
 
 /**
@@ -68,9 +66,12 @@ export interface IterableChanges<V> {
    *        of the item, after applying the operations up to this point.
    */
   forEachOperation(
-      fn:
-          (record: IterableChangeRecord<V>, previousIndex: number|null,
-           currentIndex: number|null) => void): void;
+    fn: (
+      record: IterableChangeRecord<V>,
+      previousIndex: number | null,
+      currentIndex: number | null,
+    ) => void,
+  ): void;
 
   /**
    * Iterate over changes in the order of original `Iterable` showing where the original items
@@ -101,10 +102,10 @@ export interface IterableChanges<V> {
  */
 export interface IterableChangeRecord<V> {
   /** Current index of the item in `Iterable` or null if removed. */
-  readonly currentIndex: number|null;
+  readonly currentIndex: number | null;
 
   /** Previous index of the item in `Iterable` or null if added. */
-  readonly previousIndex: number|null;
+  readonly previousIndex: number | null;
 
   /** The item. */
   readonly item: V;
@@ -168,7 +169,7 @@ export interface TrackByFunction<T> {
    * @param index The index of the item within the iterable.
    * @param item The item in the iterable.
    */
-  <U extends T>(index: number, item: T&U): any;
+  <U extends T>(index: number, item: T & U): any;
 }
 
 /**
@@ -192,8 +193,11 @@ export function defaultIterableDiffersFactory() {
  */
 export class IterableDiffers {
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable(
-      {token: IterableDiffers, providedIn: 'root', factory: defaultIterableDiffersFactory});
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+    token: IterableDiffers,
+    providedIn: 'root',
+    factory: defaultIterableDiffersFactory,
+  });
 
   constructor(private factories: IterableDifferFactory[]) {}
 
@@ -229,27 +233,29 @@ export class IterableDiffers {
   static extend(factories: IterableDifferFactory[]): StaticProvider {
     return {
       provide: IterableDiffers,
-      useFactory: (parent: IterableDiffers|null) => {
+      useFactory: (parent: IterableDiffers | null) => {
         // if parent is null, it means that we are in the root injector and we have just overridden
         // the default injection mechanism for IterableDiffers, in such a case just assume
         // `defaultIterableDiffersFactory`.
         return IterableDiffers.create(factories, parent || defaultIterableDiffersFactory());
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
-      deps: [[IterableDiffers, new SkipSelf(), new Optional()]]
+      deps: [[IterableDiffers, new SkipSelf(), new Optional()]],
     };
   }
 
   find(iterable: any): IterableDifferFactory {
-    const factory = this.factories.find(f => f.supports(iterable));
+    const factory = this.factories.find((f) => f.supports(iterable));
     if (factory != null) {
       return factory;
     } else {
       throw new RuntimeError(
-          RuntimeErrorCode.NO_SUPPORTING_DIFFER_FACTORY,
-          ngDevMode &&
-              `Cannot find a differ supporting object '${iterable}' of type '${
-                  getTypeNameForDebugging(iterable)}'`);
+        RuntimeErrorCode.NO_SUPPORTING_DIFFER_FACTORY,
+        ngDevMode &&
+          `Cannot find a differ supporting object '${iterable}' of type '${getTypeNameForDebugging(
+            iterable,
+          )}'`,
+      );
     }
   }
 }

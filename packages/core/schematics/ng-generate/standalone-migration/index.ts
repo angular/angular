@@ -32,7 +32,7 @@ interface Options {
   mode: MigrationMode;
 }
 
-export default function(options: Options): Rule {
+export default function (options: Options): Rule {
   return async (tree, context) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
@@ -44,7 +44,8 @@ export default function(options: Options): Rule {
 
     if (!allPaths.length) {
       throw new SchematicsException(
-          'Could not find any tsconfig file. Cannot run the standalone migration.');
+        'Could not find any tsconfig file. Cannot run the standalone migration.',
+      );
     }
 
     for (const tsconfigPath of allPaths) {
@@ -52,69 +53,109 @@ export default function(options: Options): Rule {
     }
 
     if (migratedFiles === 0) {
-      throw new SchematicsException(`Could not find any files to migrate under the path ${
-          pathToMigrate}. Cannot run the standalone migration.`);
+      throw new SchematicsException(
+        `Could not find any files to migrate under the path ${pathToMigrate}. Cannot run the standalone migration.`,
+      );
     }
 
     context.logger.info('🎉 Automated migration step has finished! 🎉');
     context.logger.info(
-        'IMPORTANT! Please verify manually that your application builds and behaves as expected.');
+      'IMPORTANT! Please verify manually that your application builds and behaves as expected.',
+    );
     context.logger.info(
-        `See https://angular.dev/reference/migrations/standalone for more information.`);
+      `See https://angular.dev/reference/migrations/standalone for more information.`,
+    );
   };
 }
 
 function standaloneMigration(
-    tree: Tree, tsconfigPath: string, basePath: string, pathToMigrate: string,
-    schematicOptions: Options, oldProgram?: NgtscProgram): number {
+  tree: Tree,
+  tsconfigPath: string,
+  basePath: string,
+  pathToMigrate: string,
+  schematicOptions: Options,
+  oldProgram?: NgtscProgram,
+): number {
   if (schematicOptions.path.startsWith('..')) {
     throw new SchematicsException(
-        'Cannot run standalone migration outside of the current project.');
+      'Cannot run standalone migration outside of the current project.',
+    );
   }
 
   const {host, options, rootNames} = createProgramOptions(
-      tree, tsconfigPath, basePath, undefined, undefined,
-      {
-        _enableTemplateTypeChecker: true,  // Required for the template type checker to work.
-        compileNonExportedClasses: true,   // We want to migrate non-exported classes too.
-        // Avoid checking libraries to speed up the migration.
-        skipLibCheck: true,
-        skipDefaultLibCheck: true,
-      });
+    tree,
+    tsconfigPath,
+    basePath,
+    undefined,
+    undefined,
+    {
+      _enableTemplateTypeChecker: true, // Required for the template type checker to work.
+      compileNonExportedClasses: true, // We want to migrate non-exported classes too.
+      // Avoid checking libraries to speed up the migration.
+      skipLibCheck: true,
+      skipDefaultLibCheck: true,
+    },
+  );
   const referenceLookupExcludedFiles = /node_modules|\.ngtypecheck\.ts/;
   const program = createProgram({rootNames, host, options, oldProgram}) as NgtscProgram;
   const printer = ts.createPrinter();
 
   if (existsSync(pathToMigrate) && !statSync(pathToMigrate).isDirectory()) {
-    throw new SchematicsException(`Migration path ${
-        pathToMigrate} has to be a directory. Cannot run the standalone migration.`);
+    throw new SchematicsException(
+      `Migration path ${pathToMigrate} has to be a directory. Cannot run the standalone migration.`,
+    );
   }
 
-  const sourceFiles = program.getTsProgram().getSourceFiles().filter(
-      sourceFile => sourceFile.fileName.startsWith(pathToMigrate) &&
-          canMigrateFile(basePath, sourceFile, program.getTsProgram()));
+  const sourceFiles = program
+    .getTsProgram()
+    .getSourceFiles()
+    .filter(
+      (sourceFile) =>
+        sourceFile.fileName.startsWith(pathToMigrate) &&
+        canMigrateFile(basePath, sourceFile, program.getTsProgram()),
+    );
 
   if (sourceFiles.length === 0) {
     return 0;
   }
 
   let pendingChanges: ChangesByFile;
-  let filesToRemove: Set<ts.SourceFile>|null = null;
+  let filesToRemove: Set<ts.SourceFile> | null = null;
 
   if (schematicOptions.mode === MigrationMode.pruneModules) {
     const result = pruneNgModules(
-        program, host, basePath, rootNames, sourceFiles, printer, undefined,
-        referenceLookupExcludedFiles);
+      program,
+      host,
+      basePath,
+      rootNames,
+      sourceFiles,
+      printer,
+      undefined,
+      referenceLookupExcludedFiles,
+    );
     pendingChanges = result.pendingChanges;
     filesToRemove = result.filesToRemove;
   } else if (schematicOptions.mode === MigrationMode.standaloneBootstrap) {
     pendingChanges = toStandaloneBootstrap(
-        program, host, basePath, rootNames, sourceFiles, printer, undefined,
-        referenceLookupExcludedFiles, knownInternalAliasRemapper);
+      program,
+      host,
+      basePath,
+      rootNames,
+      sourceFiles,
+      printer,
+      undefined,
+      referenceLookupExcludedFiles,
+      knownInternalAliasRemapper,
+    );
   } else {
     // This shouldn't happen, but default to `MigrationMode.toStandalone` just in case.
-    pendingChanges =
-        toStandalone(sourceFiles, program, printer, undefined, knownInternalAliasRemapper);
+    pendingChanges = toStandalone(
+      sourceFiles,
+      program,
+      printer,
+      undefined,
+      knownInternalAliasRemapper,
+    );
   }
 
   for (const [file, changes] of pendingChanges.entries()) {
@@ -125,7 +166,7 @@ function standaloneMigration(
 
     const update = tree.beginUpdate(relative(basePath, file.fileName));
 
-    changes.forEach(change => {
+    changes.forEach((change) => {
       if (change.removeLength != null) {
         update.remove(change.start, change.removeLength);
       }
@@ -145,10 +186,16 @@ function standaloneMigration(
   // Note that we can't run the module pruning internally without propagating the changes to disk,
   // because there may be conflicting AST node changes.
   if (schematicOptions.mode === MigrationMode.standaloneBootstrap) {
-    return standaloneMigration(
-               tree, tsconfigPath, basePath, pathToMigrate,
-               {...schematicOptions, mode: MigrationMode.pruneModules}, program) +
-        sourceFiles.length;
+    return (
+      standaloneMigration(
+        tree,
+        tsconfigPath,
+        basePath,
+        pathToMigrate,
+        {...schematicOptions, mode: MigrationMode.pruneModules},
+        program,
+      ) + sourceFiles.length
+    );
   }
 
   return sourceFiles.length;

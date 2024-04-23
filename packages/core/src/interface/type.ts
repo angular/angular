@@ -35,7 +35,7 @@ export interface AbstractType<T> extends Function {
 }
 
 export interface Type<T> extends Function {
-  new(...args: any[]): T;
+  new (...args: any[]): T;
 }
 
 export type Mutable<T extends {[x: string]: any}, K extends string> = {
@@ -68,5 +68,5 @@ export type Mutable<T extends {[x: string]: any}, K extends string> = {
  * ```
  */
 export type Writable<T> = {
-  -readonly[K in keyof T]: T[K];
+  -readonly [K in keyof T]: T[K];
 };

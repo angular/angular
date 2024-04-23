@@ -8,8 +8,18 @@
 
 import {ApplicationInitStatus} from '../application/application_init';
 import {compileNgModuleFactory} from '../application/application_ngmodule_factory_compiler';
-import {_callAndReportToErrorHandler, ApplicationRef, BootstrapOptions, optionsReducer, remove} from '../application/application_ref';
-import {getNgZoneOptions, internalProvideZoneChangeDetection, PROVIDED_NG_ZONE} from '../change_detection/scheduling/ng_zone_scheduling';
+import {
+  _callAndReportToErrorHandler,
+  ApplicationRef,
+  BootstrapOptions,
+  optionsReducer,
+  remove,
+} from '../application/application_ref';
+import {
+  getNgZoneOptions,
+  internalProvideZoneChangeDetection,
+  PROVIDED_NG_ZONE,
+} from '../change_detection/scheduling/ng_zone_scheduling';
 import {Injectable, InjectionToken, Injector} from '../di';
 import {ErrorHandler} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -23,15 +33,15 @@ import {createNgModuleRefWithProviders} from '../render3/ng_module_ref';
 import {stringify} from '../util/stringify';
 import {getNgZone} from '../zone/ng_zone';
 
-
 /**
  * Internal token that allows to register extra callbacks that should be invoked during the
  * `PlatformRef.destroy` operation. This token is needed to avoid a direct reference to the
  * `PlatformRef` class (i.e. register the callback via `PlatformRef.onDestroy`), thus making the
  * entire class tree-shakeable.
  */
-export const PLATFORM_DESTROY_LISTENERS =
-    new InjectionToken<Set<VoidFunction>>(ngDevMode ? 'PlatformDestroyListeners' : '');
+export const PLATFORM_DESTROY_LISTENERS = new InjectionToken<Set<VoidFunction>>(
+  ngDevMode ? 'PlatformDestroyListeners' : '',
+);
 
 /**
  * The Angular platform is the entry point for Angular on a web page.
@@ -57,16 +67,21 @@ export class PlatformRef {
    * @deprecated Passing NgModule factories as the `PlatformRef.bootstrapModuleFactory` function
    *     argument is deprecated. Use the `PlatformRef.bootstrapModule` API instead.
    */
-  bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
-      Promise<NgModuleRef<M>> {
+  bootstrapModuleFactory<M>(
+    moduleFactory: NgModuleFactory<M>,
+    options?: BootstrapOptions,
+  ): Promise<NgModuleRef<M>> {
     // Note: We need to create the NgZone _before_ we instantiate the module,
     // as instantiating the module creates some providers eagerly.
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
-    const ngZone = getNgZone(options?.ngZone, getNgZoneOptions({
-                               eventCoalescing: options?.ngZoneEventCoalescing,
-                               runCoalescing: options?.ngZoneRunCoalescing
-                             }));
+    const ngZone = getNgZone(
+      options?.ngZone,
+      getNgZoneOptions({
+        eventCoalescing: options?.ngZoneEventCoalescing,
+        runCoalescing: options?.ngZoneRunCoalescing,
+      }),
+    );
     // Note: Create ngZoneInjector within ngZone.run so that all of the instantiated services are
     // created within the Angular zone
     // Do not try to replace ngZone.run with ApplicationRef#run because ApplicationRef would then be
@@ -74,30 +89,33 @@ export class PlatformRef {
     return ngZone.run(() => {
       const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
       const moduleRef = createNgModuleRefWithProviders(
-          moduleFactory.moduleType,
-          this.injector,
-          internalProvideZoneChangeDetection(
-              {ngZoneFactory: () => ngZone, ignoreChangesOutsideZone}),
+        moduleFactory.moduleType,
+        this.injector,
+        internalProvideZoneChangeDetection({ngZoneFactory: () => ngZone, ignoreChangesOutsideZone}),
       );
 
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-          moduleRef.injector.get(PROVIDED_NG_ZONE, null) !== null) {
+      if (
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        moduleRef.injector.get(PROVIDED_NG_ZONE, null) !== null
+      ) {
         throw new RuntimeError(
-            RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
-            '`bootstrapModule` does not support `provideZoneChangeDetection`. Use `BootstrapOptions` instead.');
+          RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
+          '`bootstrapModule` does not support `provideZoneChangeDetection`. Use `BootstrapOptions` instead.',
+        );
       }
 
       const exceptionHandler = moduleRef.injector.get(ErrorHandler, null);
       if ((typeof ngDevMode === 'undefined' || ngDevMode) && exceptionHandler === null) {
         throw new RuntimeError(
-            RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-            'No ErrorHandler. Is platform module (BrowserModule) included?');
+          RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+          'No ErrorHandler. Is platform module (BrowserModule) included?',
+        );
       }
       ngZone.runOutsideAngular(() => {
         const subscription = ngZone.onError.subscribe({
           next: (error: any) => {
             exceptionHandler!.handleError(error);
-          }
+          },
         });
         moduleRef.onDestroy(() => {
           remove(this._modules, moduleRef);
@@ -135,27 +153,31 @@ export class PlatformRef {
    *
    */
   bootstrapModule<M>(
-      moduleType: Type<M>,
-      compilerOptions: (CompilerOptions&BootstrapOptions)|
-      Array<CompilerOptions&BootstrapOptions> = []): Promise<NgModuleRef<M>> {
+    moduleType: Type<M>,
+    compilerOptions:
+      | (CompilerOptions & BootstrapOptions)
+      | Array<CompilerOptions & BootstrapOptions> = [],
+  ): Promise<NgModuleRef<M>> {
     const options = optionsReducer({}, compilerOptions);
-    return compileNgModuleFactory(this.injector, options, moduleType)
-        .then(moduleFactory => this.bootstrapModuleFactory(moduleFactory, options));
+    return compileNgModuleFactory(this.injector, options, moduleType).then((moduleFactory) =>
+      this.bootstrapModuleFactory(moduleFactory, options),
+    );
   }
 
   private _moduleDoBootstrap(moduleRef: InternalNgModuleRef<any>): void {
     const appRef = moduleRef.injector.get(ApplicationRef);
     if (moduleRef._bootstrapComponents.length > 0) {
-      moduleRef._bootstrapComponents.forEach(f => appRef.bootstrap(f));
+      moduleRef._bootstrapComponents.forEach((f) => appRef.bootstrap(f));
     } else if (moduleRef.instance.ngDoBootstrap) {
       moduleRef.instance.ngDoBootstrap(appRef);
     } else {
       throw new RuntimeError(
-          RuntimeErrorCode.BOOTSTRAP_COMPONENTS_NOT_FOUND,
-          ngDevMode &&
-              `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, ` +
-                  `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
-                  `Please define one of these.`);
+        RuntimeErrorCode.BOOTSTRAP_COMPONENTS_NOT_FOUND,
+        ngDevMode &&
+          `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, ` +
+            `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
+            `Please define one of these.`,
+      );
     }
     this._modules.push(moduleRef);
   }
@@ -182,15 +204,16 @@ export class PlatformRef {
   destroy() {
     if (this._destroyed) {
       throw new RuntimeError(
-          RuntimeErrorCode.PLATFORM_ALREADY_DESTROYED,
-          ngDevMode && 'The platform has already been destroyed!');
+        RuntimeErrorCode.PLATFORM_ALREADY_DESTROYED,
+        ngDevMode && 'The platform has already been destroyed!',
+      );
     }
-    this._modules.slice().forEach(module => module.destroy());
-    this._destroyListeners.forEach(listener => listener());
+    this._modules.slice().forEach((module) => module.destroy());
+    this._destroyListeners.forEach((listener) => listener());
 
     const destroyListeners = this._injector.get(PLATFORM_DESTROY_LISTENERS, null);
     if (destroyListeners) {
-      destroyListeners.forEach(listener => listener());
+      destroyListeners.forEach((listener) => listener());
       destroyListeners.clear();
     }
 

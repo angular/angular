@@ -43,12 +43,15 @@ import {DirectiveDef} from '../interfaces/definition';
  */
 export function ɵɵProvidersFeature<T>(providers: Provider[], viewProviders: Provider[] = []) {
   return (definition: DirectiveDef<T>) => {
-    definition.providersResolver =
-        (def: DirectiveDef<T>, processProvidersFn?: ProcessProvidersFunction) => {
-          return providersResolver(
-              def,                                                             //
-              processProvidersFn ? processProvidersFn(providers) : providers,  //
-              viewProviders);
-        };
+    definition.providersResolver = (
+      def: DirectiveDef<T>,
+      processProvidersFn?: ProcessProvidersFunction,
+    ) => {
+      return providersResolver(
+        def, //
+        processProvidersFn ? processProvidersFn(providers) : providers, //
+        viewProviders,
+      );
+    };
   };
 }

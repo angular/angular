@@ -12,7 +12,6 @@ import {SchemaMetadata} from '../metadata/schema';
 import {compileNgModule} from '../render3/jit/module';
 import {makeDecorator, TypeDecorator} from '../util/decorators';
 
-
 /**
  * Type of the NgModule decorator / constructor function.
  *
@@ -23,7 +22,7 @@ export interface NgModuleDecorator {
    * Decorator that marks a class as an NgModule and supplies configuration metadata.
    */
   (obj?: NgModule): TypeDecorator;
-  new(obj?: NgModule): NgModule;
+  new (obj?: NgModule): NgModule;
 }
 
 /**
@@ -79,7 +78,7 @@ export interface NgModule {
    * }
    * ```
    */
-  providers?: Array<Provider|EnvironmentProviders>;
+  providers?: Array<Provider | EnvironmentProviders>;
 
   /**
    * The set of components, directives, and pipes (declarables
@@ -107,7 +106,7 @@ export interface NgModule {
    * }
    * ```
    */
-  declarations?: Array<Type<any>|any[]>;
+  declarations?: Array<Type<any> | any[]>;
 
   /**
    * The set of NgModules whose exported declarables
@@ -136,7 +135,7 @@ export interface NgModule {
    * ```
    *
    */
-  imports?: Array<Type<any>|ModuleWithProviders<{}>|any[]>;
+  imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
 
   /**
    * The set of components, directives, and pipes declared in this
@@ -168,12 +167,12 @@ export interface NgModule {
    * }
    * ```
    */
-  exports?: Array<Type<any>|any[]>;
+  exports?: Array<Type<any> | any[]>;
 
   /**
    * The set of components that are bootstrapped when this module is bootstrapped.
    */
-  bootstrap?: Array<Type<any>|any[]>;
+  bootstrap?: Array<Type<any> | any[]>;
 
   /**
    * The set of schemas that declare elements to be allowed in the NgModule.
@@ -185,7 +184,7 @@ export interface NgModule {
    * @security When using one of `NO_ERRORS_SCHEMA` or `CUSTOM_ELEMENTS_SCHEMA`
    * you must ensure that allowed elements and properties securely escape inputs.
    */
-  schemas?: Array<SchemaMetadata|any[]>;
+  schemas?: Array<SchemaMetadata | any[]>;
 
   /**
    * A name or path that uniquely identifies this NgModule in `getNgModuleById`.
@@ -206,16 +205,20 @@ export interface NgModule {
  * @Annotation
  */
 export const NgModule: NgModuleDecorator = makeDecorator(
-    'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,
-    /**
-     * Decorator that marks the following class as an NgModule, and supplies
-     * configuration metadata for it.
-     *
-     * * The `declarations` option configures the compiler
-     * with information about what belongs to the NgModule.
-     * * The `providers` options configures the NgModule's injector to provide
-     * dependencies the NgModule members.
-     * * The `imports` and `exports` options bring in members from other modules, and make
-     * this module's members available to others.
-     */
-    (type: Type<any>, meta: NgModule) => compileNgModule(type, meta));
+  'NgModule',
+  (ngModule: NgModule) => ngModule,
+  undefined,
+  undefined,
+  /**
+   * Decorator that marks the following class as an NgModule, and supplies
+   * configuration metadata for it.
+   *
+   * * The `declarations` option configures the compiler
+   * with information about what belongs to the NgModule.
+   * * The `providers` options configures the NgModule's injector to provide
+   * dependencies the NgModule members.
+   * * The `imports` and `exports` options bring in members from other modules, and make
+   * this module's members available to others.
+   */
+  (type: Type<any>, meta: NgModule) => compileNgModule(type, meta),
+);

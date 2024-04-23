@@ -16,7 +16,7 @@ const pluralMapping = ['zero', 'one', 'two', 'few', 'many'];
 export function getPluralCase(value: string, locale: string): string {
   const plural = getLocalePluralCase(locale)(parseInt(value, 10));
   const result = pluralMapping[plural];
-  return (result !== undefined) ? result : 'other';
+  return result !== undefined ? result : 'other';
 }
 
 /**

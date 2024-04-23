@@ -9,8 +9,13 @@ import {assertGreaterThan} from '../../util/assert';
 import {assertIndexInDeclRange} from '../assert';
 import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
 import {FLAGS, InitPhaseState, LView, LViewFlags, TVIEW, TView} from '../interfaces/view';
-import {getLView, getSelectedIndex, getTView, isInCheckNoChangesMode, setSelectedIndex} from '../state';
-
+import {
+  getLView,
+  getSelectedIndex,
+  getTView,
+  isInCheckNoChangesMode,
+  setSelectedIndex,
+} from '../state';
 
 /**
  * Advances to an element for later binding instructions.
@@ -38,18 +43,26 @@ import {getLView, getSelectedIndex, getTView, isInCheckNoChangesMode, setSelecte
 export function ɵɵadvance(delta: number = 1): void {
   ngDevMode && assertGreaterThan(delta, 0, 'Can only advance forward');
   selectIndexInternal(
-      getTView(), getLView(), getSelectedIndex() + delta, !!ngDevMode && isInCheckNoChangesMode());
+    getTView(),
+    getLView(),
+    getSelectedIndex() + delta,
+    !!ngDevMode && isInCheckNoChangesMode(),
+  );
 }
 
 export function selectIndexInternal(
-    tView: TView, lView: LView, index: number, checkNoChangesMode: boolean) {
+  tView: TView,
+  lView: LView,
+  index: number,
+  checkNoChangesMode: boolean,
+) {
   ngDevMode && assertIndexInDeclRange(lView[TVIEW], index);
 
   // Flush the initial hooks for elements in the view that have been added up to this point.
   // PERF WARNING: do NOT extract this to a separate function without running benchmarks
   if (!checkNoChangesMode) {
     const hooksInitPhaseCompleted =
-        (lView[FLAGS] & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
+      (lView[FLAGS] & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
     if (hooksInitPhaseCompleted) {
       const preOrderCheckHooks = tView.preOrderCheckHooks;
       if (preOrderCheckHooks !== null) {

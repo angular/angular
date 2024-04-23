@@ -7,7 +7,13 @@
  */
 
 // Public API for compiler
-export {Compiler, COMPILER_OPTIONS, CompilerFactory, CompilerOptions, ModuleWithComponentFactories} from './linker/compiler';
+export {
+  Compiler,
+  COMPILER_OPTIONS,
+  CompilerFactory,
+  CompilerOptions,
+  ModuleWithComponentFactories,
+} from './linker/compiler';
 export {ComponentFactory, ComponentRef} from './linker/component_factory';
 export {ComponentFactoryResolver} from './linker/component_factory_resolver';
 export {DestroyRef} from './linker/destroy_ref';

@@ -13,18 +13,28 @@ import {CONTAINER_HEADER_OFFSET} from '../render3/interfaces/container';
 import {TNode} from '../render3/interfaces/node';
 import {isDestroyed} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, INJECTOR, LView} from '../render3/interfaces/view';
-import {getNativeByIndex, removeLViewOnDestroy, storeLViewOnDestroy, walkUpViews} from '../render3/util/view_utils';
+import {
+  getNativeByIndex,
+  removeLViewOnDestroy,
+  storeLViewOnDestroy,
+  walkUpViews,
+} from '../render3/util/view_utils';
 import {assertElement, assertEqual} from '../util/assert';
 import {NgZone} from '../zone';
 import {storeTriggerCleanupFn} from './cleanup';
 
-import {DEFER_BLOCK_STATE, DeferBlockInternalState, DeferBlockState, TriggerType} from './interfaces';
+import {
+  DEFER_BLOCK_STATE,
+  DeferBlockInternalState,
+  DeferBlockState,
+  TriggerType,
+} from './interfaces';
 import {getLDeferBlockDetails} from './utils';
 
 /** Configuration object used to register passive and capturing events. */
 const eventListenerOptions: AddEventListenerOptions = {
   passive: true,
-  capture: true
+  capture: true,
 };
 
 /** Keeps track of the currently-registered `on hover` triggers. */
@@ -43,7 +53,7 @@ const interactionEventNames = ['click', 'keydown'] as const;
 const hoverEventNames = ['mouseenter', 'focusin'] as const;
 
 /** `IntersectionObserver` used to observe `viewport` triggers. */
-let intersectionObserver: IntersectionObserver|null = null;
+let intersectionObserver: IntersectionObserver | null = null;
 
 /** Number of elements currently observed with `viewport` triggers. */
 let observedViewportElements = 0;
@@ -56,7 +66,7 @@ class DeferEventEntry {
     for (const callback of this.callbacks) {
       callback();
     }
-  }
+  };
 }
 
 /**
@@ -144,20 +154,25 @@ export function onHover(trigger: Element, callback: VoidFunction): VoidFunction 
  * @param injector Injector that can be used by the trigger to resolve DI tokens.
  */
 export function onViewport(
-    trigger: Element, callback: VoidFunction, injector: Injector): VoidFunction {
+  trigger: Element,
+  callback: VoidFunction,
+  injector: Injector,
+): VoidFunction {
   const ngZone = injector.get(NgZone);
   let entry = viewportTriggers.get(trigger);
 
-  intersectionObserver = intersectionObserver || ngZone.runOutsideAngular(() => {
-    return new IntersectionObserver(entries => {
-      for (const current of entries) {
-        // Only invoke the callbacks if the specific element is intersecting.
-        if (current.isIntersecting && viewportTriggers.has(current.target)) {
-          ngZone.run(viewportTriggers.get(current.target)!.listener);
+  intersectionObserver =
+    intersectionObserver ||
+    ngZone.runOutsideAngular(() => {
+      return new IntersectionObserver((entries) => {
+        for (const current of entries) {
+          // Only invoke the callbacks if the specific element is intersecting.
+          if (current.isIntersecting && viewportTriggers.has(current.target)) {
+            ngZone.run(viewportTriggers.get(current.target)!.listener);
+          }
         }
-      }
+      });
     });
-  });
 
   if (!entry) {
     entry = new DeferEventEntry();
@@ -198,7 +213,10 @@ export function onViewport(
  *   value means that the trigger is in the same LView as the deferred block.
  */
 export function getTriggerLView(
-    deferredHostLView: LView, deferredTNode: TNode, walkUpTimes: number|undefined): LView|null {
+  deferredHostLView: LView,
+  deferredTNode: TNode,
+  walkUpTimes: number | undefined,
+): LView | null {
   // The trigger is in the same view, we don't need to traverse.
   if (walkUpTimes == null) {
     return deferredHostLView;
@@ -219,8 +237,10 @@ export function getTriggerLView(
     const lDetails = getLDeferBlockDetails(deferredHostLView, deferredTNode);
     const renderedState = lDetails[DEFER_BLOCK_STATE];
     assertEqual(
-        renderedState, DeferBlockState.Placeholder,
-        'Expected a placeholder to be rendered in this defer block.');
+      renderedState,
+      DeferBlockState.Placeholder,
+      'Expected a placeholder to be rendered in this defer block.',
+    );
     assertLView(triggerLView);
   }
 
@@ -250,9 +270,14 @@ export function getTriggerElement(triggerLView: LView, triggerIndex: number): El
  * @param type Trigger type to distinguish between regular and prefetch triggers.
  */
 export function registerDomTrigger(
-    initialLView: LView, tNode: TNode, triggerIndex: number, walkUpTimes: number|undefined,
-    registerFn: (element: Element, callback: VoidFunction, injector: Injector) => VoidFunction,
-    callback: VoidFunction, type: TriggerType) {
+  initialLView: LView,
+  tNode: TNode,
+  triggerIndex: number,
+  walkUpTimes: number | undefined,
+  registerFn: (element: Element, callback: VoidFunction, injector: Injector) => VoidFunction,
+  callback: VoidFunction,
+  type: TriggerType,
+) {
   const injector = initialLView[INJECTOR]!;
   function pollDomTrigger() {
     // If the initial view was destroyed, we don't need to do anything.
@@ -264,8 +289,10 @@ export function registerDomTrigger(
     const renderedState = lDetails[DEFER_BLOCK_STATE];
 
     // If the block was loaded before the trigger was resolved, we don't need to do anything.
-    if (renderedState !== DeferBlockInternalState.Initial &&
-        renderedState !== DeferBlockState.Placeholder) {
+    if (
+      renderedState !== DeferBlockInternalState.Initial &&
+      renderedState !== DeferBlockState.Placeholder
+    ) {
       return;
     }
 
@@ -283,12 +310,16 @@ export function registerDomTrigger(
     }
 
     const element = getTriggerElement(triggerLView, triggerIndex);
-    const cleanup = registerFn(element, () => {
-      if (initialLView !== triggerLView) {
-        removeLViewOnDestroy(triggerLView, cleanup);
-      }
-      callback();
-    }, injector);
+    const cleanup = registerFn(
+      element,
+      () => {
+        if (initialLView !== triggerLView) {
+          removeLViewOnDestroy(triggerLView, cleanup);
+        }
+        callback();
+      },
+      injector,
+    );
 
     // The trigger and deferred block might be in different LViews.
     // For the main LView the cleanup would happen as a part of

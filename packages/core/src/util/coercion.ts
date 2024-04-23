@@ -19,7 +19,7 @@
  * @publicApi
  */
 export function booleanAttribute(value: unknown): boolean {
-  return typeof value === 'boolean' ? value : (value != null && value !== 'false');
+  return typeof value === 'boolean' ? value : value != null && value !== 'false';
 }
 
 /**

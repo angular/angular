@@ -83,31 +83,39 @@ function rememberChangeHistoryAndInvokeOnChangesHook(this: OnChanges) {
   }
 }
 
-
 function ngOnChangesSetInput<T>(
-    this: DirectiveDef<T>, instance: T, inputSignalNode: null|InputSignalNode<unknown, unknown>,
-    value: unknown, publicName: string, privateName: string): void {
+  this: DirectiveDef<T>,
+  instance: T,
+  inputSignalNode: null | InputSignalNode<unknown, unknown>,
+  value: unknown,
+  publicName: string,
+  privateName: string,
+): void {
   const declaredName = (this.declaredInputs as {[key: string]: string})[publicName];
   ngDevMode && assertString(declaredName, 'Name of input in ngOnChanges has to be a string');
-  const simpleChangesStore = getSimpleChangesStore(instance) ||
-      setSimpleChangesStore(instance, {previous: EMPTY_OBJ, current: null});
+  const simpleChangesStore =
+    getSimpleChangesStore(instance) ||
+    setSimpleChangesStore(instance, {previous: EMPTY_OBJ, current: null});
   const current = simpleChangesStore.current || (simpleChangesStore.current = {});
   const previous = simpleChangesStore.previous;
   const previousChange = previous[declaredName];
   current[declaredName] = new SimpleChange(
-      previousChange && previousChange.currentValue, value, previous === EMPTY_OBJ);
+    previousChange && previousChange.currentValue,
+    value,
+    previous === EMPTY_OBJ,
+  );
 
   applyValueToInputField(instance, inputSignalNode, privateName, value);
 }
 
 const SIMPLE_CHANGES_STORE = '__ngSimpleChanges__';
 
-function getSimpleChangesStore(instance: any): null|NgSimpleChangesStore {
+function getSimpleChangesStore(instance: any): null | NgSimpleChangesStore {
   return instance[SIMPLE_CHANGES_STORE] || null;
 }
 
 function setSimpleChangesStore(instance: any, store: NgSimpleChangesStore): NgSimpleChangesStore {
-  return instance[SIMPLE_CHANGES_STORE] = store;
+  return (instance[SIMPLE_CHANGES_STORE] = store);
 }
 
 /**
@@ -116,5 +124,5 @@ function setSimpleChangesStore(instance: any, store: NgSimpleChangesStore): NgSi
  */
 interface NgSimpleChangesStore {
   previous: SimpleChanges;
-  current: SimpleChanges|null;
+  current: SimpleChanges | null;
 }

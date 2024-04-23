@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual, assertGreaterThan, assertGreaterThanOrEqual, throwError} from '../../util/assert';
+import {
+  assertEqual,
+  assertGreaterThan,
+  assertGreaterThanOrEqual,
+  throwError,
+} from '../../util/assert';
 import {assertTIcu, assertTNode} from '../assert';
 import {createTNodeAtIndex} from '../instructions/shared';
 import {IcuCreateOpCode, TIcu} from '../interfaces/i18n';
@@ -17,7 +22,6 @@ import {setI18nHandling} from '../node_manipulation';
 import {getInsertInFrontOfRNodeWithI18n, processI18nInsertBefore} from '../node_manipulation_i18n';
 
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
-
 
 /**
  * Retrieve `TIcu` at a given `index`.
@@ -32,19 +36,22 @@ import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
  * @param tView Current `TView`.
  * @param index Index where the value should be read from.
  */
-export function getTIcu(tView: TView, index: number): TIcu|null {
+export function getTIcu(tView: TView, index: number): TIcu | null {
   const value = tView.data[index] as null | TIcu | TIcuContainerNode | string;
   if (value === null || typeof value === 'string') return null;
-  if (ngDevMode &&
-      !(value.hasOwnProperty('tView') || value.hasOwnProperty('currentCaseLViewIndex'))) {
-    throwError('We expect to get \'null\'|\'TIcu\'|\'TIcuContainer\', but got: ' + value);
+  if (
+    ngDevMode &&
+    !(value.hasOwnProperty('tView') || value.hasOwnProperty('currentCaseLViewIndex'))
+  ) {
+    throwError("We expect to get 'null'|'TIcu'|'TIcuContainer', but got: " + value);
   }
   // Here the `value.hasOwnProperty('currentCaseLViewIndex')` is a polymorphic read as it can be
   // either TIcu or TIcuContainerNode. This is not ideal, but we still think it is OK because it
   // will be just two cases which fits into the browser inline cache (inline cache can take up to
   // 4)
-  const tIcu = value.hasOwnProperty('currentCaseLViewIndex') ? value as TIcu :
-                                                               (value as TIcuContainerNode).value;
+  const tIcu = value.hasOwnProperty('currentCaseLViewIndex')
+    ? (value as TIcu)
+    : (value as TIcuContainerNode).value;
   ngDevMode && assertTIcu(tIcu);
   return tIcu;
 }
@@ -66,9 +73,11 @@ export function getTIcu(tView: TView, index: number): TIcu|null {
 export function setTIcu(tView: TView, index: number, tIcu: TIcu): void {
   const tNode = tView.data[index] as null | TIcuContainerNode;
   ngDevMode &&
-      assertEqual(
-          tNode === null || tNode.hasOwnProperty('tView'), true,
-          'We expect to get \'null\'|\'TIcuContainer\'');
+    assertEqual(
+      tNode === null || tNode.hasOwnProperty('tView'),
+      true,
+      "We expect to get 'null'|'TIcuContainer'",
+    );
   if (tNode === null) {
     tView.data[index] = tIcu;
   } else {
@@ -87,8 +96,10 @@ export function setTNodeInsertBeforeIndex(tNode: TNode, index: number) {
   let insertBeforeIndex = tNode.insertBeforeIndex;
   if (insertBeforeIndex === null) {
     setI18nHandling(getInsertInFrontOfRNodeWithI18n, processI18nInsertBefore);
-    insertBeforeIndex = tNode.insertBeforeIndex =
-        [null!/* may be updated to number later */, index];
+    insertBeforeIndex = tNode.insertBeforeIndex = [
+      null! /* may be updated to number later */,
+      index,
+    ];
   } else {
     assertEqual(Array.isArray(insertBeforeIndex), true, 'Expecting array here');
     (insertBeforeIndex as number[]).push(index);
@@ -101,12 +112,14 @@ export function setTNodeInsertBeforeIndex(tNode: TNode, index: number) {
  * See `TNodeType.Placeholder` for more information.
  */
 export function createTNodePlaceholder(
-    tView: TView, previousTNodes: TNode[], index: number): TNode {
+  tView: TView,
+  previousTNodes: TNode[],
+  index: number,
+): TNode {
   const tNode = createTNodeAtIndex(tView, index, TNodeType.Placeholder, null, null);
   addTNodeAndUpdateInsertBeforeIndex(previousTNodes, tNode);
   return tNode;
 }
-
 
 /**
  * Returns current ICU case.
@@ -117,8 +130,8 @@ export function createTNodePlaceholder(
  * for cases which have just been switched. This function removes the negative flag.
  */
 export function getCurrentICUCaseIndex(tIcu: TIcu, lView: LView) {
-  const currentCase: number|null = lView[tIcu.currentCaseLViewIndex];
-  return currentCase === null ? currentCase : (currentCase < 0 ? ~currentCase : currentCase);
+  const currentCase: number | null = lView[tIcu.currentCaseLViewIndex];
+  return currentCase === null ? currentCase : currentCase < 0 ? ~currentCase : currentCase;
 }
 
 export function getParentFromIcuCreateOpCode(mergedCode: number): number {
@@ -136,11 +149,13 @@ export function getInstructionFromIcuCreateOpCode(mergedCode: number): number {
 export function icuCreateOpCode(opCode: IcuCreateOpCode, parentIdx: number, refIdx: number) {
   ngDevMode && assertGreaterThanOrEqual(parentIdx, 0, 'Missing parent index');
   ngDevMode && assertGreaterThan(refIdx, 0, 'Missing ref index');
-  return opCode | parentIdx << IcuCreateOpCode.SHIFT_PARENT | refIdx << IcuCreateOpCode.SHIFT_REF;
+  return (
+    opCode | (parentIdx << IcuCreateOpCode.SHIFT_PARENT) | (refIdx << IcuCreateOpCode.SHIFT_REF)
+  );
 }
 
 // Returns whether the given value corresponds to a root template message,
 // or a sub-template.
-export function isRootTemplateMessage(subTemplateIndex: number): subTemplateIndex is - 1 {
+export function isRootTemplateMessage(subTemplateIndex: number): subTemplateIndex is -1 {
   return subTemplateIndex === -1;
 }

@@ -23,7 +23,7 @@ export function createHtmlSourceFile(filePath: string, content: string): ts.Sour
   // At the time of writing, TSLint loads files manually if the actual rule source file is not
   // equal to the source file of the replacement. This means that the replacements need proper
   // offsets without the string literal quote symbols.
-  sourceFile.getFullText = function() {
+  sourceFile.getFullText = function () {
     return sourceFile.text.substring(1, sourceFile.text.length - 1);
   };
 

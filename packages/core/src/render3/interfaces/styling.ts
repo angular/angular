@@ -14,8 +14,7 @@ import {assertNumber, assertNumberInRange} from '../../util/assert';
  *
  * See: `TStylingKeyPrimitive` and `TStylingStatic`
  */
-export type TStylingKey = TStylingKeyPrimitive|TStylingStatic;
-
+export type TStylingKey = TStylingKeyPrimitive | TStylingStatic;
 
 /**
  * The primitive portion (`TStylingStatic` removed) of the value stored in the `TData` which is
@@ -27,7 +26,7 @@ export type TStylingKey = TStylingKeyPrimitive|TStylingStatic;
  *   is combined with directive which shadows its input `@Input('class')`. That way the binding
  *   should not participate in the styling resolution.
  */
-export type TStylingKeyPrimitive = string|null|false;
+export type TStylingKeyPrimitive = string | null | false;
 
 /**
  * Store the static values for the styling binding.
@@ -119,7 +118,7 @@ export interface TStylingStatic extends KeyValueArray<any> {}
  *
  * NOTE: `0` has special significance and represents `null` as in no additional pointer.
  */
-export type TStylingRange = number&{
+export type TStylingRange = number & {
   __brand__: 'TStylingRange';
 };
 
@@ -130,15 +129,15 @@ export const enum StylingRange {
   /// Number of bits to shift for the previous pointer
   PREV_SHIFT = 17,
   /// Previous pointer mask.
-  PREV_MASK = 0xFFFE0000,
+  PREV_MASK = 0xfffe0000,
 
   /// Number of bits to shift for the next pointer
   NEXT_SHIFT = 2,
   /// Next pointer mask.
-  NEXT_MASK = 0x001FFFC,
+  NEXT_MASK = 0x001fffc,
 
   // Mask to remove negative bit. (interpret number as positive)
-  UNSIGNED_MASK = 0x7FFF,
+  UNSIGNED_MASK = 0x7fff,
 
   /**
    * This bit is set if the previous bindings contains a binding which could possibly cause a
@@ -157,11 +156,10 @@ export const enum StylingRange {
   NEXT_DUPLICATE = 0x01,
 }
 
-
 export function toTStylingRange(prev: number, next: number): TStylingRange {
   ngDevMode && assertNumberInRange(prev, 0, StylingRange.UNSIGNED_MASK);
   ngDevMode && assertNumberInRange(next, 0, StylingRange.UNSIGNED_MASK);
-  return (prev << StylingRange.PREV_SHIFT | next << StylingRange.NEXT_SHIFT) as TStylingRange;
+  return ((prev << StylingRange.PREV_SHIFT) | (next << StylingRange.NEXT_SHIFT)) as TStylingRange;
 }
 
 export function getTStylingRangePrev(tStylingRange: TStylingRange): number {
@@ -175,11 +173,13 @@ export function getTStylingRangePrevDuplicate(tStylingRange: TStylingRange): boo
 }
 
 export function setTStylingRangePrev(
-    tStylingRange: TStylingRange, previous: number): TStylingRange {
+  tStylingRange: TStylingRange,
+  previous: number,
+): TStylingRange {
   ngDevMode && assertNumber(tStylingRange, 'expected number');
   ngDevMode && assertNumberInRange(previous, 0, StylingRange.UNSIGNED_MASK);
-  return ((tStylingRange & ~StylingRange.PREV_MASK) | (previous << StylingRange.PREV_SHIFT)) as
-      TStylingRange;
+  return ((tStylingRange & ~StylingRange.PREV_MASK) |
+    (previous << StylingRange.PREV_SHIFT)) as TStylingRange;
 }
 
 export function setTStylingRangePrevDuplicate(tStylingRange: TStylingRange): TStylingRange {
@@ -195,13 +195,13 @@ export function getTStylingRangeNext(tStylingRange: TStylingRange): number {
 export function setTStylingRangeNext(tStylingRange: TStylingRange, next: number): TStylingRange {
   ngDevMode && assertNumber(tStylingRange, 'expected number');
   ngDevMode && assertNumberInRange(next, 0, StylingRange.UNSIGNED_MASK);
-  return ((tStylingRange & ~StylingRange.NEXT_MASK) |  //
-          next << StylingRange.NEXT_SHIFT) as TStylingRange;
+  return ((tStylingRange & ~StylingRange.NEXT_MASK) | //
+    (next << StylingRange.NEXT_SHIFT)) as TStylingRange;
 }
 
 export function getTStylingRangeNextDuplicate(tStylingRange: TStylingRange): boolean {
   ngDevMode && assertNumber(tStylingRange, 'expected number');
-  return ((tStylingRange) & StylingRange.NEXT_DUPLICATE) === StylingRange.NEXT_DUPLICATE;
+  return (tStylingRange & StylingRange.NEXT_DUPLICATE) === StylingRange.NEXT_DUPLICATE;
 }
 
 export function setTStylingRangeNextDuplicate(tStylingRange: TStylingRange): TStylingRange {

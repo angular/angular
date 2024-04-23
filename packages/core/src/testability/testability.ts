@@ -84,11 +84,13 @@ export class Testability implements PublicTestability {
   private _isZoneStable: boolean = true;
   private _callbacks: WaitCallback[] = [];
 
-  private taskTrackingZone: {macroTasks: Task[]}|null = null;
+  private taskTrackingZone: {macroTasks: Task[]} | null = null;
 
   constructor(
-      private _ngZone: NgZone, private registry: TestabilityRegistry,
-      @Inject(TESTABILITY_GETTER) testabilityGetter: GetTestability) {
+    private _ngZone: NgZone,
+    private registry: TestabilityRegistry,
+    @Inject(TESTABILITY_GETTER) testabilityGetter: GetTestability,
+  ) {
     // If there was no Testability logic registered in the global scope
     // before, register the current testability getter as a global one.
     if (!_testabilityGetter) {
@@ -98,7 +100,7 @@ export class Testability implements PublicTestability {
     this._watchAngularEvents();
     _ngZone.run(() => {
       this.taskTrackingZone =
-          typeof Zone == 'undefined' ? null : Zone.current.get('TaskTrackingZone');
+        typeof Zone == 'undefined' ? null : Zone.current.get('TaskTrackingZone');
     });
   }
 
@@ -106,7 +108,7 @@ export class Testability implements PublicTestability {
     this._ngZone.onUnstable.subscribe({
       next: () => {
         this._isZoneStable = false;
-      }
+      },
     });
 
     this._ngZone.runOutsideAngular(() => {
@@ -117,7 +119,7 @@ export class Testability implements PublicTestability {
             this._isZoneStable = true;
             this._runCallbacksIfReady();
           });
-        }
+        },
       });
     });
   }
@@ -165,7 +167,7 @@ export class Testability implements PublicTestability {
         // From TaskTrackingZone:
         // https://github.com/angular/zone.js/blob/master/lib/zone-spec/task-tracking.ts#L40
         creationLocation: (t as any).creationLocation as Error,
-        data: t.data
+        data: t.data,
       };
     });
   }
@@ -196,8 +198,9 @@ export class Testability implements PublicTestability {
   whenStable(doneCb: Function, timeout?: number, updateCb?: Function): void {
     if (updateCb && !this.taskTrackingZone) {
       throw new Error(
-          'Task tracking zone is required when passing an update callback to ' +
-          'whenStable(). Is "zone.js/plugins/task-tracking" loaded?');
+        'Task tracking zone is required when passing an update callback to ' +
+          'whenStable(). Is "zone.js/plugins/task-tracking" loaded?',
+      );
     }
     this.addCallback(doneCb, timeout, updateCb);
     this._runCallbacksIfReady();
@@ -272,7 +275,7 @@ export class TestabilityRegistry {
    * Get a testability hook associated with the application
    * @param elem root element
    */
-  getTestability(elem: any): Testability|null {
+  getTestability(elem: any): Testability | null {
     return this._applications.get(elem) || null;
   }
 
@@ -296,7 +299,7 @@ export class TestabilityRegistry {
    * @param findInAncestors whether finding testability in ancestors if testability was not found in
    * current node
    */
-  findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability|null {
+  findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability | null {
     return _testabilityGetter?.findTestabilityInTree(this, elem, findInAncestors) ?? null;
   }
 }
@@ -309,8 +312,11 @@ export class TestabilityRegistry {
  */
 export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
-      Testability|null;
+  findTestabilityInTree(
+    registry: TestabilityRegistry,
+    elem: any,
+    findInAncestors: boolean,
+  ): Testability | null;
 }
 
 /**
@@ -321,4 +327,4 @@ export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }
 
-let _testabilityGetter: GetTestability|undefined;
+let _testabilityGetter: GetTestability | undefined;

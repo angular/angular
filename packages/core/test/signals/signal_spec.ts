@@ -21,7 +21,7 @@ describe('signals', () => {
     const counter = signal(0);
     expect(counter()).toEqual(0);
 
-    counter.update(c => c + 1);
+    counter.update((c) => c + 1);
     expect(counter()).toEqual(1);
   });
 
@@ -61,32 +61,31 @@ describe('signals', () => {
     expect(upper()).toEqual('D');
   });
 
-  it('should consider objects as equal based on their identity with the default equality function',
-     () => {
-       let stateValue: unknown = {};
-       const state = signal(stateValue);
-       let computeCount = 0;
-       const derived = computed(() => `${typeof state()}:${++computeCount}`);
-       expect(derived()).toEqual('object:1');
+  it('should consider objects as equal based on their identity with the default equality function', () => {
+    let stateValue: unknown = {};
+    const state = signal(stateValue);
+    let computeCount = 0;
+    const derived = computed(() => `${typeof state()}:${++computeCount}`);
+    expect(derived()).toEqual('object:1');
 
-       // reset signal value to the same object instance, expect NO change notification
-       state.set(stateValue);
-       expect(derived()).toEqual('object:1');
+    // reset signal value to the same object instance, expect NO change notification
+    state.set(stateValue);
+    expect(derived()).toEqual('object:1');
 
-       // reset signal value to a different object instance, expect change notification
-       stateValue = {};
-       state.set(stateValue);
-       expect(derived()).toEqual('object:2');
+    // reset signal value to a different object instance, expect change notification
+    stateValue = {};
+    state.set(stateValue);
+    expect(derived()).toEqual('object:2');
 
-       // reset signal value to a different object type, expect change notification
-       stateValue = [];
-       state.set(stateValue);
-       expect(derived()).toEqual('object:3');
+    // reset signal value to a different object type, expect change notification
+    stateValue = [];
+    state.set(stateValue);
+    expect(derived()).toEqual('object:3');
 
-       // reset signal value to the same array instance, expect NO change notification
-       state.set(stateValue);
-       expect(derived()).toEqual('object:3');
-     });
+    // reset signal value to the same array instance, expect NO change notification
+    state.set(stateValue);
+    expect(derived()).toEqual('object:3');
+  });
 
   it('should invoke custom equality function even if old / new references are the same', () => {
     const state = {value: 0};
@@ -103,7 +102,7 @@ describe('signals', () => {
     expect(derived()).toBe('0:2');
 
     // updating signal with the same reference should propagate change as well
-    stateSignal.update(state => state);
+    stateSignal.update((state) => state);
     expect(derived()).toBe('0:3');
   });
 
@@ -162,7 +161,7 @@ describe('signals', () => {
   });
 
   describe('post-signal-set functions', () => {
-    let prevPostSignalSetFn: (() => void)|null = null;
+    let prevPostSignalSetFn: (() => void) | null = null;
     let log: number;
     beforeEach(() => {
       log = 0;
@@ -183,11 +182,11 @@ describe('signals', () => {
     it('should call the post-signal-set fn when invoking .update()', () => {
       const counter = signal(0);
 
-      counter.update(c => c + 2);
+      counter.update((c) => c + 2);
       expect(log).toBe(1);
     });
 
-    it('should not call the post-signal-set fn when the value doesn\'t change', () => {
+    it("should not call the post-signal-set fn when the value doesn't change", () => {
       const counter = signal(0);
 
       counter.set(0);

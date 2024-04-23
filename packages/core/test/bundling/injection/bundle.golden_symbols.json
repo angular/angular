@@ -75,6 +75,9 @@
     "name": "USE_VALUE"
   },
   {
+    "name": "_Injector"
+  },
+  {
     "name": "__forward_ref__"
   },
   {

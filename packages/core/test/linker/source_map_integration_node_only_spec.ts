@@ -34,8 +34,8 @@ describe('jit source mapping', () => {
         {
           provide: JitEvaluator,
           useValue: jitEvaluator,
-        }
-      ]
+        },
+      ],
     });
   });
 
@@ -68,19 +68,18 @@ describe('jit source mapping', () => {
       it('should use the right source url in html parse errors', async () => {
         const template = '<div>\n  </error>';
         @Component({...templateDecorator(template)})
-        class MyComp {
-        }
+        class MyComp {}
 
-        await expectAsync(resolveCompileAndCreateComponent(MyComp, template))
-            .toBeRejectedWithError(new RegExp(`${escapeRegExp(ngUrl)}@1:2`));
+        await expectAsync(resolveCompileAndCreateComponent(MyComp, template)).toBeRejectedWithError(
+          new RegExp(`${escapeRegExp(ngUrl)}@1:2`),
+        );
       });
 
       it('should create a sourceMap for templates', async () => {
         const template = `Hello World!`;
 
         @Component({...templateDecorator(template)})
-        class MyComp {
-        }
+        class MyComp {}
 
         await resolveCompileAndCreateComponent(MyComp, template);
 
@@ -89,13 +88,11 @@ describe('jit source mapping', () => {
         expect(sourceMap.sourcesContent).toEqual([' ', template]);
       });
 
-
       xit('should report source location for di errors', async () => {
         const template = `<div>\n    <div   someDir></div></div>`;
 
         @Component({...templateDecorator(template)})
-        class MyComp {
-        }
+        class MyComp {}
 
         @Directive({selector: '[someDir]'})
         class SomeDir {
@@ -123,8 +120,7 @@ describe('jit source mapping', () => {
         const template = `<div someDir></div>|<div someDir="throw"></div>`;
 
         @Component({...templateDecorator(template)})
-        class MyComp {
-        }
+        class MyComp {}
 
         @Directive({selector: '[someDir]'})
         class SomeDir {
@@ -190,7 +186,7 @@ describe('jit source mapping', () => {
 
         let error: any;
         const errorHandler = TestBed.inject(ErrorHandler);
-        spyOn(errorHandler, 'handleError').and.callFake((e: any) => error = e);
+        spyOn(errorHandler, 'handleError').and.callFake((e: any) => (error = e));
         try {
           comp.debugElement.children[0].children[0].triggerEventHandler('click', 'EVENT');
         } catch (e) {
@@ -246,14 +242,14 @@ describe('jit source mapping', () => {
   interface TestConfig {
     ngUrl: string;
     templateDecorator: (template: string) => {
-      [key: string]: any
+      [key: string]: any;
     };
   }
 
   interface SourcePos {
-    source: string|null;
-    line: number|null;
-    column: number|null;
+    source: string | null;
+    line: number | null;
+    column: number | null;
   }
 
   /**
@@ -274,21 +270,23 @@ describe('jit source mapping', () => {
      * @param genFile the URL of the file whose source-map we want.
      */
     getSourceMap(genFile: string): SourceMap {
-      return this.sources.map(source => extractSourceMap(source))
-          .find(map => !!(map && map.file === genFile))!;
+      return this.sources
+        .map((source) => extractSourceMap(source))
+        .find((map) => !!(map && map.file === genFile))!;
     }
 
     async getSourcePositionForStack(stack: string, genFile: string): Promise<SourcePos> {
       const urlRegexp = new RegExp(`(${escapeRegExp(genFile)}):(\\d+):(\\d+)`);
-      const pos = stack.split('\n')
-                      .map(line => urlRegexp.exec(line))
-                      .filter(match => !!match)
-                      .map(match => ({
-                             file: match![1],
-                             line: parseInt(match![2], 10),
-                             column: parseInt(match![3], 10)
-                           }))
-                      .shift();
+      const pos = stack
+        .split('\n')
+        .map((line) => urlRegexp.exec(line))
+        .filter((match) => !!match)
+        .map((match) => ({
+          file: match![1],
+          line: parseInt(match![2], 10),
+          column: parseInt(match![3], 10),
+        }))
+        .shift();
       if (!pos) {
         throw new Error(`${genFile} was not mentioned in this stack:\n${stack}`);
       }

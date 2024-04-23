@@ -18,7 +18,22 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import type {ComponentDef, ComponentDefFeature, ComponentTemplate, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import type {
+  ComponentDef,
+  ComponentDefFeature,
+  ComponentTemplate,
+  ContentQueriesFunction,
+  DependencyTypeList,
+  DirectiveDef,
+  DirectiveDefFeature,
+  DirectiveDefListOrFactory,
+  HostBindingsFunction,
+  InputTransformFunction,
+  PipeDef,
+  PipeDefListOrFactory,
+  TypeOrFactory,
+  ViewQueriesFunction,
+} from './interfaces/definition';
 import {InputFlags} from './interfaces/input_flags';
 import type {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
@@ -83,12 +98,16 @@ import {stringifyCSSSelectorList} from './node_selector_matcher';
  *    inconsistent behavior in that it uses declared names rather than minified or public.
  */
 type DirectiveInputs<T> = {
-  [P in keyof T]?:
-      // Basic case. Mapping minified name to public name.
-  string|
-  // Complex input when there are flags, or differing public name and declared name, or there
-  // is a transform. Such inputs are not as common, so the array form is only generated then.
-  [flags: InputFlags, publicName: string, declaredName?: string, transform?: InputTransformFunction]
+  [P in keyof T]?:  // Basic case. Mapping minified name to public name.
+    | string
+    // Complex input when there are flags, or differing public name and declared name, or there
+    // is a transform. Such inputs are not as common, so the array form is only generated then.
+    | [
+        flags: InputFlags,
+        publicName: string,
+        declaredName?: string,
+        transform?: InputTransformFunction,
+      ];
 };
 
 interface DirectiveDefinition<T> {
@@ -178,7 +197,7 @@ interface DirectiveDefinition<T> {
    * Additional set of instructions specific to view query processing. This could be seen as a
    * set of instructions to be inserted into the template function.
    */
-  viewQuery?: ViewQueriesFunction<T>|null;
+  viewQuery?: ViewQueriesFunction<T> | null;
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -298,7 +317,7 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
   /**
    * The set of schemas that declare elements to be allowed in the component's template.
    */
-  schemas?: SchemaMetadata[]|null;
+  schemas?: SchemaMetadata[] | null;
 }
 
 /**
@@ -317,8 +336,9 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
  * ```
  * @codeGenApi
  */
-export function ɵɵdefineComponent<T>(componentDefinition: ComponentDefinition<T>):
-    Mutable<ComponentDef<any>, keyof ComponentDef<any>> {
+export function ɵɵdefineComponent<T>(
+  componentDefinition: ComponentDefinition<T>,
+): Mutable<ComponentDef<any>, keyof ComponentDef<any>> {
   return noSideEffects(() => {
     // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
     // See the `initNgDevMode` docstring for more information.
@@ -333,9 +353,9 @@ export function ɵɵdefineComponent<T>(componentDefinition: ComponentDefinition<
       consts: componentDefinition.consts || null,
       ngContentSelectors: componentDefinition.ngContentSelectors,
       onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
-      directiveDefs: null!,  // assigned in noSideEffects
-      pipeDefs: null!,       // assigned in noSideEffects
-      dependencies: baseDef.standalone && componentDefinition.dependencies || null,
+      directiveDefs: null!, // assigned in noSideEffects
+      pipeDefs: null!, // assigned in noSideEffects
+      dependencies: (baseDef.standalone && componentDefinition.dependencies) || null,
       getStandaloneInjector: null,
       signals: componentDefinition.signals ?? false,
       data: componentDefinition.data || {},
@@ -357,11 +377,11 @@ export function ɵɵdefineComponent<T>(componentDefinition: ComponentDefinition<
   });
 }
 
-export function extractDirectiveDef(type: Type<any>): DirectiveDef<any>|ComponentDef<any>|null {
+export function extractDirectiveDef(type: Type<any>): DirectiveDef<any> | ComponentDef<any> | null {
   return getComponentDef(type) || getDirectiveDef(type);
 }
 
-function nonNull<T>(value: T|null): value is T {
+function nonNull<T>(value: T | null): value is T {
   return value !== null;
 }
 
@@ -475,16 +495,18 @@ export function ɵɵdefineNgModule<T>(def: {
  *
 
  */
-function parseAndConvertBindingsForDefinition<T>(obj: DirectiveDefinition<T>['outputs']|
-                                                 undefined): Record<keyof T, string>;
 function parseAndConvertBindingsForDefinition<T>(
-    obj: DirectiveInputs<T>|undefined, declaredInputs: Record<string, string>):
-    Record<keyof T, string|[minifiedName: string, flags: InputFlags]>;
+  obj: DirectiveDefinition<T>['outputs'] | undefined,
+): Record<keyof T, string>;
+function parseAndConvertBindingsForDefinition<T>(
+  obj: DirectiveInputs<T> | undefined,
+  declaredInputs: Record<string, string>,
+): Record<keyof T, string | [minifiedName: string, flags: InputFlags]>;
 
 function parseAndConvertBindingsForDefinition<T>(
-    obj: undefined|DirectiveInputs<T>|DirectiveDefinition<T>['outputs'],
-    declaredInputs?: Record<string, string>):
-    Record<keyof T, string|[minifiedName: string, flags: InputFlags]> {
+  obj: undefined | DirectiveInputs<T> | DirectiveDefinition<T>['outputs'],
+  declaredInputs?: Record<string, string>,
+): Record<keyof T, string | [minifiedName: string, flags: InputFlags]> {
   if (obj == null) return EMPTY_OBJ as any;
   const newLookup: any = {};
   for (const minifiedKey in obj) {
@@ -497,7 +519,7 @@ function parseAndConvertBindingsForDefinition<T>(
       if (Array.isArray(value)) {
         inputFlags = value[0];
         publicName = value[1];
-        declaredName = value[2] ?? publicName;  // declared name might not be set to save bytes.
+        declaredName = value[2] ?? publicName; // declared name might not be set to save bytes.
       } else {
         publicName = value;
         declaredName = value;
@@ -507,7 +529,7 @@ function parseAndConvertBindingsForDefinition<T>(
       if (declaredInputs) {
         // Perf note: An array is only allocated for the input if there are flags.
         newLookup[publicName] =
-            inputFlags !== InputFlags.None ? [minifiedKey, inputFlags] : minifiedKey;
+          inputFlags !== InputFlags.None ? [minifiedKey, inputFlags] : minifiedKey;
         declaredInputs[publicName] = declaredName as string;
       } else {
         newLookup[publicName] = minifiedKey;
@@ -533,8 +555,9 @@ function parseAndConvertBindingsForDefinition<T>(
  *
  * @codeGenApi
  */
-export function ɵɵdefineDirective<T>(directiveDefinition: DirectiveDefinition<T>):
-    Mutable<DirectiveDef<any>, keyof DirectiveDef<any>> {
+export function ɵɵdefineDirective<T>(
+  directiveDefinition: DirectiveDefinition<T>,
+): Mutable<DirectiveDef<any>, keyof DirectiveDef<any>> {
   return noSideEffects(() => {
     const def = getNgDirectiveDef(directiveDefinition);
     initFeatures(def);
@@ -574,14 +597,14 @@ export function ɵɵdefinePipe<T>(pipeDef: {
    */
   standalone?: boolean;
 }): unknown {
-  return (<PipeDef<T>>{
+  return <PipeDef<T>>{
     type: pipeDef.type,
     name: pipeDef.name,
     factory: null,
     pure: pipeDef.pure !== false,
     standalone: pipeDef.standalone === true,
-    onDestroy: pipeDef.type.prototype.ngOnDestroy || null
-  });
+    onDestroy: pipeDef.type.prototype.ngOnDestroy || null,
+  };
 }
 
 /**
@@ -590,15 +613,15 @@ export function ɵɵdefinePipe<T>(pipeDef: {
  * explicit. This would require some sort of migration strategy.
  */
 
-export function getComponentDef<T>(type: any): ComponentDef<T>|null {
+export function getComponentDef<T>(type: any): ComponentDef<T> | null {
   return type[NG_COMP_DEF] || null;
 }
 
-export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
+export function getDirectiveDef<T>(type: any): DirectiveDef<T> | null {
   return type[NG_DIR_DEF] || null;
 }
 
-export function getPipeDef<T>(type: any): PipeDef<T>|null {
+export function getPipeDef<T>(type: any): PipeDef<T> | null {
   return type[NG_PIPE_DEF] || null;
 }
 
@@ -616,8 +639,8 @@ export function isStandalone(type: Type<unknown>): boolean {
 }
 
 export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;
-export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null;
-export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleDef<T>|null {
+export function getNgModuleDef<T>(type: any): NgModuleDef<T> | null;
+export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleDef<T> | null {
   const ngModuleDef = type[NG_MOD_DEF] || null;
   if (!ngModuleDef && throwNotFound === true) {
     throw new Error(`Type ${stringify(type)} does not have 'ɵmod' property.`);
@@ -625,8 +648,9 @@ export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleD
   return ngModuleDef;
 }
 
-function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
-    Mutable<DirectiveDef<T>, keyof DirectiveDef<T>> {
+function getNgDirectiveDef<T>(
+  directiveDefinition: DirectiveDefinition<T>,
+): Mutable<DirectiveDef<T>, keyof DirectiveDef<T>> {
   const declaredInputs: Record<string, string> = {};
 
   return {
@@ -655,28 +679,36 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
   };
 }
 
-function initFeatures<T>(definition:|Mutable<DirectiveDef<T>, keyof DirectiveDef<T>>|
-                         Mutable<ComponentDef<T>, keyof ComponentDef<T>>): void {
+function initFeatures<T>(
+  definition:
+    | Mutable<DirectiveDef<T>, keyof DirectiveDef<T>>
+    | Mutable<ComponentDef<T>, keyof ComponentDef<T>>,
+): void {
   definition.features?.forEach((fn) => fn(definition));
 }
 
 export function extractDefListOrFactory(
-    dependencies: TypeOrFactory<DependencyTypeList>|undefined,
-    pipeDef: false): DirectiveDefListOrFactory|null;
+  dependencies: TypeOrFactory<DependencyTypeList> | undefined,
+  pipeDef: false,
+): DirectiveDefListOrFactory | null;
 export function extractDefListOrFactory(
-    dependencies: TypeOrFactory<DependencyTypeList>|undefined, pipeDef: true): PipeDefListOrFactory|
-    null;
+  dependencies: TypeOrFactory<DependencyTypeList> | undefined,
+  pipeDef: true,
+): PipeDefListOrFactory | null;
 export function extractDefListOrFactory(
-    dependencies: TypeOrFactory<DependencyTypeList>|undefined, pipeDef: boolean): unknown {
+  dependencies: TypeOrFactory<DependencyTypeList> | undefined,
+  pipeDef: boolean,
+): unknown {
   if (!dependencies) {
     return null;
   }
 
   const defExtractor = pipeDef ? getPipeDef : extractDirectiveDef;
 
-  return () => (typeof dependencies === 'function' ? dependencies() : dependencies)
-                   .map(dep => defExtractor(dep))
-                   .filter(nonNull);
+  return () =>
+    (typeof dependencies === 'function' ? dependencies() : dependencies)
+      .map((dep) => defExtractor(dep))
+      .filter(nonNull);
 }
 
 /**
@@ -723,7 +755,7 @@ function getComponentId<T>(componentDef: ComponentDef<T>): string {
   ].join('|');
 
   for (const char of hashSelectors) {
-    hash = Math.imul(31, hash) + char.charCodeAt(0) << 0;
+    hash = (Math.imul(31, hash) + char.charCodeAt(0)) << 0;
   }
 
   // Force positive number hash.
@@ -736,13 +768,16 @@ function getComponentId<T>(componentDef: ComponentDef<T>): string {
     if (GENERATED_COMP_IDS.has(compId)) {
       const previousCompDefType = GENERATED_COMP_IDS.get(compId)!;
       if (previousCompDefType !== componentDef.type) {
-        console.warn(formatRuntimeError(
+        console.warn(
+          formatRuntimeError(
             RuntimeErrorCode.COMPONENT_ID_COLLISION,
             `Component ID generation collision detected. Components '${
-                previousCompDefType.name}' and '${componentDef.type.name}' with selector '${
-                stringifyCSSSelectorList(
-                    componentDef
-                        .selectors)}' generated the same component ID. To fix this, you can change the selector of one of those components or add an extra host attribute to force a different ID.`));
+              previousCompDefType.name
+            }' and '${componentDef.type.name}' with selector '${stringifyCSSSelectorList(
+              componentDef.selectors,
+            )}' generated the same component ID. To fix this, you can change the selector of one of those components or add an extra host attribute to force a different ID.`,
+          ),
+        );
       }
     } else {
       GENERATED_COMP_IDS.set(compId, componentDef.type);

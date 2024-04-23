@@ -11,7 +11,7 @@ import {REQUIRED_UNSET_VALUE} from '../input/input_signal_node';
 
 import {createModelSignal, ModelOptions, ModelSignal} from './model_signal';
 
-export function modelFunction<T>(initialValue?: T): ModelSignal<T|undefined> {
+export function modelFunction<T>(initialValue?: T): ModelSignal<T | undefined> {
   ngDevMode && assertInInjectionContext(model);
 
   return createModelSignal(initialValue);
@@ -39,7 +39,7 @@ export interface ModelFunction {
    * Initializes a model of type `T` with an initial value of `undefined`.
    * Angular will implicitly use `undefined` as initial value.
    */
-  <T>(): ModelSignal<T|undefined>;
+  <T>(): ModelSignal<T | undefined>;
   /** Initializes a model of type `T` with the given initial value. */
   <T>(initialValue: T, opts?: ModelOptions): ModelSignal<T>;
 
@@ -106,5 +106,5 @@ export const model: ModelFunction = (() => {
   // this assignment, unless this `model` constant export is accessed. It's a
   // self-contained side effect that is local to the user facing `model` export.
   (modelFunction as any).required = modelRequiredFunction;
-  return modelFunction as (typeof modelFunction&{required: typeof modelRequiredFunction});
+  return modelFunction as typeof modelFunction & {required: typeof modelRequiredFunction};
 })();

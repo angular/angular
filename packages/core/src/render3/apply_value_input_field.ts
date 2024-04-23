@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {InputSignalNode} from '../authoring/input/input_signal_node';
 
 export function applyValueToInputField<T>(
-    instance: T, inputSignalNode: null|InputSignalNode<unknown, unknown>, privateName: string,
-    value: unknown) {
+  instance: T,
+  inputSignalNode: null | InputSignalNode<unknown, unknown>,
+  privateName: string,
+  value: unknown,
+) {
   if (inputSignalNode !== null) {
     inputSignalNode.applyValueToInputSignal(inputSignalNode, value);
   } else {

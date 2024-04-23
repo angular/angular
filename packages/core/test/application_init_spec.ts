@@ -5,7 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {APP_INITIALIZER, ApplicationInitStatus} from '@angular/core/src/application/application_init';
+import {
+  APP_INITIALIZER,
+  ApplicationInitStatus,
+} from '@angular/core/src/application/application_init';
 import {EMPTY, Observable, Subscriber} from 'rxjs';
 
 import {TestBed} from '../testing';
@@ -13,8 +16,8 @@ import {TestBed} from '../testing';
 describe('ApplicationInitStatus', () => {
   let status: ApplicationInitStatus;
   const runInitializers = () =>
-      // Cast to `any` to access an internal function for testing purposes.
-      (status as any).runInitializers();
+    // Cast to `any` to access an internal function for testing purposes.
+    (status as any).runInitializers();
 
   describe('no initializers', () => {
     beforeEach(() => {
@@ -45,8 +48,9 @@ describe('ApplicationInitStatus', () => {
         resolve = res;
         reject = rej;
       });
-      TestBed.configureTestingModule(
-          {providers: [{provide: APP_INITIALIZER, useValue: [() => promise]}]});
+      TestBed.configureTestingModule({
+        providers: [{provide: APP_INITIALIZER, useValue: [() => promise]}],
+      });
       status = TestBed.inject(ApplicationInitStatus);
     });
 
@@ -91,62 +95,61 @@ describe('ApplicationInitStatus', () => {
         subscriber = res;
       });
 
-      TestBed.configureTestingModule(
-          {providers: [{provide: APP_INITIALIZER, useValue: [() => observable]}]});
+      TestBed.configureTestingModule({
+        providers: [{provide: APP_INITIALIZER, useValue: [() => observable]}],
+      });
       status = TestBed.inject(ApplicationInitStatus);
     });
 
-    it('should update the status once all async observable initializers are completed',
-       async () => {
-         runInitializers();
+    it('should update the status once all async observable initializers are completed', async () => {
+      runInitializers();
 
-         setTimeout(() => {
-           initFnInvoked = true;
-           subscriber.complete();
-         });
+      setTimeout(() => {
+        initFnInvoked = true;
+        subscriber.complete();
+      });
 
-         expect(status.done).toBe(false);
-         await status.donePromise;
-         expect(status.done).toBe(true);
-         expect(initFnInvoked).toBe(true);
-       });
+      expect(status.done).toBe(false);
+      await status.donePromise;
+      expect(status.done).toBe(true);
+      expect(initFnInvoked).toBe(true);
+    });
 
-    it('should update the status once all async observable initializers emitted and completed',
-       async () => {
-         runInitializers();
+    it('should update the status once all async observable initializers emitted and completed', async () => {
+      runInitializers();
 
-         subscriber.next('one');
-         subscriber.next('two');
+      subscriber.next('one');
+      subscriber.next('two');
 
-         setTimeout(() => {
-           initFnInvoked = true;
-           subscriber.complete();
-         });
+      setTimeout(() => {
+        initFnInvoked = true;
+        subscriber.complete();
+      });
 
-         await status.donePromise;
-         expect(status.done).toBe(true);
-         expect(initFnInvoked).toBe(true);
-       });
+      await status.donePromise;
+      expect(status.done).toBe(true);
+      expect(initFnInvoked).toBe(true);
+    });
 
-    it('should update the status if all async observable initializers are completed synchronously',
-       async () => {
-         // Create a status instance using an initializer that returns the `EMPTY` Observable
-         // which completes synchronously upon subscription.
-         TestBed.resetTestingModule();
-         TestBed.configureTestingModule(
-             {providers: [{provide: APP_INITIALIZER, useValue: [() => EMPTY]}]});
-         status = TestBed.inject(ApplicationInitStatus);
+    it('should update the status if all async observable initializers are completed synchronously', async () => {
+      // Create a status instance using an initializer that returns the `EMPTY` Observable
+      // which completes synchronously upon subscription.
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [{provide: APP_INITIALIZER, useValue: [() => EMPTY]}],
+      });
+      status = TestBed.inject(ApplicationInitStatus);
 
-         runInitializers();
+      runInitializers();
 
-         // Although the Observable completes synchronously, we still queue a promise for
-         // simplicity. This means that the `done` flag will not be `true` immediately, even
-         // though there was not actually any asynchronous activity.
-         expect(status.done).toBe(false);
+      // Although the Observable completes synchronously, we still queue a promise for
+      // simplicity. This means that the `done` flag will not be `true` immediately, even
+      // though there was not actually any asynchronous activity.
+      expect(status.done).toBe(false);
 
-         await status.donePromise;
-         expect(status.done).toBe(true);
-       });
+      await status.donePromise;
+      expect(status.done).toBe(true);
+    });
 
     it('should handle a case when observable emits an error', async () => {
       runInitializers();
@@ -170,18 +173,18 @@ describe('ApplicationInitStatus', () => {
 
   describe('wrong initializers', () => {
     beforeEach(() => {
-      TestBed.configureTestingModule(
-          {providers: [{provide: APP_INITIALIZER, useValue: 'notAnArray'}]});
+      TestBed.configureTestingModule({
+        providers: [{provide: APP_INITIALIZER, useValue: 'notAnArray'}],
+      });
     });
 
     it('should throw', () => {
-      expect(() => TestBed.inject(ApplicationInitStatus))
-          .toThrowError(
-              'NG0209: Unexpected type of the `APP_INITIALIZER` token value ' +
-                  `(expected an array, but got string). ` +
-                  'Please check that the `APP_INITIALIZER` token is configured as a ' +
-                  '`multi: true` provider. Find more at https://angular.io/errors/NG0209',
-          );
+      expect(() => TestBed.inject(ApplicationInitStatus)).toThrowError(
+        'NG0209: Unexpected type of the `APP_INITIALIZER` token value ' +
+          `(expected an array, but got string). ` +
+          'Please check that the `APP_INITIALIZER` token is configured as a ' +
+          '`multi: true` provider. Find more at https://angular.io/errors/NG0209',
+      );
     });
   });
 });

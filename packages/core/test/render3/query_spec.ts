@@ -6,30 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Injectable, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  Directive,
+  Injectable,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewChildren,
+  ViewContainerRef,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-
 
 describe('query', () => {
   describe('predicate', () => {
     describe('providers', () => {
       @Injectable()
-      class Service {
-      }
+      class Service {}
 
       @Injectable()
-      class Alias {
-      }
+      class Alias {}
 
-      let directive: MyDirective|null = null;
+      let directive: MyDirective | null = null;
 
       @Directive({
         selector: '[myDir]',
         standalone: true,
-        providers: [
-          Service,
-          {provide: Alias, useExisting: Service},
-        ],
+        providers: [Service, {provide: Alias, useExisting: Service}],
       })
       class MyDirective {
         constructor(public service: Service) {
@@ -37,7 +40,7 @@ describe('query', () => {
         }
       }
 
-      beforeEach(() => directive = null);
+      beforeEach(() => (directive = null));
 
       // https://stackblitz.com/edit/ng-viewengine-viewchild-providers?file=src%2Fapp%2Fapp.component.ts
       it('should query for providers that are present on a directive', () => {
@@ -85,7 +88,10 @@ describe('query', () => {
       standalone: true,
     })
     class SomeDir {
-      constructor(public vcr: ViewContainerRef, public temp: TemplateRef<any>) {
+      constructor(
+        public vcr: ViewContainerRef,
+        public temp: TemplateRef<any>,
+      ) {
         this.vcr.createEmbeddedView(this.temp);
       }
     }

@@ -22,7 +22,7 @@ let LOCALE_DATA: {[localeId: string]: any} = {};
  *
  * The signature `registerLocaleData(data: any, extraData?: any)` is deprecated since v5.1
  */
-export function registerLocaleData(data: any, localeId?: string|any, extraData?: any): void {
+export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void {
   if (typeof localeId !== 'string') {
     extraData = localeId;
     localeId = data[LocaleDataIndex.LocaleId];
@@ -64,8 +64,9 @@ export function findLocaleData(locale: string): any {
   }
 
   throw new RuntimeError(
-      RuntimeErrorCode.MISSING_LOCALE_DATA,
-      ngDevMode && `Missing locale data for the locale "${locale}".`);
+    RuntimeErrorCode.MISSING_LOCALE_DATA,
+    ngDevMode && `Missing locale data for the locale "${locale}".`,
+  );
 }
 
 /**
@@ -77,7 +78,7 @@ export function findLocaleData(locale: string): any {
  * @returns The code of the default currency for the given locale.
  *
  */
-export function getLocaleCurrencyCode(locale: string): string|null {
+export function getLocaleCurrencyCode(locale: string): string | null {
   const data = findLocaleData(locale);
   return data[LocaleDataIndex.CurrencyCode] || null;
 }
@@ -95,16 +96,17 @@ export function getLocalePluralCase(locale: string): (value: number) => number {
   return data[LocaleDataIndex.PluralCase];
 }
 
-
-
 /**
  * Helper function to get the given `normalizedLocale` from `LOCALE_DATA`
  * or from the global `ng.common.locale`.
  */
 export function getLocaleData(normalizedLocale: string): any {
   if (!(normalizedLocale in LOCALE_DATA)) {
-    LOCALE_DATA[normalizedLocale] = global.ng && global.ng.common && global.ng.common.locales &&
-        global.ng.common.locales[normalizedLocale];
+    LOCALE_DATA[normalizedLocale] =
+      global.ng &&
+      global.ng.common &&
+      global.ng.common.locales &&
+      global.ng.common.locales[normalizedLocale];
   }
   return LOCALE_DATA[normalizedLocale];
 }
@@ -141,7 +143,7 @@ export enum LocaleDataIndex {
   Currencies,
   Directionality,
   PluralCase,
-  ExtraData
+  ExtraData,
 }
 
 /**
@@ -150,7 +152,7 @@ export enum LocaleDataIndex {
 export const enum ExtraLocaleDataIndex {
   ExtraDayPeriodFormats = 0,
   ExtraDayPeriodStandalone,
-  ExtraDayPeriodsRules
+  ExtraDayPeriodsRules,
 }
 
 /**
@@ -159,7 +161,7 @@ export const enum ExtraLocaleDataIndex {
 export const enum CurrencyIndex {
   Symbol = 0,
   SymbolNarrow,
-  NbOfDigits
+  NbOfDigits,
 }
 
 /**

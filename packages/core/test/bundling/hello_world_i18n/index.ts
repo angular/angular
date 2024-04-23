@@ -12,17 +12,15 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Component({
   selector: 'hello-world',
-  template: `<div i18n i18n-title title="Hello Title!">Hello World!</div>`
+  template: `<div i18n i18n-title title="Hello Title!">Hello World!</div>`,
 })
-export class HelloWorld {
-}
+export class HelloWorld {}
 
 @NgModule({
   declarations: [HelloWorld],
   imports: [BrowserModule],
   bootstrap: [HelloWorld],
 })
-export class Module {
-}
+export class Module {}
 
 platformBrowser().bootstrapModule(Module, {ngZone: 'noop'});

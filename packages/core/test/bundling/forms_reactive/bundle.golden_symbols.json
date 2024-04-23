@@ -618,6 +618,9 @@
     "name": "ZoneStablePendingTask"
   },
   {
+    "name": "_ComponentFactoryResolver"
+  },
+  {
     "name": "_DOM"
   },
   {
@@ -625,6 +628,9 @@
   },
   {
     "name": "_DuplicateMap"
+  },
+  {
+    "name": "_Injector"
   },
   {
     "name": "_NullComponentFactoryResolver"

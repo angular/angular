@@ -51,12 +51,19 @@ function getFriendlyStringFromTNodeType(tNodeType: TNodeType): string {
  * Validates that provided nodes match during the hydration process.
  */
 export function validateMatchingNode(
-    node: RNode|null, nodeType: number, tagName: string|null, lView: LView, tNode: TNode,
-    isViewContainerAnchor = false): void {
-  if (!node ||
-      ((node as Node).nodeType !== nodeType ||
-       ((node as Node).nodeType === Node.ELEMENT_NODE &&
-        (node as HTMLElement).tagName.toLowerCase() !== tagName?.toLowerCase()))) {
+  node: RNode | null,
+  nodeType: number,
+  tagName: string | null,
+  lView: LView,
+  tNode: TNode,
+  isViewContainerAnchor = false,
+): void {
+  if (
+    !node ||
+    (node as Node).nodeType !== nodeType ||
+    ((node as Node).nodeType === Node.ELEMENT_NODE &&
+      (node as HTMLElement).tagName.toLowerCase() !== tagName?.toLowerCase())
+  ) {
     const expectedNode = shortRNodeDescription(nodeType, tagName, null);
     let header = `During hydration Angular expected ${expectedNode} but `;
 
@@ -76,8 +83,10 @@ export function validateMatchingNode(
       markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom);
     } else {
       const actualNode = shortRNodeDescription(
-          (node as Node).nodeType, (node as HTMLElement).tagName ?? null,
-          (node as HTMLElement).textContent ?? null);
+        (node as Node).nodeType,
+        (node as HTMLElement).tagName ?? null,
+        (node as HTMLElement).textContent ?? null,
+      );
 
       header += `found ${actualNode}.\n\n`;
       const actualDom = describeDomFromNode(node);
@@ -97,7 +106,7 @@ export function validateMatchingNode(
 /**
  * Validates that a given node has sibling nodes
  */
-export function validateSiblingNodeExists(node: RNode|null): void {
+export function validateSiblingNodeExists(node: RNode | null): void {
   validateNodeExists(node);
   if (!node!.nextSibling) {
     const header = 'During hydration Angular expected more sibling nodes to be present.\n\n';
@@ -115,10 +124,13 @@ export function validateSiblingNodeExists(node: RNode|null): void {
  * Validates that a node exists or throws
  */
 export function validateNodeExists(
-    node: RNode|null, lView: LView|null = null, tNode: TNode|null = null): void {
+  node: RNode | null,
+  lView: LView | null = null,
+  tNode: TNode | null = null,
+): void {
   if (!node) {
     const header =
-        'During hydration, Angular expected an element to be present at this location.\n\n';
+      'During hydration, Angular expected an element to be present at this location.\n\n';
     let expected = '';
     let footer = '';
     if (lView !== null && tNode !== null) {
@@ -130,7 +142,9 @@ export function validateNodeExists(
     }
 
     throw new RuntimeError(
-        RuntimeErrorCode.HYDRATION_MISSING_NODE, `${header}${expected}\n\n${footer}`);
+      RuntimeErrorCode.HYDRATION_MISSING_NODE,
+      `${header}${expected}\n\n${footer}`,
+    );
   }
 }
 
@@ -155,14 +169,14 @@ export function nodeNotFoundError(lView: LView, tNode: TNode): Error {
  * @param path the path to the node
  */
 export function nodeNotFoundAtPathError(host: Node, path: string): Error {
-  const header = `During hydration Angular was unable to locate a node ` +
-      `using the "${path}" path, starting from the ${describeRNode(host)} node.\n\n`;
+  const header =
+    `During hydration Angular was unable to locate a node ` +
+    `using the "${path}" path, starting from the ${describeRNode(host)} node.\n\n`;
   const footer = getHydrationErrorFooter();
 
   markRNodeAsHavingHydrationMismatch(host);
   throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_NODE, header + footer);
 }
-
 
 /**
  * Builds the hydration error message in the case that dom nodes are created outside of
@@ -173,11 +187,12 @@ export function nodeNotFoundAtPathError(host: Node, path: string): Error {
  * @returns an error
  */
 export function unsupportedProjectionOfDomNodes(rNode: RNode): Error {
-  const header = 'During serialization, Angular detected DOM nodes ' +
-      'that were created outside of Angular context and provided as projectable nodes ' +
-      '(likely via `ViewContainerRef.createComponent` or `createComponent` APIs). ' +
-      'Hydration is not supported for such cases, consider refactoring the code to avoid ' +
-      'this pattern or using `ngSkipHydration` on the host element of the component.\n\n';
+  const header =
+    'During serialization, Angular detected DOM nodes ' +
+    'that were created outside of Angular context and provided as projectable nodes ' +
+    '(likely via `ViewContainerRef.createComponent` or `createComponent` APIs). ' +
+    'Hydration is not supported for such cases, consider refactoring the code to avoid ' +
+    'this pattern or using `ngSkipHydration` on the host element of the component.\n\n';
   const actual = `${describeDomFromNode(rNode)}\n\n`;
   const message = header + actual + getHydrationAttributeNote();
   return new RuntimeError(RuntimeErrorCode.UNSUPPORTED_PROJECTION_DOM_NODES, message);
@@ -191,9 +206,10 @@ export function unsupportedProjectionOfDomNodes(rNode: RNode): Error {
  * @returns an error
  */
 export function invalidSkipHydrationHost(rNode: RNode): Error {
-  const header = 'The `ngSkipHydration` flag is applied on a node ' +
-      'that doesn\'t act as a component host. Hydration can be ' +
-      'skipped only on per-component basis.\n\n';
+  const header =
+    'The `ngSkipHydration` flag is applied on a node ' +
+    "that doesn't act as a component host. Hydration can be " +
+    'skipped only on per-component basis.\n\n';
   const actual = `${describeDomFromNode(rNode)}\n\n`;
   const footer = 'Please move the `ngSkipHydration` attribute to the component host element.\n\n';
   const message = header + actual + footer;
@@ -211,7 +227,7 @@ export function invalidSkipHydrationHost(rNode: RNode): Error {
 function stringifyTNodeAttrs(tNode: TNode): string {
   const results = [];
   if (tNode.attrs) {
-    for (let i = 0; i < tNode.attrs.length;) {
+    for (let i = 0; i < tNode.attrs.length; ) {
       const attrName = tNode.attrs[i++];
       // Once we reach the first flag, we know that the list of
       // attributes is over.
@@ -366,7 +382,10 @@ function describeDomFromNode(node: RNode): string {
  * @returns string
  */
 function shortRNodeDescription(
-    nodeType: number, tagName: string|null, textContent: string|null): string {
+  nodeType: number,
+  tagName: string | null,
+  textContent: string | null,
+): string {
   switch (nodeType) {
     case Node.ELEMENT_NODE:
       return `<${tagName!.toLowerCase()}>`;
@@ -380,7 +399,6 @@ function shortRNodeDescription(
   }
 }
 
-
 /**
  * Builds the footer hydration error message
  *
@@ -389,19 +407,23 @@ function shortRNodeDescription(
  */
 function getHydrationErrorFooter(componentClassName?: string): string {
   const componentInfo = componentClassName ? `the "${componentClassName}"` : 'corresponding';
-  return `To fix this problem:\n` +
-      `  * check ${componentInfo} component for hydration-related issues\n` +
-      `  * check to see if your template has valid HTML structure\n` +
-      `  * or skip hydration by adding the \`ngSkipHydration\` attribute ` +
-      `to its host node in a template\n\n`;
+  return (
+    `To fix this problem:\n` +
+    `  * check ${componentInfo} component for hydration-related issues\n` +
+    `  * check to see if your template has valid HTML structure\n` +
+    `  * or skip hydration by adding the \`ngSkipHydration\` attribute ` +
+    `to its host node in a template\n\n`
+  );
 }
 
 /**
  * An attribute related note for hydration errors
  */
 function getHydrationAttributeNote(): string {
-  return 'Note: attributes are only displayed to better represent the DOM' +
-      ' but have no effect on hydration mismatches.\n\n';
+  return (
+    'Note: attributes are only displayed to better represent the DOM' +
+    ' but have no effect on hydration mismatches.\n\n'
+  );
 }
 
 // Node string utility functions
@@ -423,7 +445,7 @@ function stripNewlines(input: string): string {
  * @param maxLength a maximum length in characters
  * @returns string
  */
-function shorten(input: string|null, maxLength = 50): string {
+function shorten(input: string | null, maxLength = 50): string {
   if (!input) {
     return '';
   }

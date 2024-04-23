@@ -20,8 +20,7 @@ import {Component} from '@angular/core';
     </div>
   `,
 })
-export class FillModePassingComponent {
-}
+export class FillModePassingComponent {}
 @Component({
   selector: 'fill-mode-failing',
   standalone: true,
@@ -32,5 +31,4 @@ export class FillModePassingComponent {
     </div>
   `,
 })
-export class FillModeFailingComponent {
-}
+export class FillModeFailingComponent {}

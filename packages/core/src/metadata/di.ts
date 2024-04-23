@@ -35,9 +35,8 @@ export interface AttributeDecorator {
    * @publicApi
    */
   (name: string): any;
-  new(name: string): Attribute;
+  new (name: string): Attribute;
 }
-
 
 /**
  * Type of the Attribute metadata.
@@ -83,7 +82,6 @@ export interface Query {
 // Stores the default value of `emitDistinctChangesOnly` when the `emitDistinctChangesOnly` is not
 // explicitly set.
 export const emitDistinctChangesOnlyDefaultValue = true;
-
 
 /**
  * Base class for query metadata.
@@ -165,13 +163,18 @@ export interface ContentChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string, opts?: {
-    descendants?: boolean,
-    emitDistinctChangesOnly?: boolean,
-    read?: any,
-  }): any;
-  new(selector: ProviderToken<unknown>|Function|string,
-      opts?: {descendants?: boolean, emitDistinctChangesOnly?: boolean, read?: any}): Query;
+  (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {
+      descendants?: boolean;
+      emitDistinctChangesOnly?: boolean;
+      read?: any;
+    },
+  ): any;
+  new (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {descendants?: boolean; emitDistinctChangesOnly?: boolean; read?: any},
+  ): Query;
 }
 
 /**
@@ -191,15 +194,17 @@ export type ContentChildren = Query;
  * @publicApi
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
-    'ContentChildren', (selector?: any, opts: any = {}) => ({
-                         selector,
-                         first: false,
-                         isViewQuery: false,
-                         descendants: false,
-                         emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
-                         ...opts
-                       }),
-    Query);
+  'ContentChildren',
+  (selector?: any, opts: any = {}) => ({
+    selector,
+    first: false,
+    isViewQuery: false,
+    descendants: false,
+    emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+    ...opts,
+  }),
+  Query,
+);
 
 /**
  * Type of the ContentChild decorator / constructor function.
@@ -266,10 +271,14 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string,
-   opts?: {descendants?: boolean, read?: any, static?: boolean}): any;
-  new(selector: ProviderToken<unknown>|Function|string,
-      opts?: {descendants?: boolean, read?: any, static?: boolean}): ContentChild;
+  (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {descendants?: boolean; read?: any; static?: boolean},
+  ): any;
+  new (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {descendants?: boolean; read?: any; static?: boolean},
+  ): ContentChild;
 }
 
 /**
@@ -288,10 +297,16 @@ export type ContentChild = Query;
  * @publicApi
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
-    'ContentChild',
-    (selector?: any, opts: any = {}) =>
-        ({selector, first: true, isViewQuery: false, descendants: true, ...opts}),
-    Query);
+  'ContentChild',
+  (selector?: any, opts: any = {}) => ({
+    selector,
+    first: true,
+    isViewQuery: false,
+    descendants: true,
+    ...opts,
+  }),
+  Query,
+);
 
 /**
  * Type of the ViewChildren decorator / constructor function.
@@ -352,10 +367,14 @@ export interface ViewChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string,
-   opts?: {read?: any, emitDistinctChangesOnly?: boolean}): any;
-  new(selector: ProviderToken<unknown>|Function|string,
-      opts?: {read?: any, emitDistinctChangesOnly?: boolean}): ViewChildren;
+  (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {read?: any; emitDistinctChangesOnly?: boolean},
+  ): any;
+  new (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {read?: any; emitDistinctChangesOnly?: boolean},
+  ): ViewChildren;
 }
 
 /**
@@ -372,15 +391,17 @@ export type ViewChildren = Query;
  * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren', (selector?: any, opts: any = {}) => ({
-                      selector,
-                      first: false,
-                      isViewQuery: true,
-                      descendants: true,
-                      emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
-                      ...opts
-                    }),
-    Query);
+  'ViewChildren',
+  (selector?: any, opts: any = {}) => ({
+    selector,
+    first: false,
+    isViewQuery: true,
+    descendants: true,
+    emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+    ...opts,
+  }),
+  Query,
+);
 
 /**
  * Type of the ViewChild decorator / constructor function.
@@ -443,9 +464,14 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new(selector: ProviderToken<unknown>|Function|string,
-      opts?: {read?: any, static?: boolean}): ViewChild;
+  (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {read?: any; static?: boolean},
+  ): any;
+  new (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {read?: any; static?: boolean},
+  ): ViewChild;
 }
 
 /**
@@ -462,7 +488,13 @@ export type ViewChild = Query;
  * @publicApi
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
-    'ViewChild',
-    (selector: any, opts: any) =>
-        ({selector, first: true, isViewQuery: true, descendants: true, ...opts}),
-    Query);
+  'ViewChild',
+  (selector: any, opts: any) => ({
+    selector,
+    first: true,
+    isViewQuery: true,
+    descendants: true,
+    ...opts,
+  }),
+  Query,
+);

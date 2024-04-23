@@ -15,15 +15,13 @@ import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/security';
 
-
 describe('element discovery', () => {
   it('should only monkey-patch immediate child nodes in a component', () => {
     @Component({
       standalone: true,
       template: '<div><p></p></div>',
     })
-    class StructuredComp {
-    }
+    class StructuredComp {}
 
     const fixture = TestBed.createComponent(StructuredComp);
     fixture.detectChanges();
@@ -46,8 +44,7 @@ describe('element discovery', () => {
         <div></div>
       `,
     })
-    class ChildComp {
-    }
+    class ChildComp {}
 
     @Component({
       selector: 'parent-comp',
@@ -59,8 +56,7 @@ describe('element discovery', () => {
         </section>
       `,
     })
-    class ParentComp {
-    }
+    class ParentComp {}
 
     const fixture = TestBed.createComponent(ParentComp);
     fixture.detectChanges();
@@ -89,15 +85,15 @@ describe('element discovery', () => {
         </section>
       `,
     })
-    class StructuredComp {
-    }
+    class StructuredComp {}
 
     const fixture = TestBed.createComponent(StructuredComp);
     fixture.detectChanges();
 
     const host = fixture.nativeElement;
-    const [section, div1, p, div2] =
-        Array.from<HTMLElement>(host.querySelectorAll('section, div, p'));
+    const [section, div1, p, div2] = Array.from<HTMLElement>(
+      host.querySelectorAll('section, div, p'),
+    );
 
     expect(section.nodeName.toLowerCase()).toBe('section');
     expect(readPatchedData(section)).toBeTruthy();
@@ -121,8 +117,7 @@ describe('element discovery', () => {
         <div></div>
       `,
     })
-    class StructuredComp {
-    }
+    class StructuredComp {}
 
     const fixture = TestBed.createComponent(StructuredComp);
     fixture.detectChanges();
@@ -150,8 +145,7 @@ describe('element discovery', () => {
         <section></section>
       `,
     })
-    class StructuredComp {
-    }
+    class StructuredComp {}
 
     const fixture = TestBed.createComponent(StructuredComp);
     fixture.detectChanges();
@@ -168,66 +162,61 @@ describe('element discovery', () => {
     expect(result2.lView).toBe(result1);
   });
 
-  it('should cache the element context on an intermediate element that isn\'t preemptively monkey-patched',
-     () => {
-       @Component({
-         selector: 'structured-comp',
-         standalone: true,
-         template: `
+  it("should cache the element context on an intermediate element that isn't preemptively monkey-patched", () => {
+    @Component({
+      selector: 'structured-comp',
+      standalone: true,
+      template: `
             <section>
               <p></p>
             </section>
           `,
-       })
-       class StructuredComp {
-       }
+    })
+    class StructuredComp {}
 
-       const fixture = TestBed.createComponent(StructuredComp);
-       fixture.detectChanges();
+    const fixture = TestBed.createComponent(StructuredComp);
+    fixture.detectChanges();
 
-       const section = fixture.nativeElement.querySelector('section')! as any;
-       expect(readPatchedData(section)).toBeTruthy();
+    const section = fixture.nativeElement.querySelector('section')! as any;
+    expect(readPatchedData(section)).toBeTruthy();
 
-       const p = fixture.nativeElement.querySelector('p')! as any;
-       expect(readPatchedData(p)).toBeFalsy();
+    const p = fixture.nativeElement.querySelector('p')! as any;
+    expect(readPatchedData(p)).toBeFalsy();
 
-       const pContext = getLContext(p)!;
-       expect(pContext.native).toBe(p);
-       expect(readPatchedData(p)).toBe(pContext);
-     });
+    const pContext = getLContext(p)!;
+    expect(pContext.native).toBe(p);
+    expect(readPatchedData(p)).toBe(pContext);
+  });
 
-  it('should be able to pull in element context data even if the element is decorated using styling',
-     () => {
-       @Component({
-         selector: 'structured-comp',
-         standalone: true,
-         template: `
+  it('should be able to pull in element context data even if the element is decorated using styling', () => {
+    @Component({
+      selector: 'structured-comp',
+      standalone: true,
+      template: `
             <section></section>
           `,
-       })
-       class StructuredComp {
-       }
+    })
+    class StructuredComp {}
 
-       const fixture = TestBed.createComponent(StructuredComp);
-       fixture.detectChanges();
+    const fixture = TestBed.createComponent(StructuredComp);
+    fixture.detectChanges();
 
-       const section = fixture.nativeElement.querySelector('section')! as any;
-       const result1 = readPatchedData(section) as any;
-       expect(Array.isArray(result1)).toBeTruthy();
+    const section = fixture.nativeElement.querySelector('section')! as any;
+    const result1 = readPatchedData(section) as any;
+    expect(Array.isArray(result1)).toBeTruthy();
 
-       const elementResult = result1[HEADER_OFFSET];  // first element
-       expect(elementResult).toBe(section);
+    const elementResult = result1[HEADER_OFFSET]; // first element
+    expect(elementResult).toBe(section);
 
-       const context = getLContext(section)!;
-       const result2 = readPatchedData(section);
-       expect(Array.isArray(result2)).toBeFalsy();
+    const context = getLContext(section)!;
+    const result2 = readPatchedData(section);
+    expect(Array.isArray(result2)).toBeFalsy();
 
-       expect(context.native).toBe(section);
-     });
+    expect(context.native).toBe(section);
+  });
 
-  it('should monkey-patch immediate child nodes in a content-projected region with a reference to the parent component',
-     () => {
-       /*
+  it('should monkey-patch immediate child nodes in a content-projected region with a reference to the parent component', () => {
+    /*
          <!-- DOM view -->
          <section>
            <projection-comp>
@@ -241,10 +230,10 @@ describe('element discovery', () => {
            </projection-comp>
          </section>
        */
-       @Component({
-         selector: 'projector-comp',
-         standalone: true,
-         template: `
+    @Component({
+      selector: 'projector-comp',
+      standalone: true,
+      template: `
             welcome
             <header>
               <h1>
@@ -252,15 +241,14 @@ describe('element discovery', () => {
               </h1>
             </header>
           `,
-       })
-       class ProjectorComp {
-       }
+    })
+    class ProjectorComp {}
 
-       @Component({
-         selector: 'parent-comp',
-         standalone: true,
-         imports: [ProjectorComp],
-         template: `
+    @Component({
+      selector: 'parent-comp',
+      standalone: true,
+      imports: [ProjectorComp],
+      template: `
             <section>
               <projector-comp>
                 <p>this content is projected</p>
@@ -268,81 +256,77 @@ describe('element discovery', () => {
               </projector-comp>
             </section>
           `,
-       })
-       class ParentComp {
-       }
+    })
+    class ParentComp {}
 
-       const fixture = TestBed.createComponent(ParentComp);
-       fixture.detectChanges();
+    const fixture = TestBed.createComponent(ParentComp);
+    fixture.detectChanges();
 
-       const host = fixture.nativeElement;
-       const textNode = host.firstChild as any;
-       const section = host.querySelector('section')! as any;
-       const projectorComp = host.querySelector('projector-comp')! as any;
-       const header = host.querySelector('header')! as any;
-       const h1 = host.querySelector('h1')! as any;
-       const p = host.querySelector('p')! as any;
-       const pText = p.firstChild as any;
-       const projectedTextNode = p.nextSibling;
+    const host = fixture.nativeElement;
+    const textNode = host.firstChild as any;
+    const section = host.querySelector('section')! as any;
+    const projectorComp = host.querySelector('projector-comp')! as any;
+    const header = host.querySelector('header')! as any;
+    const h1 = host.querySelector('h1')! as any;
+    const p = host.querySelector('p')! as any;
+    const pText = p.firstChild as any;
+    const projectedTextNode = p.nextSibling;
 
-       expect(projectorComp.children).toContain(header);
-       expect(h1.children).toContain(p);
+    expect(projectorComp.children).toContain(header);
+    expect(h1.children).toContain(p);
 
-       expect(readPatchedData(textNode)).toBeTruthy();
-       expect(readPatchedData(section)).toBeTruthy();
-       expect(readPatchedData(projectorComp)).toBeTruthy();
-       expect(readPatchedData(header)).toBeTruthy();
-       expect(readPatchedData(h1)).toBeFalsy();
-       expect(readPatchedData(p)).toBeTruthy();
-       expect(readPatchedData(pText)).toBeFalsy();
-       expect(readPatchedData(projectedTextNode)).toBeTruthy();
+    expect(readPatchedData(textNode)).toBeTruthy();
+    expect(readPatchedData(section)).toBeTruthy();
+    expect(readPatchedData(projectorComp)).toBeTruthy();
+    expect(readPatchedData(header)).toBeTruthy();
+    expect(readPatchedData(h1)).toBeFalsy();
+    expect(readPatchedData(p)).toBeTruthy();
+    expect(readPatchedData(pText)).toBeFalsy();
+    expect(readPatchedData(projectedTextNode)).toBeTruthy();
 
-       const parentContext = getLContext(section)!;
-       const shadowContext = getLContext(header)!;
-       const projectedContext = getLContext(p)!;
+    const parentContext = getLContext(section)!;
+    const shadowContext = getLContext(header)!;
+    const projectedContext = getLContext(p)!;
 
-       const parentComponentData = parentContext.lView;
-       const shadowComponentData = shadowContext.lView;
-       const projectedComponentData = projectedContext.lView;
+    const parentComponentData = parentContext.lView;
+    const shadowComponentData = shadowContext.lView;
+    const projectedComponentData = projectedContext.lView;
 
-       expect(projectedComponentData).toBe(parentComponentData);
-       expect(shadowComponentData).not.toBe(parentComponentData);
-     });
+    expect(projectedComponentData).toBe(parentComponentData);
+    expect(shadowComponentData).not.toBe(parentComponentData);
+  });
 
-  it('should return `null` when an element context is retrieved that isn\'t situated in Angular',
-     () => {
-       const elm1 = document.createElement('div');
-       const context1 = getLContext(elm1);
-       expect(context1).toBeFalsy();
+  it("should return `null` when an element context is retrieved that isn't situated in Angular", () => {
+    const elm1 = document.createElement('div');
+    const context1 = getLContext(elm1);
+    expect(context1).toBeFalsy();
 
-       const elm2 = document.createElement('div');
-       document.body.appendChild(elm2);
-       const context2 = getLContext(elm2);
-       expect(context2).toBeFalsy();
-     });
+    const elm2 = document.createElement('div');
+    document.body.appendChild(elm2);
+    const context2 = getLContext(elm2);
+    expect(context2).toBeFalsy();
+  });
 
-  it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular',
-     () => {
-       @Component({
-         selector: 'structured-comp',
-         standalone: true,
-         template: `
+  it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular', () => {
+    @Component({
+      selector: 'structured-comp',
+      standalone: true,
+      template: `
              <section></section>
            `,
-       })
-       class StructuredComp {
-       }
+    })
+    class StructuredComp {}
 
-       const fixture = TestBed.createComponent(StructuredComp);
-       fixture.detectChanges();
+    const fixture = TestBed.createComponent(StructuredComp);
+    fixture.detectChanges();
 
-       const section = fixture.nativeElement.querySelector('section')! as any;
-       const manuallyCreatedElement = document.createElement('div');
-       section.appendChild(manuallyCreatedElement);
+    const section = fixture.nativeElement.querySelector('section')! as any;
+    const manuallyCreatedElement = document.createElement('div');
+    section.appendChild(manuallyCreatedElement);
 
-       const context = getLContext(manuallyCreatedElement);
-       expect(context).toBeFalsy();
-     });
+    const context = getLContext(manuallyCreatedElement);
+    expect(context).toBeFalsy();
+  });
 
   it('should by default monkey-patch the bootstrap component with context details', () => {
     @Component({
@@ -350,8 +334,7 @@ describe('element discovery', () => {
       standalone: true,
       template: ``,
     })
-    class StructuredComp {
-    }
+    class StructuredComp {}
 
     const fixture = TestBed.createComponent(StructuredComp);
     fixture.detectChanges();
@@ -375,238 +358,231 @@ describe('element discovery', () => {
     expect(context2.native).toEqual(hostElm);
   });
 
-  it('should by default monkey-patch the directives with LView so that they can be examined',
-     () => {
-       let myDir1Instance: MyDir1|null = null;
-       let myDir2Instance: MyDir2|null = null;
-       let myDir3Instance: MyDir2|null = null;
+  it('should by default monkey-patch the directives with LView so that they can be examined', () => {
+    let myDir1Instance: MyDir1 | null = null;
+    let myDir2Instance: MyDir2 | null = null;
+    let myDir3Instance: MyDir2 | null = null;
 
-       @Directive({
-         selector: '[my-dir-1]',
-         standalone: true,
-       })
-       class MyDir1 {
-         constructor() {
-           myDir1Instance = this;
-         }
-       }
+    @Directive({
+      selector: '[my-dir-1]',
+      standalone: true,
+    })
+    class MyDir1 {
+      constructor() {
+        myDir1Instance = this;
+      }
+    }
 
-       @Directive({
-         selector: '[my-dir-2]',
-         standalone: true,
-       })
-       class MyDir2 {
-         constructor() {
-           myDir2Instance = this;
-         }
-       }
+    @Directive({
+      selector: '[my-dir-2]',
+      standalone: true,
+    })
+    class MyDir2 {
+      constructor() {
+        myDir2Instance = this;
+      }
+    }
 
-       @Directive({
-         selector: '[my-dir-3]',
-         standalone: true,
-       })
-       class MyDir3 {
-         constructor() {
-           myDir3Instance = this;
-         }
-       }
+    @Directive({
+      selector: '[my-dir-3]',
+      standalone: true,
+    })
+    class MyDir3 {
+      constructor() {
+        myDir3Instance = this;
+      }
+    }
 
-       @Component({
-         selector: 'structured-comp',
-         standalone: true,
-         imports: [MyDir1, MyDir2, MyDir3],
-         template: `
+    @Component({
+      selector: 'structured-comp',
+      standalone: true,
+      imports: [MyDir1, MyDir2, MyDir3],
+      template: `
             <div my-dir-1 my-dir-2></div>
             <div my-dir-3></div>
           `,
-       })
-       class StructuredComp {
-       }
+    })
+    class StructuredComp {}
 
-       const fixture = TestBed.createComponent(StructuredComp);
-       fixture.detectChanges();
+    const fixture = TestBed.createComponent(StructuredComp);
+    fixture.detectChanges();
 
-       const hostElm = fixture.nativeElement;
-       const div1 = hostElm.querySelector('div:first-child')! as any;
-       const div2 = hostElm.querySelector('div:last-child')! as any;
-       const context = getLContext(hostElm)!;
-       const componentView = context.lView![context.nodeIndex];
+    const hostElm = fixture.nativeElement;
+    const div1 = hostElm.querySelector('div:first-child')! as any;
+    const div2 = hostElm.querySelector('div:last-child')! as any;
+    const context = getLContext(hostElm)!;
+    const componentView = context.lView![context.nodeIndex];
 
-       expect(componentView).toContain(myDir1Instance);
-       expect(componentView).toContain(myDir2Instance);
-       expect(componentView).toContain(myDir3Instance);
+    expect(componentView).toContain(myDir1Instance);
+    expect(componentView).toContain(myDir2Instance);
+    expect(componentView).toContain(myDir3Instance);
 
-       expect(Array.isArray(readPatchedData(myDir1Instance))).toBeTruthy();
-       expect(Array.isArray(readPatchedData(myDir2Instance))).toBeTruthy();
-       expect(Array.isArray(readPatchedData(myDir3Instance))).toBeTruthy();
+    expect(Array.isArray(readPatchedData(myDir1Instance))).toBeTruthy();
+    expect(Array.isArray(readPatchedData(myDir2Instance))).toBeTruthy();
+    expect(Array.isArray(readPatchedData(myDir3Instance))).toBeTruthy();
 
-       const d1Context = getLContext(myDir1Instance)!;
-       const d2Context = getLContext(myDir2Instance)!;
-       const d3Context = getLContext(myDir3Instance)!;
+    const d1Context = getLContext(myDir1Instance)!;
+    const d2Context = getLContext(myDir2Instance)!;
+    const d3Context = getLContext(myDir3Instance)!;
 
-       expect(d1Context.lView).toEqual(componentView);
-       expect(d2Context.lView).toEqual(componentView);
-       expect(d3Context.lView).toEqual(componentView);
+    expect(d1Context.lView).toEqual(componentView);
+    expect(d2Context.lView).toEqual(componentView);
+    expect(d3Context.lView).toEqual(componentView);
 
-       expect(readPatchedData(myDir1Instance)).toBe(d1Context);
-       expect(readPatchedData(myDir2Instance)).toBe(d2Context);
-       expect(readPatchedData(myDir3Instance)).toBe(d3Context);
+    expect(readPatchedData(myDir1Instance)).toBe(d1Context);
+    expect(readPatchedData(myDir2Instance)).toBe(d2Context);
+    expect(readPatchedData(myDir3Instance)).toBe(d3Context);
 
-       expect(d1Context.nodeIndex).toEqual(HEADER_OFFSET);
-       expect(d1Context.native).toBe(div1);
-       expect(d1Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
+    expect(d1Context.nodeIndex).toEqual(HEADER_OFFSET);
+    expect(d1Context.native).toBe(div1);
+    expect(d1Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
 
-       expect(d2Context.nodeIndex).toEqual(HEADER_OFFSET);
-       expect(d2Context.native).toBe(div1);
-       expect(d2Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
+    expect(d2Context.nodeIndex).toEqual(HEADER_OFFSET);
+    expect(d2Context.native).toBe(div1);
+    expect(d2Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
 
-       expect(d3Context.nodeIndex).toEqual(HEADER_OFFSET + 1);
-       expect(d3Context.native).toBe(div2);
-       expect(d3Context.directives as any[]).toEqual([myDir3Instance]);
-     });
+    expect(d3Context.nodeIndex).toEqual(HEADER_OFFSET + 1);
+    expect(d3Context.native).toBe(div2);
+    expect(d3Context.directives as any[]).toEqual([myDir3Instance]);
+  });
 
-  it('should monkey-patch the exact same context instance of the DOM node, component and any directives on the same element',
-     () => {
-       let myDir1Instance: MyDir1|null = null;
-       let myDir2Instance: MyDir2|null = null;
-       let childComponentInstance: ChildComp|null = null;
+  it('should monkey-patch the exact same context instance of the DOM node, component and any directives on the same element', () => {
+    let myDir1Instance: MyDir1 | null = null;
+    let myDir2Instance: MyDir2 | null = null;
+    let childComponentInstance: ChildComp | null = null;
 
-       @Directive({
-         selector: '[my-dir-1]',
-         standalone: true,
-       })
-       class MyDir1 {
-         constructor() {
-           myDir1Instance = this;
-         }
-       }
+    @Directive({
+      selector: '[my-dir-1]',
+      standalone: true,
+    })
+    class MyDir1 {
+      constructor() {
+        myDir1Instance = this;
+      }
+    }
 
-       @Directive({
-         selector: '[my-dir-2]',
-         standalone: true,
-       })
-       class MyDir2 {
-         constructor() {
-           myDir2Instance = this;
-         }
-       }
+    @Directive({
+      selector: '[my-dir-2]',
+      standalone: true,
+    })
+    class MyDir2 {
+      constructor() {
+        myDir2Instance = this;
+      }
+    }
 
-       @Component({
-         selector: 'child-comp',
-         standalone: true,
-         template: `
+    @Component({
+      selector: 'child-comp',
+      standalone: true,
+      template: `
              <div></div>
            `,
-       })
-       class ChildComp {
-         constructor() {
-           childComponentInstance = this;
-         }
-       }
+    })
+    class ChildComp {
+      constructor() {
+        childComponentInstance = this;
+      }
+    }
 
-       @Component({
-         selector: 'parent-comp',
-         standalone: true,
-         imports: [ChildComp, MyDir1, MyDir2],
-         template: `
+    @Component({
+      selector: 'parent-comp',
+      standalone: true,
+      imports: [ChildComp, MyDir1, MyDir2],
+      template: `
              <child-comp my-dir-1 my-dir-2></child-comp>
            `,
-       })
-       class ParentComp {
-       }
+    })
+    class ParentComp {}
 
-       const fixture = TestBed.createComponent(ParentComp);
-       fixture.detectChanges();
+    const fixture = TestBed.createComponent(ParentComp);
+    fixture.detectChanges();
 
-       const childCompHostElm = fixture.nativeElement.querySelector('child-comp')! as any;
+    const childCompHostElm = fixture.nativeElement.querySelector('child-comp')! as any;
 
-       const lView = readPatchedData(childCompHostElm);
-       expect(Array.isArray(lView)).toBeTruthy();
-       expect(readPatchedData(myDir1Instance)).toBe(lView);
-       expect(readPatchedData(myDir2Instance)).toBe(lView);
-       expect(readPatchedData(childComponentInstance)).toBe(lView);
+    const lView = readPatchedData(childCompHostElm);
+    expect(Array.isArray(lView)).toBeTruthy();
+    expect(readPatchedData(myDir1Instance)).toBe(lView);
+    expect(readPatchedData(myDir2Instance)).toBe(lView);
+    expect(readPatchedData(childComponentInstance)).toBe(lView);
 
-       const childNodeContext = getLContext(childCompHostElm)!;
-       expect(childNodeContext.component).toBeFalsy();
-       expect(childNodeContext.directives).toBeFalsy();
-       assertMonkeyPatchValueIsLView(myDir1Instance);
-       assertMonkeyPatchValueIsLView(myDir2Instance);
-       assertMonkeyPatchValueIsLView(childComponentInstance);
+    const childNodeContext = getLContext(childCompHostElm)!;
+    expect(childNodeContext.component).toBeFalsy();
+    expect(childNodeContext.directives).toBeFalsy();
+    assertMonkeyPatchValueIsLView(myDir1Instance);
+    assertMonkeyPatchValueIsLView(myDir2Instance);
+    assertMonkeyPatchValueIsLView(childComponentInstance);
 
-       expect(getLContext(myDir1Instance)).toBe(childNodeContext);
-       expect(childNodeContext.component).toBeFalsy();
-       expect(childNodeContext.directives!.length).toEqual(2);
-       assertMonkeyPatchValueIsLView(myDir1Instance, false);
-       assertMonkeyPatchValueIsLView(myDir2Instance, false);
-       assertMonkeyPatchValueIsLView(childComponentInstance);
+    expect(getLContext(myDir1Instance)).toBe(childNodeContext);
+    expect(childNodeContext.component).toBeFalsy();
+    expect(childNodeContext.directives!.length).toEqual(2);
+    assertMonkeyPatchValueIsLView(myDir1Instance, false);
+    assertMonkeyPatchValueIsLView(myDir2Instance, false);
+    assertMonkeyPatchValueIsLView(childComponentInstance);
 
-       expect(getLContext(myDir2Instance)).toBe(childNodeContext);
-       expect(childNodeContext.component).toBeFalsy();
-       expect(childNodeContext.directives!.length).toEqual(2);
-       assertMonkeyPatchValueIsLView(myDir1Instance, false);
-       assertMonkeyPatchValueIsLView(myDir2Instance, false);
-       assertMonkeyPatchValueIsLView(childComponentInstance);
+    expect(getLContext(myDir2Instance)).toBe(childNodeContext);
+    expect(childNodeContext.component).toBeFalsy();
+    expect(childNodeContext.directives!.length).toEqual(2);
+    assertMonkeyPatchValueIsLView(myDir1Instance, false);
+    assertMonkeyPatchValueIsLView(myDir2Instance, false);
+    assertMonkeyPatchValueIsLView(childComponentInstance);
 
-       expect(getLContext(childComponentInstance)).toBe(childNodeContext);
-       expect(childNodeContext.component).toBeTruthy();
-       expect(childNodeContext.directives!.length).toEqual(2);
-       assertMonkeyPatchValueIsLView(myDir1Instance, false);
-       assertMonkeyPatchValueIsLView(myDir2Instance, false);
-       assertMonkeyPatchValueIsLView(childComponentInstance, false);
+    expect(getLContext(childComponentInstance)).toBe(childNodeContext);
+    expect(childNodeContext.component).toBeTruthy();
+    expect(childNodeContext.directives!.length).toEqual(2);
+    assertMonkeyPatchValueIsLView(myDir1Instance, false);
+    assertMonkeyPatchValueIsLView(myDir2Instance, false);
+    assertMonkeyPatchValueIsLView(childComponentInstance, false);
 
-       function assertMonkeyPatchValueIsLView(value: any, yesOrNo = true) {
-         expect(Array.isArray(readPatchedData(value))).toBe(yesOrNo);
-       }
-     });
+    function assertMonkeyPatchValueIsLView(value: any, yesOrNo = true) {
+      expect(Array.isArray(readPatchedData(value))).toBe(yesOrNo);
+    }
+  });
 
-  it('should monkey-patch sub components with the view data and then replace them with the context result once a lookup occurs',
-     () => {
-       @Component({
-         selector: 'child-comp',
-         standalone: true,
-         template: `
+  it('should monkey-patch sub components with the view data and then replace them with the context result once a lookup occurs', () => {
+    @Component({
+      selector: 'child-comp',
+      standalone: true,
+      template: `
             <div></div>
             <div></div>
             <div></div>
           `,
-       })
-       class ChildComp {
-       }
+    })
+    class ChildComp {}
 
-       @Component({
-         selector: 'parent-comp',
-         standalone: true,
-         imports: [ChildComp],
-         template: `
+    @Component({
+      selector: 'parent-comp',
+      standalone: true,
+      imports: [ChildComp],
+      template: `
             <section>
               <child-comp></child-comp>
             </section>
           `,
-       })
-       class ParentComp {
-       }
+    })
+    class ParentComp {}
 
-       const fixture = TestBed.createComponent(ParentComp);
-       fixture.detectChanges();
+    const fixture = TestBed.createComponent(ParentComp);
+    fixture.detectChanges();
 
-       const host = fixture.nativeElement;
-       const child = host.querySelector('child-comp') as any;
-       expect(readPatchedData(child)).toBeTruthy();
+    const host = fixture.nativeElement;
+    const child = host.querySelector('child-comp') as any;
+    expect(readPatchedData(child)).toBeTruthy();
 
-       const context = getLContext(child)!;
-       expect(readPatchedData(child)).toBeTruthy();
+    const context = getLContext(child)!;
+    expect(readPatchedData(child)).toBeTruthy();
 
-       const componentData = context.lView![context.nodeIndex];
-       const component = componentData[CONTEXT];
-       expect(component instanceof ChildComp).toBeTruthy();
-       expect(readPatchedData(component)).toBe(context.lView);
+    const componentData = context.lView![context.nodeIndex];
+    const component = componentData[CONTEXT];
+    expect(component instanceof ChildComp).toBeTruthy();
+    expect(readPatchedData(component)).toBe(context.lView);
 
-       const componentContext = getLContext(component)!;
-       expect(readPatchedData(component)).toBe(componentContext);
-       expect(componentContext.nodeIndex).toEqual(context.nodeIndex);
-       expect(componentContext.native).toEqual(context.native);
-       expect(componentContext.lView).toEqual(context.lView);
-     });
+    const componentContext = getLContext(component)!;
+    expect(readPatchedData(component)).toBe(componentContext);
+    expect(componentContext.nodeIndex).toEqual(context.nodeIndex);
+    expect(componentContext.native).toEqual(context.native);
+    expect(componentContext.lView).toEqual(context.lView);
+  });
 });
 
 describe('sanitization', () => {
@@ -631,10 +607,12 @@ describe('sanitization', () => {
     });
 
     TestBed.configureTestingModule({
-      providers: [{
-        provide: Sanitizer,
-        useValue: sanitizer,
-      }]
+      providers: [
+        {
+          provide: Sanitizer,
+          useValue: sanitizer,
+        },
+      ],
     });
     const fixture = TestBed.createComponent(SanitizationComp);
     fixture.componentInstance.updateLink('http://foo');
@@ -672,16 +650,17 @@ describe('sanitization', () => {
         <blockquote unsafeUrlHostBindingDir></blockquote>
       `,
     })
-    class SimpleComp {
-    }
+    class SimpleComp {}
 
     const sanitizer = new LocalSanitizer((value) => 'http://bar');
 
     TestBed.configureTestingModule({
-      providers: [{
-        provide: Sanitizer,
-        useValue: sanitizer,
-      }]
+      providers: [
+        {
+          provide: Sanitizer,
+          useValue: sanitizer,
+        },
+      ],
     });
     const fixture = TestBed.createComponent(SimpleComp);
     hostBindingDir!.cite = 'http://foo';
@@ -705,9 +684,9 @@ class LocalSanitizedValue {
 }
 
 class LocalSanitizer implements Sanitizer {
-  constructor(private _interceptor: (value: string|null|any) => string) {}
+  constructor(private _interceptor: (value: string | null | any) => string) {}
 
-  sanitize(context: SecurityContext, value: LocalSanitizedValue|string|null): string|null {
+  sanitize(context: SecurityContext, value: LocalSanitizedValue | string | null): string | null {
     if (value instanceof LocalSanitizedValue) {
       return value.toString();
     }

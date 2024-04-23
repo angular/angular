@@ -116,7 +116,7 @@ class _PendingRequest {
     });
   }
 
-  complete(response: string|null) {
+  complete(response: string | null) {
     if (response == null) {
       this.reject(`Failed to load ${this.url}`);
     } else {

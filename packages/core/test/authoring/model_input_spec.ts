@@ -28,10 +28,10 @@ describe('model signal', () => {
   it('should allow updates based on the previous value', () => {
     const signal = TestBed.runInInjectionContext(() => model(2));
 
-    signal.update(value => value * 3);
+    signal.update((value) => value * 3);
     expect(signal()).toBe(6);
 
-    signal.update(value => value * 3);
+    signal.update((value) => value * 3);
     expect(signal()).toBe(18);
   });
 
@@ -49,12 +49,12 @@ describe('model signal', () => {
     const signal = TestBed.runInInjectionContext(() => model(1));
     const values: number[] = [];
 
-    signal.subscribe(value => values.push(value));
+    signal.subscribe((value) => values.push(value));
 
     signal.set(2);
     expect(values).toEqual([2]);
 
-    signal.update(previous => previous * 2);
+    signal.update((previous) => previous * 2);
     expect(values).toEqual([2, 4]);
 
     signal.set(5);
@@ -65,18 +65,19 @@ describe('model signal', () => {
     const signal = TestBed.runInInjectionContext(() => model(1));
     const values: number[] = [];
 
-    signal.subscribe(value => values.push(value));
+    signal.subscribe((value) => values.push(value));
 
     TestBed.resetTestingModule();
 
-    expect(() => signal.subscribe(() => {}))
-        .toThrowError(/Unexpected subscription to destroyed `OutputRef`/);
+    expect(() => signal.subscribe(() => {})).toThrowError(
+      /Unexpected subscription to destroyed `OutputRef`/,
+    );
   });
 
   it('should stop emitting after unsubscribing', () => {
     const signal = TestBed.runInInjectionContext(() => model(0));
     const values: number[] = [];
-    const subscription = signal.subscribe(value => values.push(value));
+    const subscription = signal.subscribe((value) => values.push(value));
 
     signal.set(1);
     expect(values).toEqual([1]);
@@ -89,16 +90,16 @@ describe('model signal', () => {
   it('should not emit if the value does not change', () => {
     const signal = TestBed.runInInjectionContext(() => model(0));
     const values: number[] = [];
-    signal.subscribe(value => values.push(value));
+    signal.subscribe((value) => values.push(value));
 
     signal.set(1);
     expect(values).toEqual([1]);
     signal.set(1);
     expect(values).toEqual([1]);
 
-    signal.update(previous => previous * 2);
+    signal.update((previous) => previous * 2);
     expect(values).toEqual([1, 2]);
-    signal.update(previous => previous * 1);
+    signal.update((previous) => previous * 1);
     expect(values).toEqual([1, 2]);
   });
 

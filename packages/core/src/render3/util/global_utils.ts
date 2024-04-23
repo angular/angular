@@ -12,10 +12,23 @@ import {setProfiler} from '../profiler';
 import {isSignal} from '../reactivity/api';
 
 import {applyChanges} from './change_detection_utils';
-import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
-import {getDependenciesFromInjectable, getInjectorMetadata, getInjectorProviders, getInjectorResolutionPath} from './injector_discovery_utils';
-
-
+import {
+  getComponent,
+  getContext,
+  getDirectiveMetadata,
+  getDirectives,
+  getHostElement,
+  getInjector,
+  getListeners,
+  getOwningComponent,
+  getRootComponents,
+} from './discovery_utils';
+import {
+  getDependenciesFromInjectable,
+  getInjectorMetadata,
+  getInjectorProviders,
+  getInjectorResolutionPath,
+} from './injector_discovery_utils';
 
 /**
  * This file introduces series of globally accessible debug tools
@@ -94,7 +107,9 @@ export type GlobalDevModeUtils = {
  * used from the browser console when an application is not in production.
  */
 export function publishGlobalUtil<K extends GlobalUtilsFunctions>(
-    name: K, fn: typeof globalUtilsFunctions[K]): void {
+  name: K,
+  fn: (typeof globalUtilsFunctions)[K],
+): void {
   if (typeof COMPILED === 'undefined' || !COMPILED) {
     // Note: we can't export `ng` when using closure enhanced optimization as:
     // - closure declares globals itself for minified names, which sometimes clobber our `ng` global

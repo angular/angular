@@ -16,7 +16,15 @@ import {getNodeInjectorLView, getNodeInjectorTNode, NodeInjector} from '../di';
 import {TNode} from '../interfaces/node';
 import {LView} from '../interfaces/view';
 
-import {InjectedService, InjectorCreatedInstance, InjectorProfilerContext, InjectorProfilerEvent, InjectorProfilerEventType, ProviderRecord, setInjectorProfiler} from './injector_profiler';
+import {
+  InjectedService,
+  InjectorCreatedInstance,
+  InjectorProfilerContext,
+  InjectorProfilerEvent,
+  InjectorProfilerEventType,
+  ProviderRecord,
+  setInjectorProfiler,
+} from './injector_profiler';
 
 /**
  * These are the data structures that our framework injector profiler will fill with data in order
@@ -54,15 +62,19 @@ import {InjectedService, InjectorCreatedInstance, InjectorProfilerContext, Injec
  *
  */
 class DIDebugData {
-  resolverToTokenToDependencies =
-      new WeakMap<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
-  resolverToProviders = new WeakMap<Injector|TNode, ProviderRecord[]>();
+  resolverToTokenToDependencies = new WeakMap<
+    Injector | LView,
+    WeakMap<Type<unknown>, InjectedService[]>
+  >();
+  resolverToProviders = new WeakMap<Injector | TNode, ProviderRecord[]>();
   standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
 
   reset() {
-    this.resolverToTokenToDependencies =
-        new WeakMap<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
-    this.resolverToProviders = new WeakMap<Injector|TNode, ProviderRecord[]>();
+    this.resolverToTokenToDependencies = new WeakMap<
+      Injector | LView,
+      WeakMap<Type<unknown>, InjectedService[]>
+    >();
+    this.resolverToProviders = new WeakMap<Injector | TNode, ProviderRecord[]>();
     this.standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
   }
 }
@@ -87,8 +99,9 @@ export function getFrameworkDIDebugData(): DIDebugData {
  */
 export function setupFrameworkInjectorProfiler(): void {
   frameworkDIDebugData.reset();
-  setInjectorProfiler(
-      (injectorProfilerEvent) => handleInjectorProfilerEvent(injectorProfilerEvent));
+  setInjectorProfiler((injectorProfilerEvent) =>
+    handleInjectorProfilerEvent(injectorProfilerEvent),
+  );
 }
 
 function handleInjectorProfilerEvent(injectorProfilerEvent: InjectorProfilerEvent): void {
@@ -157,7 +170,7 @@ function handleInjectEvent(context: InjectorProfilerContext, data: InjectedServi
  * @param injector
  * @returns {lView: LView, tNode: TNode}|undefined
  */
-function getNodeInjectorContext(injector: Injector): {lView: LView, tNode: TNode}|undefined {
+function getNodeInjectorContext(injector: Injector): {lView: LView; tNode: TNode} | undefined {
   if (!(injector instanceof NodeInjector)) {
     throwError('getNodeInjectorContext must be called with a NodeInjector');
   }
@@ -183,7 +196,9 @@ function getNodeInjectorContext(injector: Injector): {lView: LView, tNode: TNode
  *
  */
 function handleInstanceCreatedByInjectorEvent(
-    context: InjectorProfilerContext, data: InjectorCreatedInstance): void {
+  context: InjectorProfilerContext,
+  data: InjectorCreatedInstance,
+): void {
   const {value} = data;
 
   if (getDIResolver(context.injector) === null) {
@@ -192,7 +207,7 @@ function handleInstanceCreatedByInjectorEvent(
 
   // if our value is an instance of a standalone component, map the injector of that standalone
   // component to the component class. Otherwise, this event is a noop.
-  let standaloneComponent: Type<unknown>|undefined = undefined;
+  let standaloneComponent: Type<unknown> | undefined = undefined;
   if (typeof value === 'object') {
     standaloneComponent = value?.constructor as Type<unknown>;
   }
@@ -200,8 +215,11 @@ function handleInstanceCreatedByInjectorEvent(
     return;
   }
 
-  const environmentInjector: EnvironmentInjector|null =
-      context.injector.get(EnvironmentInjector, null, {optional: true});
+  const environmentInjector: EnvironmentInjector | null = context.injector.get(
+    EnvironmentInjector,
+    null,
+    {optional: true},
+  );
   // Standalone components should have an environment injector. If one cannot be
   // found we may be in a test case for low level functionality that did not explicitly
   // setup this injector. In those cases, we simply ignore this event.
@@ -237,10 +255,12 @@ function isStandaloneComponent(value: Type<unknown>): boolean {
  *
  */
 function handleProviderConfiguredEvent(
-    context: InjectorProfilerContext, data: ProviderRecord): void {
+  context: InjectorProfilerContext,
+  data: ProviderRecord,
+): void {
   const {resolverToProviders} = frameworkDIDebugData;
 
-  let diResolver: Injector|TNode;
+  let diResolver: Injector | TNode;
   if (context?.injector instanceof NodeInjector) {
     diResolver = getNodeInjectorTNode(context.injector) as TNode;
   } else {
@@ -258,8 +278,8 @@ function handleProviderConfiguredEvent(
   resolverToProviders.get(diResolver)!.push(data);
 }
 
-function getDIResolver(injector: Injector|undefined): Injector|LView|null {
-  let diResolver: Injector|LView|null = null;
+function getDIResolver(injector: Injector | undefined): Injector | LView | null {
+  let diResolver: Injector | LView | null = null;
 
   if (injector === undefined) {
     return diResolver;
@@ -286,6 +306,8 @@ function getDIResolver(injector: Injector|undefined): Injector|LView|null {
 // https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-canbeheldweakly
 function canBeHeldWeakly(value: any): boolean {
   // we check for value !== null here because typeof null === 'object
-  return value !== null &&
-      (typeof value === 'object' || typeof value === 'function' || typeof value === 'symbol');
+  return (
+    value !== null &&
+    (typeof value === 'object' || typeof value === 'function' || typeof value === 'symbol')
+  );
 }

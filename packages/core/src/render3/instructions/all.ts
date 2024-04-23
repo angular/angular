@@ -37,7 +37,12 @@ export * from './di';
 export * from './di_attr';
 export * from './element';
 export * from './element_container';
-export {ɵgetUnknownElementStrictMode, ɵgetUnknownPropertyStrictMode, ɵsetUnknownElementStrictMode, ɵsetUnknownPropertyStrictMode} from './element_validation';
+export {
+  ɵgetUnknownElementStrictMode,
+  ɵgetUnknownPropertyStrictMode,
+  ɵsetUnknownElementStrictMode,
+  ɵsetUnknownPropertyStrictMode,
+} from './element_validation';
 export * from './get_current_view';
 export * from './host_property';
 export * from './i18n';

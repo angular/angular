@@ -8,11 +8,21 @@
 
 import {createLView, createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {HEADER_OFFSET, LViewFlags, TVIEW, TViewType} from '@angular/core/src/render3/interfaces/view';
-import {enterView, getBindingRoot, getLView, setBindingIndex, setSelectedIndex} from '@angular/core/src/render3/state';
+import {
+  HEADER_OFFSET,
+  LViewFlags,
+  TVIEW,
+  TViewType,
+} from '@angular/core/src/render3/interfaces/view';
+import {
+  enterView,
+  getBindingRoot,
+  getLView,
+  setBindingIndex,
+  setSelectedIndex,
+} from '@angular/core/src/render3/state';
 
 import {MockRendererFactory} from './mock_renderer_factory';
-
 
 /**
  * Setups a simple `LView` so that it is possible to do unit tests on instructions.
@@ -34,22 +44,43 @@ export function enterViewWithOneDiv() {
   const renderer = rendererFactory.createRenderer(null, null);
   const div = renderer.createElement('div');
   const consts = 1;
-  const vars = 60;  // Space for directive expando,  template, component + 3 directives if we assume
-                    // that each consume 10 slots.
+  const vars = 60; // Space for directive expando,  template, component + 3 directives if we assume
+  // that each consume 10 slots.
   const tView = createTView(
-      TViewType.Component, null, emptyTemplate, consts, vars, null, null, null, null, null, null);
+    TViewType.Component,
+    null,
+    emptyTemplate,
+    consts,
+    vars,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  );
   // Just assume that the expando starts after 10 initial bindings.
   tView.expandoStartIndex = HEADER_OFFSET + 10;
-  const tNode = tView.firstChild = createTNode(tView, null!, TNodeType.Element, 0, 'div', null);
+  const tNode = (tView.firstChild = createTNode(tView, null!, TNodeType.Element, 0, 'div', null));
   const lView = createLView(
-      null, tView, null, LViewFlags.CheckAlways, null, null, {
-        rendererFactory,
-        sanitizer: null,
-        inlineEffectRunner: null,
-        afterRenderEventManager: null,
-        changeDetectionScheduler: null
-      },
-      renderer, null, null, null);
+    null,
+    tView,
+    null,
+    LViewFlags.CheckAlways,
+    null,
+    null,
+    {
+      rendererFactory,
+      sanitizer: null,
+      inlineEffectRunner: null,
+      afterRenderEventManager: null,
+      changeDetectionScheduler: null,
+    },
+    renderer,
+    null,
+    null,
+    null,
+  );
   lView[HEADER_OFFSET] = div;
   tView.data[HEADER_OFFSET] = tNode;
   enterView(lView);

@@ -6,12 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ɵcreateInjector, ɵInjectorProfilerContext, ɵsetInjectorProfilerContext, ɵɵFactoryTarget, ɵɵngDeclareFactory} from '@angular/core';
+import {
+  Injector,
+  ɵcreateInjector,
+  ɵInjectorProfilerContext,
+  ɵsetInjectorProfilerContext,
+  ɵɵFactoryTarget,
+  ɵɵngDeclareFactory,
+} from '@angular/core';
 import {ɵɵdefineInjector} from '@angular/core/src/di';
 import {setCurrentInjector} from '@angular/core/src/di/injector_compatibility';
 
 describe('Factory declaration jit compilation', () => {
-  let previousInjector: Injector|null|undefined;
+  let previousInjector: Injector | null | undefined;
   let previousInjectorProfilerContext: ɵInjectorProfilerContext;
   beforeEach(() => {
     const injector = ɵcreateInjector(TestInjector);
@@ -65,13 +72,19 @@ class DependingClass {
 }
 
 class ChildClass extends DependingClass {
-  static override ɵfac =
-      ɵɵngDeclareFactory({type: ChildClass, deps: null, target: ɵɵFactoryTarget.Injectable});
+  static override ɵfac = ɵɵngDeclareFactory({
+    type: ChildClass,
+    deps: null,
+    target: ɵɵFactoryTarget.Injectable,
+  });
 }
 
 class InvalidDepsClass {
-  static ɵfac = ɵɵngDeclareFactory(
-      {type: InvalidDepsClass, deps: 'invalid', target: ɵɵFactoryTarget.Injectable});
+  static ɵfac = ɵɵngDeclareFactory({
+    type: InvalidDepsClass,
+    deps: 'invalid',
+    target: ɵɵFactoryTarget.Injectable,
+  });
 }
 
 class TestInjector {

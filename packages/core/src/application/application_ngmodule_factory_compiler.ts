@@ -11,14 +11,19 @@ import {Injector} from '../di/injector';
 import {Type} from '../interface/type';
 import {COMPILER_OPTIONS, CompilerOptions} from '../linker/compiler';
 import {NgModuleFactory} from '../linker/ng_module_factory';
-import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from '../metadata/resource_loading';
+import {
+  isComponentResourceResolutionQueueEmpty,
+  resolveComponentResources,
+} from '../metadata/resource_loading';
 import {assertNgModuleType} from '../render3/assert';
 import {setJitOptions} from '../render3/jit/jit_options';
 import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
 
 export function compileNgModuleFactory<M>(
-    injector: Injector, options: CompilerOptions,
-    moduleType: Type<M>): Promise<NgModuleFactory<M>> {
+  injector: Injector,
+  options: CompilerOptions,
+  moduleType: Type<M>,
+): Promise<NgModuleFactory<M>> {
   ngDevMode && assertNgModuleType(moduleType);
 
   const moduleFactory = new R3NgModuleFactory(moduleType);
@@ -34,8 +39,8 @@ export function compileNgModuleFactory<M>(
   // are bootstrapped with incompatible options, as a component can only be compiled according to
   // a single set of options.
   setJitOptions({
-    defaultEncapsulation: _lastDefined(compilerOptions.map(opts => opts.defaultEncapsulation)),
-    preserveWhitespaces: _lastDefined(compilerOptions.map(opts => opts.preserveWhitespaces)),
+    defaultEncapsulation: _lastDefined(compilerOptions.map((opts) => opts.defaultEncapsulation)),
+    preserveWhitespaces: _lastDefined(compilerOptions.map((opts) => opts.preserveWhitespaces)),
   });
 
   if (isComponentResourceResolutionQueueEmpty()) {
@@ -61,11 +66,12 @@ export function compileNgModuleFactory<M>(
   const resourceLoader = compilerInjector.get(compiler.ResourceLoader);
   // The resource loader can also return a string while the "resolveComponentResources"
   // always expects a promise. Therefore we need to wrap the returned value in a promise.
-  return resolveComponentResources(url => Promise.resolve(resourceLoader.get(url)))
-      .then(() => moduleFactory);
+  return resolveComponentResources((url) => Promise.resolve(resourceLoader.get(url))).then(
+    () => moduleFactory,
+  );
 }
 
-function _lastDefined<T>(args: T[]): T|undefined {
+function _lastDefined<T>(args: T[]): T | undefined {
   for (let i = args.length - 1; i >= 0; i--) {
     if (args[i] !== undefined) {
       return args[i];

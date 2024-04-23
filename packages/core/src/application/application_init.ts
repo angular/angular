@@ -131,9 +131,9 @@ import {isPromise, isSubscribable} from '../util/lang';
  *
  * @publicApi
  */
-export const APP_INITIALIZER =
-    new InjectionToken<ReadonlyArray<() => Observable<unknown>| Promise<unknown>| void>>(
-        ngDevMode ? 'Application Initializer' : '');
+export const APP_INITIALIZER = new InjectionToken<
+  ReadonlyArray<() => Observable<unknown> | Promise<unknown> | void>
+>(ngDevMode ? 'Application Initializer' : '');
 
 /**
  * A class that reflects the state of running {@link APP_INITIALIZER} functions.
@@ -159,11 +159,12 @@ export class ApplicationInitStatus {
   constructor() {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && !Array.isArray(this.appInits)) {
       throw new RuntimeError(
-          RuntimeErrorCode.INVALID_MULTI_PROVIDER,
-          'Unexpected type of the `APP_INITIALIZER` token value ' +
-              `(expected an array, but got ${typeof this.appInits}). ` +
-              'Please check that the `APP_INITIALIZER` token is configured as a ' +
-              '`multi: true` provider.');
+        RuntimeErrorCode.INVALID_MULTI_PROVIDER,
+        'Unexpected type of the `APP_INITIALIZER` token value ' +
+          `(expected an array, but got ${typeof this.appInits}). ` +
+          'Please check that the `APP_INITIALIZER` token is configured as a ' +
+          '`multi: true` provider.',
+      );
     }
   }
 
@@ -193,12 +194,12 @@ export class ApplicationInitStatus {
     };
 
     Promise.all(asyncInitPromises)
-        .then(() => {
-          complete();
-        })
-        .catch(e => {
-          this.reject(e);
-        });
+      .then(() => {
+        complete();
+      })
+      .catch((e) => {
+        this.reject(e);
+      });
 
     if (asyncInitPromises.length === 0) {
       complete();

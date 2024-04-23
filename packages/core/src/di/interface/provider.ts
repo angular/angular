@@ -256,8 +256,12 @@ export interface FactoryProvider extends FactorySansProvider {
  * @publicApi
  */
 export type StaticProvider =
-    ValueProvider|ExistingProvider|StaticClassProvider|ConstructorProvider|FactoryProvider|any[];
-
+  | ValueProvider
+  | ExistingProvider
+  | StaticClassProvider
+  | ConstructorProvider
+  | FactoryProvider
+  | any[];
 
 /**
  * Configures the `Injector` to return an instance of `Type` when `Type' is used as the token.
@@ -329,8 +333,14 @@ export interface ClassProvider extends ClassSansProvider {
  *
  * @publicApi
  */
-export type Provider = TypeProvider|ValueProvider|ClassProvider|ConstructorProvider|
-    ExistingProvider|FactoryProvider|any[];
+export type Provider =
+  | TypeProvider
+  | ValueProvider
+  | ClassProvider
+  | ConstructorProvider
+  | ExistingProvider
+  | FactoryProvider
+  | any[];
 
 /**
  * Encapsulated `Provider`s that are only accepted during creation of an `EnvironmentInjector` (e.g.
@@ -352,7 +362,7 @@ export type EnvironmentProviders = {
 };
 
 export interface InternalEnvironmentProviders extends EnvironmentProviders {
-  ɵproviders: (Provider|EnvironmentProviders)[];
+  ɵproviders: (Provider | EnvironmentProviders)[];
 
   /**
    * If present, indicates that the `EnvironmentProviders` were derived from NgModule providers.
@@ -363,8 +373,8 @@ export interface InternalEnvironmentProviders extends EnvironmentProviders {
 }
 
 export function isEnvironmentProviders(
-    value: Provider|EnvironmentProviders|
-    InternalEnvironmentProviders): value is InternalEnvironmentProviders {
+  value: Provider | EnvironmentProviders | InternalEnvironmentProviders,
+): value is InternalEnvironmentProviders {
   return value && !!(value as InternalEnvironmentProviders).ɵproviders;
 }
 
@@ -374,7 +384,6 @@ export function isEnvironmentProviders(
  */
 export type ProcessProvidersFunction = (providers: Provider[]) => Provider[];
 
-
 /**
  * A wrapper around an NgModule that associates it with providers
  * Usage without a generic type is deprecated.
@@ -383,7 +392,7 @@ export type ProcessProvidersFunction = (providers: Provider[]) => Provider[];
  */
 export interface ModuleWithProviders<T> {
   ngModule: Type<T>;
-  providers?: Array<Provider|EnvironmentProviders>;
+  providers?: Array<Provider | EnvironmentProviders>;
 }
 
 /**

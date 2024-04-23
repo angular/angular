@@ -26,20 +26,21 @@ describe('RuntimeError utils', () => {
 
   it('should correctly format an error with both an error message and an aio guide', () => {
     const error = new RuntimeError(RuntimeErrorCode.EXPORT_NOT_FOUND, 'Some error message');
-    expect(error.toString())
-        .toBe('Error: NG0301: Some error message. Find more at https://angular.io/errors/NG0301');
+    expect(error.toString()).toBe(
+      'Error: NG0301: Some error message. Find more at https://angular.io/errors/NG0301',
+    );
   });
 
-  ['.', ',', ';', '!', '?'].forEach(
-      character => it(
-          `should not add a period between the error message and the aio guide suffix if the message ends with '${
-              character}'`,
-          () => {
-            const errorMessage = `Pipe not found${character}`;
-            const error =
-                new RuntimeError<RuntimeErrorCode>(RuntimeErrorCode.PIPE_NOT_FOUND, errorMessage);
-            expect(error.toString())
-                .toBe(`Error: NG0302: Pipe not found${
-                    character} Find more at https://angular.io/errors/NG0302`);
-          }));
+  ['.', ',', ';', '!', '?'].forEach((character) =>
+    it(`should not add a period between the error message and the aio guide suffix if the message ends with '${character}'`, () => {
+      const errorMessage = `Pipe not found${character}`;
+      const error = new RuntimeError<RuntimeErrorCode>(
+        RuntimeErrorCode.PIPE_NOT_FOUND,
+        errorMessage,
+      );
+      expect(error.toString()).toBe(
+        `Error: NG0302: Pipe not found${character} Find more at https://angular.io/errors/NG0302`,
+      );
+    }),
+  );
 });

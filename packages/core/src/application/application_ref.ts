@@ -8,7 +8,10 @@
 
 import '../util/ng_jit_mode';
 
-import {setActiveConsumer, setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
+import {
+  setActiveConsumer,
+  setThrowInvalidWriteToSignalError,
+} from '@angular/core/primitives/signals';
 import {Observable, Subject} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
@@ -51,9 +54,9 @@ import {ApplicationInitStatus} from './application_init';
  *
  * @publicApi
  */
-export const APP_BOOTSTRAP_LISTENER =
-    new InjectionToken<ReadonlyArray<(compRef: ComponentRef<any>) => void>>(
-        ngDevMode ? 'appBootstrapListener' : '');
+export const APP_BOOTSTRAP_LISTENER = new InjectionToken<
+  ReadonlyArray<(compRef: ComponentRef<any>) => void>
+>(ngDevMode ? 'appBootstrapListener' : '');
 
 export function publishDefaultGlobalUtils() {
   ngDevMode && _publishDefaultGlobalUtils();
@@ -65,10 +68,11 @@ export function publishDefaultGlobalUtils() {
 export function publishSignalConfiguration(): void {
   setThrowInvalidWriteToSignalError(() => {
     throw new RuntimeError(
-        RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT,
-        ngDevMode &&
-            'Writing to signals is not allowed in a `computed` or an `effect` by default. ' +
-                'Use `allowSignalWrites` in the `CreateEffectOptions` to enable this inside effects.');
+      RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT,
+      ngDevMode &&
+        'Writing to signals is not allowed in a `computed` or an `effect` by default. ' +
+          'Use `allowSignalWrites` in the `CreateEffectOptions` to enable this inside effects.',
+    );
   });
 }
 
@@ -83,7 +87,10 @@ export function isBoundToModule<C>(cf: ComponentFactory<C>): boolean {
  * @publicApi
  */
 export class NgProbeToken {
-  constructor(public name: string, public token: any) {}
+  constructor(
+    public name: string,
+    public token: any,
+  ) {}
 }
 
 /**
@@ -99,7 +106,7 @@ export interface BootstrapOptions {
    * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
    * - `noop` - Use `NoopNgZone` which does nothing.
    */
-  ngZone?: NgZone|'zone.js'|'noop';
+  ngZone?: NgZone | 'zone.js' | 'noop';
 
   /**
    * Optionally specify coalescing event change detections or not.
@@ -163,7 +170,10 @@ export interface BootstrapOptions {
 const MAXIMUM_REFRESH_RERUNS = 10;
 
 export function _callAndReportToErrorHandler(
-    errorHandler: ErrorHandler, ngZone: NgZone, callback: () => any): any {
+  errorHandler: ErrorHandler,
+  ngZone: NgZone,
+  callback: () => any,
+): any {
   try {
     const result = callback();
     if (isPromise(result)) {
@@ -182,7 +192,7 @@ export function _callAndReportToErrorHandler(
   }
 }
 
-export function optionsReducer<T extends Object>(dst: T, objs: T|T[]): T {
+export function optionsReducer<T extends Object>(dst: T, objs: T | T[]): T {
   if (Array.isArray(objs)) {
     return objs.reduce(optionsReducer, dst);
   }
@@ -323,8 +333,9 @@ export class ApplicationRef {
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable: Observable<boolean> =
-      inject(PendingTasks).hasPendingTasks.pipe(map(pending => !pending));
+  public readonly isStable: Observable<boolean> = inject(PendingTasks).hasPendingTasks.pipe(
+    map((pending) => !pending),
+  );
 
   private readonly _injector = inject(EnvironmentInjector);
   /**
@@ -371,7 +382,7 @@ export class ApplicationRef {
    *
    * {@example core/ts/platform/platform.ts region='domNode'}
    */
-  bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string|any): ComponentRef<C>;
+  bootstrap<C>(component: Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
 
   /**
    * Bootstrap a component onto the element identified by its selector or, optionally, to a
@@ -413,8 +424,10 @@ export class ApplicationRef {
    * @deprecated Passing Component factories as the `Application.bootstrap` function argument is
    *     deprecated. Pass Component Types instead.
    */
-  bootstrap<C>(componentFactory: ComponentFactory<C>, rootSelectorOrNode?: string|any):
-      ComponentRef<C>;
+  bootstrap<C>(
+    componentFactory: ComponentFactory<C>,
+    rootSelectorOrNode?: string | any,
+  ): ComponentRef<C>;
 
   /**
    * Bootstrap a component onto the element identified by its selector or, optionally, to a
@@ -453,19 +466,22 @@ export class ApplicationRef {
    *
    * {@example core/ts/platform/platform.ts region='domNode'}
    */
-  bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>, rootSelectorOrNode?: string|any):
-      ComponentRef<C> {
+  bootstrap<C>(
+    componentOrFactory: ComponentFactory<C> | Type<C>,
+    rootSelectorOrNode?: string | any,
+  ): ComponentRef<C> {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     const isComponentFactory = componentOrFactory instanceof ComponentFactory;
     const initStatus = this._injector.get(ApplicationInitStatus);
 
     if (!initStatus.done) {
       const standalone = !isComponentFactory && isStandalone(componentOrFactory);
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          'Cannot bootstrap as there are still asynchronous initializers running.' +
-              (standalone ?
-                   '' :
-                   ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
+      const errorMessage =
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        'Cannot bootstrap as there are still asynchronous initializers running.' +
+          (standalone
+            ? ''
+            : ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
       throw new RuntimeError(RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, errorMessage);
     }
 
@@ -479,8 +495,9 @@ export class ApplicationRef {
     this.componentTypes.push(componentFactory.componentType);
 
     // Create a factory associated with the current module if it's not bound to some other
-    const ngModule =
-        isBoundToModule(componentFactory) ? undefined : this._injector.get(NgModuleRef);
+    const ngModule = isBoundToModule(componentFactory)
+      ? undefined
+      : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
     const nativeElement = compRef.location.nativeElement;
@@ -520,8 +537,9 @@ export class ApplicationRef {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     if (this._runningTick) {
       throw new RuntimeError(
-          RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
-          ngDevMode && 'ApplicationRef.tick is called recursively');
+        RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
+        ngDevMode && 'ApplicationRef.tick is called recursively',
+      );
     }
 
     const prevConsumer = setActiveConsumer(null);
@@ -530,7 +548,7 @@ export class ApplicationRef {
 
       this.detectChangesInAttachedViews(refreshViews);
 
-      if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
         for (let view of this._views) {
           view.checkNoChanges();
         }
@@ -554,7 +572,11 @@ export class ApplicationRef {
         this.beforeRender.next(isFirstPass);
         for (let {_lView, notifyErrorHandler} of this._views) {
           detectChangesInViewIfRequired(
-              _lView, notifyErrorHandler, isFirstPass, this.zonelessEnabled);
+            _lView,
+            notifyErrorHandler,
+            isFirstPass,
+            this.zonelessEnabled,
+          );
         }
       }
       runs++;
@@ -562,27 +584,33 @@ export class ApplicationRef {
       afterRenderEffectManager.executeInternalCallbacks();
       // If we have a newly dirty view after running internal callbacks, recheck the views again
       // before running user-provided callbacks
-      if ([...this.externalTestViews.keys(), ...this._views].some(
-              ({_lView}) => requiresRefreshOrTraversal(_lView))) {
+      if (
+        [...this.externalTestViews.keys(), ...this._views].some(({_lView}) =>
+          requiresRefreshOrTraversal(_lView),
+        )
+      ) {
         continue;
       }
 
       afterRenderEffectManager.execute();
       // If after running all afterRender callbacks we have no more views that need to be refreshed,
       // we can break out of the loop
-      if (![...this.externalTestViews.keys(), ...this._views].some(
-              ({_lView}) => requiresRefreshOrTraversal(_lView))) {
+      if (
+        ![...this.externalTestViews.keys(), ...this._views].some(({_lView}) =>
+          requiresRefreshOrTraversal(_lView),
+        )
+      ) {
         break;
       }
     }
 
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && runs >= MAXIMUM_REFRESH_RERUNS) {
       throw new RuntimeError(
-          RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
-          ngDevMode &&
-              'Infinite change detection while refreshing application views. ' +
-                  'Ensure views are not calling `markForCheck` on every template execution or ' +
-                  'that afterRender hooks always mark views for check.',
+        RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
+        ngDevMode &&
+          'Infinite change detection while refreshing application views. ' +
+            'Ensure views are not calling `markForCheck` on every template execution or ' +
+            'that afterRender hooks always mark views for check.',
       );
     }
   }
@@ -594,7 +622,7 @@ export class ApplicationRef {
    */
   attachView(viewRef: ViewRef): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
-    const view = (viewRef as InternalViewRef<unknown>);
+    const view = viewRef as InternalViewRef<unknown>;
     this._views.push(view);
     view.attachToAppRef(this);
   }
@@ -604,7 +632,7 @@ export class ApplicationRef {
    */
   detachView(viewRef: ViewRef): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
-    const view = (viewRef as InternalViewRef<unknown>);
+    const view = viewRef as InternalViewRef<unknown>;
     remove(this._views, view);
     view.detachFromAppRef();
   }
@@ -617,11 +645,12 @@ export class ApplicationRef {
     const listeners = this._injector.get(APP_BOOTSTRAP_LISTENER, []);
     if (ngDevMode && !Array.isArray(listeners)) {
       throw new RuntimeError(
-          RuntimeErrorCode.INVALID_MULTI_PROVIDER,
-          'Unexpected type of the `APP_BOOTSTRAP_LISTENER` token value ' +
-              `(expected an array, but got ${typeof listeners}). ` +
-              'Please check that the `APP_BOOTSTRAP_LISTENER` token is configured as a ' +
-              '`multi: true` provider.');
+        RuntimeErrorCode.INVALID_MULTI_PROVIDER,
+        'Unexpected type of the `APP_BOOTSTRAP_LISTENER` token value ' +
+          `(expected an array, but got ${typeof listeners}). ` +
+          'Please check that the `APP_BOOTSTRAP_LISTENER` token is configured as a ' +
+          '`multi: true` provider.',
+      );
     }
     [...this._bootstrapListeners, ...listeners].forEach((listener) => listener(componentRef));
   }
@@ -632,7 +661,7 @@ export class ApplicationRef {
 
     try {
       // Call all the lifecycle hooks.
-      this._destroyListeners.forEach(listener => listener());
+      this._destroyListeners.forEach((listener) => listener());
 
       // Destroy all registered views.
       this._views.slice().forEach((view) => view.destroy());
@@ -667,13 +696,14 @@ export class ApplicationRef {
   destroy(): void {
     if (this._destroyed) {
       throw new RuntimeError(
-          RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
-          ngDevMode && 'This instance of the `ApplicationRef` has already been destroyed.');
+        RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
+        ngDevMode && 'This instance of the `ApplicationRef` has already been destroyed.',
+      );
     }
 
     // This is a temporary type to represent an instance of an R3Injector, which can be destroyed.
     // The type will be replaced with a different one once destroyable injector type is available.
-    type DestroyableInjector = Injector&{destroy?: Function, destroyed?: boolean};
+    type DestroyableInjector = Injector & {destroy?: Function; destroyed?: boolean};
 
     const injector = this._injector as DestroyableInjector;
 
@@ -694,9 +724,12 @@ export class ApplicationRef {
 
   private warnIfDestroyed() {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && this._destroyed) {
-      console.warn(formatRuntimeError(
+      console.warn(
+        formatRuntimeError(
           RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
-          'This instance of the `ApplicationRef` has already been destroyed.'));
+          'This instance of the `ApplicationRef` has already been destroyed.',
+        ),
+      );
     }
   }
 }
@@ -708,7 +741,7 @@ export function remove<T>(list: T[], el: T): void {
   }
 }
 
-let whenStableStore: WeakMap<ApplicationRef, Promise<void>>|undefined;
+let whenStableStore: WeakMap<ApplicationRef, Promise<void>> | undefined;
 /**
  * Returns a Promise that resolves when the application becomes stable after this method is called
  * the first time.
@@ -720,8 +753,10 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
     return cachedWhenStable;
   }
 
-  const whenStablePromise =
-      applicationRef.isStable.pipe(first((isStable) => isStable)).toPromise().then(() => void 0);
+  const whenStablePromise = applicationRef.isStable
+    .pipe(first((isStable) => isStable))
+    .toPromise()
+    .then(() => void 0);
   whenStableStore.set(applicationRef, whenStablePromise);
 
   // Be a good citizen and clean the store `onDestroy` even though we are using `WeakMap`.
@@ -730,20 +765,24 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
   return whenStablePromise;
 }
 
-
 export function detectChangesInViewIfRequired(
-    lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean, zonelessEnabled: boolean) {
+  lView: LView,
+  notifyErrorHandler: boolean,
+  isFirstPass: boolean,
+  zonelessEnabled: boolean,
+) {
   // When re-checking, only check views which actually need it.
   if (!isFirstPass && !requiresRefreshOrTraversal(lView)) {
     return;
   }
 
-  const mode = (isFirstPass && !zonelessEnabled) ?
-      // The first pass is always in Global mode, which includes `CheckAlways` views.
-      // When using zoneless, all root views must be explicitly marked for refresh, even if they are
-      // `CheckAlways`.
-      ChangeDetectionMode.Global :
-      // Only refresh views with the `RefreshView` flag or views is a changed signal
-      ChangeDetectionMode.Targeted;
+  const mode =
+    isFirstPass && !zonelessEnabled
+      ? // The first pass is always in Global mode, which includes `CheckAlways` views.
+        // When using zoneless, all root views must be explicitly marked for refresh, even if they are
+        // `CheckAlways`.
+        ChangeDetectionMode.Global
+      : // Only refresh views with the `RefreshView` flag or views is a changed signal
+        ChangeDetectionMode.Targeted;
   detectChangesInternal(lView, notifyErrorHandler, mode);
 }

@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, NgModule, Pipe, Type, ɵReflectionCapabilities as ReflectionCapabilities} from '@angular/core';
+import {
+  Component,
+  Directive,
+  NgModule,
+  Pipe,
+  Type,
+  ɵReflectionCapabilities as ReflectionCapabilities,
+} from '@angular/core';
 
 import {MetadataOverride} from './metadata_override';
 import {MetadataOverrider} from './metadata_overrider';
@@ -19,7 +26,7 @@ const reflection = new ReflectionCapabilities();
 export interface Resolver<T> {
   addOverride(type: Type<any>, override: MetadataOverride<T>): void;
   setOverrides(overrides: Array<[Type<any>, MetadataOverride<T>]>): void;
-  resolve(type: Type<any>): T|null;
+  resolve(type: Type<any>): T | null;
 }
 
 /**
@@ -27,7 +34,7 @@ export interface Resolver<T> {
  */
 abstract class OverrideResolver<T> implements Resolver<T> {
   private overrides = new Map<Type<any>, MetadataOverride<T>[]>();
-  private resolved = new Map<Type<any>, T|null>();
+  private resolved = new Map<Type<any>, T | null>();
 
   abstract get type(): any;
 
@@ -45,7 +52,7 @@ abstract class OverrideResolver<T> implements Resolver<T> {
     });
   }
 
-  getAnnotation(type: Type<any>): T|null {
+  getAnnotation(type: Type<any>): T | null {
     const annotations = reflection.annotations(type);
     // Try to find the nearest known Type annotation and make sure that this annotation is an
     // instance of the type we are looking for, so we can use it for resolution. Note: there might
@@ -54,17 +61,20 @@ abstract class OverrideResolver<T> implements Resolver<T> {
     // annotation has the right type.
     for (let i = annotations.length - 1; i >= 0; i--) {
       const annotation = annotations[i];
-      const isKnownType = annotation instanceof Directive || annotation instanceof Component ||
-          annotation instanceof Pipe || annotation instanceof NgModule;
+      const isKnownType =
+        annotation instanceof Directive ||
+        annotation instanceof Component ||
+        annotation instanceof Pipe ||
+        annotation instanceof NgModule;
       if (isKnownType) {
-        return annotation instanceof this.type ? annotation as unknown as T : null;
+        return annotation instanceof this.type ? (annotation as unknown as T) : null;
       }
     }
     return null;
   }
 
-  resolve(type: Type<any>): T|null {
-    let resolved: T|null = this.resolved.get(type) || null;
+  resolve(type: Type<any>): T | null {
+    let resolved: T | null = this.resolved.get(type) || null;
 
     if (!resolved) {
       resolved = this.getAnnotation(type);
@@ -72,7 +82,7 @@ abstract class OverrideResolver<T> implements Resolver<T> {
         const overrides = this.overrides.get(type);
         if (overrides) {
           const overrider = new MetadataOverrider();
-          overrides.forEach(override => {
+          overrides.forEach((override) => {
             resolved = overrider.overrideMetadata(this.type, resolved!, override);
           });
         }
@@ -83,7 +93,6 @@ abstract class OverrideResolver<T> implements Resolver<T> {
     return resolved;
   }
 }
-
 
 export class DirectiveResolver extends OverrideResolver<Directive> {
   override get type() {

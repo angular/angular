@@ -13,7 +13,7 @@ import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Host, Inject, Optional, Self, SkipSelf} from '../metadata';
 import {Attribute} from '../metadata_attr';
 
-let _reflect: ReflectionCapabilities|null = null;
+let _reflect: ReflectionCapabilities | null = null;
 
 export function getReflect(): ReflectionCapabilities {
   return (_reflect = _reflect || new ReflectionCapabilities());
@@ -24,10 +24,10 @@ export function reflectDependencies(type: Type<any>): R3DependencyMetadataFacade
 }
 
 export function convertDependencies(deps: any[]): R3DependencyMetadataFacade[] {
-  return deps.map(dep => reflectDependency(dep));
+  return deps.map((dep) => reflectDependency(dep));
 }
 
-function reflectDependency(dep: any|any[]): R3DependencyMetadataFacade {
+function reflectDependency(dep: any | any[]): R3DependencyMetadataFacade {
   const meta: R3DependencyMetadataFacade = {
     token: null,
     attribute: null,
@@ -60,8 +60,9 @@ function reflectDependency(dep: any|any[]): R3DependencyMetadataFacade {
       } else if (param instanceof Attribute) {
         if (param.attributeName === undefined) {
           throw new RuntimeError(
-              RuntimeErrorCode.INVALID_INJECTION_TOKEN,
-              ngDevMode && `Attribute name must be defined.`);
+            RuntimeErrorCode.INVALID_INJECTION_TOKEN,
+            ngDevMode && `Attribute name must be defined.`,
+          );
         }
         meta.attribute = param.attributeName;
       } else {

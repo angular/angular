@@ -10,7 +10,13 @@ import {ProviderToken} from '../../di';
 import {unwrapElementRef} from '../../linker/element_ref';
 import {QueryList} from '../../linker/query_list';
 import {QueryFlags} from '../interfaces/query';
-import {createContentQuery, createViewQuery, getQueryResults, getTQuery, loadQueryInternal} from '../query';
+import {
+  createContentQuery,
+  createViewQuery,
+  getQueryResults,
+  getTQuery,
+  loadQueryInternal,
+} from '../query';
 import {getCurrentQueryIndex, getLView, getTView, setCurrentQueryIndex} from '../state';
 import {isCreationMode} from '../util/view_utils';
 
@@ -27,8 +33,11 @@ import {isCreationMode} from '../util/view_utils';
  * @codeGenApi
  */
 export function ɵɵcontentQuery<T>(
-    directiveIndex: number, predicate: ProviderToken<unknown>|string|string[], flags: QueryFlags,
-    read?: any): void {
+  directiveIndex: number,
+  predicate: ProviderToken<unknown> | string | string[],
+  flags: QueryFlags,
+  read?: any,
+): void {
   createContentQuery<T>(directiveIndex, predicate, flags, read);
 }
 
@@ -42,7 +51,10 @@ export function ɵɵcontentQuery<T>(
  * @codeGenApi
  */
 export function ɵɵviewQuery<T>(
-    predicate: ProviderToken<unknown>|string|string[], flags: QueryFlags, read?: any): void {
+  predicate: ProviderToken<unknown> | string | string[],
+  flags: QueryFlags,
+  read?: any,
+): void {
   createViewQuery(predicate, flags, read);
 }
 
@@ -63,9 +75,11 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
   setCurrentQueryIndex(queryIndex + 1);
 
   const tQuery = getTQuery(tView, queryIndex);
-  if (queryList.dirty &&
-      (isCreationMode(lView) ===
-       ((tQuery.metadata.flags & QueryFlags.isStatic) === QueryFlags.isStatic))) {
+  if (
+    queryList.dirty &&
+    isCreationMode(lView) ===
+      ((tQuery.metadata.flags & QueryFlags.isStatic) === QueryFlags.isStatic)
+  ) {
     if (tQuery.matches === null) {
       queryList.reset([]);
     } else {

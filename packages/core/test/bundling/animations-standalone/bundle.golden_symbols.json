@@ -555,10 +555,16 @@
     "name": "_CACHED_BODY"
   },
   {
+    "name": "_ComponentFactoryResolver"
+  },
+  {
     "name": "_DOM"
   },
   {
     "name": "_IS_WEBKIT"
+  },
+  {
+    "name": "_Injector"
   },
   {
     "name": "_NullComponentFactoryResolver"

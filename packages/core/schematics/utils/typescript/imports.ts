@@ -9,14 +9,16 @@
 import ts from 'typescript';
 
 export type Import = {
-  name: string,
-  importModule: string,
-  node: ts.ImportDeclaration
+  name: string;
+  importModule: string;
+  node: ts.ImportDeclaration;
 };
 
 /** Gets import information about the specified identifier by using the Type checker. */
-export function getImportOfIdentifier(typeChecker: ts.TypeChecker, node: ts.Identifier): Import|
-    null {
+export function getImportOfIdentifier(
+  typeChecker: ts.TypeChecker,
+  node: ts.Identifier,
+): Import | null {
   const symbol = typeChecker.getSymbolAtLocation(node);
 
   if (!symbol || symbol.declarations === undefined || !symbol.declarations.length) {
@@ -39,10 +41,9 @@ export function getImportOfIdentifier(typeChecker: ts.TypeChecker, node: ts.Iden
     // Handles aliased imports: e.g. "import {Component as myComp} from ...";
     name: decl.propertyName ? decl.propertyName.text : decl.name.text,
     importModule: importDecl.moduleSpecifier.text,
-    node: importDecl
+    node: importDecl,
   };
 }
-
 
 /**
  * Gets a top-level import specifier with a specific name that is imported from a particular module.
@@ -62,19 +63,25 @@ export function getImportOfIdentifier(typeChecker: ts.TypeChecker, node: ts.Iden
  *    their original name.
  */
 export function getImportSpecifier(
-    sourceFile: ts.SourceFile, moduleName: string|RegExp,
-    specifierName: string): ts.ImportSpecifier|null {
+  sourceFile: ts.SourceFile,
+  moduleName: string | RegExp,
+  specifierName: string,
+): ts.ImportSpecifier | null {
   return getImportSpecifiers(sourceFile, moduleName, [specifierName])[0] ?? null;
 }
 
 export function getImportSpecifiers(
-    sourceFile: ts.SourceFile, moduleName: string|RegExp,
-    specifierNames: string[]): ts.ImportSpecifier[] {
+  sourceFile: ts.SourceFile,
+  moduleName: string | RegExp,
+  specifierNames: string[],
+): ts.ImportSpecifier[] {
   const matches: ts.ImportSpecifier[] = [];
   for (const node of sourceFile.statements) {
     if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
-      const isMatch = typeof moduleName === 'string' ? node.moduleSpecifier.text === moduleName :
-                                                       moduleName.test(node.moduleSpecifier.text);
+      const isMatch =
+        typeof moduleName === 'string'
+          ? node.moduleSpecifier.text === moduleName
+          : moduleName.test(node.moduleSpecifier.text);
       const namedBindings = node.importClause?.namedBindings;
       if (isMatch && namedBindings && ts.isNamedImports(namedBindings)) {
         for (const specifierName of specifierNames) {
@@ -90,11 +97,15 @@ export function getImportSpecifiers(
 }
 
 export function getNamedImports(
-    sourceFile: ts.SourceFile, moduleName: string|RegExp): ts.NamedImports|null {
+  sourceFile: ts.SourceFile,
+  moduleName: string | RegExp,
+): ts.NamedImports | null {
   for (const node of sourceFile.statements) {
     if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
-      const isMatch = typeof moduleName === 'string' ? node.moduleSpecifier.text === moduleName :
-                                                       moduleName.test(node.moduleSpecifier.text);
+      const isMatch =
+        typeof moduleName === 'string'
+          ? node.moduleSpecifier.text === moduleName
+          : moduleName.test(node.moduleSpecifier.text);
       const namedBindings = node.importClause?.namedBindings;
       if (isMatch && namedBindings && ts.isNamedImports(namedBindings)) {
         return namedBindings;
@@ -104,7 +115,6 @@ export function getNamedImports(
   return null;
 }
 
-
 /**
  * Replaces an import inside a named imports node with a different one.
  *
@@ -113,7 +123,10 @@ export function getNamedImports(
  * @param newImportName Import that should be inserted.
  */
 export function replaceImport(
-    node: ts.NamedImports, existingImport: string, newImportName: string) {
+  node: ts.NamedImports,
+  existingImport: string,
+  newImportName: string,
+) {
   const isAlreadyImported = findImportSpecifier(node.elements, newImportName);
   if (isAlreadyImported) {
     return node;
@@ -124,15 +137,17 @@ export function replaceImport(
     return node;
   }
 
-  const importPropertyName =
-      existingImportNode.propertyName ? ts.factory.createIdentifier(newImportName) : undefined;
-  const importName = existingImportNode.propertyName ? existingImportNode.name :
-                                                       ts.factory.createIdentifier(newImportName);
+  const importPropertyName = existingImportNode.propertyName
+    ? ts.factory.createIdentifier(newImportName)
+    : undefined;
+  const importName = existingImportNode.propertyName
+    ? existingImportNode.name
+    : ts.factory.createIdentifier(newImportName);
 
   return ts.factory.updateNamedImports(node, [
-    ...node.elements.filter(current => current !== existingImportNode),
+    ...node.elements.filter((current) => current !== existingImportNode),
     // Create a new import while trying to preserve the alias of the old one.
-    ts.factory.createImportSpecifier(false, importPropertyName, importName)
+    ts.factory.createImportSpecifier(false, importPropertyName, importName),
   ]);
 }
 
@@ -146,14 +161,16 @@ export function replaceImport(
  */
 export function removeSymbolFromNamedImports(node: ts.NamedImports, symbol: ts.ImportSpecifier) {
   return ts.factory.updateNamedImports(node, [
-    ...node.elements.filter(current => current !== symbol),
+    ...node.elements.filter((current) => current !== symbol),
   ]);
 }
 
 /** Finds an import specifier with a particular name. */
 export function findImportSpecifier(
-    nodes: ts.NodeArray<ts.ImportSpecifier>, specifierName: string): ts.ImportSpecifier|undefined {
-  return nodes.find(element => {
+  nodes: ts.NodeArray<ts.ImportSpecifier>,
+  specifierName: string,
+): ts.ImportSpecifier | undefined {
+  return nodes.find((element) => {
     const {name, propertyName} = element;
     return propertyName ? propertyName.text === specifierName : name.text === specifierName;
   });

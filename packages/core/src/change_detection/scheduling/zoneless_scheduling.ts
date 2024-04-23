@@ -8,8 +8,6 @@
 
 import {InjectionToken} from '../../di/injection_token';
 
-
-
 export const enum NotificationSource {
   // Change detection needs to run in order to synchronize application state
   // with the DOM when the following notifications are received:
@@ -60,8 +58,10 @@ export abstract class ChangeDetectionScheduler {
 
 /** Token used to indicate if zoneless was enabled via provideZonelessChangeDetection(). */
 export const ZONELESS_ENABLED = new InjectionToken<boolean>(
-    typeof ngDevMode === 'undefined' || ngDevMode ? 'Zoneless enabled' : '',
-    {providedIn: 'root', factory: () => false});
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'Zoneless enabled' : '',
+  {providedIn: 'root', factory: () => false},
+);
 
 export const ZONELESS_SCHEDULER_DISABLED = new InjectionToken<boolean>(
-    typeof ngDevMode === 'undefined' || ngDevMode ? 'scheduler disabled' : '');
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'scheduler disabled' : '',
+);

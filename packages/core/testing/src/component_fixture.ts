@@ -6,7 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  ComponentRef,
+  DebugElement,
+  ElementRef,
+  getDebugNode,
+  inject,
+  NgZone,
+  RendererFactory2,
+  ViewRef,
+  ɵDeferBlockDetails as DeferBlockDetails,
+  ɵdetectChangesInViewIfRequired,
+  ɵEffectScheduler as EffectScheduler,
+  ɵgetDeferBlocks as getDeferBlocks,
+  ɵNoopNgZone as NoopNgZone,
+  ɵPendingTasks as PendingTasks,
+} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -44,7 +61,7 @@ export abstract class ComponentFixture<T> {
    */
   changeDetectorRef: ChangeDetectorRef;
 
-  private _renderer: RendererFactory2|null|undefined;
+  private _renderer: RendererFactory2 | null | undefined;
   private _isDestroyed: boolean = false;
   /** @internal */
   protected readonly _noZoneOptionIsSet = inject(ComponentFixtureNoNgZone, {optional: true});
@@ -114,7 +131,7 @@ export abstract class ComponentFixture<T> {
     if (this.isStable()) {
       return Promise.resolve(false);
     }
-    return this._appRef.isStable.pipe(first(stable => stable)).toPromise();
+    return this._appRef.isStable.pipe(first((stable) => stable)).toPromise();
   }
 
   /**
@@ -182,8 +199,8 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   override detectChanges(checkNoChanges: boolean = true): void {
     if (!checkNoChanges) {
       throw new Error(
-          'Cannot disable `checkNoChanges` in this configuration. ' +
-              'Use `fixture.componentRef.hostView.changeDetectorRef.detectChanges()` instead.',
+        'Cannot disable `checkNoChanges` in this configuration. ' +
+          'Use `fixture.componentRef.hostView.changeDetectorRef.detectChanges()` instead.',
       );
     }
     this._effectRunner.flush();
@@ -191,11 +208,12 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
     this._effectRunner.flush();
   }
 
-  override autoDetectChanges(autoDetect?: boolean|undefined): void {
+  override autoDetectChanges(autoDetect?: boolean | undefined): void {
     if (!autoDetect) {
       throw new Error(
-          'Cannot disable autoDetect after it has been enabled when using the zoneless scheduler. ' +
-          'To disable autoDetect, add `{provide: ComponentFixtureAutoDetect, useValue: false}` to the TestBed providers.');
+        'Cannot disable autoDetect after it has been enabled when using the zoneless scheduler. ' +
+          'To disable autoDetect, add `{provide: ComponentFixtureAutoDetect, useValue: false}` to the TestBed providers.',
+      );
     } else if (!this._autoDetect) {
       this._autoDetect = autoDetect;
       this._appRef.attachView(this.componentRef.hostView);
@@ -216,8 +234,8 @@ interface TestAppRef {
 export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   private _subscriptions = new Subscription();
   private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
-  private afterTickSubscription: Subscription|undefined = undefined;
-  private beforeRenderSubscription: Subscription|undefined = undefined;
+  private afterTickSubscription: Subscription | undefined = undefined;
+  private beforeRenderSubscription: Subscription | undefined = undefined;
 
   initialize(): void {
     if (this._autoDetect) {
@@ -230,11 +248,11 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
     // of NgZone.
     this._ngZone.runOutsideAngular(() => {
       this._subscriptions.add(
-          this._ngZone.onError.subscribe({
-            next: (error: any) => {
-              throw error;
-            },
-          }),
+        this._ngZone.onError.subscribe({
+          next: (error: any) => {
+            throw error;
+          },
+        }),
       );
     });
   }
@@ -279,10 +297,10 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
       this.beforeRenderSubscription = this._testAppRef.beforeRender.subscribe((isFirstPass) => {
         try {
           ɵdetectChangesInViewIfRequired(
-              (this.componentRef.hostView as any)._lView,
-              (this.componentRef.hostView as any).notifyErrorHandler,
-              isFirstPass,
-              false /** zoneless enabled */,
+            (this.componentRef.hostView as any)._lView,
+            (this.componentRef.hostView as any).notifyErrorHandler,
+            isFirstPass,
+            false /** zoneless enabled */,
           );
         } catch (e: unknown) {
           // If an error occurred during change detection, remove the test view from the application
