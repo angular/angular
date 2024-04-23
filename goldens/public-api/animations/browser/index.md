@@ -17,8 +17,6 @@ export abstract class AnimationDriver {
     abstract containsElement(elm1: any, elm2: any): boolean;
     abstract getParentElement(element: unknown): unknown;
     // @deprecated (undocumented)
-    abstract matchesElement(element: any, selector: string): boolean;
-    // @deprecated (undocumented)
     static NOOP: AnimationDriver;
     // (undocumented)
     abstract query(element: any, selector: string, multi: boolean): any[];
@@ -38,8 +36,6 @@ export class NoopAnimationDriver implements AnimationDriver {
     containsElement(elm1: any, elm2: any): boolean;
     // (undocumented)
     getParentElement(element: unknown): unknown;
-    // @deprecated (undocumented)
-    matchesElement(_element: any, _selector: string): boolean;
     // (undocumented)
     query(element: any, selector: string, multi: boolean): any[];
     // (undocumented)

@@ -44,11 +44,6 @@ export class WebAnimationsDriver implements AnimationDriver {
     return true;
   }
 
-  matchesElement(_element: any, _selector: string): boolean {
-    // This method is deprecated and no longer in use so we return false.
-    return false;
-  }
-
   containsElement(elm1: any, elm2: any): boolean {
     return containsElement(elm1, elm2);
   }

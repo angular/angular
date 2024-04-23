@@ -22,8 +22,6 @@ export class MockAnimationDriver implements AnimationDriver {
     // (undocumented)
     static log: AnimationPlayer[];
     // (undocumented)
-    matchesElement(_element: any, _selector: string): boolean;
-    // (undocumented)
     query(element: any, selector: string, multi: boolean): any[];
     // (undocumented)
     validateAnimatableStyleProperty(prop: string): boolean;
