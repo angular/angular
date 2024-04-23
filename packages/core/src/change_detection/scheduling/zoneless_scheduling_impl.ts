@@ -12,7 +12,7 @@ import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {PendingTasks} from '../../pending_tasks';
+import {ExperimentalPendingTaskHandle, PendingTasks} from '../../pending_tasks';
 import {scheduleCallbackWithMicrotask, scheduleCallbackWithRafRace} from '../../util/callback_scheduler';
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone, NoopNgZone} from '../../zone/ng_zone';
@@ -45,7 +45,7 @@ function trackMicrotaskNotificationForDebugging() {
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private appRef = inject(ApplicationRef);
   private taskService = inject(PendingTasks);
-  private pendingRenderTaskId: number|null = null;
+  private pendingRenderTaskId: ExperimentalPendingTaskHandle|null = null;
   private shouldRefreshViews = false;
   private readonly ngZone = inject(NgZone);
   runningTick = false;
@@ -225,8 +225,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * ```
  *
  * This API is experimental. Neither the shape, nor the underlying behavior is stable and can change
- * in patch versions. There are known feature gaps, including the lack of a public zoneless API
- * which prevents the application from serializing too early with SSR.
+ * in patch versions. There are known feature gaps and API ergonomic considerations. We will iterate
+ * on the exact API based on the feedback and our understanding of the problem and solution space.
  *
  * @publicApi
  * @experimental

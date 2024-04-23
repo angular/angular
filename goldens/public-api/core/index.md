@@ -674,6 +674,23 @@ export interface ExistingSansProvider {
 }
 
 // @public
+export type ExperimentalPendingTaskHandle = {
+    __brand: 'experimentalPendingTask';
+};
+
+// @public
+export abstract class ExperimentalPendingTasks {
+    // (undocumented)
+    abstract add(): ExperimentalPendingTaskHandle;
+    // (undocumented)
+    abstract remove(task: ExperimentalPendingTaskHandle): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<ExperimentalPendingTasks, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<ExperimentalPendingTasks>;
+}
+
+// @public
 export interface FactoryProvider extends FactorySansProvider {
     multi?: boolean;
     provide: any;

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ExperimentalPendingTaskHandle} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, of} from 'rxjs';
 import {map, take, withLatestFrom} from 'rxjs/operators';
@@ -44,9 +45,9 @@ describe('PendingTasks', () => {
     const pendingTasks = TestBed.inject(PendingTasks);
     expect(await hasPendingTasks(pendingTasks)).toBeFalse();
 
-    pendingTasks.remove(Math.random());
-    pendingTasks.remove(Math.random());
-    pendingTasks.remove(Math.random());
+    pendingTasks.remove(Math.random() as unknown as ExperimentalPendingTaskHandle);
+    pendingTasks.remove(Math.random() as unknown as ExperimentalPendingTaskHandle);
+    pendingTasks.remove(Math.random() as unknown as ExperimentalPendingTaskHandle);
 
     expect(await hasPendingTasks(pendingTasks)).toBeFalse();
   });
