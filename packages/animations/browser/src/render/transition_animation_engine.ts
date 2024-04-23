@@ -16,6 +16,7 @@ import {
 } from '@angular/animations';
 import {
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
+  ɵNotificationSource as NotificationSource,
   ɵWritable as Writable,
 } from '@angular/core';
 
@@ -816,7 +817,7 @@ export class TransitionAnimationEngine {
 
   removeNode(namespaceId: string, element: any, context: any): void {
     if (isElementNode(element)) {
-      this.scheduler?.notify();
+      this.scheduler?.notify(NotificationSource.AnimationQueuedNodeRemoval);
       const ns = namespaceId ? this._fetchNamespace(namespaceId) : null;
       if (ns) {
         ns.removeNode(element, context);

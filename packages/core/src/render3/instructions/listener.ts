@@ -9,6 +9,7 @@
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
+import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
 import {assertIndexInRange} from '../../util/assert';
 import {NodeOutputBindings, TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
@@ -260,7 +261,7 @@ function wrapListener(
     // must also mark the component view itself dirty (i.e. the view that it owns).
     const startView =
         tNode.componentOffset > -1 ? getComponentLViewByIndex(tNode.index, lView) : lView;
-    markViewDirty(startView);
+    markViewDirty(startView, NotificationSource.Listener);
 
     let result = executeListenerWithErrorHandling(lView, context, listenerFn, e);
     // A just-invoked listener function might have coalesced listeners so we need to check for

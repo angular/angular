@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EmbeddedViewRef, ViewRefTracker} from '../linker/view_ref';
 import {removeFromArray} from '../util/array_utils';
@@ -141,7 +142,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * ```
    */
   markForCheck(): void {
-    markViewDirty(this._cdRefInjectingView || this._lView);
+    markViewDirty(this._cdRefInjectingView || this._lView, NotificationSource.MarkForCheck);
   }
 
   /**
