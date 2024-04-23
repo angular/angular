@@ -25,14 +25,6 @@ export class NoopAnimationDriver implements AnimationDriver {
   }
 
   /**
-   * @deprecated unused
-   */
-  matchesElement(_element: any, _selector: string): boolean {
-    // This method is deprecated and no longer in use so we return false.
-    return false;
-  }
-
-  /**
    *
    * @returns Whether elm1 contains elm2.
    */
@@ -90,11 +82,6 @@ export abstract class AnimationDriver {
   abstract validateStyleProperty(prop: string): boolean;
 
   abstract validateAnimatableStyleProperty?: (prop: string) => boolean;
-
-  /**
-   * @deprecated No longer in use. Will be removed.
-   */
-  abstract matchesElement(element: any, selector: string): boolean;
 
   abstract containsElement(elm1: any, elm2: any): boolean;
 

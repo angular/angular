@@ -33,10 +33,6 @@ export class MockAnimationDriver implements AnimationDriver {
     return ɵvalidateWebAnimatableStyleProperty(cssProp);
   }
 
-  matchesElement(_element: any, _selector: string): boolean {
-    return false;
-  }
-
   containsElement(elm1: any, elm2: any): boolean {
     return containsElement(elm1, elm2);
   }
