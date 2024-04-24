@@ -658,8 +658,8 @@ export class ShadowCss {
 
   private _scopeSelector(selector: string, scopeSelector: string, hostSelector: string): string {
     return selector
-      .split(',')
-      .map((part) => part.trim().split(_shadowDeepSelectors))
+      .split(/ ?, ?/)
+      .map((part) => part.split(_shadowDeepSelectors))
       .map((deepParts) => {
         const [shallowPart, ...otherParts] = deepParts;
         const applyScope = (shallowPart: string) => {
@@ -727,10 +727,10 @@ export class ShadowCss {
       let scopedP = p.trim();
 
       if (!scopedP) {
-        return '';
+        return p;
       }
 
-      if (p.indexOf(_polyfillHostNoCombinator) > -1) {
+      if (p.includes(_polyfillHostNoCombinator)) {
         scopedP = this._applySimpleSelectorScope(p, scopeSelector, hostSelector);
       } else {
         // remove :host since it should be unnecessary
@@ -765,13 +765,18 @@ export class ShadowCss {
     // - `tag:host` -> `tag[h]` (this is to avoid breaking legacy apps, should not match anything)
     // - `tag :host` -> `tag [h]` (`tag` is not scoped because it's considered part of a
     //   `:host-context(tag)`)
-    const hasHost = selector.indexOf(_polyfillHostNoCombinator) > -1;
+    const hasHost = selector.includes(_polyfillHostNoCombinator);
     // Only scope parts after the first `-shadowcsshost-no-combinator` when it is present
     let shouldScope = !hasHost;
 
     while ((res = sep.exec(selector)) !== null) {
       const separator = res[1];
-      const part = selector.slice(startIndex, res.index).trim();
+      // Do not trim the selector, as otherwise this will break sourcemaps
+      // when they are defined on multiple lines
+      // Example:
+      //  div,
+      //  p { color: red}
+      const part = selector.slice(startIndex, res.index);
 
       // A space following an escaped hex value and followed by another hex character
       // (ie: ".\fc ber" for ".über") is not a separator between 2 selectors
@@ -781,14 +786,14 @@ export class ShadowCss {
         continue;
       }
 
-      shouldScope = shouldScope || part.indexOf(_polyfillHostNoCombinator) > -1;
+      shouldScope = shouldScope || part.includes(_polyfillHostNoCombinator);
       const scopedPart = shouldScope ? _scopeSelectorPart(part) : part;
       scopedSelector += `${scopedPart} ${separator} `;
       startIndex = sep.lastIndex;
     }
 
     const part = selector.substring(startIndex);
-    shouldScope = shouldScope || part.indexOf(_polyfillHostNoCombinator) > -1;
+    shouldScope = shouldScope || part.includes(_polyfillHostNoCombinator);
     scopedSelector += shouldScope ? _scopeSelectorPart(part) : part;
 
     // replace the placeholders with their original values
