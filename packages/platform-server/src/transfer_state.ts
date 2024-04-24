@@ -50,7 +50,11 @@ function serializeTransferStateFactory(doc: Document, appId: string, transferSto
     const script = createScript(
       doc,
       content,
-      null /** nonce is not required for 'application/json' */,
+      /**
+       * `nonce` is not required for 'application/json'
+       * See: https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type
+       */
+      null,
     );
     script.id = appId + '-state';
     script.setAttribute('type', 'application/json');
