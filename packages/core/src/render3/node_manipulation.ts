@@ -8,7 +8,7 @@
 
 import {consumerDestroy, getActiveConsumer, setActiveConsumer} from '@angular/core/primitives/signals';
 
-import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
+import {NotificationType} from '../change_detection/scheduling/zoneless_scheduling';
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererStyleFlags2} from '../render/api_flags';
@@ -174,10 +174,8 @@ export function addViewToDOM(
  * @param lView the `LView` to be detached.
  */
 export function detachViewFromDOM(tView: TView, lView: LView) {
-  // When we remove a view from the DOM, we need to rerun afterRender hooks
-  // We don't necessarily needs to run change detection. DOM removal only requires
-  // change detection if animations are enabled (this notification is handled by animations).
-  lView[ENVIRONMENT].changeDetectionScheduler?.notify(NotificationSource.ViewDetachedFromDOM);
+  // When we remove a view from the DOM, we need to rerun afterRender hooks.
+  lView[ENVIRONMENT].changeDetectionScheduler?.notify(NotificationType.AfterRenderHooks);
   applyView(tView, lView, lView[RENDERER], WalkTNodeTreeAction.Detach, null, null);
 }
 

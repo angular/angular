@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
+import {NotificationType} from '../../change_detection/scheduling/zoneless_scheduling';
 import {isRootView} from '../interfaces/type_checks';
 import {ENVIRONMENT, FLAGS, LView, LViewFlags} from '../interfaces/view';
 import {isRefreshingViews} from '../state';
@@ -23,7 +23,7 @@ import {getLViewParent} from '../util/view_utils';
  * @param lView The starting LView to mark dirty
  * @returns the root LView
  */
-export function markViewDirty(lView: LView, source: NotificationSource): LView|null {
+export function markViewDirty(lView: LView): LView|null {
   const dirtyBitsToUse = isRefreshingViews() ?
       // When we are actively refreshing views, we only use the `Dirty` bit to mark a view
       // for check. This bit is ignored in ChangeDetectionMode.Targeted, which is used to
@@ -37,7 +37,7 @@ export function markViewDirty(lView: LView, source: NotificationSource): LView|n
       // afterRender hooks as well as animation listeners which execute after detecting
       // changes in a view when the render factory flushes.
       LViewFlags.RefreshView | LViewFlags.Dirty;
-  lView[ENVIRONMENT].changeDetectionScheduler?.notify(source);
+  lView[ENVIRONMENT].changeDetectionScheduler?.notify(NotificationType.RefreshViews);
   while (lView) {
     lView[FLAGS] |= dirtyBitsToUse;
     const parent = getLViewParent(lView);

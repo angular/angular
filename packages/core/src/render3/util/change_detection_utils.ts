@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
 import {assertDefined} from '../../util/assert';
 import {getComponentViewByInstance} from '../context_discovery';
 import {detectChangesInternal} from '../instructions/change_detection';
@@ -26,7 +25,7 @@ import {getRootComponents} from './discovery_utils';
  */
 export function applyChanges(component: {}): void {
   ngDevMode && assertDefined(component, 'component');
-  markViewDirty(getComponentViewByInstance(component), NotificationSource.DebugApplyChanges);
+  markViewDirty(getComponentViewByInstance(component));
   getRootComponents(component).forEach(rootComponent => detectChanges(rootComponent));
 }
 

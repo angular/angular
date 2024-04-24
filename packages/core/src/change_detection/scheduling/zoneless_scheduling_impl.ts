@@ -17,7 +17,7 @@ import {scheduleCallbackWithMicrotask, scheduleCallbackWithRafRace} from '../../
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone, NoopNgZone} from '../../zone/ng_zone';
 
-import {ChangeDetectionScheduler, NotificationSource, ZONELESS_ENABLED, ZONELESS_SCHEDULER_DISABLED} from './zoneless_scheduling';
+import {ChangeDetectionScheduler, NotificationType, ZONELESS_ENABLED, ZONELESS_SCHEDULER_DISABLED} from './zoneless_scheduling';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -75,38 +75,10 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
          !this.zoneIsDefined);
   }
 
-  notify(source: NotificationSource): void {
-    if (!this.zonelessEnabled && source === NotificationSource.Listener) {
-      // When the notification comes from a listener, we skip the notification unless the
-      // application has enabled zoneless. Ideally, listeners wouldn't notify the scheduler at all
-      // automatically. We do not know that a developer made a change in the listener callback that
-      // requires an `ApplicationRef.tick` (synchronize templates / run render hooks). We do this
-      // only for an easier migration from OnPush components to zoneless. Because listeners are
-      // usually executed inside the Angular zone and listeners automatically call `markViewDirty`,
-      // developers never needed to manually use `ChangeDetectorRef.markForCheck` or some other API
-      // to make listener callbacks work correctly with `OnPush` components.
-      return;
-    }
-    switch (source) {
-      case NotificationSource.DebugApplyChanges:
-      case NotificationSource.DeferBlockStateUpdate:
-      case NotificationSource.MarkAncestorsForTraversal:
-      case NotificationSource.MarkForCheck:
-      case NotificationSource.Listener:
-      case NotificationSource.SetInput: {
-        this.shouldRefreshViews = true;
-        break;
-      }
-      case NotificationSource.ViewDetachedFromDOM:
-      case NotificationSource.ViewAttached:
-      case NotificationSource.NewRenderHook:
-      case NotificationSource.AsyncAnimationsLoaded:
-      default: {
-        // These notifications only schedule a tick but do not change whether we should refresh
-        // views. Instead, we only need to run render hooks unless another notification from the
-        // other set is also received before `tick` happens.
-      }
-    }
+  notify(type = NotificationType.RefreshViews): void {
+    // When the only source of notification is an afterRender hook will skip straight to the hooks
+    // rather than refreshing views in ApplicationRef.tick
+    this.shouldRefreshViews ||= type === NotificationType.RefreshViews;
 
     if (!this.shouldScheduleTick()) {
       return;
