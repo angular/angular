@@ -9,6 +9,7 @@
 import {
   APP_ID,
   ApplicationRef,
+  CSP_NONCE,
   InjectionToken,
   PlatformRef,
   Provider,
@@ -19,7 +20,6 @@ import {
   ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵwhenStable as whenStable,
-  CSP_NONCE,
 } from '@angular/core';
 
 import {PlatformState} from './platform_state';
@@ -56,11 +56,19 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
 }
 
 /**
+ * Finds and returns inlined event dispatch script if it exists.
+ * See the `EVENT_DISPATCH_SCRIPT_ID` const docs for additional info.
+ */
+function findEventDispatchScript(doc: Document) {
+  return doc.getElementById(EVENT_DISPATCH_SCRIPT_ID);
+}
+
+/**
  * Removes inlined event dispatch script if it exists.
  * See the `EVENT_DISPATCH_SCRIPT_ID` const docs for additional info.
  */
 function removeEventDispatchScript(doc: Document) {
-  doc.getElementById(EVENT_DISPATCH_SCRIPT_ID)?.remove();
+  findEventDispatchScript(doc)?.remove();
 }
 
 /**
@@ -99,13 +107,20 @@ function insertEventRecordScript(
   eventTypesToBeReplayed: Set<string>,
   nonce: string | null,
 ): void {
-  const events = Array.from(eventTypesToBeReplayed);
-  // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
-  const replayScript = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
-    appId,
-  )}, ${JSON.stringify(events)});`;
-  const script = createScript(doc, replayScript, nonce);
-  doc.body.insertBefore(script, doc.body.firstChild);
+  const eventDispatchScript = findEventDispatchScript(doc);
+  if (eventDispatchScript) {
+    const events = Array.from(eventTypesToBeReplayed);
+    // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
+    const replayScriptContents = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
+      appId,
+    )}, ${JSON.stringify(events)});`;
+
+    const replayScript = createScript(doc, replayScriptContents, nonce);
+
+    // Insert replay script right after inlined event dispatch script, since it
+    // relies on `__jsaction_bootstrap` to be defined in the global scope.
+    eventDispatchScript.after(replayScript);
+  }
 }
 
 async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {

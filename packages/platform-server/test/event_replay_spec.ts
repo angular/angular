@@ -97,7 +97,7 @@ describe('event replay', () => {
           selector: 'app',
           template: `
             <div (click)="onClick()" id="1">
-                <div (blur)="onClick()" id="2"></div>
+              <div (blur)="onClick()" id="2"></div>
             </div>
           `,
         })
@@ -106,14 +106,12 @@ describe('event replay', () => {
           onBlur = blurSpy;
         }
 
-        const docContents = `<html><head></head><body><app></app></body></html>`;
+        const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
         const html = await ssr(SimpleComponent, {doc: docContents});
         const ssrContents = getAppContents(html);
-        expect(
-          ssrContents.startsWith(
-            `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click","blur"]);</script>`,
-          ),
-        ).toBeTrue();
+        expect(ssrContents).toContain(
+          `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click","blur"]);</script>`,
+        );
         expect(ssrContents).toContain(
           '<div id="1" jsaction="click:"><div id="2" jsaction="blur:"></div></div>',
         );
@@ -145,7 +143,9 @@ describe('event replay', () => {
           onClick() {}
         }
 
-        const doc = `<html><head></head><body><app ngCspNonce="{{nonce}}"></app></body></html>`;
+        const doc =
+          `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}` +
+          `<app ngCspNonce="{{nonce}}"></app></body></html>`;
         const html = await ssr(SimpleComponent, {doc});
         expect(getAppContents(html)).toContain(
           '<script nonce="{{nonce}}">window.__jsaction_bootstrap',
@@ -206,6 +206,14 @@ describe('event replay', () => {
 
           expect(hasJSActionAttrs(ssrContents)).toBeTrue();
           expect(hasEventDispatchScript(ssrContents)).toBeTrue();
+
+          // Verify that inlined event delegation script goes first and
+          // event contract setup goes second (since it uses some code from
+          // the inlined script).
+          expect(ssrContents).toContain(
+            `<script type="text/javascript" id="ng-event-dispatch-contract"></script>` +
+              `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click"]);</script>`,
+          );
         });
       });
     });
