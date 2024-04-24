@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionScheduler, NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
+import {ChangeDetectionScheduler, NotificationType} from '../change_detection/scheduling/zoneless_scheduling';
 import {assertInInjectionContext, Injector, runInInjectionContext, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {ErrorHandler} from '../error_handler';
@@ -336,7 +336,7 @@ class AfterRenderCallback {
 
   constructor(readonly phase: AfterRenderPhase, private callbackFn: VoidFunction) {
     // Registering a callback will notify the scheduler.
-    inject(ChangeDetectionScheduler, {optional: true})?.notify(NotificationSource.NewRenderHook);
+    inject(ChangeDetectionScheduler, {optional: true})?.notify(NotificationType.AfterRenderHooks);
   }
 
   invoke() {

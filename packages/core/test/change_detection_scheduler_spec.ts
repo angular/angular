@@ -8,7 +8,7 @@
 
 import {AsyncPipe} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, EventEmitter, inject, Input, NgZone, Output, PLATFORM_ID, provideExperimentalZonelessChangeDetection as provideZonelessChangeDetection, provideZoneChangeDetection, signal, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {afterNextRender, afterRender, ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, NgZone, PLATFORM_ID, provideExperimentalZonelessChangeDetection as provideZonelessChangeDetection, provideZoneChangeDetection, signal, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -648,45 +648,6 @@ describe('Angular with scheduler and ZoneJS', () => {
     expect(fixture.isStable()).toBe(true);
     await fixture.whenStable();
     expect(fixture.nativeElement.innerText).toContain('initial');
-  });
-
-  it('will not schedule change detection if listener callback is outside the zone', async () => {
-    let renders = 0;
-    TestBed.runInInjectionContext(() => {
-      afterRender(() => {
-        renders++;
-      });
-    });
-
-    @Component({selector: 'component-with-output', template: '', standalone: true})
-    class ComponentWithOutput {
-      @Output() out = new EventEmitter();
-    }
-    let called = false;
-    @Component({
-      standalone: true,
-      imports: [ComponentWithOutput],
-      template: '<component-with-output (out)="onOut()" />'
-    })
-    class App {
-      onOut() {
-        called = true;
-      }
-    }
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const outComponent =
-        fixture.debugElement
-            .query((debugNode) => debugNode.providerTokens!.indexOf(ComponentWithOutput) !== -1)
-            .componentInstance as ComponentWithOutput;
-    TestBed.inject(NgZone).runOutsideAngular(() => {
-      outComponent.out.emit();
-    });
-    await fixture.whenStable();
-
-    expect(renders).toBe(1);
-    expect(called).toBe(true);
-    expect(renders).toBe(1);
   });
 
   it('updating signal outside of zone still schedules update when in hybrid mode', async () => {
