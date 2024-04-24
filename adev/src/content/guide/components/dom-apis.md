@@ -80,4 +80,4 @@ Avoid inserting, removing, and modifying DOM elements. In particular, **never di
 element's `innerHTML` property**, which can make your application vulnerable
 to [cross-site scripting (XSS) exploits](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting).
 Angular's template bindings, including bindings for `innerHTML`, include safeguards that help
-protect against XSS attacks. See the [Security guide](guide/security) for details.
+protect against XSS attacks. See the [Security guide](best-practices/security) for details.

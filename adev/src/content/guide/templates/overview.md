@@ -26,7 +26,7 @@ However, because an Angular template is part of an overall webpage, and not the 
 
 IMPORTANT: To eliminate the risk of script injection attacks, Angular does not support the `<script>` element in templates.
 Angular ignores the `<script>` tag and outputs a warning to the browser console.
-For more information, see the [Security](guide/security) page.
+For more information, see the [Security](best-practices/security) page.
 
 ## More on template syntax
 
