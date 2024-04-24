@@ -1038,6 +1038,9 @@
     "name": "init_a11y_click"
   },
   {
+    "name": "init_action_resolver"
+  },
+  {
     "name": "init_advance"
   },
   {
