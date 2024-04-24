@@ -80,7 +80,7 @@ export class PendingTasks implements OnDestroy {
   providedIn: 'root',
 })
 export class ExperimentalPendingTasks {
-  internalPendingTasks = inject(PendingTasks);
+  private internalPendingTasks = inject(PendingTasks);
   /**
    * Adds a new task that should block application's stability.
    * @returns A cleanup function that removes a task when called.
