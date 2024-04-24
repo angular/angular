@@ -1269,9 +1269,9 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG3003',
       },
       {
-        label: 'NG5000: Hydration with unsupported Zone.js instance.',
-        path: 'errors/NG5000',
-        contentPath: 'reference/errors/NG5000',
+        label: 'NG05000: Hydration with unsupported Zone.js instance.',
+        path: 'errors/NG05000',
+        contentPath: 'reference/errors/NG05000',
       },
       {
         label: 'NG6100: NgModule.id Set to module.id anti-pattern',
