@@ -21,7 +21,7 @@ import {FLAGS, LViewFlags, EFFECTS_TO_SCHEDULE} from '../interfaces/view';
 
 import {assertNotInReactiveContext} from './asserts';
 import {performanceMarkFeature} from '../../util/performance';
-import {ExperimentalPendingTaskHandle, PendingTasks} from '../../pending_tasks';
+import {PendingTasks} from '../../pending_tasks';
 
 
 /**
@@ -86,7 +86,7 @@ export class ZoneAwareEffectScheduler implements EffectScheduler {
   private queuedEffectCount = 0;
   private queues = new Map<Zone|null, Set<SchedulableEffect>>();
   private readonly pendingTasks = inject(PendingTasks);
-  private taskId: ExperimentalPendingTaskHandle|null = null;
+  private taskId: number|null = null;
 
   scheduleEffect(handle: SchedulableEffect): void {
     this.enqueue(handle);

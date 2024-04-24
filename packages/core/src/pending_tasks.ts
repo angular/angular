@@ -8,31 +8,34 @@
 
 import {BehaviorSubject} from 'rxjs';
 
+import {inject} from './di';
 import {Injectable} from './di/injectable';
 import {OnDestroy} from './interface/lifecycle_hooks';
 
 /**
  * Internal implementation of the pending tasks service.
  */
-@Injectable({providedIn: 'root'})
-export class PendingTasks implements ExperimentalPendingTasks, OnDestroy {
+@Injectable({
+  providedIn: 'root',
+})
+export class PendingTasks implements OnDestroy {
   private taskId = 0;
-  private pendingTasks = new Set<ExperimentalPendingTaskHandle>();
+  private pendingTasks = new Set<number>();
   private get _hasPendingTasks() {
     return this.hasPendingTasks.value;
   }
   hasPendingTasks = new BehaviorSubject<boolean>(false);
 
-  add(): ExperimentalPendingTaskHandle {
+  add(): number {
     if (!this._hasPendingTasks) {
       this.hasPendingTasks.next(true);
     }
-    const taskId = this.taskId++ as unknown as ExperimentalPendingTaskHandle;
+    const taskId = this.taskId++;
     this.pendingTasks.add(taskId);
     return taskId;
   }
 
-  remove(taskId: ExperimentalPendingTaskHandle): void {
+  remove(taskId: number): void {
     this.pendingTasks.delete(taskId);
     if (this.pendingTasks.size === 0 && this._hasPendingTasks) {
       this.hasPendingTasks.next(false);
@@ -48,17 +51,6 @@ export class PendingTasks implements ExperimentalPendingTasks, OnDestroy {
 }
 
 /**
- * An opaque handle representing a pending task. Users should not assume anything about the internal
- * type or structure of this handle.
- *
- * @publicApi
- * @experimental
- */
-export type ExperimentalPendingTaskHandle = {
-  __brand: 'experimentalPendingTask'
-};
-
-/**
  * Experimental service that keeps track of pending tasks contributing to the stableness of Angular
  * application. While several existing Angular services (ex.: `HttpClient`) will internally manage
  * tasks influencing stability, this API gives control over stability to library and application
@@ -72,9 +64,9 @@ export type ExperimentalPendingTaskHandle = {
  * @usageNotes
  * ```typescript
  * const pendingTasks = inject(ExperimentalPendingTasks);
- * const task = pendingTasks.add();
+ * const taskCleanup = pendingTasks.add();
  * // do work that should block application's stability and then:
- * pendingTasks.remove(task);
+ * taskCleanup();
  * ```
  *
  * This API is experimental. Neither the shape, nor the underlying behavior is stable and can change
@@ -86,17 +78,15 @@ export type ExperimentalPendingTaskHandle = {
  */
 @Injectable({
   providedIn: 'root',
-  useExisting: PendingTasks,
 })
-export abstract class ExperimentalPendingTasks {
+export class ExperimentalPendingTasks {
+  internalPendingTasks = inject(PendingTasks);
   /**
    * Adds a new task that should block application's stability.
-   * @returns An opaque task handle that can be used to remove a task.
+   * @returns A cleanup function that removes a task when called.
    */
-  abstract add(): ExperimentalPendingTaskHandle;
-
-  /**
-   * Removes a task given its handle.
-   */
-  abstract remove(task: ExperimentalPendingTaskHandle): void;
+  add(): () => void {
+    const taskId = this.internalPendingTasks.add();
+    return () => this.internalPendingTasks.remove(taskId);
+  }
 }

@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExperimentalPendingTaskHandle} from '@angular/core';
+import {ApplicationRef, ExperimentalPendingTasks} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, of} from 'rxjs';
 import {map, take, withLatestFrom} from 'rxjs/operators';
 
-import {ApplicationRef} from '../../src/application/application_ref';
 import {PendingTasks} from '../../src/pending_tasks';
 
 describe('PendingTasks', () => {
@@ -45,9 +44,9 @@ describe('PendingTasks', () => {
     const pendingTasks = TestBed.inject(PendingTasks);
     expect(await hasPendingTasks(pendingTasks)).toBeFalse();
 
-    pendingTasks.remove(Math.random() as unknown as ExperimentalPendingTaskHandle);
-    pendingTasks.remove(Math.random() as unknown as ExperimentalPendingTaskHandle);
-    pendingTasks.remove(Math.random() as unknown as ExperimentalPendingTaskHandle);
+    pendingTasks.remove(Math.random());
+    pendingTasks.remove(Math.random());
+    pendingTasks.remove(Math.random());
 
     expect(await hasPendingTasks(pendingTasks)).toBeFalse();
   });
@@ -64,6 +63,18 @@ describe('PendingTasks', () => {
     const taskB = pendingTasks.add();
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
     pendingTasks.remove(taskB);
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
+  });
+});
+
+describe('public ExperimentalPendingTasks', () => {
+  it('should allow adding and removing tasks influencing stability', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const pendingTasks = TestBed.inject(ExperimentalPendingTasks);
+
+    const taskA = pendingTasks.add();
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
+    taskA();
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
   });
 });

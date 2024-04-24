@@ -12,7 +12,7 @@ import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {ExperimentalPendingTaskHandle, PendingTasks} from '../../pending_tasks';
+import {PendingTasks} from '../../pending_tasks';
 import {scheduleCallbackWithMicrotask, scheduleCallbackWithRafRace} from '../../util/callback_scheduler';
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone, NoopNgZone} from '../../zone/ng_zone';
@@ -45,7 +45,7 @@ function trackMicrotaskNotificationForDebugging() {
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private appRef = inject(ApplicationRef);
   private taskService = inject(PendingTasks);
-  private pendingRenderTaskId: ExperimentalPendingTaskHandle|null = null;
+  private pendingRenderTaskId: number|null = null;
   private shouldRefreshViews = false;
   private readonly ngZone = inject(NgZone);
   runningTick = false;

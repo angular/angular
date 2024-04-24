@@ -12,7 +12,7 @@ import {ApplicationRef} from '../../application/application_ref';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, Injectable, InjectionToken, makeEnvironmentProviders, StaticProvider} from '../../di';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {ExperimentalPendingTaskHandle, PendingTasks} from '../../pending_tasks';
+import {PendingTasks} from '../../pending_tasks';
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
@@ -240,7 +240,7 @@ export class ZoneStablePendingTask {
     }
     this.initialized = true;
 
-    let task: ExperimentalPendingTaskHandle|null = null;
+    let task: number|null = null;
     if (!this.zone.isStable && !this.zone.hasPendingMacrotasks && !this.zone.hasPendingMicrotasks) {
       task = this.pendingTasks.add();
     }
