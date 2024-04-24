@@ -57,6 +57,7 @@ const DEFAULT_NAMESPACE_ID = 'id';
         getBodyNode(),
         driver,
         normalizer || new NoopAnimationStyleNormalizer(),
+        null,
       );
       engine.createNamespace(DEFAULT_NAMESPACE_ID, element);
       return engine;

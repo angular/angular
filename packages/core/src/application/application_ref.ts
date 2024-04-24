@@ -18,7 +18,7 @@ import {inject} from '../di';
 import {Injectable} from '../di/injectable';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {EnvironmentInjector, R3Injector} from '../di/r3_injector';
+import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
@@ -163,6 +163,9 @@ export interface BootstrapOptions {
 /** Maximum number of times ApplicationRef will refresh all attached views in a single tick. */
 const MAXIMUM_REFRESH_RERUNS = 10;
 
+// This is a temporary type to represent an instance of an R3Injector, which can be destroyed.
+// The type will be replaced with a different one once destroyable injector type is available.
+type DestroyableInjector = Injector&{destroy?: Function, destroyed?: boolean};
 
 export function _callAndReportToErrorHandler(
     errorHandler: ErrorHandler, ngZone: NgZone, callback: () => any): any {
@@ -549,8 +552,8 @@ export class ApplicationRef {
 
   private detectChangesInAttachedViews(refreshViews: boolean) {
     let rendererFactory: RendererFactory2|null = null;
-    if (!(this._injector as R3Injector).destroyed) {
-      rendererFactory = this._injector.get(RendererFactory2);
+    if (!(this._injector as DestroyableInjector).destroyed) {
+      rendererFactory = this._injector.get(RendererFactory2, null, {optional: true});
     }
 
     let runs = 0;
@@ -567,7 +570,6 @@ export class ApplicationRef {
       runs++;
 
       afterRenderEffectManager.executeInternalCallbacks();
-
       // If we have a newly dirty view after running internal callbacks, recheck the views again
       // before running user-provided callbacks
       if ([...this.externalTestViews.keys(), ...this._views].some(
@@ -575,8 +577,8 @@ export class ApplicationRef {
         continue;
       }
 
-      // Even if no views require refresh, we need to ensure
-      // renderFactory begin and end happen to flush animations.
+      // Flush animations before running afterRender hooks
+      // This might not have happened if no views were refreshed above
       rendererFactory?.begin?.();
       rendererFactory?.end?.();
 
@@ -684,7 +686,7 @@ export class ApplicationRef {
           ngDevMode && 'This instance of the `ApplicationRef` has already been destroyed.');
     }
 
-    const injector = this._injector as R3Injector;
+    const injector = this._injector as DestroyableInjector;
 
     // Check that this injector instance supports destroy operation.
     if (injector.destroy && !injector.destroyed) {
