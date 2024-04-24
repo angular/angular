@@ -7,7 +7,7 @@
     },
     "mangle": {
       "toplevel": true,
-      "properties": true,
+      "properties": false,
       "keep_classnames": false,
       "keep_fnames": false
     },
