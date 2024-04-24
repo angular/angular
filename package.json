@@ -155,7 +155,7 @@
     "@angular/animations": "^18.0.0-next",
     "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#5b1b7bc36648f4c066d8cf917ea7cc9e7eed2b8f",
     "@angular/docs": "https://github.com/angular/dev-infra-private-docs-builds.git#12016780c96616656ed6667d65860391a5b56c79",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#43caa47b9ea70629976ccbe2b4fb4869f202c080",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#6562bdff590d9669e895a8103c02736d805bcbdc",
     "@babel/helper-remap-async-to-generator": "^7.18.9",
     "@babel/plugin-proposal-async-generator-functions": "^7.20.7",
     "@bazel/bazelisk": "^1.7.5",
