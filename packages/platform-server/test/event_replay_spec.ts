@@ -8,7 +8,7 @@
 
 import {DOCUMENT} from '@angular/common';
 import {Component, destroyPlatform, getPlatform, Type} from '@angular/core';
-import {bootstrapEventContract, EventContract} from '@angular/core/primitives/event-dispatch';
+import {EventContract} from '@angular/core/primitives/event-dispatch';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
 import {withEventReplay} from '@angular/platform-browser/src/hydration';
@@ -16,7 +16,7 @@ import {withEventReplay} from '@angular/platform-browser/src/hydration';
 import {provideServerRendering} from '../public_api';
 import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
 
-import {getAppContents, hydrate, render, resetTViewsFor} from './dom_utils';
+import {getAppContents, hydrate, render as renderHtml, resetTViewsFor} from './dom_utils';
 
 /**
  * Represents the <script> tag added by the build process to inject
@@ -72,22 +72,40 @@ describe('event replay', () => {
 
     describe('server rendering', () => {
       let doc: Document;
-      let eventContract!: EventContract;
+      let eventContract: EventContract | undefined = undefined;
+      const originalDocument = globalThis.document;
+      const originalWindow = globalThis.window;
+
+      function render(doc: Document, html: string) {
+        renderHtml(doc, html);
+        globalThis.document = doc;
+        const scripts = doc.getElementsByTagName('script');
+        for (const script of Array.from(scripts)) {
+          if (script?.textContent?.startsWith('window.__jsaction_bootstrap')) {
+            eval(script.textContent);
+          }
+        }
+        eventContract = globalThis.window['ngContracts']['ng'];
+        expect(eventContract).toBeDefined();
+      }
+
+      beforeAll(async () => {
+        globalThis.window = globalThis as unknown as Window & typeof globalThis;
+        await import('@angular/core/primitives/event-dispatch/contract_bundle_min.js' as string);
+      });
 
       beforeEach(() => {
         doc = TestBed.inject(DOCUMENT);
-        eventContract = bootstrapEventContract(
-          'ngContracts',
-          doc.body,
-          'ng',
-          ['click', 'blur'],
-          globalThis,
-        );
       });
 
       afterEach(() => {
         doc.body.textContent = '';
-        eventContract.cleanUp();
+        eventContract?.cleanUp();
+        eventContract = undefined;
+      });
+      afterAll(() => {
+        globalThis.window = originalWindow;
+        globalThis.document = originalDocument;
       });
       it('should serialize event types to be listened to and jsaction', async () => {
         const clickSpy = jasmine.createSpy('onClick');
