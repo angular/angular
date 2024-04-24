@@ -117,6 +117,13 @@ describe('ShadowCss', () => {
     expect(css).toEqualCss('div[contenta]::after { content:"{}"}');
   });
 
+  it('should keep retain multiline selectors', () => {
+    // This is needed as shifting in line number will cause sourcemaps to break.
+    const styleStr = '.foo,\n.bar { color: red;}';
+    const css = shim(styleStr, 'contenta');
+    expect(css).toEqual('.foo[contenta], \n.bar[contenta] { color: red;}');
+  });
+
   describe('comments', () => {
     // Comments should be kept in the same position as otherwise inline sourcemaps break due to
     // shift in lines.
