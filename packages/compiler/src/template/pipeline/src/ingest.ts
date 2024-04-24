@@ -357,10 +357,11 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
     throw Error(`Unhandled i18n metadata type for element: ${content.i18n.constructor.name}`);
   }
 
-  const id = unit.job.allocateXrefId();
   let fallbackView: ViewCompilationUnit | null = null;
 
   // Don't capture default content that's only made up of empty text nodes and comments.
+  // Note that we process the default content before the projection in order to match the
+  // insertion order at runtime.
   if (
     content.children.some(
       (child) =>
@@ -372,6 +373,7 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
     ingestNodes(fallbackView, content.children);
   }
 
+  const id = unit.job.allocateXrefId();
   const op = ir.createProjectionOp(
     id,
     content.selector,

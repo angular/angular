@@ -1808,5 +1808,95 @@ describe('projection', () => {
       expect(content).toContain('Outer header override');
       expect(content).toContain('Outer footer fallback');
     });
+
+    it('should not instantiate directives inside the fallback content', () => {
+      let creationCount = 0;
+
+      @Component({
+        selector: 'fallback',
+        standalone: true,
+        template: 'Fallback',
+      })
+      class Fallback {
+        constructor() {
+          creationCount++;
+        }
+      }
+
+      @Component({
+        selector: 'projection',
+        template: `<ng-content><fallback/></ng-content>`,
+        standalone: true,
+        imports: [Fallback],
+      })
+      class Projection {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Projection],
+        template: `<projection>Hello</projection>`,
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      expect(creationCount).toBe(0);
+      expect(getElementHtml(fixture.nativeElement)).toContain(`<projection>Hello</projection>`);
+    });
+
+    it('should render the fallback content when an instance of a component that uses ' +
+           'fallback content is declared after one that does not',
+       () => {
+         @Component({
+           selector: 'projection',
+           template: `<ng-content>Fallback</ng-content>`,
+           standalone: true,
+         })
+         class Projection {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [Projection],
+           template: `
+            <projection>Content</projection>
+            <projection/>
+          `
+         })
+         class App {
+         }
+
+         const fixture = TestBed.createComponent(App);
+         expect(getElementHtml(fixture.nativeElement))
+             .toContain('<projection>Content</projection><projection>Fallback</projection>');
+       });
+
+    it('should render the fallback content when an instance of a component that uses ' +
+           'fallback content is declared before one that does not',
+       () => {
+         @Component({
+           selector: 'projection',
+           template: `<ng-content>Fallback</ng-content>`,
+           standalone: true,
+         })
+         class Projection {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [Projection],
+           template: `
+            <projection/>
+            <projection>Content</projection>
+          `
+         })
+         class App {
+         }
+
+         const fixture = TestBed.createComponent(App);
+         expect(getElementHtml(fixture.nativeElement))
+             .toContain('<projection>Fallback</projection><projection>Content</projection>');
+       });
   });
 });
