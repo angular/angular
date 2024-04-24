@@ -1113,6 +1113,9 @@
     "name": "init_authoring"
   },
   {
+    "name": "init_base_dispatcher"
+  },
+  {
     "name": "init_bindings"
   },
   {
