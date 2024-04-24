@@ -5987,9 +5987,11 @@ describe('platform-server hydration integration', () => {
         const content = clientRootNode.innerHTML;
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-        expect(content).toContain('Header slot: <header>Header override</header>');
+        expect(content).toContain('Header slot: <!--container--><header>Header override</header>');
         expect(content).toContain('Main slot: <main>Main fallback</main>');
-        expect(content).toContain('Footer slot: <footer><h1>Footer override 321</h1></footer>');
+        expect(content).toContain(
+          'Footer slot: <!--container--><footer><h1>Footer override 321</h1></footer>',
+        );
         expect(content).toContain('Wildcard fallback');
       });
     });
