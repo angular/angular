@@ -27,7 +27,6 @@ import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
 import {PendingTasks} from '../pending_tasks';
-import {RendererFactory2} from '../render/api';
 import {AfterRenderEventManager} from '../render3/after_render_hooks';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
@@ -162,10 +161,6 @@ export interface BootstrapOptions {
 
 /** Maximum number of times ApplicationRef will refresh all attached views in a single tick. */
 const MAXIMUM_REFRESH_RERUNS = 10;
-
-// This is a temporary type to represent an instance of an R3Injector, which can be destroyed.
-// The type will be replaced with a different one once destroyable injector type is available.
-type DestroyableInjector = Injector&{destroy?: Function, destroyed?: boolean};
 
 export function _callAndReportToErrorHandler(
     errorHandler: ErrorHandler, ngZone: NgZone, callback: () => any): any {
@@ -551,11 +546,6 @@ export class ApplicationRef {
   }
 
   private detectChangesInAttachedViews(refreshViews: boolean) {
-    let rendererFactory: RendererFactory2|null = null;
-    if (!(this._injector as DestroyableInjector).destroyed) {
-      rendererFactory = this._injector.get(RendererFactory2, null, {optional: true});
-    }
-
     let runs = 0;
     const afterRenderEffectManager = this.afterRenderEffectManager;
     while (runs < MAXIMUM_REFRESH_RERUNS) {
@@ -576,11 +566,6 @@ export class ApplicationRef {
               ({_lView}) => requiresRefreshOrTraversal(_lView))) {
         continue;
       }
-
-      // Flush animations before running afterRender hooks
-      // This might not have happened if no views were refreshed above
-      rendererFactory?.begin?.();
-      rendererFactory?.end?.();
 
       afterRenderEffectManager.execute();
       // If after running all afterRender callbacks we have no more views that need to be refreshed,
@@ -685,6 +670,10 @@ export class ApplicationRef {
           RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
           ngDevMode && 'This instance of the `ApplicationRef` has already been destroyed.');
     }
+
+    // This is a temporary type to represent an instance of an R3Injector, which can be destroyed.
+    // The type will be replaced with a different one once destroyable injector type is available.
+    type DestroyableInjector = Injector&{destroy?: Function, destroyed?: boolean};
 
     const injector = this._injector as DestroyableInjector;
 
