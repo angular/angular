@@ -16,7 +16,7 @@ circular_dependency_test(
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(["**/*.ts"]) + [":contract.ts"],
     deps = [
         "//packages:types",
         "//packages/animations",
@@ -41,7 +41,19 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node"],
+    data = ["//packages/core/primitives/event-dispatch:contract_bundle_min"],
     deps = [
         ":test_lib",
     ],
+)
+
+genrule(
+    name = "contract_for_test_srcs",
+    srcs = ["//packages/core/primitives/event-dispatch:contract_bundle_min"],
+    outs = ["contract.ts"],
+    cmd = '''
+        echo -n "export const contract = \'" >> $(@)  
+        cat $(SRCS) >> $(@)
+        echo "\';" >> $(@)
+    ''',
 )
