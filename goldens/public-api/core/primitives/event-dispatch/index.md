@@ -9,14 +9,15 @@ export function bootstrapEventContract(field: string, container: Element, appId:
 
 // @public
 export class Dispatcher {
-    constructor(getHandler?: ((eventInfoWrapper: EventInfoWrapper) => EventInfoHandler | void) | undefined, { stopPropagation }?: {
+    constructor(getHandler?: ((eventInfoWrapper: EventInfoWrapper) => EventInfoWrapperHandler | void) | undefined, { stopPropagation, eventReplayer, }?: {
         stopPropagation?: boolean;
+        eventReplayer?: Replayer;
     });
     canDispatch(eventInfoWrapper: EventInfoWrapper): boolean;
     dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): EventInfo | void;
     hasAction(name: string): boolean;
     registerEventInfoHandlers<T>(namespace: string, instance: T | null, methods: {
-        [key: string]: EventInfoHandler;
+        [key: string]: EventInfoWrapperHandler;
     }): void;
     registerGlobalHandler(eventType: string, handler: GlobalHandler): void;
     setEventReplayer(eventReplayer: Replayer): void;
@@ -26,7 +27,7 @@ export class Dispatcher {
 
 // @public
 export class EventContract implements UnrenamedEventContract {
-    constructor(containerManager: EventContractContainerManager, stopPropagation?: false);
+    constructor(containerManager: EventContractContainerManager);
     // (undocumented)
     static A11Y_CLICK_SUPPORT: boolean;
     // (undocumented)
