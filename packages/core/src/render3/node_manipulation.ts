@@ -174,7 +174,9 @@ export function addViewToDOM(
  * @param lView the `LView` to be detached.
  */
 export function detachViewFromDOM(tView: TView, lView: LView) {
-  // When we remove a view from the DOM, we need to rerun afterRender hooks.
+  // When we remove a view from the DOM, we need to rerun afterRender hooks
+  // We don't necessarily needs to run change detection. DOM removal only requires
+  // change detection if animations are enabled (this notification is handled by animations).
   lView[ENVIRONMENT].changeDetectionScheduler?.notify(NotificationType.AfterRenderHooks);
   applyView(tView, lView, lView[RENDERER], WalkTNodeTreeAction.Detach, null, null);
 }

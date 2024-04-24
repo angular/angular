@@ -333,6 +333,10 @@ describe('Angular with zoneless enabled', () => {
       await whenStable();
       expect(host.innerHTML).toEqual('<dynamic-cmp>binding</dynamic-cmp>');
 
+      const component2 = createComponent(DynamicCmp, {environmentInjector});
+      // TODO(atscott): Only needed because renderFactory will not run if ApplicationRef has no
+      // views This should likely be fixed in ApplicationRef
+      appRef.attachView(component2.hostView);
       appRef.detachView(component.hostView);
       // DOM is not synchronously removed because change detection hasn't run
       expect(host.innerHTML).toEqual('<dynamic-cmp>binding</dynamic-cmp>');
