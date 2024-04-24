@@ -94,7 +94,7 @@ more">
   Angular's internationalization features handles message translations and formatting, including
   support for unicode standard ICU syntax.
   </docs-card>
-  <docs-card title="Protect your users with security by default" href="guide/security" link="Security">
+  <docs-card title="Protect your users with security by default" href="best-practices/security" link="Security">
   In collaboration with Google's world-class security engineers, Angular aims to make development
   safe by default. Built-in security features, including HTML sanitization and
   trusted type support, help protect your users from common vulnerabilities like
