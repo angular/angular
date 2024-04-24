@@ -680,9 +680,7 @@ export type ExperimentalPendingTaskHandle = {
 
 // @public
 export abstract class ExperimentalPendingTasks {
-    // (undocumented)
     abstract add(): ExperimentalPendingTaskHandle;
-    // (undocumented)
     abstract remove(task: ExperimentalPendingTaskHandle): void;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ExperimentalPendingTasks, never>;
