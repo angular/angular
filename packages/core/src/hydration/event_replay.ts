@@ -52,7 +52,9 @@ export function withEventReplay(): Provider[] {
             whenStable(appRef).then(() => {
               const appId = injector.get(APP_ID);
               // This is set in packages/platform-server/src/utils.ts
-              const eventContract = globalThis[CONTRACT_PROPERTY][appId] as EventContract;
+              // Note: globalThis[CONTRACT_PROPERTY] may be undefined in case Event Replay feature
+              // is enabled, but there are no events configured in an application.
+              const eventContract = globalThis[CONTRACT_PROPERTY]?.[appId] as EventContract;
               if (eventContract) {
                 const dispatcher = new Dispatcher();
                 setEventReplayer(dispatcher);
