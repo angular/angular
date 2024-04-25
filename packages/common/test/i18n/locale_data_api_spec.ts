@@ -23,7 +23,7 @@ import {
   getLocaleMonthNames,
   getNumberOfCurrencyDigits,
   TranslationWidth,
-} from '../../src/i18n/locale_data_api';
+} from '@angular/common';
 
 describe('locale data api', () => {
   beforeAll(() => {
