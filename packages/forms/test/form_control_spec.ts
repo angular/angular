@@ -1523,7 +1523,7 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
           expect(fn).toThrowError(
             'NG01101: Expected async validator to return Promise or Observable. ' +
               'Are you using a synchronous validator where an async validator is expected? ' +
-              'Find more at https://angular.io/errors/NG01101',
+              'Find more at https://angular.dev/errors/NG01101',
           );
         });
 
