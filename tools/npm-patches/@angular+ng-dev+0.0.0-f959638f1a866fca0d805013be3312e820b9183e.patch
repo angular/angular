@@ -1,0 +1,13 @@
+diff --git a/node_modules/@angular/ng-dev/bundles/chunk-K6WKGSNA.mjs b/node_modules/@angular/ng-dev/bundles/chunk-K6WKGSNA.mjs
+index 4fdcf37..76cbc46 100755
+--- a/node_modules/@angular/ng-dev/bundles/chunk-K6WKGSNA.mjs
++++ b/node_modules/@angular/ng-dev/bundles/chunk-K6WKGSNA.mjs
+@@ -820,7 +820,7 @@ function getCachedConfig() {
+ }
+ 
+ // bazel-out/k8-fastbuild/bin/ng-dev/utils/config.js
+-var CONFIG_FILE_PATH = ".ng-dev/config.mjs";
++var CONFIG_FILE_PATH = ".ng-dev/config.mts";
+ var USER_CONFIG_FILE_PATH = ".ng-dev.user";
+ var userConfig = null;
+ var setConfig = setCachedConfig;

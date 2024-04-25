@@ -22,10 +22,10 @@
     "// 2": "Find the usage you are looking for with:",
     "// 3": "yarn ng-dev --help",
     "/ ": "",
-    "postinstall": "node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js && patch-package --patch-dir tools/esm-interop/patches/npm",
+    "postinstall": "node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js && patch-package --patch-dir tools/npm-patches && patch-package --patch-dir tools/esm-interop/patches/npm",
     "prepare": "husky install",
-    "ng-dev": "ts-node --esm --project .ng-dev/tsconfig.json --transpile-only node_modules/@angular/ng-dev/bundles/cli.mjs",
-    "build": "ts-node --esm --project scripts/tsconfig.json scripts/build/build-packages-dist.mts",
+    "ng-dev": "tsx --tsconfig .ng-dev/tsconfig.json node_modules/@angular/ng-dev/bundles/cli.mjs",
+    "build": "tsx --tsconfig scripts/tsconfig.json scripts/build/build-packages-dist.mts",
     "test": "bazelisk test",
     "test:ci": "bazelisk test -- //... -//devtools/... -//aio/... && bazelisk test --//packages/compiler:use_template_pipeline //packages/compiler-cli/test/compliance/full",
     "test-tsec": "bazelisk test //... --build_tag_filters=tsec --test_tag_filters=tsec",
@@ -43,7 +43,7 @@
     "devtools:build:chrome": "bazelisk build --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=chrome -- devtools/projects/shell-browser/src:prodapp",
     "devtools:build:firefox": "bazelisk build --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=firefox -- devtools/projects/shell-browser/src:prodapp",
     "devtools:test": "bazelisk test --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/...",
-    "benchmarks": "ts-node --esm scripts/benchmarks/index.mts"
+    "benchmarks": "tsx --tsconfig=scripts/tsconfig.json scripts/benchmarks/index.mts"
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
@@ -151,6 +151,7 @@
     "tsickle": "0.46.3",
     "tslib": "^2.3.0",
     "tslint": "6.1.3",
+    "tsx": "^4.7.2",
     "typescript": "5.1.3",
     "webtreemap": "^2.0.1",
     "xhr2": "0.2.1",
