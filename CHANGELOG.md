@@ -1,3 +1,14 @@
+<a name="17.3.6"></a>
+# 17.3.6 (2024-04-25)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [826861b1fa](https://github.com/angular/angular/commit/826861b1fa7693010743f5dd881fb31ec33eee52) | fix | DeferBlockFixture.render should not wait for stability ([#55271](https://github.com/angular/angular/pull/55271)) |
+| [5cf14da35c](https://github.com/angular/angular/commit/5cf14da35cce1ea4456bae4365d3dbe6667b1881) | fix | make `ActivatedRoute` inject correct instance inside `@defer` blocks ([#55374](https://github.com/angular/angular/pull/55374)) |
+| [8979fba2c5](https://github.com/angular/angular/commit/8979fba2c5813673767a133caeec9ac768d17329) | fix | skip defer timers on the server ([#55480](https://github.com/angular/angular/pull/55480)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.3.5"></a>
 # 17.3.5 (2024-04-17)
 
