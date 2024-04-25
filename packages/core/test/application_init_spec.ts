@@ -183,7 +183,7 @@ describe('ApplicationInitStatus', () => {
         'NG0209: Unexpected type of the `APP_INITIALIZER` token value ' +
           `(expected an array, but got string). ` +
           'Please check that the `APP_INITIALIZER` token is configured as a ' +
-          '`multi: true` provider. Find more at https://angular.io/errors/NG0209',
+          '`multi: true` provider. Find more at https://angular.dev/errors/NG0209',
       );
     });
   });
