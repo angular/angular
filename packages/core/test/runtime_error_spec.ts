@@ -11,7 +11,7 @@ import {RuntimeError, RuntimeErrorCode} from '../src/errors';
 describe('RuntimeError utils', () => {
   it('should correctly format an error without an error message', () => {
     const error = new RuntimeError<RuntimeErrorCode>(RuntimeErrorCode.EXPORT_NOT_FOUND, '');
-    expect(error.toString()).toBe('Error: NG0301. Find more at https://angular.io/errors/NG0301');
+    expect(error.toString()).toBe('Error: NG0301. Find more at https://angular.dev/errors/NG0301');
   });
 
   it('should correctly format an error without an error message not aio guide', () => {
@@ -27,7 +27,7 @@ describe('RuntimeError utils', () => {
   it('should correctly format an error with both an error message and an aio guide', () => {
     const error = new RuntimeError(RuntimeErrorCode.EXPORT_NOT_FOUND, 'Some error message');
     expect(error.toString()).toBe(
-      'Error: NG0301: Some error message. Find more at https://angular.io/errors/NG0301',
+      'Error: NG0301: Some error message. Find more at https://angular.dev/errors/NG0301',
     );
   });
 
@@ -39,7 +39,7 @@ describe('RuntimeError utils', () => {
         errorMessage,
       );
       expect(error.toString()).toBe(
-        `Error: NG0302: Pipe not found${character} Find more at https://angular.io/errors/NG0302`,
+        `Error: NG0302: Pipe not found${character} Find more at https://angular.dev/errors/NG0302`,
       );
     }),
   );
