@@ -145,7 +145,19 @@ describe('DatePipe', () => {
       );
     });
 
+    it('should take timezone into account with timezone offset', () => {
+      expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual('Jan 10, 2017');
+    });
+
+    it('should support an empty string for the timezone', () => {
+      expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '')).toEqual('Jan 11, 2017');
+    });
+
     it('should take timezone into account', () => {
+      expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual('Jan 10, 2017');
+    });
+
+    it('should take timezone into account with timezone offset', () => {
       expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual('Jan 10, 2017');
     });
 

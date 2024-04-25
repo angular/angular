@@ -73,7 +73,7 @@ describe('Format date', () => {
     const isoStringWithoutTimeOrDate = '2015-01';
     const isoStringWithoutTimeOrDateOrMonth = '2015';
     const defaultFormat = 'mediumDate';
-    let date: Date;
+    const date = new Date(2015, 5, 15, 9, 3, 1, 550);
 
     // Check the transformation of a date into a pattern
     function expectDateFormatAs(date: Date | string, pattern: any, output: string): void {
@@ -94,10 +94,6 @@ describe('Format date', () => {
     });
 
     afterAll(() => ɵunregisterLocaleData());
-
-    beforeEach(() => {
-      date = new Date(2015, 5, 15, 9, 3, 1, 550);
-    });
 
     it('should format each component correctly', () => {
       const dateFixtures: any = {
@@ -278,6 +274,12 @@ describe('Format date', () => {
       Object.keys(midnightCrossingPeriods).forEach((pattern) => {
         expectDateFormatAs(nightTime, pattern, midnightCrossingPeriods[pattern]);
       });
+    });
+
+    it('should support non-normalized locales', () => {
+      expect(formatDate(date, 'short', 'de-DE')).toEqual('15.06.15, 09:03');
+      expect(formatDate(date, 'short', 'de_DE')).toEqual('15.06.15, 09:03');
+      expect(formatDate(date, 'short', 'de-de')).toEqual('15.06.15, 09:03');
     });
 
     it('should format with timezones', () => {
@@ -488,6 +490,29 @@ describe('Format date', () => {
     // https://github.com/angular/angular/issues/26922
     it('should support fullDate in finnish, which uses standalone week day', () => {
       expect(formatDate(date, 'fullDate', 'fi')).toMatch('maanantai 15. kesäkuuta 2015');
+    });
+
+    it('should wrap negative years', () => {
+      const date = new Date(new Date('2024-01-13').setFullYear(-1)); // Year -1
+      expect(formatDate(date, 'yyyy', ɵDEFAULT_LOCALE_ID)).toEqual('0002');
+    });
+
+    it('should support years < 1000', () => {
+      expect(formatDate(new Date('0054-02-18'), 'yyy', ɵDEFAULT_LOCALE_ID)).toEqual('054');
+      expect(formatDate(new Date('0054-02-18'), 'yyyy', ɵDEFAULT_LOCALE_ID)).toEqual('0054');
+      expect(formatDate(new Date('0803-02-18'), 'yyyy', ɵDEFAULT_LOCALE_ID)).toEqual('0803');
+    });
+
+    it('should support timezones', () => {
+      const isoDate = '2024-02-17T12:00:00Z';
+
+      const date1 = formatDate(isoDate, 'long', 'en', 'America/New_York');
+      const date2 = formatDate(isoDate, 'long', 'en', 'EST');
+      expect(date1).toBe('February 17, 2024 at 12:00:00 PM GMT+0');
+      expect(date2).toBe('February 17, 2024 at 7:00:00 AM GMT-5');
+
+      const date3 = formatDate(isoDate, 'long', 'en', '+0500');
+      expect(date3).toBe('February 17, 2024 at 5:00:00 PM GMT+5');
     });
 
     it('should return thursday date of the same week', () => {

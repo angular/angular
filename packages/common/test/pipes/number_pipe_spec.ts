@@ -175,6 +175,11 @@ describe('Number pipes', () => {
         expect(pipe.transform(123456789, 'EUR', 'symbol', '', 'de-at')).toEqual('€ 123.456.789,00');
         expect(pipe.transform(5.1234, 'EUR', '', '', 'de-at')).toEqual('5,12');
         expect(pipe.transform(5.1234, 'DKK', '', '', 'da')).toEqual('5,12');
+
+        // CLP doesn't have a subdivision, so it should not display decimals unless explicitly
+        // told so
+        expect(pipe.transform(5.1234, 'CLP', '')).toEqual('5');
+        expect(pipe.transform(5.1234, 'CLP', '', '2.0-3')).toEqual('05.123');
       });
 
       it('should use the injected default currency code if none is provided', () => {
@@ -189,6 +194,12 @@ describe('Number pipes', () => {
         );
         // currency code is USD, the pipe will format based on USD but will display "Custom name"
         expect(pipe.transform(5.1234, 'USD', 'Custom name')).toEqual('Custom name5.12');
+
+        // currency code is unknown, default formatting options will be used and will display
+        // "Custom name"
+        expect(pipe.transform(5.1234, 'unexisting_ISO_code', 'Custom name')).toEqual(
+          'Custom name5.12',
+        );
       });
 
       it('should return null for NaN', () => {

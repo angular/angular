@@ -34,6 +34,8 @@ describe('Format number', () => {
         expect(formatNumber(1.1234, ɵDEFAULT_LOCALE_ID)).toEqual('1.123');
         expect(formatNumber(1.123456, ɵDEFAULT_LOCALE_ID, '.2')).toEqual('1.123');
         expect(formatNumber(1.123456, ɵDEFAULT_LOCALE_ID, '.4')).toEqual('1.1235');
+
+        expect(formatNumber(1e100, ɵDEFAULT_LOCALE_ID)).toEqual('1E+100');
       });
 
       it('should throw if minFractionDigits is explicitly higher than maxFractionDigits', () => {
@@ -47,6 +49,12 @@ describe('Format number', () => {
       it('should return the correct format for es-US', () => {
         expect(formatNumber(9999999.99, 'es-US', '1.2-2')).toEqual('9,999,999.99');
       });
+
+      it('should support non-normalized locales', () => {
+        expect(formatNumber(12345, 'en-US')).toEqual('12,345');
+        expect(formatNumber(12345, 'en_US')).toEqual('12,345');
+        expect(formatNumber(12345, 'en_us')).toEqual('12,345');
+      });
     });
   });
 
@@ -56,6 +64,8 @@ describe('Format number', () => {
         expect(formatPercent(1.23, ɵDEFAULT_LOCALE_ID)).toEqual('123%');
         expect(formatPercent(1.2, ɵDEFAULT_LOCALE_ID, '.2')).toEqual('120.00%');
         expect(formatPercent(1.2, ɵDEFAULT_LOCALE_ID, '4.2')).toEqual('0,120.00%');
+        expect(formatPercent(0, ɵDEFAULT_LOCALE_ID)).toEqual('0%');
+        expect(formatPercent(-0, ɵDEFAULT_LOCALE_ID)).toEqual('0%');
         expect(formatPercent(1.2, 'fr', '4.2')).toEqual('0\u202f120,00 %');
         expect(formatPercent(1.2, 'ar', '4.2')).toEqual('0,120.00‎%‎');
         // see issue #20136
@@ -74,6 +84,12 @@ describe('Format number', () => {
         expect(formatPercent(100, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('10,000%');
         expect(formatPercent(1.5e2, ɵDEFAULT_LOCALE_ID)).toEqual('15,000%');
         expect(formatPercent(1e100, ɵDEFAULT_LOCALE_ID)).toEqual('1E+102%');
+      });
+
+      it('should support non-normalized locales', () => {
+        expect(formatPercent(1.23, 'en-US')).toEqual('123%');
+        expect(formatPercent(1.23, 'en_US')).toEqual('123%');
+        expect(formatPercent(1.23, 'en_us')).toEqual('123%');
       });
     });
   });
@@ -127,6 +143,12 @@ describe('Format number', () => {
         // BHD has a default number of digits of 3
         expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'BHD', 'BHD')).toEqual('BHD5.123');
         expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'BHD', 'BHD', '.1-2')).toEqual('BHD5.12');
+      });
+
+      it('should support non-normalized locales', () => {
+        expect(formatCurrency(12345, 'en-US', 'USD')).toEqual('USD12,345.00');
+        expect(formatCurrency(12345, 'en_US', 'USD')).toEqual('USD12,345.00');
+        expect(formatCurrency(12345, 'en_us', 'USD')).toEqual('USD12,345.00');
       });
     });
   });
