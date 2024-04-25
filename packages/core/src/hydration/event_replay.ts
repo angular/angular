@@ -7,6 +7,7 @@
  */
 
 import {
+  Attribute,
   Dispatcher,
   EventContract,
   EventInfoWrapper,
@@ -15,12 +16,13 @@ import {
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
 import {APP_ID} from '../application/application_tokens';
-import {Injector} from '../di';
+import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
 import {attachLViewId, readLView} from '../render3/context_discovery';
+import {setDisableEventReplayImpl} from '../render3/instructions/listener';
 import {TNode, TNodeType} from '../render3/interfaces/node';
-import {RNode} from '../render3/interfaces/renderer_dom';
+import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {CLEANUP, LView, TVIEW, TView} from '../render3/interfaces/view';
 import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
@@ -43,6 +45,17 @@ export function withEventReplay(): Provider[] {
     {
       provide: IS_EVENT_REPLAY_ENABLED,
       useValue: true,
+    },
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      useValue: () => {
+        setDisableEventReplayImpl((el: RElement) => {
+          if (el.hasAttribute(Attribute.JSACTION)) {
+            el.removeAttribute(Attribute.JSACTION);
+          }
+        });
+      },
+      multi: true,
     },
     {
       provide: APP_BOOTSTRAP_LISTENER,

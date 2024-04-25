@@ -29,6 +29,18 @@ import {
 } from './shared';
 
 /**
+ * Contains a reference to a function that disables event replay feature
+ * for server-side rendered applications. This function is overridden with
+ * an actual implementation when the event replay feature is enabled via
+ * `withEventReplay()` call.
+ */
+let disableEventReplayFn = (el: RElement) => {};
+
+export function setDisableEventReplayImpl(fn: (el: RElement) => void) {
+  disableEventReplayFn = fn;
+}
+
+/**
  * Adds an event listener to the current node.
  *
  * If an output exists on one of the node's directives, it also subscribes to the output
@@ -168,6 +180,8 @@ export function listenerInternal(
     const idxOrTargetGetter = eventTargetResolver
       ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
       : tNode.index;
+
+    disableEventReplayFn(native);
 
     // In order to match current behavior, native DOM event listeners must be added for all
     // events (including outputs).

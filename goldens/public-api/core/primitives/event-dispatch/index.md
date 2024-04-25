@@ -4,6 +4,17 @@
 
 ```ts
 
+// @public (undocumented)
+export enum Attribute {
+    JSACTION = "jsaction",
+    JSINSTANCE = "jsinstance",
+    JSNAMESPACE = "jsnamespace",
+    JSTRACK = "jstrack",
+    OI = "oi",
+    VED = "ved",
+    VET = "vet"
+}
+
 // @public
 export function bootstrapEventContract(field: string, container: Element, appId: string, events: string[], anyWindow?: any): EventContract;
 
