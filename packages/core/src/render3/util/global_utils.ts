@@ -71,7 +71,11 @@ export function publishDefaultGlobalUtils() {
   if (!_published) {
     _published = true;
 
-    setupFrameworkInjectorProfiler();
+    if (typeof window !== 'undefined') {
+      // Only configure the injector profiler when running in the browser.
+      setupFrameworkInjectorProfiler();
+    }
+
     for (const [methodName, method] of Object.entries(globalUtilsFunctions)) {
       publishGlobalUtil(methodName as GlobalUtilsFunctions, method);
     }
