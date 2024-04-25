@@ -5,6 +5,8 @@ It can improve the user experience by quickly launching a static rendered page (
 
 This gives users a meaningful first paint of your application that appears quickly because the browser can render the HTML and CSS without the need to initialize any JavaScript.
 
+Learn more in [The App Shell Model](https://developers.google.com/web/fundamentals/architecture/app-shell).
+
 <docs-workflow>
 <docs-step title="Prepare the application">
 Do this with the following Angular CLI command:
@@ -15,7 +17,7 @@ ng new my-app --routing
 
 </docs-code>
 
-For an existing application, you have to manually add the `RouterModule` and defining a `<router-outlet>` within your application.
+For an existing application, you have to manually add the `Router` and defining a `<router-outlet>` within your application.
 </docs-step>
 <docs-step title="Create the application shell">
 Use the Angular CLI to automatically create the application shell.
@@ -28,57 +30,24 @@ ng generate app-shell
 
 For more information about this command, see [App shell command](cli/generate#app-shell-command).
 
-After running this command you can see that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
+The command updates the application code and adds extra files to the project structure.
 
-<docs-code language="json">
+<code-example language="text">
 
-"server": {
-  "builder": "@angular-devkit/build-angular:server",
-  "defaultConfiguration": "production",
-  "options": {
-    "outputPath": "dist/my-app/server",
-    "main": "src/main.server.ts",
-    "tsConfig": "tsconfig.server.json"
-  },
-  "configurations": {
-    "development": {
-      "outputHashing": "none",
-    },
-    "production": {
-      "outputHashing": "media",
-      "fileReplacements": [
-        {
-          "replace": "src/environments/environment.ts",
-          "with": "src/environments/environment.prod.ts"
-        }
-      ],
-      "sourceMap": false,
-      "optimization": true
-    }
-  }
-},
-"app-shell": {
-  "builder": "@angular-devkit/build-angular:app-shell",
-  "defaultConfiguration": "production",
-  "options": {
-    "route": "shell"
-  },
-  "configurations": {
-    "development": {
-      "browserTarget": "my-app:build:development",
-      "serverTarget": "my-app:server:development",
-    },
-    "production": {
-      "browserTarget": "my-app:build:production",
-      "serverTarget": "my-app:server:production"
-    }
-  }
-}
+  src
+  ├── app
+  │   ├── app.config.server.ts               # server application configuration
+  │   └── app-shell                          # app-shell component
+  │       ├── app-shell.component.html
+  │       ├── app-shell.component.scss
+  │       ├── app-shell.component.spec.ts
+  │       └── app-shell.component.ts
+  └── main.server.ts                         # main server application bootstrapping
 
-</docs-code>
-</docs-step>
+</code-example>
+
+
 <docs-step title="Verify the application is built with the shell content">
-Use the Angular CLI to build the `app-shell` target.
 
 <docs-code language="shell">
 
