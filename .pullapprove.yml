@@ -1201,7 +1201,7 @@ groups:
           'tools/gulp-tasks/**/{*,.*}',
           'tools/legacy-saucelabs/**/{*,.*}',
           'tools/manual_api_docs/**/{*,.*}',
-          'tools/npm-patches/**/{*,.*}',
+          'tools/npm-patches*/**/{*,.*}',
           'tools/rxjs/**/{*,.*}',
           'tools/saucelabs-daemon/**/{*,.*}',
           'tools/saucelabs/**/{*,.*}',
