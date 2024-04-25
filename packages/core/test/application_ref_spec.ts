@@ -532,7 +532,7 @@ describe('bootstrap', () => {
             `NG0403: The module MyModule was bootstrapped, ` +
             `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
             `Please define one of these. ` +
-            `Find more at https://angular.io/errors/NG0403`;
+            `Find more at https://angular.dev/errors/NG0403`;
           expect(e.message).toEqual(expectedErrMsg);
           expect(mockConsole.res[0].join('#')).toEqual('ERROR#Error: ' + expectedErrMsg);
         },

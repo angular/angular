@@ -30,7 +30,7 @@ describe('di with forwardRef', () => {
 
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
       expect(() => TestBed.createComponent(MyComp)).toThrowError(
-        'NG0200: Circular dependency in DI detected for DirectiveA. Find more at https://angular.io/errors/NG0200',
+        'NG0200: Circular dependency in DI detected for DirectiveA. Find more at https://angular.dev/errors/NG0200',
       );
     });
 

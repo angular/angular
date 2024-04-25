@@ -177,7 +177,7 @@ function logLazyLCPWarning(src: string) {
         `changing the loading value of the LCP image to "eager", or by using the ` +
         `NgOptimizedImage directive's prioritization utilities. For more ` +
         `information about addressing or disabling this warning, see ` +
-        `https://angular.io/errors/NG0913`,
+        `https://angular.dev/errors/NG0913`,
     ),
   );
 }
@@ -189,7 +189,7 @@ function logOversizedImageWarning(src: string) {
       `An image with src ${src} has intrinsic file dimensions much larger than its ` +
         `rendered size. This can negatively impact application loading performance. ` +
         `For more information about addressing or disabling this warning, see ` +
-        `https://angular.io/errors/NG0913`,
+        `https://angular.dev/errors/NG0913`,
     ),
   );
 }
