@@ -12,7 +12,6 @@ import {EventContract} from '@angular/core/primitives/event-dispatch';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
 import {withEventReplay} from '@angular/platform-browser/src/hydration';
-import {contract} from './contract';
 
 import {provideServerRendering} from '../public_api';
 import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
@@ -89,7 +88,7 @@ describe('event replay', () => {
 
       beforeAll(async () => {
         globalThis.window = globalThis as unknown as Window & typeof globalThis;
-        eval(contract);
+        await import('@angular/core/primitives/event-dispatch/contract_bundle_min.js' as string);
       });
 
       beforeEach(() => {
