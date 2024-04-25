@@ -1,3 +1,75 @@
+<a name="18.0.0-next.6"></a>
+# 18.0.0-next.6 (2024-04-25)
+## Breaking Changes
+### animations
+- Deprecated `matchesElement` method has been removed from `AnimationDriver` as it is unused.
+### core
+- `async` has been removed, use `waitForAsync` instead.
+### http
+- By default we now prevent caching of HTTP requests that require authorization . To opt-out from this behaviour use the `includeRequestsWithAuthHeaders` option in `withHttpTransferCache`.
+  
+  Example:
+  ```ts
+  withHttpTransferCache({
+    includeRequestsWithAuthHeaders: true,
+  })
+  ```
+### platform-browser
+- Deprecated `StateKey`, `TransferState` and `makeStateKey` have been removed from `@angular/platform-browser`, use the same APIs from `@angular/core`.
+## Deprecations
+### common
+- `getCurrencySymbol`, `getLocaleCurrencyCode`, `getLocaleCurrencyName`, `getLocaleCurrencySymbol`, `getLocaleDateFormat`, `getLocaleDateTimeFormat`, `getLocaleDayNames`, `getLocaleDayPeriods`, `getLocaleDirection`, `getLocaleEraNames`, `getLocaleExtraDayPeriodRules`, `getLocaleExtraDayPeriods`, `getLocaleFirstDayOfWeek`, `getLocaleId`, `getLocaleMonthNames`, `getLocaleNumberFormat`, `getLocaleNumberSymbol`, `getLocalePluralCase`, `getLocaleTimeFormat`, `getLocaleWeekEndRange`, `getNumberOfCurrencyDigits`
+### http
+- `HttpClientModule`, `HttpClientXsrfModule` and `HttpClientJsonpModule`
+  
+  As mentionned, those modules can be replaced by provider function only.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bcce85af72](https://github.com/angular/angular/commit/bcce85af72a82634f60b31d66a5ef42ecd844ce8) | refactor | remove deprecated `matchesElement` from `AnimationDriver` ([#55479](https://github.com/angular/angular/pull/55479)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d34c033902](https://github.com/angular/angular/commit/d34c033902b4e7543796de6c57d0cfd09093eb43) | refactor | Deprecate Local Data API functions ([#54483](https://github.com/angular/angular/pull/54483)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7a16d7e969](https://github.com/angular/angular/commit/7a16d7e969eaf5a9475ffdd21a4bf637ce523856) | fix | don't type check the bodies of control flow nodes in basic mode ([#55360](https://github.com/angular/angular/pull/55360)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a730f09ae9](https://github.com/angular/angular/commit/a730f09ae9e729da79a3e0951e15e0139ef67713) | feat | Add a public API to establish events to be replayed and an attribute to mark an element with an event handler. ([#55356](https://github.com/angular/angular/pull/55356)) |
+| [5f06ca8f55](https://github.com/angular/angular/commit/5f06ca8f5539ed208bae0b110887b5538ac4041f) | feat | add HOST_TAG_NAME token ([#54751](https://github.com/angular/angular/pull/54751)) |
+| [ac863ded48](https://github.com/angular/angular/commit/ac863ded4818af3426ef5888c706a2bd8c79c0be) | feat | provide ExperimentalPendingTasks API ([#55487](https://github.com/angular/angular/pull/55487)) |
+| [5a10f405d3](https://github.com/angular/angular/commit/5a10f405d315a28b9a000c669e9b1cb3fa24a7f1) | fix | complete the removal of deprecation `async` function ([#55491](https://github.com/angular/angular/pull/55491)) |
+| [c175bca364](https://github.com/angular/angular/commit/c175bca36432b26851adb4ea9d850c2d07fba864) | fix | DeferBlockFixture.render should not wait for stability ([#55271](https://github.com/angular/angular/pull/55271)) |
+| [9894278e71](https://github.com/angular/angular/commit/9894278e712a50079af87898a63e1d19a462d015) | fix | make `ActivatedRoute` inject correct instance inside `@defer` blocks ([#55374](https://github.com/angular/angular/pull/55374)) |
+| [5948193e13](https://github.com/angular/angular/commit/5948193e1368eec86647b4c1c0b337a387b27087) | fix | skip defer timers on the server ([#55480](https://github.com/angular/angular/pull/55480)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6f88d80758](https://github.com/angular/angular/commit/6f88d8075895bd80592b1b7e0fba8202a58a5417) | feat | allow caching requests with different origins between server and client ([#55274](https://github.com/angular/angular/pull/55274)) |
+| [8eacb6e4b9](https://github.com/angular/angular/commit/8eacb6e4b982a5aa23cfbf9078dc4e19d9466d73) | feat | exclude caching for authenticated HTTP requests ([#55034](https://github.com/angular/angular/pull/55034)) |
+| [ef665a40a5](https://github.com/angular/angular/commit/ef665a40a580ff4df79617084ac83738f28ae924) | refactor | Deprecate `HttpClientModule` & related modules ([#54020](https://github.com/angular/angular/pull/54020)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f914f6a362](https://github.com/angular/angular/commit/f914f6a3628847c06cbdde9c90cd417fb2f4c61f) | feat | Migration schematics for `HttpClientModule` ([#54020](https://github.com/angular/angular/pull/54020)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cba336d4f1](https://github.com/angular/angular/commit/cba336d4f1badd601b24a58fc51bde995f45682d) | refactor | remove deprecated transfer state APIs ([#55474](https://github.com/angular/angular/pull/55474)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5674c644ab](https://github.com/angular/angular/commit/5674c644abf51ae8764befd3011742ff1febdf29) | fix | add `nonce` attribute to event record script ([#55495](https://github.com/angular/angular/pull/55495)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4a42961393](https://github.com/angular/angular/commit/4a42961393b3abf40f34374df059d3959dadecc0) | feat | `withNavigationErrorHandler` can convert errors to redirects ([#55370](https://github.com/angular/angular/pull/55370)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.3.6"></a>
 # 17.3.6 (2024-04-25)
 ### core
