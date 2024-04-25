@@ -924,6 +924,9 @@
     "name": "diPublicInInjector"
   },
   {
+    "name": "disableEventReplayFn"
+  },
+  {
     "name": "elementPropertyInternal"
   },
   {

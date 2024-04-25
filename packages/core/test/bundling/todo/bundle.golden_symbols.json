@@ -810,6 +810,9 @@
     "name": "diPublicInInjector"
   },
   {
+    "name": "disableEventReplayFn"
+  },
+  {
     "name": "enterDI"
   },
   {
