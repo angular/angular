@@ -12,7 +12,6 @@ import {EventContract} from '@angular/core/primitives/event-dispatch';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
 import {withEventReplay} from '@angular/platform-browser/src/hydration';
-import {contract} from './contract';
 
 import {provideServerRendering} from '../public_api';
 import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
@@ -74,12 +73,15 @@ describe('event replay', () => {
     describe('server rendering', () => {
       let doc: Document;
       let eventContract: EventContract | undefined = undefined;
+      const originalDocument = globalThis.document;
+      const originalWindow = globalThis.window;
+
       function render(doc: Document, html: string) {
         renderHtml(doc, html);
         globalThis.document = doc;
         const scripts = doc.getElementsByTagName('script');
         for (const script of Array.from(scripts)) {
-          if (script && script.textContent?.startsWith('window.__jsaction_bootstrap')) {
+          if (script?.textContent?.startsWith('window.__jsaction_bootstrap')) {
             eval(script.textContent);
           }
         }
@@ -89,7 +91,7 @@ describe('event replay', () => {
 
       beforeAll(async () => {
         globalThis.window = globalThis as unknown as Window & typeof globalThis;
-        eval(contract);
+        await import('@angular/core/primitives/event-dispatch/contract_bundle_min.js' as string);
       });
 
       beforeEach(() => {
@@ -98,8 +100,12 @@ describe('event replay', () => {
 
       afterEach(() => {
         doc.body.textContent = '';
-        eventContract && eventContract.cleanUp();
+        eventContract?.cleanUp();
         eventContract = undefined;
+      });
+      afterAll(() => {
+        globalThis.window = originalWindow;
+        globalThis.document = originalDocument;
       });
       it('should serialize event types to be listened to and jsaction', async () => {
         const clickSpy = jasmine.createSpy('onClick');
