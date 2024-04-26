@@ -45,11 +45,7 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
     private zone: NgZone,
     private animationType: 'animations' | 'noop',
     private moduleImpl?: Promise<{
-      ɵcreateEngine: (
-        type: 'animations' | 'noop',
-        doc: Document,
-        scheduler: ChangeDetectionScheduler | null,
-      ) => AnimationEngine;
+      ɵcreateEngine: (type: 'animations' | 'noop', doc: Document) => AnimationEngine;
       ɵAnimationRendererFactory: typeof AnimationRendererFactory;
     }>,
   ) {}
@@ -84,7 +80,7 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
       .then(({ɵcreateEngine, ɵAnimationRendererFactory}) => {
         // We can't create the renderer yet because we might need the hostElement and the type
         // Both are provided in createRenderer().
-        this._engine = ɵcreateEngine(this.animationType, this.doc, this.scheduler);
+        this._engine = ɵcreateEngine(this.animationType, this.doc);
         const rendererFactory = new ɵAnimationRendererFactory(
           this.delegate,
           this._engine,

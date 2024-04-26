@@ -21,7 +21,7 @@ import {inject} from '../di';
 import {Injectable} from '../di/injectable';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {EnvironmentInjector} from '../di/r3_injector';
+import {EnvironmentInjector, type R3Injector} from '../di/r3_injector';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
@@ -30,6 +30,7 @@ import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
 import {PendingTasks} from '../pending_tasks';
+import {RendererFactory2} from '../render/api';
 import {AfterRenderEventManager} from '../render3/after_render_hooks';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
@@ -311,6 +312,9 @@ export class ApplicationRef {
   private beforeRender = new Subject<boolean>();
   /** @internal */
   afterTick = new Subject<void>();
+  private get allViews() {
+    return [...this.externalTestViews.keys(), ...this._views];
+  }
 
   /**
    * Indicates whether this instance was destroyed.
@@ -564,6 +568,11 @@ export class ApplicationRef {
   }
 
   private detectChangesInAttachedViews(refreshViews: boolean) {
+    let rendererFactory: RendererFactory2 | null = null;
+    if (!(this._injector as R3Injector).destroyed) {
+      rendererFactory = this._injector.get(RendererFactory2, null, {optional: true});
+    }
+
     let runs = 0;
     const afterRenderEffectManager = this.afterRenderEffectManager;
     while (runs < MAXIMUM_REFRESH_RERUNS) {
@@ -578,28 +587,25 @@ export class ApplicationRef {
             this.zonelessEnabled,
           );
         }
+      } else {
+        // If we skipped refreshing views above, there might still be unflushed animations
+        // because we never called `detectChangesInternal` on the views.
+        rendererFactory?.begin?.();
+        rendererFactory?.end?.();
       }
       runs++;
 
       afterRenderEffectManager.executeInternalCallbacks();
       // If we have a newly dirty view after running internal callbacks, recheck the views again
       // before running user-provided callbacks
-      if (
-        [...this.externalTestViews.keys(), ...this._views].some(({_lView}) =>
-          requiresRefreshOrTraversal(_lView),
-        )
-      ) {
+      if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
         continue;
       }
 
       afterRenderEffectManager.execute();
       // If after running all afterRender callbacks we have no more views that need to be refreshed,
       // we can break out of the loop
-      if (
-        ![...this.externalTestViews.keys(), ...this._views].some(({_lView}) =>
-          requiresRefreshOrTraversal(_lView),
-        )
-      ) {
+      if (!this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
         break;
       }
     }
@@ -701,11 +707,7 @@ export class ApplicationRef {
       );
     }
 
-    // This is a temporary type to represent an instance of an R3Injector, which can be destroyed.
-    // The type will be replaced with a different one once destroyable injector type is available.
-    type DestroyableInjector = Injector & {destroy?: Function; destroyed?: boolean};
-
-    const injector = this._injector as DestroyableInjector;
+    const injector = this._injector as R3Injector;
 
     // Check that this injector instance supports destroy operation.
     if (injector.destroy && !injector.destroyed) {
