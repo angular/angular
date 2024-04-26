@@ -39,7 +39,7 @@ export class InjectableAnimationEngine extends AnimationEngine implements OnDest
     driver: AnimationDriver,
     normalizer: AnimationStyleNormalizer,
   ) {
-    super(doc, driver, normalizer, inject(ChangeDetectionScheduler, {optional: true}));
+    super(doc, driver, normalizer);
   }
 
   ngOnDestroy(): void {
