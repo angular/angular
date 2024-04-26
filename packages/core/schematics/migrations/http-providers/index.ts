@@ -50,7 +50,7 @@ function runMigration(tree: Tree, tsconfigPath: string, basePath: string) {
         update.insertLeft(startPos, text);
       }
     };
-    migrateFile(sourceFile, rewriter);
+    migrateFile(sourceFile, program.getTypeChecker(), rewriter);
 
     if (update !== null) {
       tree.commitUpdate(update);

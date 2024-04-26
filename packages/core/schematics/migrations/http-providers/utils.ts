@@ -9,6 +9,7 @@
 import ts from 'typescript';
 
 import {ChangeTracker} from '../../utils/change_tracker';
+import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {getImportSpecifiers, getNamedImports} from '../../utils/typescript/imports';
 
 const HTTP_CLIENT_MODULE = 'HttpClientModule';
@@ -34,7 +35,8 @@ const HTTP_TESTING_MODULES = new Set([HTTP_CLIENT_TESTING_MODULE]);
 
 export type RewriteFn = (startPos: number, width: number, text: string) => void;
 
-export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
+export function migrateFile(
+    sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker, rewriteFn: RewriteFn) {
   const changeTracker = new ChangeTracker(ts.createPrinter());
   const addedImports = new Map<string, Set<string>>([
     [COMMON_HTTP, new Set()],
@@ -43,24 +45,25 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
 
   const commonHttpIdentifiers = new Set(
       getImportSpecifiers(sourceFile, COMMON_HTTP, [...HTTP_MODULES])
-          .map(
-              (specifier) => specifier.getText(),
-              ),
+          .map((specifier) => specifier.getText()),
   );
   const commonHttpTestingIdentifiers = new Set(
       getImportSpecifiers(sourceFile, COMMON_HTTP_TESTING, [...HTTP_TESTING_MODULES])
-          .map(
-              (specifier) => specifier.getText(),
-              ),
+          .map((specifier) => specifier.getText()),
   );
 
-  const visitNode = (node: ts.Node) => {
-    ts.forEachChild(node, visitNode);
+  ts.forEachChild(sourceFile, function visit(node: ts.Node) {
+    ts.forEachChild(node, visit);
 
-    migrateDecoratorsImports(node, commonHttpIdentifiers, addedImports, changeTracker);
+    if (ts.isClassDeclaration(node)) {
+      const decorators = getAngularDecorators(typeChecker, ts.getDecorators(node) || []);
+      decorators.forEach(decorator => {
+        migrateDecorator(decorator, commonHttpIdentifiers, addedImports, changeTracker);
+      });
+    }
+
     migrateTestingModuleImports(node, commonHttpTestingIdentifiers, addedImports, changeTracker);
-  };
-  ts.forEachChild(sourceFile, visitNode);
+  });
 
   // Imports are for the whole file
   // We handle them separately
@@ -113,26 +116,23 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
   }
 }
 
-function migrateDecoratorsImports(
-    node: ts.Node,
-    commonHttpIdentifiers: Set<string>,
-    addedImports: Map<string, Set<string>>,
-    changeTracker: ChangeTracker,
-) {
-  if (!ts.isDecorator(node)) {
-    return;
-  }
-
-  // We have a decorator, is it @NgModule/Component/Directive?
-  const decoratorCallExpression = node.getChildAt(1) as ts.CallExpression;
-  const decoratedFunction = decoratorCallExpression.expression.getText();
-  if (!['NgModule', 'Component', 'Directive'].includes(decoratedFunction)) {
+function migrateDecorator(
+    decorator: NgDecorator, commonHttpIdentifiers: Set<string>,
+    addedImports: Map<string, Set<string>>, changeTracker: ChangeTracker) {
+  // Only @NgModule and @Component support `imports`.
+  // Also skip decorators with no arguments.
+  if ((decorator.name !== 'NgModule' && decorator.name !== 'Component') ||
+      decorator.node.expression.arguments.length < 1) {
     return;
   }
 
   // Does the decorator have any imports?
-  const decoratorArgs = decoratorCallExpression.arguments[0] as ts.ObjectLiteralExpression;
-  const moduleImports = getImportsProp(decoratorArgs);
+  const metadata = decorator.node.expression.arguments[0];
+  if (!ts.isObjectLiteralExpression(metadata)) {
+    return;
+  }
+
+  const moduleImports = getImportsProp(metadata);
   if (!moduleImports) {
     return;
   }
@@ -181,7 +181,7 @@ function migrateDecoratorsImports(
 
   // Adding the new providers
   addedImports.get(COMMON_HTTP)?.add(PROVIDE_HTTP_CLIENT);
-  const providers = getProvidersFromLiteralExpr(decoratorArgs);
+  const providers = getProvidersFromLiteralExpr(metadata);
   const provideHttpExpr = createCallExpression(PROVIDE_HTTP_CLIENT, [...addedProviders]);
 
   let newProviders: ts.ArrayLiteralExpression;
@@ -198,21 +198,23 @@ function migrateDecoratorsImports(
 
   // Replacing the existing decorator with the new one (with the new imports and providers)
   const newDecoratorArgs = ts.factory.createObjectLiteralExpression([
-    ...decoratorArgs.properties.filter((p) => p.getText() === 'imports'),
+    ...metadata.properties.filter((p) => p.getText() === 'imports'),
     ts.factory.createPropertyAssignment('imports', newImports),
     ts.factory.createPropertyAssignment('providers', newProviders),
   ]);
-  changeTracker.replaceNode(decoratorArgs, newDecoratorArgs);
+  changeTracker.replaceNode(metadata, newDecoratorArgs);
 }
 
 function migrateTestingModuleImports(
-    node: ts.Node,
-    commonHttpTestingIdentifiers: Set<string>,
-    addedImports: Map<string, Set<string>>,
-    changeTracker: ChangeTracker,
-) {
-  if (!ts.isCallExpression(node) ||
-      node.expression.getText() !== 'TestBed.configureTestingModule') {
+    node: ts.Node, commonHttpTestingIdentifiers: Set<string>,
+    addedImports: Map<string, Set<string>>, changeTracker: ChangeTracker) {
+  // Look for calls to `TestBed.configureTestingModule` with at least one argument.
+  // TODO: this won't work if `TestBed` is aliased or type cast.
+  if (!ts.isCallExpression(node) || node.arguments.length < 1 ||
+      !ts.isPropertyAccessExpression(node.expression) ||
+      !ts.isIdentifier(node.expression.expression) ||
+      node.expression.expression.text !== 'TestBed' ||
+      node.expression.name.text !== 'configureTestingModule') {
     return;
   }
 
@@ -277,7 +279,7 @@ function migrateTestingModuleImports(
 
 function getImportsProp(literal: ts.ObjectLiteralExpression) {
   const properties = literal.properties;
-  let importProp = properties.find((property) => property.name?.getText() === 'imports');
+  const importProp = properties.find((property) => property.name?.getText() === 'imports');
   if (!importProp || !ts.hasOnlyExpressionInitializer(importProp)) {
     return null;
   }
@@ -291,7 +293,7 @@ function getImportsProp(literal: ts.ObjectLiteralExpression) {
 
 function getProvidersFromLiteralExpr(literal: ts.ObjectLiteralExpression) {
   const properties = literal.properties;
-  let providersProp = properties.find((property) => property.name?.getText() === 'providers');
+  const providersProp = properties.find((property) => property.name?.getText() === 'providers');
   if (!providersProp || !ts.hasOnlyExpressionInitializer(providersProp)) {
     return null;
   }

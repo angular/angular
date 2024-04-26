@@ -64,15 +64,23 @@ describe('Http providers migration', () => {
     shx.rm('-r', tmpDirPath);
   });
 
-  it('should replace HttpClienModule', async () => {
+  it('should replace HttpClientModule', async () => {
     writeFile(
         '/index.ts',
-        `import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@angular/common/http';
-         import { CommonModule } from '@angular/common';
-    @NgModule({
-      imports: [CommonModule, HttpClientModule,HttpClientJsonpModule, RouterModule.forRoot([]), HttpClientXsrfModule.withOptions({cookieName: 'foobar'})],
-    })
-    export class AppModule {}`,
+        `
+          import { NgModule } from '@angular/core';
+          import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@angular/common/http';
+          import { CommonModule } from '@angular/common';
+
+          @NgModule({
+            imports: [
+              CommonModule,
+              HttpClientModule,HttpClientJsonpModule,
+              RouterModule.forRoot([]),
+              HttpClientXsrfModule.withOptions({cookieName: 'foobar'})
+            ],
+          })
+          export class AppModule {}`,
     );
 
     await runMigration();
@@ -92,15 +100,25 @@ describe('Http providers migration', () => {
     );
   });
 
-  it('should replace HttpClienModule with existing providers ', async () => {
+  it('should replace HttpClientModule with existing providers ', async () => {
     writeFile(
         '/index.ts',
-        `import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@angular/common/http';
-    @NgModule({
-      imports: [CommonModule,HttpClientModule,HttpClientJsonpModule, RouterModule.forRoot([]), HttpClientXsrfModule.withOptions({cookieName: 'foobar'})],
-      providers: [provideConfig({ someConfig: 'foobar'})]
-    })
-    export class AppModule {}`,
+        `
+          import { NgModule } from '@angular/core';
+          import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@angular/common/http';
+
+          @NgModule({
+            imports: [
+              CommonModule,
+              HttpClientModule,
+              HttpClientJsonpModule,
+              RouterModule.forRoot([]),
+              HttpClientXsrfModule.withOptions({cookieName: 'foobar'})
+            ],
+            providers: [provideConfig({ someConfig: 'foobar'})]
+          })
+          export class AppModule {}
+      `,
     );
 
     await runMigration();
@@ -117,15 +135,25 @@ describe('Http providers migration', () => {
     );
   });
 
-  it('should replace HttpClienModule & HttpClientXsrfModule.disable()', async () => {
+  it('should replace HttpClientModule & HttpClientXsrfModule.disable()', async () => {
     writeFile(
         '/index.ts',
-        `import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@angular/common/http';
-    @NgModule({
-      imports: [CommonModule,HttpClientModule,HttpClientJsonpModule, RouterModule.forRoot([]), HttpClientXsrfModule.disable()],
-      providers: [provideConfig({ someConfig: 'foobar'})]
-    })
-    export class AppModule {}`,
+        `
+        import { NgModule } from '@angular/core';
+        import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@angular/common/http';
+
+        @NgModule({
+          imports: [
+            CommonModule,
+            HttpClientModule,
+            HttpClientJsonpModule,
+            RouterModule.forRoot([]),
+            HttpClientXsrfModule.disable()
+          ],
+          providers: [provideConfig({ someConfig: 'foobar'})]
+        })
+        export class AppModule {}
+      `,
     );
 
     await runMigration();
@@ -142,15 +170,24 @@ describe('Http providers migration', () => {
     );
   });
 
-  it('should replace HttpClienModule & base HttpClientXsrfModule', async () => {
+  it('should replace HttpClientModule & base HttpClientXsrfModule', async () => {
     writeFile(
         '/index.ts',
-        `import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@angular/common/http';
-    @NgModule({
-      imports: [CommonModule,HttpClientModule,RouterModule.forRoot([]), HttpClientXsrfModule],
-      providers: [provideConfig({ someConfig: 'foobar'})]
-    })
-    export class AppModule {}`,
+        `
+        import { NgModule } from '@angular/core';
+        import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@angular/common/http';
+
+        @NgModule({
+          imports: [
+            CommonModule,
+            HttpClientModule,
+            RouterModule.forRoot([]),
+            HttpClientXsrfModule
+          ],
+          providers: [provideConfig({ someConfig: 'foobar'})]
+        })
+        export class AppModule {}
+      `,
     );
 
     await runMigration();
@@ -171,18 +208,21 @@ describe('Http providers migration', () => {
   it('should handle a migration with 2 modules in the same file ', async () => {
     writeFile(
         '/index.ts',
-        `import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@angular/common/http';
-    @NgModule({
-      imports: [CommonModule,HttpClientModule,HttpClientJsonpModule)],
-      providers: [provideConfig({ someConfig: 'foobar'})]
-    })
-    export class AppModule {}
-    
-    @NgModule({
-      imports: [CommonModule,HttpClientModule,HttpClientXsrfModule.disable()],
-      providers: [provideConfig({ someConfig: 'foobar'})]
-    })
-    export class AppModule {}
+        `
+        import { NgModule } from '@angular/core';
+        import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@angular/common/http';
+
+        @NgModule({
+          imports: [CommonModule, HttpClientModule, HttpClientJsonpModule],
+          providers: [provideConfig({ someConfig: 'foobar'})]
+        })
+        export class AppModule {}
+
+        @NgModule({
+          imports: [CommonModule, HttpClientModule, HttpClientXsrfModule.disable()],
+          providers: [provideConfig({ someConfig: 'foobar'})]
+        })
+        export class AppModule {}
     `,
     );
 
@@ -204,12 +244,15 @@ describe('Http providers migration', () => {
   it('should handle a migration for acomponent ', async () => {
     writeFile(
         '/index.ts',
-        `import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
-    @Component({
-      template: '',
-      imports: [HttpClientModule,HttpClientJsonpModule)],
-    })
-    export class MyComponent {}
+        `
+          import { Component } from '@angular/core';
+          import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
+
+          @Component({
+            template: '',
+            imports: [HttpClientModule,HttpClientJsonpModule],
+          })
+          export class MyComponent {}
     `,
     );
 
@@ -221,41 +264,24 @@ describe('Http providers migration', () => {
     expect(content).toContain(`provideHttpClient(withInterceptorsFromDi(), withJsonpSupport())`);
   });
 
-  it('should handle a migration for a directive ', async () => {
+  it('should not migrate HttpClientModule from another package', async () => {
     writeFile(
         '/index.ts',
-        `import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
-    @Directive({
-      selector: 'my-directive',
-      imports: [HttpClientModule,HttpClientJsonpModule)],
-    })
-    export class MyDirective {}
-    `,
-    );
+        `
+          import { NgModule } from '@angular/core';
+          import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@not-angular/common/http';
 
-    await runMigration();
+          @NgModule({
+            imports: [CommonModule,HttpClientModule,HttpClientJsonpModule],
+            providers: [provideConfig({ someConfig: 'foobar' })]
+          })
+          export class AppModule {}
 
-    const content = tree.readContent('/index.ts');
-    expect(content).toContain(`@angular/common/http`);
-    expect(content).not.toContain(`HttpClientModule`);
-    expect(content).toContain(`provideHttpClient(withInterceptorsFromDi(), withJsonpSupport())`);
-  });
-
-  it('should not migrate  HttpClientModule from another package', async () => {
-    writeFile(
-        '/index.ts',
-        `import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule, HttpTransferCacheOptions } from '@not-angular/common/http';
-    @NgModule({
-      imports: [CommonModule,HttpClientModule,HttpClientJsonpModule)],
-      providers: [provideConfig({ someConfig: 'foobar' })]
-    })
-    export class AppModule {}
-    
-    @NgModule({
-      imports: [CommonModule,HttpClientModule,HttpClientXsrfModule.disable()],
-      providers: [provideConfig({ someConfig: 'foobar' })]
-    })
-    export class AppModule {}
+          @NgModule({
+            imports: [CommonModule,HttpClientModule,HttpClientXsrfModule.disable()],
+            providers: [provideConfig({ someConfig: 'foobar' })]
+          })
+          export class AppModule {}
     `,
     );
 
@@ -280,10 +306,12 @@ describe('Http providers migration', () => {
     writeFile(
         '/index.ts',
         `
-      import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-      TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule],
-      });
+        import { TestBed } from '@angular/core/testing';
+        import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+
+        TestBed.configureTestingModule({
+          imports: [HttpClientTestingModule],
+        });
     `,
     );
 
@@ -301,11 +329,13 @@ describe('Http providers migration', () => {
     writeFile(
         '/index.ts',
         `
-      import { HttpClientTestingModule, HttpTestingController } from '@not-angular/common/http/testing';
-      TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule],
-      });
-    `,
+        import { TestBed } from '@angular/core/testing';
+        import { HttpClientTestingModule, HttpTestingController } from '@not-angular/common/http/testing';
+
+        TestBed.configureTestingModule({
+          imports: [HttpClientTestingModule],
+        });
+      `,
     );
 
     await runMigration();
@@ -320,19 +350,21 @@ describe('Http providers migration', () => {
     writeFile(
         '/index.ts',
         `
-      import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-      import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
+        import { NgModule } from '@angular/core';
+        import { TestBed } from '@angular/core/testing';
+        import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+        import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 
-      @NgModule({
-        template: '',
-        imports: [HttpClientModule,HttpClientJsonpModule)],
-      })
-      export class MyModule {}
+        @NgModule({
+          template: '',
+          imports: [HttpClientModule,HttpClientJsonpModule],
+        })
+        export class MyModule {}
 
 
-      TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule],
-      });
+        TestBed.configureTestingModule({
+          imports: [HttpClientTestingModule],
+        });
     `,
     );
 
@@ -352,5 +384,24 @@ describe('Http providers migration', () => {
         `import { withInterceptorsFromDi, withJsonpSupport, provideHttpClient } from '@angular/common/http';`);
     expect(content).toContain(
         `import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';`);
+  });
+
+  it('should not change a decorator with no arguments', async () => {
+    writeFile(
+        '/index.ts',
+        `
+          import { NgModule } from '@angular/core';
+          import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
+
+          @NgModule()
+          export class MyModule {}
+    `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts');
+    expect(content).not.toContain('HttpClientModule');
+    expect(content).not.toContain('provideHttpClient');
   });
 });
