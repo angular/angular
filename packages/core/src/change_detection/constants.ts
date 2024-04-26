@@ -12,7 +12,6 @@
  * When set, takes effect the next time change detection is triggered.
  *
  * @see [Change detection usage](/api/core/ChangeDetectorRef?tab=usage-notes)
- * @see [Skipping component subtrees](/best-practices/skipping-subtrees)
  *
  * @publicApi
  */
