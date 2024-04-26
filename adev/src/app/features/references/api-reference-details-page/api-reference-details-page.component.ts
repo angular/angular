@@ -16,12 +16,12 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import {DOCUMENT, NgFor, NgIf} from '@angular/common';
+import {DOCUMENT, NgFor, NgIf, ViewportScroller} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {distinctUntilChanged, map} from 'rxjs/operators';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
+import {distinctUntilChanged, filter, map, take} from 'rxjs/operators';
 import {DocContent, DocViewer} from '@angular/docs';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink, Scroll} from '@angular/router';
 import {ApiItemType} from './../interfaces/api-item-type';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {
@@ -51,6 +51,15 @@ export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly scrollHandler = inject(ReferenceScrollHandler);
+  private readonly scroller = inject(ViewportScroller);
+  private scrollEvent = toSignal(
+    this.router.events.pipe(
+      filter((e): e is Scroll => e instanceof Scroll),
+      take(1),
+    ),
+    {initialValue: null},
+  );
+  private cardsDisplayedOnInit = false;
 
   ApiItemType = ApiItemType;
 
@@ -67,10 +76,22 @@ export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.setActiveTab();
+    if (this.canDisplayCards()) {
+      this.cardsDisplayedOnInit = true;
+    }
     this.listenToTabChange();
   }
 
   membersCardsLoaded(): void {
+    const event = this.scrollEvent();
+    if (this.cardsDisplayedOnInit && event) {
+      // Cards loaded after scroll event happened. We have to handle the scroll event manually
+      if (event.position) {
+        this.scroller.scrollToPosition(event.position);
+      } else if (event.anchor) {
+        this.scroller.scrollToAnchor(event.anchor);
+      }
+    }
     this.scrollHandler.setupListeners(API_TAB_CLASS_NAME);
   }
 
