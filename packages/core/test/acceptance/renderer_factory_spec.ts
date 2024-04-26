@@ -98,7 +98,7 @@ describe('renderer factory lifecycle', () => {
 
   it('should work with a component', () => {
     const fixture = TestBed.createComponent(SomeComponent);
-    fixture.detectChanges();
+    fixture.componentRef.changeDetectorRef.detectChanges();
     expect(logs).toEqual([
       'create',
       'create',
@@ -108,14 +108,14 @@ describe('renderer factory lifecycle', () => {
       'end',
     ]);
     logs = [];
-    fixture.detectChanges();
+    fixture.componentRef.changeDetectorRef.detectChanges();
     expect(logs).toEqual(['begin', 'some_component update', 'end']);
   });
 
   it('should work with a component which throws', () => {
     expect(() => {
       const fixture = TestBed.createComponent(SomeComponentWhichThrows);
-      fixture.detectChanges();
+      fixture.componentRef.changeDetectorRef.detectChanges();
     }).toThrow();
     expect(logs).toEqual(['create', 'create', 'begin', 'end']);
   });
@@ -377,12 +377,7 @@ function getAnimationRendererFactory2(document: Document): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   return new ɵAnimationRendererFactory(
     getRendererFactory2(document),
-    new ɵAnimationEngine(
-      document,
-      new MockAnimationDriver(),
-      new ɵNoopAnimationStyleNormalizer(),
-      null,
-    ),
+    new ɵAnimationEngine(document, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
     fakeNgZone,
   );
 }

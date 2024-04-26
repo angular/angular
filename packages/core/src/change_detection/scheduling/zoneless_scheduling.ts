@@ -21,9 +21,6 @@ export const enum NotificationSource {
   DebugApplyChanges,
   // ChangeDetectorRef.markForCheck indicates the component is dirty/needs to refresh.
   MarkForCheck,
-  // Node removal is queued in animation code and needs change detection to flush.
-  // TODO(atscott): We should not have to refresh views in order to flush animations.
-  AnimationQueuedNodeRemoval,
 
   // Bound listener callbacks execute and can update state without causing other notifications from
   // above.

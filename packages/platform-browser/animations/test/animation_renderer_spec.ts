@@ -351,11 +351,11 @@ import {el} from '../../testing/src/browser_util';
       const cmp = fixture.componentInstance;
 
       renderer.log = [];
-      fixture.detectChanges();
+      fixture.changeDetectorRef.detectChanges();
       expect(renderer.log).toEqual(['begin', 'end']);
 
       renderer.log = [];
-      fixture.detectChanges();
+      fixture.changeDetectorRef.detectChanges();
       expect(renderer.log).toEqual(['begin', 'end']);
     });
   });
