@@ -60,7 +60,7 @@ The tabs for the example show the following:
 | flying-heroes.component.html   | Template with the new pipe used. |
 | flying-heroes.pipe.ts          | File with custom pipe that filters flying heroes. |
 
-<docs-code-multifile path="adev/src/content/examples/pipes/src/app/flying-heroes.component.ts_FlyingHeroesComponent" preview>
+<docs-code-multifile>
     <docs-code header="src/app/flying-heroes.component.html" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.html" visibleRegion="template-flying-heroes"/>
     <docs-code header="src/app/flying-heroes.pipe.ts" path="adev/src/content/examples/pipes/src/app/flying-heroes.pipe.ts" visibleRegion="pure"/>
 </docs-code-multifile>
