@@ -46,8 +46,6 @@ export class EventContract implements UnrenamedEventContract {
     static MOUSE_SPECIAL_SUPPORT: boolean;
     registerDispatcher(dispatcher: Dispatcher_2, restriction: Restriction): void;
     replayEarlyEvents(): void;
-    // (undocumented)
-    static STOP_PROPAGATION: boolean;
 }
 
 // @public
