@@ -38,7 +38,6 @@ import {EventContractContainerManager} from './event_contract_container';
 import {
   A11Y_CLICK_SUPPORT,
   CUSTOM_EVENT_SUPPORT,
-  JSNAMESPACE_SUPPORT,
   MOUSE_SPECIAL_SUPPORT,
 } from './event_contract_defines';
 import * as eventInfoLib from './event_info';
@@ -91,7 +90,6 @@ export class EventContract implements UnrenamedEventContract {
   static CUSTOM_EVENT_SUPPORT = CUSTOM_EVENT_SUPPORT;
   static A11Y_CLICK_SUPPORT = A11Y_CLICK_SUPPORT;
   static MOUSE_SPECIAL_SUPPORT = MOUSE_SPECIAL_SUPPORT;
-  static JSNAMESPACE_SUPPORT = JSNAMESPACE_SUPPORT;
 
   private containerManager: EventContractContainerManager | null;
 
