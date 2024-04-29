@@ -7,7 +7,7 @@ built _with_ Angular. (Though you can follow them too if you really want).
 
 The [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html) is the
 basis for Angular's coding style, with additional guidance here pertaining to TypeScript. The team
-uses `clang-format` to automatically format code; automatic formatting is enforced by CI.
+uses `prettier` to automatically format code; automatic formatting is enforced by CI.
 
 ## Code practices
 

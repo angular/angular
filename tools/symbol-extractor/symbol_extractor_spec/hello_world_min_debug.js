@@ -248,10 +248,10 @@
     return 'function' == typeof value
       ? value.name || value
       : 'string' == typeof value
-      ? value
-      : null == value
-      ? ''
-      : '' + value;
+        ? value
+        : null == value
+          ? ''
+          : '' + value;
   }
   /**
    *@license
