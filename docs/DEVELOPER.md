@@ -91,6 +91,7 @@ PRs can only be merged if the code is formatted properly and all tests are passi
 
 <a name="formatting-your-source-code">
 <a name="clang-format"></a>
+<a name="prettier"></a>
 
 ### Testing changes against a local library/project
 
@@ -119,38 +120,13 @@ node --preserve-symlinks --preserve-symlinks-main node_modules/@angular/cli/lib/
 
 ## Formatting your source code
 
-Angular uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) to format the source code.
+Angular uses [prettier](https://clang.llvm.org/docs/ClangFormat.html) to format the source code.
 If the source code is not properly formatted, the CI will fail and the PR cannot be merged.
 
 You can automatically format your code by running:
 - `yarn ng-dev format changed [shaOrRef]`: format only files changed since the provided sha/ref. `shaOrRef` defaults to `main`.
 - `yarn ng-dev format all`: format _all_ source code
 - `yarn ng-dev format files <files..>`: format only provided files
-
-A better way is to set up your IDE to format the changed file on each file save.
-
-### VS Code
-1. Install [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format) extension for VS Code.
-2. It will automatically pick up the settings from `.vscode/settings.json`.
-If you haven't already, create a `settings.json` file by following the instructions [here](../.vscode/README.md).
-
-### WebStorm / IntelliJ
-1. Install the [ClangFormatIJ](https://plugins.jetbrains.com/plugin/8396-clangformatij) plugin
-1. Open `Preferences->Tools->clang-format`
-1. Find the field named "PATH"
-1. Add `<PATH_TO_YOUR_WORKSPACE>/angular/node_modules/clang-format/bin/<OS>/`
-  where the OS options are: `darwin_x64`, `linux_x64`, and `win32`.
-
-### Vim
-1. Install [Vim Clang-Format](https://github.com/rhysd/vim-clang-format).
-2. Create a [project-specific `.vimrc`](https://andrew.stwrt.ca/posts/project-specific-vimrc/) in
-   your Angular directory containing
-
-```vim
-let g:clang_format#command = '$ANGULAR_PATH/node_modules/.bin/clang-format'
-```
-
-where `$ANGULAR_PATH` is an environment variable of the absolute path of your Angular directory.
 
 ## Linting/verifying your Source Code
 

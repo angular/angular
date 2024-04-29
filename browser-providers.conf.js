@@ -43,19 +43,19 @@ const customLaunchers = {
 
 const sauceAliases = {
   'CI_REQUIRED': buildConfiguration('unitTest', 'SL', true),
-  'CI_OPTIONAL': buildConfiguration('unitTest', 'SL', false)
+  'CI_OPTIONAL': buildConfiguration('unitTest', 'SL', false),
 };
 
 module.exports = {
-  customLaunchers : customLaunchers,
-  sauceAliases : sauceAliases,
+  customLaunchers: customLaunchers,
+  sauceAliases: sauceAliases,
 };
 
 function buildConfiguration(type, target, required) {
   return Object.keys(config)
-      .filter((item) => {
-        const conf = config[item][type];
-        return conf.required === required && conf.target === target;
-      })
-      .map((item) => target + '_' + item.toUpperCase());
+    .filter((item) => {
+      const conf = config[item][type];
+      return conf.required === required && conf.target === target;
+    })
+    .map((item) => target + '_' + item.toUpperCase());
 }

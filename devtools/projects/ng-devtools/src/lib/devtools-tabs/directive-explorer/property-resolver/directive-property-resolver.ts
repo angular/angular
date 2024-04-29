@@ -157,8 +157,8 @@ export class DirectivePropertyResolver {
       propPointer = inputLabels.has(propName)
         ? inputProps
         : outputLabels.has(propName)
-        ? outputProps
-        : stateProps;
+          ? outputProps
+          : stateProps;
       propPointer[propName] = this.directiveProperties[propName];
     });
 
