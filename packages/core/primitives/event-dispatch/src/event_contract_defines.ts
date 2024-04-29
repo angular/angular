@@ -7,12 +7,6 @@
  */
 
 /**
- * @define Support for jsnamespace attribute.  This flag can be overridden in a
- * build rule to trim down the EventContract's binary size.
- */
-export const JSNAMESPACE_SUPPORT = false;
-
-/**
  * @define Support for accessible click actions.  This flag can be overridden in
  * a build rule.
  */

@@ -44,8 +44,6 @@ export class EventContract implements UnrenamedEventContract {
     exportAddA11yClickSupport(): void;
     handler(eventType: string): EventHandler | undefined;
     // (undocumented)
-    static JSNAMESPACE_SUPPORT: boolean;
-    // (undocumented)
     static MOUSE_SPECIAL_SUPPORT: boolean;
     registerDispatcher(dispatcher: Dispatcher_2, restriction: Restriction): void;
     replayEarlyEvents(earlyJsactionContainer?: EarlyJsactionDataContainer): void;
