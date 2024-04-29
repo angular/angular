@@ -52,20 +52,17 @@ export class DevToolsTabsComponent {
   readonly isHydrationEnabled = input(false);
   readonly frameSelected = output<Frame>();
 
-  readonly applicationEnvironment = inject(ApplicationEnvironment);
-  readonly activeTab = signal<Tabs>('Components');
-  readonly inspectorRunning = signal(false);
-  readonly showCommentNodes = signal(false);
-  readonly timingAPIEnabled = signal(false);
+  @Output() frameSelected = new EventEmitter<Frame>();
+  @ViewChild(DirectiveExplorerComponent) directiveExplorer!: DirectiveExplorerComponent;
+  @ViewChild('navBar', {static: true}) navbar!: MatTabNav;
 
-  readonly routes = signal<Route[]>([]);
-  readonly frameManager = inject(FrameManager);
+  applicationEnvironment = inject(ApplicationEnvironment);
 
-  readonly tabs = computed<Tabs[]>(() => {
-    const alwaysShown: Tabs[] = ['Components', 'Profiler', 'Injector Tree'];
-    return this.routes().length === 0 ? alwaysShown : [...alwaysShown, 'Router Tree'];
-  });
-
+  activeTab: Tabs = 'Components';
+  inspectorRunning = false;
+  routerTreeEnabled = false;
+  showCommentNodes = false;
+  timingAPIEnabled = false;
   profilingNotificationsSupported = Boolean(
     (window.chrome?.devtools as any)?.performance?.onProfilingStarted,
   );

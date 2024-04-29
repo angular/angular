@@ -6,23 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   CanActivateFn,
   RouterModule,
   RouterStateSnapshot,
-  UrlTree,
 } from '@angular/router';
 
-export const activateGuard: CanActivateFn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot,
-): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree => {
-  return true;
-};
-
-import RoutesAuxComponent, {
+import {
+  RoutesAuxComponent,
   RoutesHomeComponent,
   RoutesOneComponent,
   RoutesTwoComponent,
@@ -31,8 +25,13 @@ import RoutesAuxComponent, {
   Service3,
   Service4,
 } from './routes.component';
-import {CommonModule} from '@angular/common';
-import {Observable} from 'rxjs';
+
+export const activateGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
+  return true;
+};
 
 @NgModule({
   imports: [
@@ -56,10 +55,9 @@ import {Observable} from 'rxjs';
       {path: 'route-params/:id', component: RoutesHomeComponent, title: 'Route Parmas'},
       {path: 'route-query-params', component: RoutesHomeComponent},
       {
-        path: 'route-stand-alone',
+        path: 'route-standalone',
         providers: [Service1, Service2, Service3, Service4],
-        loadComponent: () =>
-          import('./standalone-route.component').then((x) => x.RoutesStandaloneComponent),
+        loadComponent: () => import('./routes.component').then((x) => x.RoutesStandaloneComponent),
       },
       {
         path: 'route-data',

@@ -50,11 +50,11 @@
 }
 
 .selected-route {
-  background-color: #ebf1fb !important;
+  background-color: #ebf1fb;
 }
 
 .active-route {
-  background-color: #cfe8fc !important;
+  background-color: #cfe8fc;
 }
 
 :host {
@@ -97,13 +97,6 @@
       text-align: left;
       background-color: #cfe8fc;
     }
-
-    // .link {
-    //   stroke: #9b9b9b;
-    //   // stroke: #000000;
-    //   stroke-width: 1px;
-    //   fill: none;
-    // }
 
     .text-link {
       text-decoration: underline;
@@ -165,12 +158,6 @@
 
 :host-context(.dark-theme) {
   ::ng-deep {
-    // .link {
-    //   stroke: #bcc5ce;
-    //   stroke-width: 1px;
-    //   fill: none;
-    // }
-
     .node-route {
       stroke: #54c9bd;
       fill: #202124;

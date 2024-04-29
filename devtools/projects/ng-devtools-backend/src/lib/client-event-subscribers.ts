@@ -213,20 +213,15 @@ const getNestedPropertiesCallback =
 // Subscribe Helpers
 //
 
-// todo: parse router tree with framework APIs after they are developed
 const getRoutes = (messageBus: MessageBus<Events>) => {
-  // Return empty router tree to disable tab.
-  // messageBus.emit('updateRouterTree', [[]]);
-  const node = queryDirectiveForest(
-    [0],
+  const forest = prepareForestForSerialization(
     initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    ngDebugDependencyInjectionApiIsSupported(),
   );
-  let routes: Route[] = [];
-  if (node?.component?.instance?.router) {
-    console.log(node?.component?.instance?.router);
-    routes = [parseRoutes(node?.component?.instance?.router)];
+  const rootInjector = (forest[0].resolutionPath ?? []).find((i) => i.name === 'Root');
+  if (rootInjector) {
+    getRouterConfigFromRoot(messageBus)(rootInjector);
   }
-  messageBus.emit('updateRouterTree', [routes]);
 };
 
 const checkForAngular = (messageBus: MessageBus<Events>): void => {
@@ -352,58 +347,93 @@ function getNodeDIResolutionPath(node: ComponentTreeNode): SerializedInjector[] 
   return serializedPath;
 }
 
+const getInjectorProvidersCallbackUtil = (injector: SerializedInjector) => {
+  if (!idToInjector.has(injector.id)) {
+    return;
+  }
+
+  const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
+  const allProviderRecords: SerializedProviderRecord[] = [];
+
+  const tokenToRecords: Map<any, SerializedProviderRecord[]> = new Map();
+
+  for (const [index, providerRecord] of providerRecords.entries()) {
+    const record = serializeProviderRecord(providerRecord, index, injector.type === 'environment');
+
+    allProviderRecords.push(record);
+
+    const records = tokenToRecords.get(providerRecord.token) ?? [];
+    records.push(record);
+    tokenToRecords.set(providerRecord.token, records);
+  }
+
+  const serializedProviderRecords: SerializedProviderRecord[] = [];
+
+  for (const [token, records] of tokenToRecords.entries()) {
+    const multiRecords = records.filter((record) => record.multi);
+    const nonMultiRecords = records.filter((record) => !record.multi);
+
+    for (const record of nonMultiRecords) {
+      serializedProviderRecords.push(record);
+    }
+
+    const [firstMultiRecord] = multiRecords;
+    if (firstMultiRecord !== undefined) {
+      // All multi providers will have the same token, so we can just use the first one.
+      serializedProviderRecords.push({
+        token: firstMultiRecord.token,
+        type: 'multi',
+        multi: true,
+        // todo(aleksanderbodurri): implememnt way to differentiate multi providers that
+        // provided as viewProviders
+        isViewProvider: firstMultiRecord.isViewProvider,
+        index: records.map((record) => record.index as number),
+      });
+    }
+  }
+
+  return serializedProviderRecords;
+};
+
+const getRouterConfigFromRoot =
+  (messageBus: MessageBus<Events>) => (injector: SerializedInjector) => {
+    const serializedProviderRecords = getInjectorProvidersCallbackUtil(injector) || [];
+    const routerInstance = serializedProviderRecords.filter(
+      (provider) => provider.token === 'Router', // get the instance of router using token
+    );
+    const routerProvider = getProviderValue(injector, routerInstance[0]);
+
+    const routes: Route[] = [parseRoutes(routerProvider)];
+    messageBus.emit('updateRouterTree', [routes]);
+  };
+
 const getInjectorProvidersCallback =
   (messageBus: MessageBus<Events>) => (injector: SerializedInjector) => {
-    if (!idToInjector.has(injector.id)) {
-      return;
-    }
-
-    const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
-    const allProviderRecords: SerializedProviderRecord[] = [];
-
-    const tokenToRecords: Map<any, SerializedProviderRecord[]> = new Map();
-
-    for (const [index, providerRecord] of providerRecords.entries()) {
-      const record = serializeProviderRecord(
-        providerRecord,
-        index,
-        injector.type === 'environment',
-      );
-
-      allProviderRecords.push(record);
-
-      const records = tokenToRecords.get(providerRecord.token) ?? [];
-      records.push(record);
-      tokenToRecords.set(providerRecord.token, records);
-    }
-
-    const serializedProviderRecords: SerializedProviderRecord[] = [];
-
-    for (const [token, records] of tokenToRecords.entries()) {
-      const multiRecords = records.filter((record) => record.multi);
-      const nonMultiRecords = records.filter((record) => !record.multi);
-
-      for (const record of nonMultiRecords) {
-        serializedProviderRecords.push(record);
-      }
-
-      const [firstMultiRecord] = multiRecords;
-      if (firstMultiRecord !== undefined) {
-        // All multi providers will have the same token, so we can just use the first one.
-        serializedProviderRecords.push({
-          token: firstMultiRecord.token,
-          type: 'multi',
-          multi: true,
-          // todo(aleksanderbodurri): implememnt way to differentiate multi providers that
-          // provided as viewProviders
-          isViewProvider: firstMultiRecord.isViewProvider,
-          index: records.map((record) => record.index as number),
-        });
-      }
-    }
-
+    const serializedProviderRecords = getInjectorProvidersCallbackUtil(injector) || [];
     messageBus.emit('latestInjectorProviders', [injector, serializedProviderRecords]);
   };
+
+const getProviderValue = (
+  serializedInjector: SerializedInjector,
+  serializedProvider: SerializedProviderRecord,
+) => {
+  if (!idToInjector.has(serializedInjector.id)) {
+    return;
+  }
+
+  const injector = idToInjector.get(serializedInjector.id)!;
+  const providerRecords = getInjectorProviders(injector);
+
+  let provider, providerValue;
+  if (typeof serializedProvider.index === 'number') {
+    provider = providerRecords[serializedProvider.index];
+    providerValue = injector.get(provider.token, null, {optional: true});
+  } else if (Array.isArray(serializedProvider.index)) {
+    provider = serializedProvider.index.map((index) => providerRecords[index]);
+    providerValue = injector.get(provider[0].token, null, {optional: true});
+  }
+  return providerValue;
+};
 
 const logProvider = (
   serializedInjector: SerializedInjector,
@@ -412,7 +442,6 @@ const logProvider = (
   if (!idToInjector.has(serializedInjector.id)) {
     return;
   }
-
   const injector = idToInjector.get(serializedInjector.id)!;
 
   const providerRecords = getInjectorProviders(injector);

@@ -63,7 +63,7 @@ export class RoutesHomeComponent {
   selector: 'app-routes-aux',
   template: 'Component Aux',
 })
-export default class RoutesAuxComponent {}
+export class RoutesAuxComponent {}
 
 @Component({
   selector: 'app-routes-one',
@@ -76,6 +76,13 @@ export class RoutesOneComponent {}
   template: `<h1>Route 2 works</h1>`,
 })
 export class RoutesTwoComponent {}
+
+@Component({
+  standalone: true,
+  selector: 'app-routes-standalone',
+  template: '<h1>Standalone Route</h1>',
+})
+export class RoutesStandaloneComponent {}
 
 @Injectable()
 export class Service1 {
