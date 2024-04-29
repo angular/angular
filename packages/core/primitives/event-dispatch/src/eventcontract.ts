@@ -40,7 +40,6 @@ import {EventContractContainerManager} from './event_contract_container';
 import {
   A11Y_CLICK_SUPPORT,
   CUSTOM_EVENT_SUPPORT,
-  JSNAMESPACE_SUPPORT,
   MOUSE_SPECIAL_SUPPORT,
   STOP_PROPAGATION,
 } from './event_contract_defines';
@@ -109,7 +108,6 @@ export class EventContract implements UnrenamedEventContract {
   static STOP_PROPAGATION = STOP_PROPAGATION;
   static A11Y_CLICK_SUPPORT = A11Y_CLICK_SUPPORT;
   static MOUSE_SPECIAL_SUPPORT = MOUSE_SPECIAL_SUPPORT;
-  static JSNAMESPACE_SUPPORT = JSNAMESPACE_SUPPORT;
 
   private containerManager: EventContractContainerManager | null;
 
@@ -366,17 +364,13 @@ export class EventContract implements UnrenamedEventContract {
    * action the given event is mapped to, if any. It parses the
    * attribute value and stores it in a property on the node for
    * subsequent retrieval without re-parsing and re-accessing the
-   * attribute. In order to fully qualify jsaction names using a
-   * namespace, the DOM is searched starting at the current node and
-   * going through ancestor nodes until a jsnamespace attribute is
-   * found.
-   *
+   * attribute.
    * @param actionElement The DOM node to retrieve the jsaction map from.
    * @param eventInfo `EventInfo` to set `action` and `actionElement` if an
    *    action is found on the `actionElement`.
    */
   private populateActionOnElement(actionElement: Element, eventInfo: eventInfoLib.EventInfo) {
-    const actionMap = parseActions(actionElement, eventInfoLib.getContainer(eventInfo));
+    const actionMap = parseActions(actionElement);
 
     const actionName = actionMap[eventInfoLib.getEventType(eventInfo)];
     if (actionName !== undefined) {
@@ -622,11 +616,9 @@ function shouldPreventDefaultBeforeDispatching(
  * This is primarily for internal use.
  *
  * @param actionElement The DOM node to retrieve the jsaction map from.
- * @param container The node which limits the namespace lookup for a jsaction
- * name. The container node itself will not be searched.
  * @return Map from event to qualified name of the jsaction bound to it.
  */
-export function parseActions(actionElement: Element, container: Node): {[key: string]: string} {
+export function parseActions(actionElement: Element): {[key: string]: string} {
   let actionMap: {[key: string]: string} | undefined = cache.get(actionElement);
   if (!actionMap) {
     const jsactionAttribute = getAttr(actionElement, Attribute.JSACTION);
@@ -651,84 +643,10 @@ export function parseActions(actionElement: Element, container: Node): {[key: st
         }
         cache.setParsed(jsactionAttribute, actionMap);
       }
-      // If namespace support is active we need to augment the (potentially
-      // cached) jsaction mapping with the namespace.
-      if (EventContract.JSNAMESPACE_SUPPORT) {
-        const noNs = actionMap;
-        actionMap = {};
-        for (const type in noNs) {
-          actionMap[type] = getFullyQualifiedAction(noNs[type], actionElement, container);
-        }
-      }
       cache.set(actionElement, actionMap);
     }
   }
   return actionMap;
-}
-
-/**
- * Returns the fully qualified jsaction action. If the given jsaction
- * name doesn't already contain the namespace, the function iterates
- * over ancestor nodes until a jsnamespace attribute is found, and
- * uses the value of that attribute as the namespace.
- *
- * @param action The jsaction action to resolve.
- * @param start The node from which to start searching for a jsnamespace
- * attribute.
- * @param container The node which limits the search for a jsnamespace
- * attribute. This node will be searched.
- * @return The fully qualified name of the jsaction. If no namespace is found,
- * returns the unqualified name in case it exists in the global namespace.
- */
-function getFullyQualifiedAction(action: string, start: Element, container: Node): string {
-  if (EventContract.JSNAMESPACE_SUPPORT) {
-    if (isNamespacedAction(action)) {
-      return action;
-    }
-
-    let node: Node | null = start;
-    while (node) {
-      const namespace = getNamespaceFromElement(node as Element);
-      if (namespace) {
-        return namespace + Char.NAMESPACE_ACTION_SEPARATOR + action;
-      }
-
-      // If this node is the container, stop.
-      if (node === container) {
-        break;
-      }
-
-      node = node.parentNode;
-    }
-  }
-
-  return action;
-}
-
-/**
- * Checks if a jsaction action contains a namespace part.
- */
-function isNamespacedAction(action: string): boolean {
-  return action.indexOf(Char.NAMESPACE_ACTION_SEPARATOR) >= 0;
-}
-
-/**
- * Returns the value of the jsnamespace attribute of the given node.
- * Also caches the value for subsequent lookups.
- * @param element The node whose jsnamespace attribute is being asked for.
- * @return The value of the jsnamespace attribute, or null if not found.
- */
-function getNamespaceFromElement(element: Element): string | null {
-  let namespace = cache.getNamespace(element);
-  // Only query for the attribute if it has not been queried for
-  // before. getAttr() returns null if an attribute is not present. Thus,
-  // namespace is string|null if the query took place in the past, or
-  // undefined if the query did not take place.
-  if (namespace === undefined) {
-    namespace = getAttr(element, Attribute.JSNAMESPACE);
-    cache.setNamespace(element, namespace);
-  }
-  return namespace;
 }
 
 /**
