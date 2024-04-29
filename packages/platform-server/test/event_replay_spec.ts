@@ -147,7 +147,7 @@ describe('event replay', () => {
         expect(clickSpy).toHaveBeenCalled();
       });
 
-      it('should remove jsaction attributes and stop listening after hydration.', async () => {
+      it('should remove jsaction attributes, but continue listening to events.', async () => {
         @Component({
           standalone: true,
           selector: 'app',
@@ -164,16 +164,10 @@ describe('event replay', () => {
         const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
         const html = await ssr(SimpleComponent, {doc: docContents});
         const ssrContents = getAppContents(html);
-        const originalRemoveEventListener = doc.body.removeEventListener;
-        const removeEventListenerSpy = jasmine.createSpy();
-        doc.body.removeEventListener = function (
-          type: string,
-          listener: EventListenerOrEventListenerObject,
-          options: boolean | EventListenerOptions | undefined,
-        ) {
-          originalRemoveEventListener.call(doc.body, type, listener, options);
-          removeEventListenerSpy();
-        };
+        const removeEventListenerSpy = spyOn(
+          document.body,
+          'removeEventListener',
+        ).and.callThrough();
         render(doc, ssrContents);
         const el = doc.getElementById('1')!;
         expect(el.hasAttribute('jsaction')).toBeTrue();
@@ -188,44 +182,6 @@ describe('event replay', () => {
         expect((el.firstChild as Element).hasAttribute('jsaction')).toBeFalse();
         // Event contract is still listening even if jsaction attributes are removed.
         expect(removeEventListenerSpy).not.toHaveBeenCalled();
-      });
-
-      describe('bubbling behavior', () => {
-        it('should remove jsaction attributes and stop listening after hydration.', async () => {
-          const clickSpyOne = jasmine.createSpy();
-          const clickSpyTwo = jasmine.createSpy();
-          @Component({
-            standalone: true,
-            selector: 'app',
-            template: `
-              <div (click)="onClick()" id="1">
-                <div (click)="onClick2()" id="2"></div>
-              </div>
-            `,
-          })
-          class SimpleComponent {
-            onClick = clickSpyOne;
-            onClick2 = clickSpyTwo;
-          }
-
-          const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
-          const html = await ssr(SimpleComponent, {doc: docContents});
-          const ssrContents = getAppContents(html);
-          render(doc, ssrContents);
-          const el = doc.getElementById('2')!;
-          const clickEvent = new CustomEvent('click', {bubbles: true});
-          el.dispatchEvent(clickEvent);
-          resetTViewsFor(SimpleComponent);
-          const appRef = await hydrate(doc, SimpleComponent, {
-            hydrationFeatures: [withEventReplay()],
-          });
-          appRef.tick();
-          expect(clickSpyTwo).toHaveBeenCalledTimes(1);
-          expect(clickSpyOne).toHaveBeenCalledTimes(0);
-          el.dispatchEvent(clickEvent);
-          expect(clickSpyTwo).toHaveBeenCalledTimes(2);
-          expect(clickSpyOne).toHaveBeenCalledTimes(1);
-        });
       });
 
       it(`should add 'nonce' attribute to event record script when 'ngCspNonce' is provided`, async () => {

@@ -7,7 +7,6 @@
  */
 
 import {
-  Attribute,
   Dispatcher,
   EventContract,
   EventInfoWrapper,
@@ -36,6 +35,8 @@ declare global {
   var ngContracts: {[key: string]: EventContract};
 }
 
+const JSACTION_ATTRIBUTE = 'jsaction';
+
 /**
  * Returns a set of providers required to setup support for event replay.
  * Requires hydration to be enabled separately.
@@ -50,8 +51,8 @@ export function withEventReplay(): Provider[] {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
         setDisableEventReplayImpl((el: RElement) => {
-          if (el.hasAttribute(Attribute.JSACTION)) {
-            el.removeAttribute(Attribute.JSACTION);
+          if (el.hasAttribute(JSACTION_ATTRIBUTE)) {
+            el.removeAttribute(JSACTION_ATTRIBUTE);
           }
         });
       },
@@ -141,7 +142,7 @@ export function setJSActionAttribute(
     const events = nativeElementToEvents.get(nativeElement) ?? [];
     const parts = events.map((event) => `${event}:`);
     if (parts.length > 0) {
-      nativeElement.setAttribute('jsaction', parts.join(';'));
+      nativeElement.setAttribute(JSACTION_ATTRIBUTE, parts.join(';'));
     }
   }
 }
