@@ -65,9 +65,12 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
 
   @Output() frameSelected = new EventEmitter<Frame>();
   @ViewChild(DirectiveExplorerComponent) directiveExplorer!: DirectiveExplorerComponent;
+  @ViewChild(RouterTreeComponent) routerTreeComponent!: RouterTreeComponent;
   @ViewChild('navBar', {static: true}) navbar!: MatTabNav;
 
   applicationEnvironment = inject(ApplicationEnvironment);
+  routerTree: any;
+
   activeTab: Tabs = 'Components';
   inspectorRunning = false;
   routerTreeEnabled = false;
@@ -132,7 +135,9 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
     this.activeTab = tab;
     this.tabUpdate.notify();
     if (tab === 'Router Tree') {
-      this._messageBus.emit('getRoutes');
+      // console.log(this.routerTreeComponent);
+      this.routerTreeComponent.renderGraph(true);
+      // this._messageBus.emit('getRoutes');
     }
   }
 

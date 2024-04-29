@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
 import {Events, MessageBus, Route} from 'protocol';
 import {RouterTreeVisualizer} from './router-tree-visualizer';
@@ -41,7 +41,7 @@ export class RouterTreeComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.setUpRouterVisualizer();
-    this._messageBus.emit('getRoutes');
+    // this._messageBus.emit('getRoutes');
   }
 
   togglePathSettings(): void {
@@ -76,7 +76,7 @@ export class RouterTreeComponent implements AfterViewInit {
   }
 
   renderGraph(snapToRoot: boolean = true): void {
-    this.routerTreeVisualizer.render(this._routes[0] as any, this.filterRegex, this.showFullPath);
+    this.routerTreeVisualizer?.render(this._routes[0] as any, this.filterRegex, this.showFullPath);
     if (snapToRoot) {
       setTimeout(() => this.routerTreeVisualizer.snapToRoot(0.6), 250);
     }

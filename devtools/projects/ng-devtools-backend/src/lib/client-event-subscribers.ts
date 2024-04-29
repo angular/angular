@@ -85,6 +85,7 @@ export const subscribeToClientEvents = (
   messageBus.on('disableTimingAPI', disableTimingAPI);
 
   messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
+  messageBus.on('getRouterConfigFromRoot', getRouterConfigFromRootCallback(messageBus));
 
   messageBus.on('logProvider', logProvider);
 
@@ -352,63 +353,78 @@ function getNodeDIResolutionPath(node: ComponentTreeNode): SerializedInjector[] 
   return serializedPath;
 }
 
+const getInjectorProvidersCallbackUtil = (injector: SerializedInjector) => {
+  if (!idToInjector.has(injector.id)) {
+    return;
+  }
+
+  const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
+  const allProviderRecords: SerializedProviderRecord[] = [];
+
+  const tokenToRecords: Map<any, SerializedProviderRecord[]> = new Map();
+
+  for (const [index, providerRecord] of providerRecords.entries()) {
+    const record = serializeProviderRecord(providerRecord, index, injector.type === 'environment');
+
+    allProviderRecords.push(record);
+
+    const records = tokenToRecords.get(providerRecord.token) ?? [];
+    records.push(record);
+    tokenToRecords.set(providerRecord.token, records);
+  }
+
+  const serializedProviderRecords: SerializedProviderRecord[] = [];
+
+  for (const [token, records] of tokenToRecords.entries()) {
+    const multiRecords = records.filter((record) => record.multi);
+    const nonMultiRecords = records.filter((record) => !record.multi);
+
+    for (const record of nonMultiRecords) {
+      serializedProviderRecords.push(record);
+    }
+
+    const [firstMultiRecord] = multiRecords;
+    if (firstMultiRecord !== undefined) {
+      // All multi providers will have the same token, so we can just use the first one.
+      serializedProviderRecords.push({
+        token: firstMultiRecord.token,
+        type: 'multi',
+        multi: true,
+        // todo(aleksanderbodurri): implememnt way to differentiate multi providers that
+        // provided as viewProviders
+        isViewProvider: firstMultiRecord.isViewProvider,
+        index: records.map((record) => record.index as number),
+      });
+    }
+  }
+
+  return serializedProviderRecords;
+};
+
+const getRouterConfigFromRootCallback =
+  (messageBus: MessageBus<Events>) => (injector: SerializedInjector) => {
+    const serializedProviderRecords = getInjectorProvidersCallbackUtil(injector) || [];
+    const routerInstance = serializedProviderRecords.filter(
+      (provider) => provider.token === 'Router', // get the instance of router using token
+    );
+    const routerProvider = logProvider(injector, routerInstance[0], true);
+    console.log('routerInstance', injector, routerInstance, routerProvider);
+
+    const routes: Route[] = [parseRoutes(routerProvider)];
+    messageBus.emit('updateRouterTree', [routes]);
+  };
+
 const getInjectorProvidersCallback =
   (messageBus: MessageBus<Events>) => (injector: SerializedInjector) => {
-    if (!idToInjector.has(injector.id)) {
-      return;
-    }
-
-    const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
-    const allProviderRecords: SerializedProviderRecord[] = [];
-
-    const tokenToRecords: Map<any, SerializedProviderRecord[]> = new Map();
-
-    for (const [index, providerRecord] of providerRecords.entries()) {
-      const record = serializeProviderRecord(
-        providerRecord,
-        index,
-        injector.type === 'environment',
-      );
-
-      allProviderRecords.push(record);
-
-      const records = tokenToRecords.get(providerRecord.token) ?? [];
-      records.push(record);
-      tokenToRecords.set(providerRecord.token, records);
-    }
-
-    const serializedProviderRecords: SerializedProviderRecord[] = [];
-
-    for (const [token, records] of tokenToRecords.entries()) {
-      const multiRecords = records.filter((record) => record.multi);
-      const nonMultiRecords = records.filter((record) => !record.multi);
-
-      for (const record of nonMultiRecords) {
-        serializedProviderRecords.push(record);
-      }
-
-      const [firstMultiRecord] = multiRecords;
-      if (firstMultiRecord !== undefined) {
-        // All multi providers will have the same token, so we can just use the first one.
-        serializedProviderRecords.push({
-          token: firstMultiRecord.token,
-          type: 'multi',
-          multi: true,
-          // todo(aleksanderbodurri): implememnt way to differentiate multi providers that
-          // provided as viewProviders
-          isViewProvider: firstMultiRecord.isViewProvider,
-          index: records.map((record) => record.index as number),
-        });
-      }
-    }
-
+    const serializedProviderRecords = getInjectorProvidersCallbackUtil(injector) || [];
     messageBus.emit('latestInjectorProviders', [injector, serializedProviderRecords]);
   };
 
 const logProvider = (
   serializedInjector: SerializedInjector,
   serializedProvider: SerializedProviderRecord,
-): void => {
+  returnValue: boolean = false,
+): void | any => {
   if (!idToInjector.has(serializedInjector.id)) {
     return;
   }
@@ -417,29 +433,30 @@ const logProvider = (
 
   const providerRecords = getInjectorProviders(injector);
 
-  console.group(
-    `%c${serializedInjector.name}`,
-    `color: ${
-      serializedInjector.type === 'element' ? '#a7d5a9' : '#f05057'
-    }; font-size: 1.25rem; font-weight: bold;`,
-  );
-  // tslint:disable-next-line:no-console
-  console.log('injector: ', injector);
-
+  let provider, providerValue;
   if (typeof serializedProvider.index === 'number') {
-    const provider = providerRecords[serializedProvider.index];
-
-    // tslint:disable-next-line:no-console
-    console.log('provider: ', provider);
-    // tslint:disable-next-line:no-console
-    console.log(`value: `, injector.get(provider.token, null, {optional: true}));
+    provider = providerRecords[serializedProvider.index];
+    providerValue = injector.get(provider.token, null, {optional: true});
   } else if (Array.isArray(serializedProvider.index)) {
-    const providers = serializedProvider.index.map((index) => providerRecords[index]);
+    provider = serializedProvider.index.map((index) => providerRecords[index]);
+    providerValue = injector.get(provider[0].token, null, {optional: true});
+  }
 
+  if (returnValue) {
+    return providerValue;
+  } else {
+    console.group(
+      `%c${serializedInjector.name}`,
+      `color: ${
+        serializedInjector.type === 'element' ? '#a7d5a9' : '#f05057'
+      }; font-size: 1.25rem; font-weight: bold;`,
+    );
     // tslint:disable-next-line:no-console
-    console.log('providers: ', providers);
+    console.log('injector: ', injector);
     // tslint:disable-next-line:no-console
-    console.log(`value: `, injector.get(providers[0].token, null, {optional: true}));
+    console.log('provider(s): ', provider);
+    // tslint:disable-next-line:no-console
+    console.log(`value: `, providerValue);
   }
 
   console.groupEnd();

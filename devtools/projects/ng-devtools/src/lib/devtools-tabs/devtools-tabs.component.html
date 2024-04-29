@@ -11,7 +11,11 @@
     </button>
   </div>
 
-  <select matTooltip="Select a frame to inspect with Angular Devtools" class="frame-selector" (change)="emitSelectedFrame($event.target.value)">
+  <select
+    matTooltip="Select a frame to inspect with Angular Devtools"
+    class="frame-selector"
+    (change)="emitSelectedFrame($event.target.value)"
+  >
     @for (frame of frameManager.frames; track frame.id) {
       <option [value]="frame.id" [selected]="frameManager.isSelectedFrame(frame)">
         @if (frame.id === TOP_LEVEL_FRAME_ID) {
@@ -39,14 +43,14 @@
           {{ angularVersion() }}
         </span>
       } @else {
-        <span 
+        <span
           id="version-number"
           matTooltip="
             Angular Devtools supports Angular versions 12 and above. Some DevTools features may be available in 
             older versions of Angular, but it is not officially supported.
           "
           class="unsupported-version"
-          >
+        >
           {{ angularVersion() }} (unsupported)
         </span>
       }
@@ -65,28 +69,30 @@
         [class.hidden]="activeTab !== 'Components'"
         (toggleInspector)="toggleInspector()"
       />
-      <ng-profiler [class.hidden]="activeTab !== 'Profiler'"/>
-      <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'"/>
-      <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'"/>
+      <ng-profiler [class.hidden]="activeTab !== 'Profiler'" />
+      <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'" />
+      <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'" />
     </div>
   }
 </mat-tab-nav-panel>
 
 <mat-menu #menu="matMenu">
   <div mat-menu-item disableRipple (click)="$event.stopPropagation(); toggleTimingAPI()">
-    <mat-slide-toggle [checked]="timingAPIEnabled">
-      Enable timing API
-    </mat-slide-toggle>
+    <mat-slide-toggle [checked]="timingAPIEnabled"> Enable timing API </mat-slide-toggle>
   </div>
-  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); themeService.toggleDarkMode(currentTheme === 'light-theme')">
-    <mat-slide-toggle [checked]="currentTheme === 'dark-theme'">
-      Dark Mode
-    </mat-slide-toggle>
+  <div
+    mat-menu-item
+    disableRipple
+    (click)="$event.stopPropagation(); themeService.toggleDarkMode(currentTheme === 'light-theme')"
+  >
+    <mat-slide-toggle [checked]="currentTheme === 'dark-theme'"> Dark Mode </mat-slide-toggle>
   </div>
-  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); showCommentNodes = $event.checked">
-    <mat-slide-toggle [checked]="showCommentNodes">
-      Show comment nodes
-    </mat-slide-toggle>
+  <div
+    mat-menu-item
+    disableRipple
+    (click)="$event.stopPropagation(); showCommentNodes = $event.checked"
+  >
+    <mat-slide-toggle [checked]="showCommentNodes"> Show comment nodes </mat-slide-toggle>
   </div>
 </mat-menu>
 

@@ -286,6 +286,7 @@ export interface Events {
   disableTimingAPI: () => void;
 
   // todo: type properly
+  getRouterConfigFromRoot: (injector: SerializedInjector) => void;
   getInjectorProviders: (injector: SerializedInjector) => void;
   latestInjectorProviders: (
     injector: SerializedInjector,
