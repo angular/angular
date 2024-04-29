@@ -727,8 +727,8 @@ export abstract class BackendService {
       db instanceof Observable
         ? db
         : typeof (db as any).then === 'function'
-        ? from(db as Promise<any>)
-        : of(db);
+          ? from(db as Promise<any>)
+          : of(db);
     db$.pipe(first()).subscribe((d: {}) => {
       this.db = d;
       this.dbReadySubject && this.dbReadySubject.next(true);

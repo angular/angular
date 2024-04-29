@@ -21,7 +21,7 @@ Run tslint:
 
 `yarn lint`
 
-Run format with clang-format:
+Run format with prettier:
 
 `yarn format`
 
@@ -35,7 +35,7 @@ Before Commit
 Please make sure you pass all following checks before commit
 
 - yarn gulp lint (tslint)
-- yarn gulp format (clang-format)
+- yarn gulp format (prettier)
 - yarn promisetest (promise a+ test)
 - yarn bazel test //packages/zone.js/... (all tests)
 
