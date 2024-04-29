@@ -40,7 +40,6 @@ import {
   CUSTOM_EVENT_SUPPORT,
   JSNAMESPACE_SUPPORT,
   MOUSE_SPECIAL_SUPPORT,
-  STOP_PROPAGATION,
 } from './event_contract_defines';
 import * as eventInfoLib from './event_info';
 import {EventType} from './event_type';
@@ -90,7 +89,6 @@ type EventHandler = (eventType: string, event: Event, container: Element) => voi
  */
 export class EventContract implements UnrenamedEventContract {
   static CUSTOM_EVENT_SUPPORT = CUSTOM_EVENT_SUPPORT;
-  static STOP_PROPAGATION = STOP_PROPAGATION;
   static A11Y_CLICK_SUPPORT = A11Y_CLICK_SUPPORT;
   static MOUSE_SPECIAL_SUPPORT = MOUSE_SPECIAL_SUPPORT;
   static JSNAMESPACE_SUPPORT = JSNAMESPACE_SUPPORT;
