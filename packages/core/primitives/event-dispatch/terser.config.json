@@ -7,7 +7,25 @@
     },
     "mangle": {
       "toplevel": true,
-      "properties": false,
+      "properties": {
+        "reserved": [
+          "ecrd",
+          "eventType",
+          "event",
+          "targetElement",
+          "eic",
+          "timeStamp",
+          "eia",
+          "eirp",
+          "eiack",
+          "et",
+          "q",
+          "h",
+          "c",
+          "etc",
+          "_ejsa"
+        ]
+      },
       "keep_classnames": false,
       "keep_fnames": false
     },

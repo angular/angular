@@ -16,7 +16,7 @@ circular_dependency_test(
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(["*.ts"]),
     deps = [
         "//packages:types",
         "//packages/animations",

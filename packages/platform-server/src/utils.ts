@@ -142,10 +142,25 @@ function insertEventRecordScript(
   const eventDispatchScript = findEventDispatchScript(doc);
   if (eventDispatchScript) {
     const events = Array.from(eventTypesToBeReplayed);
+    const captureEventTypes = [];
+    const eventTypes = [];
+    for (const eventType of events) {
+      if (
+        eventType === 'focus' ||
+        eventType === 'blur' ||
+        eventType === 'error' ||
+        eventType === 'load' ||
+        eventType === 'toggle'
+      ) {
+        captureEventTypes.push(eventType);
+      } else {
+        eventTypes.push(eventType);
+      }
+    }
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
     const replayScriptContents = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
       appId,
-    )}, ${JSON.stringify(events)});`;
+    )}, ${JSON.stringify(eventTypes)}${captureEventTypes.length ? ',' + JSON.stringify(captureEventTypes) : ''});`;
 
     const replayScript = createScript(doc, replayScriptContents, nonce);
 

@@ -8,7 +8,9 @@
 
 import {
   Dispatcher,
+  EarlyJsactionDataContainer,
   EventContract,
+  EventContractContainer,
   EventInfoWrapper,
   registerDispatcher,
 } from '@angular/core/primitives/event-dispatch';
@@ -32,7 +34,7 @@ export const EVENT_REPLAY_ENABLED_DEFAULT = false;
 export const CONTRACT_PROPERTY = 'ngContracts';
 
 declare global {
-  var ngContracts: {[key: string]: EventContract};
+  var ngContracts: {[key: string]: EarlyJsactionDataContainer};
 }
 
 const JSACTION_ATTRIBUTE = 'jsaction';
@@ -76,11 +78,20 @@ export function withEventReplay(): Provider[] {
               // This is set in packages/platform-server/src/utils.ts
               // Note: globalThis[CONTRACT_PROPERTY] may be undefined in case Event Replay feature
               // is enabled, but there are no events configured in an application.
-              const eventContract = globalThis[CONTRACT_PROPERTY]?.[appId] as EventContract;
-              if (eventContract) {
+              const container = globalThis[CONTRACT_PROPERTY]?.[appId];
+              if (container._ejsa) {
+                const eventContract = new EventContract(
+                  new EventContractContainer(container._ejsa.c),
+                );
+                for (const et of container._ejsa.et) {
+                  eventContract.addEvent(et);
+                }
+                for (const et of container._ejsa.etc) {
+                  eventContract.addEvent(et);
+                }
+                eventContract.replayEarlyEvents(container);
                 const dispatcher = new Dispatcher();
                 setEventReplayer(dispatcher);
-                // Event replay is kicked off as a side-effect of executing this function.
                 registerDispatcher(eventContract, dispatcher);
                 for (const el of removeJsactionQueue) {
                   el.removeAttribute(JSACTION_ATTRIBUTE);
