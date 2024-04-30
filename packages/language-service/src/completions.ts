@@ -61,6 +61,7 @@ import {
   unsafeCastDisplayInfoKindToScriptElementKind,
 } from './display_parts';
 import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
+import {getCodeActionToImportTheDirectiveDeclaration, standaloneTraitOrNgModule} from './ts_utils';
 import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 
 type PropertyExpressionCompletionBuilder = CompletionBuilder<
@@ -721,6 +722,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       name: tag,
       sortText: tag,
       replacementSpan,
+      hasAction: directive?.isInScope === true ? undefined : true,
     }));
 
     return {
@@ -755,6 +757,17 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       tags = displayInfo.tags;
     }
 
+    let codeActions: ts.CodeAction[] | undefined;
+
+    if (!directive.isInScope) {
+      const importOn = standaloneTraitOrNgModule(templateTypeChecker, this.component);
+
+      codeActions =
+        importOn !== null
+          ? getCodeActionToImportTheDirectiveDeclaration(this.compiler, importOn, directive)
+          : undefined;
+    }
+
     return {
       kind: tagCompletionKind(directive),
       name: entryName,
@@ -762,6 +775,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       displayParts,
       documentation,
       tags,
+      codeActions,
     };
   }
 

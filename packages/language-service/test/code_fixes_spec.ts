@@ -272,10 +272,7 @@ describe('code fixes', () => {
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooComponent`, [
         [``, `import { BarComponent } from "./bar";`],
-        [
-          `{`,
-          `{ selector: 'foo', template: '<bar></bar>', standalone: true, imports: [BarComponent] }`,
-        ],
+        [``, `, imports: [BarComponent]`],
       ]);
     });
 
@@ -317,10 +314,7 @@ describe('code fixes', () => {
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarModule from './bar' on FooComponent`, [
         [``, `import { BarModule } from "./bar";`],
-        [
-          `{`,
-          `{ selector: 'foo', template: '<bar></bar>', standalone: true, imports: [BarModule] }`,
-        ],
+        [``, `, imports: [BarModule]`],
       ]);
     });
 
@@ -362,7 +356,7 @@ describe('code fixes', () => {
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooModule`, [
         [``, `import { BarComponent } from "./bar";`],
-        [`{`, `{ declarations: [FooComponent], exports: [], imports: [BarComponent] }`],
+        [`imp`, `imports: [BarComponent]`],
       ]);
     });
 
@@ -403,10 +397,7 @@ describe('code fixes', () => {
 
       actionChangesMatch(actionChanges, `Import BarPipe from './bar' on FooComponent`, [
         [``, `import { BarPipe } from "./bar";`],
-        [
-          '{',
-          `{ selector: 'foo', template: '{{"hello"|bar}}', standalone: true, imports: [BarPipe] }`,
-        ],
+        ['', `, imports: [BarPipe]`],
       ]);
     });
 
@@ -454,17 +445,11 @@ describe('code fixes', () => {
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarModule from './bar' on FooComponent`, [
         [``, `import { BarModule } from "./bar";`],
-        [
-          `{`,
-          `{ selector: 'foo', template: '<bar></bar>', standalone: true, imports: [BarModule] }`,
-        ],
+        [``, `, imports: [BarModule]`],
       ]);
       actionChangesMatch(actionChanges, `Import Bar2Module from './bar' on FooComponent`, [
         [``, `import { Bar2Module } from "./bar";`],
-        [
-          `{`,
-          `{ selector: 'foo', template: '<bar></bar>', standalone: true, imports: [Bar2Module] }`,
-        ],
+        [``, `, imports: [Bar2Module]`],
       ]);
     });
   });
