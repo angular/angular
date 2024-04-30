@@ -65,14 +65,11 @@ export class EarlyEventContract {
   /**
    * Installs a list of event types for container .
    */
-  addEvents(types: string[], capture = false) {
+  addEvents(types: string[], capture?: boolean) {
     for (let idx = 0; idx < types.length; idx++) {
       const eventType = types[idx];
-      if (capture) {
-        this.replaySink._ejsa!.etc.push(eventType);
-      } else {
-        this.replaySink._ejsa!.et.push(eventType);
-      }
+      const eventTypes = capture ? this.replaySink._ejsa!.etc : this.replaySink._ejsa!.et;
+      eventTypes.push(eventType);
       this.container.addEventListener(eventType, this.replaySink._ejsa!.h, {capture});
     }
   }

@@ -46,7 +46,8 @@ export function bootstrapEventContract(
  * @param container The container that listens to events
  * @param appId A given identifier for an application. If there are multiple apps on the page
  *              then this is how contracts can be initialized for each one.
- * @param events An array of event names that should be listened to.
+ * @param eventTypes An array of event names that should be listened to.
+ * @param captureEventTypes An array of event names that should be listened to with capture.
  * @param anyWindow The global window object that should receive the event contract.
  * @returns The `event` contract. This is both assigned to `anyWindow` and returned for testing.
  */
@@ -54,13 +55,15 @@ export function bootstrapEarlyEventContract(
   field: string,
   container: HTMLElement,
   appId: string,
-  events: string[],
-  anyWindow: any = window,
+  eventTypes: string[],
+  captureEventTypes: [],
+  earlyJsactionTracker: any = window,
 ) {
-  if (!anyWindow[field]) {
-    anyWindow[field] = {};
+  if (!earlyJsactionTracker[field]) {
+    earlyJsactionTracker[field] = {};
   }
-  anyWindow[field][appId] = {};
-  const eventContract = new EarlyEventContract(anyWindow[field][appId], container);
-  eventContract.addEvents(events);
+  earlyJsactionTracker[field][appId] = {};
+  const eventContract = new EarlyEventContract(earlyJsactionTracker[field][appId], container);
+  eventContract.addEvents(eventTypes);
+  eventContract.addEvents(captureEventTypes, true);
 }
