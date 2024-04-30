@@ -67,6 +67,9 @@ export function createCustomEvent<T>(type: string, data?: T, triggeringEvent?: E
  * Fires a custom event with an optional payload. Only intended to be consumed
  * by jsaction itself. Supported in Firefox 6+, IE 9+, and all Chrome versions.
  *
+ * `bootstrapCustomEventSupport` is required to add a listener that handles the
+ * event.
+ *
  * @param target The target element.
  * @param type The type of the action, e.g., 'submit'.
  * @param data An optional data payload.
@@ -81,4 +84,41 @@ export function fireCustomEvent<T>(
 ) {
   const event = createCustomEvent(type, data, triggeringEvent);
   target.dispatchEvent(event);
+}
+
+/**
+ * Bootstraps `CustomEvent` support on the container.
+ *
+ * This is required to handle events fired by `fireCustomEvent` in the `container`.
+ *
+ * @param container The JSAction container to add an event listener on.
+ * @param trigger A function that can trigger JSAction Event dispatch. Generally this function
+ *    should delegate to an `EventContract` handler for the event type provided defined by
+ *    `event.detail['_type']`.
+ * @returns A function that removes the event listener.
+ */
+export function bootstrapCustomEventSupport(container: Element, trigger: (event: Event) => void) {
+  const customEventListener = (event: Event) => {
+    let customEvent = event as CustomEvent;
+    const detail = customEvent.detail;
+    // For custom events, use a secondary dispatch based on the internal
+    // custom type of the event.
+    if (!detail || !detail['_type']) {
+      // This should never happen.
+      return;
+    }
+    // Mirrors code from Wiz's internal `trigger()` method.
+    const syntheticCustomEvent = {
+      'type': detail['_type'],
+      'target': event.target,
+      'bubbles': true,
+      detail,
+    };
+    // tslint:disable-next-line:no-any
+    trigger(syntheticCustomEvent as any);
+  };
+  container.addEventListener('_custom', customEventListener);
+  return () => {
+    container.removeEventListener('_custom', customEventListener);
+  };
 }
