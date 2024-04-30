@@ -1344,6 +1344,9 @@
     "name": "init_dom_triggers"
   },
   {
+    "name": "init_earlyeventcontract"
+  },
+  {
     "name": "init_effect"
   },
   {
