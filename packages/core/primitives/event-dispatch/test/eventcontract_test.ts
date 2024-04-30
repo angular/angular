@@ -1884,6 +1884,45 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
+    it('early capture events are dispatched', () => {
+      const el = document.createElement('div');
+      const button = document.createElement('button');
+      button.setAttribute('jsaction', 'focus:handleFocus;');
+      el.appendChild(button);
+      const replaySink = {};
+      const removeEventListenerSpy = spyOn(el, 'removeEventListener').and.callThrough();
+
+      const earlyEventContract = new EarlyEventContract(replaySink, el);
+      earlyEventContract.addEvents(['focus'], true);
+
+      const focusEvent = new FocusEvent('focus');
+      button.dispatchEvent(focusEvent);
+
+      const earlyJsactionData: EarlyJsactionData | undefined = replaySink._ejsa;
+      expect(earlyJsactionData).toBeDefined();
+      expect(earlyJsactionData!.q.length).toBe(1);
+      expect(earlyJsactionData!.q[0].event).toBe(focusEvent);
+
+      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+      const eventContract = createEventContract({
+        eventContractContainerManager: new EventContractContainer(el),
+        eventTypes: ['focus'],
+        dispatcher,
+      });
+
+      eventContract.replayEarlyEvents(replaySink);
+
+      expect(replaySink._ejsa).toBeUndefined();
+      expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(eventInfoWrapper.getEventType()).toBe('focus');
+      expect(eventInfoWrapper.getEvent()).toBe(focusEvent);
+      expect(eventInfoWrapper.getTargetElement()).toBe(button);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleFocus');
+      expect(eventInfoWrapper.getAction()?.element).toBe(button);
+    });
+
     it('early events are dispatched when target is cleared', () => {
       const container = getRequiredElementById('click-container');
       const actionElement = getRequiredElementById('click-action-element');

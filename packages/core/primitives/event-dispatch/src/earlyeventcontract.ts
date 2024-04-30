@@ -21,6 +21,9 @@ export declare interface EarlyJsactionData {
   // List used to keep track of the early JSAction event types.
   et: string[];
 
+  // List used to keep track of capture event types.
+  etc: string[];
+
   // List used to keep track of the JSAction events if using earlyeventcontract.
   q: EventInfo[];
 
@@ -45,6 +48,7 @@ export class EarlyEventContract {
       c: container,
       q: [],
       et: [],
+      etc: [],
       h: (event: Event) => {
         const eventInfo = createEventInfoFromParameters(
           event.type,
@@ -59,13 +63,17 @@ export class EarlyEventContract {
   }
 
   /**
-   * Installs a list of event types for container.
+   * Installs a list of event types for container .
    */
-  addEvents(types: string[]) {
+  addEvents(types: string[], capture = false) {
     for (let idx = 0; idx < types.length; idx++) {
       const eventType = types[idx];
-      this.replaySink._ejsa!.et.push(eventType);
-      this.container.addEventListener(eventType, this.replaySink._ejsa!.h);
+      if (capture) {
+        this.replaySink._ejsa!.etc.push(eventType);
+      } else {
+        this.replaySink._ejsa!.et.push(eventType);
+      }
+      this.container.addEventListener(eventType, this.replaySink._ejsa!.h, {capture});
     }
   }
 }

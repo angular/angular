@@ -255,7 +255,7 @@ export class EventContract implements UnrenamedEventContract {
    * in the provided event contract. Once all the events are replayed, it cleans
    * up the early contract.
    */
-  replayEarlyEvents(earlyJsactionContainer: Window = window) {
+  replayEarlyEvents(earlyJsactionContainer: Object = window) {
     // Check if the early contract is present and prevent calling this function
     // more than once.
     const earlyJsactionData: EarlyJsactionData | undefined = earlyJsactionContainer._ejsa;
@@ -283,6 +283,12 @@ export class EventContract implements UnrenamedEventContract {
     for (let idx = 0; idx < earlyEventTypes.length; idx++) {
       const eventType: string = earlyEventTypes[idx];
       earlyJsactionData.c.removeEventListener(eventType, earlyEventHandler);
+    }
+    const earlyEventTypesCapture: string[] = earlyJsactionData.etc;
+    const earlyEventHandlerCapture: (event: Event) => void = earlyJsactionData.h;
+    for (let idx = 0; idx < earlyEventTypesCapture.length; idx++) {
+      const eventType: string = earlyEventTypes[idx];
+      earlyJsactionData.c.removeEventListener(eventType, earlyEventHandlerCapture);
     }
     delete earlyJsactionContainer._ejsa;
   }
