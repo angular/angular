@@ -5,8 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PotentialImport, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {
+  PotentialDirective,
+  PotentialImportMode,
+  PotentialPipe,
+  TemplateTypeChecker,
+} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
+import {guessIndentationInSingleLine} from './format';
 
 /**
  * Return the node that most tightly encompasses the specified `position`.
@@ -171,22 +178,19 @@ export function objectPropertyAssignmentForKey(
 
 /**
  * Given an ObjectLiteralExpression node, create or update the specified key, using the provided
- * callback to generate the new value (possibly based on an old value).
+ * callback to generate the new value (possibly based on an old value), and return the `ts.PropertyAssignment`
+ * for the key.
  */
 export function updateObjectValueForKey(
   obj: ts.ObjectLiteralExpression,
   key: string,
   newValueFn: (oldValue?: ts.Expression) => ts.Expression,
-): ts.ObjectLiteralExpression {
+): ts.PropertyAssignment {
   const existingProp = objectPropertyAssignmentForKey(obj, key);
-  const newProp = ts.factory.createPropertyAssignment(
+  return ts.factory.createPropertyAssignment(
     ts.factory.createIdentifier(key),
     newValueFn(existingProp?.initializer),
   );
-  return ts.factory.updateObjectLiteralExpression(obj, [
-    ...obj.properties.filter((p) => p !== existingProp),
-    newProp,
-  ]);
 }
 
 /**
@@ -426,6 +430,22 @@ export function updateImportsForAngularTrait(
     return [];
   }
 
+  /**
+   * The assumption here is that there is a `template` or `templateUrl` in the decorator.
+   */
+  if (decoratorProps.properties.length === 0) {
+    return [];
+  }
+
+  const lastProp = decoratorProps.properties[decoratorProps.properties.length - 1];
+  const trailRange = ts.getTrailingCommentRanges(decoratorProps.getSourceFile().text, lastProp.end);
+  const lastTrailRange =
+    trailRange !== undefined && trailRange.length > 0
+      ? trailRange[trailRange.length - 1]
+      : undefined;
+  const lastTrailRangePos = lastTrailRange?.end ?? lastProp.end;
+  const oldImports = decoratorProps.properties.find((prop) => prop.name?.getText() === 'imports');
+
   let updateRequired = true;
   // Update the trait's imports.
   const newDecoratorProps = updateObjectValueForKey(
@@ -457,13 +477,59 @@ export function updateImportsForAngularTrait(
   if (!updateRequired) {
     return [];
   }
+  const indentationNumber = guessIndentationInSingleLine(lastProp, lastProp.getSourceFile());
+  const indentationString = indentationNumber !== undefined ? ' '.repeat(indentationNumber) : '';
+  let indentationPrefix = ',\n' + indentationString;
+  /**
+   * If the last trail range is a single line comment, the `,` should be placed in the next line and the
+   * `imports` arrays should be placed in the next line of `,`.
+   *
+   * For example:
+   *
+   * {
+   *   template: "" // this is a comment
+   * }
+   *
+   * =>
+   *
+   * {
+   *   template: "" // this is an comment
+   *   ,
+   *   imports: []
+   * }
+   */
+  if (lastTrailRange?.kind === ts.SyntaxKind.SingleLineCommentTrivia) {
+    indentationPrefix = '\n' + indentationString + ',\n' + indentationString;
+  }
+
   return [
     {
+      /**
+       * If the `imports` exists in the object, replace the old `imports` array with the new `imports` array.
+       * If the `imports` doesn't exist in the object, append the `imports` array after the last property of the object.
+       *
+       * There is a weird usage, but it's acceptable. For example:
+       *
+       * {
+       *   template: ``, // This is a comment for the template
+       *  _____________^ // The new `imports` array is appended here before the `,`
+       * }
+       *
+       * =>
+       *
+       * {
+       *   template: ``,
+       *   imports: [], // This is a comment for the template
+       * }
+       *
+       */
       span: {
-        start: decoratorProps.getStart(),
-        length: decoratorProps.getEnd() - decoratorProps.getStart(),
+        start: oldImports !== undefined ? oldImports.getStart() : lastTrailRangePos,
+        length: oldImports !== undefined ? oldImports.getEnd() - oldImports.getStart() : 0,
       },
-      newText: printNode(newDecoratorProps, trait.getSourceFile()),
+      newText:
+        (oldImports !== undefined ? '' : indentationPrefix) +
+        printNode(newDecoratorProps, trait.getSourceFile()),
     },
   ];
 }
@@ -558,4 +624,76 @@ function getOrCreatePrinter(): ts.Printer {
  */
 export function printNode(node: ts.Node, sourceFile: ts.SourceFile): string {
   return getOrCreatePrinter().printNode(ts.EmitHint.Unspecified, node, sourceFile);
+}
+
+/**
+ * Get the code actions to tell the vscode how to import the directive into the standalone component or ng module.
+ */
+export function getCodeActionToImportTheDirectiveDeclaration(
+  compiler: NgCompiler,
+  importOn: ts.ClassDeclaration,
+  directive: PotentialDirective | PotentialPipe,
+): ts.CodeAction[] | undefined {
+  const codeActions: ts.CodeAction[] = [];
+  const currMatchSymbol = directive.tsSymbol.valueDeclaration!;
+  const potentialImports = compiler
+    .getTemplateTypeChecker()
+    .getPotentialImportsFor(directive.ref, importOn, PotentialImportMode.Normal);
+  for (const potentialImport of potentialImports) {
+    const fileImportChanges: ts.TextChange[] = [];
+    let importName: string;
+    let forwardRefName: string | null = null;
+
+    if (potentialImport.moduleSpecifier) {
+      const [importChanges, generatedImportName] = updateImportsForTypescriptFile(
+        compiler.getCurrentProgram().getTypeChecker(),
+        importOn.getSourceFile(),
+        potentialImport.symbolName,
+        potentialImport.moduleSpecifier,
+        currMatchSymbol.getSourceFile(),
+      );
+      importName = generatedImportName;
+      fileImportChanges.push(...importChanges);
+    } else {
+      if (potentialImport.isForwardReference) {
+        // Note that we pass the `importOn` file twice since we know that the potential import
+        // is within the same file, because it doesn't have a `moduleSpecifier`.
+        const [forwardRefImports, generatedForwardRefName] = updateImportsForTypescriptFile(
+          compiler.getCurrentProgram().getTypeChecker(),
+          importOn.getSourceFile(),
+          'forwardRef',
+          '@angular/core',
+          importOn.getSourceFile(),
+        );
+        fileImportChanges.push(...forwardRefImports);
+        forwardRefName = generatedForwardRefName;
+      }
+      importName = potentialImport.symbolName;
+    }
+
+    // Always update the trait import, although the TS import might already be present.
+    const traitImportChanges = updateImportsForAngularTrait(
+      compiler.getTemplateTypeChecker(),
+      importOn,
+      importName,
+      forwardRefName,
+    );
+    if (traitImportChanges.length === 0) continue;
+
+    let description = `Import ${importName}`;
+    if (potentialImport.moduleSpecifier !== undefined) {
+      description += ` from '${potentialImport.moduleSpecifier}' on ${importOn.name!.text}`;
+    }
+    codeActions.push({
+      description,
+      changes: [
+        {
+          fileName: importOn.getSourceFile().fileName,
+          textChanges: [...fileImportChanges, ...traitImportChanges],
+        },
+      ],
+    });
+  }
+
+  return codeActions;
 }
