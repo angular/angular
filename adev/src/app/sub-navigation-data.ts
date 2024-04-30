@@ -1249,6 +1249,16 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG0912',
       },
       {
+        label: 'NG0955: Track expression resulted in duplicated keys for a given collection',
+        path: 'errors/NG0955',
+        contentPath: 'reference/errors/NG0955',
+      },
+      {
+        label: 'NG0956: Tracking expression caused re-creation of the DOM structure',
+        path: 'errors/NG0956',
+        contentPath: 'reference/errors/NG0956',
+      },
+      {
         label: 'NG1001: Argument Not Literal',
         path: 'errors/NG1001',
         contentPath: 'reference/errors/NG1001',
