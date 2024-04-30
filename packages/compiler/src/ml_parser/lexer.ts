@@ -101,6 +101,12 @@ export interface TokenizeOptions {
    * or ICU tokens if `tokenizeExpansionForms` is enabled.
    */
   tokenizeBlocks?: boolean;
+
+  /**
+   * Whether to tokenize the `@let` syntax. Otherwise will be considered either
+   * text or an incomplete block, depending on whether `tokenizeBlocks` is enabled.
+   */
+  tokenizeLet?: boolean;
 }
 
 export function tokenize(
@@ -155,6 +161,7 @@ class _Tokenizer {
   private readonly _preserveLineEndings: boolean;
   private readonly _i18nNormalizeLineEndingsInICUs: boolean;
   private readonly _tokenizeBlocks: boolean;
+  private readonly _tokenizeLet: boolean;
   tokens: Token[] = [];
   errors: TokenError[] = [];
   nonNormalizedIcuExpressions: Token[] = [];
@@ -185,6 +192,8 @@ class _Tokenizer {
     this._preserveLineEndings = options.preserveLineEndings || false;
     this._i18nNormalizeLineEndingsInICUs = options.i18nNormalizeLineEndingsInICUs || false;
     this._tokenizeBlocks = options.tokenizeBlocks ?? true;
+    // TODO(crisbeto): eventually set this to true.
+    this._tokenizeLet = options.tokenizeLet || false;
     try {
       this._cursor.init();
     } catch (e) {
@@ -221,6 +230,15 @@ class _Tokenizer {
           } else {
             this._consumeTagOpen(start);
           }
+        } else if (
+          this._tokenizeLet &&
+          // Use `peek` instead of `attempCharCode` since we
+          // don't want to advance in case it's not `@let`.
+          this._cursor.peek() === chars.$AT &&
+          !this._inInterpolation &&
+          this._attemptStr('@let')
+        ) {
+          this._consumeLetDeclaration(start);
         } else if (this._tokenizeBlocks && this._attemptCharCode(chars.$AT)) {
           this._consumeBlockStart(start);
         } else if (
@@ -344,6 +362,91 @@ class _Tokenizer {
       // Skip to the next parameter.
       this._attemptCharCodeUntilFn(isBlockParameterChar);
     }
+  }
+
+  private _consumeLetDeclaration(start: CharacterCursor) {
+    this._beginToken(TokenType.LET_START, start);
+
+    // Require at least one white space after the `@let`.
+    if (chars.isWhitespace(this._cursor.peek())) {
+      this._attemptCharCodeUntilFn(isNotWhitespace);
+    } else {
+      const token = this._endToken([this._cursor.getChars(start)]);
+      token.type = TokenType.INCOMPLETE_LET;
+      return;
+    }
+
+    const startToken = this._endToken([this._getLetDeclarationName()]);
+
+    // Skip over white space before the equals character.
+    this._attemptCharCodeUntilFn(isNotWhitespace);
+
+    // Expect an equals sign.
+    if (!this._attemptCharCode(chars.$EQ)) {
+      startToken.type = TokenType.INCOMPLETE_LET;
+      return;
+    }
+
+    // Skip spaces after the equals.
+    this._attemptCharCodeUntilFn((code) => isNotWhitespace(code) && !chars.isNewLine(code));
+    this._consumeLetDeclarationValue();
+
+    // Terminate the `@let` with a semicolon.
+    const endChar = this._cursor.peek();
+    if (endChar === chars.$SEMICOLON) {
+      this._beginToken(TokenType.LET_END);
+      this._endToken([]);
+      this._cursor.advance();
+    } else {
+      startToken.type = TokenType.INCOMPLETE_LET;
+      startToken.sourceSpan = this._cursor.getSpan(start);
+    }
+  }
+
+  private _getLetDeclarationName(): string {
+    const nameCursor = this._cursor.clone();
+    let allowDigit = false;
+
+    this._attemptCharCodeUntilFn((code) => {
+      // `@let` names can't start with a digit, but digits are valid anywhere else in the name.
+      if (chars.isAsciiLetter(code) || code === chars.$_ || (allowDigit && chars.isDigit(code))) {
+        allowDigit = true;
+        return false;
+      }
+      return true;
+    });
+
+    return this._cursor.getChars(nameCursor).trim();
+  }
+
+  private _consumeLetDeclarationValue(): void {
+    const start = this._cursor.clone();
+    this._beginToken(TokenType.LET_VALUE, start);
+
+    while (this._cursor.peek() !== chars.$EOF) {
+      const char = this._cursor.peek();
+
+      // `@let` declarations terminate with a semicolon.
+      if (char === chars.$SEMICOLON) {
+        break;
+      }
+
+      // If we hit a quote, skip over its content since we don't care what's inside.
+      if (chars.isQuote(char)) {
+        this._cursor.advance();
+        this._attemptCharCodeUntilFn((inner) => {
+          if (inner === chars.$BACKSLASH) {
+            this._cursor.advance();
+            return false;
+          }
+          return inner === char;
+        });
+      }
+
+      this._cursor.advance();
+    }
+
+    this._endToken([this._cursor.getChars(start)]);
   }
 
   /**
