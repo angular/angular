@@ -26,6 +26,9 @@ export declare interface EarlyJsactionData {
 
   // Early Jsaction handler
   h: (event: Event) => void;
+
+  // Container for listening to events
+  c: HTMLElement;
 }
 
 /**
@@ -34,8 +37,12 @@ export declare interface EarlyJsactionData {
  * late-loaded EventContract.
  */
 export class EarlyEventContract {
-  constructor() {
-    window._ejsa = {
+  constructor(
+    private readonly container: Window = window,
+    private readonly documentElement = window.document.documentElement,
+  ) {
+    this.container._ejsa = {
+      c: documentElement,
       q: [],
       et: [],
       h: (event: Event) => {
@@ -46,19 +53,19 @@ export class EarlyEventContract {
           window.document.documentElement,
           Date.now(),
         );
-        window._ejsa!.q.push(eventInfo);
+        this.container._ejsa!.q.push(eventInfo);
       },
     };
   }
 
   /**
-   * Installs a list of event types for window.document.documentElement.
+   * Installs a list of event types for documentElement.
    */
   addEvents(types: string[]) {
     for (let idx = 0; idx < types.length; idx++) {
       const eventType = types[idx];
-      window._ejsa!.et.push(eventType);
-      window.document.documentElement.addEventListener(eventType, window._ejsa!.h);
+      this.container._ejsa!.et.push(eventType);
+      this.documentElement.addEventListener(eventType, this.container._ejsa!.h);
     }
   }
 }

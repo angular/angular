@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {EarlyEventContract} from './earlyeventcontract';
 import {EventContractContainer} from './event_contract_container';
 import {EventContract} from './eventcontract';
 
@@ -36,4 +37,30 @@ export function bootstrapEventContract(
     eventContract.addEvent(ev);
   }
   return eventContract;
+}
+
+/**
+ * Provides a factory function for bootstrapping an event contract on a
+ * window object.
+ * @param field The property on the window that the event contract will be placed on.
+ * @param container The container that listens to events
+ * @param appId A given identifier for an application. If there are multiple apps on the page
+ *              then this is how contracts can be initialized for each one.
+ * @param events An array of event names that should be listened to.
+ * @param anyWindow The global window object that should receive the event contract.
+ * @returns The `event` contract. This is both assigned to `anyWindow` and returned for testing.
+ */
+export function bootstrapEarlyEventContract(
+  field: string,
+  container: HTMLElement,
+  appId: string,
+  events: string[],
+  anyWindow: any = window,
+) {
+  if (!anyWindow[field]) {
+    anyWindow[field] = {};
+  }
+  anyWindow[field][appId] = {};
+  const eventContract = new EarlyEventContract(anyWindow[field][appId], container);
+  eventContract.addEvents(events);
 }
