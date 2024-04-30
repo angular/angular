@@ -38,6 +38,10 @@ export const enum TokenType {
   BLOCK_CLOSE,
   BLOCK_PARAMETER,
   INCOMPLETE_BLOCK_OPEN,
+  LET_START,
+  LET_VALUE,
+  LET_END,
+  INCOMPLETE_LET,
   EOF,
 }
 
@@ -69,7 +73,11 @@ export type Token =
   | BlockOpenStartToken
   | BlockOpenEndToken
   | BlockCloseToken
-  | IncompleteBlockOpenToken;
+  | IncompleteBlockOpenToken
+  | LetStartToken
+  | LetValueToken
+  | LetEndToken
+  | IncompleteLetToken;
 
 export type InterpolatedTextToken = TextToken | InterpolationToken | EncodedEntityToken;
 
@@ -225,5 +233,25 @@ export interface BlockCloseToken extends TokenBase {
 
 export interface IncompleteBlockOpenToken extends TokenBase {
   type: TokenType.INCOMPLETE_BLOCK_OPEN;
+  parts: [name: string];
+}
+
+export interface LetStartToken extends TokenBase {
+  type: TokenType.LET_START;
+  parts: [name: string];
+}
+
+export interface LetValueToken extends TokenBase {
+  type: TokenType.LET_VALUE;
+  parts: [value: string];
+}
+
+export interface LetEndToken extends TokenBase {
+  type: TokenType.LET_END;
+  parts: [];
+}
+
+export interface IncompleteLetToken extends TokenBase {
+  type: TokenType.INCOMPLETE_LET;
   parts: [name: string];
 }
