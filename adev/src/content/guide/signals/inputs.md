@@ -130,8 +130,7 @@ That way, you are only dealing with `boolean` inside your component when calling
 <my-custom-comp disabled>
 ```
 
-
-IMPORTANT:Do not use transforms if they change the meaning of the input, or if they are [impure](https://en.wikipedia.org/wiki/Pure_function#Impure_functions).
+IMPORTANT: Do not use transforms if they change the meaning of the input, or if they are [impure](https://en.wikipedia.org/wiki/Pure_function#Impure_functions).
 Instead, use `computed` for transformations with different meaning, or an `effect` for impure code that should run whenever the input changes.
 
 ## Why should we use signal inputs and not `@Input()`?
