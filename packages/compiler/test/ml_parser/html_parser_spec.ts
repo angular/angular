@@ -1057,6 +1057,54 @@ describe('HtmlParser', () => {
       });
     });
 
+    describe('let declaration', () => {
+      function parseLet(input: string) {
+        return parser.parse(input, 'TestComp', {tokenizeLet: true});
+      }
+
+      it('should parse a let declaration', () => {
+        expect(humanizeDom(parseLet('@let foo = 123;'))).toEqual([
+          [html.LetDeclaration, 'foo', '123'],
+        ]);
+      });
+
+      it('should parse a let declaration that is nested in a parent', () => {
+        expect(humanizeDom(parseLet('@grandparent {@parent {@let foo = 123;}}'))).toEqual([
+          [html.Block, 'grandparent', 0],
+          [html.Block, 'parent', 1],
+          [html.LetDeclaration, 'foo', '123'],
+        ]);
+      });
+
+      it('should store the source location of a @let declaration', () => {
+        expect(humanizeDomSourceSpans(parseLet('@let foo = 123 + 456;'))).toEqual([
+          [html.LetDeclaration, 'foo', '123 + 456', '@let foo = 123 + 456', 'foo', '123 + 456'],
+        ]);
+      });
+
+      it('should report an error for an incomplete let declaration', () => {
+        expect(humanizeErrors(parseLet('@let foo =').errors)).toEqual([
+          [
+            'foo',
+            'Incomplete @let declaration "foo". @let declarations must be written as `@let <name> = <value>;`',
+            '0:0',
+          ],
+        ]);
+      });
+
+      it('should store the locations of an incomplete let declaration', () => {
+        const parseResult = parseLet('@let foo =');
+
+        // It's expected that errors will be reported for the incomplete declaration,
+        // but we still want to check the spans since they're important even for broken templates.
+        parseResult.errors = [];
+
+        expect(humanizeDomSourceSpans(parseResult)).toEqual([
+          [html.LetDeclaration, 'foo', '', '@let foo =', 'foo =', ''],
+        ]);
+      });
+    });
+
     describe('source spans', () => {
       it('should store the location', () => {
         expect(
@@ -1307,6 +1355,7 @@ describe('HtmlParser', () => {
             html.visitAll(this, block.children);
           }
           visitBlockParameter(parameter: html.BlockParameter, context: any) {}
+          visitLetDeclaration(decl: html.LetDeclaration, context: any) {}
         })();
 
         html.visitAll(visitor, result.rootNodes);
@@ -1348,6 +1397,9 @@ describe('HtmlParser', () => {
             throw Error('Unexpected');
           }
           visitBlockParameter(parameter: html.BlockParameter, context: any) {
+            throw Error('Unexpected');
+          }
+          visitLetDeclaration(decl: html.LetDeclaration, context: any) {
             throw Error('Unexpected');
           }
         })();

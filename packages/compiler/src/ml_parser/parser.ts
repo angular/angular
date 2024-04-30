@@ -25,9 +25,13 @@ import {
   ExpansionCaseValueToken,
   ExpansionFormStartToken,
   IncompleteBlockOpenToken,
+  IncompleteLetToken,
   IncompleteTagOpenToken,
   InterpolatedAttributeToken,
   InterpolatedTextToken,
+  LetEndToken,
+  LetStartToken,
+  LetValueToken,
   TagCloseToken,
   TagOpenStartToken,
   TextToken,
@@ -127,6 +131,12 @@ class _TreeBuilder {
       } else if (this._peek.type === TokenType.INCOMPLETE_BLOCK_OPEN) {
         this._closeVoidElement();
         this._consumeIncompleteBlock(this._advance());
+      } else if (this._peek.type === TokenType.LET_START) {
+        this._closeVoidElement();
+        this._consumeLet(this._advance());
+      } else if (this._peek.type === TokenType.INCOMPLETE_LET) {
+        this._closeVoidElement();
+        this._consumeIncompleteLet(this._advance());
       } else {
         // Skip all other tokens...
         this._advance();
@@ -623,6 +633,89 @@ class _TreeBuilder {
         span,
         `Incomplete block "${token.parts[0]}". If you meant to write the @ character, ` +
           `you should use the "&#64;" HTML entity instead.`,
+      ),
+    );
+  }
+
+  private _consumeLet(startToken: LetStartToken) {
+    const name = startToken.parts[0];
+    let valueToken: LetValueToken;
+    let endToken: LetEndToken;
+
+    if (this._peek.type !== TokenType.LET_VALUE) {
+      this.errors.push(
+        TreeError.create(
+          startToken.parts[0],
+          startToken.sourceSpan,
+          `Invalid @let declaration "${name}". Declaration must have a value.`,
+        ),
+      );
+      return;
+    } else {
+      valueToken = this._advance();
+    }
+
+    // Type cast is necessary here since TS narrowed the type of `peek` above.
+    if ((this._peek as Token).type !== TokenType.LET_END) {
+      this.errors.push(
+        TreeError.create(
+          startToken.parts[0],
+          startToken.sourceSpan,
+          `Unterminated @let declaration "${name}". Declaration must be terminated with a semicolon.`,
+        ),
+      );
+      return;
+    } else {
+      endToken = this._advance();
+    }
+
+    const end = endToken.sourceSpan.fullStart;
+    const span = new ParseSourceSpan(
+      startToken.sourceSpan.start,
+      end,
+      startToken.sourceSpan.fullStart,
+    );
+
+    // The start token usually captures the `@let`. Construct a name span by
+    // offsetting the start by the length of any text before the name.
+    const startOffset = startToken.sourceSpan.toString().lastIndexOf(name);
+    const nameStart = startToken.sourceSpan.start.moveBy(startOffset);
+    const nameSpan = new ParseSourceSpan(nameStart, startToken.sourceSpan.end);
+    const node = new html.LetDeclaration(
+      name,
+      valueToken.parts[0],
+      span,
+      nameSpan,
+      valueToken.sourceSpan,
+    );
+
+    this._addToParent(node);
+  }
+
+  private _consumeIncompleteLet(token: IncompleteLetToken) {
+    // Incomplete `@let` declaration may end up with an empty name.
+    const name = token.parts[0] ?? '';
+    const nameString = name ? ` "${name}"` : '';
+
+    // If there's at least a name, we can salvage an AST node that can be used for completions.
+    if (name.length > 0) {
+      const startOffset = token.sourceSpan.toString().lastIndexOf(name);
+      const nameStart = token.sourceSpan.start.moveBy(startOffset);
+      const nameSpan = new ParseSourceSpan(nameStart, token.sourceSpan.end);
+      const valueSpan = new ParseSourceSpan(
+        token.sourceSpan.start,
+        token.sourceSpan.start.moveBy(0),
+      );
+      const node = new html.LetDeclaration(name, '', token.sourceSpan, nameSpan, valueSpan);
+      this._addToParent(node);
+    }
+
+    this.errors.push(
+      TreeError.create(
+        token.parts[0],
+        token.sourceSpan,
+        `Incomplete @let declaration${nameString}. ` +
+          `@let declarations must be written as \`@let <name> = <value>;\``,
       ),
     );
   }
