@@ -23,11 +23,13 @@
 | `NG0507`  | [HTML content was altered after SSR](errors/NG0507)                                  |
 | `NG0910`  | [Unsafe bindings on an iframe element](errors/NG0910)                                |
 | `NG0912`  | [Component ID generation collision](errors/NG0912)                                   |
+| `NG0955`  | [Track expression resulted in duplicated keys for a given collection](errors/NG0955) |
+| `NG0956`  | [Tracking expression caused re-creation of the DOM structure](errors/NG0956)         |
 | `NG01101` | [Wrong Async Validator Return Type](errors/NG01101)                                  |
 | `NG01203` | [Missing value accessor](errors/NG01203)                                             |
 | `NG02200` | [Missing Iterable Differ](errors/NG02200)                                            |
 | `NG02800` | [JSONP support in HttpClient configuration](errors/NG02800)                          |
-| `NG05000`  | [Hydration with unsupported Zone.js instance.](errors/NG05000)                        |
+| `NG05000`  | [Hydration with unsupported Zone.js instance.](errors/NG05000)                      |
 | `NG05104` | [Root element was not found.](errors/NG05104)                                        |
 
 ## Compiler errors
