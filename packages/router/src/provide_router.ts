@@ -764,7 +764,7 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
  * @returns A set of providers for use with `provideRouter`.
  * @see https://developer.chrome.com/docs/web-platform/view-transitions/
  * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
- * @experimental
+ * @developerPreview
  */
 export function withViewTransitions(
   options?: ViewTransitionsFeatureOptions,
