@@ -332,6 +332,8 @@ class _Visitor implements html.Visitor {
 
   visitBlockParameter(parameter: html.BlockParameter, context: any) {}
 
+  visitLetDeclaration(decl: html.LetDeclaration, context: any) {}
+
   private _init(mode: _VisitorMode, interpolationConfig: InterpolationConfig): void {
     this._mode = mode;
     this._inI18nBlock = false;
