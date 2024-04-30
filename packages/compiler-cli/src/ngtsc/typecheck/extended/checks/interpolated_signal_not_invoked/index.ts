@@ -55,9 +55,18 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
       if (symbol !== null && symbol.kind === SymbolKind.Input) {
         return [];
       }
-      // otherwise, we check if the node is a bound property like `[prop]="mySignal"`
+      // otherwise, we check if the node is
       if (
-        node.type === BindingType.Property &&
+        // a bound property like `[prop]="mySignal"`
+        (node.type === BindingType.Property ||
+          // or a class binding like `[class.myClass]="mySignal"`
+          node.type === BindingType.Class ||
+          // or a style binding like `[style.width]="mySignal"`
+          node.type === BindingType.Style ||
+          // or an attribute binding like `[attr.role]="mySignal"`
+          node.type === BindingType.Attribute ||
+          // or an animation binding like `[@myAnimation]="mySignal"`
+          node.type === BindingType.Animation) &&
         node.value instanceof ASTWithSource &&
         node.value.ast instanceof PropertyRead
       ) {
