@@ -32,7 +32,7 @@
 
 import * as a11yClickLib from './a11y_click';
 import {ActionResolver} from './action_resolver';
-import {EarlyJsactionData} from './earlyeventcontract';
+import {EarlyJsactionData, EarlyJsactionDataContainer} from './earlyeventcontract';
 import * as eventLib from './event';
 import {EventContractContainerManager} from './event_contract_container';
 import {
@@ -255,7 +255,7 @@ export class EventContract implements UnrenamedEventContract {
    * in the provided event contract. Once all the events are replayed, it cleans
    * up the early contract.
    */
-  replayEarlyEvents(earlyJsactionContainer: Object = window) {
+  replayEarlyEvents(earlyJsactionContainer: EarlyJsactionDataContainer = window) {
     // Check if the early contract is present and prevent calling this function
     // more than once.
     const earlyJsactionData: EarlyJsactionData | undefined = earlyJsactionContainer._ejsa;

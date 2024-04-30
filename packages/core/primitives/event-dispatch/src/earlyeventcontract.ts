@@ -9,9 +9,11 @@
 import {createEventInfoFromParameters, EventInfo} from './event_info';
 
 declare global {
-  interface Object {
-    _ejsa?: EarlyJsactionData;
-  }
+  interface Window extends EarlyJsactionDataContainer {}
+}
+
+export declare interface EarlyJsactionDataContainer {
+  _ejsa?: EarlyJsactionData;
 }
 
 /**
@@ -41,7 +43,7 @@ export declare interface EarlyJsactionData {
  */
 export class EarlyEventContract {
   constructor(
-    private readonly replaySink: Object = window,
+    private readonly replaySink: EarlyJsactionDataContainer = window,
     private readonly container = window.document.documentElement,
   ) {
     this.replaySink._ejsa = {

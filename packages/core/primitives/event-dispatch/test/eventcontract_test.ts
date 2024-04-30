@@ -1893,7 +1893,7 @@ describe('EventContract', () => {
       const container = getRequiredElementById('focus-container');
       const actionElement = getRequiredElementById('focus-action-element');
       const targetElement = getRequiredElementById('focus-target-element');
-      const replaySink = {};
+      const replaySink = {_ejsa: undefined};
       const removeEventListenerSpy = spyOn(container, 'removeEventListener').and.callThrough();
 
       const earlyEventContract = new EarlyEventContract(replaySink, container);
