@@ -56,7 +56,7 @@ export function bootstrapEarlyEventContract(
   container: HTMLElement,
   appId: string,
   eventTypes: string[],
-  captureEventTypes: [],
+  captureEventTypes: string[],
   earlyJsactionTracker: any = window,
 ) {
   if (!earlyJsactionTracker[field]) {

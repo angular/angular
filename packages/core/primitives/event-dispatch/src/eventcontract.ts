@@ -285,10 +285,9 @@ export class EventContract implements UnrenamedEventContract {
       earlyJsactionData.c.removeEventListener(eventType, earlyEventHandler);
     }
     const earlyEventTypesCapture: string[] = earlyJsactionData.etc;
-    const earlyEventHandlerCapture: (event: Event) => void = earlyJsactionData.h;
     for (let idx = 0; idx < earlyEventTypesCapture.length; idx++) {
       const eventType: string = earlyEventTypes[idx];
-      earlyJsactionData.c.removeEventListener(eventType, earlyEventHandlerCapture);
+      earlyJsactionData.c.removeEventListener(eventType, earlyEventHandler);
     }
     delete earlyJsactionContainer._ejsa;
   }

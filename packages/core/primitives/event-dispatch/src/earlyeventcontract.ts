@@ -70,7 +70,7 @@ export class EarlyEventContract {
       const eventType = types[idx];
       const eventTypes = capture ? this.replaySink._ejsa!.etc : this.replaySink._ejsa!.et;
       eventTypes.push(eventType);
-      this.container.addEventListener(eventType, this.replaySink._ejsa!.h, {capture});
+      this.container.addEventListener(eventType, this.replaySink._ejsa!.h, capture);
     }
   }
 }

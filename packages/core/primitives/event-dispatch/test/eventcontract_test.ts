@@ -182,6 +182,11 @@ const domContent = `
     </div>
   </div>
 </div>
+<div id="focus-container">
+  <div id="focus-action-element" jsaction="focus:handleFocus">
+    <button id="focus-target-element">Focus Button</button>
+  </div>
+</div>
 `;
 
 function getRequiredElementById(id: string) {
@@ -1885,27 +1890,25 @@ describe('EventContract', () => {
     });
 
     it('early capture events are dispatched', () => {
-      const el = document.createElement('div');
-      const button = document.createElement('button');
-      button.setAttribute('jsaction', 'focus:handleFocus;');
-      el.appendChild(button);
+      const container = getRequiredElementById('focus-container');
+      const actionElement = getRequiredElementById('focus-action-element');
+      const targetElement = getRequiredElementById('focus-target-element');
       const replaySink = {};
-      const removeEventListenerSpy = spyOn(el, 'removeEventListener').and.callThrough();
+      const removeEventListenerSpy = spyOn(container, 'removeEventListener').and.callThrough();
 
-      const earlyEventContract = new EarlyEventContract(replaySink, el);
+      const earlyEventContract = new EarlyEventContract(replaySink, container);
       earlyEventContract.addEvents(['focus'], true);
 
-      const focusEvent = new FocusEvent('focus');
-      button.dispatchEvent(focusEvent);
+      targetElement.focus();
 
       const earlyJsactionData: EarlyJsactionData | undefined = replaySink._ejsa;
       expect(earlyJsactionData).toBeDefined();
       expect(earlyJsactionData!.q.length).toBe(1);
-      expect(earlyJsactionData!.q[0].event).toBe(focusEvent);
+      expect(earlyJsactionData!.q[0].event.type).toBe('focus');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContract = createEventContract({
-        eventContractContainerManager: new EventContractContainer(el),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['focus'],
         dispatcher,
       });
@@ -1917,10 +1920,10 @@ describe('EventContract', () => {
       expect(dispatcher).toHaveBeenCalledTimes(2);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('focus');
-      expect(eventInfoWrapper.getEvent()).toBe(focusEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(button);
+      expect(eventInfoWrapper.getEvent().type).toBe('focus');
+      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
       expect(eventInfoWrapper.getAction()?.name).toBe('handleFocus');
-      expect(eventInfoWrapper.getAction()?.element).toBe(button);
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('early events are dispatched when target is cleared', () => {
