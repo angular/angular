@@ -9,7 +9,11 @@
 import * as cache from '../src/cache';
 import {bootstrapCustomEventSupport, fireCustomEvent} from '../src/custom_events';
 import {stopPropagation} from '../src/dispatcher';
-import {EarlyEventContract, EarlyJsactionData} from '../src/earlyeventcontract';
+import {
+  EarlyEventContract,
+  EarlyJsactionData,
+  EarlyJsactionDataContainer,
+} from '../src/earlyeventcontract';
 import {
   EventContractContainer,
   EventContractContainerManager,
@@ -22,6 +26,10 @@ import {Property} from '../src/property';
 import {Restriction} from '../src/restriction';
 
 import {safeElement, testonlyHtml} from './html';
+
+declare global {
+  interface Window extends EarlyJsactionDataContainer {}
+}
 
 const domContent = `
 <div id="container"></div>
@@ -180,6 +188,11 @@ const domContent = `
     <div id="jsnamespace-action-element" jsaction="handleClick">
       <div id="jsnamespace-target-element"></div>
     </div>
+  </div>
+</div>
+<div id="focus-container">
+  <div id="focus-action-element" jsaction="focus:handleFocus">
+    <button id="focus-target-element">Focus Button</button>
   </div>
 </div>
 `;
@@ -1920,6 +1933,43 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
+    it('early capture events are dispatched', () => {
+      const container = getRequiredElementById('focus-container');
+      const actionElement = getRequiredElementById('focus-action-element');
+      const targetElement = getRequiredElementById('focus-target-element');
+      const replaySink = {_ejsa: undefined};
+      const removeEventListenerSpy = spyOn(container, 'removeEventListener').and.callThrough();
+
+      const earlyEventContract = new EarlyEventContract(replaySink, container);
+      earlyEventContract.addEvents(['focus'], true);
+
+      targetElement.focus();
+
+      const earlyJsactionData: EarlyJsactionData | undefined = replaySink._ejsa;
+      expect(earlyJsactionData).toBeDefined();
+      expect(earlyJsactionData!.q.length).toBe(1);
+      expect(earlyJsactionData!.q[0].event.type).toBe('focus');
+
+      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+      const eventContract = createEventContract({
+        eventContractContainerManager: new EventContractContainer(container),
+        eventTypes: ['focus'],
+        dispatcher,
+      });
+
+      eventContract.replayEarlyEvents(replaySink);
+
+      expect(replaySink._ejsa).toBeUndefined();
+      expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(eventInfoWrapper.getEventType()).toBe('focus');
+      expect(eventInfoWrapper.getEvent().type).toBe('focus');
+      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleFocus');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
+    });
+
     it('early events are dispatched when target is cleared', () => {
       const container = getRequiredElementById('click-container');
       const actionElement = getRequiredElementById('click-action-element');
@@ -1978,7 +2028,9 @@ describe('EventContract', () => {
           relatedTarget: container,
         });
 
-        const earlyJsactionData: EarlyJsactionData | undefined = window._ejsa;
+        const earlyJsactionData: EarlyJsactionData | undefined = (
+          window as EarlyJsactionDataContainer
+        )._ejsa;
         expect(earlyJsactionData).toBeDefined();
         expect(earlyJsactionData!.q.length).toBe(1);
         expect(earlyJsactionData!.q[0].event).toBe(mouseOutEvent);
@@ -1992,7 +2044,7 @@ describe('EventContract', () => {
 
         eventContract.replayEarlyEvents();
 
-        expect(window._ejsa).toBeUndefined();
+        expect((window as EarlyJsactionDataContainer)._ejsa).toBeUndefined();
         expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
         expect(dispatcher).toHaveBeenCalledTimes(3);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
