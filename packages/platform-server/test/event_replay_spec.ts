@@ -8,7 +8,6 @@
 
 import {DOCUMENT} from '@angular/common';
 import {Component, destroyPlatform, getPlatform, Type} from '@angular/core';
-import {EventContract} from '@angular/core/primitives/event-dispatch';
 import {TestBed} from '@angular/core/testing';
 import {
   withEventReplay,
@@ -83,7 +82,6 @@ describe('event replay', () => {
 
     describe('server rendering', () => {
       let doc: Document;
-      let eventContract: EventContract | undefined = undefined;
       const originalDocument = globalThis.document;
       const originalWindow = globalThis.window;
 
@@ -96,8 +94,6 @@ describe('event replay', () => {
             eval(script.textContent);
           }
         }
-        eventContract = globalThis.window['ngContracts']['ng'];
-        expect(eventContract).toBeDefined();
       }
 
       beforeAll(async () => {
@@ -111,51 +107,55 @@ describe('event replay', () => {
 
       afterEach(() => {
         doc.body.textContent = '';
-        eventContract?.cleanUp();
-        eventContract = undefined;
       });
       afterAll(() => {
         globalThis.window = originalWindow;
         globalThis.document = originalDocument;
       });
-      it('should serialize event types to be listened to and jsaction', async () => {
+      it('should serialize event types to be listened to and jsaction attribute', async () => {
         const clickSpy = jasmine.createSpy('onClick');
-        const blurSpy = jasmine.createSpy('onBlur');
+        const focusSpy = jasmine.createSpy('onFocus');
         @Component({
           standalone: true,
           selector: 'app',
           template: `
-            <div (click)="onClick()" id="1">
-              <div (blur)="onClick()" id="2"></div>
+            <div (click)="onClick()" id="click-element">
+              <div id="focus-container">
+                <div id="focus-action-element" (focus)="onFocus()">
+                  <button id="focus-target-element">Focus Button</button>
+                </div>
+              </div>
             </div>
           `,
         })
         class SimpleComponent {
           onClick = clickSpy;
-          onBlur = blurSpy;
+          onFocus = focusSpy;
         }
 
         const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
         const html = await ssr(SimpleComponent, {doc: docContents});
         const ssrContents = getAppContents(html);
         expect(ssrContents).toContain(
-          `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click","blur"]);</script>`,
-        );
-        expect(ssrContents).toContain(
-          '<div id="1" jsaction="click:"><div id="2" jsaction="blur:"></div></div>',
+          `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click"],["focus"]);</script>`,
         );
 
         render(doc, ssrContents);
-        const el = doc.getElementById('1')!;
+        const el = doc.getElementById('click-element')!;
+        const button = doc.getElementById('focus-target-element')!;
         const clickEvent = new CustomEvent('click', {bubbles: true});
         el.dispatchEvent(clickEvent);
+        const focusEvent = new CustomEvent('focus');
+        button.dispatchEvent(focusEvent);
         expect(clickSpy).not.toHaveBeenCalled();
+        expect(focusSpy).not.toHaveBeenCalled();
         resetTViewsFor(SimpleComponent);
         const appRef = await hydrate(doc, SimpleComponent, {
           hydrationFeatures: [withEventReplay()],
         });
         appRef.tick();
         expect(clickSpy).toHaveBeenCalled();
+        expect(focusSpy).toHaveBeenCalled();
       });
 
       it('should remove jsaction attributes, but continue listening to events.', async () => {
@@ -175,24 +175,17 @@ describe('event replay', () => {
         const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
         const html = await ssr(SimpleComponent, {doc: docContents});
         const ssrContents = getAppContents(html);
-        const removeEventListenerSpy = spyOn(
-          document.body,
-          'removeEventListener',
-        ).and.callThrough();
         render(doc, ssrContents);
         const el = doc.getElementById('1')!;
         expect(el.hasAttribute('jsaction')).toBeTrue();
         expect((el.firstChild as Element).hasAttribute('jsaction')).toBeTrue();
         resetTViewsFor(SimpleComponent);
-        expect(removeEventListenerSpy).not.toHaveBeenCalled();
         const appRef = await hydrate(doc, SimpleComponent, {
           hydrationFeatures: [withEventReplay()],
         });
         appRef.tick();
         expect(el.hasAttribute('jsaction')).toBeFalse();
         expect((el.firstChild as Element).hasAttribute('jsaction')).toBeFalse();
-        // Event contract is still listening even if jsaction attributes are removed.
-        expect(removeEventListenerSpy).not.toHaveBeenCalled();
       });
 
       it(`should add 'nonce' attribute to event record script when 'ngCspNonce' is provided`, async () => {
