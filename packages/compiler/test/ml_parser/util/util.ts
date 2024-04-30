@@ -50,6 +50,10 @@ class _SerializerVisitor implements html.Visitor {
     return parameter.expression;
   }
 
+  visitLetDeclaration(decl: html.LetDeclaration, context: any) {
+    return `@let ${decl.name} = ${decl.value};`;
+  }
+
   private _visitAll(nodes: html.Node[], separator = '', prefix = ''): string {
     return nodes.length > 0 ? prefix + nodes.map((a) => a.visit(this, null)).join(separator) : '';
   }
