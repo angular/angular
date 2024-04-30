@@ -1,3 +1,14 @@
+## [0.14.5](https://github.com/angular/angular/compare/zone.js-0.14.4...zone.js-0.14.5) (2024-04-30)
+
+
+### Bug Fixes
+
+* **zone.js:** Add 'declare' to each interface to prevent renaming ([#54966](https://github.com/angular/angular/issues/54966)) ([b3d045b](https://github.com/angular/angular/commit/b3d045b9a4383d97ea3c5d770d9413ffed35d760))
+* **zone.js:** make sure fakeasync use the same id pool with native ([#54600](https://github.com/angular/angular/issues/54600)) ([ddbf6bb](https://github.com/angular/angular/commit/ddbf6bb038d101daf5280abbd2a0efaa0b7fd3a0)), closes [#54323](https://github.com/angular/angular/issues/54323)
+* **zone.js:** should not clear onhandler when remove capture listener ([#54602](https://github.com/angular/angular/issues/54602)) ([e44b077](https://github.com/angular/angular/commit/e44b077cbd4fc1ac16b3edd0fea758842ce6e29f)), closes [#54581](https://github.com/angular/angular/issues/54581)
+
+
+
 ## [0.14.4](https://github.com/angular/angular/compare/zone.js-0.14.3...zone.js-0.14.4) (2024-02-13)
 
 
