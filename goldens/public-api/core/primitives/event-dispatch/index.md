@@ -5,28 +5,17 @@
 ```ts
 
 // @public
-export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes: string[], captureEventTypes: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
-
-// @public
-export function bootstrapEventContract(field: string, container: Element, appId: string, events: string[], earlyJsactionTracker?: EventContractTracker<EventContract>): void;
-
-// @public
-export class Dispatcher {
-    constructor(getHandler?: ((eventInfoWrapper: EventInfoWrapper) => EventInfoWrapperHandler | void) | undefined, { stopPropagation, eventReplayer, }?: {
-        stopPropagation?: boolean;
+export class BaseDispatcher {
+    constructor(dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void, { eventReplayer }?: {
         eventReplayer?: Replayer;
     });
-    canDispatch(eventInfoWrapper: EventInfoWrapper): boolean;
-    dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): void;
-    hasAction(name: string): boolean;
-    registerEventInfoHandlers<T>(namespace: string, instance: T | null, methods: {
-        [key: string]: EventInfoWrapperHandler;
-    }): void;
-    registerGlobalHandler(eventType: string, handler: GlobalHandler): void;
-    setEventReplayer(eventReplayer: Replayer): void;
-    unregisterGlobalHandler(eventType: string, handler: GlobalHandler): void;
-    unregisterHandler(namespace: string, name: string): void;
+    dispatch(eventInfo: EventInfo): void;
+    queueEventInfoWrapper(eventInfoWrapper: EventInfoWrapper): void;
+    scheduleEventReplay(): void;
 }
+
+// @public
+export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
 
 // @public (undocumented)
 export interface EarlyJsactionDataContainer {
@@ -46,12 +35,12 @@ export class EventContract implements UnrenamedEventContract {
     static CUSTOM_EVENT_SUPPORT: boolean;
     // (undocumented)
     ecaacs?: (updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick, preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick, populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction) => void;
-    ecrd(dispatcher: Dispatcher_2, restriction: Restriction): void;
+    ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
     exportAddA11yClickSupport(): void;
     handler(eventType: string): EventHandler | undefined;
     // (undocumented)
     static MOUSE_SPECIAL_SUPPORT: boolean;
-    registerDispatcher(dispatcher: Dispatcher_2, restriction: Restriction): void;
+    registerDispatcher(dispatcher: Dispatcher, restriction: Restriction): void;
     replayEarlyEvents(earlyJsactionContainer?: EarlyJsactionDataContainer): void;
 }
 
@@ -112,7 +101,7 @@ export class EventInfoWrapper {
 }
 
 // @public
-export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher): void;
+export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: BaseDispatcher): void;
 
 // (No @packageDocumentation comment for this package)
 
