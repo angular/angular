@@ -27,6 +27,10 @@ import {Restriction} from '../src/restriction';
 
 import {safeElement, testonlyHtml} from './html';
 
+declare global {
+  interface Window extends EarlyJsactionDataContainer {}
+}
+
 const domContent = `
 <div id="container"></div>
 
@@ -2032,9 +2036,7 @@ describe('EventContract', () => {
           relatedTarget: container,
         });
 
-        const earlyJsactionData: EarlyJsactionData | undefined = (
-          window as EarlyJsactionDataContainer
-        )._ejsa;
+        const earlyJsactionData: EarlyJsactionData | undefined = window._ejsa;
         expect(earlyJsactionData).toBeDefined();
         expect(earlyJsactionData!.q.length).toBe(1);
         expect(earlyJsactionData!.q[0].event).toBe(mouseOutEvent);
@@ -2048,7 +2050,7 @@ describe('EventContract', () => {
 
         eventContract.replayEarlyEvents();
 
-        expect((window as EarlyJsactionDataContainer)._ejsa).toBeUndefined();
+        expect(window._ejsa).toBeUndefined();
         expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
         expect(dispatcher).toHaveBeenCalledTimes(2);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
