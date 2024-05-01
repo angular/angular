@@ -2032,7 +2032,9 @@ describe('EventContract', () => {
           relatedTarget: container,
         });
 
-        const earlyJsactionData: EarlyJsactionData | undefined = (window as EarlyJsactionDataContainer)._ejsa;
+        const earlyJsactionData: EarlyJsactionData | undefined = (
+          window as EarlyJsactionDataContainer
+        )._ejsa;
         expect(earlyJsactionData).toBeDefined();
         expect(earlyJsactionData!.q.length).toBe(1);
         expect(earlyJsactionData!.q[0].event).toBe(mouseOutEvent);
@@ -2046,7 +2048,7 @@ describe('EventContract', () => {
 
         eventContract.replayEarlyEvents();
 
-        expect((window as )._ejsa).toBeUndefined();
+        expect((window as EarlyJsactionDataContainer)._ejsa).toBeUndefined();
         expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
         expect(dispatcher).toHaveBeenCalledTimes(2);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
