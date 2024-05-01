@@ -20,7 +20,13 @@
   },
   "peerDependencies": {
     "rxjs": "^6.5.3 || ^7.4.0",
-    "zone.js": "~0.15.0"
+    "zone.js": "~0.15.0",
+    "@angular/compiler": "0.0.0-PLACEHOLDER"
+  },
+  "peerDependenciesMeta": {
+    "@angular/compiler": {
+      "optional": true
+    }
   },
   "repository": {
     "type": "git",
