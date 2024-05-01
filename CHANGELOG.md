@@ -1,3 +1,20 @@
+<a name="17.3.7"></a>
+# 17.3.7 (2024-05-01)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [51ac883167](https://github.com/angular/angular/commit/51ac8831670637b562dfa135bec1e27a0b49f21d) | fix | don't type check the bodies of control flow nodes in basic mode ([#55558](https://github.com/angular/angular/pull/55558)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [af0eb846a5](https://github.com/angular/angular/commit/af0eb846a572d0e9de2c6bb7016ddd339473dc00) | fix | render hooks should not specifically run outside the Angular zone ([#55399](https://github.com/angular/angular/pull/55399)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3eea50da64](https://github.com/angular/angular/commit/3eea50da644f6023e7f001b8738c54cb89aece4c) | fix | Scroller should scroll as soon as change detection completes ([#55105](https://github.com/angular/angular/pull/55105)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-next.6"></a>
 # 18.0.0-next.6 (2024-04-25)
 ## Breaking Changes
