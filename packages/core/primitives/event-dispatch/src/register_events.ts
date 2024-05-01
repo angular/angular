@@ -10,46 +10,45 @@ import {EarlyEventContract} from './earlyeventcontract';
 import {EventContractContainer} from './event_contract_container';
 import {EventContract} from './eventcontract';
 
+declare const ngDevMode: boolean | undefined;
+
 /**
  * Provides a factory function for bootstrapping an event contract on a
- * window object.
- * @param field The property on the window that the event contract will be placed on.
+ * specified object (by default, exposed on the `window`).
+ * @param field The property on the object that the event contract will be placed on.
  * @param container The container that listens to events
  * @param appId A given identifier for an application. If there are multiple apps on the page
  *              then this is how contracts can be initialized for each one.
  * @param events An array of event names that should be listened to.
- * @param anyWindow The global window object that should receive the event contract.
- * @returns The `event` contract. This is both assigned to `anyWindow` and returned for testing.
+ * @param earlyJsactionTracker The object that should receive the event contract.
  */
 export function bootstrapEventContract(
   field: string,
   container: Element,
   appId: string,
   events: string[],
-  anyWindow: any = window,
+  earlyJsactionTracker: any = window,
 ) {
-  if (!anyWindow[field]) {
-    anyWindow[field] = {};
+  if (!earlyJsactionTracker[field]) {
+    earlyJsactionTracker[field] = {};
   }
   const eventContract = new EventContract(new EventContractContainer(container));
-  anyWindow[field][appId] = eventContract;
+  earlyJsactionTracker[field][appId] = eventContract;
   for (const ev of events) {
     eventContract.addEvent(ev);
   }
-  return eventContract;
 }
 
 /**
  * Provides a factory function for bootstrapping an event contract on a
- * window object.
- * @param field The property on the window that the event contract will be placed on.
+ * specified object (by default, exposed on the `window`).
+ * @param field The property on the object that the event contract will be placed on.
  * @param container The container that listens to events
  * @param appId A given identifier for an application. If there are multiple apps on the page
  *              then this is how contracts can be initialized for each one.
  * @param eventTypes An array of event names that should be listened to.
  * @param captureEventTypes An array of event names that should be listened to with capture.
- * @param anyWindow The global window object that should receive the event contract.
- * @returns The `event` contract. This is both assigned to `anyWindow` and returned for testing.
+ * @param earlyJsactionTracker The object that should receive the event contract.
  */
 export function bootstrapEarlyEventContract(
   field: string,

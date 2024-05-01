@@ -9,7 +9,11 @@
 import * as cache from '../src/cache';
 import {fireCustomEvent} from '../src/custom_events';
 import {stopPropagation} from '../src/dispatcher';
-import {EarlyEventContract, EarlyJsactionData} from '../src/earlyeventcontract';
+import {
+  EarlyEventContract,
+  EarlyJsactionData,
+  EarlyJsactionDataContainer,
+} from '../src/earlyeventcontract';
 import {
   EventContractContainer,
   EventContractContainerManager,
@@ -1984,7 +1988,9 @@ describe('EventContract', () => {
           relatedTarget: container,
         });
 
-        const earlyJsactionData: EarlyJsactionData | undefined = window._ejsa;
+        const earlyJsactionData: EarlyJsactionData | undefined = (
+          window as EarlyJsactionDataContainer
+        )._ejsa;
         expect(earlyJsactionData).toBeDefined();
         expect(earlyJsactionData!.q.length).toBe(1);
         expect(earlyJsactionData!.q[0].event).toBe(mouseOutEvent);
@@ -1998,7 +2004,7 @@ describe('EventContract', () => {
 
         eventContract.replayEarlyEvents();
 
-        expect(window._ejsa).toBeUndefined();
+        expect((window as EarlyJsactionDataContainer)._ejsa).toBeUndefined();
         expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
         expect(dispatcher).toHaveBeenCalledTimes(3);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
@@ -2026,7 +2032,9 @@ describe('EventContract', () => {
           relatedTarget: container,
         });
 
-        const earlyJsactionData: EarlyJsactionData | undefined = window._ejsa;
+        const earlyJsactionData: EarlyJsactionData | undefined = (
+          window as EarlyJsactionDataContainer
+        )._ejsa;
         expect(earlyJsactionData).toBeDefined();
         expect(earlyJsactionData!.q.length).toBe(1);
         expect(earlyJsactionData!.q[0].event).toBe(mouseOutEvent);
@@ -2040,7 +2048,7 @@ describe('EventContract', () => {
 
         eventContract.replayEarlyEvents();
 
-        expect(window._ejsa).toBeUndefined();
+        expect((window as EarlyJsactionDataContainer)._ejsa).toBeUndefined();
         expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
         expect(dispatcher).toHaveBeenCalledTimes(2);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);

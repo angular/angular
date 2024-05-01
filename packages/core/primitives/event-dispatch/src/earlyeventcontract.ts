@@ -8,10 +8,6 @@
 
 import {createEventInfoFromParameters, EventInfo} from './event_info';
 
-declare global {
-  interface Window extends EarlyJsactionDataContainer {}
-}
-
 export declare interface EarlyJsactionDataContainer {
   _ejsa?: EarlyJsactionData;
 }
@@ -43,7 +39,7 @@ export declare interface EarlyJsactionData {
  */
 export class EarlyEventContract {
   constructor(
-    private readonly replaySink: EarlyJsactionDataContainer = window,
+    private readonly replaySink: EarlyJsactionDataContainer = window as EarlyJsactionDataContainer,
     private readonly container = window.document.documentElement,
   ) {
     this.replaySink._ejsa = {
@@ -68,11 +64,12 @@ export class EarlyEventContract {
    * Installs a list of event types for container .
    */
   addEvents(types: string[], capture?: boolean) {
+    const replaySink = this.replaySink._ejsa!;
     for (let idx = 0; idx < types.length; idx++) {
       const eventType = types[idx];
-      const eventTypes = capture ? this.replaySink._ejsa!.etc : this.replaySink._ejsa!.et;
+      const eventTypes = capture ? replaySink.etc : replaySink.et;
       eventTypes.push(eventType);
-      this.container.addEventListener(eventType, this.replaySink._ejsa!.h, capture);
+      this.container.addEventListener(eventType, replaySink.h, capture);
     }
   }
 }
