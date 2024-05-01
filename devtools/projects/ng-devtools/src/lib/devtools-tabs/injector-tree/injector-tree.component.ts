@@ -24,7 +24,6 @@ import {
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {
   InjectorTreeD3Node,
-  InjectorTreeNode,
   InjectorTreeVisualizer,
 } from '../dependency-injection/injector-tree-visualizer';
 import {ResolutionPathComponent} from '../dependency-injection/resolution-path.component';
@@ -186,29 +185,7 @@ export class InjectorTreeComponent {
 
       this.highlightPathFromSelectedInjector();
       this.firstRender = false;
-
-      this.initRouterGraph(environmentInjectorTree);
     });
-  }
-
-  findRootNode(node: InjectorTreeNode): any {
-    if (node.injector.name === 'Root') {
-      return node;
-    }
-    for (let i = 0; i < node.children.length; i++) {
-      return this.findRootNode(node.children[i]);
-    }
-  }
-
-  initRouterGraph(node: InjectorTreeNode) {
-    const rootNode = this.findRootNode(node);
-    this._messageBus.emit('getRouterConfigFromRoot', [
-      {
-        id: rootNode.injector.id,
-        type: rootNode.injector.type,
-        name: rootNode.injector.name,
-      },
-    ]);
   }
 
   snapToRoot(graph: InjectorTreeVisualizer) {

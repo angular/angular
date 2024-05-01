@@ -41,7 +41,7 @@ export class RouterTreeComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.setUpRouterVisualizer();
-    // this._messageBus.emit('getRoutes');
+    this._messageBus.emit('getRoutes');
   }
 
   togglePathSettings(): void {

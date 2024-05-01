@@ -85,7 +85,6 @@ export const subscribeToClientEvents = (
   messageBus.on('disableTimingAPI', disableTimingAPI);
 
   messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
-  messageBus.on('getRouterConfigFromRoot', getRouterConfigFromRootCallback(messageBus));
 
   messageBus.on('logProvider', logProvider);
 
@@ -214,20 +213,15 @@ const getNestedPropertiesCallback =
 // Subscribe Helpers
 //
 
-// todo: parse router tree with framework APIs after they are developed
 const getRoutes = (messageBus: MessageBus<Events>) => {
-  // Return empty router tree to disable tab.
-  // messageBus.emit('updateRouterTree', [[]]);
-  const node = queryDirectiveForest(
-    [0],
+  const forest = prepareForestForSerialization(
     initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    ngDebugDependencyInjectionApiIsSupported(),
   );
-  let routes: Route[] = [];
-  if (node?.component?.instance?.router) {
-    console.log(node?.component?.instance?.router);
-    routes = [parseRoutes(node?.component?.instance?.router)];
+  const rootInjector = (forest[0].resolutionPath ?? []).find((i) => i.name === 'Root');
+  if (rootInjector) {
+    getRouterConfigFromRoot(messageBus)(rootInjector);
   }
-  messageBus.emit('updateRouterTree', [routes]);
 };
 
 const checkForAngular = (messageBus: MessageBus<Events>): void => {
@@ -401,14 +395,13 @@ const getInjectorProvidersCallbackUtil = (injector: SerializedInjector) => {
   return serializedProviderRecords;
 };
 
-const getRouterConfigFromRootCallback =
+const getRouterConfigFromRoot =
   (messageBus: MessageBus<Events>) => (injector: SerializedInjector) => {
     const serializedProviderRecords = getInjectorProvidersCallbackUtil(injector) || [];
     const routerInstance = serializedProviderRecords.filter(
       (provider) => provider.token === 'Router', // get the instance of router using token
     );
-    const routerProvider = logProvider(injector, routerInstance[0], true);
-    console.log('routerInstance', injector, routerInstance, routerProvider);
+    const routerProvider = getProviderValue(injector, routerInstance[0]);
 
     const routes: Route[] = [parseRoutes(routerProvider)];
     messageBus.emit('updateRouterTree', [routes]);
@@ -420,17 +413,15 @@ const getInjectorProvidersCallback =
     messageBus.emit('latestInjectorProviders', [injector, serializedProviderRecords]);
   };
 
-const logProvider = (
+const getProviderValue = (
   serializedInjector: SerializedInjector,
   serializedProvider: SerializedProviderRecord,
-  returnValue: boolean = false,
-): void | any => {
+) => {
   if (!idToInjector.has(serializedInjector.id)) {
     return;
   }
 
   const injector = idToInjector.get(serializedInjector.id)!;
-
   const providerRecords = getInjectorProviders(injector);
 
   let provider, providerValue;
@@ -441,22 +432,43 @@ const logProvider = (
     provider = serializedProvider.index.map((index) => providerRecords[index]);
     providerValue = injector.get(provider[0].token, null, {optional: true});
   }
+  return providerValue;
+};
 
-  if (returnValue) {
-    return providerValue;
-  } else {
-    console.group(
-      `%c${serializedInjector.name}`,
-      `color: ${
-        serializedInjector.type === 'element' ? '#a7d5a9' : '#f05057'
-      }; font-size: 1.25rem; font-weight: bold;`,
-    );
+const logProvider = (
+  serializedInjector: SerializedInjector,
+  serializedProvider: SerializedProviderRecord,
+): void => {
+  if (!idToInjector.has(serializedInjector.id)) {
+    return;
+  }
+  const injector = idToInjector.get(serializedInjector.id)!;
+
+  const providerRecords = getInjectorProviders(injector);
+
+  console.group(
+    `%c${serializedInjector.name}`,
+    `color: ${
+      serializedInjector.type === 'element' ? '#a7d5a9' : '#f05057'
+    }; font-size: 1.25rem; font-weight: bold;`,
+  );
+  // tslint:disable-next-line:no-console
+  console.log('injector: ', injector);
+
+  if (typeof serializedProvider.index === 'number') {
+    const provider = providerRecords[serializedProvider.index];
+
     // tslint:disable-next-line:no-console
-    console.log('injector: ', injector);
+    console.log('provider: ', provider);
     // tslint:disable-next-line:no-console
-    console.log('provider(s): ', provider);
+    console.log(`value: `, injector.get(provider.token, null, {optional: true}));
+  } else if (Array.isArray(serializedProvider.index)) {
+    const providers = serializedProvider.index.map((index) => providerRecords[index]);
+
     // tslint:disable-next-line:no-console
-    console.log(`value: `, providerValue);
+    console.log('providers: ', providers);
+    // tslint:disable-next-line:no-console
+    console.log(`value: `, injector.get(providers[0].token, null, {optional: true}));
   }
 
   console.groupEnd();

@@ -26,6 +26,5 @@ ng_module(
         "@npm//@types",
         "@npm//d3",
         "@npm//rxjs",
-        # "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree/router-tree-visualizer:router_tree_visualizer"
     ],
 )
