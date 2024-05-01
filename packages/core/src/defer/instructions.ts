@@ -522,9 +522,14 @@ function scheduleDelayedTrigger(
   const tNode = getCurrentTNode()!;
 
   renderPlaceholder(lView, tNode);
-  const cleanupFn = scheduleFn(() => triggerDeferBlock(lView, tNode), lView);
-  const lDetails = getLDeferBlockDetails(lView, tNode);
-  storeTriggerCleanupFn(TriggerType.Regular, lDetails, cleanupFn);
+
+  // Only trigger the scheduled trigger on the browser
+  // since we don't want to delay the server response.
+  if (isPlatformBrowser(lView[INJECTOR]!)) {
+    const cleanupFn = scheduleFn(() => triggerDeferBlock(lView, tNode), lView);
+    const lDetails = getLDeferBlockDetails(lView, tNode);
+    storeTriggerCleanupFn(TriggerType.Regular, lDetails, cleanupFn);
+  }
 }
 
 /**
@@ -536,15 +541,20 @@ function scheduleDelayedPrefetching(
   scheduleFn: (callback: VoidFunction, lView: LView) => VoidFunction,
 ) {
   const lView = getLView();
-  const tNode = getCurrentTNode()!;
-  const tView = lView[TVIEW];
-  const tDetails = getTDeferBlockDetails(tView, tNode);
 
-  if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
-    const lDetails = getLDeferBlockDetails(lView, tNode);
-    const prefetch = () => triggerPrefetching(tDetails, lView, tNode);
-    const cleanupFn = scheduleFn(prefetch, lView);
-    storeTriggerCleanupFn(TriggerType.Prefetch, lDetails, cleanupFn);
+  // Only trigger the scheduled trigger on the browser
+  // since we don't want to delay the server response.
+  if (isPlatformBrowser(lView[INJECTOR]!)) {
+    const tNode = getCurrentTNode()!;
+    const tView = lView[TVIEW];
+    const tDetails = getTDeferBlockDetails(tView, tNode);
+
+    if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
+      const lDetails = getLDeferBlockDetails(lView, tNode);
+      const prefetch = () => triggerPrefetching(tDetails, lView, tNode);
+      const cleanupFn = scheduleFn(prefetch, lView);
+      storeTriggerCleanupFn(TriggerType.Prefetch, lDetails, cleanupFn);
+    }
   }
 }
 
