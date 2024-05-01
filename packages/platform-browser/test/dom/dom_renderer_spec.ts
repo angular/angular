@@ -252,6 +252,23 @@ describe('DefaultDomRendererV2', () => {
       expect(await styleCount(fixture, '.emulated')).toBe(0);
     });
   });
+
+  describe('should support namespaces', () => {
+    it('should create SVG elements', () => {
+      expect(
+        document.createElementNS(NAMESPACE_URIS['svg'], 'math') instanceof SVGElement,
+      ).toBeTrue();
+    });
+
+    it('should create MathML elements', () => {
+      // MathMLElement is fairly recent and doesn't exist on our Saucelabs test environments
+      if (typeof MathMLElement !== 'undefined') {
+        expect(
+          document.createElementNS(NAMESPACE_URIS['math'], 'math') instanceof MathMLElement,
+        ).toBeTrue();
+      }
+    });
+  });
 });
 
 async function styleCount(
