@@ -576,8 +576,10 @@ export class ApplicationRef {
     let runs = 0;
     const afterRenderEffectManager = this.afterRenderEffectManager;
     while (runs < MAXIMUM_REFRESH_RERUNS) {
-      if (refreshViews) {
-        const isFirstPass = runs === 0;
+      const isFirstPass = runs === 0;
+      // Some notifications to run a `tick` will only trigger render hooks. so we skip refreshing views the first time through.
+      // After the we execute render hooks in the first pass, we loop while views are marked dirty and should refresh them.
+      if (refreshViews || !isFirstPass) {
         this.beforeRender.next(isFirstPass);
         for (let {_lView, notifyErrorHandler} of this._views) {
           detectChangesInViewIfRequired(

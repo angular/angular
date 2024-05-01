@@ -37,6 +37,8 @@ import {withBody} from '@angular/private/testing';
 
 import {destroyPlatform} from '../../src/core';
 import {EnvironmentInjector} from '../../src/di';
+import {firstValueFrom} from 'rxjs';
+import {filter} from 'rxjs/operators';
 
 function createAndAttachComponent<T>(component: Type<T>) {
   const componentRef = createComponent(component, {
@@ -1097,7 +1099,7 @@ describe('after render hooks', () => {
       expect(fixture.nativeElement.innerText).toBe('1');
     });
 
-    it('allows updating state and calling markForCheck in afterRender', () => {
+    it('allows updating state and calling markForCheck in afterRender', async () => {
       @Component({
         selector: 'test-component',
         standalone: true,
@@ -1124,7 +1126,48 @@ describe('after render hooks', () => {
       const fixture = TestBed.createComponent(TestCmp);
       const appRef = TestBed.inject(ApplicationRef);
       appRef.attachView(fixture.componentRef.hostView);
-      appRef.tick();
+      await firstValueFrom(appRef.isStable.pipe(filter((stable) => stable)));
+      expect(fixture.nativeElement.innerText).toBe('1');
+    });
+
+    it('allows updating state and calling markForCheck in afterRender, outside of change detection', async () => {
+      const counter = signal(0);
+      @Component({
+        selector: 'test-component',
+        standalone: true,
+        template: `{{counter()}}`,
+      })
+      class TestCmp {
+        injector = inject(EnvironmentInjector);
+        counter = counter;
+        async ngOnInit() {
+          // push the render hook to a time outside of change detection
+          await new Promise<void>((resolve) => setTimeout(resolve));
+          afterNextRender(
+            () => {
+              counter.set(1);
+            },
+            {injector: this.injector},
+          );
+        }
+      }
+      TestBed.configureTestingModule({
+        providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}],
+      });
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.attachView(fixture.componentRef.hostView);
+      await new Promise<void>((resolve) => {
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            if (counter() === 1) {
+              resolve();
+            }
+          });
+        });
+      });
+      await firstValueFrom(appRef.isStable.pipe(filter((stable) => stable)));
       expect(fixture.nativeElement.innerText).toBe('1');
     });
 
