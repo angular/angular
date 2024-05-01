@@ -122,7 +122,6 @@ export interface TDeferBlockDetails {
  * Describes the current state of this defer block instance.
  *
  * @publicApi
- * @developerPreview
  */
 export enum DeferBlockState {
   /** The placeholder block content is rendered */
@@ -212,7 +211,6 @@ export interface DeferBlockConfig {
 /**
  * Options for configuring defer blocks behavior.
  * @publicApi
- * @developerPreview
  */
 export enum DeferBlockBehavior {
   /**

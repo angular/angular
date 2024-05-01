@@ -136,8 +136,6 @@ export abstract class ComponentFixture<T> {
 
   /**
    * Retrieves all defer block fixtures in the component fixture.
-   *
-   * @developerPreview
    */
   getDeferBlocks(): Promise<DeferBlockFixture[]> {
     const deferBlocks: DeferBlockDetails[] = [];
