@@ -124,6 +124,9 @@ export interface ParseTemplateOptions {
   /** Whether the @ block syntax is enabled. */
   enableBlockSyntax?: boolean;
 
+  /** Whether the `@let` syntax is enabled. */
+  enableLetSyntax?: boolean;
+
   // TODO(crisbeto): delete this option when the migration is deleted.
   /**
    * Whether the parser should allow invalid two-way bindings.
@@ -158,6 +161,7 @@ export function parseTemplate(
     ...options,
     tokenizeExpansionForms: true,
     tokenizeBlocks: options.enableBlockSyntax ?? true,
+    tokenizeLet: options.enableLetSyntax ?? false,
   });
 
   if (

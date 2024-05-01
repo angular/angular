@@ -384,6 +384,7 @@ export class NgCompiler {
   readonly ignoreForEmit: Set<ts.SourceFile>;
   readonly enableTemplateTypeChecker: boolean;
   private readonly enableBlockSyntax: boolean;
+  private readonly enableLetSyntax: boolean;
   private readonly angularCoreVersion: string | null;
 
   /**
@@ -454,6 +455,7 @@ export class NgCompiler {
       enableTemplateTypeChecker || (options['_enableTemplateTypeChecker'] ?? false);
     // TODO(crisbeto): remove this flag and base `enableBlockSyntax` on the `angularCoreVersion`.
     this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
+    this.enableLetSyntax = options['_enableLetSyntax'] ?? false;
     this.angularCoreVersion = options['_angularCoreVersion'] ?? null;
     this.constructionDiagnostics.push(
       ...this.adapter.constructionDiagnostics,
@@ -1397,6 +1399,7 @@ export class NgCompiler {
         deferredSymbolsTracker,
         !!this.options.forbidOrphanComponents,
         this.enableBlockSyntax,
+        this.enableLetSyntax,
         localCompilationExtraImportsTracker,
       ),
 
