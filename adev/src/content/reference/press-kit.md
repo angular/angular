@@ -46,7 +46,10 @@ In this example, we’ve adapted the shield to create an Angular Signals logo va
 ![Angular Signals logo](assets/images/press-kit/angular_signals.png#medium "Angular Signals logo")
 </docs-step>
 
-<docs-step title="Do’s and don’ts of adapting the brand">
+<docs-step title="Do’s and don’ts of using Angular's brand">
+If you are creating your own logo, we encourage differentiating your logo from ours to not cause confusion. When adapting the logo, you are free to change and adapt the colors and shape to make it your own.
+  
+When representing Angular with the original logo, please follow these guidelines:
 ![Rhubarb the small cat](assets/images/press-kit/do_and_dont.png "Rhubarb the small cat")
 </docs-step>
 
