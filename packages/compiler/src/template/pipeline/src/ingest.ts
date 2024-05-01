@@ -225,6 +225,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestIcu(unit, node);
     } else if (node instanceof t.ForLoopBlock) {
       ingestForBlock(unit, node);
+    } else if (node instanceof t.LetDeclaration) {
+      // TODO(crisbeto): needs further integration
     } else {
       throw new Error(`Unsupported template node: ${node.constructor.name}`);
     }
