@@ -51,6 +51,8 @@
     // `/generated/docs/api/forms/f_ormb_uilder.json`.
     //////////////////////////////////////////////////////////////////////////////////////////////
     "redirects": [
+      {"type": 301, "source": "/", "destination": "https://angular.dev/"},
+
       // A random bad indexed page that used `api/api`
       {"type": 301, "source": "/api/api/:rest*", "destination": "/api/:rest*"},
 
