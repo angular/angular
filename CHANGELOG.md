@@ -1,3 +1,22 @@
+<a name="18.0.0-rc.0"></a>
+# 18.0.0-rc.0 (2024-05-01)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [44c0ed83a6](https://github.com/angular/angular/commit/44c0ed83a6499fa96f65a27bc5c926579c06b6d2) | fix | hide implementation details of ExperimentalPendingTasks ([#55516](https://github.com/angular/angular/pull/55516)) |
+| [a177abef1b](https://github.com/angular/angular/commit/a177abef1b0a0edc46dcca2d8c5c67669c55ff8f) | fix | render hooks should not specifically run outside the Angular zone ([#55399](https://github.com/angular/angular/pull/55399)) |
+| [a5c57c7484](https://github.com/angular/angular/commit/a5c57c7484f1dc3afab4ece4e969a4a7308cdeca) | fix | resolve error for multiple component instances that use fallback content ([#55478](https://github.com/angular/angular/pull/55478)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f93e5180be](https://github.com/angular/angular/commit/f93e5180be1e20a59ff68f12853653f4f3282846) | fix | resolve multiple structural issues with HttpClient migration ([#55557](https://github.com/angular/angular/pull/55557)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [aefee87074](https://github.com/angular/angular/commit/aefee87074f4a5b2531f989a1876ace6e6616da4) | fix | Scroller should scroll as soon as change detection completes ([#55105](https://github.com/angular/angular/pull/55105)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-next.6"></a>
 # 18.0.0-next.6 (2024-04-25)
 ## Breaking Changes
