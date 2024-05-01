@@ -246,6 +246,7 @@ export class ComponentDecoratorHandler
     private readonly deferredSymbolTracker: DeferredSymbolTracker,
     private readonly forbidOrphanRendering: boolean,
     private readonly enableBlockSyntax: boolean,
+    private readonly enableLetSyntax: boolean,
     private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
   ) {
     this.extractTemplateOptions = {
@@ -253,6 +254,7 @@ export class ComponentDecoratorHandler
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
       usePoisonedData: this.usePoisonedData,
       enableBlockSyntax: this.enableBlockSyntax,
+      enableLetSyntax: this.enableLetSyntax,
     };
   }
 
@@ -272,6 +274,7 @@ export class ComponentDecoratorHandler
     i18nNormalizeLineEndingsInICUs: boolean;
     usePoisonedData: boolean;
     enableBlockSyntax: boolean;
+    enableLetSyntax: boolean;
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -621,6 +624,7 @@ export class ComponentDecoratorHandler
           i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
           usePoisonedData: this.usePoisonedData,
           enableBlockSyntax: this.enableBlockSyntax,
+          enableLetSyntax: this.enableLetSyntax,
         },
         this.compilationMode,
       );
