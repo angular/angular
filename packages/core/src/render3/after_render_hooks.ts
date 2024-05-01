@@ -331,6 +331,7 @@ export function afterNextRender(
  * A wrapper around a function to be used as an after render callback.
  */
 class AfterRenderCallback {
+  private zone = inject(NgZone);
   private errorHandler = inject(ErrorHandler, {optional: true});
 
   constructor(readonly phase: AfterRenderPhase, private callbackFn: VoidFunction) {
@@ -340,7 +341,7 @@ class AfterRenderCallback {
 
   invoke() {
     try {
-      this.callbackFn();
+      this.zone.runOutsideAngular(this.callbackFn);
     } catch (err) {
       this.errorHandler?.handleError(err);
     }
