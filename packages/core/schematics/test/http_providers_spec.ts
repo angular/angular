@@ -241,7 +241,7 @@ describe('Http providers migration', () => {
     );
   });
 
-  it('should handle a migration for acomponent ', async () => {
+  it('should handle a migration for a component', async () => {
     writeFile(
       '/index.ts',
       `
@@ -262,6 +262,32 @@ describe('Http providers migration', () => {
     expect(content).toContain(`@angular/common/http`);
     expect(content).not.toContain(`HttpClientModule`);
     expect(content).toContain(`provideHttpClient(withInterceptorsFromDi(), withJsonpSupport())`);
+  });
+
+  it('should handle a migration of HttpClientModule in a test', async () => {
+    writeFile(
+      '/index.ts',
+      `
+          import { HttpClientModule } from '@angular/common/http';
+
+          describe('MyComponent', () => {
+            beforeEach(() =>
+              TestBed.configureTestingModule({
+                imports: [HttpClientModule]
+              })
+            );
+          });
+    `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts');
+    expect(content).not.toContain(`'@angular/common/http/testing'`);
+    expect(content).toContain(`'@angular/common/http'`);
+    expect(content).toMatch(/import.*provideHttpClient.*withInterceptorsFromDi.*from/);
+    expect(content).not.toContain(`HttpClientModule`);
+    expect(content).toContain(`provideHttpClient(withInterceptorsFromDi())`);
   });
 
   it('should not migrate HttpClientModule from another package', async () => {
@@ -318,7 +344,9 @@ describe('Http providers migration', () => {
     await runMigration();
 
     const content = tree.readContent('/index.ts');
-    expect(content).toContain(`@angular/common/http/testing`);
+    expect(content).toContain(`'@angular/common/http/testing'`);
+    expect(content).toContain(`'@angular/common/http'`);
+    expect(content).toMatch(/import.*provideHttpClient.*withInterceptorsFromDi.*from/);
     expect(content).not.toContain(`HttpClientTestingModule`);
     expect(content).toMatch(/import.*provideHttpClientTesting/);
     expect(content).toContain(
@@ -347,7 +375,7 @@ describe('Http providers migration', () => {
     expect(content).not.toContain('provideHttpClientTesting');
   });
 
-  it('shouldmigrate NgModule + TestBed.configureTestingModule in the same file', async () => {
+  it('should migrate NgModule + TestBed.configureTestingModule in the same file', async () => {
     writeFile(
       '/index.ts',
       `

@@ -67,7 +67,13 @@ export function migrateFile(
       });
     }
 
-    migrateTestingModuleImports(node, commonHttpTestingIdentifiers, addedImports, changeTracker);
+    migrateTestingModuleImports(
+      node,
+      commonHttpIdentifiers,
+      commonHttpTestingIdentifiers,
+      addedImports,
+      changeTracker,
+    );
   });
 
   // Imports are for the whole file
@@ -89,6 +95,13 @@ export function migrateFile(
       }),
     ]);
     changeTracker.replaceNode(commonHttpImports, newImports);
+  }
+  // If there are no imports for common/http, and we need to add some
+  else if (addedImports.get(COMMON_HTTP)?.size) {
+    // Then we add a new import statement for common/http
+    addedImports.get(COMMON_HTTP)?.forEach((entry) => {
+      changeTracker.addImport(sourceFile, entry, COMMON_HTTP);
+    });
   }
 
   // Remove the HttpModules imports from common/http/testing
@@ -156,22 +169,23 @@ function migrateDecorator(
   const addedProviders = new Set<ts.CallExpression>();
 
   // Handle the different imported Http modules
+  const commonHttpAddedImports = addedImports.get(COMMON_HTTP);
   if (importedModules.client) {
-    addedImports.get(COMMON_HTTP)?.add(WITH_INTERCEPTORS_FROM_DI);
+    commonHttpAddedImports?.add(WITH_INTERCEPTORS_FROM_DI);
     addedProviders.add(createCallExpression(WITH_INTERCEPTORS_FROM_DI));
   }
   if (importedModules.clientJsonp) {
-    addedImports.get(COMMON_HTTP)?.add(WITH_JSONP_SUPPORT);
+    commonHttpAddedImports?.add(WITH_JSONP_SUPPORT);
     addedProviders.add(createCallExpression(WITH_JSONP_SUPPORT));
   }
   if (importedModules.xsrf) {
     // HttpClientXsrfModule is the only module with Class methods.
     // They correspond to different provider functions
     if (importedModules.xsrfOptions === 'disable') {
-      addedImports.get(COMMON_HTTP)?.add(WITH_NOXSRF_PROTECTION);
+      commonHttpAddedImports?.add(WITH_NOXSRF_PROTECTION);
       addedProviders.add(createCallExpression(WITH_NOXSRF_PROTECTION));
     } else {
-      addedImports.get(COMMON_HTTP)?.add(WITH_XSRF_CONFIGURATION);
+      commonHttpAddedImports?.add(WITH_XSRF_CONFIGURATION);
       addedProviders.add(
         createCallExpression(
           WITH_XSRF_CONFIGURATION,
@@ -192,20 +206,23 @@ function migrateDecorator(
   ]);
 
   // Adding the new providers
-  addedImports.get(COMMON_HTTP)?.add(PROVIDE_HTTP_CLIENT);
+  commonHttpAddedImports?.add(PROVIDE_HTTP_CLIENT);
   const providers = getProvidersFromLiteralExpr(metadata);
   const provideHttpExpr = createCallExpression(PROVIDE_HTTP_CLIENT, [...addedProviders]);
 
   let newProviders: ts.ArrayLiteralExpression;
   if (!providers) {
-    // No existing providers, we add an property to the literal
+    // No existing providers, we add a property to the literal
     newProviders = ts.factory.createArrayLiteralExpression([provideHttpExpr]);
   } else {
     // We add the provider to the existing provider array
-    newProviders = ts.factory.createArrayLiteralExpression([
-      ...providers.elements,
-      provideHttpExpr,
-    ]);
+    newProviders = ts.factory.updateArrayLiteralExpression(
+      providers,
+      ts.factory.createNodeArray(
+        [...providers.elements, provideHttpExpr],
+        providers.elements.hasTrailingComma,
+      ),
+    );
   }
 
   // Replacing the existing decorator with the new one (with the new imports and providers)
@@ -219,6 +236,7 @@ function migrateDecorator(
 
 function migrateTestingModuleImports(
   node: ts.Node,
+  commonHttpIdentifiers: Set<string>,
   commonHttpTestingIdentifiers: Set<string>,
   addedImports: Map<string, Set<string>>,
   changeTracker: ChangeTracker,
@@ -248,51 +266,98 @@ function migrateTestingModuleImports(
     return;
   }
 
+  const commonHttpAddedImports = addedImports.get(COMMON_HTTP);
+
+  // Does the imports array contain the HttpClientModule?
+  const httpClient = importsArray.elements.find((elt) => elt.getText() === HTTP_CLIENT_MODULE);
+  if (httpClient && commonHttpIdentifiers.has(HTTP_CLIENT_MODULE)) {
+    // We add the imports for provideHttpClient(withInterceptorsFromDi())
+    commonHttpAddedImports?.add(PROVIDE_HTTP_CLIENT);
+    commonHttpAddedImports?.add(WITH_INTERCEPTORS_FROM_DI);
+
+    const newImports = ts.factory.createArrayLiteralExpression([
+      ...importsArray.elements.filter((item) => item !== httpClient),
+    ]);
+
+    const provideHttpClient = createCallExpression(PROVIDE_HTTP_CLIENT, [
+      createCallExpression(WITH_INTERCEPTORS_FROM_DI),
+    ]);
+
+    // Adding the new provider
+    const providers = getProvidersFromLiteralExpr(configureTestingModuleArgs);
+
+    let newProviders: ts.ArrayLiteralExpression;
+    if (!providers) {
+      // No existing providers, we add a property to the literal
+      newProviders = ts.factory.createArrayLiteralExpression([provideHttpClient]);
+    } else {
+      // We add the provider to the existing provider array
+      newProviders = ts.factory.updateArrayLiteralExpression(
+        providers,
+        ts.factory.createNodeArray(
+          [...providers.elements, provideHttpClient],
+          providers.elements.hasTrailingComma,
+        ),
+      );
+    }
+
+    // Replacing the existing configuration with the new one (with the new imports and providers)
+    const newTestingModuleArgs = updateTestBedConfiguration(
+      configureTestingModuleArgs,
+      newImports,
+      newProviders,
+    );
+    changeTracker.replaceNode(configureTestingModuleArgs, newTestingModuleArgs);
+  }
+
   // Does the imports array contain the HttpClientTestingModule?
   const httpClientTesting = importsArray.elements.find(
     (elt) => elt.getText() === HTTP_CLIENT_TESTING_MODULE,
   );
-  if (!httpClientTesting || !commonHttpTestingIdentifiers.has(HTTP_CLIENT_TESTING_MODULE)) {
-    return;
-  }
+  if (httpClientTesting && commonHttpTestingIdentifiers.has(HTTP_CLIENT_TESTING_MODULE)) {
+    // We add the imports for provideHttpClient(withInterceptorsFromDi()) and provideHttpClientTesting()
+    commonHttpAddedImports?.add(PROVIDE_HTTP_CLIENT);
+    commonHttpAddedImports?.add(WITH_INTERCEPTORS_FROM_DI);
+    addedImports.get(COMMON_HTTP_TESTING)?.add(PROVIDE_HTTP_CLIENT_TESTING);
 
-  addedImports.get(COMMON_HTTP_TESTING)?.add(PROVIDE_HTTP_CLIENT_TESTING);
-
-  const newImports = ts.factory.createArrayLiteralExpression([
-    ...importsArray.elements.filter((item) => item !== httpClientTesting),
-  ]);
-
-  const provideHttpClient = createCallExpression(PROVIDE_HTTP_CLIENT, [
-    createCallExpression(WITH_INTERCEPTORS_FROM_DI),
-  ]);
-  const provideHttpClientTesting = createCallExpression(PROVIDE_HTTP_CLIENT_TESTING);
-
-  // Adding the new providers
-  const providers = getProvidersFromLiteralExpr(configureTestingModuleArgs);
-
-  let newProviders: ts.ArrayLiteralExpression;
-  if (!providers) {
-    // No existing providers, we add an property to the literal
-    newProviders = ts.factory.createArrayLiteralExpression([
-      provideHttpClient,
-      provideHttpClientTesting,
+    const newImports = ts.factory.createArrayLiteralExpression([
+      ...importsArray.elements.filter((item) => item !== httpClientTesting),
     ]);
-  } else {
-    // We add the provider to the existing provider array
-    newProviders = ts.factory.createArrayLiteralExpression([
-      ...providers.elements,
-      provideHttpClient,
-      provideHttpClientTesting,
-    ]);
-  }
 
-  // Replacing the existing decorator with the new one (with the new imports and providers)
-  const newTestingModuleArgs = ts.factory.createObjectLiteralExpression([
-    ...configureTestingModuleArgs.properties.filter((p) => p.getText() === 'imports'),
-    ts.factory.createPropertyAssignment('imports', newImports),
-    ts.factory.createPropertyAssignment('providers', newProviders),
-  ]);
-  changeTracker.replaceNode(configureTestingModuleArgs, newTestingModuleArgs);
+    const provideHttpClient = createCallExpression(PROVIDE_HTTP_CLIENT, [
+      createCallExpression(WITH_INTERCEPTORS_FROM_DI),
+    ]);
+    const provideHttpClientTesting = createCallExpression(PROVIDE_HTTP_CLIENT_TESTING);
+
+    // Adding the new providers
+    const providers = getProvidersFromLiteralExpr(configureTestingModuleArgs);
+
+    let newProviders: ts.ArrayLiteralExpression;
+    if (!providers) {
+      // No existing providers, we add a property to the literal
+      newProviders = ts.factory.createArrayLiteralExpression([
+        provideHttpClient,
+        provideHttpClientTesting,
+      ]);
+    } else {
+      // We add the provider to the existing provider array
+      newProviders = ts.factory.updateArrayLiteralExpression(
+        providers,
+        ts.factory.createNodeArray(
+          [...providers.elements, provideHttpClient, provideHttpClientTesting],
+          providers.elements.hasTrailingComma,
+        ),
+      );
+    }
+
+    // Replacing the existing configuration with the new one (with the new imports and providers)
+    const newTestingModuleArgs = updateTestBedConfiguration(
+      configureTestingModuleArgs,
+      newImports,
+      newProviders,
+    );
+    changeTracker.replaceNode(configureTestingModuleArgs, newTestingModuleArgs);
+  }
 }
 
 function getImportsProp(literal: ts.ObjectLiteralExpression) {
@@ -386,4 +451,15 @@ function createCallExpression(functionName: string, args: ts.Expression[] = []) 
     undefined,
     args,
   );
+}
+
+function updateTestBedConfiguration(
+  configureTestingModuleArgs: ts.ObjectLiteralExpression,
+  newImports: ts.ArrayLiteralExpression,
+  newProviders: ts.ArrayLiteralExpression,
+): ts.ObjectLiteralExpression {
+  return ts.factory.updateObjectLiteralExpression(configureTestingModuleArgs, [
+    ts.factory.createPropertyAssignment('imports', newImports),
+    ts.factory.createPropertyAssignment('providers', newProviders),
+  ]);
 }
