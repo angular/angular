@@ -79,9 +79,8 @@ APPLICATION_DEPS = [
     "@npm//@lezer/javascript",
     "@npm//@lezer/common",
     "@npm//@xterm/xterm",
+    "@npm//@xterm/addon-fit",
     "@npm//algoliasearch",
-    "@npm//xterm",
-    "@npm//xterm-addon-fit",
     "@npm//angular-split",
     "@npm//zone.js",
 ]
