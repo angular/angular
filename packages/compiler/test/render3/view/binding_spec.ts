@@ -212,6 +212,126 @@ describe('t2 binding', () => {
     expect(elDirectives[0].name).toBe('Dir');
   });
 
+  it('should get @let declarations when resolving entities at the root', () => {
+    const template = parseTemplate(
+      `
+        @let one = 1;
+        @let two = 2;
+        @let sum = one + two;
+      `,
+      '',
+      {
+        enableLetSyntax: true,
+      },
+    );
+    const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
+    const res = binder.bind({template: template.nodes});
+    const entities = Array.from(res.getEntitiesInScope(null));
+
+    expect(entities.map((entity) => entity.name)).toEqual(['one', 'two', 'sum']);
+  });
+
+  it('should scope @let declarations to their current view', () => {
+    const template = parseTemplate(
+      `
+        @let one = 1;
+
+        @if (true) {
+          @let two = 2;
+        }
+
+        @if (true) {
+          @let three = 3;
+        }
+      `,
+      '',
+      {
+        enableLetSyntax: true,
+      },
+    );
+    const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
+    const res = binder.bind({template: template.nodes});
+    const rootEntities = Array.from(res.getEntitiesInScope(null));
+    const firstBranchEntities = Array.from(
+      res.getEntitiesInScope((template.nodes[1] as a.IfBlock).branches[0]),
+    );
+    const secondBranchEntities = Array.from(
+      res.getEntitiesInScope((template.nodes[2] as a.IfBlock).branches[0]),
+    );
+
+    expect(rootEntities.map((entity) => entity.name)).toEqual(['one']);
+    expect(firstBranchEntities.map((entity) => entity.name)).toEqual(['one', 'two']);
+    expect(secondBranchEntities.map((entity) => entity.name)).toEqual(['one', 'three']);
+  });
+
+  it('should resolve expressions to an @let declaration', () => {
+    const template = parseTemplate(
+      `
+        @let value = 1;
+        {{value}}
+      `,
+      '',
+      {
+        enableLetSyntax: true,
+      },
+    );
+    const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
+    const res = binder.bind({template: template.nodes});
+    const interpolationWrapper = (template.nodes[1] as a.BoundText).value as e.ASTWithSource;
+    const propertyRead = (interpolationWrapper.ast as e.Interpolation).expressions[0];
+    const target = res.getExpressionTarget(propertyRead);
+
+    expect(target instanceof a.LetDeclaration).toBe(true);
+    expect((target as a.LetDeclaration)?.name).toBe('value');
+  });
+
+  it('should not resolve a `this` access to a `@let` declaration', () => {
+    const template = parseTemplate(
+      `
+        @let value = 1;
+        {{this.value}}
+      `,
+      '',
+      {
+        enableLetSyntax: true,
+      },
+    );
+    const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
+    const res = binder.bind({template: template.nodes});
+    const interpolationWrapper = (template.nodes[1] as a.BoundText).value as e.ASTWithSource;
+    const propertyRead = (interpolationWrapper.ast as e.Interpolation).expressions[0];
+    const target = res.getExpressionTarget(propertyRead);
+
+    expect(target).toBe(null);
+  });
+
+  it('should resolve the definition node of let declarations', () => {
+    const template = parseTemplate(
+      `
+        @if (true) {
+          @let one = 1;
+        }
+
+        @if (true) {
+          @let two = 2;
+        }
+      `,
+      '',
+      {
+        enableLetSyntax: true,
+      },
+    );
+    const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
+    const res = binder.bind({template: template.nodes});
+    const firstBranch = (template.nodes[0] as a.IfBlock).branches[0];
+    const firstLet = firstBranch.children[0] as a.LetDeclaration;
+    const secondBranch = (template.nodes[1] as a.IfBlock).branches[0];
+    const secondLet = secondBranch.children[0] as a.LetDeclaration;
+
+    expect(res.getDefinitionNodeOfSymbol(firstLet)).toBe(firstBranch);
+    expect(res.getDefinitionNodeOfSymbol(secondLet)).toBe(secondBranch);
+  });
+
   describe('matching inputs to consuming directives', () => {
     it('should work for bound attributes', () => {
       const template = parseTemplate('<div hasInput [inputBinding]="myValue"></div>', '', {});
