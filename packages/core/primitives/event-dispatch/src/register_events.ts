@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EarlyEventContract} from './earlyeventcontract';
+import {EarlyEventContract, EarlyJsactionDataContainer} from './earlyeventcontract';
 import {EventContractContainer} from './event_contract_container';
 import {EventContract} from './eventcontract';
 
-declare const ngDevMode: boolean | undefined;
+type Container = {[key: string]: {[appId: string]: EarlyJsactionDataContainer}};
 
 /**
  * Provides a factory function for bootstrapping an event contract on a
@@ -56,7 +56,7 @@ export function bootstrapEarlyEventContract(
   appId: string,
   eventTypes: string[],
   captureEventTypes: string[],
-  earlyJsactionTracker: any = window,
+  earlyJsactionTracker: Container = window as unknown as Container,
 ) {
   if (!earlyJsactionTracker[field]) {
     earlyJsactionTracker[field] = {};
