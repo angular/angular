@@ -280,17 +280,9 @@ export class EventContract implements UnrenamedEventContract {
     }
 
     // Clean up the early contract.
-    const earlyEventTypes: string[] = earlyJsactionData.et;
     const earlyEventHandler: (event: Event) => void = earlyJsactionData.h;
-    for (let idx = 0; idx < earlyEventTypes.length; idx++) {
-      const eventType: string = earlyEventTypes[idx];
-      earlyJsactionData.c.removeEventListener(eventType, earlyEventHandler);
-    }
-    const earlyEventTypesCapture: string[] = earlyJsactionData.etc;
-    for (let idx = 0; idx < earlyEventTypesCapture.length; idx++) {
-      const eventType: string = earlyEventTypes[idx];
-      earlyJsactionData.c.removeEventListener(eventType, earlyEventHandler, /* useCapture */ true);
-    }
+    removeEventListeners(earlyJsactionData.c, earlyJsactionData.et, earlyEventHandler);
+    removeEventListeners(earlyJsactionData.c, earlyJsactionData.etc, earlyEventHandler, true);
     delete earlyJsactionContainer._ejsa;
   }
 
@@ -394,6 +386,17 @@ export class EventContract implements UnrenamedEventContract {
       preventDefaultForA11yClick,
       populateClickOnlyAction,
     );
+  }
+}
+
+function removeEventListeners(
+  container: HTMLElement,
+  eventTypes: string[],
+  earlyEventHandler: (e: Event) => void,
+  capture?: boolean,
+) {
+  for (let idx = 0; idx < eventTypes.length; idx++) {
+    container.removeEventListener(eventTypes[idx], earlyEventHandler, /* useCapture */ capture);
   }
 }
 
