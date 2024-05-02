@@ -3507,6 +3507,32 @@ runInEachFileSystem(() => {
 1. If 'foo' is an Angular component, then verify that it is part of this module.
 2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
       });
+
+      it('should allow math elements', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            @Component({
+              template: \`
+                <math>
+                  <mfrac>
+                    <mn>1</mn>
+                    <msqrt>
+                      <mn>2</mn>
+                    </msqrt>
+                  </mfrac>
+                </math>
+              \`,
+              standalone: true,
+            })
+            export class MathCmp {}
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     // Test both sync and async compilations, see https://github.com/angular/angular/issues/32538
