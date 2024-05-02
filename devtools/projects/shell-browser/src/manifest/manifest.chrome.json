@@ -9,6 +9,7 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlm3JzpfmggVNDXe1uSVKq1btwWec4pOYefbB36CYj41bqUyw3xQqiAOCIlSAhl5GkQA/9PTixCNd14ix6RbI2yV8OeNt6oc0ca5BmEdGVj27lu32CgH5KbOc+AhyOAikoMq4IlgaWvqglZiyzd9KnL1wO/DqLDsZS0PV9oRwZk/8Eno2giZ1El4YQ5cNZ125JJR5z9KYAvxUs6bnDXAM71gW5sJwoUdgXQZhEIT18uSz0p2RiC0Ajjh4kx9c5Ll9naByXd3g5hjS8Ro5WbENRhxZtx1eEcgwC79l0pbJjI71i0QjbfLZn6syfHGMWsLyMc/ucv6d86tCPO8J1mU8iQIDAQAB",
   "icons": {
     "16": "assets/icon16.png",
     "48": "assets/icon48.png",
