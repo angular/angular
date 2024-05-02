@@ -13,7 +13,7 @@ This migration updates any `@NgModule`, `@Component`, `@Directive` that imports 
 import { HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule } from '@angular/common/http';
 
 @NgModule({
-    imports: [CommonModule, HttpClientModule,HttpClientJsonpModule, HttpClientXsrfModule)],
+    imports: [CommonModule, HttpClientModule, HttpClientJsonpModule, HttpClientXsrfModule]
 })
 export class AppModule {}
 ```
@@ -33,30 +33,61 @@ export class AppModule {}
 
 #### Before 
 
-```
-import { HttpClientTestingModule } from '@not-angular/common/http/testing';
+```ts
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-describe('some test') {
+describe('some test', () => {
 
     it('...', () => {
       TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule],
-      });
+        imports: [HttpClientTestingModule]
+      })
     })
-}
+})
+```
+
+#### After
+
+```ts
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+
+describe('some test', () => {
+
+    it('...', () => {
+      TestBed.configureTestingModule({
+        providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+      })
+    })
+})
 ```
 
 #### Before
 
-```
-import { provideHttpClientTesting } from '@not-angular/common/http/testing';
+```ts
+import { HttpClientTesting } from '@angular/common/http';
 
-describe('some test') {
+describe('some test', () => {
 
     it('...', () => {
       TestBed.configureTestingModule({
-        providers: [provideHttpClientTesting()],
-      });
+        imports: [HttpClientTesting],
+      })
     })
-}
+});
+```
+
+#### After
+
+```ts
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+
+describe('some test', () => {
+
+    it('...', () => {
+      TestBed.configureTestingModule({
+        providers: [provideHttpClient(withInterceptorsFromDi())]
+      })
+    })
+})
 ```

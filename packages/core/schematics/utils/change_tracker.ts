@@ -110,6 +110,8 @@ export class ChangeTracker {
    * @param sourceFile File to which to add the import.
    * @param symbolName Symbol being imported.
    * @param moduleName Module from which the symbol is imported.
+   * @param alias Alias to use for the import.
+   * @param keepSymbolName Whether to keep the symbol name in the import.
    */
   addImport(
     sourceFile: ts.SourceFile,
