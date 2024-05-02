@@ -95,7 +95,6 @@ export class EventContract implements UnrenamedEventContract {
 
   private readonly actionResolver = new ActionResolver({
     customEventSupport: EventContract.CUSTOM_EVENT_SUPPORT,
-    jsnamespaceSupport: EventContract.JSNAMESPACE_SUPPORT,
     syntheticMouseEventSupport: EventContract.MOUSE_SPECIAL_SUPPORT,
   });
 
