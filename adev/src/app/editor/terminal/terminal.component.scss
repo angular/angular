@@ -2,7 +2,7 @@
 // SASS imports, here we're importing a CSS asset
 //
 // stylelint-disable-next-line @angular/no-import
-@import 'xterm/css/xterm.css';
+@import '@xterm/xterm/css/xterm.css';
 
 .docs-tutorial-terminal {
   display: block;
