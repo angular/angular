@@ -10,7 +10,7 @@ import {EarlyEventContract, EarlyJsactionDataContainer} from './earlyeventcontra
 import {EventContractContainer} from './event_contract_container';
 import {EventContract} from './eventcontract';
 
-export type Tracker<T> = {[key: string]: {[appId: string]: T}};
+export type EventContractTracker<T> = {[key: string]: {[appId: string]: T}};
 
 /**
  * Provides a factory function for bootstrapping an event contract on a
@@ -27,7 +27,7 @@ export function bootstrapEventContract(
   container: Element,
   appId: string,
   events: string[],
-  earlyJsactionTracker: any = window,
+  earlyJsactionTracker: EventContractTracker<EventContract> = window as unknown as EventContractTracker<EventContract>,
 ) {
   if (!earlyJsactionTracker[field]) {
     earlyJsactionTracker[field] = {};
@@ -56,7 +56,7 @@ export function bootstrapEarlyEventContract(
   appId: string,
   eventTypes: string[],
   captureEventTypes: string[],
-  earlyJsactionTracker: Tracker<EarlyJsactionDataContainer> = window as unknown as Tracker<EarlyJsactionDataContainer>,
+  earlyJsactionTracker: EventContractTracker<EarlyJsactionDataContainer> = window as unknown as EventContractTracker<EarlyJsactionDataContainer>,
 ) {
   if (!earlyJsactionTracker[field]) {
     earlyJsactionTracker[field] = {};
