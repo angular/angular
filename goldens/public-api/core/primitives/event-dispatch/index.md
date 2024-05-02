@@ -5,7 +5,10 @@
 ```ts
 
 // @public
-export function bootstrapEventContract(field: string, container: Element, appId: string, events: string[], earlyJsactionTracker?: any): void;
+export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes: string[], captureEventTypes: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
+
+// @public
+export function bootstrapEventContract(field: string, container: Element, appId: string, events: string[], earlyJsactionTracker?: EventContractTracker<EventContract>): void;
 
 // @public
 export class Dispatcher {
@@ -57,6 +60,13 @@ export class EventContractContainer implements EventContractContainerManager {
     readonly element: Element;
 }
 
+// @public (undocumented)
+export type EventContractTracker<T> = {
+    [key: string]: {
+        [appId: string]: T;
+    };
+};
+
 // @public
 export class EventInfoWrapper {
     constructor(eventInfo: EventInfo);
@@ -99,13 +109,6 @@ export class EventInfoWrapper {
 
 // @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher): void;
-
-// @public (undocumented)
-export type Tracker<T> = {
-    [key: string]: {
-        [appId: string]: T;
-    };
-};
 
 // (No @packageDocumentation comment for this package)
 
