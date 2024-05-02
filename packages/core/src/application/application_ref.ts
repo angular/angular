@@ -312,7 +312,8 @@ export class ApplicationRef {
   private beforeRender = new Subject<boolean>();
   /** @internal */
   afterTick = new Subject<void>();
-  private get allViews() {
+  /** @internal */
+  get allViews() {
     return [...this.externalTestViews.keys(), ...this._views];
   }
 

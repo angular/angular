@@ -4,6 +4,7 @@
 
 ```ts
 
+import { EnvironmentProviders as EnvironmentProviders_2 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SIGNAL } from '@angular/core/primitives/signals';
 import { SignalNode } from '@angular/core/primitives/signals';
@@ -1364,6 +1365,13 @@ export class PlatformRef {
 
 // @public
 export type Predicate<T> = (value: T) => boolean;
+
+// @public
+export function provideExperimentalCheckNoChangesForDebug(options: {
+    interval?: number;
+    useNgZoneOnStable?: boolean;
+    exhaustive?: boolean;
+}): EnvironmentProviders_2;
 
 // @public
 export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders;

@@ -7,8 +7,10 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
 import {
   ApplicationRef,
+  NgZone,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -29,7 +31,15 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
+  provideExperimentalCheckNoChangesForDebug,
+  provideExperimentalZonelessChangeDetection,
+  ɵRuntimeError as RuntimeError,
+  ɵRuntimeErrorCode as RuntimeErrorCode,
+  afterRender,
+  PLATFORM_ID,
+  provideZoneChangeDetection,
 } from '@angular/core';
+import {} from '@angular/core/src/errors';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BehaviorSubject} from 'rxjs';
@@ -1289,6 +1299,225 @@ describe('change detection', () => {
         expect(comp.doCheckCount).toEqual(1);
         expect(comp.contentCheckCount).toEqual(1);
         expect(comp.viewCheckCount).toEqual(1);
+      });
+
+      describe('provideCheckNoChangesForDebug', () => {
+        // Needed because tests in this repo patch rAF to be setTimeout
+        // and coalescing tries to get the native one but fails so
+        // coalescing will run a timeout in the zone and cause an infinite loop.
+        const previousRaf = global.requestAnimationFrame;
+        beforeEach(() => {
+          (global as any).requestAnimationFrame = undefined;
+        });
+        afterEach(() => {
+          (global as any).requestAnimationFrame = previousRaf;
+        });
+
+        @Component({
+          changeDetection: ChangeDetectionStrategy.OnPush,
+          standalone: true,
+          template: '{{state}}{{resolveReadPromise()}}',
+        })
+        class MyApp {
+          state = 'initial';
+          promise?: Promise<void>;
+          private resolve?: Function;
+          changeDetectorRef = inject(ChangeDetectorRef);
+          createReadPromise() {
+            this.promise = new Promise<void>((resolve) => {
+              this.resolve = resolve;
+            });
+          }
+          resolveReadPromise() {
+            this.resolve?.();
+          }
+        }
+
+        it('throws error if used after zoneless provider', async () => {
+          TestBed.configureTestingModule({
+            providers: [
+              {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+              provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
+              provideExperimentalZonelessChangeDetection(),
+            ],
+          });
+
+          expect(() => {
+            TestBed.createComponent(MyApp);
+          }).toThrowError(/must be after any other provider for `NgZone`/);
+        });
+
+        it('throws error if used after zone provider', async () => {
+          TestBed.configureTestingModule({
+            providers: [
+              {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+              provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
+              provideZoneChangeDetection(),
+            ],
+          });
+
+          expect(() => {
+            TestBed.createComponent(MyApp);
+          }).toThrowError(/must be after any other provider for `NgZone`/);
+        });
+
+        it('throws expression changed with useNgZoneOnStable', async () => {
+          let error: RuntimeError | undefined = undefined;
+          TestBed.configureTestingModule({
+            providers: [
+              {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+              provideExperimentalZonelessChangeDetection(),
+              provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
+              {
+                provide: ErrorHandler,
+                useValue: {
+                  handleError(e: unknown) {
+                    error = e as RuntimeError;
+                  },
+                },
+              },
+            ],
+          });
+
+          let renderHookCalls = 0;
+          TestBed.runInInjectionContext(() => {
+            afterRender(() => {
+              renderHookCalls++;
+            });
+          });
+
+          const fixture = TestBed.createComponent(MyApp);
+          await fixture.whenStable();
+          expect(renderHookCalls).toBe(1);
+
+          fixture.componentInstance.createReadPromise();
+          TestBed.inject(NgZone).run(() => {
+            fixture.componentInstance.state = 'new';
+          });
+          await fixture.componentInstance.promise;
+          // should not have run appplicationRef.tick again
+          expect(renderHookCalls).toBe(1);
+          expect(error).toBeDefined();
+          expect(error!.code).toEqual(RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED);
+        });
+
+        it('does not throw expression changed with useNgZoneOnStable if there is a change detection scheduled', async () => {
+          let error: RuntimeError | undefined = undefined;
+          TestBed.configureTestingModule({
+            providers: [
+              provideExperimentalZonelessChangeDetection(),
+              provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
+              {
+                provide: ErrorHandler,
+                useValue: {
+                  handleError(e: unknown) {
+                    error = e as RuntimeError;
+                  },
+                },
+              },
+            ],
+          });
+
+          const fixture = TestBed.createComponent(MyApp);
+          await fixture.whenStable();
+
+          fixture.componentInstance.createReadPromise();
+          TestBed.inject(NgZone).run(() => {
+            setTimeout(() => {
+              fixture.componentInstance.state = 'new';
+              fixture.componentInstance.changeDetectorRef.markForCheck();
+            }, 20);
+          });
+          await fixture.componentInstance.promise;
+          // checkNoChanges runs from zone.run call
+          expect(error).toBeUndefined();
+
+          // checkNoChanges runs from the timeout
+          fixture.componentInstance.createReadPromise();
+          await fixture.componentInstance.promise;
+          expect(error).toBeUndefined();
+        });
+
+        it('throws expression changed with interval', async () => {
+          let error: RuntimeError | undefined = undefined;
+          TestBed.configureTestingModule({
+            providers: [
+              provideExperimentalZonelessChangeDetection(),
+              provideExperimentalCheckNoChangesForDebug({interval: 5}),
+              {
+                provide: ErrorHandler,
+                useValue: {
+                  handleError(e: unknown) {
+                    error = e as RuntimeError;
+                  },
+                },
+              },
+            ],
+          });
+
+          const fixture = TestBed.createComponent(MyApp);
+          fixture.detectChanges();
+
+          fixture.componentInstance.state = 'new';
+          await new Promise<void>((resolve) => setTimeout(resolve, 10));
+
+          expect(error!.code).toEqual(RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED);
+        });
+
+        it('does not throw expression changed with interval if change detection is scheduled', async () => {
+          let error: RuntimeError | undefined = undefined;
+          TestBed.configureTestingModule({
+            providers: [
+              provideExperimentalZonelessChangeDetection(),
+              provideExperimentalCheckNoChangesForDebug({interval: 0}),
+              {
+                provide: ErrorHandler,
+                useValue: {
+                  handleError(e: unknown) {
+                    error = e as RuntimeError;
+                  },
+                },
+              },
+            ],
+          });
+
+          const fixture = TestBed.createComponent(MyApp);
+          fixture.detectChanges();
+
+          fixture.componentInstance.state = 'new';
+          // markForCheck schedules change detection
+          fixture.componentInstance.changeDetectorRef.markForCheck();
+          // wait beyond the exhaustive check interval
+          await new Promise<void>((resolve) => setTimeout(resolve, 1));
+
+          expect(error).toBeUndefined();
+        });
+
+        it('does not throw expression changed with interval if OnPush component an no exhaustive', async () => {
+          let error: RuntimeError | undefined = undefined;
+          TestBed.configureTestingModule({
+            providers: [
+              provideExperimentalZonelessChangeDetection(),
+              provideExperimentalCheckNoChangesForDebug({interval: 0, exhaustive: false}),
+              {
+                provide: ErrorHandler,
+                useValue: {
+                  handleError(e: unknown) {
+                    error = e as RuntimeError;
+                  },
+                },
+              },
+            ],
+          });
+
+          const fixture = TestBed.createComponent(MyApp);
+          fixture.detectChanges();
+
+          fixture.componentInstance.state = 'new';
+          // wait beyond the exhaustive check interval
+          await new Promise<void>((resolve) => setTimeout(resolve, 1));
+          expect(error).toBeUndefined();
+        });
       });
     });
   });

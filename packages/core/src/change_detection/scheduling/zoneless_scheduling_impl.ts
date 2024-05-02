@@ -66,9 +66,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
 
   private cancelScheduledCallback: null | (() => void) = null;
   private shouldRefreshViews = false;
-  private pendingRenderTaskId: number | null = null;
   private useMicrotaskScheduler = false;
   runningTick = false;
+  pendingRenderTaskId: number | null = null;
 
   constructor() {
     this.subscriptions.add(
@@ -175,7 +175,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
     // If we're inside the zone don't bother with scheduler. Zone will stabilize
     // eventually and run change detection.
-    if (this.zoneIsDefined && NgZone.isInAngularZone()) {
+    if (!this.zonelessEnabled && this.zoneIsDefined && NgZone.isInAngularZone()) {
       return false;
     }
 
