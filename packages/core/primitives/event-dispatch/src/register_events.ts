@@ -10,7 +10,7 @@ import {EarlyEventContract, EarlyJsactionDataContainer} from './earlyeventcontra
 import {EventContractContainer} from './event_contract_container';
 import {EventContract} from './eventcontract';
 
-type Tracker<T> = {[key: string]: {[appId: string]: T}};
+export type Tracker<T> = {[key: string]: {[appId: string]: T}};
 
 /**
  * Provides a factory function for bootstrapping an event contract on a
