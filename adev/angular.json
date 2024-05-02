@@ -28,7 +28,7 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/robots.txt", "src/assets"],
-            "styles": ["@angular/docs/styles/global-styles.scss"],
+            "styles": ["@angular/docs/styles/global-styles.scss", "./src/local-styles.scss"],
             "scripts": [],
             "webWorkerTsConfig": "tsconfig.worker.json",
             "optimization": {
