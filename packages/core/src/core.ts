@@ -44,6 +44,7 @@ export {
 } from './change_detection/scheduling/ng_zone_scheduling';
 export {provideExperimentalZonelessChangeDetection} from './change_detection/scheduling/zoneless_scheduling_impl';
 export {ExperimentalPendingTasks} from './pending_tasks';
+export {provideExperimentalCheckNoChangesForDebug} from './change_detection/scheduling/exhaustive_check_no_changes';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
 export {
   APP_ID,

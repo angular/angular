@@ -44,7 +44,9 @@ import {
   ReactiveLViewConsumer,
 } from '../reactive_lview_consumer';
 import {
+  CheckNoChangesMode,
   enterView,
+  isExhaustiveCheckNoChanges,
   isInCheckNoChangesMode,
   isRefreshingViews,
   leaveView,
@@ -143,12 +145,16 @@ function detectChangesInViewWhileDirty(lView: LView, mode: ChangeDetectionMode) 
   }
 }
 
-export function checkNoChangesInternal(lView: LView, notifyErrorHandler = true) {
-  setIsInCheckNoChangesMode(true);
+export function checkNoChangesInternal(
+  lView: LView,
+  mode: CheckNoChangesMode,
+  notifyErrorHandler = true,
+) {
+  setIsInCheckNoChangesMode(mode);
   try {
     detectChangesInternal(lView, notifyErrorHandler);
   } finally {
-    setIsInCheckNoChangesMode(false);
+    setIsInCheckNoChangesMode(CheckNoChangesMode.Off);
   }
 }
 
@@ -329,12 +335,13 @@ export function refreshView<T>(
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
   } catch (e) {
-    // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
-    // because the error might have caused a situation where views below the current location are
-    // dirty but will be unreachable because the "has dirty children" flag in the ancestors has been
-    // cleared during change detection and we failed to run to completion.
-
-    markAncestorsForTraversal(lView);
+    if (!isInCheckNoChangesPass) {
+      // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
+      // because the error might have caused a situation where views below the current location are
+      // dirty but will be unreachable because the "has dirty children" flag in the ancestors has been
+      // cleared during change detection and we failed to run to completion.
+      markAncestorsForTraversal(lView);
+    }
     throw e;
   } finally {
     if (currentConsumer !== null) {
@@ -468,6 +475,8 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
 
   // Refresh views when they have a dirty reactive consumer, regardless of mode.
   shouldRefreshView ||= !!(consumer?.dirty && consumerPollProducersForChange(consumer));
+
+  shouldRefreshView ||= !!(ngDevMode && isExhaustiveCheckNoChanges());
 
   // Mark the Flags and `ReactiveNode` as not dirty before refreshing the component, so that they
   // can be re-dirtied during the refresh process.

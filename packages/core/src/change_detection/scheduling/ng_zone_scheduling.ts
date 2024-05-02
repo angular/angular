@@ -38,6 +38,7 @@ export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
   private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler, {optional: true});
   private readonly applicationRef = inject(ApplicationRef);
+  private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
 
   private _onMicrotaskEmptySubscription?: Subscription;
 

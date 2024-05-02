@@ -34,6 +34,7 @@ import {
   detachViewFromDOM,
   trackMovedView,
 } from './node_manipulation';
+import {CheckNoChangesMode} from './state';
 import {storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
@@ -320,7 +321,11 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    */
   checkNoChanges(): void {
     if (ngDevMode) {
-      checkNoChangesInternal(this._lView, this.notifyErrorHandler);
+      checkNoChangesInternal(
+        this._lView,
+        CheckNoChangesMode.OnlyDirtyViews,
+        this.notifyErrorHandler,
+      );
     }
   }
 
