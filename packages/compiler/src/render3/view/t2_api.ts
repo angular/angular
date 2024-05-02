@@ -20,6 +20,7 @@ import {
   ForLoopBlock,
   ForLoopBlockEmpty,
   IfBlockBranch,
+  LetDeclaration,
   Node,
   Reference,
   SwitchBlockCase,
@@ -49,6 +50,9 @@ export type ReferenceTarget<DirectiveT> =
     }
   | Element
   | Template;
+
+/** Entity that is local to the template and defined within the template. */
+export type TemplateEntity = Reference | Variable | LetDeclaration;
 
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of
@@ -200,7 +204,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * This is only defined for `AST` expressions that read or write to a property of an
    * `ImplicitReceiver`.
    */
-  getExpressionTarget(expr: AST): Reference | Variable | null;
+  getExpressionTarget(expr: AST): TemplateEntity | null;
 
   /**
    * Given a particular `Reference` or `Variable`, get the `ScopedNode` which created it.
@@ -208,7 +212,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * All `Variable`s are defined on node, so this will always return a value for a `Variable`
    * from the `Target`. Returns `null` otherwise.
    */
-  getDefinitionNodeOfSymbol(symbol: Reference | Variable): ScopedNode | null;
+  getDefinitionNodeOfSymbol(symbol: TemplateEntity): ScopedNode | null;
 
   /**
    * Get the nesting level of a particular `ScopedNode`.
@@ -222,7 +226,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * Get all `Reference`s and `Variables` visible within the given `ScopedNode` (or at the top
    * level, if `null` is passed).
    */
-  getEntitiesInScope(node: ScopedNode | null): ReadonlySet<Reference | Variable>;
+  getEntitiesInScope(node: ScopedNode | null): ReadonlySet<TemplateEntity>;
 
   /**
    * Get a list of all the directives used by the target,
