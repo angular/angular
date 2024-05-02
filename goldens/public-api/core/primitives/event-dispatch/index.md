@@ -100,6 +100,13 @@ export class EventInfoWrapper {
 // @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher): void;
 
+// @public (undocumented)
+export type Tracker<T> = {
+    [key: string]: {
+        [appId: string]: T;
+    };
+};
+
 // (No @packageDocumentation comment for this package)
 
 ```
