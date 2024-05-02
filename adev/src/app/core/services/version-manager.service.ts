@@ -15,7 +15,7 @@ export interface Version {
   url: string;
 }
 
-export type VersionMode = 'stable' | 'rc' | 'next' | number;
+export type VersionMode = 'stable' | 'deprecated' | 'rc' | 'next' | number;
 
 export const INITIAL_DOCS_VERSION = 17;
 export const VERSION_PATTERN_PLACEHOLDER = '{{version}}';
