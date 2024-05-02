@@ -208,6 +208,12 @@ const instructionState: InstructionState = {
   skipHydrationRootTNode: null,
 };
 
+export enum CheckNoChangesMode {
+  Off,
+  Exhaustive,
+  OnlyDirtyViews,
+}
+
 /**
  * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
  *
@@ -216,7 +222,7 @@ const instructionState: InstructionState = {
  * The `checkNoChanges` function is invoked only in ngDevMode=true and verifies that no unintended
  * changes exist in the change detector or its children.
  */
-let _isInCheckNoChangesMode = false;
+let _checkNoChangesMode: CheckNoChangesMode = 0; /* CheckNoChangesMode.Off */
 
 /**
  * Flag used to indicate that we are in the middle running change detection on a view
@@ -411,12 +417,17 @@ export function getContextLView(): LView {
 
 export function isInCheckNoChangesMode(): boolean {
   !ngDevMode && throwError('Must never be called in production mode');
-  return _isInCheckNoChangesMode;
+  return _checkNoChangesMode !== CheckNoChangesMode.Off;
 }
 
-export function setIsInCheckNoChangesMode(mode: boolean): void {
+export function isExhaustiveCheckNoChanges(): boolean {
   !ngDevMode && throwError('Must never be called in production mode');
-  _isInCheckNoChangesMode = mode;
+  return _checkNoChangesMode === CheckNoChangesMode.Exhaustive;
+}
+
+export function setIsInCheckNoChangesMode(mode: CheckNoChangesMode): void {
+  !ngDevMode && throwError('Must never be called in production mode');
+  _checkNoChangesMode = mode;
 }
 
 export function isRefreshingViews(): boolean {

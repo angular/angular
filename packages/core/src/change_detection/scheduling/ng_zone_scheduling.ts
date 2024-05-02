@@ -26,7 +26,11 @@ import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
 import {alwaysProvideZonelessScheduler} from './flags';
-import {ChangeDetectionScheduler, ZONELESS_SCHEDULER_DISABLED} from './zoneless_scheduling';
+import {
+  ChangeDetectionScheduler,
+  ZONELESS_ENABLED,
+  ZONELESS_SCHEDULER_DISABLED,
+} from './zoneless_scheduling';
 import {ChangeDetectionSchedulerImpl} from './zoneless_scheduling_impl';
 
 @Injectable({providedIn: 'root'})
@@ -34,6 +38,7 @@ export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
   private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler, {optional: true});
   private readonly applicationRef = inject(ApplicationRef);
+  private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
 
   private _onMicrotaskEmptySubscription?: Subscription;
 

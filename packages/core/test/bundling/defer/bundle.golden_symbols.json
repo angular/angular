@@ -1428,6 +1428,9 @@
     "name": "init_eventcontract"
   },
   {
+    "name": "init_exhaustive_check_no_changes"
+  },
+  {
     "name": "init_fields"
   },
   {
