@@ -5,7 +5,7 @@
 ```ts
 
 // @public
-export function bootstrapEventContract(field: string, container: Element, appId: string, events: string[], anyWindow?: any): EventContract;
+export function bootstrapEventContract(field: string, container: Element, appId: string, events: string[], earlyJsactionTracker?: any): void;
 
 // @public
 export class Dispatcher {
