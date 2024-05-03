@@ -42,6 +42,7 @@ APPLICATION_ASSETS = [
 ]
 
 APPLICATION_DEPS = [
+    "@npm//@angular/build",
     "@npm//@angular-devkit/build-angular",
     "@npm//@angular/animations",
     "@npm//@angular/cdk",
