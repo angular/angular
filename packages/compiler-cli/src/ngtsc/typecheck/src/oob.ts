@@ -10,6 +10,7 @@ import {
   AbsoluteSourceSpan,
   BindingPipe,
   PropertyRead,
+  PropertyWrite,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstElement,
@@ -18,6 +19,7 @@ import {
   TmplAstHoverDeferredTrigger,
   TmplAstIfBlockBranch,
   TmplAstInteractionDeferredTrigger,
+  TmplAstLetDeclaration,
   TmplAstReference,
   TmplAstSwitchBlockCase,
   TmplAstTemplate,
@@ -168,6 +170,20 @@ export interface OutOfBandDiagnosticRecorder {
       | TmplAstForLoopBlock
       | TmplAstForLoopBlockEmpty,
     preservesWhitespaces: boolean,
+  ): void;
+
+  /** Reports cases where users are writing to `@let` declarations. */
+  illegalWriteToLetDeclaration(
+    templateId: TemplateId,
+    node: PropertyWrite,
+    target: TmplAstLetDeclaration,
+  ): void;
+
+  /** Reports cases where users are accessing an `@let` before it is defined.. */
+  letUsedBeforeDefinition(
+    templateId: TemplateId,
+    node: PropertyRead,
+    target: TmplAstLetDeclaration,
   ): void;
 }
 
@@ -577,6 +593,50 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         category,
         ngErrorCode(ErrorCode.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION),
         lines.join('\n'),
+      ),
+    );
+  }
+
+  illegalWriteToLetDeclaration(
+    templateId: TemplateId,
+    node: PropertyWrite,
+    target: TmplAstLetDeclaration,
+  ): void {
+    const sourceSpan = this.resolver.toParseSourceSpan(templateId, node.sourceSpan);
+    if (sourceSpan === null) {
+      throw new Error(`Assertion failure: no SourceLocation found for property write.`);
+    }
+
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        templateId,
+        this.resolver.getSourceMapping(templateId),
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.ILLEGAL_LET_WRITE),
+        `Cannot assign to @let declaration '${target.name}'.`,
+      ),
+    );
+  }
+
+  letUsedBeforeDefinition(
+    templateId: TemplateId,
+    node: PropertyRead,
+    target: TmplAstLetDeclaration,
+  ): void {
+    const sourceSpan = this.resolver.toParseSourceSpan(templateId, node.sourceSpan);
+    if (sourceSpan === null) {
+      throw new Error(`Assertion failure: no SourceLocation found for property read.`);
+    }
+
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        templateId,
+        this.resolver.getSourceMapping(templateId),
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.LET_USED_BEFORE_DEFINITION),
+        `Cannot read @let declaration '${target.name}' before it has been defined.`,
       ),
     );
   }
