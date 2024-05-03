@@ -493,6 +493,7 @@ export function setup(
     config?: Partial<TypeCheckingConfig>;
     options?: ts.CompilerOptions;
     inlining?: boolean;
+    parseOptions?: ParseTemplateOptions;
   } = {},
 ): {
   templateTypeChecker: TemplateTypeChecker;
@@ -594,7 +595,7 @@ export function setup(
         const template = target.templates[className];
         const templateUrl = `${className}.html`;
         const templateFile = new ParseSourceFile(template, templateUrl);
-        const {nodes, errors} = parseTemplate(template, templateUrl);
+        const {nodes, errors} = parseTemplate(template, templateUrl, overrides.parseOptions);
         if (errors !== null) {
           throw new Error('Template parse errors: \n' + errors.join('\n'));
         }

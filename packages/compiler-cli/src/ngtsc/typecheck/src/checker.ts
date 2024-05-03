@@ -15,12 +15,11 @@ import {
   ParseSourceSpan,
   PropertyRead,
   SafePropertyRead,
+  TemplateEntity,
   TmplAstElement,
   TmplAstNode,
-  TmplAstReference,
   TmplAstTemplate,
   TmplAstTextAttribute,
-  TmplAstVariable,
   WrappedNodeExpr,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -437,10 +436,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     this.isComplete = false;
   }
 
-  getExpressionTarget(
-    expression: AST,
-    clazz: ts.ClassDeclaration,
-  ): TmplAstReference | TmplAstVariable | null {
+  getExpressionTarget(expression: AST, clazz: ts.ClassDeclaration): TemplateEntity | null {
     return (
       this.getLatestComponentState(clazz).data?.boundTarget.getExpressionTarget(expression) || null
     );
