@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "outputHashing": "none",
             "outputPath": "dist",
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -32,7 +33,7 @@
               "extractLicenses": false
             },
             "production": {
-              "outputHashing": "all",
+              "outputHashing": "none",
               "budgets": [
                 {
                   "type": "initial",

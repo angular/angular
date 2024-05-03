@@ -11,12 +11,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "outputHashing": "none",
             "namedChunks": true,
-            "outputPath": "dist",
+            "outputPath": {
+              "base": "dist",
+              "browser": ""
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -26,17 +29,16 @@
             "styles": ["src/styles.css"],
             "scripts": [],
             "optimization": false,
-            "buildOptimizer": false,
-            "progress": false
+            "progress": false,
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
+              "namedChunks": true,
               "optimization": true,
-              "outputHashing": "all",
+              "outputHashing": "none",
               "sourceMap": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
