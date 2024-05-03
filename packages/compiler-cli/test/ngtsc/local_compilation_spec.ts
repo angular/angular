@@ -72,6 +72,116 @@ runInEachFileSystem(() => {
 
       it('should only include NgModule external import as global import', () => {
         env.write(
+          'comp1.ts',
+          `
+        import {Component} from '@angular/core';
+
+        @Component({template:''})
+        export class Comp1 {
+        }
+        `,
+        );
+        env.write(
+          'module1.ts',
+          `
+        import {NgModule} from '@angular/core';
+
+        import {Comp1} from 'comp1';
+
+        @NgModule({declarations:[Comp1]})
+        export class Module1 {
+        }
+        `,
+        );
+        env.write(
+          'a.ts',
+          `
+        import {NgModule} from '@angular/core';
+        import {SomeExternalStuff} from '/some_external_file';
+        import {SomeExternalStuff2} from '/some_external_file2';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [SomeExternalStuff, BModule]})
+        export class AModule {
+        }
+        `,
+        );
+        env.write(
+          'b.ts',
+          `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class BModule {
+        }
+        `,
+        );
+
+        env.driveMain();
+        const Comp1Contents = env.getContents('comp1.js');
+
+        expect(Comp1Contents)
+          .withContext('NgModule external imports should be included in the global imports')
+          .toContain('import "/some_external_file"');
+        expect(Comp1Contents)
+          .withContext(
+            'External import which is not an NgModule import should not be included in the global import',
+          )
+          .not.toContain('import "/some_external_file2"');
+        expect(Comp1Contents)
+          .withContext('NgModule internal import should not be included in the global import')
+          .not.toContain('import "b"');
+      });
+
+      it('should include global imports only in the eligible files', () => {
+        env.write(
+          'module_and_comp.ts',
+          `
+        import {NgModule, Component} from '@angular/core';
+
+        @Component({template:'', standalone: true})
+        export class Comp3 {
+        }
+
+        @NgModule({declarations:[Comp3]})
+        export class Module3 {
+        }
+        `,
+        );
+        env.write(
+          'standalone_comp.ts',
+          `
+        import {Component} from '@angular/core';
+
+        @Component({template:'', standalone: true})
+        export class Comp2 {
+        }
+        `,
+        );
+        env.write(
+          'comp1.ts',
+          `
+        import {Component} from '@angular/core';
+
+        @Component({template:''})
+        export class Comp1 {
+        }
+        `,
+        );
+        env.write(
+          'module1.ts',
+          `
+        import {NgModule} from '@angular/core';
+
+        import {Comp1} from 'comp1';
+
+        @NgModule({declarations:[Comp1]})
+        export class Module1 {
+        }
+        `,
+        );
+        env.write(
           'a.ts',
           `
         import {NgModule} from '@angular/core';
@@ -103,27 +213,51 @@ runInEachFileSystem(() => {
         );
 
         env.driveMain();
-        const aContents = env.getContents('a.js');
-        const bContents = env.getContents('b.js');
-        const cContents = env.getContents('c.js');
 
-        // NgModule external import as global import
-        expect(aContents).toContain('import "/some_external_file"');
-        expect(bContents).toContain('import "/some_external_file"');
-        expect(cContents).toContain('import "/some_external_file"');
-
-        // External import which is not an NgModule import should not be global import
-        expect(aContents).not.toContain('import "/some_external_file2"');
-        expect(bContents).not.toContain('import "/some_external_file2"');
-        expect(cContents).not.toContain('import "/some_external_file2"');
-
-        // NgModule internal import should not be global import
-        expect(aContents).not.toContain('import "b"');
-        expect(bContents).not.toContain('import "b"');
-        expect(cContents).not.toContain('import "b"');
+        expect(env.getContents('comp1.js'))
+          .withContext(
+            'Global imports should be generated when a component has its NgModule in a different file',
+          )
+          .toContain('import "/some_external_file"');
+        expect(env.getContents('standalone_comp.js'))
+          .withContext('Global imports should not be generated when all components are standalone')
+          .not.toContain('import "/some_external_file"');
+        expect(env.getContents('module_and_comp.js'))
+          .withContext(
+            'Global imports should not be generated when components and their NgModules are in the same file',
+          )
+          .not.toContain('import "/some_external_file"');
+        expect(env.getContents('a.js'))
+          .withContext('Global imports should not be generated when the file has no component')
+          .not.toContain('import "/some_external_file"');
+        expect(env.getContents('c.js'))
+          .withContext('Global imports should not be generated for non-Angular files')
+          .not.toContain('import "/some_external_file"');
       });
 
       it('should include NgModule namespace external import as global import', () => {
+        env.write(
+          'comp1.ts',
+          `
+        import {Component} from '@angular/core';
+
+        @Component({template:''})
+        export class Comp1 {
+        }
+        `,
+        );
+        env.write(
+          'module1.ts',
+          `
+        import {NgModule} from '@angular/core';
+
+        import {Comp1} from 'comp1';
+
+        @NgModule({declarations:[Comp1]})
+        export class Module1 {
+        }
+        `,
+        );
         env.write(
           'a.ts',
           `
@@ -146,11 +280,32 @@ runInEachFileSystem(() => {
 
         env.driveMain();
 
-        expect(env.getContents('a.js')).toContain('import "/some_external_file"');
-        expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+        expect(env.getContents('comp1.js')).toContain('import "/some_external_file"');
       });
 
       it('should include nested NgModule external import as global import - case of named import', () => {
+        env.write(
+          'comp1.ts',
+          `
+        import {Component} from '@angular/core';
+
+        @Component({template:''})
+        export class Comp1 {
+        }
+        `,
+        );
+        env.write(
+          'module1.ts',
+          `
+        import {NgModule} from '@angular/core';
+
+        import {Comp1} from 'comp1';
+
+        @NgModule({declarations:[Comp1]})
+        export class Module1 {
+        }
+        `,
+        );
         env.write(
           'a.ts',
           `
@@ -164,20 +319,35 @@ runInEachFileSystem(() => {
         }
         `,
         );
-        env.write(
-          'test.ts',
-          `
-        // Some code
-        `,
-        );
 
         env.driveMain();
 
-        expect(env.getContents('a.js')).toContain('import "/some_external_file"');
-        expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+        expect(env.getContents('comp1.js')).toContain('import "/some_external_file"');
       });
 
       it('should include nested NgModule external import as global import - case of namespace import', () => {
+        env.write(
+          'comp1.ts',
+          `
+        import {Component} from '@angular/core';
+
+        @Component({template:''})
+        export class Comp1 {
+        }
+        `,
+        );
+        env.write(
+          'module1.ts',
+          `
+        import {NgModule} from '@angular/core';
+
+        import {Comp1} from 'comp1';
+
+        @NgModule({declarations:[Comp1]})
+        export class Module1 {
+        }
+        `,
+        );
         env.write(
           'a.ts',
           `
@@ -191,20 +361,35 @@ runInEachFileSystem(() => {
         }
         `,
         );
-        env.write(
-          'test.ts',
-          `
-        // Some code
-        `,
-        );
 
         env.driveMain();
 
-        expect(env.getContents('a.js')).toContain('import "/some_external_file"');
-        expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+        expect(env.getContents('comp1.js')).toContain('import "/some_external_file"');
       });
 
       it('should include NgModule external imports as global imports - case of multiple nested imports including named and namespace imports', () => {
+        env.write(
+          'comp1.ts',
+          `
+        import {Component} from '@angular/core';
+
+        @Component({template:''})
+        export class Comp1 {
+        }
+        `,
+        );
+        env.write(
+          'module1.ts',
+          `
+        import {NgModule} from '@angular/core';
+
+        import {Comp1} from 'comp1';
+
+        @NgModule({declarations:[Comp1]})
+        export class Module1 {
+        }
+        `,
+        );
         env.write(
           'a.ts',
           `
@@ -219,17 +404,11 @@ runInEachFileSystem(() => {
         }
         `,
         );
-        env.write(
-          'test.ts',
-          `
-        // Some code
-        `,
-        );
 
         env.driveMain();
 
-        expect(env.getContents('test.js')).toContain('import "/some_external_file"');
-        expect(env.getContents('test.js')).toContain('import "/some_external_file2"');
+        expect(env.getContents('comp1.js')).toContain('import "/some_external_file"');
+        expect(env.getContents('comp1.js')).toContain('import "/some_external_file2"');
       });
 
       it('should include extra import for the local component dependencies (component, directive and pipe)', () => {

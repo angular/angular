@@ -61,6 +61,9 @@
   <nav
     class="adev-nav-primary docs-scroll-hide"
     [class.adev-nav-primary--open]="isMobileNavigationOpened()"
+    [class.adev-nav-primary--rc]="currentDocsVersionMode === 'rc'"
+    [class.adev-nav-primary--next]="currentDocsVersionMode === 'next'"
+    [class.adev-nav-primary--deprecated]="currentDocsVersionMode === 'deprecated'"
   >
     <button
       type="button"
@@ -122,7 +125,6 @@
               </clipPath>
             </defs>
           </svg>
-          <div class="adev-beta-version">Beta Docs</div>
         </a>
 
         <!-- Version picker for v18+ -->

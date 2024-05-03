@@ -1058,6 +1058,12 @@ export class ComponentDecoratorHandler
       // Dependencies from the `@Component.deferredImports` field.
       const explicitlyDeferredDependencies = getExplicitlyDeferredDeps(scope);
 
+      // Mark the component is an NgModule-based component with its NgModule in a different file
+      // then mark this file for extra import generation
+      if (isModuleScope && context.fileName !== getSourceFile(scope.ngModule).fileName) {
+        this.localCompilationExtraImportsTracker?.markFileForExtraImportGeneration(context);
+      }
+
       // Make sure that `@Component.imports` and `@Component.deferredImports` do not have
       // the same dependencies.
       if (

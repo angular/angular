@@ -21,7 +21,6 @@ import type {ComponentFixture} from './component_fixture';
  * Represents an individual defer block for testing purposes.
  *
  * @publicApi
- * @developerPreview
  */
 export class DeferBlockFixture {
   /** @nodoc */

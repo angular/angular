@@ -165,7 +165,6 @@ export class NgZone {
       !shouldCoalesceRunChangeDetection && shouldCoalesceEventChangeDetection;
     self.shouldCoalesceRunChangeDetection = shouldCoalesceRunChangeDetection;
     self.callbackScheduled = false;
-    self.scheduleCallback = scheduleCallbackWithRafRace;
     forkInnerZoneWithAngularBehavior(self);
   }
 
@@ -326,12 +325,6 @@ interface NgZonePrivate extends NgZone {
    *
    */
   shouldCoalesceRunChangeDetection: boolean;
-
-  scheduleCallback: (callback: Function) => void;
-
-  // Cache a  "fake" top eventTask so you don't need to schedule a new task every
-  // time you run a `checkStable`.
-  fakeTopEventTask: Task;
 }
 
 function checkStable(zone: NgZonePrivate) {
@@ -385,32 +378,14 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
     return;
   }
   zone.callbackScheduled = true;
-  zone.scheduleCallback.call(global, () => {
-    // This is a work around for https://github.com/angular/angular/issues/36839.
-    // The core issue is that when event coalescing is enabled it is possible for microtasks
-    // to get flushed too early (As is the case with `Promise.then`) between the
-    // coalescing eventTasks.
-    //
-    // To workaround this we schedule a "fake" eventTask before we process the
-    // coalescing eventTasks. The benefit of this is that the "fake" container eventTask
-    //  will prevent the microtasks queue from getting drained in between the coalescing
-    // eventTask execution.
-    if (!zone.fakeTopEventTask) {
-      zone.fakeTopEventTask = Zone.root.scheduleEventTask(
-        'fakeTopEventTask',
-        () => {
-          zone.callbackScheduled = false;
-          updateMicroTaskStatus(zone);
-          zone.isCheckStableRunning = true;
-          checkStable(zone);
-          zone.isCheckStableRunning = false;
-        },
-        undefined,
-        () => {},
-        () => {},
-      );
-    }
-    zone.fakeTopEventTask.invoke();
+  Zone.root.run(() => {
+    scheduleCallbackWithRafRace(() => {
+      zone.callbackScheduled = false;
+      updateMicroTaskStatus(zone);
+      zone.isCheckStableRunning = true;
+      checkStable(zone);
+      zone.isCheckStableRunning = false;
+    });
   });
   updateMicroTaskStatus(zone);
 }

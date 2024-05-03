@@ -147,6 +147,43 @@ describe('event replay', () => {
         expect(clickSpy).toHaveBeenCalled();
       });
 
+      it('should remove jsaction attributes, but continue listening to events.', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            <div (click)="onClick()" id="1">
+              <div (click)="onClick()" id="2"></div>
+            </div>
+          `,
+        })
+        class SimpleComponent {
+          onClick() {}
+        }
+
+        const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
+        const html = await ssr(SimpleComponent, {doc: docContents});
+        const ssrContents = getAppContents(html);
+        const removeEventListenerSpy = spyOn(
+          document.body,
+          'removeEventListener',
+        ).and.callThrough();
+        render(doc, ssrContents);
+        const el = doc.getElementById('1')!;
+        expect(el.hasAttribute('jsaction')).toBeTrue();
+        expect((el.firstChild as Element).hasAttribute('jsaction')).toBeTrue();
+        resetTViewsFor(SimpleComponent);
+        expect(removeEventListenerSpy).not.toHaveBeenCalled();
+        const appRef = await hydrate(doc, SimpleComponent, {
+          hydrationFeatures: [withEventReplay()],
+        });
+        appRef.tick();
+        expect(el.hasAttribute('jsaction')).toBeFalse();
+        expect((el.firstChild as Element).hasAttribute('jsaction')).toBeFalse();
+        // Event contract is still listening even if jsaction attributes are removed.
+        expect(removeEventListenerSpy).not.toHaveBeenCalled();
+      });
+
       it(`should add 'nonce' attribute to event record script when 'ngCspNonce' is provided`, async () => {
         @Component({
           standalone: true,
