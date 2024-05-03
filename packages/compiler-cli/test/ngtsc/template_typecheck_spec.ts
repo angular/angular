@@ -6609,5 +6609,469 @@ suppress
         );
       });
     });
+
+    describe('@let declarations', () => {
+      beforeEach(() => env.tsconfig({_enableLetSyntax: true, strictTemplates: true}));
+
+      it('should infer the type of a let declaration', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let one = 1;
+              {{acceptsString(one)}}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            acceptsString(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('one');
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should check the expression of a let declaration', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = {} + 1;
+            \`,
+            standalone: true,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('{} + 1');
+        expect(diags[0].messageText).toBe(
+          `Operator '+' cannot be applied to types '{}' and 'number'.`,
+        );
+      });
+
+      it('should narrow the type of a let declaration used directly in the template', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = cond ? 1 : 'one';
+
+              @if (value === 1) {
+                {{expectsString(value)}}
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            cond: boolean = true;
+            expectsString(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('value');
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should narrow the type of a let declaration inside an event listener', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = cond ? 1 : 'one';
+
+              @if (value === 1) {
+                <button (click)="expectsString(value)">Click me</button>
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            cond: boolean = true;
+            expectsString(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('value');
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should be able to access the let declaration from a parent embedded view', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              <ng-template>
+                @let value = 1;
+
+                <ng-template>
+                  @if (true) {
+                    @switch (1) {
+                      @case (1) {
+                        <ng-template>{{expectsString(value)}}</ng-template>
+                      }
+                    }
+                  }
+                </ng-template>
+              </ng-template>
+
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expectsString(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should not be able to access a let declaration from a child embedded view', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @if (true) {
+                @let value = 1;
+              }
+
+              {{value}}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`Property 'value' does not exist on type 'Main'.`);
+      });
+
+      it('should not be able to access a let declaration from a sibling embedded view', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @if (true) {
+                @let value = 1;
+              }
+
+              @if (true) {
+                {{value}}
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`Property 'value' does not exist on type 'Main'.`);
+      });
+
+      it('should give precedence to a local let declaration over a component property', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = 1;
+              {{expectsString(value)}}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            value = 'one';
+            expectsString(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should give precedence to a local let declaration over one from a parent view', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = 'one';
+
+              @if (true) {
+                @let value = 1;
+                {{expectsString(value)}}
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expectsString(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should not allow a let declaration to be referenced before it is defined', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              {{value}}
+              @let value = 1;
+            \`,
+            standalone: true,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot read @let declaration 'value' before it has been defined.`,
+        );
+      });
+
+      it('should not allow a let declaration to be referenced before it is defined inside a child view', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              <ng-template>
+                {{value}}
+                @let value = 1;
+              </ng-template>
+            \`,
+            standalone: true,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot read @let declaration 'value' before it has been defined.`,
+        );
+      });
+
+      it('should not be able to access let declarations via `this`', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = 1;
+              {{this.value}}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`Property 'value' does not exist on type 'Main'.`);
+      });
+
+      it('should not allow a let declaration to refer to itself', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = value;
+            \`,
+            standalone: true,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot read @let declaration 'value' before it has been defined.`,
+        );
+      });
+
+      it('should allow event listeners to refer to a declaration before it has been defined', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              <button (click)="expectsString(value)">Click me</button>
+              @let value = 1;
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expectsString(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should allow child views to refer to a declaration before it has been defined', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @if (true) {
+                {{value}}
+              }
+
+              @let value = 1;
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            expectsString(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not allow a let declaration value to be changed', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = 1;
+              <button (click)="value = 2">Click me</button>
+            \`,
+            standalone: true,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
+      });
+
+      it('should not allow a let declaration value to be changed through a `this` access', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = 1;
+              <button (click)="this.value = 2">Click me</button>
+            \`,
+            standalone: true,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`Property 'value' does not exist on type 'Main'.`);
+      });
+    });
   });
 });

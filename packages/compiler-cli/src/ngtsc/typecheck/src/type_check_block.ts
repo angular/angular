@@ -25,6 +25,7 @@ import {
   SafePropertyRead,
   SchemaMetadata,
   SelectorMatcher,
+  TemplateEntity,
   ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
@@ -40,6 +41,7 @@ import {
   TmplAstIfBlock,
   TmplAstIfBlockBranch,
   TmplAstInteractionDeferredTrigger,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
   TmplAstSwitchBlock,
@@ -215,6 +217,14 @@ export function generateTypeCheckBlock(
   return fnDecl;
 }
 
+/** Types that can referenced locally in a template. */
+type LocalSymbol =
+  | TmplAstElement
+  | TmplAstTemplate
+  | TmplAstVariable
+  | TmplAstLetDeclaration
+  | TmplAstReference;
+
 /**
  * A code generation operation that's involved in the construction of a Type Check Block.
  *
@@ -357,6 +367,39 @@ class TcbTemplateContextOp extends TcbOp {
     const type = ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
     this.scope.addStatement(tsDeclareVariable(ctx, type));
     return ctx;
+  }
+}
+
+/**
+ * A `TcbOp` which generates a constant for a `TmplAstLetDeclaration`.
+ *
+ * Executing this operation returns a reference to the `@let` declaration.
+ */
+class TcbLetDeclarationOp extends TcbOp {
+  constructor(
+    private tcb: Context,
+    private scope: Scope,
+    private node: TmplAstLetDeclaration,
+  ) {
+    super();
+  }
+
+  /**
+   * `@let` declarations are mandatory, because their expressions
+   * should be checked even if they aren't referenced anywhere.
+   */
+  override readonly optional = false;
+
+  override execute(): ts.Identifier {
+    const id = this.tcb.allocateId();
+    addParseSpanInfo(id, this.node.nameSpan);
+    const value = tcbExpression(this.node.value, this.tcb, this.scope);
+    // Value needs to be wrapped, because spans for the expressions inside of it can
+    // be picked up incorrectly as belonging to the full variable declaration.
+    const varStatement = tsCreateVariable(id, wrapForTypeChecker(value), ts.NodeFlags.Const);
+    addParseSpanInfo(varStatement.declarationList.declarations[0], this.node.sourceSpan);
+    this.scope.addStatement(varStatement);
+    return id;
   }
 }
 
@@ -1978,6 +2021,11 @@ class Scope {
   private varMap = new Map<TmplAstVariable, number | ts.Identifier>();
 
   /**
+   * A map of `TmplAstLetDeclaration`s to the index of their op in the `opQueue`.
+   */
+  private letDeclOpMap = new Map<TmplAstLetDeclaration, number>();
+
+  /**
    * Statements for this template.
    *
    * Executing the `TcbOp`s in the `opQueue` populates this array.
@@ -2081,6 +2129,11 @@ class Scope {
     }
     for (const node of children) {
       scope.appendNode(node);
+
+      if (node instanceof TmplAstLetDeclaration) {
+        const opIndex = scope.opQueue.push(new TcbLetDeclarationOp(tcb, scope, node)) - 1;
+        scope.letDeclOpMap.set(node, opIndex);
+      }
     }
     return scope;
   }
@@ -2104,13 +2157,14 @@ class Scope {
    * * `TmplAstElement` - retrieve the expression for the element DOM node
    * * `TmplAstTemplate` - retrieve the template context variable
    * * `TmplAstVariable` - retrieve a template let- variable
+   * * `TmplAstLetDeclaration` - retrieve a template `@let` declaration
    * * `TmplAstReference` - retrieve variable created for the local ref
    *
    * @param directive if present, a directive type on a `TmplAstElement` or `TmplAstTemplate` to
    * look up instead of the default for an element or template node.
    */
   resolve(
-    node: TmplAstElement | TmplAstTemplate | TmplAstVariable | TmplAstReference,
+    node: LocalSymbol,
     directive?: TypeCheckableDirectiveMeta,
   ): ts.Identifier | ts.NonNullExpression {
     // Attempt to resolve the operation locally.
@@ -2195,12 +2249,25 @@ class Scope {
     }
   }
 
+  /** Returns whether a template symbol is defined locally within the current scope. */
+  isLocal(node: TmplAstVariable | TmplAstLetDeclaration | TmplAstReference): boolean {
+    if (node instanceof TmplAstVariable) {
+      return this.varMap.has(node);
+    }
+    if (node instanceof TmplAstLetDeclaration) {
+      return this.letDeclOpMap.has(node);
+    }
+    return this.referenceOpMap.has(node);
+  }
+
   private resolveLocal(
-    ref: TmplAstElement | TmplAstTemplate | TmplAstVariable | TmplAstReference,
+    ref: LocalSymbol,
     directive?: TypeCheckableDirectiveMeta,
   ): ts.Expression | null {
     if (ref instanceof TmplAstReference && this.referenceOpMap.has(ref)) {
       return this.resolveOp(this.referenceOpMap.get(ref)!);
+    } else if (ref instanceof TmplAstLetDeclaration && this.letDeclOpMap.has(ref)) {
+      return this.resolveOp(this.letDeclOpMap.get(ref)!);
     } else if (ref instanceof TmplAstVariable && this.varMap.has(ref)) {
       // Resolving a context variable for this template.
       // Execute the `TcbVariableOp` associated with the `TmplAstVariable`.
@@ -2633,18 +2700,32 @@ class TcbExpressionTranslator {
       // the expression is referencing the top-level component context. In that case, `null` is
       // returned here to let it fall through resolution so it will be caught when the
       // `ImplicitReceiver` is resolved in the branch below.
-      return this.resolveTarget(ast);
+      const target = this.tcb.boundTarget.getExpressionTarget(ast);
+      if (target instanceof TmplAstLetDeclaration) {
+        this.validateLetDeclarationAccess(target, ast);
+      }
+      return target === null ? null : this.getTargetNodeExpression(target, ast);
     } else if (ast instanceof PropertyWrite && ast.receiver instanceof ImplicitReceiver) {
-      const target = this.resolveTarget(ast);
+      const target = this.tcb.boundTarget.getExpressionTarget(ast);
       if (target === null) {
         return null;
       }
 
+      const targetExpression = this.getTargetNodeExpression(target, ast);
       const expr = this.translate(ast.value);
       const result = ts.factory.createParenthesizedExpression(
-        ts.factory.createBinaryExpression(target, ts.SyntaxKind.EqualsToken, expr),
+        ts.factory.createBinaryExpression(targetExpression, ts.SyntaxKind.EqualsToken, expr),
       );
       addParseSpanInfo(result, ast.sourceSpan);
+
+      // Ignore diagnostics from TS produced for writes to `@let` and re-report them using
+      // our own infrastructure. We can't rely on the TS reporting, because it includes
+      // the name of the auto-generated TCB variable name.
+      if (target instanceof TmplAstLetDeclaration) {
+        markIgnoreDiagnostics(result);
+        this.tcb.oobRecorder.illegalWriteToLetDeclaration(this.tcb.id, ast, target);
+      }
+
       return result;
     } else if (ast instanceof ImplicitReceiver) {
       // AST instances representing variables and references look very similar to property reads
@@ -2732,11 +2813,12 @@ class TcbExpressionTranslator {
       // could be resolved. If no target is available, then the method is referencing the top-level
       // component context, in which case `null` is returned to let the `ImplicitReceiver` being
       // resolved to the component context.
-      const receiver = this.resolveTarget(ast);
-      if (receiver === null) {
+      const target = this.tcb.boundTarget.getExpressionTarget(ast);
+      if (target === null) {
         return null;
       }
 
+      const receiver = this.getTargetNodeExpression(target, ast);
       const method = wrapForDiagnostics(receiver);
       addParseSpanInfo(method, ast.receiver.nameSpan);
       const args = ast.args.map((arg) => this.translate(arg));
@@ -2749,20 +2831,26 @@ class TcbExpressionTranslator {
     }
   }
 
-  /**
-   * Attempts to resolve a bound target for a given expression, and translates it into the
-   * appropriate `ts.Expression` that represents the bound target. If no target is available,
-   * `null` is returned.
-   */
-  protected resolveTarget(ast: AST): ts.Expression | null {
-    const binding = this.tcb.boundTarget.getExpressionTarget(ast);
-    if (binding === null) {
-      return null;
-    }
-
-    const expr = this.scope.resolve(binding);
-    addParseSpanInfo(expr, ast.sourceSpan);
+  private getTargetNodeExpression(targetNode: TemplateEntity, expressionNode: AST): ts.Expression {
+    const expr = this.scope.resolve(targetNode);
+    addParseSpanInfo(expr, expressionNode.sourceSpan);
     return expr;
+  }
+
+  protected validateLetDeclarationAccess(target: TmplAstLetDeclaration, ast: PropertyRead): void {
+    const targetStart = target.sourceSpan.start.offset;
+    const targetEnd = target.sourceSpan.end.offset;
+    const astStart = ast.sourceSpan.start;
+
+    // We only flag local references that occur before the declaration, because embedded views
+    // are updated before the child views. In practice this means that something like
+    // `<ng-template [ngIf]="true">{{value}}</ng-template> @let value = 1;` is valid.
+    if (
+      (targetStart > astStart || (astStart >= targetStart && astStart <= targetEnd)) &&
+      this.scope.isLocal(target)
+    ) {
+      this.tcb.oobRecorder.letUsedBeforeDefinition(this.tcb.id, ast, target);
+    }
   }
 }
 
@@ -3089,6 +3177,11 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
 
     return super.resolve(ast);
   }
+
+  protected override validateLetDeclarationAccess(): void {
+    // Event listeners are allowed to read `@let` declarations before
+    // they're declared since the callback won't be executed immediately.
+  }
 }
 
 class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
@@ -3115,7 +3208,10 @@ class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
     if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver) {
       const target = this.tcb.boundTarget.getExpressionTarget(ast);
 
-      if (target !== null && !this.allowedVariables.has(target)) {
+      if (
+        target !== null &&
+        (!(target instanceof TmplAstVariable) || !this.allowedVariables.has(target))
+      ) {
         this.tcb.oobRecorder.illegalForLoopTrackAccess(this.tcb.id, this.block, ast);
       }
     }

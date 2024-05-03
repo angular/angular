@@ -13,10 +13,13 @@ import {
   ParseSourceSpan,
   parseTemplate,
   ParseTemplateOptions,
+  PropertyRead,
+  PropertyWrite,
   R3TargetBinder,
   SchemaMetadata,
   SelectorMatcher,
   TmplAstElement,
+  TmplAstLetDeclaration,
 } from '@angular/compiler';
 import {readFileSync} from 'fs';
 import path from 'path';
@@ -1025,4 +1028,14 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   illegalForLoopTrackAccess(): void {}
   inaccessibleDeferredTriggerElement(): void {}
   controlFlowPreventingContentProjection(): void {}
+  illegalWriteToLetDeclaration(
+    templateId: TemplateId,
+    node: PropertyWrite,
+    target: TmplAstLetDeclaration,
+  ): void {}
+  letUsedBeforeDefinition(
+    templateId: TemplateId,
+    node: PropertyRead,
+    target: TmplAstLetDeclaration,
+  ): void {}
 }
