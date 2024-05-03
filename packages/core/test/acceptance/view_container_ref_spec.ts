@@ -227,7 +227,7 @@ describe('ViewContainerRef', () => {
           expect(fixture.nativeElement.querySelector('svg').namespaceURI)
               .toEqual('http://www.w3.org/2000/svg');
           expect(fixture.nativeElement.querySelector('math').namespaceURI)
-              .toEqual('http://www.w3.org/1998/MathML/');
+              .toEqual('http://www.w3.org/1998/Math/MathML');
         });
       }
 
