@@ -489,9 +489,9 @@ debug@^4.1.0, debug@^4.3.1:
     ms "2.1.2"
 
 electron-to-chromium@^1.4.668:
-  version "1.4.754"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.754.tgz#20a9f3cc80e0fb6a804b86605e55da16918a58b0"
-  integrity sha512-7Kr5jUdns5rL/M9wFFmMZAgFDuL2YOnanFH4OI4iFzUqyh3XOL7nAGbSlSMZdzKMIyyTpNSbqZsWG9odwLeKvA==
+  version "1.4.755"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.755.tgz#e26b3f5955b9de75a24048587521bde22fa4e0a0"
+  integrity sha512-9nop+3jZxSHIxe1EzEUcjDXzK+3qOv3fY5w0sE88nIZUntbv1aXWmoxGWlklX5XSO4txCpLssWkUSh8RQPovBg==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -753,7 +753,7 @@ tslib@^2.1.0, tslib@^2.3.0:
   integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
 
 "typescript@file:../../node_modules/typescript":
-  version "5.4.2"
+  version "5.4.5"
 
 update-browserslist-db@^1.0.13:
   version "1.0.14"
