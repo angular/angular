@@ -1,11 +1,11 @@
 @defer (when isBrowser) {
-<adev-progress-bar />
+  <adev-progress-bar />
 }
 <button (click)="focusFirstHeading()" class="adev-skip">Skip to main content</button>
 
 <div class="adev-nav"></div>
 @if (displaySecondaryNav()) {
-<adev-secondary-navigation />
+  <adev-secondary-navigation />
 }
 <div class="docs-app-main-content">
   <!--
@@ -22,9 +22,9 @@
       }
     }
   }
-    <router-outlet />
+  <router-outlet />
 
   @if (displayFooter()) {
-  <footer adev-footer></footer>
+    <footer adev-footer></footer>
   }
 </div>

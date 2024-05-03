@@ -27,7 +27,7 @@ import {
   isApple,
   IS_SEARCH_DIALOG_OPEN,
 } from '@angular/docs';
-import {NavigationEnd, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
 import {GITHUB, MEDIUM, X, YOUTUBE} from '../../constants/links';
@@ -82,6 +82,9 @@ export class Navigation implements OnInit {
 
   readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
+
+  // We can't use the ActivatedRouter queryParams as we're outside the router outlet
+  readonly isUwu = 'location' in globalThis ? location.search.includes('uwu') : false;
 
   miniMenuPositions = [
     new ConnectionPositionPair(
