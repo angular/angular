@@ -315,9 +315,10 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#ba0f1f86fe338005a11d4be1986eddf6ff2b0d71":
-  version "0.0.0-0581ca5177f61a7dba5221c17e60522776cef714"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#ba0f1f86fe338005a11d4be1986eddf6ff2b0d71"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#a11e93b01708684827af3873e9232b437c209237":
+  version "0.0.0-e6e98d32d7d4d350ecf4ec10ad9c7e75198daabd"
+  uid a11e93b01708684827af3873e9232b437c209237
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#a11e93b01708684827af3873e9232b437c209237"
   dependencies:
     "@angular/benchpress" "0.3.0"
     "@angular/build" "18.0.0-next.5"
@@ -460,9 +461,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#83b069a4b23120fdcb94a711153f8da20fabca80":
-  version "0.0.0-0108dd3e38791911fc5140593201c74b9ba2fb77"
-  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#83b069a4b23120fdcb94a711153f8da20fabca80"
+"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#2c6262f4561659f2a12dd01a7ff797725fd1241c":
+  version "0.0.0-e6e98d32d7d4d350ecf4ec10ad9c7e75198daabd"
+  uid "2c6262f4561659f2a12dd01a7ff797725fd1241c"
+  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#2c6262f4561659f2a12dd01a7ff797725fd1241c"
   dependencies:
     "@webcontainer/api" "^1.1.8"
     diff "~5.2.0"
@@ -473,6 +475,7 @@
     jsdom "~24.0.0"
     jszip "~3.10.1"
     marked "~12.0.2"
+    mermaid "^10.8.0"
 
 "@angular/material@18.0.0-rc.0":
   version "18.0.0-rc.0"
@@ -529,9 +532,10 @@
     "@material/typography" "15.0.0-canary.7f224ddd4.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#74f90940307d22c628914cd00a7868a823ee74ab":
-  version "0.0.0-0581ca5177f61a7dba5221c17e60522776cef714"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#74f90940307d22c628914cd00a7868a823ee74ab"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#33d9240bc4e16fc12b0caaba09c85bd030c03bf6":
+  version "0.0.0-e6e98d32d7d4d350ecf4ec10ad9c7e75198daabd"
+  uid "33d9240bc4e16fc12b0caaba09c85bd030c03bf6"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#33d9240bc4e16fc12b0caaba09c85bd030c03bf6"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
@@ -4208,6 +4212,7 @@
     "@types/node" "*"
 
 "@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.22", "@types/selenium-webdriver@^4.1.21":
+  name "@types/selenium-webdriver4"
   version "4.1.22"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.22.tgz#344519b90727eb713e1ce6d2e0198eb0b4f8f316"
   integrity sha512-MCL4l7q8dwxejr2Q2NXLyNwHWMPdlWE0Kpn6fFwJtvkJF7PTkG5jkvbH/X1IAAQxgt/L1dA8u2GtDeekvSKvOA==
