@@ -84,6 +84,9 @@ export class QuickInfoBuilder {
 
   private getQuickInfoForSymbol(symbol: Symbol): ts.QuickInfo | undefined {
     switch (symbol.kind) {
+      case SymbolKind.LetDeclaration:
+        // TODO(crisbeto): will integrate let declarations in a future commit.
+        return undefined;
       case SymbolKind.Input:
       case SymbolKind.Output:
         return this.getQuickInfoForBindingSymbol(symbol);

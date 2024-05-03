@@ -33,6 +33,7 @@ import {
   TmplAstTextAttribute as TextAttribute,
   TmplAstUnknownBlock as UnknownBlock,
   TmplAstVariable,
+  TmplAstLetDeclaration,
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
@@ -628,8 +629,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
   /**
    * Get the `ts.Symbol` of a specific completion for a property expression in a global context
-   * (e.g.
-   * `{{y|}}`).
+   * (e.g. `{{y|}}`).
    */
   private getGlobalPropertyExpressionCompletionSymbol(
     this: PropertyExpressionCompletionBuilder,
@@ -645,7 +645,8 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     }
     const {componentContext, templateContext} = completions;
     if (templateContext.has(entryName)) {
-      const node: TmplAstReference | TmplAstVariable = templateContext.get(entryName)!.node;
+      const node: TmplAstReference | TmplAstVariable | TmplAstLetDeclaration =
+        templateContext.get(entryName)!.node;
       const symbol = this.templateTypeChecker.getSymbolOfNode(
         node,
         this.component,

@@ -1983,9 +1983,9 @@ describe('type check blocks', () => {
         {{sum}}
       `);
 
-      expect(result).toContain('const _t1 = 1;');
-      expect(result).toContain('const _t2 = 2;');
-      expect(result).toContain('const _t3 = (_t1) + (_t2);');
+      expect(result).toContain('const _t1 = (1);');
+      expect(result).toContain('const _t2 = (2);');
+      expect(result).toContain('const _t3 = ((_t1) + (_t2));');
       expect(result).toContain('"" + (_t3);');
     });
 
@@ -1995,7 +1995,7 @@ describe('type check blocks', () => {
         <button (click)="doStuff(value)"></button>
       `);
 
-      expect(result).toContain('const _t1 = 1;');
+      expect(result).toContain('const _t1 = (1);');
       expect(result).toContain('var _t2 = document.createElement("button");');
       expect(result).toContain(
         '_t2.addEventListener("click", ($event): any => { (this).doStuff(_t1); });',

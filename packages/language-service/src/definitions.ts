@@ -111,6 +111,9 @@ export class DefinitionBuilder {
     component,
   }: DefinitionMeta & TemplateInfo): readonly ts.DefinitionInfo[] | undefined {
     switch (symbol.kind) {
+      case SymbolKind.LetDeclaration:
+        // TODO(crisbeto): will integrate let declarations in a future commit.
+        return undefined;
       case SymbolKind.Directive:
       case SymbolKind.Element:
       case SymbolKind.Template:
