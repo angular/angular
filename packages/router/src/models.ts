@@ -284,7 +284,7 @@ export type LoadChildren = LoadChildrenCallback;
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
 /**
- * The type for the function that returns a used to handle redirects when the path matches a `Route` config.
+ * The type for the function that can be used to handle redirects when the path matches a `Route` config.
  *
  * The `RedirectFunction` does have access to the full
  * `ActivatedRouteSnapshot` interface. Some data are not accurately known
