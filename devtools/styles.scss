@@ -10,15 +10,15 @@ body {
 }
 
 // Light theme
-$light-primary: mat.define-palette(mat.$grey-palette, 700, 200);
-$light-accent: mat.define-palette(mat.$blue-palette, 800);
-$light-theme: mat.define-light-theme($light-primary, $light-accent);
+$light-primary: mat.m2-define-palette(mat.$m2-grey-palette, 700, 200);
+$light-accent: mat.m2-define-palette(mat.$m2-blue-palette, 800);
+$light-theme: mat.m2-define-light-theme($light-primary, $light-accent);
 
 // Dark theme
-$dark-primary: mat.define-palette(mat.$blue-grey-palette, 50);
-$dark-accent: mat.define-palette(mat.$blue-palette, 200);
+$dark-primary: mat.m2-define-palette(mat.$m2-blue-grey-palette, 50);
+$dark-accent: mat.m2-define-palette(mat.$m2-blue-palette, 200);
 $dark-theme: map.deep-merge(
-  mat.define-dark-theme($dark-primary, $dark-accent),
+  mat.m2-define-dark-theme($dark-primary, $dark-accent),
   (
     'color': (
       'background': (
@@ -41,7 +41,7 @@ $dark-theme: map.deep-merge(
 
 .light-theme {
   @include mat.all-component-themes($light-theme);
-  
+
   .mat-mdc-chip.mat-mdc-standard-chip {
     --mdc-chip-container-height: 24px;
   }
@@ -55,7 +55,6 @@ $dark-theme: map.deep-merge(
     --mdc-chip-container-height: 24px;
   }
 }
-
 
 ng-devtools {
   .mdc-card {
