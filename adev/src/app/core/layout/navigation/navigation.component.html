@@ -82,7 +82,8 @@
       >
         <a aria-label="Angular homepage" routerLink="/">
           <!-- Logo Symbol -->
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 223 236" width="32">
+          @if(!isUwu) {
+          <svg class="angular-logo" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 223 236" width="32">
             <g clip-path="url(#a)">
               <path
                 fill="url(#b)"
@@ -125,6 +126,14 @@
               </clipPath>
             </defs>
           </svg>
+        } @else {
+          <img
+            src="assets/images/uwu.png"
+            style="width: auto; margin: 0"
+            class="uwu-logo"
+            alt="Angular logo"
+            height="34"/>
+        }
         </a>
 
         <!-- Version picker for v18+ -->
