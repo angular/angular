@@ -28,7 +28,23 @@ export interface AfterContentInit {
 }
 
 // @public
+export function afterNextRender<E = never, W = never, M = never>(spec: {
+    earlyRead?: () => E;
+    write?: (...args: ɵFirstAvailable<[E]>) => W;
+    mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
+    read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
+}, opts?: AfterRenderOptions): AfterRenderRef;
+
+// @public
 export function afterNextRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
+
+// @public
+export function afterRender<E = never, W = never, M = never>(spec: {
+    earlyRead?: () => E;
+    write?: (...args: ɵFirstAvailable<[E]>) => W;
+    mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
+    read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
+}, opts?: AfterRenderOptions): AfterRenderRef;
 
 // @public
 export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
@@ -36,15 +52,6 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
 // @public
 export interface AfterRenderOptions {
     injector?: Injector;
-    phase?: AfterRenderPhase;
-}
-
-// @public
-export enum AfterRenderPhase {
-    EarlyRead = 0,
-    MixedReadWrite = 2,
-    Read = 3,
-    Write = 1
 }
 
 // @public
