@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TmplAstReference, TmplAstVariable} from '@angular/compiler';
+import {TmplAstLetDeclaration, TmplAstReference, TmplAstVariable} from '@angular/compiler';
 
 import {TcbLocation} from './symbols';
 
 /**
  * An autocompletion source of any kind.
  */
-export type Completion = ReferenceCompletion | VariableCompletion;
+export type Completion = ReferenceCompletion | VariableCompletion | LetDeclarationCompletion;
 
 /**
  * Discriminant of an autocompletion source (a `Completion`).
@@ -22,6 +22,7 @@ export type Completion = ReferenceCompletion | VariableCompletion;
 export enum CompletionKind {
   Reference,
   Variable,
+  LetDeclaration,
 }
 
 /**
@@ -49,6 +50,18 @@ export interface VariableCompletion {
 }
 
 /**
+ * An autocompletion result representing an `@let` declaration in the template.
+ */
+export interface LetDeclarationCompletion {
+  kind: CompletionKind.LetDeclaration;
+
+  /**
+   * The `TmplAstLetDeclaration` from the template which should be available as a completion.
+   */
+  node: TmplAstLetDeclaration;
+}
+
+/**
  * Autocompletion data for an expression in the global scope.
  *
  * Global completion is accomplished by merging data from two sources:
@@ -70,7 +83,7 @@ export interface GlobalCompletion {
    * accounted for in the preparation of `templateContext`. Entries here shadow component members of
    * the same name (from the `componentContext` completions).
    */
-  templateContext: Map<string, ReferenceCompletion | VariableCompletion>;
+  templateContext: Map<string, ReferenceCompletion | VariableCompletion | LetDeclarationCompletion>;
 
   /**
    * A location within the type-checking shim where TypeScript's completion APIs can be used to
