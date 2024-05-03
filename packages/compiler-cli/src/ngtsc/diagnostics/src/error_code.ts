@@ -358,6 +358,12 @@ export enum ErrorCode {
    */
   DEFERRED_DEPENDENCY_IMPORTED_EAGERLY = 8014,
 
+  /** An expression is trying to write to an `@let` declaration. */
+  ILLEGAL_LET_WRITE = 8015,
+
+  /** An expression is trying to read an `@let` before it has been defined. */
+  LET_USED_BEFORE_DEFINITION = 8016,
+
   /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:

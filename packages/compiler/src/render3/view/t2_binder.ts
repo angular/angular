@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TmplAstLetDeclaration} from '../../compiler';
 import {
   AST,
   BindingPipe,
@@ -866,7 +865,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     // It's not allowed to read template entities via `this`, however it previously worked by
     // accident (see #55115). Since `@let` declarations are new, we can fix it from the beginning,
     // whereas pre-existing template entities will be fixed in #55115.
-    if (target instanceof TmplAstLetDeclaration && ast.receiver instanceof ThisReceiver) {
+    if (target instanceof LetDeclaration && ast.receiver instanceof ThisReceiver) {
       return;
     }
 
