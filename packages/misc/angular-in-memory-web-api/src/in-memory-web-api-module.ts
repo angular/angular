@@ -7,7 +7,7 @@
  */
 
 import {XhrFactory} from '@angular/common';
-import {HttpBackend, ɵPRIMARY_HTTP_BACKEND as PRIMARY_HTTP_BACKEND} from '@angular/common/http';
+import {HttpBackend} from '@angular/common/http';
 import {ModuleWithProviders, NgModule, Type} from '@angular/core';
 
 import {httpClientInMemBackendServiceFactory} from './http-client-in-memory-web-api-module';
@@ -47,7 +47,6 @@ export class InMemoryWebApiModule {
           useFactory: httpClientInMemBackendServiceFactory,
           deps: [InMemoryDbService, InMemoryBackendConfig, XhrFactory],
         },
-        {provide: PRIMARY_HTTP_BACKEND, useExisting: HttpBackend},
       ],
     };
   }
