@@ -31,7 +31,6 @@
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "@types/node": "file:../../node_modules/@types/node",
-    "codelyzer": "5.2.0",
     "jasmine-core": "3.5.0",
     "jasmine-spec-reporter": "4.2.1",
     "karma": "4.4.0",
@@ -41,7 +40,6 @@
     "karma-jasmine-html-reporter": "1.4.2",
     "protractor": "file:../../node_modules/protractor",
     "ts-node": "8.3.0",
-    "tslint": "5.18.0",
     "typescript": "file:../../node_modules/typescript"
   }
 }
