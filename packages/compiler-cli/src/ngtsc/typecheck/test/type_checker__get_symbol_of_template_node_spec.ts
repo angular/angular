@@ -20,8 +20,13 @@ import {
   TmplAstNode,
   TmplAstReference,
   TmplAstTemplate,
+  AST,
+  LiteralArray,
+  LiteralMap,
+  TmplAstIfBlock,
+  TmplAstLetDeclaration,
+  ParseTemplateOptions,
 } from '@angular/compiler';
-import {AST, LiteralArray, LiteralMap, TmplAstIfBlock} from '@angular/compiler/src/compiler';
 import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
@@ -33,6 +38,7 @@ import {
   ElementSymbol,
   ExpressionSymbol,
   InputBindingSymbol,
+  LetDeclarationSymbol,
   OutputBindingSymbol,
   PipeSymbol,
   ReferenceSymbol,
@@ -1947,6 +1953,86 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('let declarations', () => {
+      let templateTypeChecker: TemplateTypeChecker;
+      let cmp: ClassDeclaration<ts.ClassDeclaration>;
+      let ast: TmplAstNode[];
+      let program: ts.Program;
+
+      beforeEach(() => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const templateString = `
+          @let message = 'The value is ' + value;
+          <div [dir]="message"></div>
+        `;
+        const testValues = setup(
+          [
+            {
+              fileName,
+              templates: {'Cmp': templateString},
+              source: `
+              export class Cmp {
+                value = 1;
+              }
+            `,
+              declarations: [
+                {
+                  name: 'TestDir',
+                  selector: '[dir]',
+                  file: dirFile,
+                  type: 'directive',
+                  exportAs: ['dir'],
+                  inputs: {dir: 'dir'},
+                },
+              ],
+            },
+            {
+              fileName: dirFile,
+              source: `export class TestDir {dir: any;}`,
+              templates: {},
+            },
+          ],
+          undefined,
+          {
+            enableLetSyntax: true,
+          },
+        );
+        templateTypeChecker = testValues.templateTypeChecker;
+        program = testValues.program;
+        const sf = getSourceFileOrError(testValues.program, fileName);
+        cmp = getClass(sf, 'Cmp');
+        ast = templateTypeChecker.getTemplate(cmp)!;
+      });
+
+      it('should get symbol of a let declaration at the declaration location', () => {
+        const symbol = templateTypeChecker.getSymbolOfNode(ast[0] as TmplAstLetDeclaration, cmp)!;
+        assertLetDeclarationSymbol(symbol);
+        expect(program.getTypeChecker().typeToString(symbol.tsType!)).toBe('string');
+        expect(symbol.declaration.name).toBe('message');
+      });
+
+      it('should get symbol of a let declaration at a usage site', () => {
+        const symbol = templateTypeChecker.getSymbolOfNode(
+          (ast[1] as TmplAstElement).inputs[0].value,
+          cmp,
+        )!;
+        assertLetDeclarationSymbol(symbol);
+        expect(program.getTypeChecker().typeToString(symbol.tsType!)).toEqual('string');
+        expect(symbol.declaration.name).toEqual('message');
+
+        // Ensure we can map the shim locations back to the template
+        const initializerMapping = templateTypeChecker.getTemplateMappingAtTcbLocation(
+          symbol.initializerLocation,
+        )!;
+        expect(initializerMapping.span.toString()).toEqual(`'The value is ' + value`);
+        const localVarMapping = templateTypeChecker.getTemplateMappingAtTcbLocation(
+          symbol.localVarLocation,
+        )!;
+        expect(localVarMapping.span.toString()).toEqual('message');
+      });
+    });
+
     it('elements with generic directives', () => {
       const fileName = absoluteFrom('/main.ts');
       const dirFile = absoluteFrom('/dir.ts');
@@ -2093,9 +2179,18 @@ function assertDomBindingSymbol(tSymbol: Symbol): asserts tSymbol is DomBindingS
   expect(tSymbol.kind).toEqual(SymbolKind.DomBinding);
 }
 
-export function setup(targets: TypeCheckingTarget[], config?: Partial<TypeCheckingConfig>) {
+function assertLetDeclarationSymbol(tSymbol: Symbol): asserts tSymbol is LetDeclarationSymbol {
+  expect(tSymbol.kind).toEqual(SymbolKind.LetDeclaration);
+}
+
+export function setup(
+  targets: TypeCheckingTarget[],
+  config?: Partial<TypeCheckingConfig>,
+  parseOptions?: ParseTemplateOptions,
+) {
   return baseTestSetup(targets, {
     inlining: false,
     config: {...config, enableTemplateTypeChecker: true, useInlineTypeConstructors: false},
+    parseOptions,
   });
 }
