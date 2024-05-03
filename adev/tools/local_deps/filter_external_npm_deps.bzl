@@ -6,7 +6,7 @@ load("@build_bazel_rules_nodejs//:providers.bzl", "ExternalNpmPackageInfo", "Lin
 def _filter_external_npm_deps_impl(ctx):
     problematic_paths = ["external/npm/node_modules/%s" % pkg for pkg in ctx.attr.angular_packages]
     package_name = ctx.attr.target.label.package
-    has_problematic_transitive_dep = package_name.startswith("@angular-devkit/")
+    has_problematic_transitive_dep = package_name.startswith("@angular-devkit/") or package_name.startswith("@angular/build")
     filtered_deps = []
 
     # Note: to_list() is expensive; we need to invoke it here to get the path

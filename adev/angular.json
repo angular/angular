@@ -17,7 +17,7 @@
       "prefix": "adev",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "externalDependencies": ["path"],
             "outputPath": "dist/angular-dev",
