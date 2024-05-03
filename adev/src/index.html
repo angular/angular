@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- We set all theme classes to allow critters to inline the theme styles and prevent flickering -->
 <html lang="en" class="docs-dark-mode docs-light-mode">
   <head>
@@ -24,7 +24,22 @@
       } else {
         documentClassList.add(LIGHT_MODE_CLASS_NAME);
       }
+
+      if(location.search.includes('uwu')) {
+        documentClassList.add('uwu');
+      }
     </script>
+    <style>
+      .uwu-logo {
+        display: none;
+      }
+      html.uwu .angular-logo {
+        display: none;
+      }
+      html.uwu .uwu-logo {
+        display: block !important;
+      }
+    </style>
 
     <meta charset="utf-8" />
     <title>Angular</title>

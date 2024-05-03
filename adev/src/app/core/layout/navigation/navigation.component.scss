@@ -251,6 +251,10 @@
   }
 }
 
+.adev-nav-item--logo a {
+  height: 34px;
+}
+
 .adev-close-nav {
   display: none;
   @include mq.for-phone-only {
