@@ -105,6 +105,7 @@ export class Navigation implements OnInit {
   currentDocsVersion = signal(this.DOCS_VERSIONS.currentVersionMode === 'next' || this.DOCS_VERSIONS.currentVersionMode === 'rc'
     ? this.DOCS_VERSIONS.currentVersionMode
     : this.DOCS_VERSIONS.currentVersion);
+  currentDocsVersionMode = this.DOCS_VERSIONS.currentVersionMode;
 
   // Set the values of the search label and title only on the client, because the label is user-agent specific.
   searchLabel = this.isBrowser
