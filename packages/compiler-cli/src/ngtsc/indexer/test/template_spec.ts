@@ -13,6 +13,7 @@ import {
   AttributeIdentifier,
   ElementIdentifier,
   IdentifierKind,
+  LetDeclarationIdentifier,
   ReferenceIdentifier,
   TemplateNodeIdentifier,
   TopLevelIdentifier,
@@ -28,6 +29,7 @@ function bind(template: string) {
   return util.getBoundTemplate(template, {
     preserveWhitespaces: true,
     leadingTriviaChars: [],
+    enableLetSyntax: true,
   });
 }
 
@@ -726,6 +728,30 @@ runInEachFileSystem(() => {
             target: variableIdentifier,
           },
         ] as TopLevelIdentifier[]),
+      );
+    });
+  });
+
+  describe('let declarations', () => {
+    it('should discover references to let declaration', () => {
+      const template = `@let foo = 123; <div [someInput]="foo"></div>`;
+      const refs = getTemplateIdentifiers(bind(template));
+      const letIdentifier: LetDeclarationIdentifier = {
+        name: 'foo',
+        kind: IdentifierKind.LetDeclaration,
+        span: new AbsoluteSourceSpan(5, 8),
+      };
+
+      expect(Array.from(refs)).toEqual(
+        jasmine.arrayContaining([
+          letIdentifier,
+          {
+            name: 'foo',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(34, 37),
+            target: letIdentifier,
+          },
+        ]),
       );
     });
   });
