@@ -30,7 +30,6 @@
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/node": "file:../../node_modules/@types/node",
-    "codelyzer": "6.0.1",
     "jasmine-core": "3.6.0",
     "jasmine-spec-reporter": "5.0.2",
     "karma": "5.2.3",
@@ -40,7 +39,6 @@
     "karma-jasmine-html-reporter": "1.5.4",
     "protractor": "file:../../node_modules/protractor",
     "ts-node": "8.3.0",
-    "tslint": "6.1.3",
     "typescript": "file:../../node_modules/typescript"
   }
 }
