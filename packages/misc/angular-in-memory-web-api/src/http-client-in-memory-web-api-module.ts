@@ -7,7 +7,7 @@
  */
 
 import {XhrFactory} from '@angular/common';
-import {HttpBackend, ɵPRIMARY_HTTP_BACKEND as PRIMARY_HTTP_BACKEND} from '@angular/common/http';
+import {HttpBackend} from '@angular/common/http';
 import {ModuleWithProviders, NgModule, Type} from '@angular/core';
 
 import {HttpClientBackendService} from './http-client-backend-service';
@@ -57,7 +57,6 @@ export class HttpClientInMemoryWebApiModule {
           useFactory: httpClientInMemBackendServiceFactory,
           deps: [InMemoryDbService, InMemoryBackendConfig, XhrFactory],
         },
-        {provide: PRIMARY_HTTP_BACKEND, useExisting: HttpBackend},
       ],
     };
   }

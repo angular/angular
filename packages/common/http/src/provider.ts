@@ -22,7 +22,6 @@ import {
   HttpInterceptorFn,
   HttpInterceptorHandler,
   legacyInterceptorFnFactory,
-  PRIMARY_HTTP_BACKEND,
 } from './interceptor';
 import {
   jsonpCallbackContext,
@@ -126,7 +125,12 @@ export function provideHttpClient(
     HttpXhrBackend,
     HttpInterceptorHandler,
     {provide: HttpHandler, useExisting: HttpInterceptorHandler},
-    {provide: HttpBackend, useExisting: HttpXhrBackend},
+    {
+      provide: HttpBackend,
+      useFactory: () => {
+        return inject(FetchBackend, {optional: true}) ?? inject(HttpXhrBackend);
+      },
+    },
     {
       provide: HTTP_INTERCEPTOR_FNS,
       useValue: xsrfInterceptorFn,
@@ -294,26 +298,13 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
 /**
  * Configures the current `HttpClient` instance to make requests using the fetch API.
  *
- * This `FetchBackend` requires the support of the Fetch API which is available on all evergreen
- * browsers and on NodeJS from v18 onward.
- *
  * Note: The Fetch API doesn't support progress report on uploads.
  *
  * @publicApi
  */
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
-  if ((typeof ngDevMode === 'undefined' || ngDevMode) && typeof fetch !== 'function') {
-    // TODO: Create a runtime error
-    // TODO: Use ENVIRONMENT_INITIALIZER to contextualize the error message (browser or server)
-    throw new Error(
-      'The `withFetch` feature of HttpClient requires the `fetch` API to be available. ' +
-        'If you run the code in a Node environment, make sure you use Node v18.10 or later.',
-    );
-  }
-
   return makeHttpFeature(HttpFeatureKind.Fetch, [
     FetchBackend,
     {provide: HttpBackend, useExisting: FetchBackend},
-    {provide: PRIMARY_HTTP_BACKEND, useExisting: FetchBackend},
   ]);
 }
