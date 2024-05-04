@@ -29,7 +29,6 @@ import {
   FormControl,
   FormControlDirective,
   FormControlName,
-  FormControlState,
   FormGroup,
   FormGroupDirective,
   FormsModule,
@@ -51,6 +50,8 @@ import {map, tap} from 'rxjs/operators';
 import {
   ControlEvent,
   FormControlStatus,
+  FormResetEvent,
+  FormSubmittedEvent,
   PristineChangeEvent,
   StatusChangeEvent,
   TouchedChangeEvent,
@@ -1390,6 +1391,45 @@ describe('reactive forms integration tests', () => {
       expect(fcEvents.length).toBe(0);
       fc.markAsDirty({emitEvent: false});
       expect(fcEvents.length).toBe(0);
+    });
+
+    it('formControl should emit an event when resetting a form', () => {
+      const fixture = initTest(FormGroupComp);
+      const form = new FormGroup({'login': new FormControl('', Validators.required)});
+      fixture.componentInstance.form = form;
+      fixture.detectChanges();
+
+      const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+
+      const events: ControlEvent[] = [];
+      fixture.componentInstance.form.events.subscribe((event) => events.push(event));
+      formGroupDir.resetForm();
+
+      expect(events.length).toBe(4);
+      expect(events[0]).toBeInstanceOf(TouchedChangeEvent);
+      expect(events[1]).toBeInstanceOf(ValueChangeEvent);
+      expect(events[2]).toBeInstanceOf(StatusChangeEvent);
+
+      // The event that matters
+      expect(events[3]).toBeInstanceOf(FormResetEvent);
+      expect(events[3].source).toBe(form);
+    });
+
+    it('formControl should emit an event when submitting a form', () => {
+      const fixture = initTest(FormGroupComp);
+      const form = new FormGroup({'login': new FormControl('', Validators.required)});
+      fixture.componentInstance.form = form;
+      fixture.detectChanges();
+
+      const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+
+      const events: ControlEvent[] = [];
+      fixture.componentInstance.form.events.subscribe((event) => events.push(event));
+      formGroupDir.onSubmit({} as any);
+
+      expect(events.length).toBe(1);
+      expect(events[0]).toBeInstanceOf(FormSubmittedEvent);
+      expect(events[0].source).toBe(form);
     });
   });
 

@@ -45,6 +45,7 @@ import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../valid
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
+import {FormResetEvent, FormSubmittedEvent} from '../../model/abstract_model';
 
 const formDirectiveProvider: Provider = {
   provide: ControlContainer,
@@ -302,6 +303,8 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     (this as Writable<this>).submitted = true;
     syncPendingControls(this.form, this.directives);
     this.ngSubmit.emit($event);
+    this.form._events.next(new FormSubmittedEvent(this.control));
+
     // Forms with `method="dialog"` have some special behavior that won't reload the page and that
     // shouldn't be prevented. Note that we need to null check the `event` and the `target`, because
     // some internal apps call this method directly with the wrong arguments.
@@ -325,6 +328,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   resetForm(value: any = undefined): void {
     this.form.reset(value);
     (this as Writable<this>).submitted = false;
+    this.form._events.next(new FormResetEvent(this.form));
   }
 
   /** @internal */
