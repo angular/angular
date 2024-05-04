@@ -479,10 +479,11 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   /**
    * Indicates that a control has its own pending asynchronous validation in progress.
+   * It also stores if the control should emit events when the validation status changes.
    *
    * @internal
    */
-  _hasOwnPendingAsyncValidator = false;
+  _hasOwnPendingAsyncValidator: null | {emitEvent: boolean} = null;
 
   /** @internal */
   _pendingTouched = false;
@@ -1332,12 +1333,15 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     this._updateValue();
 
     if (this.enabled) {
-      this._cancelExistingSubscription();
+      const shouldHaveEmitted = this._cancelExistingSubscription();
+
       (this as Writable<this>).errors = this._runValidator();
       (this as Writable<this>).status = this._calculateStatus();
 
       if (this.status === VALID || this.status === PENDING) {
-        this._runAsyncValidator(opts.emitEvent);
+        // If the canceled subscription should have emitted
+        // we make sure the async validator emits the status change on completion
+        this._runAsyncValidator(shouldHaveEmitted, opts.emitEvent);
       }
     }
 
@@ -1368,26 +1372,32 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     return this.validator ? this.validator(this) : null;
   }
 
-  private _runAsyncValidator(emitEvent?: boolean): void {
+  private _runAsyncValidator(shouldHaveEmitted: boolean, emitEvent?: boolean): void {
     if (this.asyncValidator) {
       (this as Writable<this>).status = PENDING;
-      this._hasOwnPendingAsyncValidator = true;
+      this._hasOwnPendingAsyncValidator = {emitEvent: emitEvent !== false};
       const obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription = obs.subscribe((errors: ValidationErrors | null) => {
-        this._hasOwnPendingAsyncValidator = false;
+        this._hasOwnPendingAsyncValidator = null;
         // This will trigger the recalculation of the validation status, which depends on
         // the state of the asynchronous validation (whether it is in progress or not). So, it is
         // necessary that we have updated the `_hasOwnPendingAsyncValidator` boolean flag first.
-        this.setErrors(errors, {emitEvent});
+        this.setErrors(errors, {emitEvent, shouldHaveEmitted});
       });
     }
   }
 
-  private _cancelExistingSubscription(): void {
+  private _cancelExistingSubscription(): boolean {
     if (this._asyncValidationSubscription) {
       this._asyncValidationSubscription.unsubscribe();
-      this._hasOwnPendingAsyncValidator = false;
+
+      // we're cancelling the validator subscribtion, we keep if it should have emitted
+      // because we want to emit eventually if it was required at least once.
+      const shouldHaveEmitted = this._hasOwnPendingAsyncValidator?.emitEvent ?? false;
+      this._hasOwnPendingAsyncValidator = null;
+      return shouldHaveEmitted;
     }
+    return false;
   }
 
   /**
@@ -1418,9 +1428,19 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * expect(login.valid).toEqual(true);
    * ```
    */
-  setErrors(errors: ValidationErrors | null, opts: {emitEvent?: boolean} = {}): void {
+  setErrors(errors: ValidationErrors | null, opts?: {emitEvent?: boolean}): void;
+
+  /** @internal */
+  setErrors(
+    errors: ValidationErrors | null,
+    opts?: {emitEvent?: boolean; shouldHaveEmitted?: boolean},
+  ): void;
+  setErrors(
+    errors: ValidationErrors | null,
+    opts: {emitEvent?: boolean; shouldHaveEmitted?: boolean} = {},
+  ): void {
     (this as Writable<this>).errors = errors;
-    this._updateControlsErrors(opts.emitEvent !== false, this);
+    this._updateControlsErrors(opts.emitEvent !== false, this, opts.shouldHaveEmitted);
   }
 
   /**
@@ -1565,16 +1585,26 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   }
 
   /** @internal */
-  _updateControlsErrors(emitEvent: boolean, changedControl: AbstractControl): void {
+  _updateControlsErrors(
+    emitEvent: boolean,
+    changedControl: AbstractControl,
+    shouldHaveEmitted?: boolean,
+  ): void {
     (this as Writable<this>).status = this._calculateStatus();
 
     if (emitEvent) {
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
+    }
+
+    // The Events Observable expose a slight different bevahior than the statusChanges obs
+    // An async validator will still emit a StatusChangeEvent is a previously cancelled
+    // async validator has emitEvent set to true
+    if (emitEvent || shouldHaveEmitted) {
       this._events.next(new StatusChangeEvent(this.status, changedControl));
     }
 
     if (this._parent) {
-      this._parent._updateControlsErrors(emitEvent, changedControl);
+      this._parent._updateControlsErrors(emitEvent, changedControl, shouldHaveEmitted);
     }
   }
 
