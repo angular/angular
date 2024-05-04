@@ -249,6 +249,12 @@
     "name": "FormRecord"
   },
   {
+    "name": "FormResetEvent"
+  },
+  {
+    "name": "FormSubmittedEvent"
+  },
+  {
     "name": "FormsExampleModule"
   },
   {

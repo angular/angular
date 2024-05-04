@@ -74,6 +74,8 @@ export {
   AbstractControlOptions,
   ControlEvent,
   FormControlStatus,
+  FormResetEvent,
+  FormSubmittedEvent,
   PristineChangeEvent as PristineEvent,
   StatusChangeEvent as StatusEvent,
   TouchedChangeEvent as TouchedEvent,
