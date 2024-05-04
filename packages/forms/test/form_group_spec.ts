@@ -9,11 +9,13 @@
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {
   AbstractControl,
+  ControlEvent,
   FormArray,
   FormControl,
   FormGroup,
   ValidationErrors,
   Validators,
+  ValueChangeEvent,
 } from '@angular/forms';
 import {of} from 'rxjs';
 
@@ -23,6 +25,7 @@ import {
   currentStateOf,
   simpleAsyncValidator,
 } from './util';
+import {StatusChangeEvent} from '../src/model/abstract_model';
 
 (function () {
   function simpleValidator(c: AbstractControl): ValidationErrors | null {
@@ -2216,6 +2219,27 @@ import {
           // Because we are calling `setValue` with `emitEvent: false`, nothing is emitted
           // and our logger remains empty
           expect(logger).toEqual([]);
+        }));
+
+        it('should cancel initial run of the async validator and emit on the event Observable', fakeAsync(() => {
+          const c = new FormControl('', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
+
+          const events: ControlEvent[] = [];
+          c.events.subscribe((e) => events.push(e));
+
+          expect(events.length).toBe(0);
+
+          c.setValue('new!');
+
+          tick(1);
+
+          // validator was invoked twice (init + setValue)
+          // but since we cancel pending validators we only get 1 status update cycle
+          expect(events[0]).toBeInstanceOf(ValueChangeEvent);
+          expect(events[1]).toBeInstanceOf(StatusChangeEvent);
+          expect((events[1] as StatusChangeEvent).status).toBe('PENDING');
+          expect(events[2]).toBeInstanceOf(StatusChangeEvent);
+          expect((events[2] as StatusChangeEvent).status).toBe('INVALID');
         }));
 
         it('should run the sync validator on stand alone controls and set status to `INVALID`', fakeAsync(() => {
