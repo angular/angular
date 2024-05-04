@@ -566,6 +566,13 @@ export interface FormRecord<TControl> {
 }
 
 // @public
+export class FormResetEvent extends ControlEvent {
+    constructor(source: AbstractControl);
+    // (undocumented)
+    readonly source: AbstractControl;
+}
+
+// @public
 export class FormsModule {
     static withConfig(opts: {
         callSetDisabledState?: SetDisabledStateOption;
@@ -576,6 +583,13 @@ export class FormsModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<FormsModule>;
     // (undocumented)
     static ɵmod: i0.ɵɵNgModuleDeclaration<FormsModule, [typeof i1_2.NgModel, typeof i2_2.NgModelGroup, typeof i3_2.NgForm], never, [typeof i4_2.ɵInternalFormsSharedModule, typeof i1_2.NgModel, typeof i2_2.NgModelGroup, typeof i3_2.NgForm]>;
+}
+
+// @public
+export class FormSubmittedEvent extends ControlEvent {
+    constructor(source: AbstractControl);
+    // (undocumented)
+    readonly source: AbstractControl;
 }
 
 // @public

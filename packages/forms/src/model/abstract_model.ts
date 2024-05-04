@@ -145,6 +145,27 @@ export class StatusChangeEvent extends ControlEvent {
 }
 
 /**
+ * Event fired when a form is submitted
+ *
+ * @publicApi
+ */
+export class FormSubmittedEvent extends ControlEvent {
+  constructor(public readonly source: AbstractControl) {
+    super();
+  }
+}
+/**
+ * Event fired when a form is reset.
+ *
+ * @publicApi
+ */
+export class FormResetEvent extends ControlEvent {
+  constructor(public readonly source: AbstractControl) {
+    super();
+  }
+}
+
+/**
  * Gets validators from either an options object or given validators.
  */
 export function pickValidators(
@@ -683,7 +704,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @internal
    */
-  private readonly _events = new Subject<ControlEvent<TValue>>();
+  readonly _events = new Subject<ControlEvent<TValue>>();
 
   /**
    * A multicasting observable that emits an event every time the state of the control changes.
