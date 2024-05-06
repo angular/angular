@@ -95,6 +95,7 @@ export function withEventReplay(): Provider[] {
                     for (const event of queue) {
                       handleEvent(event);
                     }
+                    queue.length = 0;
                   },
                 });
                 registerDispatcher(eventContract, dispatcher);
