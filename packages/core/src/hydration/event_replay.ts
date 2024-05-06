@@ -36,6 +36,7 @@ declare global {
 }
 
 const JSACTION_ATTRIBUTE = 'jsaction';
+const removeJsactionQueue: RElement[] = [];
 
 /**
  * Returns a set of providers required to setup support for event replay.
@@ -52,7 +53,9 @@ export function withEventReplay(): Provider[] {
       useValue: () => {
         setDisableEventReplayImpl((el: RElement) => {
           if (el.hasAttribute(JSACTION_ATTRIBUTE)) {
-            el.removeAttribute(JSACTION_ATTRIBUTE);
+            // We don't immediately remove the attribute here because
+            // we need it for replay that happens after hydration.
+            removeJsactionQueue.push(el);
           }
         });
       },
@@ -79,6 +82,10 @@ export function withEventReplay(): Provider[] {
                 setEventReplayer(dispatcher);
                 // Event replay is kicked off as a side-effect of executing this function.
                 registerDispatcher(eventContract, dispatcher);
+                for (const el of removeJsactionQueue) {
+                  el.removeAttribute(JSACTION_ATTRIBUTE);
+                }
+                removeJsactionQueue.length = 0;
               }
             });
           };
