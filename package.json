@@ -155,6 +155,7 @@
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
     "@actions/core": "^1.10.0",
+    "@actions/github": "^6.0.0",
     "@angular-devkit/architect-cli": "^0.1800.0-next",
     "@angular/animations": "^18.0.0-next",
     "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#304b7ac86675d00240c7215dc6005d9255c0fbdd",
@@ -216,11 +217,13 @@
     "prettier": "^3.0.0",
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.9.1-linux.tar.gz",
     "semver": "^7.3.5",
+    "tmp": "^0.2.3",
     "ts-node": "^10.9.1",
     "tsec": "0.2.8",
     "tslint-eslint-rules": "5.4.0",
     "tslint-no-toplevel-property-access": "0.0.2",
     "typed-graphqlify": "^3.1.1",
+    "undici": "^6.15.0",
     "vrsource-tslint-rules": "6.0.0",
     "xregexp": "^5.1.1"
   },

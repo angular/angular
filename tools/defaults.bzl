@@ -1,7 +1,7 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
-load("@build_bazel_rules_nodejs//:index.bzl", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
+load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/concatjs:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
@@ -14,7 +14,7 @@ load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "ka
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
-load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
+load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild_esm_bundle", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
@@ -613,6 +613,39 @@ def esbuild(args = None, **kwargs):
             "resolveExtensions": [".mjs", ".js", ".json"],
         },
         **kwargs
+    )
+
+def esbuild_checked_in(name, **kwargs):
+    esbuild_esm_bundle(
+        name = "%s_generated" % name,
+        # Unfortunately we need to omit source maps from the checked-in files as these
+        # will vary based on the platform. See more details below in the sanitization
+        # genrule transformation. It is acceptable not having source-maps for the checked-in
+        # files as those are not minified and its to debug, the checked-in file can be visited.
+        sourcemap = "external",
+        # We always disable minification for checked-in files as otherwise it will
+        # become difficult determining potential differences. e.g. on Windows ESBuild
+        # accidentally included `source-map-support` due to the missing sandbox.
+        minify = False,
+        **kwargs
+    )
+
+    # ESBuild adds comments and function identifiers with the name of their module
+    # location. e.g. `"bazel-out/x64_windows-fastbuild/bin/node_modules/a"function(exports)`.
+    # We strip all of these paths as that would break approval of the he checked-in files within
+    # different platforms (e.g. RBE running with K8). Additionally these paths depend
+    # on the non-deterministic hoisting of the package manager across all platforms.
+    native.genrule(
+        name = "%s_sanitized" % name,
+        srcs = ["%s_generated.js" % name],
+        outs = ["%s_sanitized.js" % name],
+        cmd = """cat $< | sed -E "s#(bazel-out|node_modules)/[^\\"']+##g" > $@""",
+    )
+
+    generated_file_test(
+        name = name,
+        src = "%s.js" % name,
+        generated = "%s_sanitized.js" % name,
     )
 
 def generate_api_docs(**kwargs):
