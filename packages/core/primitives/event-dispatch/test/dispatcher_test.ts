@@ -14,10 +14,9 @@ import {
   EventInfoWrapper,
   unsetAction,
 } from '../src/event_info';
-import {createEvent} from '../src/replay';
 
-function createMockClickEvent() {
-  return createEvent({type: 'click'} as Event);
+function createClickEvent() {
+  return new MouseEvent('click', {bubbles: true, cancelable: true});
 }
 
 function createTestActionInfo({
@@ -29,7 +28,7 @@ function createTestActionInfo({
 
 function createTestEventInfo({
   eventType = 'click',
-  event = createMockClickEvent(),
+  event = createClickEvent(),
   targetElement = document.createElement('div'),
   container = document.createElement('div'),
   timestamp = 0,
@@ -74,7 +73,7 @@ describe('dispatcher test.ts', () => {
       }),
     );
     expect(eventInfo).not.toBeNull();
-    expect(eventInfo.getEventType()).toBe(createMockClickEvent().type);
+    expect(eventInfo.getEventType()).toBe('click');
     expect(eventInfo.getAction()!.element).toBe(actionElement);
   });
 
@@ -219,7 +218,7 @@ describe('dispatcher test.ts', () => {
     dispatcher.registerGlobalHandler('click', handler);
 
     const eventInfo = createTestEventInfo({
-      event: createEvent({type: 'mousedown'} as Event),
+      event: new MouseEvent('mousedown', {bubbles: true, cancelable: true}),
       eventType: 'mousedown',
     });
     unsetAction(eventInfo);
