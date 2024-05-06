@@ -26,6 +26,7 @@ export {
   NotificationSource as ɵNotificationSource,
   ZONELESS_ENABLED as ɵZONELESS_ENABLED,
 } from './change_detection/scheduling/zoneless_scheduling';
+export {PROVIDED_NG_ZONE as ɵPROVIDED_NG_ZONE} from './change_detection/scheduling/ng_zone_scheduling';
 export {Console as ɵConsole} from './console';
 export {
   DeferBlockDetails as ɵDeferBlockDetails,
