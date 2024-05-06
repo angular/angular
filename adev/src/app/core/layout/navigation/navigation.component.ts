@@ -15,6 +15,7 @@ import {
   OnInit,
   PLATFORM_ID,
   inject,
+  signal,
 } from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
@@ -37,6 +38,7 @@ import {VersionManager} from '../../services/version-manager.service';
 import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {ConnectionPositionPair} from '@angular/cdk/overlay';
 import {COMMAND, CONTROL, SEARCH_TRIGGER_KEY} from '../../constants/keys';
+import {DOCS_VERSIONS} from '../../providers/versions';
 
 type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
@@ -67,7 +69,7 @@ export class Navigation implements OnInit {
   private readonly themeManager = inject(ThemeManager);
   private readonly isSearchDialogOpen = inject(IS_SEARCH_DIALOG_OPEN);
   private readonly window = inject(WINDOW);
-  private readonly versionManager = inject(VersionManager);
+  private readonly DOCS_VERSIONS = inject(DOCS_VERSIONS);
 
   readonly DOCS_ROUTE = PagePrefix.DOCS;
   readonly HOME_ROUTE = PagePrefix.HOME;
@@ -101,8 +103,13 @@ export class Navigation implements OnInit {
   theme = this.themeManager.theme;
   openedMenu: MenuType | null = null;
 
-  currentDocsVersion = this.versionManager.currentDocsVersion;
-  currentDocsVersionMode = this.versionManager.currentDocsVersion()?.version;
+  currentDocsVersion = signal(
+    this.DOCS_VERSIONS.currentVersionMode === 'next' ||
+      this.DOCS_VERSIONS.currentVersionMode === 'rc'
+      ? this.DOCS_VERSIONS.currentVersionMode
+      : this.DOCS_VERSIONS.currentVersion,
+  );
+  currentDocsVersionMode = this.DOCS_VERSIONS.currentVersionMode;
 
   // Set the values of the search label and title only on the client, because the label is user-agent specific.
   searchLabel = this.isBrowser
@@ -115,7 +122,7 @@ export class Navigation implements OnInit {
       ? `${COMMAND} ${SEARCH_TRIGGER_KEY.toUpperCase()}`
       : `${CONTROL} ${SEARCH_TRIGGER_KEY.toUpperCase()}`
     : '';
-  versions = this.versionManager.versions;
+  versions = signal(this.DOCS_VERSIONS.versions);
 
   isMobileNavigationOpened = this.navigationState.isMobileNavVisible;
   isMobileNavigationOpened$ = toObservable(this.isMobileNavigationOpened);

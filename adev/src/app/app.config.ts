@@ -44,6 +44,9 @@ import {ExampleContentLoader} from './core/services/example-content-loader.servi
 import {ReuseTutorialsRouteStrategy} from './features/tutorial/tutorials-route-reuse-strategy';
 import {routes} from './routes';
 import {ReferenceScrollHandler} from './features/references/services/reference-scroll-handler.service';
+import {DOCS_VERSIONS} from './core/providers/versions';
+
+import VERSIONS from '../../src/assets/versions.json';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -93,5 +96,6 @@ export const appConfig: ApplicationConfig = {
     {provide: TitleStrategy, useClass: ADevTitleStrategy},
     provideZoneChangeDetection({eventCoalescing: true}),
     ReferenceScrollHandler,
+    {provide: DOCS_VERSIONS, useValue: VERSIONS},
   ],
 };
