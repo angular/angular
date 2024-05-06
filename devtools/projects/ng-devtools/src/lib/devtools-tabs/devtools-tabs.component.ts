@@ -90,6 +90,8 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
     return parseInt(version.toString().split('.')[0], 10);
   });
 
+  extensionVersion = 'Development Build';
+
   constructor(
     public tabUpdate: TabUpdate,
     public themeService: ThemeService,
@@ -111,6 +113,10 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.navbar.stretchTabs = false;
+
+    if (chrome !== undefined && chrome.runtime !== undefined) {
+      this.extensionVersion = chrome.runtime.getManifest().version;
+    }
   }
 
   get tabs(): Tabs[] {
@@ -120,10 +126,6 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.navbar.disablePagination = true;
-  }
-
-  get latestSHA(): string {
-    return this.applicationEnvironment.environment.LATEST_SHA.slice(0, 8);
   }
 
   changeTab(tab: Tabs): void {
