@@ -7,7 +7,13 @@
  */
 
 import {Dispatcher, Replayer} from '../src/dispatcher';
-import {ActionInfo, createEventInfo, EventInfo, EventInfoWrapper} from '../src/event_info';
+import {
+  ActionInfo,
+  createEventInfo,
+  EventInfo,
+  EventInfoWrapper,
+  unsetAction,
+} from '../src/event_info';
 import {createEvent} from '../src/replay';
 
 function createMockClickEvent() {
@@ -137,7 +143,8 @@ describe('dispatcher test.ts', () => {
     await expectAsync(replayed).toBePending();
 
     const eventInfo1 = createTestEventInfo({isReplay: true});
-    dispatcher.dispatch(eventInfo1, /* globalDispatch= */ true);
+    unsetAction(eventInfo1);
+    dispatcher.dispatch(eventInfo1);
 
     await expectAsync(replayed).toBePending();
   });
@@ -199,7 +206,9 @@ describe('dispatcher test.ts', () => {
     const dispatcher = new Dispatcher();
     dispatcher.registerGlobalHandler('click', handler);
 
-    dispatcher.dispatch(createTestEventInfo(), true);
+    const eventInfo = createTestEventInfo();
+    unsetAction(eventInfo);
+    dispatcher.dispatch(eventInfo);
 
     expect(handler).toHaveBeenCalledTimes(1);
   });
@@ -213,7 +222,8 @@ describe('dispatcher test.ts', () => {
       event: createEvent({type: 'mousedown'} as Event),
       eventType: 'mousedown',
     });
-    dispatcher.dispatch(eventInfo, true);
+    unsetAction(eventInfo);
+    dispatcher.dispatch(eventInfo);
 
     expect(handler).not.toHaveBeenCalled();
   });
@@ -234,7 +244,8 @@ describe('dispatcher test.ts', () => {
         container,
         action: {name: 'foo', element: targetElement},
       });
-      dispatcher.dispatch(eventInfo, true);
+      unsetAction(eventInfo);
+      dispatcher.dispatch(eventInfo);
     });
     targetElement.addEventListener('click', targetHandler);
     const parentHandler = jasmine.createSpy('parentHandler');
@@ -263,7 +274,8 @@ describe('dispatcher test.ts', () => {
         container,
         action: {name: 'foo', element: targetElement},
       });
-      dispatcher.dispatch(eventInfo, /* globalDispatch= */ true);
+      unsetAction(eventInfo);
+      dispatcher.dispatch(eventInfo);
     });
     targetElement.addEventListener('click', targetHandler);
     const parentHandler = jasmine.createSpy('parentHandler');

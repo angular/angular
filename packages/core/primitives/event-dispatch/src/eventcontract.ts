@@ -163,29 +163,14 @@ export class EventContract implements UnrenamedEventContract {
       // All events are queued when the dispatcher isn't yet loaded.
       eventInfoLib.setIsReplay(eventInfo, true);
       this.queuedEventInfos?.push(eventInfo);
+      return;
     }
     this.actionResolver.resolve(eventInfo);
-
-    if (!this.dispatcher) {
-      return;
-    }
-    const globalEventInfo: eventInfoLib.EventInfo = eventInfoLib.cloneEventInfo(eventInfo);
-
-    // In some cases, `populateAction` will rewrite `click` events to
-    // `clickonly`. Revert back to a regular click, otherwise we won't be able
-    // to execute global event handlers registered on click events.
-    if (eventInfoLib.getEventType(globalEventInfo) === EventType.CLICKONLY) {
-      eventInfoLib.setEventType(globalEventInfo, EventType.CLICK);
-    }
-
-    this.dispatcher(globalEventInfo, /* dispatch global event */ true);
-
     const action = eventInfoLib.getAction(eventInfo);
-    if (!action) {
-      return;
-    }
-    if (shouldPreventDefaultBeforeDispatching(eventInfoLib.getActionElement(action), eventInfo)) {
-      eventLib.preventDefault(eventInfoLib.getEvent(eventInfo));
+    if (action) {
+      if (shouldPreventDefaultBeforeDispatching(eventInfoLib.getActionElement(action), eventInfo)) {
+        eventLib.preventDefault(eventInfoLib.getEvent(eventInfo));
+      }
     }
 
     this.dispatcher(eventInfo);
