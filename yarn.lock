@@ -3609,10 +3609,10 @@
     "@types/node" "*"
     "@types/responselike" "^1.0.0"
 
-"@types/chrome@^0.0.266":
-  version "0.0.266"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.266.tgz#1ef0c3076ea05489db2a04a057657587920d2390"
-  integrity sha512-QSQWJTL7NjZElvq/6/E5C1+pHgEP8UAJzwoz7M4vSJ7AECt6NNehJ+tU6snnvuTqZOBjFCivvitYo5+8tNPmhg==
+"@types/chrome@^0.0.267":
+  version "0.0.267"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.267.tgz#eefb7d2085993437d8109eb495431dfc0e3dbda1"
+  integrity sha512-vnCWPpYjazSPRMNmybRH+0q4f738F+Pbbls4ZPFsPr9/4TTNJyK1OLZDpSnghnEWb4stfmIUtq/GegnlfD4sPA==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -13922,10 +13922,10 @@ select-hose@^2.0.0:
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
   integrity sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==
 
-"selenium-webdriver4@npm:selenium-webdriver@4.19.0":
-  version "4.19.0"
-  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.19.0.tgz#bdd001b6e534033664d8c1310a84c0f12eeafc67"
-  integrity sha512-8XHW8m9V2XN2/SC1kr4bWzMtGvjmKUEZ6S0UBoDBqonhmwEIzKOLbzhanBd08HCOg1s1O0XrDWCD71NnA8Zt0g==
+"selenium-webdriver4@npm:selenium-webdriver@4.20.0", selenium-webdriver@^4.18.1:
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.20.0.tgz#14941ab4a59e8956a5e4b4491a8ba2bd6619d1ac"
+  integrity sha512-s/G44lGQ1xB3tmtX6NNPomlkpL6CxLdmAvp/AGWWwi4qv5Te1+qji7tPSyr6gyuoPpdYiof1rKnWe3luy0MrYA==
   dependencies:
     jszip "^3.10.1"
     tmp "^0.2.3"
@@ -13950,15 +13950,6 @@ selenium-webdriver@3.6.0, selenium-webdriver@^3.0.1:
     rimraf "^2.5.4"
     tmp "0.0.30"
     xml2js "^0.4.17"
-
-selenium-webdriver@^4.18.1:
-  version "4.20.0"
-  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.20.0.tgz#14941ab4a59e8956a5e4b4491a8ba2bd6619d1ac"
-  integrity sha512-s/G44lGQ1xB3tmtX6NNPomlkpL6CxLdmAvp/AGWWwi4qv5Te1+qji7tPSyr6gyuoPpdYiof1rKnWe3luy0MrYA==
-  dependencies:
-    jszip "^3.10.1"
-    tmp "^0.2.3"
-    ws ">=8.16.0"
 
 selfsigned@^2.4.1:
   version "2.4.1"
