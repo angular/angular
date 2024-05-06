@@ -28,7 +28,7 @@ jobs:
       - uses: alessbell/pull-request-comment-branch@aad01d65d6982b8eacabed5e9a684cd8ceb98da6 # v1.1
         id: comment-branch
 
-      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
         with:
           # Specify repository as the PR branch might be from a fork.
           repository: ${{steps.comment-branch.outputs.head_owner}}/${{steps.comment-branch.outputs.head_repo}}
