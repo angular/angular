@@ -186,7 +186,6 @@ describe('event replay', () => {
         appRef.tick();
         expect(el.hasAttribute('jsaction')).toBeFalse();
         expect((el.firstChild as Element).hasAttribute('jsaction')).toBeFalse();
-        appRef.tick();
       });
 
       it(`should add 'nonce' attribute to event record script when 'ngCspNonce' is provided`, async () => {
