@@ -24,6 +24,9 @@ export const format: FormatConfig = {
       '!packages/compiler-cli/test/compliance/test_cases/**/*.{js,ts}',
       // Ignore AIO as its pending removal.
       '!aio/**/*.{js,ts}',
+
+      // Ignore generated javascript file(s)
+      '!.github/actions/deploy-docs-site/main.js',
     ],
   },
   'buildifier': true,
