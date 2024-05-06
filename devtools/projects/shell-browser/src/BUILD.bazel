@@ -151,5 +151,4 @@ pkg_web(
     additional_root_paths = [
         "projects/ng-devtools/src/lib",
     ],
-    substitutions = {"BUILD_SCM_COMMIT_SHA": "{BUILD_SCM_COMMIT_SHA}"},
 )
