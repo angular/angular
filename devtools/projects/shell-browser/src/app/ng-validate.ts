@@ -8,12 +8,6 @@
 
 /// <reference types="chrome"/>
 
-window.addEventListener('message', (event: MessageEvent) => {
-  if (event.source === window && event.data) {
-    chrome.runtime.sendMessage(event.data);
-  }
-});
-
 if (document.contentType === 'text/html') {
   const script = document.createElement('script');
   script.src = chrome.runtime.getURL('app/detect_angular_for_extension_icon_bundle.js');
