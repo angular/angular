@@ -427,9 +427,9 @@ describe('EventContract', () => {
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     eventContract.registerDispatcher(dispatcher, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe(EventType.CLICK);
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -453,9 +453,9 @@ describe('EventContract', () => {
 
     const clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe(EventType.CLICK);
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -477,9 +477,9 @@ describe('EventContract', () => {
 
     const clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe(EventType.CLICK);
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -502,7 +502,7 @@ describe('EventContract', () => {
 
     const clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -526,7 +526,7 @@ describe('EventContract', () => {
 
     const clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -558,7 +558,7 @@ describe('EventContract', () => {
     // tslint:enable:deprecation
     targetElement.dispatchEvent(animationEndEvent);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('animationend');
     expect(eventInfoWrapper.getEvent()).toBe(animationEndEvent);
@@ -581,7 +581,7 @@ describe('EventContract', () => {
 
     const clickEvent = dispatchMouseEvent(targetElement, {shiftKey: true});
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('clickmod');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -604,7 +604,7 @@ describe('EventContract', () => {
 
     let clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     let eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -617,7 +617,7 @@ describe('EventContract', () => {
 
     clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -640,7 +640,7 @@ describe('EventContract', () => {
 
     let clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     let eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -655,7 +655,7 @@ describe('EventContract', () => {
 
     clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -678,7 +678,7 @@ describe('EventContract', () => {
 
     const clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -701,7 +701,7 @@ describe('EventContract', () => {
 
     const keydownEvent = dispatchKeyboardEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('keydown');
     expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
@@ -724,7 +724,7 @@ describe('EventContract', () => {
 
     const keyupEvent = dispatchKeyboardEvent(targetElement, {type: 'keyup'});
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('keyup');
     expect(eventInfoWrapper.getEvent()).toBe(keyupEvent);
@@ -776,7 +776,7 @@ describe('EventContract', () => {
 
     shadowChild.click();
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('click');
     // Target element is set to the host from the event.
@@ -832,7 +832,7 @@ describe('EventContract', () => {
 
     clickHandler('click', clickEvent, container);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe(EventType.CLICK);
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -876,7 +876,7 @@ describe('EventContract', () => {
       // tslint:enable:deprecation
       targetElement.dispatchEvent(customEvent);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('custom-event');
       expect(eventInfoWrapper.getEvent()).toBe(customEvent);
@@ -900,7 +900,7 @@ describe('EventContract', () => {
       const data = {'test': 1};
       fireCustomEvent(targetElement, 'custom-event', data);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('custom-event');
       const customEvent = eventInfoWrapper.getEvent() as CustomEvent;
@@ -936,7 +936,7 @@ describe('EventContract', () => {
       const data = {'test': 1};
       fireCustomEvent(targetElement, 'custom-event', data);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('custom-event');
       const customEvent = eventInfoWrapper.getEvent() as CustomEvent;
@@ -962,7 +962,7 @@ describe('EventContract', () => {
 
     const clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -987,7 +987,7 @@ describe('EventContract', () => {
 
     const clickEvent = dispatchMouseEvent(targetElement, {shiftKey: true});
 
-    expect(dispatcher).toHaveBeenCalledTimes(2);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
     const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
     expect(eventInfoWrapper.getEventType()).toBe('clickmod');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1031,7 +1031,7 @@ describe('EventContract', () => {
 
       const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
@@ -1054,9 +1054,9 @@ describe('EventContract', () => {
 
       const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'a'});
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('keydown');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
@@ -1079,7 +1079,7 @@ describe('EventContract', () => {
 
       const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
@@ -1104,9 +1104,9 @@ describe('EventContract', () => {
 
       const clickEvent = dispatchMouseEvent(targetElement);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('clickonly');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1129,9 +1129,9 @@ describe('EventContract', () => {
 
       const clickEvent = dispatchMouseEvent(targetElement);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1158,7 +1158,7 @@ describe('EventContract', () => {
 
       const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
@@ -1183,9 +1183,9 @@ describe('EventContract', () => {
 
       const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'a'});
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('keydown');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
@@ -1210,7 +1210,7 @@ describe('EventContract', () => {
 
       const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
@@ -1237,9 +1237,9 @@ describe('EventContract', () => {
 
       const clickEvent = dispatchMouseEvent(targetElement);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('clickonly');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1264,9 +1264,9 @@ describe('EventContract', () => {
 
       const clickEvent = dispatchMouseEvent(targetElement);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1307,7 +1307,7 @@ describe('EventContract', () => {
 
       const clickEvent = dispatchMouseEvent(outerTargetElement);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1332,7 +1332,7 @@ describe('EventContract', () => {
 
       const clickEvent = dispatchMouseEvent(innerTargetElement);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1357,7 +1357,7 @@ describe('EventContract', () => {
 
       const clickEvent = dispatchMouseEvent(outerTargetElement);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1382,7 +1382,7 @@ describe('EventContract', () => {
 
       const clickEvent = dispatchMouseEvent(innerTargetElement);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1408,7 +1408,7 @@ describe('EventContract', () => {
 
       let clickEvent = dispatchMouseEvent(innerTargetElement);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       let eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1425,7 +1425,7 @@ describe('EventContract', () => {
 
       clickEvent = dispatchMouseEvent(innerTargetElement);
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1457,7 +1457,7 @@ describe('EventContract', () => {
 
         const clickEvent = dispatchMouseEvent(outerTargetElement);
 
-        expect(dispatcher).toHaveBeenCalledTimes(2);
+        expect(dispatcher).toHaveBeenCalledTimes(1);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
         expect(eventInfoWrapper.getEventType()).toBe('click');
         expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1488,7 +1488,7 @@ describe('EventContract', () => {
 
         const clickEvent = dispatchMouseEvent(innerTargetElement);
 
-        expect(dispatcher).toHaveBeenCalledTimes(2);
+        expect(dispatcher).toHaveBeenCalledTimes(1);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
         expect(eventInfoWrapper.getEventType()).toBe('click');
         expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1519,7 +1519,7 @@ describe('EventContract', () => {
 
         const clickEvent = dispatchMouseEvent(outerTargetElement);
 
-        expect(dispatcher).toHaveBeenCalledTimes(2);
+        expect(dispatcher).toHaveBeenCalledTimes(1);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
         expect(eventInfoWrapper.getEventType()).toBe('click');
         expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1550,7 +1550,7 @@ describe('EventContract', () => {
 
         const clickEvent = dispatchMouseEvent(innerTargetElement);
 
-        expect(dispatcher).toHaveBeenCalledTimes(2);
+        expect(dispatcher).toHaveBeenCalledTimes(1);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
         expect(eventInfoWrapper.getEventType()).toBe('click');
         expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1587,7 +1587,7 @@ describe('EventContract', () => {
         relatedTarget: container,
       });
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('mouseenter');
       const syntheticMouseEvent = eventInfoWrapper.getEvent();
@@ -1640,7 +1640,7 @@ describe('EventContract', () => {
         relatedTarget: container,
       });
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('mouseleave');
       const syntheticMouseEvent = eventInfoWrapper.getEvent();
@@ -1693,7 +1693,7 @@ describe('EventContract', () => {
         relatedTarget: container,
       });
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('pointerenter');
       const syntheticMouseEvent = eventInfoWrapper.getEvent();
@@ -1746,7 +1746,7 @@ describe('EventContract', () => {
         relatedTarget: container,
       });
 
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('pointerleave');
       const syntheticMouseEvent = eventInfoWrapper.getEvent();
@@ -1817,7 +1817,7 @@ describe('EventContract', () => {
 
       expect(window._ejsa).toBeUndefined();
       expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1854,7 +1854,7 @@ describe('EventContract', () => {
 
       expect(replaySink._ejsa).toBeUndefined();
       expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('focus');
       expect(eventInfoWrapper.getEvent().type).toBe('focus');
@@ -1892,7 +1892,7 @@ describe('EventContract', () => {
 
       expect(window._ejsa).toBeUndefined();
       expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
-      expect(dispatcher).toHaveBeenCalledTimes(2);
+      expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
@@ -1939,7 +1939,7 @@ describe('EventContract', () => {
 
         expect((window as EarlyJsactionDataContainer)._ejsa).toBeUndefined();
         expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
-        expect(dispatcher).toHaveBeenCalledTimes(3);
+        expect(dispatcher).toHaveBeenCalledTimes(2);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
         expect(eventInfoWrapper.getEventType()).toBe('mouseleave');
         const syntheticMouseEvent = eventInfoWrapper.getEvent();
@@ -1981,7 +1981,7 @@ describe('EventContract', () => {
 
         expect(window._ejsa).toBeUndefined();
         expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
-        expect(dispatcher).toHaveBeenCalledTimes(2);
+        expect(dispatcher).toHaveBeenCalledTimes(1);
         const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
         expect(eventInfoWrapper.getEventType()).toBe('mouseleave');
         const syntheticMouseEvent = eventInfoWrapper.getEvent();
