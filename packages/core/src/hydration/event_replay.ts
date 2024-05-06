@@ -7,7 +7,7 @@
  */
 
 import {
-  Dispatcher,
+  BaseDispatcher,
   EarlyJsactionDataContainer,
   EventContract,
   EventContractContainer,
@@ -90,8 +90,13 @@ export function withEventReplay(): Provider[] {
                   eventContract.addEvent(et);
                 }
                 eventContract.replayEarlyEvents(container);
-                const dispatcher = new Dispatcher();
-                setEventReplayer(dispatcher);
+                const dispatcher = new BaseDispatcher(() => {}, {
+                  eventReplayer: (queue) => {
+                    for (const event of queue) {
+                      handleEvent(event);
+                    }
+                  },
+                });
                 registerDispatcher(eventContract, dispatcher);
                 for (const el of removeJsactionQueue) {
                   el.removeAttribute(JSACTION_ATTRIBUTE);
@@ -163,17 +168,6 @@ export function setJSActionAttribute(
       nativeElement.setAttribute(JSACTION_ATTRIBUTE, parts.join(';'));
     }
   }
-}
-
-/**
- * Registers a function that should be invoked to replay events.
- */
-function setEventReplayer(dispatcher: Dispatcher) {
-  dispatcher.setEventReplayer((queue) => {
-    for (const event of queue) {
-      handleEvent(event);
-    }
-  });
 }
 
 /**
