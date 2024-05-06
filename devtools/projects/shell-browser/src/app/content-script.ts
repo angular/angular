@@ -90,3 +90,22 @@ if (!backendInitialized) {
   };
   retry();
 }
+
+const proxyEventFromWindowToDevToolsExtension = (event: MessageEvent) => {
+  if (event.source === window && event.data) {
+    try {
+      chrome.runtime.sendMessage(event.data);
+    } catch (e) {
+      const {message} = e as Error;
+      if (message.includes('Extension context invalidated.')) {
+        console.error(
+          'Angular DevTools: Disconnecting content script due to invalid extension context. Please reload the page.',
+        );
+        window.removeEventListener('message', proxyEventFromWindowToDevToolsExtension);
+      }
+      throw e;
+    }
+  }
+};
+
+window.addEventListener('message', proxyEventFromWindowToDevToolsExtension);
