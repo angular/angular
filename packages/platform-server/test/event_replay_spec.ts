@@ -54,19 +54,27 @@ describe('event replay', () => {
      */
     async function ssr(
       component: Type<unknown>,
-      options?: {doc?: string; enableEventReplay?: boolean},
+      options: {doc?: string; enableEventReplay?: boolean; hydrationDisabled?: boolean} = {},
     ): Promise<string> {
-      const enableEventReplay = options?.enableEventReplay ?? true;
-      const defaultHtml = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
-      const hydrationProviders = enableEventReplay
-        ? provideClientHydration(withEventReplay())
-        : provideClientHydration();
-      const providers = [provideServerRendering(), hydrationProviders];
+      const {
+        enableEventReplay = true,
+        hydrationDisabled,
+        doc = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`,
+      } = options;
 
-      const bootstrap = () => bootstrapApplication(component, {providers});
+      const hydrationProviders = hydrationDisabled
+        ? []
+        : enableEventReplay
+          ? provideClientHydration(withEventReplay())
+          : provideClientHydration();
+
+      const bootstrap = () =>
+        bootstrapApplication(component, {
+          providers: [provideServerRendering(), hydrationProviders],
+        });
 
       return renderApplication(bootstrap, {
-        document: options?.doc ?? defaultHtml,
+        document: doc,
       });
     }
 
@@ -208,6 +216,24 @@ describe('event replay', () => {
       });
 
       describe('event dispatch script', () => {
+        it('should not be present on a page when hydration is disabled', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: '<input (click)="onClick()" />',
+          })
+          class SimpleComponent {
+            onClick() {}
+          }
+
+          const doc = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
+          const html = await ssr(SimpleComponent, {doc, hydrationDisabled: true});
+          const ssrContents = getAppContents(html);
+
+          expect(hasJSActionAttrs(ssrContents)).toBeFalse();
+          expect(hasEventDispatchScript(ssrContents)).toBeFalse();
+        });
+
         it('should not be present on a page if there are no events to replay', async () => {
           @Component({
             standalone: true,
