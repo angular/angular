@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  ɵparseCookieValue as parseCookieValue,
-  ɵsetRootDomAdapter as setRootDomAdapter,
-} from '@angular/common';
+import {ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
 
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
@@ -80,9 +77,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   override getUserAgent(): string {
     return window.navigator.userAgent;
-  }
-  override getCookie(name: string): string | null {
-    return parseCookieValue(document.cookie, name);
   }
 }
 
