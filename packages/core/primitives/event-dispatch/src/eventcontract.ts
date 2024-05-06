@@ -35,11 +35,7 @@ import {ActionResolver} from './action_resolver';
 import {EarlyJsactionData, EarlyJsactionDataContainer} from './earlyeventcontract';
 import * as eventLib from './event';
 import {EventContractContainerManager} from './event_contract_container';
-import {
-  A11Y_CLICK_SUPPORT,
-  CUSTOM_EVENT_SUPPORT,
-  MOUSE_SPECIAL_SUPPORT,
-} from './event_contract_defines';
+import {A11Y_CLICK_SUPPORT, MOUSE_SPECIAL_SUPPORT} from './event_contract_defines';
 import * as eventInfoLib from './event_info';
 import {EventType} from './event_type';
 import {Restriction} from './restriction';
@@ -87,14 +83,12 @@ type EventHandler = (eventType: string, event: Event, container: Element) => voi
  * be delay loaded in a generic way.
  */
 export class EventContract implements UnrenamedEventContract {
-  static CUSTOM_EVENT_SUPPORT = CUSTOM_EVENT_SUPPORT;
   static A11Y_CLICK_SUPPORT = A11Y_CLICK_SUPPORT;
   static MOUSE_SPECIAL_SUPPORT = MOUSE_SPECIAL_SUPPORT;
 
   private containerManager: EventContractContainerManager | null;
 
   private readonly actionResolver = new ActionResolver({
-    customEventSupport: EventContract.CUSTOM_EVENT_SUPPORT,
     syntheticMouseEventSupport: EventContract.MOUSE_SPECIAL_SUPPORT,
   });
 
@@ -135,9 +129,6 @@ export class EventContract implements UnrenamedEventContract {
 
   constructor(containerManager: EventContractContainerManager) {
     this.containerManager = containerManager;
-    if (EventContract.CUSTOM_EVENT_SUPPORT) {
-      this.addEvent(EventType.CUSTOM);
-    }
     if (EventContract.A11Y_CLICK_SUPPORT) {
       // Add a11y click support to the `EventContract`.
       this.addA11yClickSupport();

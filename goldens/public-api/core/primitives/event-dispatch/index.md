@@ -32,8 +32,6 @@ export class EventContract implements UnrenamedEventContract {
     addEvent(eventType: string, prefixedEventType?: string): void;
     cleanUp(): void;
     // (undocumented)
-    static CUSTOM_EVENT_SUPPORT: boolean;
-    // (undocumented)
     ecaacs?: (updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick, preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick, populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction) => void;
     ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
     exportAddA11yClickSupport(): void;

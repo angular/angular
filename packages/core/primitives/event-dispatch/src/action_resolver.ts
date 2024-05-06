@@ -32,7 +32,6 @@ const DEFAULT_EVENT_TYPE: string = EventType.CLICK;
 /** Resolves actions for Events. */
 export class ActionResolver {
   private a11yClickSupport: boolean = false;
-  private readonly customEventSupport: boolean;
   private readonly syntheticMouseEventSupport: boolean;
 
   private updateEventInfoForA11yClick?: (eventInfo: eventInfoLib.EventInfo) => void = undefined;
@@ -46,30 +45,14 @@ export class ActionResolver {
   ) => void = undefined;
 
   constructor({
-    customEventSupport = false,
     syntheticMouseEventSupport = false,
   }: {
-    customEventSupport?: boolean;
     syntheticMouseEventSupport?: boolean;
   } = {}) {
-    this.customEventSupport = customEventSupport;
     this.syntheticMouseEventSupport = syntheticMouseEventSupport;
   }
 
   resolve(eventInfo: eventInfoLib.EventInfo) {
-    if (this.customEventSupport) {
-      if (eventInfoLib.getEventType(eventInfo) === EventType.CUSTOM) {
-        const detail = (eventInfoLib.getEvent(eventInfo) as CustomEvent).detail;
-        // For custom events, use a secondary dispatch based on the internal
-        // custom type of the event.
-        if (!detail || !detail['_type']) {
-          // This should never happen.
-          return;
-        }
-        eventInfoLib.setEventType(eventInfo, detail['_type']);
-      }
-    }
-
     this.populateAction(eventInfo);
   }
 
