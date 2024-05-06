@@ -54,8 +54,8 @@ export function bootstrapEarlyEventContract(
   field: string,
   container: HTMLElement,
   appId: string,
-  eventTypes: string[],
-  captureEventTypes: string[],
+  eventTypes?: string[],
+  captureEventTypes?: string[],
   earlyJsactionTracker: EventContractTracker<EarlyJsactionDataContainer> = window as unknown as EventContractTracker<EarlyJsactionDataContainer>,
 ) {
   if (!earlyJsactionTracker[field]) {
@@ -63,6 +63,6 @@ export function bootstrapEarlyEventContract(
   }
   earlyJsactionTracker[field][appId] = {};
   const eventContract = new EarlyEventContract(earlyJsactionTracker[field][appId], container);
-  eventContract.addEvents(eventTypes);
-  eventContract.addEvents(captureEventTypes, true);
+  eventTypes && eventContract.addEvents(eventTypes);
+  captureEventTypes && eventContract.addEvents(captureEventTypes, true);
 }

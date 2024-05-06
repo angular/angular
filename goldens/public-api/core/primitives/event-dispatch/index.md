@@ -28,6 +28,12 @@ export class Dispatcher {
     unregisterHandler(namespace: string, name: string): void;
 }
 
+// @public (undocumented)
+export interface EarlyJsactionDataContainer {
+    // (undocumented)
+    _ejsa?: EarlyJsactionData;
+}
+
 // @public
 export class EventContract implements UnrenamedEventContract {
     constructor(containerManager: EventContractContainerManager);
