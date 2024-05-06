@@ -39,10 +39,7 @@ export class BaseDispatcher {
    * @param dispatchDelegate A function that should handle dispatching an `EventInfoWrapper` to handlers.
    */
   constructor(
-    private readonly dispatchDelegate: (
-      eventInfoWrapper: EventInfoWrapper,
-      isGlobalDispatch?: boolean,
-    ) => void,
+    private readonly dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void,
     {eventReplayer = undefined}: {eventReplayer?: Replayer} = {},
   ) {
     this.eventReplayer = eventReplayer;
@@ -67,20 +64,18 @@ export class BaseDispatcher {
    *
    * @param eventInfo The info for the event that triggered this call or the
    *     queue of events from EventContract.
-   * @param isGlobalDispatch If true, dispatches a global event instead of a
-   *     regular jsaction handler.
    */
-  dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): void {
+  dispatch(eventInfo: EventInfo): void {
     const eventInfoWrapper = new EventInfoWrapper(eventInfo);
     if (eventInfoWrapper.getIsReplay()) {
-      if (isGlobalDispatch || !this.eventReplayer) {
+      if (!this.eventReplayer) {
         return;
       }
       this.queueEventInfoWrapper(eventInfoWrapper);
       this.scheduleEventReplay();
       return;
     }
-    this.dispatchDelegate(eventInfoWrapper, isGlobalDispatch);
+    this.dispatchDelegate(eventInfoWrapper);
   }
 
   /** Queue an `EventInfoWrapper` for replay. */
@@ -117,7 +112,7 @@ export function registerDispatcher(
   eventContract: UnrenamedEventContract,
   dispatcher: BaseDispatcher,
 ) {
-  eventContract.ecrd((eventInfo: EventInfo, globalDispatch?: boolean) => {
-    dispatcher.dispatch(eventInfo, globalDispatch);
+  eventContract.ecrd((eventInfo: EventInfo) => {
+    dispatcher.dispatch(eventInfo);
   }, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
 }

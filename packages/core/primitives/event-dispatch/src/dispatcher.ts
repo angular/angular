@@ -71,8 +71,8 @@ export class Dispatcher {
   ) {
     this.eventReplayer = eventReplayer;
     this.baseDispatcher = new BaseDispatcher(
-      (eventInfoWrapper: EventInfoWrapper, isGlobalDispatch?: boolean) => {
-        this.dispatchToHandler(eventInfoWrapper, isGlobalDispatch);
+      (eventInfoWrapper: EventInfoWrapper) => {
+        this.dispatchToHandler(eventInfoWrapper);
       },
       {
         eventReplayer: (eventInfoWrappers) => {
@@ -102,41 +102,49 @@ export class Dispatcher {
    *
    * @param eventInfo The info for the event that triggered this call or the
    *     queue of events from EventContract.
-   * @param isGlobalDispatch If true, dispatches a global event instead of a
-   *     regular jsaction handler.
    */
   dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): void {
-    this.baseDispatcher.dispatch(eventInfo, isGlobalDispatch);
+    this.baseDispatcher.dispatch(eventInfo);
   }
 
   /**
    * Dispatches an `EventInfoWrapper`.
    */
-  private dispatchToHandler(eventInfoWrapper: EventInfoWrapper, isGlobalDispatch?: boolean) {
-    if (isGlobalDispatch) {
+  private dispatchToHandler(eventInfoWrapper: EventInfoWrapper) {
+    if (this.globalHandlers.size) {
+      const globalEventInfoWrapper = eventInfoWrapper.clone();
+
+      // In some cases, `populateAction` will rewrite `click` events to
+      // `clickonly`. Revert back to a regular click, otherwise we won't be able
+      // to execute global event handlers registered on click events.
+      if (globalEventInfoWrapper.getEventType() === EventType.CLICKONLY) {
+        globalEventInfoWrapper.setEventType(EventType.CLICK);
+      }
       // Skip everything related to jsaction handlers, and execute the global
       // handlers.
-      const ev = eventInfoWrapper.getEvent();
-      const eventTypeHandlers = this.globalHandlers.get(eventInfoWrapper.getEventType());
+      const event = globalEventInfoWrapper.getEvent();
+      const eventTypeHandlers = this.globalHandlers.get(globalEventInfoWrapper.getEventType());
       let shouldPreventDefault = false;
       if (eventTypeHandlers) {
         for (const handler of eventTypeHandlers) {
-          if (handler(ev) === false) {
+          if (handler(event) === false) {
             shouldPreventDefault = true;
           }
         }
       }
       if (shouldPreventDefault) {
-        eventLib.preventDefault(ev);
+        eventLib.preventDefault(event);
       }
+    }
+
+    const action = eventInfoWrapper.getAction();
+    if (!action) {
       return;
     }
 
     if (this.stopPropagation) {
       stopPropagation(eventInfoWrapper);
     }
-
-    const action = eventInfoWrapper.getAction()!;
 
     let handler: EventInfoWrapperHandler | void = undefined;
     if (this.getHandler) {
@@ -307,7 +315,7 @@ export function stopPropagation(eventInfoWrapper: EventInfoWrapper) {
  * Dispatcher.
  */
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher) {
-  eventContract.ecrd((eventInfo: EventInfo, globalDispatch?: boolean) => {
-    dispatcher.dispatch(eventInfo, globalDispatch);
+  eventContract.ecrd((eventInfo: EventInfo) => {
+    dispatcher.dispatch(eventInfo);
   }, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
 }
