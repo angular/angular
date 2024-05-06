@@ -10,7 +10,7 @@ export {BaseDispatcher, registerDispatcher} from './src/base_dispatcher';
 export {EventContractContainer} from './src/event_contract_container';
 export type {EarlyJsactionDataContainer} from './src/earlyeventcontract';
 export {EventContract} from './src/eventcontract';
-export {bootstrapEventContract, bootstrapEarlyEventContract} from './src/register_events';
+export {bootstrapEarlyEventContract} from './src/register_events';
 
 export type {EventContractTracker} from './src/register_events';
 export {EventInfoWrapper} from './src/event_info';

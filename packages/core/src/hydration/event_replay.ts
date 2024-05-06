@@ -37,6 +37,11 @@ declare global {
   var ngContracts: {[key: string]: EarlyJsactionDataContainer};
 }
 
+// TODO: Upstream this back into event-dispatch.
+function getJsactionData(container: EarlyJsactionDataContainer) {
+  return container._ejsa;
+}
+
 const JSACTION_ATTRIBUTE = 'jsaction';
 const removeJsactionQueue: RElement[] = [];
 
@@ -79,14 +84,15 @@ export function withEventReplay(): Provider[] {
               // Note: globalThis[CONTRACT_PROPERTY] may be undefined in case Event Replay feature
               // is enabled, but there are no events configured in an application.
               const container = globalThis[CONTRACT_PROPERTY]?.[appId];
-              if (container._ejsa) {
+              const earlyJsactionData = getJsactionData(container);
+              if (earlyJsactionData) {
                 const eventContract = new EventContract(
-                  new EventContractContainer(container._ejsa.c),
+                  new EventContractContainer(earlyJsactionData.c),
                 );
-                for (const et of container._ejsa.et) {
+                for (const et of earlyJsactionData.et) {
                   eventContract.addEvent(et);
                 }
-                for (const et of container._ejsa.etc) {
+                for (const et of earlyJsactionData.etc) {
                   eventContract.addEvent(et);
                 }
                 eventContract.replayEarlyEvents(container);
