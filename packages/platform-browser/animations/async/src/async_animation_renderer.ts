@@ -65,7 +65,10 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
    * @internal
    */
   private loadImpl(): Promise<AnimationRendererFactory> {
-    const moduleImpl = this.moduleImpl ?? import('@angular/animations/browser');
+    // Note on the `.then(m => m)` part below: Closure compiler optimizations in g3 require
+    // `.then` to be present for a dynamic import (or an import should be `await`ed) to detect
+    // the set of imported symbols.
+    const moduleImpl = this.moduleImpl ?? import('@angular/animations/browser').then((m) => m);
 
     return moduleImpl
       .catch((e) => {
