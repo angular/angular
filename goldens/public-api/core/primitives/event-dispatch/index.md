@@ -17,9 +17,6 @@ export class BaseDispatcher {
 // @public
 export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
 
-// @public
-export function bootstrapEventContract(field: string, container: Element, appId: string, events: string[], earlyJsactionTracker?: EventContractTracker<EventContract>): void;
-
 // @public (undocumented)
 export interface EarlyJsactionDataContainer {
     // (undocumented)
