@@ -22,22 +22,11 @@ const debugMode = false;
 // https://saucelabs.com/platform/platform-configurator
 const customLaunchers = {
   'SL_ANDROID11': {
-    base: 'SauceLabs',
-    browserName: 'Chrome',
     platformName: 'Android',
-    platformVersion: '11.0',
-    deviceName: 'Google Pixel 3a GoogleAPI Emulator',
-    appiumVersion: '1.20.2',
-    extendedDebugging: debugMode,
-  },
-  'SL_ANDROID12': {
-    base: 'SauceLabs',
-    browserName: 'Chrome',
-    platformName: 'Android',
-    platformVersion: '12.0',
-    deviceName: 'Google Pixel 4a (5G) GoogleAPI Emulator',
-    appiumVersion: '1.22.1',
-    extendedDebugging: debugMode,
+    browserName: 'Browser',
+    'appium:deviceName': 'Android GoogleAPI Emulator',
+    'appium:platformVersion': 'current_major',
+    'appium:automationName': 'UiAutomator2',
   },
 };
 
