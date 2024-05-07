@@ -40,9 +40,9 @@
     "check-tooling-setup": "yarn tsc --project .ng-dev/tsconfig.json && yarn tsc --project scripts/tsconfig.json",
     "devtools:devserver": "ibazel run //devtools/src:devserver",
     "devtools:devserver:demo-standalone": "ibazel run //devtools/projects/demo-standalone/src:devserver",
-    "devtools:build:chrome": "bazelisk build --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=chrome -- devtools/projects/shell-browser/src:prodapp",
-    "devtools:build:firefox": "bazelisk build --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=firefox -- devtools/projects/shell-browser/src:prodapp",
-    "devtools:test": "bazelisk test --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/...",
+    "devtools:build:chrome": "bazelisk build --//devtools/projects/shell-browser/src:flag_browser=chrome -- devtools/projects/shell-browser/src:prodapp",
+    "devtools:build:firefox": "bazelisk build --config snapshot-build-firefox --//devtools/projects/shell-browser/src:flag_browser=firefox -- devtools/projects/shell-browser/src:prodapp",
+    "devtools:test": "bazelisk test --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/...",
     "docs": "[[ -n $CI ]] && echo 'Cannot run this yarn script on CI' && exit 1 || yarn bazel run //adev:serve --fast_adev",
     "docs:build": "[[ -n $CI ]] && echo 'Cannot run this yarn script on CI' && exit 1 || yarn bazel build //adev:build --fast_adev",
     "benchmarks": "tsx --tsconfig=scripts/tsconfig.json scripts/benchmarks/index.mts"
