@@ -22,6 +22,7 @@ export {
   defaultKeyValueDiffers as ɵdefaultKeyValueDiffers,
 } from './change_detection/change_detection';
 export {internalProvideZoneChangeDetection as ɵinternalProvideZoneChangeDetection} from './change_detection/scheduling/ng_zone_scheduling';
+export {ChangeDetectionSchedulerImpl as ɵChangeDetectionSchedulerImpl} from './change_detection/scheduling/zoneless_scheduling_impl';
 export {
   ChangeDetectionScheduler as ɵChangeDetectionScheduler,
   NotificationSource as ɵNotificationSource,

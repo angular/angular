@@ -20,7 +20,11 @@ import {
   internalProvideZoneChangeDetection,
   PROVIDED_NG_ZONE,
 } from '../change_detection/scheduling/ng_zone_scheduling';
-import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
+import {
+  ChangeDetectionScheduler,
+  ZONELESS_ENABLED,
+} from '../change_detection/scheduling/zoneless_scheduling';
+import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {Injectable, InjectionToken, Injector} from '../di';
 import {ErrorHandler} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -89,11 +93,13 @@ export class PlatformRef {
     // created outside of the Angular zone.
     return ngZone.run(() => {
       const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
-      const moduleRef = createNgModuleRefWithProviders(
-        moduleFactory.moduleType,
-        this.injector,
-        internalProvideZoneChangeDetection({ngZoneFactory: () => ngZone, ignoreChangesOutsideZone}),
-      );
+      const moduleRef = createNgModuleRefWithProviders(moduleFactory.moduleType, this.injector, [
+        ...internalProvideZoneChangeDetection({
+          ngZoneFactory: () => ngZone,
+          ignoreChangesOutsideZone,
+        }),
+        {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+      ]);
 
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
         if (moduleRef.injector.get(PROVIDED_NG_ZONE)) {

@@ -9,6 +9,8 @@
 import {ResourceLoader} from '@angular/compiler';
 import {
   ApplicationInitStatus,
+  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
+  ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
   Compiler,
   COMPILER_OPTIONS,
   Component,
@@ -926,7 +928,11 @@ export class TestBedCompiler {
   private compileTestModule(): void {
     class RootScopeModule {}
     compileNgModuleDefs(RootScopeModule as NgModuleType<any>, {
-      providers: [...this.rootProviderOverrides, internalProvideZoneChangeDetection({})],
+      providers: [
+        ...this.rootProviderOverrides,
+        internalProvideZoneChangeDetection({}),
+        {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+      ],
     });
 
     const providers = [

@@ -15,6 +15,8 @@ import {
   platformCore,
   StaticProvider,
   ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
+  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
+  ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
 } from '@angular/core';
 import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 
@@ -47,6 +49,7 @@ export const platformBrowserTesting = createPlatformFactory(
   providers: [
     {provide: APP_ID, useValue: 'a'},
     internalProvideZoneChangeDetection({}),
+    {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
     {provide: PlatformLocation, useClass: MockPlatformLocation},
   ],
 })
