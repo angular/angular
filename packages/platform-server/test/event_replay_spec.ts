@@ -10,8 +10,11 @@ import {DOCUMENT} from '@angular/common';
 import {Component, destroyPlatform, getPlatform, Type} from '@angular/core';
 import {EventContract} from '@angular/core/primitives/event-dispatch';
 import {TestBed} from '@angular/core/testing';
-import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
-import {withEventReplay} from '@angular/platform-browser/src/hydration';
+import {
+  withEventReplay,
+  bootstrapApplication,
+  provideClientHydration,
+} from '@angular/platform-browser';
 
 import {provideServerRendering} from '../public_api';
 import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
