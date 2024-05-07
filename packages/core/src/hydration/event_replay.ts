@@ -7,7 +7,7 @@
  */
 
 import {
-  BaseDispatcher,
+  Dispatcher,
   EarlyJsactionDataContainer,
   EventContract,
   EventContractContainer,
@@ -96,7 +96,7 @@ export function withEventReplay(): Provider[] {
                   eventContract.addEvent(et);
                 }
                 eventContract.replayEarlyEvents(container);
-                const dispatcher = new BaseDispatcher(() => {}, {
+                const dispatcher = new Dispatcher(() => {}, {
                   eventReplayer: (queue) => {
                     for (const event of queue) {
                       handleEvent(event);

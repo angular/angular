@@ -6,15 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BaseDispatcher, EventInfoWrapperHandler} from './base_dispatcher';
-import {Char} from './char';
-import * as eventLib from './event';
 import {EventInfo, EventInfoWrapper} from './event_info';
 import {EventType} from './event_type';
-import {UnrenamedEventContract} from './eventcontract';
 import {Restriction} from './restriction';
+import {UnrenamedEventContract} from './eventcontract';
+import * as eventLib from './event';
 
-export type {EventInfoWrapperHandler as EventInfoHandler} from './base_dispatcher';
+/**
+ * A replayer is a function that is called when there are queued events,
+ * either from the `EventContract` or when there are no detected handlers.
+ */
+export type Replayer = (eventInfoWrappers: EventInfoWrapper[]) => void;
+
+/**
+ * A handler is dispatched to during normal handling.
+ */
+export type EventInfoHandler = (eventInfoWrapper: EventInfoWrapper) => void;
 
 /**
  * A global handler is dispatched to before normal handler dispatch. Returning
@@ -23,64 +30,30 @@ export type {EventInfoWrapperHandler as EventInfoHandler} from './base_dispatche
 export type GlobalHandler = (event: Event) => boolean | void;
 
 /**
- * A replayer is a function that is called when there are queued events,
- * either from the `EventContract` or when there are no detected handlers.
- */
-export type Replayer = (eventInfoWrappers: EventInfoWrapper[], dispatcher: Dispatcher) => void;
-
-/**
  * Receives a DOM event, determines the jsaction associated with the source
  * element of the DOM event, and invokes the handler associated with the
  * jsaction.
  */
 export class Dispatcher {
-  private readonly baseDispatcher: BaseDispatcher;
-
-  /** Whether to stop propagation for an `EventInfo`. */
-  private readonly stopPropagation: boolean;
-
-  /**
-   * The actions that are registered for this Dispatcher instance.
-   * This should be the primary one used once migration off of registerHandlers
-   * is done.
-   */
-  private readonly actions: {[key: string]: EventInfoWrapperHandler} = {};
-
-  /** A map of global event handlers, where each key is an event type. */
-  private readonly globalHandlers = new Map<string, Set<GlobalHandler>>();
-
-  /** The event replayer. */
+  /** The queue of events. */
+  private readonly replayEventInfoWrappers: EventInfoWrapper[] = [];
+  /** The replayer function to be called when there are queued events. */
   private eventReplayer?: Replayer;
+  /** Whether the event replay is scheduled. */
+  private eventReplayScheduled = false;
 
   /**
-   * Receives a DOM event, determines the jsaction associated with the source
-   * element of the DOM event, and invokes the handler associated with the
-   * jsaction.
-   *
-   * @param getHandler A function that knows how to get the handler for a
-   *     given event info.
+   * Options are:
+   *   1. `eventReplayer`: When the event contract dispatches replay events
+   *      to the Dispatcher, the Dispatcher collects them and in the next tick
+   *      dispatches them to the `eventReplayer`.
+   * @param dispatchDelegate A function that should handle dispatching an `EventInfoWrapper` to handlers.
    */
   constructor(
-    private readonly getHandler?: (
-      eventInfoWrapper: EventInfoWrapper,
-    ) => EventInfoWrapperHandler | void,
-    {
-      stopPropagation = false,
-      eventReplayer = undefined,
-    }: {stopPropagation?: boolean; eventReplayer?: Replayer} = {},
+    private readonly dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void,
+    {eventReplayer = undefined}: {eventReplayer?: Replayer} = {},
   ) {
     this.eventReplayer = eventReplayer;
-    this.baseDispatcher = new BaseDispatcher(
-      (eventInfoWrapper: EventInfoWrapper) => {
-        this.dispatchToHandler(eventInfoWrapper);
-      },
-      {
-        eventReplayer: (eventInfoWrappers) => {
-          this.eventReplayer?.(eventInfoWrappers, this);
-        },
-      },
-    );
-    this.stopPropagation = stopPropagation;
   }
 
   /**
@@ -103,185 +76,33 @@ export class Dispatcher {
    * @param eventInfo The info for the event that triggered this call or the
    *     queue of events from EventContract.
    */
-  dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): void {
-    this.baseDispatcher.dispatch(eventInfo);
-  }
-
-  /**
-   * Dispatches an `EventInfoWrapper`.
-   */
-  private dispatchToHandler(eventInfoWrapper: EventInfoWrapper) {
-    if (this.globalHandlers.size) {
-      const globalEventInfoWrapper = eventInfoWrapper.clone();
-
-      // In some cases, `populateAction` will rewrite `click` events to
-      // `clickonly`. Revert back to a regular click, otherwise we won't be able
-      // to execute global event handlers registered on click events.
-      if (globalEventInfoWrapper.getEventType() === EventType.CLICKONLY) {
-        globalEventInfoWrapper.setEventType(EventType.CLICK);
+  dispatch(eventInfo: EventInfo): void {
+    const eventInfoWrapper = new EventInfoWrapper(eventInfo);
+    if (eventInfoWrapper.getIsReplay()) {
+      if (!this.eventReplayer) {
+        return;
       }
-      // Skip everything related to jsaction handlers, and execute the global
-      // handlers.
-      const event = globalEventInfoWrapper.getEvent();
-      const eventTypeHandlers = this.globalHandlers.get(globalEventInfoWrapper.getEventType());
-      let shouldPreventDefault = false;
-      if (eventTypeHandlers) {
-        for (const handler of eventTypeHandlers) {
-          if (handler(event) === false) {
-            shouldPreventDefault = true;
-          }
-        }
-      }
-      if (shouldPreventDefault) {
-        eventLib.preventDefault(event);
-      }
-    }
-
-    const action = eventInfoWrapper.getAction();
-    if (!action) {
+      this.scheduleEventInfoWrapperReplay(eventInfoWrapper);
       return;
     }
+    this.dispatchDelegate(eventInfoWrapper);
+  }
 
-    if (this.stopPropagation) {
-      stopPropagation(eventInfoWrapper);
-    }
-
-    let handler: EventInfoWrapperHandler | void = undefined;
-    if (this.getHandler) {
-      handler = this.getHandler(eventInfoWrapper);
-    }
-
-    if (!handler) {
-      handler = this.actions[action.name];
-    }
-
-    if (handler) {
-      handler(eventInfoWrapper);
+  /**
+   * Schedules an `EventInfoWrapper` for replay. The replaying will happen in its own
+   * stack once the current flow cedes control. This is done to mimic
+   * browser event handling.
+   */
+  private scheduleEventInfoWrapperReplay(eventInfoWrapper: EventInfoWrapper) {
+    this.replayEventInfoWrappers.push(eventInfoWrapper);
+    if (this.eventReplayScheduled || !this.eventReplayer) {
       return;
     }
-
-    // No handler was found.
-    this.baseDispatcher.queueEventInfoWrapper(eventInfoWrapper);
-  }
-
-  /**
-   * Registers multiple methods all bound to the same object
-   * instance. This is a common case: an application module binds
-   * multiple of its methods under public names to the event contract of
-   * the application. So we provide a shortcut for it.
-   * Attempts to replay the queued events after registering the handlers.
-   *
-   * @param namespace The namespace of the jsaction name.
-   *
-   * @param instance The object to bind the methods to. If this is null, then
-   *     the functions are not bound, but directly added under the public names.
-   *
-   * @param methods A map from public name to functions that will be bound to
-   *     instance and registered as action under the public name. I.e. the
-   *     property names are the public names. The property values are the
-   *     methods of instance.
-   */
-  registerEventInfoHandlers<T>(
-    namespace: string,
-    instance: T | null,
-    methods: {[key: string]: EventInfoWrapperHandler},
-  ) {
-    for (const [name, method] of Object.entries(methods)) {
-      const handler = instance ? method.bind(instance) : method;
-      if (namespace) {
-        // Include a '.' separator between namespace name and action name.
-        // In the case that no namespace name is provided, the jsaction name
-        // consists of the action name only (no period).
-        const fullName = namespace + Char.NAMESPACE_ACTION_SEPARATOR + name;
-        this.actions[fullName] = handler;
-      } else {
-        this.actions[name] = handler;
-      }
-    }
-
-    this.baseDispatcher.scheduleEventReplay();
-  }
-
-  /**
-   * Unregisters an action.  Provided as an easy way to reverse the effects of
-   * registerHandlers.
-   * @param namespace The namespace of the jsaction name.
-   * @param name The action name to unbind.
-   */
-  unregisterHandler(namespace: string, name: string) {
-    const fullName = namespace ? namespace + Char.NAMESPACE_ACTION_SEPARATOR + name : name;
-    delete this.actions[fullName];
-  }
-
-  /** Registers a global event handler. */
-  registerGlobalHandler(eventType: string, handler: GlobalHandler) {
-    if (!this.globalHandlers.has(eventType)) {
-      this.globalHandlers.set(eventType, new Set<GlobalHandler>([handler]));
-    } else {
-      this.globalHandlers.get(eventType)!.add(handler);
-    }
-  }
-
-  /** Unregisters a global event handler. */
-  unregisterGlobalHandler(eventType: string, handler: GlobalHandler) {
-    if (this.globalHandlers.has(eventType)) {
-      this.globalHandlers.get(eventType)!.delete(handler);
-    }
-  }
-
-  /**
-   * Checks whether there is an action registered under the given
-   * name. This returns true if there is a namespace handler, even
-   * if it can not yet handle the event.
-   *
-   * @param name Action name.
-   * @return Whether the name is registered.
-   * @see #canDispatch
-   */
-  hasAction(name: string): boolean {
-    return this.actions.hasOwnProperty(name);
-  }
-
-  /**
-   * Whether this dispatcher can dispatch the event. This can be used by
-   * event replayer to check whether the dispatcher can replay an event.
-   */
-  canDispatch(eventInfoWrapper: EventInfoWrapper): boolean {
-    const action = eventInfoWrapper.getAction();
-    if (!action) {
-      return false;
-    }
-    return this.hasAction(action.name);
-  }
-
-  /**
-   * Sets the event replayer, enabling queued events to be replayed when actions
-   * are bound. To replay events, you must register the dispatcher to the
-   * contract after setting the `EventReplayer`. The event replayer takes as
-   * parameters the queue of events and the dispatcher (used to check whether
-   * actions have handlers registered and can be replayed). The event replayer
-   * is also responsible for dequeuing events.
-   *
-   * Example: An event replayer that replays only the last event.
-   *
-   *   const dispatcher = new Dispatcher();
-   *   // ...
-   *   dispatcher.setEventReplayer((queue, dispatcher) => {
-   *     const lastEventInfoWrapper = queue[queue.length -1];
-   *     if (dispatcher.canDispatch(lastEventInfoWrapper.getAction())) {
-   *       jsaction.replay.replayEvent(
-   *           lastEventInfoWrapper.getEvent(),
-   *           lastEventInfoWrapper.getTargetElement(),
-   *           lastEventInfoWrapper.getEventType(),
-   *       );
-   *       queue.length = 0;
-   *     }
-   *   });
-   *
-   * @param eventReplayer It allows elements to be replayed and dequeuing.
-   */
-  setEventReplayer(eventReplayer: Replayer) {
-    this.eventReplayer = eventReplayer;
+    this.eventReplayScheduled = true;
+    Promise.resolve().then(() => {
+      this.eventReplayScheduled = false;
+      this.eventReplayer!(this.replayEventInfoWrappers);
+    });
   }
 }
 

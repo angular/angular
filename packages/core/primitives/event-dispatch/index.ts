@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {BaseDispatcher, registerDispatcher} from './src/base_dispatcher';
+export {Dispatcher, registerDispatcher} from './src/dispatcher';
 export {EventContractContainer} from './src/event_contract_container';
 export type {EarlyJsactionDataContainer} from './src/earlyeventcontract';
 export {EventContract} from './src/eventcontract';

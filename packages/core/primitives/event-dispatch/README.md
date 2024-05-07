@@ -20,7 +20,7 @@ This can introduce a couple problems:
 
 1.  Server rendered applications will silently ignore user events that happen
     before the app hydrates and registers handlers
-    
+
     ```html
     <!-- Let's say this server-rendered page is streamed to the browser -->
     <body>
@@ -45,14 +45,14 @@ This can introduce a couple problems:
 2.  Applications must eagerly load any possible handler that could be needed to
     handle user interactions, even if that handler is never invoked or even
     rendered on the page
-    
+
     ```html
     // This button is rarely clicked, but the code to show the dialog must be
     // loaded for every user
     <button type="button" (click)="showAdvancedOptionsDialog()">
       Advanced options
     </button>
-    
+
     // Non-admins will never see this button, and yet they still have to load
     // this handler.
     @if (isAdmin) {
@@ -61,7 +61,7 @@ This can introduce a couple problems:
       </button>
     }
     ```
-    
+
     It's possible to write these handlers so that they will late-load their
     inner logic, but that's a manual, opt-in solution.
 
@@ -114,13 +114,13 @@ valid-char            = character - invalid-name-chars
 invalid-name-chars    = ":" | ";" | "."
 ```
 
-  - Omitting the event type and colon will default the binding to the `click`
-    event (e.g.`jsaction="handleClick;hover:handleHover"`)
-  - Both the event type and handler name can be the empty string (but make sure
-    to keep the colon: `jsaction="change:;"`)
-  - The `event-handler` is an arbitrary string that can store metadata needed to
-    find the handler that handles the event. The user of JSAction can choose to
-    define the semantics of the handler string however they like.
+- Omitting the event type and colon will default the binding to the `click`
+  event (e.g.`jsaction="handleClick;hover:handleHover"`)
+- Both the event type and handler name can be the empty string (but make sure
+  to keep the colon: `jsaction="change:;"`)
+- The `event-handler` is an arbitrary string that can store metadata needed to
+  find the handler that handles the event. The user of JSAction can choose to
+  define the semantics of the handler string however they like.
 
 #### Example
 
@@ -200,10 +200,8 @@ Finally, once your application is bootstrapped and ready to handle events,
 you'll need to create a `Dispatcher` and register it with the `EventContract`
 that has been queueing events.
 
-<!-- TODO(b/337878694): Update this once the `BaseDispatcher` is renamed to be just `Dispatcher` -->
-
 ```javascript
-import {BaseDispatcher as Dispatcher, registerDispatcher} from '@angular/core/primitives/event-dispatch/src/base_dispatcher';
+import {Dispatcher, registerDispatcher} from '@angular/core/primitives/event-dispatch';
 
 function handleEvent(eventInfoWrapper) {
   // eventInfoWrapper contains all the information about the event
@@ -246,16 +244,16 @@ some tradeoffs to doing this:
 
 Pros of cleaning up event contract:
 
-  - Native handlers avoid the [quirks](#known-caveats) of JSAction dispatching
+- Native handlers avoid the [quirks](#known-caveats) of JSAction dispatching
 
 Pros of keeping event contract:
 
-  - JSAction's event delegation drastically reduces the number of event
-    listeners registered with the browser. In extreme cases, registering
-    thousands of listeners in your app can be noticably slow.
-  - There may be slight behavior differences when your event is dispatched via
-    JSAction vs native event listeners. Always using JSAction dispatch keeps
-    things consistent.
+- JSAction's event delegation drastically reduces the number of event
+  listeners registered with the browser. In extreme cases, registering
+  thousands of listeners in your app can be noticably slow.
+- There may be slight behavior differences when your event is dispatched via
+  JSAction vs native event listeners. Always using JSAction dispatch keeps
+  things consistent.
 
 <!-- end list -->
 

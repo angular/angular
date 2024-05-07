@@ -5,17 +5,15 @@
 ```ts
 
 // @public
-export class BaseDispatcher {
+export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
+
+// @public
+export class Dispatcher {
     constructor(dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void, { eventReplayer }?: {
         eventReplayer?: Replayer;
     });
     dispatch(eventInfo: EventInfo): void;
-    queueEventInfoWrapper(eventInfoWrapper: EventInfoWrapper): void;
-    scheduleEventReplay(): void;
 }
-
-// @public
-export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
 
 // @public (undocumented)
 export interface EarlyJsactionDataContainer {
@@ -33,12 +31,12 @@ export class EventContract implements UnrenamedEventContract {
     cleanUp(): void;
     // (undocumented)
     ecaacs?: (updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick, preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick, populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction) => void;
-    ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
+    ecrd(dispatcher: Dispatcher_2, restriction: Restriction): void;
     exportAddA11yClickSupport(): void;
     handler(eventType: string): EventHandler | undefined;
     // (undocumented)
     static MOUSE_SPECIAL_SUPPORT: boolean;
-    registerDispatcher(dispatcher: Dispatcher, restriction: Restriction): void;
+    registerDispatcher(dispatcher: Dispatcher_2, restriction: Restriction): void;
     replayEarlyEvents(earlyJsactionContainer?: EarlyJsactionDataContainer): void;
 }
 
@@ -99,7 +97,7 @@ export class EventInfoWrapper {
 }
 
 // @public
-export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: BaseDispatcher): void;
+export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher): void;
 
 // (No @packageDocumentation comment for this package)
 
