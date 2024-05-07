@@ -289,8 +289,10 @@ describe('Query API', () => {
       const view = createTestCmpAndDetectChanges(MyComp0, template);
       const needsTpl: NeedsTpl = view.debugElement.children[0].injector.get(NeedsTpl);
 
-      expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).rootNodes[0]).toHaveText('light');
-      expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first).rootNodes[0]).toHaveText(
+      expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first!).rootNodes[0]).toHaveText(
+        'light',
+      );
+      expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first!).rootNodes[0]).toHaveText(
         'shadow',
       );
     });
@@ -592,7 +594,7 @@ describe('Query API', () => {
       q.show = true;
       view.detectChanges();
       expect(q.query.length).toBe(1);
-      expect(q.query.first.text).toEqual('1');
+      expect(q.query.first!.text).toEqual('1');
     });
 
     it('should not be affected by other changes in the component', () => {
@@ -601,12 +603,12 @@ describe('Query API', () => {
       const q: NeedsViewQueryNestedIf = view.debugElement.children[0].references!['q'];
 
       expect(q.query.length).toEqual(1);
-      expect(q.query.first.text).toEqual('1');
+      expect(q.query.first!.text).toEqual('1');
 
       q.show = false;
       view.detectChanges();
       expect(q.query.length).toEqual(1);
-      expect(q.query.first.text).toEqual('1');
+      expect(q.query.first!.text).toEqual('1');
     });
 
     it('should maintain directives in pre-order depth-first DOM order after dynamic insertion', () => {

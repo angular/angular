@@ -1404,7 +1404,7 @@ export class QueryList<T> implements Iterable<T> {
     // (undocumented)
     [Symbol.iterator]: () => Iterator<T>;
     constructor(_emitDistinctChangesOnly?: boolean);
-    get changes(): Observable<any>;
+    get changes(): Observable<QueryList<T>>;
     destroy(): void;
     // (undocumented)
     readonly dirty = true;
@@ -1413,11 +1413,11 @@ export class QueryList<T> implements Iterable<T> {
     filter(predicate: (value: T, index: number, array: readonly T[]) => unknown): T[];
     find(fn: (item: T, index: number, array: T[]) => boolean): T | undefined;
     // (undocumented)
-    readonly first: T;
+    readonly first: T | undefined;
     forEach(fn: (item: T, index: number, array: T[]) => void): void;
     get(index: number): T | undefined;
     // (undocumented)
-    readonly last: T;
+    readonly last: T | undefined;
     // (undocumented)
     readonly length: number;
     map<U>(fn: (item: T, index: number, array: T[]) => U): U[];

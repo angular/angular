@@ -97,7 +97,10 @@ export function bindQueryToSignal(target: Signal<unknown>, queryIndex: number): 
   node._queryList.onDirty(() => node._dirtyCounter.update((v) => v + 1));
 }
 
-function refreshSignalQuery<V>(node: QuerySignalNode<V>, firstOnly: boolean): V | ReadonlyArray<V> {
+function refreshSignalQuery<V>(
+  node: QuerySignalNode<V>,
+  firstOnly: boolean,
+): V | undefined | ReadonlyArray<V> {
   const lView = node._lView;
   const queryIndex = node._queryIndex;
 

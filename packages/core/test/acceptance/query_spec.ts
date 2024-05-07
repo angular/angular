@@ -1014,12 +1014,12 @@ describe('query logic', () => {
 
       const contentQList = fixture.componentInstance.contentQueryDir.foos;
       expect(contentQList.length).toBe(1);
-      expect(contentQList.first.nativeElement.getAttribute('id')).toBe('contentAndView');
+      expect(contentQList.first!.nativeElement.getAttribute('id')).toBe('contentAndView');
 
       const viewQList = fixture.componentInstance.fooBars;
       expect(viewQList.length).toBe(2);
-      expect(viewQList.first.nativeElement.getAttribute('id')).toBe('contentAndView');
-      expect(viewQList.last.nativeElement.getAttribute('id')).toBe('contentOnly');
+      expect(viewQList.first!.nativeElement.getAttribute('id')).toBe('contentAndView');
+      expect(viewQList.last!.nativeElement.getAttribute('id')).toBe('contentOnly');
     });
   });
 
@@ -1380,7 +1380,7 @@ describe('query logic', () => {
       const elToQuery = fixture.nativeElement.querySelector('div');
 
       expect(qList.length).toBe(1);
-      expect(qList.first.nativeElement).toBe(elToQuery);
+      expect(qList.first!.nativeElement).toBe(elToQuery);
     });
 
     it('should query using type predicate and read another directive type', () => {
@@ -1437,7 +1437,7 @@ describe('query logic', () => {
       const elToQuery = fixture.nativeElement.querySelector('div');
 
       expect(qList.length).toBe(1);
-      expect(qList.first.nativeElement).toBe(elToQuery);
+      expect(qList.first!.nativeElement).toBe(elToQuery);
     });
 
     it('should query for multiple elements and read ElementRef by default', () => {
@@ -1460,8 +1460,8 @@ describe('query logic', () => {
       const elToQuery = fixture.nativeElement.querySelectorAll('div');
 
       expect(qList.length).toBe(2);
-      expect(qList.first.nativeElement).toBe(elToQuery[0]);
-      expect(qList.last.nativeElement).toBe(elToQuery[2]);
+      expect(qList.first!.nativeElement).toBe(elToQuery[0]);
+      expect(qList.last!.nativeElement).toBe(elToQuery[2]);
     });
 
     it('should read ElementRef from an element when explicitly asked for', () => {
@@ -1483,7 +1483,7 @@ describe('query logic', () => {
       const elToQuery = fixture.nativeElement.querySelector('div');
 
       expect(qList.length).toBe(1);
-      expect(qList.first.nativeElement).toBe(elToQuery);
+      expect(qList.first!.nativeElement).toBe(elToQuery);
     });
 
     it('should query for <ng-container> and read ElementRef with a native element pointing to comment node', () => {
@@ -1500,7 +1500,7 @@ describe('query logic', () => {
 
       const qList = fixture.componentInstance.query!;
       expect(qList.length).toBe(1);
-      expect(qList.first.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
+      expect(qList.first!.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
     });
 
     it('should query for <ng-container> and read ElementRef without explicit read option', () => {
@@ -1517,7 +1517,7 @@ describe('query logic', () => {
 
       const qList = fixture.componentInstance.query!;
       expect(qList.length).toBe(1);
-      expect(qList.first.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
+      expect(qList.first!.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
     });
 
     it('should read ViewContainerRef from element nodes when explicitly asked for', () => {
@@ -1568,7 +1568,7 @@ describe('query logic', () => {
 
       const qList = fixture.componentInstance.query!;
       expect(qList.length).toBe(1);
-      expect(qList.first.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
+      expect(qList.first!.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
     });
 
     it('should read TemplateRef from ng-template by default', () => {

@@ -51,13 +51,13 @@ export class QueryList<T> implements Iterable<T> {
   private _changes: EventEmitter<QueryList<T>> | undefined = undefined;
 
   readonly length: number = 0;
-  readonly first: T = undefined!;
-  readonly last: T = undefined!;
+  readonly first: T | undefined = undefined!;
+  readonly last: T | undefined = undefined!;
 
   /**
    * Returns `Observable` of `QueryList` notifying the subscriber of changes.
    */
-  get changes(): Observable<any> {
+  get changes(): Observable<QueryList<T>> {
     return (this._changes ??= new EventEmitter());
   }
 
