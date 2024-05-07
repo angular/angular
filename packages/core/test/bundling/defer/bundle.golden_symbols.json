@@ -1116,9 +1116,6 @@
     "name": "init_authoring"
   },
   {
-    "name": "init_base_dispatcher"
-  },
-  {
     "name": "init_bindings"
   },
   {
@@ -1324,6 +1321,9 @@
   },
   {
     "name": "init_discovery_utils"
+  },
+  {
+    "name": "init_dispatcher"
   },
   {
     "name": "init_document"
