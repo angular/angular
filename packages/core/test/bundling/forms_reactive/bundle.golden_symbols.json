@@ -480,6 +480,9 @@
     "name": "PristineChangeEvent"
   },
   {
+    "name": "PristineEvent"
+  },
+  {
     "name": "R3Injector"
   },
   {
@@ -549,6 +552,9 @@
     "name": "StatusChangeEvent"
   },
   {
+    "name": "StatusEvent"
+  },
+  {
     "name": "Subject"
   },
   {
@@ -586,6 +592,9 @@
   },
   {
     "name": "TouchedChangeEvent"
+  },
+  {
+    "name": "TouchedEvent"
   },
   {
     "name": "USE_VALUE"
