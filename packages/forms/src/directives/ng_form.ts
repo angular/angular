@@ -8,6 +8,7 @@
 
 import {
   AfterViewInit,
+  computed,
   Directive,
   EventEmitter,
   forwardRef,
@@ -16,6 +17,8 @@ import {
   Optional,
   Provider,
   Self,
+  signal,
+  untracked,
   ɵWritable as Writable,
 } from '@angular/core';
 
@@ -126,7 +129,12 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    * @description
    * Returns whether the form submission has been triggered.
    */
-  public readonly submitted: boolean = false;
+  get submitted(): boolean {
+    return untracked(this.submittedReactive);
+  }
+  /** @internal */
+  readonly _submitted = computed(() => this.submittedReactive());
+  private readonly submittedReactive = signal(false);
 
   private _directives = new Set<NgModel>();
 
@@ -327,7 +335,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    * @param $event The "submit" event object
    */
   onSubmit($event: Event): boolean {
-    (this as Writable<this>).submitted = true;
+    this.submittedReactive.set(true);
     syncPendingControls(this.form, this._directives);
     this.ngSubmit.emit($event);
     // Forms with `method="dialog"` have some special behavior
@@ -351,7 +359,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    */
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    (this as Writable<this>).submitted = false;
+    this.submittedReactive.set(false);
   }
 
   private _setUpdateStrategy() {

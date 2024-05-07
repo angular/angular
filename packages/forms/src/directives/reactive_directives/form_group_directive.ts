@@ -7,6 +7,7 @@
  */
 
 import {
+  computed,
   Directive,
   EventEmitter,
   forwardRef,
@@ -18,7 +19,9 @@ import {
   Output,
   Provider,
   Self,
+  signal,
   SimpleChanges,
+  untracked,
   ɵWritable as Writable,
 } from '@angular/core';
 
@@ -87,11 +90,20 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Reports whether the form submission has been triggered.
    */
-  public readonly submitted: boolean = false;
+  get submitted() {
+    return untracked(this._submittedReactive);
+  }
+  // TODO(atscott): Remove once invalid API usage is cleaned up internally
+  private set submitted(value: boolean) {
+    this._submittedReactive.set(value);
+  }
+  /** @internal */
+  readonly _submitted = computed(() => this._submittedReactive());
+  private readonly _submittedReactive = signal(false);
 
   /**
-   * Reference to an old form group input value, which is needed to cleanup old instance in case it
-   * was replaced with a new one.
+   * Reference to an old form group input value, which is needed to cleanup
+   * old instance in case it was replaced with a new one.
    */
   private _oldForm: FormGroup | undefined;
 
@@ -300,7 +312,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @param $event The "submit" event object
    */
   onSubmit($event: Event): boolean {
-    (this as Writable<this>).submitted = true;
+    this._submittedReactive.set(true);
     syncPendingControls(this.form, this.directives);
     this.ngSubmit.emit($event);
     this.form._events.next(new FormSubmittedEvent(this.control));
@@ -327,7 +339,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    */
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    (this as Writable<this>).submitted = false;
+    this._submittedReactive.set(false);
     this.form._events.next(new FormResetEvent(this.form));
   }
 
