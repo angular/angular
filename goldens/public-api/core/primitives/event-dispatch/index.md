@@ -6,10 +6,10 @@
 
 // @public
 export class BaseDispatcher {
-    constructor(dispatchDelegate: (eventInfoWrapper: EventInfoWrapper, isGlobalDispatch?: boolean) => void, { eventReplayer }?: {
+    constructor(dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void, { eventReplayer }?: {
         eventReplayer?: Replayer;
     });
-    dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): void;
+    dispatch(eventInfo: EventInfo): void;
     queueEventInfoWrapper(eventInfoWrapper: EventInfoWrapper): void;
     scheduleEventReplay(): void;
 }
