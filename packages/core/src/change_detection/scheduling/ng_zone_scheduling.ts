@@ -25,18 +25,16 @@ import {performanceMarkFeature} from '../../util/performance';
 import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
-import {alwaysProvideZonelessScheduler} from './flags';
 import {
   ChangeDetectionScheduler,
-  ZONELESS_ENABLED,
   ZONELESS_SCHEDULER_DISABLED,
+  ZONELESS_ENABLED,
 } from './zoneless_scheduling';
-import {ChangeDetectionSchedulerImpl} from './zoneless_scheduling_impl';
 
 @Injectable({providedIn: 'root'})
 export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
-  private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler, {optional: true});
+  private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler);
   private readonly applicationRef = inject(ApplicationRef);
 
   private _onMicrotaskEmptySubscription?: Subscription;
@@ -51,7 +49,7 @@ export class NgZoneChangeDetectionScheduler {
         // `onMicroTaskEmpty` can happen _during_ the zoneless scheduler change detection because
         // zone.run(() => {}) will result in `checkStable` at the end of the `zone.run` closure
         // and emit `onMicrotaskEmpty` synchronously if run coalsecing is false.
-        if (this.changeDetectionScheduler?.runningTick) {
+        if (this.changeDetectionScheduler.runningTick) {
           return;
         }
         this.zone.run(() => {
@@ -119,11 +117,6 @@ export function internalProvideZoneChangeDetection({
     // Always disable scheduler whenever explicitly disabled, even if another place called
     // `provideZoneChangeDetection` without the 'ignore' option.
     ignoreChangesOutsideZone === true ? {provide: ZONELESS_SCHEDULER_DISABLED, useValue: true} : [],
-    // TODO(atscott): This should move to the same places that zone change detection is provided by
-    // default instead of being in the zone scheduling providers.
-    alwaysProvideZonelessScheduler || ignoreChangesOutsideZone === false
-      ? {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl}
-      : [],
   ];
 }
 
