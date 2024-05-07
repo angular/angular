@@ -7,7 +7,7 @@
  */
 
 import * as cache from '../src/cache';
-import {stopPropagation} from '../src/dispatcher';
+import {stopPropagation} from '../src/legacy_dispatcher';
 import {
   EarlyEventContract,
   EarlyJsactionData,

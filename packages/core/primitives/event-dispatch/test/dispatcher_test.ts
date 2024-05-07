@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Dispatcher, Replayer} from '../src/dispatcher';
+import {LegacyDispatcher, Replayer} from '../src/legacy_dispatcher';
 import {
   ActionInfo,
   createEventInfo,
@@ -63,7 +63,7 @@ describe('dispatcher test.ts', () => {
       eventInfo = event;
     };
 
-    const dispatcher = new Dispatcher();
+    const dispatcher = new LegacyDispatcher();
     const actions = {'bar': actionHandler};
     dispatcher.registerEventInfoHandlers('foo', null, actions);
 
@@ -84,7 +84,7 @@ describe('dispatcher test.ts', () => {
     const getEventInfoHandler = () => eventInfoHandler1;
     const eventInfoHandler2 = jasmine.createSpy('eventInfoHandler2');
 
-    const dispatcher = new Dispatcher(/* getHandler= */ getEventInfoHandler);
+    const dispatcher = new LegacyDispatcher(/* getHandler= */ getEventInfoHandler);
     const eventInfoHandlers = {'bar': eventInfoHandler2};
     dispatcher.registerEventInfoHandlers('bar', null, eventInfoHandlers);
 
@@ -98,7 +98,7 @@ describe('dispatcher test.ts', () => {
   });
 
   it('registered EventInfo handlers are found with hasAction', () => {
-    const dispatcher = new Dispatcher();
+    const dispatcher = new LegacyDispatcher();
 
     dispatcher.registerEventInfoHandlers('', null, {
       'foo': () => {},
@@ -110,7 +110,7 @@ describe('dispatcher test.ts', () => {
   });
 
   it('EventInfo handlers can be unregistered', () => {
-    const dispatcher = new Dispatcher();
+    const dispatcher = new LegacyDispatcher();
 
     dispatcher.registerEventInfoHandlers('prefix', null, {
       'clickaction': () => {},
@@ -133,7 +133,7 @@ describe('dispatcher test.ts', () => {
   }
 
   it('global event dispatch is not replayed', async () => {
-    const dispatcher = new Dispatcher();
+    const dispatcher = new LegacyDispatcher();
     const eventReplayer = jasmine.createSpy('eventReplayer');
     dispatcher.setEventReplayer(eventReplayer);
     dispatcher.registerEventInfoHandlers('foo', null, {'bar': () => {}});
@@ -151,7 +151,7 @@ describe('dispatcher test.ts', () => {
   function expectEventReplayerToHaveBeenCalledWith(
     eventReplayer: jasmine.Spy<Replayer>,
     expectedEventInfos: EventInfo[],
-    expectedDispatcher: Dispatcher,
+    expectedDispatcher: LegacyDispatcher,
   ) {
     const args = eventReplayer.calls.mostRecent().args;
     expect(args.length).toBe(2);
@@ -163,7 +163,7 @@ describe('dispatcher test.ts', () => {
   }
 
   it('events are collected and replayed', async () => {
-    const dispatcher = new Dispatcher();
+    const dispatcher = new LegacyDispatcher();
     const eventReplayer = jasmine.createSpy<Replayer>('eventReplayer');
     dispatcher.setEventReplayer(eventReplayer);
     dispatcher.registerEventInfoHandlers('foo', null, {'bar': () => {}});
@@ -181,7 +181,7 @@ describe('dispatcher test.ts', () => {
   });
 
   it('events are replayed when handlers are registered', async () => {
-    const dispatcher = new Dispatcher();
+    const dispatcher = new LegacyDispatcher();
     const eventReplayer = jasmine.createSpy<Replayer>('eventReplayer');
     dispatcher.setEventReplayer(eventReplayer);
     let replayed = waitForEventReplayer(eventReplayer);
@@ -202,7 +202,7 @@ describe('dispatcher test.ts', () => {
 
   it('dispatches to registered global EventInfo handler', () => {
     const handler = jasmine.createSpy('handler');
-    const dispatcher = new Dispatcher();
+    const dispatcher = new LegacyDispatcher();
     dispatcher.registerGlobalHandler('click', handler);
 
     const eventInfo = createTestEventInfo();
@@ -214,7 +214,7 @@ describe('dispatcher test.ts', () => {
 
   it('does not dispatch to non-matching registered global EventInfo handler', () => {
     const handler = jasmine.createSpy('handler');
-    const dispatcher = new Dispatcher();
+    const dispatcher = new LegacyDispatcher();
     dispatcher.registerGlobalHandler('click', handler);
 
     const eventInfo = createTestEventInfo({
@@ -232,7 +232,7 @@ describe('dispatcher test.ts', () => {
     window.document.body.appendChild(container);
     const targetElement = document.createElement('div');
     container.appendChild(targetElement);
-    const dispatcher = new Dispatcher();
+    const dispatcher = new LegacyDispatcher();
 
     const targetHandler = jasmine.createSpy('targetHandler');
     targetHandler.and.callFake((event) => {
@@ -262,7 +262,7 @@ describe('dispatcher test.ts', () => {
     window.document.body.appendChild(container);
     const targetElement = document.createElement('div');
     container.appendChild(targetElement);
-    const dispatcher = new Dispatcher(undefined, {stopPropagation: true});
+    const dispatcher = new LegacyDispatcher(undefined, {stopPropagation: true});
 
     const targetHandler = jasmine.createSpy('targetHandler');
     targetHandler.and.callFake((event) => {
@@ -292,7 +292,7 @@ describe('dispatcher test.ts', () => {
     window.document.body.appendChild(container);
     const targetElement = document.createElement('div');
     container.appendChild(targetElement);
-    const dispatcher = new Dispatcher(undefined, {stopPropagation: true});
+    const dispatcher = new LegacyDispatcher(undefined, {stopPropagation: true});
 
     const targetHandler = jasmine.createSpy('targetHandler');
     targetHandler.and.callFake((event) => {
