@@ -60,6 +60,13 @@ build:release --stamp
 build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
 
+# Angular DevTools for Firefox releases *cannot* be stamped and `--config snapshot-build-firefox` is a no-op.
+# This is because Mozilla requires add-on source code to be uploaded and then they manually reproduce the build.
+# If we stamp the build based on Git information such as the current commit, then reproducing the build would require
+# uploading the entire `.git` directory. We already must upload the entire monorepo, and uploading `.git` as well
+# exceeds the max source file size. To address this, we just *don't* stamp Firefox builds of Angular DevTools.
+build:snapshot-build-firefox --nostamp
+
 ##########################################################
 # AIO architect build configuration                      #
 # See aio/angular.json for available configurations.     #
