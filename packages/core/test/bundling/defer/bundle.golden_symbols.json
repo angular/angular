@@ -462,6 +462,9 @@
     "name": "Subscription"
   },
   {
+    "name": "TEMPORARY_CONSUMER_NODE"
+  },
+  {
     "name": "TESTABILITY"
   },
   {
@@ -679,6 +682,12 @@
   },
   {
     "name": "configureViewWithDirective"
+  },
+  {
+    "name": "consumerBeforeComputation"
+  },
+  {
+    "name": "consumerDestroy"
   },
   {
     "name": "consumerIsLive"
@@ -2467,6 +2476,9 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "viewShouldHaveReactiveConsumer"
   },
   {
     "name": "walkProviderTree"
