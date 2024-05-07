@@ -1240,6 +1240,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG0507',
       },
       {
+        label: 'NG0602: HTML content was altered after server-side rendering',
+        path: 'errors/NG0602',
+        contentPath: 'reference/errors/NG0602',
+      },
+      {
         label: 'NG05104: Root element was not found',
         path: 'errors/NG05104',
         contentPath: 'reference/errors/NG05104',
@@ -1253,6 +1258,16 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'NG0912: Component ID generation collision',
         path: 'errors/NG0912',
         contentPath: 'reference/errors/NG0912',
+      },
+      {
+        label: 'NG0950: Required input is accessed before a value is set.',
+        path: 'errors/NG0950',
+        contentPath: 'reference/errors/NG0950',
+      },
+      {
+        label: 'NG0951: Child query result is required but no value is available.',
+        path: 'errors/NG0951',
+        contentPath: 'reference/errors/NG0951',
       },
       {
         label: 'NG0955: Track expression resulted in duplicated keys for a given collection',
