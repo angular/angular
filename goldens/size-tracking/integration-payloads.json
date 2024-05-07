@@ -51,5 +51,12 @@
       "polyfills": 33807,
       "defer.component": 371
     }
+  },
+  "platform-server-hydration/browser": {
+    "uncompressed": {
+      "main": 200584,
+      "polyfills": 33807,
+      "event-dispatch-contract.min": 11293
+    }
   }
 }
