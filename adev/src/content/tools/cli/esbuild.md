@@ -1,4 +1,4 @@
-# Getting started with the Angular CLI's new build system
+# Migrating to the new build system
 
 In v17 and higher, the new build system provides an improved way to build Angular applications. This new build system includes:
 
@@ -20,7 +20,39 @@ New applications will use this new build system by default via the `application`
 
 ## For existing applications
 
-For existing projects, you can opt-in to use the new builder on a per-application basis with two different options.
+Both automated and manual procedures are available dependening on the requirements of the project.
+Starting with v18, the update process will ask if you would like to migrate existing applications to use the new build system via the automated migration.
+
+HELPFUL: Remember to remove any CommonJS assumptions in the application server code if using SSR such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope). All application code should be ESM compatible. This does not apply to third-party dependencies.
+
+### Automated migration (Recommended)
+
+The automated migration will adjust both the application configuration within `angular.json` as well as code and stylesheets to remove previous Webpack-specific feature usage.
+While many changes can be automated and most applications will not require any further changes, each application is unique and there may be some manual changes required.
+After the migration, please attempt a build of the application as there could be new errors that will require adjustments within the code.
+The errors will attempt to provide solutions to the problem when possible and the later sections of this guide describe some of the more common situations that you may encounter.
+When updating to Angular v18 via `ng update`, you will be asked to execute the migration.
+This migration is entirely optional for v18 and can also be run manually at anytime after an update via the following command:
+
+<docs-code language="shell">
+
+ng update @angular/cli --name use-application-builder
+
+</docs-code>
+
+The migration does the following:
+
+* Converts existing `browser` or `browser-esbuild` target to `application`
+* Removes any previous SSR builders (because `application` does that now).
+* Updates configuration accordingly.
+* Merges `tsconfig.server.json` with `tsconfig.app.json` and adds the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
+* Updates application server code to use new bootstrapping and output directory structure.
+* Removes any Webpack-specific builder stylesheet usage such as the tilde or caret in `@import`/`url()` and updates the configuration to provide equivalent behavior
+* Converts to use the new lower dependency `@angular/build` Node.js package if no other `@angular-devkit/build-angular` usage is found.
+
+### Manual migration
+
+Additionally for existing projects, you can manually opt-in to use the new builder on a per-application basis with two different options.
 Both options are considered stable and fully supported by the Angular team.
 The choice of which option to use is a factor of how many changes you will need to make to migrate and what new features you would like to use in the project.
 
@@ -28,10 +60,10 @@ The choice of which option to use is a factor of how many changes you will need 
 - The `application` builder covers an entire application, such as the client-side bundle, as well as optionally building a server for server-side rendering and performing build-time prerendering of static pages.
 
 The `application` builder is generally preferred as it improves server-side rendered (SSR) builds, and makes it easier for client-side rendered projects to adopt SSR in the future.
-However it requires a little more migration effort, particularly for existing SSR applications.
+However it requires a little more migration effort, particularly for existing SSR applications if performed manually.
 If the `application` builder is difficult for your project to adopt, `browser-esbuild` can be an easier solution which gives most of the build performance benefits with fewer breaking changes.
 
-### Using the `browser-esbuild` builder
+#### Manual migration to the compatibility builder
 
 A builder named `browser-esbuild` is available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application.
 You can try out the new build system for applications that use the `browser` builder.
@@ -61,7 +93,7 @@ Changing the `builder` field is the only change you will need to make.
 ...
 </docs-code>
 
-### Using the `application` builder
+#### Manual migration to the new `application` builder
 
 A builder named `application` is also available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application.
 This builder is the default for all new applications created via `ng new`.
@@ -117,23 +149,6 @@ The `application` builder now provides the integrated functionality for all of t
 The `ng update` process will automatically remove usages of the `@nguniversal` scope packages where some of these builders were previously located.
 The new `@angular/ssr` package will also be automatically added and used with configuration and code being adjusted during the update.
 The `@angular/ssr` package supports the `browser` builder as well as the `application` builder.
-To convert from the separate SSR builders to the integrated capabilities of the `application` builder, run the experimental `use-application-builder` migration.
-
-<docs-code language="shell">
-
-ng update @angular/cli --name use-application-builder
-
-</docs-code>
-
-The migration does the following:
-
-* Converts existing `browser` or `browser-esbuild` target to `application`
-* Removes any previous SSR builders (because `application` does that now).
-* Updates configuration accordingly.
-* Merges `tsconfig.server.json` with `tsconfig.app.json` and adds the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
-* Updates application server code to use new bootstrapping and output directory structure.
-
-HELPFUL: Remember to remove any CommonJS assumptions in the application server code such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope). All application code should be ESM compatible. This does not apply to third-party dependencies.
 
 ## Executing a build
 
