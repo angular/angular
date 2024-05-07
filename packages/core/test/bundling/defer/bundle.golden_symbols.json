@@ -1431,9 +1431,6 @@
     "name": "init_fields"
   },
   {
-    "name": "init_flags"
-  },
-  {
     "name": "init_forward_ref"
   },
   {

@@ -29,7 +29,11 @@ import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
 import {_callAndReportToErrorHandler, ApplicationRef} from './application_ref';
-import {PROVIDED_ZONELESS} from '../change_detection/scheduling/zoneless_scheduling';
+import {
+  PROVIDED_ZONELESS,
+  ChangeDetectionScheduler,
+} from '../change_detection/scheduling/zoneless_scheduling';
+import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
 
 /**
  * Internal create application API that implements the core application creation logic and optional
@@ -59,7 +63,11 @@ export function internalCreateApplication(config: {
 
     // Create root application injector based on a set of providers configured at the platform
     // bootstrap level as well as providers passed to the bootstrap call by a user.
-    const allAppProviders = [internalProvideZoneChangeDetection({}), ...(appProviders || [])];
+    const allAppProviders = [
+      internalProvideZoneChangeDetection({}),
+      {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+      ...(appProviders || []),
+    ];
     const adapter = new EnvironmentNgModuleRefAdapter({
       providers: allAppProviders,
       parent: platformInjector as EnvironmentInjector,
