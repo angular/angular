@@ -25,7 +25,7 @@ In the **Edit** pane of your IDE:
 
 1. In `src/app/housing.service.ts`, inside the `HousingService` class, paste this method at the bottom of the class definition.
 
-    <docs-code header="Submit method in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/housing.service.ts" visibleLines="[120,122]"/>
+    <docs-code header="Submit method in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/housing.service.ts" visibleLines="[120,124]"/>
 
 1. Confirm that the app builds without error.
     Correct any errors before you continue to the next step.
@@ -42,7 +42,7 @@ In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
 
 1. In the `DetailsComponent` decorator metadata, update the `imports` property with the following code:
 
-    <docs-code header="imports directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[10,13]"/>
+    <docs-code header="imports directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[10]"/>
 
 1. In the `DetailsComponent` class, before the `constructor()` method, add the following code to create the form object.
 
@@ -52,7 +52,7 @@ In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
 
 1. In the `DetailsComponent` class, after the `constructor()` method, add the following code to handle the **Apply now** click.
 
-    <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[64,69]"/>
+    <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[63,69]"/>
 
     This button does not exist yet - you will add it in the next step. In the above code, the `FormControl`s may return `null`. This code uses the nullish coalescing operator to default to empty string if the value is `null`.
 
@@ -67,7 +67,7 @@ In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
 
 1. In the `DetailsComponent` decorator metadata, update the `template` HTML to match the following code to add the form's markup.
 
-    <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[15,45]"/>
+    <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[11,46]"/>
 
     The template now includes an event handler `(submit)="submitApplication()"`. Angular uses parentheses syntax around the event name to define events in the template code. The code on the right hand side of the equals sign is the code that should be executed when this event is triggered. You can bind to browser events and custom events.
 

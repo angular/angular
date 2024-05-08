@@ -162,7 +162,7 @@ The data source has been configured, the next step is to update your web app to 
 
     1. Update the `getAllHousingLocations` function to make a call to the web server you configured.
 
-        <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[12,14]"/>
+        <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[10,13]"/>
 
         The code now uses asynchronous code to make a **GET** request over HTTP.
 
@@ -170,11 +170,11 @@ The data source has been configured, the next step is to update your web app to 
 
     1. Update the `getHousingLocationsById` function to make a call to the web server you configured.
 
-        <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[16,19]"/>
+        <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[15,18]"/>
 
     1. Once all the updates are complete, your updated service should match the following code.
 
-        <docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts"/>
+        <docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,24]" />
 
 </docs-step>
 
@@ -183,7 +183,7 @@ The server is now reading data from the HTTP request but the components that rel
 
 1. In `src/app/home/home.component.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method.
 
-    <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.component.ts" visibleLines="[36,41]"/>
+    <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.component.ts" visibleLines="[32,37]"/>
 
 1. In `src/app/details/details.component.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method.
 

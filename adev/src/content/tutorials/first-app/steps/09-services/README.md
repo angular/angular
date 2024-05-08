@@ -87,7 +87,7 @@ In the **Edit** pane of your IDE, in `src/app/home/home.component.ts`:
 
 1. In `HomeComponent`, add the following code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
 
-    <docs-code header="Initialize data from service in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[31,36]"/>
+    <docs-code header="Initialize data from service in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[28,32]"/>
 
 1. Save the changes to `src/app/home/home.component.ts` and confirm your app builds without error.
     Correct any errors before you continue to the next step.
