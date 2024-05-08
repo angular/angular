@@ -14,6 +14,7 @@ import {
   EventDispatcher,
   registerDispatcher,
   EarlyJsactionDataContainer,
+  EventPhase,
 } from '@angular/core/primitives/event-dispatch';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
@@ -30,21 +31,22 @@ import {IS_EVENT_REPLAY_ENABLED, IS_GLOBAL_EVENT_DELEGATION_ENABLED} from './tok
 import {
   GlobalEventDelegation,
   sharedStashFunction,
+  sharedMapFunction,
   removeListeners,
-  invokeRegisteredListeners,
+  BLOCKNAME_ATTRIBUTE,
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
+import {hydrateFromBlockName} from './api';
 
 declare global {
   var ngContracts: {[key: string]: EarlyJsactionDataContainer};
 }
 
 export const CONTRACT_PROPERTY = 'ngContracts';
-
 /**
- * A set of DOM elements with `jsaction` attributes.
+ * A map of DOM elements with `jsaction` attributes grouped by action names.
  */
-const jsactionSet = new Set<Element>();
+let jsActionMap = new Map<string, Set<Element>>();
 
 function isGlobalEventDelegationEnabled(injector: Injector) {
   return injector.get(IS_GLOBAL_EVENT_DELEGATION_ENABLED, false);
@@ -69,7 +71,7 @@ export function withEventReplay(): Provider[] {
         }
         setStashFn((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
           sharedStashFunction(rEl, eventName, listenerFn);
-          jsactionSet.add(rEl as unknown as Element);
+          sharedMapFunction(rEl, jsActionMap);
         });
       },
       multi: true,
@@ -90,10 +92,7 @@ export function withEventReplay(): Provider[] {
               }
               const globalEventDelegation = injector.get(GlobalEventDelegation);
               initEventReplay(globalEventDelegation, injector);
-              jsactionSet.forEach(removeListeners);
-              // After hydration, we shouldn't need to do anymore work related to
-              // event replay anymore.
-              setStashFn(() => {});
+              removeListenersFromBlocks(['']);
             });
           };
         }
@@ -111,6 +110,7 @@ function getJsactionData(container: EarlyJsactionDataContainer) {
 
 const initEventReplay = (eventDelegation: GlobalEventDelegation, injector: Injector) => {
   const appId = injector.get(APP_ID);
+  const appRef = injector.get(ApplicationRef);
   // This is set in packages/platform-server/src/utils.ts
   // Note: globalThis[CONTRACT_PROPERTY] may be undefined in case Event Replay feature
   // is enabled, but there are no events configured in an application.
@@ -126,7 +126,9 @@ const initEventReplay = (eventDelegation: GlobalEventDelegation, injector: Injec
     eventContract.addEvent(et);
   }
   eventContract.replayEarlyEvents(container);
-  const dispatcher = new EventDispatcher(invokeRegisteredListeners);
+  const dispatcher = new EventDispatcher((event) => {
+    invokeRegisteredReplayListeners(appRef, event);
+  });
   registerDispatcher(eventContract, dispatcher);
 };
 
@@ -177,4 +179,45 @@ export function collectDomEventsInfo(
     }
   }
   return events;
+}
+
+export function invokeRegisteredReplayListeners(
+  appRef: ApplicationRef,
+  event: Event,
+  hydratedBlocks?: Set<string>,
+) {
+  const el = (event.currentTarget as Element) || (event.target as Element);
+  const blockName = (el && el.getAttribute(BLOCKNAME_ATTRIBUTE)) ?? '';
+  if (
+    event.eventPhase === EventPhase.REPLAY ||
+    (blockName !== '' && hydratedBlocks && hydratedBlocks.has(blockName))
+  ) {
+    const handlerFns = el?.__jsaction_fns?.get(event.type);
+    if (!handlerFns) {
+      return;
+    }
+    for (const handler of handlerFns) {
+      handler(event);
+    }
+    removeListenersFromBlocks(hydratedBlocks ? [...hydratedBlocks] : ['']);
+  } else {
+    if (/d\d+/.test(blockName)) {
+      triggerBlockHydration(appRef, event, blockName);
+    }
+  }
+}
+
+async function triggerBlockHydration(appRef: ApplicationRef, event: Event, blockName: string) {
+  const hydratedBlocks = await hydrateFromBlockName(appRef, blockName);
+  hydratedBlocks.add(blockName);
+  invokeRegisteredReplayListeners(appRef, event, hydratedBlocks);
+}
+
+function removeListenersFromBlocks(blockNames: string[]) {
+  let blockList: Element[] = [];
+  for (let blockName of blockNames) {
+    blockList = [...blockList, ...jsActionMap.get(blockName)!];
+  }
+  const replayList = new Set(blockList);
+  replayList.forEach(removeListeners);
 }

@@ -42,6 +42,22 @@ const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 export const NGH_DATA_KEY = makeStateKey<Array<SerializedView>>(TRANSFER_STATE_TOKEN_ID);
 
 /**
+ * The name of the key used in the TransferState collection,
+ * where serialized defer block information is located.
+ *
+ * TODO: consider updating '__nghData__' key and change value format
+ * from an array to an object.
+ */
+const TRANSFER_STATE_DEFER_BLOCKS_INFO = '__nghDeferBlocks__';
+
+/**
+ * Lookup key used to retrieve defer block datain `TransferState`.
+ */
+export const NGH_DEFER_BLOCKS_KEY = makeStateKey<{[key: string]: string | null}>(
+  TRANSFER_STATE_DEFER_BLOCKS_INFO,
+);
+
+/**
  * The name of the attribute that would be added to host component
  * nodes and contain a reference to a particular slot in transferred
  * state that contains the necessary hydration info for this component.
