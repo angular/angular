@@ -1,3 +1,35 @@
+<a name="18.0.0-rc.1"></a>
+# 18.0.0-rc.1 (2024-05-08)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [91b007e58f](https://github.com/angular/angular/commit/91b007e58ffb91f7c396cbc0333a91d18f02bd27) | fix | add math elements to schema ([#55631](https://github.com/angular/angular/pull/55631)) |
+| [a040fb720a](https://github.com/angular/angular/commit/a040fb720af7db08b328a9f78511c9881f50482d) | fix | maintain multiline CSS selectors during CSS scoping ([#55509](https://github.com/angular/angular/pull/55509)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d5edfde6ee](https://github.com/angular/angular/commit/d5edfde6ee3d65bf7f938ecfeac9f30633f8731b) | fix | afterRender hooks registered outside change detection can mark views dirty ([#55623](https://github.com/angular/angular/pull/55623)) |
+| [36130b2e72](https://github.com/angular/angular/commit/36130b2e720b509e064368382eb0f7c2686154fb) | fix | don't schedule timer triggers on the server ([#55605](https://github.com/angular/angular/pull/55605)) |
+| [0510930a25](https://github.com/angular/angular/commit/0510930a257e610460c875dbbc5566fd06547814) | fix | TestBed should not override NgZone from initTestEnvironment ([#55226](https://github.com/angular/angular/pull/55226)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d9b339fdbc](https://github.com/angular/angular/commit/d9b339fdbc0f8d1e9bb7b1e4190e7d80e68542f9) | fix | resolve `withRequestsMadeViaParent` behavior with `withFetch` ([#55652](https://github.com/angular/angular/pull/55652)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8459ee46cb](https://github.com/angular/angular/commit/8459ee46cba7f63966c41a2fb7199ec295a91cbb) | fix | handle more cases in HttpClientModule migration ([#55640](https://github.com/angular/angular/pull/55640)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [23f914f101](https://github.com/angular/angular/commit/23f914f1012545330f6a5aeed4e862bf0e66117b) | fix | Use the right namespace for mathML. ([#55622](https://github.com/angular/angular/pull/55622)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e71e869112](https://github.com/angular/angular/commit/e71e869112af1c0ee7a9dd64a963ad7af14a40e2) | fix | remove event dispatch script from HTML when hydration is disabled ([#55681](https://github.com/angular/angular/pull/55681)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-rc.0"></a>
 # 18.0.0-rc.0 (2024-05-01)
 ### core
