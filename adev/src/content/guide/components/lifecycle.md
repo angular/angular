@@ -8,7 +8,7 @@ components and checking them for updates over time.
 
 In your components, you can implement **lifecycle hooks** to run code during these steps.
 Lifecycle hooks that relate to a specific component instance are implemented as methods on your
-component class. Lifecycle hooks that relate the Angular application as a whole are implemented
+component class. Lifecycle hooks that relate to the Angular application as a whole are implemented
 as functions that accept a callback.
 
 A component's lifecycle is tightly connected to how Angular checks your components for changes over
@@ -48,7 +48,7 @@ process.
     </tr>
     <tr>
       <td><code>ngDoCheck</code></td>
-      <td>Runs every time this component is checked for changes.</td>
+      <td>Runs every time the component is checked for changes.</td>
     </tr>
     <tr>
       <td><code>ngAfterViewInit</code></td>
@@ -64,7 +64,7 @@ process.
     </tr>
     <tr>
       <td><code>ngAfterContentChecked</code></td>
-      <td>Runs every time this component content has been checked for changes.</td>
+      <td>Runs every time the component's content has been checked for changes.</td>
     </tr>
     <tr>
       <td rowspan="2">Rendering</td>
@@ -85,8 +85,8 @@ process.
 
 ### ngOnInit
 
-The `ngOnInit` method runs after Angular has initialized all the components inputs with their
-initial values. A component's `ngOnInit` runs exactly once.
+The `ngOnInit` method runs after Angular has initialized all the component's inputs with their
+initial values. A component's `ngOnInit` method runs exactly once.
 
 This step happens _before_ the component's own template is initialized. This means that you can
 update the component's state based on its initial input values.
@@ -106,14 +106,14 @@ The `ngOnChanges` method accepts one `SimpleChanges` argument. This object is
 a [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)
 mapping each component input name to a `SimpleChange` object. Each `SimpleChange` contains the
 input's previous value, its current value, and a flag for whether this is the first time the input
-has changed.
+has changed:
 
 ```ts
 @Component({
   /* ... */
 })
 export class UserProfile {
-  @Input() name: string = '';
+  @Input() name = '';
 
   ngOnChanges(changes: SimpleChanges) {
     for (const inputName in changes) {
@@ -139,7 +139,7 @@ to another page.
 
 As an alternative to the `ngOnDestroy` method, you can inject an instance of `DestroyRef`. You can
 register a callback to be invoked upon the component's destruction by calling the `onDestroy` method
-of `DestroyRef`.
+of `DestroyRef`:
 
 ```ts
 @Component({
@@ -154,7 +154,7 @@ export class UserProfile {
 }
 ```
 
-You can pass the `DestroyRef` instance to functions or classes outside your component. Use this
+You can pass the `DestroyRef` instance to functions or classes outside of your component. Use this
 pattern if you have other code that should run some cleanup behavior when the component is
 destroyed.
 
@@ -166,7 +166,7 @@ all cleanup code in the `ngOnDestroy` method.
 The `ngDoCheck` method runs before every time Angular checks a component's template for changes.
 
 You can use this lifecycle hook to manually check for state changes outside of Angular's normal
-change detection, manually updating the component's state.
+change detection process, manually updating the component's state.
 
 This method runs very frequently and can significantly impact your page's performance. Avoid
 defining this hook whenever possible, only using it when you have no alternative.
@@ -185,8 +185,8 @@ these queries, attempting to change any state in this method results in an
 
 ### ngAfterContentInit
 
-The `ngAfterContentInit` method runs once after all the children nested inside the component (
-its _content_) have been initialized.
+The `ngAfterContentInit` method runs once after all the children nested inside the component (its
+_content_) have been initialized.
 
 You can use this lifecycle hook to read the results of
 [content queries](guide/components/queries#content-queries). While you can access the initialized
@@ -226,7 +226,7 @@ invoked after Angular has finished rendering _all components_ on the page into t
 
 These functions are different from the other lifecycle hooks described in this guide. Rather than a
 class method, they are standalone functions that accept a callback. The execution of render
-callbacks are not tied to any specific component instance, but instead an application-wide hook.
+callbacks is not tied to any specific component instance, but is instead an application-wide hook.
 
 `afterRender` and `afterNextRender` must be called in
 an [injection context](guide/di/dependency-injection-context), typically a
@@ -242,7 +242,7 @@ Render callbacks do not run during server-side rendering or during build-time pr
 When using `afterRender` or `afterNextRender`, you can optionally specify a `phase`. The phase
 gives you control over the sequencing of DOM operations, letting you sequence _write_ operations
 before _read_ operations in order to minimize
-[layout thrashing](https://web.dev/avoid-large-complex-layouts-and-layout-thrashing).
+[layout thrashing](https://web.dev/avoid-large-complex-layouts-and-layout-thrashing):
 
 ```ts
 import {Component, ElementRef, afterNextRender, AfterRenderPhase} from '@angular/core';
@@ -267,14 +267,14 @@ export class UserProfile {
 }
 ```
 
-There are four phases, run in the following order:
+There are four phases, which run in the following order:
 
-| Phase            | Description                                                                                                                                                                                           |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `EarlyRead`      | Use this phase to read any layout-affecting DOM properties and styles that are strictly necessary for subsequent calculation. Avoid this phase if possible, preferring the `Write` and `Read` phases. |
-| `MixedReadWrite` | Default phase. Use for any operations need to both read and write layout-affecting properties and styles. Avoid this phase if possible, preferring the explicit `Write` and `Read` phases.            |
-| `Write`          | Use this phase to write layout-affecting DOM properties and styles.                                                                                                                                   |
-| `Read`           | Use this phase to read any layout-affecting DOM properties.                                                                                                                                           |
+| Phase            | Description                                                                                                                                                                                                |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `EarlyRead`      | Use this phase to read any layout-affecting DOM properties and styles that are strictly necessary for subsequent calculation. Avoid this phase if possible, preferring the `Write` and `Read` phases.      |
+| `MixedReadWrite` | Default phase. Use this phase for any operations that need to both read and write layout-affecting properties and styles. Avoid this phase if possible, preferring the explicit `Write` and `Read` phases. |
+| `Write`          | Use this phase to write layout-affecting DOM properties and styles.                                                                                                                                        |
+| `Read`           | Use this phase to read any layout-affecting DOM properties.                                                                                                                                                |
 
 ## Lifecycle interfaces
 
@@ -283,7 +283,7 @@ and `implement` these interfaces to ensure that your implementation does not hav
 misspellings.
 
 Each interface has the same name as the corresponding method without the `ng` prefix. For example,
-the interface for `ngOnInit` is `OnInit`.
+the interface for `ngOnInit` is `OnInit`:
 
 ```ts
 @Component({
