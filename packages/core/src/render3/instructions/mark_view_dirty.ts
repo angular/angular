@@ -21,6 +21,7 @@ import {getLViewParent} from '../util/view_utils';
  * an additional time to get the root view and schedule a tick on it.
  *
  * @param lView The starting LView to mark dirty
+ * @param source change detection notification source
  * @returns the root LView
  */
 export function markViewDirty(lView: LView, source: NotificationSource): LView | null {

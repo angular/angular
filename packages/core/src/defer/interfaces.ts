@@ -116,6 +116,11 @@ export interface TDeferBlockDetails {
    * standalone components used within this defer block.
    */
   providers: Provider[] | null;
+
+  /**
+   * Id of the pending task, indicating that dependencies are being loaded.
+   */
+  taskId: number | null;
 }
 
 /**
@@ -158,6 +163,9 @@ export const STATE_IS_FROZEN_UNTIL = 2;
 export const LOADING_AFTER_CLEANUP_FN = 3;
 export const TRIGGER_CLEANUP_FNS = 4;
 export const PREFETCH_TRIGGER_CLEANUP_FNS = 5;
+export const UNIQUE_SSR_ID = 6;
+export const SSR_STATE = 7;
+export const ON_COMPLETE_FNS = 8;
 
 /**
  * Describes instance-specific defer block data.
@@ -199,6 +207,21 @@ export interface LDeferBlockDetails extends Array<unknown> {
    * List of cleanup functions for prefetch triggers.
    */
   [PREFETCH_TRIGGER_CLEANUP_FNS]: VoidFunction[] | null;
+
+  /**
+   * Unique id of this defer block assigned during SSR.
+   */
+  [UNIQUE_SSR_ID]: string | null;
+
+  /**
+   * Defer block state after SSR.
+   */
+  [SSR_STATE]: number | null;
+
+  /**
+   * A set of callbacks to be invoked once the main content is rendered.
+   */
+  [ON_COMPLETE_FNS]: VoidFunction[] | null;
 }
 
 /**

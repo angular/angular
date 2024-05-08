@@ -19,7 +19,12 @@ import {provideServerRendering} from '../public_api';
 import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
 import {EventPhase} from '@angular/core/primitives/event-dispatch';
 
-import {getAppContents, hydrate, render as renderHtml, resetTViewsFor} from './dom_utils';
+import {
+  getAppContents,
+  hydrate,
+  insertDomInDocument as renderHtml,
+  resetTViewsFor,
+} from './dom_utils';
 
 /**
  * Represents the <script> tag added by the build process to inject
@@ -139,7 +144,7 @@ describe('event replay', () => {
       template: `
         <div class="card">
           <button id="inner-button" (click)="onClick()"></button>
-          <ng-content></ng-content> 
+          <ng-content></ng-content>
         </div>
       `,
     })
