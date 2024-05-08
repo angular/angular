@@ -16,19 +16,19 @@ export declare interface EarlyJsactionDataContainer {
  * Defines the early jsaction data types.
  */
 export declare interface EarlyJsactionData {
-  // List used to keep track of the early JSAction event types.
+  /** List used to keep track of the early JSAction event types. */
   et: string[];
 
-  // List used to keep track of capture event types.
+  /** List used to keep track of capture event types. */
   etc: string[];
 
-  // List used to keep track of the JSAction events if using earlyeventcontract.
+  /** List used to keep track of the JSAction events if using earlyeventcontract. */
   q: EventInfo[];
 
-  // Early Jsaction handler
+  /** Early Jsaction handler. */
   h: (event: Event) => void;
 
-  // Container for listening to events
+  /** Container for listening to events. */
   c: HTMLElement;
 }
 
@@ -42,7 +42,7 @@ export class EarlyEventContract {
     private readonly replaySink: EarlyJsactionDataContainer = window as EarlyJsactionDataContainer,
     private readonly container = window.document.documentElement,
   ) {
-    this.replaySink._ejsa = {
+    replaySink._ejsa = {
       c: container,
       q: [],
       et: [],
@@ -52,10 +52,10 @@ export class EarlyEventContract {
           event.type,
           event,
           event.target as Element,
-          window.document.documentElement,
+          container,
           Date.now(),
         );
-        this.replaySink._ejsa!.q.push(eventInfo);
+        replaySink._ejsa!.q.push(eventInfo);
       },
     };
   }
