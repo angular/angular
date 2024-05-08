@@ -1,3 +1,16 @@
+<a name="17.3.8"></a>
+# 17.3.8 (2024-05-08)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c21b459ba6](https://github.com/angular/angular/commit/c21b459ba6520fd5835e23800338ac9c997fee91) | fix | add math elements to schema ([#55631](https://github.com/angular/angular/pull/55631)) ([#55645](https://github.com/angular/angular/pull/55645)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3818436ebc](https://github.com/angular/angular/commit/3818436ebc649267bb39b976b6b567b7f2b06a64) | fix | don't schedule timer triggers on the server ([#55605](https://github.com/angular/angular/pull/55605)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-rc.0"></a>
 # 18.0.0-rc.0 (2024-05-01)
 ### core
