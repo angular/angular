@@ -42,7 +42,7 @@ export class EarlyEventContract {
     private readonly replaySink: EarlyJsactionDataContainer = window as EarlyJsactionDataContainer,
     private readonly container = window.document.documentElement,
   ) {
-    this.replaySink._ejsa = {
+    replaySink._ejsa = {
       c: container,
       q: [],
       et: [],
@@ -55,7 +55,7 @@ export class EarlyEventContract {
           container,
           Date.now(),
         );
-        this.replaySink._ejsa!.q.push(eventInfo);
+        replaySink._ejsa!.q.push(eventInfo);
       },
     };
   }
