@@ -8,12 +8,18 @@
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
+import {DEFER_BLOCK_CONFIG as PUBLIC_DEFER_BLOCK_CONFIG} from '../application/application_tokens';
 import {CachedInjectorService} from '../cached_injector_service';
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
-import {EnvironmentInjector, InjectionToken, Injector, Provider} from '../di';
+import {EnvironmentInjector, InjectionToken, Injector, Provider, ɵɵdefineInjectable} from '../di';
 import {internalImportProvidersFrom} from '../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {findMatchingDehydratedView} from '../hydration/views';
+import {
+  DEFER_BLOCK_ID,
+  DEFER_BLOCK_STATE as SERIALIZED_DEFER_BLOCK_STATE,
+  DehydratedContainerView,
+  TEMPLATE_ID,
+} from '../hydration/interfaces';
 import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref';
 import {PendingTasks} from '../pending_tasks';
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
@@ -24,7 +30,7 @@ import {getTemplateLocationDetails} from '../render3/instructions/element_valida
 import {markViewDirty} from '../render3/instructions/mark_view_dirty';
 import {handleError} from '../render3/instructions/shared';
 import {declareTemplate} from '../render3/instructions/template';
-import {LContainer} from '../render3/interfaces/container';
+import {DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
 import {DirectiveDefList, PipeDefList} from '../render3/interfaces/definition';
 import {TContainerNode, TNode} from '../render3/interfaces/node';
 import {isDestroyed} from '../render3/interfaces/type_checks';
@@ -73,6 +79,8 @@ import {
   LDeferBlockDetails,
   LOADING_AFTER_CLEANUP_FN,
   NEXT_DEFER_BLOCK_STATE,
+  ON_COMPLETE_FNS,
+  SSR_STATE,
   STATE_IS_FROZEN_UNTIL,
   TDeferBlockDetails,
   TriggerType,
@@ -90,6 +98,31 @@ import {
   setLDeferBlockDetails,
   setTDeferBlockDetails,
 } from './utils';
+
+// TODO: figure out proper location for this class.
+export class DeferBlockRegistry {
+  private registry = new Map<string, any>();
+  add(id: string, info: any) {
+    this.registry.set(id, info);
+  }
+  get(id: string) {
+    return this.registry.get(id) ?? null;
+  }
+  remove(id: string) {
+    this.registry.delete(id);
+  }
+
+  // Blocks that are being hydrated.
+  // TODO: come up with a nicer API
+  hydrating = new Set();
+
+  /** @nocollapse */
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+    token: DeferBlockRegistry,
+    providedIn: 'root',
+    factory: () => new DeferBlockRegistry(),
+  });
+}
 
 /**
  * **INTERNAL**, avoid referencing it in application code.
@@ -109,6 +142,12 @@ export const DEFER_BLOCK_CONFIG = new InjectionToken<DeferBlockConfig>(
   ngDevMode ? 'DEFER_BLOCK_CONFIG' : '',
 );
 
+function shouldTriggerWhenOnServer(injector: Injector) {
+  const isServer = !isPlatformBrowser(injector);
+  const publicConfig = injector.get(PUBLIC_DEFER_BLOCK_CONFIG);
+  return isServer && publicConfig.enableOnServer;
+}
+
 /**
  * Returns whether defer blocks should be triggered.
  *
@@ -120,7 +159,7 @@ function shouldTriggerDeferBlock(injector: Injector): boolean {
   if (config?.behavior === DeferBlockBehavior.Manual) {
     return false;
   }
-  return isPlatformBrowser(injector);
+  return isPlatformBrowser(injector) || shouldTriggerWhenOnServer(injector);
 }
 
 /**
@@ -210,6 +249,7 @@ export function ɵɵdefer(
       loadingState: DeferDependenciesLoadingState.NOT_STARTED,
       loadingPromise: null,
       providers: null,
+      taskId: null,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
     setTDeferBlockDetails(tView, adjustedIndex, tDetails);
@@ -222,6 +262,16 @@ export function ɵɵdefer(
   // In client-only mode, this function is a noop.
   populateDehydratedViewsInLContainer(lContainer, tNode, lView);
 
+  let ssrId = null;
+  let ssrState = null;
+  if (lContainer[DEHYDRATED_VIEWS]?.length > 0) {
+    // NOTE: this is a hack, we should serialize defer
+    // block info at a higher level (not at a view level).
+    const info = lContainer[DEHYDRATED_VIEWS][0].data;
+    ssrId = info[DEFER_BLOCK_ID];
+    ssrState = info[SERIALIZED_DEFER_BLOCK_STATE];
+  }
+
   // Init instance-specific defer details and store it.
   const lDetails: LDeferBlockDetails = [
     null, // NEXT_DEFER_BLOCK_STATE
@@ -230,6 +280,9 @@ export function ɵɵdefer(
     null, // LOADING_AFTER_CLEANUP_FN
     null, // TRIGGER_CLEANUP_FNS
     null, // PREFETCH_TRIGGER_CLEANUP_FNS
+    ssrId, // UNIQUE_SSR_ID
+    ssrState, // SSR_STATE
+    null,
   ];
   setLDeferBlockDetails(lView, adjustedIndex, lDetails);
 
@@ -240,6 +293,12 @@ export function ɵɵdefer(
     removeLViewOnDestroy(lView, cleanupTriggersFn),
   );
   storeLViewOnDestroy(lView, cleanupTriggersFn);
+
+  if (ssrId !== null) {
+    // Also store this defer block in teh registry.
+    const registry = lView[INJECTOR]!.get(DeferBlockRegistry);
+    registry.add(ssrId, {lView, tNode});
+  }
 }
 
 /**
@@ -426,16 +485,22 @@ export function ɵɵdeferOnInteraction(triggerIndex: number, walkUpTimes?: numbe
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
-  renderPlaceholder(lView, tNode);
-  registerDomTrigger(
-    lView,
-    tNode,
-    triggerIndex,
-    walkUpTimes,
-    onInteraction,
-    () => triggerDeferBlock(lView, tNode),
-    TriggerType.Regular,
-  );
+  // TODO: this should be repeated for all "on" conditions.
+  if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
+    // We are on the server and SSR for defer blocks is enabled.
+    triggerDeferBlock(lView, tNode);
+  } else {
+    renderPlaceholder(lView, tNode);
+    registerDomTrigger(
+      lView,
+      tNode,
+      triggerIndex,
+      walkUpTimes,
+      onInteraction,
+      () => triggerDeferBlock(lView, tNode),
+      TriggerType.Regular,
+    );
+  }
 }
 
 /**
@@ -592,6 +657,11 @@ export function renderDeferBlockState(
 
   const currentState = lDetails[DEFER_BLOCK_STATE];
 
+  const ssrState = lDetails[SSR_STATE];
+  if (ssrState !== null && newState < ssrState) {
+    return; // trying to render a previous state, exit
+  }
+
   if (
     isValidStateChange(currentState, newState) &&
     isValidStateChange(lDetails[NEXT_DEFER_BLOCK_STATE] ?? -1, newState)
@@ -694,6 +764,25 @@ function createDeferBlockInjector(
   return getOrCreateEnvironmentInjector(parentInjector, tDetails, providers);
 }
 
+function findMatchingDehydratedViewForDeferBlock(
+  lContainer: LContainer,
+  lDetails: LDeferBlockDetails,
+): DehydratedContainerView | null {
+  const views = lContainer[DEHYDRATED_VIEWS];
+  if (views === null || views.length === 0) {
+    return null;
+  }
+
+  // Find matching view based on serialized defer block state.
+  // TODO: reconcile this logic with the regular logic that looks up
+  // dehydrated views to see if there is anything missing in this function.
+  return (
+    views.find(
+      (view: any) => view.data[SERIALIZED_DEFER_BLOCK_STATE] === lDetails[DEFER_BLOCK_STATE],
+    ) ?? null
+  );
+}
+
 /**
  * Applies changes to the DOM to reflect a given state.
  */
@@ -710,6 +799,8 @@ function applyDeferBlockState(
     lDetails[DEFER_BLOCK_STATE] = newState;
     const hostTView = hostLView[TVIEW];
     const adjustedIndex = stateTmplIndex + HEADER_OFFSET;
+
+    // The TNode that represents a template that will activated in the defer block
     const activeBlockTNode = getTNode(hostTView, adjustedIndex) as TContainerNode;
 
     // There is only 1 view that can be present in an LContainer that
@@ -732,18 +823,44 @@ function applyDeferBlockState(
         injector = createDeferBlockInjector(hostLView[INJECTOR]!, tDetails, providers);
       }
     }
-    const dehydratedView = findMatchingDehydratedView(lContainer, activeBlockTNode.tView!.ssrId);
-    const embeddedLView = createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {
-      dehydratedView,
-      injector,
-    });
-    addLViewToLContainer(
-      lContainer,
-      embeddedLView,
-      viewIndex,
-      shouldAddViewToDom(activeBlockTNode, dehydratedView),
-    );
-    markViewDirty(embeddedLView, NotificationSource.DeferBlockStateUpdate);
+
+    const dehydratedView = findMatchingDehydratedViewForDeferBlock(lContainer, lDetails);
+    // Render either when we don't have dehydrated views at all (e.g. client rendering)
+    // or when dehydrated view is found (in which case we hydrate).
+    // Otherwise, do nothing, since we'd end up erasing SSR'ed content.
+    const isClientOnly = !lContainer[DEHYDRATED_VIEWS];
+    if (isClientOnly || dehydratedView) {
+      // Erase dehydrated view info, so that it's not removed later
+      // by post-hydration cleanup process.
+      // TODO: we need a better mechanism here.
+      lContainer[DEHYDRATED_VIEWS] = null;
+
+      const embeddedLView = createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {
+        injector,
+        dehydratedView,
+      });
+      addLViewToLContainer(
+        lContainer,
+        embeddedLView,
+        viewIndex,
+        shouldAddViewToDom(activeBlockTNode, dehydratedView),
+      );
+      markViewDirty(embeddedLView, NotificationSource.DeferBlockStateUpdate);
+    }
+
+    // TODO:
+    // - what if we had some views in `lContainer[DEHYDRATED_VIEWS]`, but
+    //   we didn't find a view that matches the expected state?
+    // - for example, handle a situation when a block was in the "completed" state
+    //   on the server, but the loading failing on the client. How do we reconcile and cleanup?
+
+    // TODO: should we also invoke if newState === DeferBlockState.Error?
+    if (newState === DeferBlockState.Complete && Array.isArray(lDetails[ON_COMPLETE_FNS])) {
+      for (const callback of lDetails[ON_COMPLETE_FNS]) {
+        callback();
+      }
+      lDetails[ON_COMPLETE_FNS] = null;
+    }
   }
 }
 
@@ -1026,7 +1143,7 @@ function renderDeferStateAfterResourceLoading(
  * If the block is already in a loading, completed or an error state -
  * no additional actions are taken.
  */
-function triggerDeferBlock(lView: LView, tNode: TNode) {
+export function triggerDeferBlock(lView: LView, tNode: TNode) {
   const tView = lView[TVIEW];
   const lContainer = lView[tNode.index];
   const injector = lView[INJECTOR]!;
@@ -1069,4 +1186,11 @@ function triggerDeferBlock(lView: LView, tNode: TNode) {
         throwError('Unknown defer block state');
       }
   }
+}
+
+export function onDeferBlockCompletion(lDetails: LDeferBlockDetails, callback: VoidFunction) {
+  if (!Array.isArray(lDetails[ON_COMPLETE_FNS])) {
+    lDetails[ON_COMPLETE_FNS] = [];
+  }
+  lDetails[ON_COMPLETE_FNS].push(callback);
 }

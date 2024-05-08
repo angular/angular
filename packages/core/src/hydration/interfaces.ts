@@ -37,6 +37,8 @@ export const TEMPLATE_ID = 'i'; // as it's also an "id"
 export const NODES = 'n';
 export const DISCONNECTED_NODES = 'd';
 export const I18N_DATA = 'l';
+export const DEFER_BLOCK_ID = 'di';
+export const DEFER_BLOCK_STATE = 'ds';
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -101,6 +103,18 @@ export interface SerializedView {
    * active ICU cases.
    */
   [I18N_DATA]?: Record<number, number[]>;
+
+  /**
+   * If this view represents a `@defer` block, this field contains
+   * unique id of the block.
+   */
+  [DEFER_BLOCK_ID]?: string;
+
+  /**
+   * If this view represents a `@defer` block, this field represents
+   * a status, based on the `DeferBlockState` enum.
+   */
+  [DEFER_BLOCK_STATE]?: number;
 }
 
 /**

@@ -29,8 +29,8 @@ import {EventPhase} from '@angular/core/primitives/event-dispatch';
 import {
   getAppContents,
   hydrate,
-  renderAndHydrate,
-  render as renderHtml,
+  prepareEnvironmentAndHydrate,
+  insertDomInDocument as renderHtml,
   resetTViewsFor,
 } from './dom_utils';
 
@@ -171,7 +171,7 @@ describe('event replay', () => {
       template: `
         <div class="card">
           <button id="inner-button" (click)="onClick()"></button>
-          <ng-content></ng-content> 
+          <ng-content></ng-content>
         </div>
       `,
     })
@@ -436,7 +436,7 @@ describe('event replay', () => {
       expect(hasEventDispatchScript(ssrContents)).toBeFalse();
 
       resetTViewsFor(SimpleComponent);
-      await renderAndHydrate(doc, ssrContents, SimpleComponent, {
+      await prepareEnvironmentAndHydrate(doc, ssrContents, SimpleComponent, {
         envProviders: [
           {provide: PLATFORM_ID, useValue: 'browser'},
           // This ensures that there are no errors while bootstrapping an application
