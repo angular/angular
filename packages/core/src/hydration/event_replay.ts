@@ -15,6 +15,7 @@ import {
   registerDispatcher,
   getAppScopedQueuedEventInfos,
   clearAppScopedEarlyEventContract,
+  EventPhase,
 } from '@angular/core/primitives/event-dispatch';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
@@ -34,18 +35,20 @@ import {
 } from './tokens';
 import {
   sharedStashFunction,
+  sharedMapFunction,
   removeListeners,
-  invokeRegisteredListeners,
+  BLOCKNAME_ATTRIBUTE,
   EventContractDetails,
   JSACTION_EVENT_CONTRACT,
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
+import {hydrateFromBlockName} from './api';
 
 /**
- * A set of DOM elements with `jsaction` attributes.
+ * A map of DOM elements with `jsaction` attributes grouped by action names.
  */
-const jsactionSet = new Set<Element>();
+let jsActionMap = new Map<string, Set<Element>>();
 
 function isGlobalEventDelegationEnabled(injector: Injector) {
   return injector.get(IS_GLOBAL_EVENT_DELEGATION_ENABLED, false);
@@ -88,10 +91,11 @@ export function withEventReplay(): Provider[] {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
         const injector = inject(Injector);
+        // TODO: is this a problem?
         if (isPlatformBrowser(injector) && shouldEnableEventReplay(injector)) {
           setStashFn((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
             sharedStashFunction(rEl, eventName, listenerFn);
-            jsactionSet.add(rEl as unknown as Element);
+            sharedMapFunction(rEl, jsActionMap);
           });
         }
       },
@@ -114,9 +118,10 @@ export function withEventReplay(): Provider[] {
             whenStable(appRef).then(() => {
               const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
               initEventReplay(eventContractDetails, injector);
-              jsactionSet.forEach(removeListeners);
+              removeListenersFromBlocks(['']);
               // After hydration, we shouldn't need to do anymore work related to
               // event replay anymore.
+              // TODO: is this a problem for partial hydration?
               setStashFn(() => {});
             });
           };
@@ -130,6 +135,7 @@ export function withEventReplay(): Provider[] {
 
 const initEventReplay = (eventDelegation: EventContractDetails, injector: Injector) => {
   const appId = injector.get(APP_ID);
+  const appRef = injector.get(ApplicationRef);
   // This is set in packages/platform-server/src/utils.ts
   const earlyJsactionData = window._ejsas![appId]!;
   const eventContract = (eventDelegation.instance = new EventContract(
@@ -144,7 +150,9 @@ const initEventReplay = (eventDelegation: EventContractDetails, injector: Inject
   const eventInfos = getAppScopedQueuedEventInfos(appId);
   eventContract.replayEarlyEventInfos(eventInfos);
   clearAppScopedEarlyEventContract(appId);
-  const dispatcher = new EventDispatcher(invokeRegisteredListeners);
+  const dispatcher = new EventDispatcher((event) => {
+    invokeRegisteredReplayListeners(appRef, event);
+  });
   registerDispatcher(eventContract, dispatcher);
 };
 
@@ -195,4 +203,45 @@ export function collectDomEventsInfo(
     }
   }
   return domEventsInfo;
+}
+
+export function invokeRegisteredReplayListeners(
+  appRef: ApplicationRef,
+  event: Event,
+  hydratedBlocks?: Set<string>,
+) {
+  const el = (event.currentTarget as Element) || (event.target as Element);
+  const blockName = (el && el.getAttribute(BLOCKNAME_ATTRIBUTE)) ?? '';
+  if (
+    event.eventPhase === EventPhase.REPLAY ||
+    (blockName !== '' && hydratedBlocks && hydratedBlocks.has(blockName))
+  ) {
+    const handlerFns = el?.__jsaction_fns?.get(event.type);
+    if (!handlerFns) {
+      return;
+    }
+    for (const handler of handlerFns) {
+      handler(event);
+    }
+    removeListenersFromBlocks(hydratedBlocks ? [...hydratedBlocks] : ['']);
+  } else {
+    if (/d\d+/.test(blockName)) {
+      triggerBlockHydration(appRef, event, blockName);
+    }
+  }
+}
+
+async function triggerBlockHydration(appRef: ApplicationRef, event: Event, blockName: string) {
+  const hydratedBlocks = await hydrateFromBlockName(appRef, blockName);
+  hydratedBlocks.add(blockName);
+  invokeRegisteredReplayListeners(appRef, event, hydratedBlocks);
+}
+
+function removeListenersFromBlocks(blockNames: string[]) {
+  let blockList: Element[] = [];
+  for (let blockName of blockNames) {
+    blockList = [...blockList, ...jsActionMap.get(blockName)!];
+  }
+  const replayList = new Set(blockList);
+  replayList.forEach(removeListeners);
 }

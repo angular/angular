@@ -21,13 +21,15 @@ import {RElement} from './render3/interfaces/renderer_dom';
 import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './hydration/tokens';
 import {OnDestroy} from './interface/lifecycle_hooks';
 
+export const BLOCKNAME_ATTRIBUTE = 'ngb';
+
 declare global {
   interface Element {
     __jsaction_fns: Map<string, Function[]> | undefined;
   }
 }
 
-export function invokeRegisteredListeners(event: Event) {
+export function invokeRegisteredDelegationListeners(event: Event) {
   const handlerFns = (event.currentTarget as Element)?.__jsaction_fns?.get(event.type);
   if (!handlerFns) {
     return;
@@ -37,13 +39,23 @@ export function invokeRegisteredListeners(event: Event) {
   }
 }
 
-export function setJSActionAttributes(nativeElement: Element, eventTypes: string[]) {
+export function setJSActionAttributes(
+  nativeElement: Element,
+  eventTypes: string[],
+  parentDeferBlockId: string | null = null,
+) {
   if (!eventTypes.length) {
     return;
   }
   const parts = eventTypes.reduce((prev, curr) => prev + curr + ':;', '');
   const existingAttr = nativeElement.getAttribute(Attribute.JSACTION);
+  //  This is required to be a module accessor to appease security tests on setAttribute.
   nativeElement.setAttribute(Attribute.JSACTION, `${existingAttr ?? ''}${parts}`);
+
+  const blockName = parentDeferBlockId ?? '';
+  if (blockName !== '' && parts.length > 0) {
+    nativeElement.setAttribute(BLOCKNAME_ATTRIBUTE, blockName);
+  }
 }
 
 export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn: Function) => {
@@ -53,6 +65,16 @@ export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn
   eventListeners.push(listenerFn);
   eventListenerMap.set(eventType, eventListeners);
   el.__jsaction_fns = eventListenerMap;
+};
+
+export const sharedMapFunction = (rEl: RElement, jsActionMap: Map<string, Set<Element>>) => {
+  let blockName = rEl.getAttribute(BLOCKNAME_ATTRIBUTE) ?? '';
+  const el = rEl as unknown as Element;
+  const blockSet = jsActionMap.get(blockName) ?? new Set<Element>();
+  if (!blockSet.has(el)) {
+    blockSet.add(el);
+  }
+  jsActionMap.set(blockName, blockSet);
 };
 
 export const removeListeners = (el: Element) => {
@@ -125,6 +147,6 @@ export const initGlobalEventDelegation = (
   const eventContract = (eventContractDetails.instance = new EventContract(
     new EventContractContainer(document.body),
   ));
-  const dispatcher = new EventDispatcher(invokeRegisteredListeners, /** clickModSupport */ false);
+  const dispatcher = new EventDispatcher(invokeRegisteredDelegationListeners, /** clickModSupport */ false);
   registerDispatcher(eventContract, dispatcher);
 };
