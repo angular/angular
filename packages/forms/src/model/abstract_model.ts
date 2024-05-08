@@ -103,32 +103,12 @@ export class ValueChangeEvent<T> extends ControlEvent<T> {
 }
 
 /**
- * @deprecated use `PristineChangeEvent` symbol instead.
- */
-
-export class PristineEvent extends ControlEvent {
-  constructor(
-    public readonly pristine: boolean,
-    public readonly source: AbstractControl,
-  ) {
-    super();
-  }
-}
-
-/**
  * Event fired when the control's pristine state changes (pristine <=> dirty).
  *
- * @publicApi
- */
-
-export class PristineChangeEvent extends PristineEvent {}
-
-/**
- * @deprecated use `TouchedChangeEvent` symbol instead.
- */
-export class TouchedEvent extends ControlEvent {
+ * @publicApi */
+export class PristineChangeEvent extends ControlEvent {
   constructor(
-    public readonly touched: boolean,
+    public readonly pristine: boolean,
     public readonly source: AbstractControl,
   ) {
     super();
@@ -140,14 +120,9 @@ export class TouchedEvent extends ControlEvent {
  *
  * @publicApi
  */
-export class TouchedChangeEvent extends TouchedEvent {}
-
-/**
- * @deprecated use `StatusChangeEvent` symbol instead.
- */
-export class StatusEvent extends ControlEvent {
+export class TouchedChangeEvent extends ControlEvent {
   constructor(
-    public readonly status: FormControlStatus,
+    public readonly touched: boolean,
     public readonly source: AbstractControl,
   ) {
     super();
@@ -159,7 +134,14 @@ export class StatusEvent extends ControlEvent {
  *
  * @publicApi
  */
-export class StatusChangeEvent extends StatusEvent {}
+export class StatusChangeEvent extends ControlEvent {
+  constructor(
+    public readonly status: FormControlStatus,
+    public readonly source: AbstractControl,
+  ) {
+    super();
+  }
+}
 
 /**
  * Event fired when a form is submitted
