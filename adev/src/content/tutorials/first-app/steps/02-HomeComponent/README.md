@@ -70,11 +70,11 @@ In the **Edit** pane of your IDE:
 
 1. In `app.component.ts`, in `@Component`, update the `imports` array property and add `HomeComponent`.
 
-    <docs-code header="Replace in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[7,9]"/>
+    <docs-code header="Replace in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[7]"/>
 
 1. In `app.component.ts`, in `@Component`, update the `template` property to include the following HTML code.
 
-    <docs-code header="Replace in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[10,19]"/>
+    <docs-code header="Replace in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[8,17]"/>
 
 1. Save your changes to  `app.component.ts`.
 1. If `ng serve` is running, the app should update.
@@ -87,6 +87,7 @@ In the **Edit** pane of your IDE:
 </docs-step>
 
 <docs-step title="Add features to `HomeComponent`">
+
 In this step you add features to `HomeComponent`.
 
 In the previous step, you added the default `HomeComponent` to your app's template so its default HTML appeared in the app.
@@ -99,7 +100,7 @@ In the **Edit** pane of your IDE:
 1. In the `first-app` directory, open `home.component.ts` in the editor.
 1. In `home.component.ts`, in `@Component`, update the `template` property with this code.
 
-    <docs-code header="Replace in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.component.ts" visibleLines="[10,17]"/>
+    <docs-code header="Replace in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.component.ts" visibleLines="[8,15]"/>
 
 1. Next, open `home.component.css` in the editor and update the content with these styles.
 
