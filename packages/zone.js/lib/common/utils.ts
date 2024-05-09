@@ -518,32 +518,3 @@ export function patchMicroTask(
 export function attachOriginToPatched(patched: Function, original: any) {
   (patched as any)[zoneSymbol('OriginalDelegate')] = original;
 }
-
-let isDetectedIEOrEdge = false;
-let ieOrEdge = false;
-
-export function isIE() {
-  try {
-    const ua = internalWindow.navigator.userAgent;
-    if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident/') !== -1) {
-      return true;
-    }
-  } catch (error) {}
-  return false;
-}
-
-export function isIEOrEdge() {
-  if (isDetectedIEOrEdge) {
-    return ieOrEdge;
-  }
-
-  isDetectedIEOrEdge = true;
-
-  try {
-    const ua = internalWindow.navigator.userAgent;
-    if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident/') !== -1 || ua.indexOf('Edge/') !== -1) {
-      ieOrEdge = true;
-    }
-  } catch (error) {}
-  return ieOrEdge;
-}

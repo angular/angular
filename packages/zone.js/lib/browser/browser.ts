@@ -29,13 +29,6 @@ import {eventTargetPatch, patchEvent} from './event-target';
 import {propertyDescriptorPatch} from './property-descriptor';
 
 export function patchBrowser(Zone: ZoneType): void {
-  Zone.__load_patch('legacy', (global: any) => {
-    const legacyPatch = global[Zone.__symbol__('legacyPatch')];
-    if (legacyPatch) {
-      legacyPatch();
-    }
-  });
-
   Zone.__load_patch('timers', (global: any) => {
     const set = 'set';
     const clear = 'clear';

@@ -368,7 +368,6 @@ export declare interface ZonePrivate {
     metaCreator: (self: any, args: any[]) => any,
   ) => void;
   patchEventPrototype: (_global: any, api: ZonePrivate) => void;
-  isIEOrEdge: () => boolean;
   ObjectDefineProperty: (
     o: any,
     p: PropertyKey,
@@ -1581,7 +1580,6 @@ export function initZone(): ZoneType {
     patchThen: () => noop,
     patchMacroTask: () => noop,
     patchEventPrototype: () => noop,
-    isIEOrEdge: () => false,
     getGlobalObjects: () => undefined,
     ObjectDefineProperty: () => noop,
     ObjectGetOwnPropertyDescriptor: () => undefined,

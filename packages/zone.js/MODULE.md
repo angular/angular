@@ -40,7 +40,6 @@ Below is the full list of currently supported modules.
 |IntersectionObserver|Intersection will be patched as Zone aware operation|__Zone_disable_IntersectionObserver = true|
 |FileReader|FileReader will be patched as Zone aware operation|__Zone_disable_FileReader = true|
 |canvas|HTMLCanvasElement.toBlob will be patched as Zone aware operation|__Zone_disable_canvas = true|
-|IE BrowserTools check|in IE, browser tool will not use zone patched eventListener|__Zone_disable_IE_check = true|
 |CrossContext check|in webdriver, enable check event listener is cross context|__Zone_enable_cross_context_check = true|
 |XHR|XMLHttpRequest will be patched as Zone aware MacroTask|__Zone_disable_XHR = true|
 |geolocation|navigator.geolocation's prototype will be patched as Zone.run|__Zone_disable_geolocation = true|
