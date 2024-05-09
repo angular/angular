@@ -65,9 +65,6 @@ export type ControlConfig<T> = [
   (AsyncValidatorFn | AsyncValidatorFn[])?,
 ];
 
-// Disable clang-format to produce clearer formatting for this multiline type.
-// clang-format off
-
 /**
  * FormBuilder accepts values in various container shapes, as well as raw values.
  * Element returns the appropriate corresponding model class, given the container T.
@@ -117,8 +114,6 @@ export type ɵElement<T, N extends null> =
                               Exclude<U, ValidatorConfig | PermissiveAbstractControlOptions> | N
                             >
                           : FormControl<T | N>;
-
-// clang-format on
 
 /**
  * @description

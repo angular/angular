@@ -13,11 +13,9 @@
  */
 
 import {input, model, signal, ɵunwrapWritableSignal as unwrapWritableSignal} from '@angular/core';
-// clang-format off
 // import preserved to simplify `.d.ts` emit and simplify the `type_tester` logic.
 // tslint:disable-next-line no-duplicate-imports
 import {InputSignal, WritableSignal} from '@angular/core';
-// clang-format on
 
 export class SignalModelSignatureTest {
   /** string | undefined */

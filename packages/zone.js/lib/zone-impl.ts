@@ -1291,14 +1291,12 @@ export function initZone(): ZoneType {
         if (this._hasTaskZS) {
           returnTask._zoneDelegates!.push(this._hasTaskDlgtOwner!);
         }
-        // clang-format off
         returnTask = this._scheduleTaskZS.onScheduleTask!(
           this._scheduleTaskDlgt!,
           this._scheduleTaskCurrZone!,
           targetZone,
           task,
         ) as ZoneTask<any>;
-        // clang-format on
         if (!returnTask) returnTask = task as ZoneTask<any>;
       } else {
         if (task.scheduleFn) {

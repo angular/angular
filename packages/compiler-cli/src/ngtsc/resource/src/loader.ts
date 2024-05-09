@@ -232,14 +232,13 @@ export class AdapterResourceLoader implements ResourceLoader {
       failedLookupLocations: ReadonlyArray<string>;
     };
 
-    // clang-format off
     const failedLookup = ts.resolveModuleName(
       url + RESOURCE_MARKER,
       fromFile,
       this.options,
       this.lookupResolutionHost,
     ) as ResolvedModuleWithFailedLookupLocations;
-    // clang-format on
+
     if (failedLookup.failedLookupLocations === undefined) {
       throw new Error(
         `Internal error: expected to find failedLookupLocations during resolution of resource '${url}' in context of ${fromFile}`,

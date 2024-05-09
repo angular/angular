@@ -301,7 +301,6 @@ function hash32(view: DataView, length: number, c: number): number {
   return mix(a, b, c)[2];
 }
 
-// clang-format off
 function mix(a: number, b: number, c: number): [number, number, number] {
   a -= b;
   a -= c;
@@ -332,7 +331,6 @@ function mix(a: number, b: number, c: number): [number, number, number] {
   c ^= b >>> 15;
   return [a, b, c];
 }
-// clang-format on
 
 // Utils
 
