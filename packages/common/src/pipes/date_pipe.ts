@@ -58,7 +58,6 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
   ngDevMode ? 'DATE_PIPE_DEFAULT_OPTIONS' : '',
 );
 
-// clang-format off
 /**
  * @ngModule CommonModule
  * @description
@@ -217,7 +216,6 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
  *
  * @publicApi
  */
-// clang-format on
 @Pipe({
   name: 'date',
   standalone: true,

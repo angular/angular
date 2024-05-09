@@ -46,11 +46,7 @@ function getDiagnosticSourceCode(diag: ts.Diagnostic): string {
   return diag.file!.text.slice(diag.start!, diag.start! + diag.length!);
 }
 
-runInEachFileSystem(allTests);
-
-// Wrap all tests into a function to work around clang-format going crazy and (poorly)
-// reformatting the entire file.
-function allTests(os: string) {
+runInEachFileSystem((os: string) => {
   describe('ngtsc behavioral tests', () => {
     let env!: NgtscTestEnvironment;
 
@@ -10505,4 +10501,4 @@ function allTests(os: string) {
     expect(guard(node)).toBe(true);
     return node as T;
   }
-}
+});

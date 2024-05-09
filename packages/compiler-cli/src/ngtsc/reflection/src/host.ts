@@ -28,11 +28,8 @@ export interface Decorator {
   /**
    * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
    * if the decorator was declared in the same module and not imported.
-   *
-   * Note: this field is declared using computed property syntax to work around a clang-format bug
-   * that resulted in inconsistent indentation of this comment block.
    */
-  ['import']: Import | null;
+  import: Import | null;
 
   /**
    * TypeScript reference to the decorator itself.

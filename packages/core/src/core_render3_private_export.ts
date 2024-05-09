@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// clang-format off
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.
 //
@@ -301,5 +300,3 @@ export {
 } from './render3/deps_tracker/deps_tracker';
 export {generateStandaloneInDeclarationsError as ɵgenerateStandaloneInDeclarationsError} from './render3/jit/module';
 export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
-
-// clang-format on

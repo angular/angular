@@ -1402,7 +1402,6 @@ export class NgCompiler {
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
-      // clang-format off
       new DirectiveDecoratorHandler(
         reflector,
         evaluator,
@@ -1422,7 +1421,6 @@ export class NgCompiler {
         compilationMode,
         !!this.options.generateExtraImportsInLocalMode,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,
-      // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(

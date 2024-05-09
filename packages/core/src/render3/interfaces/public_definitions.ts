@@ -10,7 +10,6 @@
 
 // Formatting does horrible things to these declarations.
 
-// clang-format off
 /**
  * @publicApi
  */
@@ -68,7 +67,6 @@ export type ɵɵPipeDeclaration<
   // are not standalone.
   IsStandalone extends boolean = false,
 > = unknown;
-// clang-format on
 
 /**
  * @publicApi

@@ -352,9 +352,6 @@ export type ɵRawValue<T extends AbstractControl | undefined> =
       : never
     : never;
 
-// Disable clang-format to produce clearer formatting for these multiline types.
-// clang-format off
-
 /**
  * Tokenize splits a string literal S by a delimiter D.
  */
@@ -420,8 +417,6 @@ export type ɵGetProperty<T, K> =
       ? ɵNavigate<T, ɵWriteable<K>>
       : // Fall through permissively if we can't calculate the type of K.
         any;
-
-// clang-format on
 
 /**
  * This is the base class for `FormControl`, `FormGroup`, and `FormArray`.

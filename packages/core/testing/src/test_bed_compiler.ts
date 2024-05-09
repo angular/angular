@@ -937,7 +937,6 @@ export class TestBedCompiler {
     ];
     const imports = [RootScopeModule, this.additionalModuleTypes, this.imports || []];
 
-    // clang-format off
     compileNgModuleDefs(
       this.testModuleType,
       {
@@ -948,7 +947,6 @@ export class TestBedCompiler {
       },
       /* allowDuplicateDeclarationsInRoot */ true,
     );
-    // clang-format on
 
     this.applyProviderOverridesInScope(this.testModuleType);
   }

@@ -10,7 +10,6 @@
 // it on one line, too, which has gotten very hard to read & manage. So disable the formatter for
 // this statement only.
 
-/* clang-format off */
 import {
   Component,
   ComponentRef,
@@ -42,8 +41,6 @@ import {
   ɵstringify as stringify,
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
 } from '@angular/core';
-
-/* clang-format on */
 
 import {
   ComponentFixture,
