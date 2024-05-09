@@ -45,7 +45,6 @@ export {NgModuleType} from '../metadata/ng_module_def';
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
 export {ɵɵgetInheritedFactory} from './di';
 export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
-// clang-format off
 export {
   store,
   ɵɵadvance,
@@ -209,7 +208,6 @@ export {ɵɵresolveBody, ɵɵresolveDocument, ɵɵresolveWindow} from './util/mi
 export {ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound';
 export {ɵɵgetComponentDepsFactory} from './local_compilation';
 export {ɵsetClassDebugInfo} from './debug/set_debug_info';
-// clang-format on
 
 export {
   ComponentDebugMetadata,

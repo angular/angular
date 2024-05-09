@@ -264,7 +264,6 @@ export enum HydrationStatus {
   Mismatched = 'mismatched',
 }
 
-// clang-format off
 export type HydrationInfo =
   | {
       status: HydrationStatus.Hydrated | HydrationStatus.Skipped;
@@ -274,7 +273,6 @@ export type HydrationInfo =
       actualNodeDetails: string | null;
       expectedNodeDetails: string | null;
     };
-// clang-format on
 
 const HYDRATION_INFO_KEY = '__ngDebugHydrationInfo__';
 

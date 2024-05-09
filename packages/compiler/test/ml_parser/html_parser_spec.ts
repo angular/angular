@@ -850,7 +850,6 @@ describe('HtmlParser', () => {
       });
 
       it('should parse nested blocks', () => {
-        // clang-format off
         const markup =
           `<root-sibling-one/>` +
           `@root {` +
@@ -877,7 +876,6 @@ describe('HtmlParser', () => {
           `<outer-child-three/>` +
           `}` +
           `} <root-sibling-two/>`;
-        // clang-format on
 
         expect(humanizeDom(parser.parse(markup, 'TestComp'))).toEqual([
           [html.Element, 'root-sibling-one', 0],

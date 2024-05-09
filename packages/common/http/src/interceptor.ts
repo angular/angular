@@ -181,14 +181,12 @@ function chainedInterceptorFn(
   interceptorFn: HttpInterceptorFn,
   injector: EnvironmentInjector,
 ): ChainedInterceptorFn<unknown> {
-  // clang-format off
   return (initialRequest, finalHandlerFn) =>
     runInInjectionContext(injector, () =>
       interceptorFn(initialRequest, (downstreamRequest) =>
         chainTailFn(downstreamRequest, finalHandlerFn),
       ),
     );
-  // clang-format on
 }
 
 /**

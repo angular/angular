@@ -60,11 +60,9 @@ function createTestSupportFor(basePath: string) {
     'lib': Object.freeze([
       path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
     ]) as string[],
-    // clang-format off
     'paths': Object.freeze({'@angular/*': ['./node_modules/@angular/*']}) as {
       [index: string]: string[];
     },
-    // clang-format on
   };
 
   return {

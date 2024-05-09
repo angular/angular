@@ -733,15 +733,12 @@ function extract(
     throw new Error(`unexpected errors: ${result.errors.join('\n')}`);
   }
 
-  // clang-format off
-  // https://github.com/angular/clang-format/issues/35
   return result.messages.map((message) => [
     serializeI18nNodes(message.nodes),
     message.meaning,
     message.description,
     message.id,
   ]) as [string[], string, string, string][];
-  // clang-format on
 }
 
 function extractErrors(
