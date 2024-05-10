@@ -76,7 +76,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     get parent(): FormGroup | FormArray | null;
     abstract patchValue(value: TValue, options?: Object): void;
     get pending(): boolean;
-    readonly pristine: boolean;
+    get pristine(): boolean;
     removeAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[]): void;
     removeValidators(validators: ValidatorFn | ValidatorFn[]): void;
     abstract reset(value?: TValue, options?: Object): void;
@@ -88,9 +88,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     setParent(parent: FormGroup | FormArray | null): void;
     setValidators(validators: ValidatorFn | ValidatorFn[] | null): void;
     abstract setValue(value: TRawValue, options?: Object): void;
-    readonly status: FormControlStatus;
+    get status(): FormControlStatus;
     readonly statusChanges: Observable<FormControlStatus>;
-    readonly touched: boolean;
+    get touched(): boolean;
     get untouched(): boolean;
     get updateOn(): FormHooks;
     updateValueAndValidity(opts?: {
@@ -505,7 +505,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     removeFormArray(dir: FormArrayName): void;
     removeFormGroup(dir: FormGroupName): void;
     resetForm(value?: any): void;
-    readonly submitted: boolean;
+    get submitted(): boolean;
     updateModel(dir: FormControlName, value: any): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": { "alias": "formGroup"; "required": false; }; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
@@ -702,7 +702,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     setValue(value: {
         [key: string]: any;
     }): void;
-    readonly submitted: boolean;
+    get submitted(): boolean;
     updateModel(dir: NgControl, value: any): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgForm, "form:not([ngNoForm]):not([formGroup]),ng-form,[ngForm]", ["ngForm"], { "options": { "alias": "ngFormOptions"; "required": false; }; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;

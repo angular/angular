@@ -90,6 +90,12 @@
     "name": "COMPOSITION_BUFFER_MODE"
   },
   {
+    "name": "COMPUTED_NODE"
+  },
+  {
+    "name": "COMPUTING"
+  },
+  {
     "name": "CONTAINER_HEADER_OFFSET"
   },
   {
@@ -199,6 +205,9 @@
   },
   {
     "name": "ENVIRONMENT_INITIALIZER"
+  },
+  {
+    "name": "ERRORED"
   },
   {
     "name": "EVENT_MANAGER_PLUGINS"
@@ -507,6 +516,9 @@
     "name": "SIGNAL"
   },
   {
+    "name": "SIGNAL_NODE"
+  },
+  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {
@@ -580,6 +592,9 @@
   },
   {
     "name": "TouchedChangeEvent"
+  },
+  {
+    "name": "UNSET"
   },
   {
     "name": "USE_VALUE"
@@ -747,6 +762,9 @@
     "name": "assertConsumerNode"
   },
   {
+    "name": "assertProducerNode"
+  },
+  {
     "name": "attachInjectFlag"
   },
   {
@@ -810,6 +828,9 @@
     "name": "computeStaticStyling"
   },
   {
+    "name": "computed"
+  },
+  {
     "name": "concatStringsWithSpace"
   },
   {
@@ -819,6 +840,9 @@
     "name": "configureViewWithDirective"
   },
   {
+    "name": "consumerAfterComputation"
+  },
+  {
     "name": "consumerBeforeComputation"
   },
   {
@@ -826,6 +850,9 @@
   },
   {
     "name": "consumerIsLive"
+  },
+  {
+    "name": "consumerMarkDirty"
   },
   {
     "name": "consumerPollProducersForChange"
@@ -882,6 +909,9 @@
     "name": "createOperatorSubscriber"
   },
   {
+    "name": "createPlatform"
+  },
+  {
     "name": "createPlatformFactory"
   },
   {
@@ -892,6 +922,9 @@
   },
   {
     "name": "deepForEachProvider"
+  },
+  {
+    "name": "defaultEquals"
   },
   {
     "name": "defaultIterableDiffersFactory"
@@ -1203,6 +1236,9 @@
     "name": "importProvidersFrom"
   },
   {
+    "name": "inNotificationPhase"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
@@ -1288,6 +1324,9 @@
   },
   {
     "name": "isComponentHost"
+  },
+  {
+    "name": "isConsumerNode"
   },
   {
     "name": "isContentQueryHost"
@@ -1446,6 +1485,9 @@
     "name": "markViewForRefresh"
   },
   {
+    "name": "markedFeatures"
+  },
+  {
     "name": "maybeUnwrapEmpty"
   },
   {
@@ -1545,6 +1587,9 @@
     "name": "parseAndConvertBindingsForDefinition"
   },
   {
+    "name": "performanceMarkFeature"
+  },
+  {
     "name": "pickAsyncValidators"
   },
   {
@@ -1557,13 +1602,28 @@
     "name": "platformCore"
   },
   {
+    "name": "postSignalSetFn"
+  },
+  {
     "name": "processInjectorTypesWithProviders"
+  },
+  {
+    "name": "producerAccessed"
+  },
+  {
+    "name": "producerAddLiveConsumer"
+  },
+  {
+    "name": "producerNotifyConsumers"
   },
   {
     "name": "producerRemoveLiveConsumerAtIndex"
   },
   {
     "name": "producerUpdateValueVersion"
+  },
+  {
+    "name": "producerUpdatesAllowed"
   },
   {
     "name": "profiler"
@@ -1734,6 +1794,15 @@
     "name": "shouldSearchParent"
   },
   {
+    "name": "signal"
+  },
+  {
+    "name": "signalAsReadonlyFn"
+  },
+  {
+    "name": "signalSetFn"
+  },
+  {
     "name": "stashEventListener"
   },
   {
@@ -1744,6 +1813,12 @@
   },
   {
     "name": "stringifyCSSSelector"
+  },
+  {
+    "name": "throwInvalidWriteToSignalError"
+  },
+  {
+    "name": "throwInvalidWriteToSignalErrorFn"
   },
   {
     "name": "throwProviderNotFoundError"
@@ -1768,6 +1843,9 @@
   },
   {
     "name": "uniqueIdCounter"
+  },
+  {
+    "name": "untracked"
   },
   {
     "name": "unwrapRNode"
