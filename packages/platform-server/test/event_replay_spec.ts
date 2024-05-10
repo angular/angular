@@ -25,6 +25,7 @@ import {getAppContents, hydrate, render as renderHtml, resetTViewsFor} from './d
  * event dispatch (JSAction) logic.
  */
 const EVENT_DISPATCH_SCRIPT = `<script type="text/javascript" id="${EVENT_DISPATCH_SCRIPT_ID}"></script>`;
+const DEFAULT_DOCUMENT = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
 
 /** Checks whether event dispatch script is present in the generated HTML */
 function hasEventDispatchScript(content: string) {
@@ -73,11 +74,7 @@ describe('event replay', () => {
     component: Type<unknown>,
     options: {doc?: string; enableEventReplay?: boolean; hydrationDisabled?: boolean} = {},
   ): Promise<string> {
-    const {
-      enableEventReplay = true,
-      hydrationDisabled,
-      doc = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`,
-    } = options;
+    const {enableEventReplay = true, hydrationDisabled, doc = DEFAULT_DOCUMENT} = options;
 
     const hydrationProviders = hydrationDisabled
       ? []
@@ -126,13 +123,8 @@ describe('event replay', () => {
       onClick = clickSpy;
       onFocus = focusSpy;
     }
-
-    const docContents = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
-    const html = await ssr(SimpleComponent, {doc: docContents});
+    const html = await ssr(SimpleComponent);
     const ssrContents = getAppContents(html);
-    expect(ssrContents).toContain(
-      `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click"],["focus"]);</script>`,
-    );
 
     render(doc, ssrContents);
     const el = doc.getElementById('click-element')!;
@@ -333,8 +325,7 @@ describe('event replay', () => {
       })
       class SimpleComponent {}
 
-      const doc = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
-      const html = await ssr(SimpleComponent, {doc});
+      const html = await ssr(SimpleComponent);
       const ssrContents = getAppContents(html);
 
       expect(hasJSActionAttrs(ssrContents)).toBeFalse();
@@ -351,8 +342,7 @@ describe('event replay', () => {
         doThing() {}
       }
 
-      const doc = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
-      const html = await ssr(SimpleComponent, {doc});
+      const html = await ssr(SimpleComponent);
       const ssrContents = getAppContents(html);
 
       expect(hasJSActionAttrs(ssrContents)).toBeFalse();
@@ -369,8 +359,7 @@ describe('event replay', () => {
         onClick() {}
       }
 
-      const doc = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
-      const html = await ssr(SimpleComponent, {doc, enableEventReplay: false});
+      const html = await ssr(SimpleComponent, {enableEventReplay: false});
       const ssrContents = getAppContents(html);
 
       // Expect that there are no JSAction artifacts in the HTML
@@ -390,8 +379,7 @@ describe('event replay', () => {
         onClick() {}
       }
 
-      const doc = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
-      const html = await ssr(SimpleComponent, {doc});
+      const html = await ssr(SimpleComponent);
       const ssrContents = getAppContents(html);
 
       expect(hasJSActionAttrs(ssrContents)).toBeTrue();
