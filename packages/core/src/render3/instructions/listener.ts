@@ -34,9 +34,9 @@ import {
  * an actual implementation when the event replay feature is enabled via
  * `withEventReplay()` call.
  */
-let disableEventReplayFn = (el: RElement) => {};
+let disableEventReplayFn = (el: RElement, eventName: string, listenerFn: (e?: any) => any) => {};
 
-export function setDisableEventReplayImpl(fn: (el: RElement) => void) {
+export function setDisableEventReplayImpl(fn: typeof disableEventReplayFn) {
   disableEventReplayFn = fn;
 }
 
@@ -181,7 +181,7 @@ export function listenerInternal(
       ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
       : tNode.index;
 
-    disableEventReplayFn(native);
+    disableEventReplayFn(native, eventName, listenerFn);
 
     // In order to match current behavior, native DOM event listeners must be added for all
     // events (including outputs).
