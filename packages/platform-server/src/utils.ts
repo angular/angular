@@ -146,14 +146,6 @@ function insertEventRecordScript(
     const eventTypes = [];
     for (const eventType of events) {
       if (
-        eventType === 'mouseenter' ||
-        eventType === 'mouseleave' ||
-        eventType === 'pointerenter' ||
-        eventType === 'pointerleave'
-      ) {
-        continue;
-      }
-      if (
         eventType === 'focus' ||
         eventType === 'blur' ||
         eventType === 'error' ||
