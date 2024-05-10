@@ -20,11 +20,10 @@ import {APP_ID} from '../application/application_tokens';
 import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
-import {attachLViewId, readLView} from '../render3/context_discovery';
 import {setDisableEventReplayImpl} from '../render3/instructions/listener';
 import {TNode, TNodeType} from '../render3/interfaces/node';
-import {RElement, RNode} from '../render3/interfaces/renderer_dom';
-import {CLEANUP, LView, TVIEW, TView} from '../render3/interfaces/view';
+import {RNode} from '../render3/interfaces/renderer_dom';
+import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
 
@@ -43,7 +42,7 @@ function getJsactionData(container: EarlyJsactionDataContainer) {
 }
 
 const JSACTION_ATTRIBUTE = 'jsaction';
-const removeJsactionQueue: RElement[] = [];
+const jsactionMap: Map<Element, Map<string, Function[]>> = new Map();
 
 /**
  * Returns a set of providers required to setup support for event replay.
@@ -58,11 +57,18 @@ export function withEventReplay(): Provider[] {
     {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
-        setDisableEventReplayImpl((el: RElement) => {
-          if (el.hasAttribute(JSACTION_ATTRIBUTE)) {
+        setDisableEventReplayImpl((rEl, eventName, listenerFn) => {
+          if (rEl.hasAttribute(JSACTION_ATTRIBUTE)) {
+            const el = unwrapRNode(rEl) as Element;
             // We don't immediately remove the attribute here because
             // we need it for replay that happens after hydration.
-            removeJsactionQueue.push(el);
+            if (!jsactionMap.has(el)) {
+              jsactionMap.set(el, new Map());
+            }
+            if (!jsactionMap.get(el)!.has(eventName)) {
+              jsactionMap.get(el)!.set(eventName, []);
+            }
+            jsactionMap.get(el)!.get(eventName)!.push(listenerFn);
           }
         });
       },
@@ -101,14 +107,14 @@ export function withEventReplay(): Provider[] {
                     for (const event of queue) {
                       handleEvent(event);
                     }
+                    jsactionMap.clear();
                     queue.length = 0;
                   },
                 });
                 registerDispatcher(eventContract, dispatcher);
-                for (const el of removeJsactionQueue) {
+                for (const el of jsactionMap.keys()) {
                   el.removeAttribute(JSACTION_ATTRIBUTE);
                 }
-                removeJsactionQueue.length = 0;
               }
             });
           };
@@ -185,73 +191,13 @@ export function setJSActionAttribute(
   }
 }
 
-/**
- * Finds an LView that a given DOM element belongs to.
- */
-function getLViewByElement(target: HTMLElement): LView | null {
-  let lView = readLView(target);
-  if (lView) {
-    return lView;
-  } else {
-    // If this node doesn't have LView info attached, then we need to
-    // traverse upwards up the DOM to find the nearest element that
-    // has already been monkey patched with data.
-    let parent = target as HTMLElement;
-    while ((parent = parent.parentNode as HTMLElement)) {
-      lView = readLView(parent);
-      if (lView) {
-        // To prevent additional lookups, monkey-patch LView id onto this DOM node.
-        // TODO: consider patching all parent nodes that didn't have LView id, so that
-        // we can avoid lookups for more nodes.
-        attachLViewId(target, lView);
-        return lView;
-      }
-    }
-  }
-  return null;
-}
-
 function handleEvent(event: EventInfoWrapper) {
-  const nativeElement = event.getAction()!.element;
-  // Dispatch event via Angular's logic
-  if (nativeElement) {
-    const lView = getLViewByElement(nativeElement as HTMLElement);
-    if (lView !== null) {
-      const tView = lView[TVIEW];
-      const eventName = event.getEventType();
-      const origEvent = event.getEvent();
-      const listeners = getEventListeners(tView, lView, nativeElement, eventName);
-      for (const listener of listeners) {
-        listener(origEvent);
-      }
-    }
+  const nativeElement = unwrapRNode(event.getAction()!.element) as Element;
+  const handlerFns = jsactionMap.get(nativeElement)?.get(event.getEventType());
+  if (!handlerFns) {
+    return;
   }
-}
-
-type Listener = ((value: Event) => unknown) | (() => unknown);
-
-function getEventListeners(
-  tView: TView,
-  lView: LView,
-  nativeElement: Element,
-  eventName: string,
-): Listener[] {
-  const listeners: Listener[] = [];
-  const lCleanup = lView[CLEANUP];
-  const tCleanup = tView.cleanup;
-  if (tCleanup && lCleanup) {
-    for (let i = 0; i < tCleanup.length; ) {
-      const storedEventName = tCleanup[i++];
-      const nativeElementIndex = tCleanup[i++];
-      if (typeof storedEventName === 'string') {
-        const listenerElement = unwrapRNode(lView[nativeElementIndex]) as any as Element;
-        const listener: Listener = lCleanup[tCleanup[i++]];
-        i++; // increment to the next position;
-        if (listenerElement === nativeElement && eventName === storedEventName) {
-          listeners.push(listener);
-        }
-      }
-    }
+  for (const handler of handlerFns) {
+    handler(event.getEvent());
   }
-  return listeners;
 }
