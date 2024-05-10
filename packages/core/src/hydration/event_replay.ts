@@ -142,6 +142,14 @@ export function collectDomEventsInfo(
       continue;
     }
     const name: string = firstParam;
+    if (
+      name === 'mouseenter' ||
+      name === 'mouseleave' ||
+      name === 'pointerenter' ||
+      name === 'pointerleave'
+    ) {
+      continue;
+    }
     eventTypesToReplay.add(name);
     const listenerElement = unwrapRNode(lView[secondParam]) as any as Element;
     i++; // move the cursor to the next position (location of the listener idx)
