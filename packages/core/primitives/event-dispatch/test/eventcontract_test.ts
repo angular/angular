@@ -25,6 +25,10 @@ import {OWNER} from '../src/property';
 import {Restriction} from '../src/restriction';
 
 import {safeElement, testonlyHtml} from './html';
+import {
+  Dispatcher as LateDispatcher,
+  registerDispatcher as registerLateDispatcher,
+} from '../src/dispatcher';
 
 declare global {
   interface Window extends EarlyJsactionDataContainer {}
@@ -849,17 +853,18 @@ describe('EventContract', () => {
     const actionElement = getRequiredElementById('anchor-click-action-element');
     const targetElement = getRequiredElementById('anchor-click-target-element');
 
-    const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-    createEventContract({
+    const eventContract = createEventContract({
       eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
-      dispatcher,
     });
+    const dispatch = jasmine.createSpy<(eventInfoWrapper: EventInfoWrapper) => void>('dispatch');
+    const dispatcher = new LateDispatcher(dispatch);
+    registerLateDispatcher(eventContract, dispatcher);
 
     const clickEvent = dispatchMouseEvent(targetElement);
 
-    expect(dispatcher).toHaveBeenCalledTimes(1);
-    const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    const eventInfoWrapper = dispatch.calls.mostRecent().args[0];
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
@@ -874,17 +879,18 @@ describe('EventContract', () => {
     const actionElement = getRequiredElementById('anchor-clickmod-action-element');
     const targetElement = getRequiredElementById('anchor-clickmod-target-element');
 
-    const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-    createEventContract({
+    const eventContract = createEventContract({
       eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
-      dispatcher,
     });
+    const dispatch = jasmine.createSpy<(eventInfoWrapper: EventInfoWrapper) => void>('dispatch');
+    const dispatcher = new LateDispatcher(dispatch);
+    registerLateDispatcher(eventContract, dispatcher);
 
     const clickEvent = dispatchMouseEvent(targetElement, {shiftKey: true});
 
-    expect(dispatcher).toHaveBeenCalledTimes(1);
-    const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    const eventInfoWrapper = dispatch.calls.mostRecent().args[0];
     expect(eventInfoWrapper.getEventType()).toBe('clickmod');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
@@ -966,17 +972,18 @@ describe('EventContract', () => {
       const actionElement = getRequiredElementById('a11y-anchor-click-action-element');
       const targetElement = getRequiredElementById('a11y-anchor-click-target-element');
 
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
+      const eventContract = createEventContract({
         eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
-        dispatcher,
       });
+      const dispatch = jasmine.createSpy<(eventInfoWrapper: EventInfoWrapper) => void>('dispatch');
+      const dispatcher = new LateDispatcher(dispatch);
+      registerLateDispatcher(eventContract, dispatcher);
 
       const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
 
-      expect(dispatcher).toHaveBeenCalledTimes(1);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      const eventInfoWrapper = dispatch.calls.mostRecent().args[0];
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
@@ -1095,19 +1102,20 @@ describe('EventContract', () => {
       const actionElement = getRequiredElementById('a11y-anchor-click-action-element');
       const targetElement = getRequiredElementById('a11y-anchor-click-target-element');
 
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContract = createEventContract({
         eventContractContainerManager: new EventContractContainer(container),
         exportAddA11yClickSupport: true,
         eventTypes: ['click'],
-        dispatcher,
       });
       addDeferredA11yClickSupport(eventContract);
+      const dispatch = jasmine.createSpy<(eventInfoWrapper: EventInfoWrapper) => void>('dispatch');
+      const dispatcher = new LateDispatcher(dispatch);
+      registerLateDispatcher(eventContract, dispatcher);
 
       const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
 
-      expect(dispatcher).toHaveBeenCalledTimes(1);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      const eventInfoWrapper = dispatch.calls.mostRecent().args[0];
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);

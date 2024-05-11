@@ -78,6 +78,10 @@ export class Dispatcher {
    */
   dispatch(eventInfo: EventInfo): void {
     const eventInfoWrapper = new EventInfoWrapper(eventInfo);
+    const action = eventInfoWrapper.getAction();
+    if (action && shouldPreventDefaultBeforeDispatching(action.element, eventInfoWrapper)) {
+      eventLib.preventDefault(eventInfoWrapper.getEvent());
+    }
     if (eventInfoWrapper.getIsReplay()) {
       if (!this.eventReplayer) {
         return;
@@ -129,6 +133,24 @@ export function stopPropagation(eventInfoWrapper: EventInfoWrapper) {
     return;
   }
   event.stopPropagation();
+}
+
+/**
+ * Returns true if the default action of this event should be prevented before
+ * this event is dispatched.
+ */
+function shouldPreventDefaultBeforeDispatching(
+  actionElement: Element,
+  eventInfoWrapper: EventInfoWrapper,
+): boolean {
+  // Prevent browser from following <a> node links if a jsaction is present
+  // and we are dispatching the action now. Note that the targetElement may be
+  // a child of an anchor that has a jsaction attached. For that reason, we
+  // need to check the actionElement rather than the targetElement.
+  return (
+    (actionElement.tagName === 'A' && eventInfoWrapper.getEventType() === EventType.CLICK) ||
+    eventInfoWrapper.getEventType() === EventType.CLICKMOD
+  );
 }
 
 /**

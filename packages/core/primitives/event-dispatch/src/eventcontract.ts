@@ -157,13 +157,6 @@ export class EventContract implements UnrenamedEventContract {
       return;
     }
     this.actionResolver.resolve(eventInfo);
-    const action = eventInfoLib.getAction(eventInfo);
-    if (action) {
-      if (shouldPreventDefaultBeforeDispatching(eventInfoLib.getActionElement(action), eventInfo)) {
-        eventLib.preventDefault(eventInfoLib.getEvent(eventInfo));
-      }
-    }
-
     this.dispatcher(eventInfo);
   }
 
@@ -384,24 +377,5 @@ export function addDeferredA11yClickSupport(eventContract: EventContract) {
     a11yClickLib.updateEventInfoForA11yClick,
     a11yClickLib.preventDefaultForA11yClick,
     a11yClickLib.populateClickOnlyAction,
-  );
-}
-
-/**
- * Returns true if the default action of this event should be prevented before
- * this event is dispatched.
- */
-function shouldPreventDefaultBeforeDispatching(
-  actionElement: Element,
-  eventInfo: eventInfoLib.EventInfo,
-): boolean {
-  // Prevent browser from following <a> node links if a jsaction is present
-  // and we are dispatching the action now. Note that the targetElement may be
-  // a child of an anchor that has a jsaction attached. For that reason, we
-  // need to check the actionElement rather than the targetElement.
-  return (
-    actionElement.tagName === 'A' &&
-    (eventInfoLib.getEventType(eventInfo) === EventType.CLICK ||
-      eventInfoLib.getEventType(eventInfo) === EventType.CLICKMOD)
   );
 }
