@@ -88,9 +88,7 @@ export class EventContract implements UnrenamedEventContract {
 
   private containerManager: EventContractContainerManager | null;
 
-  private readonly actionResolver = new ActionResolver({
-    syntheticMouseEventSupport: EventContract.MOUSE_SPECIAL_SUPPORT,
-  });
+  private readonly actionResolver?: ActionResolver;
 
   /**
    * The DOM events which this contract covers. Used to prevent double
@@ -127,8 +125,16 @@ export class EventContract implements UnrenamedEventContract {
     populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction,
   ) => void;
 
-  constructor(containerManager: EventContractContainerManager) {
+  constructor(
+    containerManager: EventContractContainerManager,
+    private readonly useActionResolver = true,
+  ) {
     this.containerManager = containerManager;
+    if (this.useActionResolver) {
+      this.actionResolver = new ActionResolver({
+        syntheticMouseEventSupport: EventContract.MOUSE_SPECIAL_SUPPORT,
+      });
+    }
     if (EventContract.A11Y_CLICK_SUPPORT) {
       // Add a11y click support to the `EventContract`.
       this.addA11yClickSupport();
@@ -156,7 +162,9 @@ export class EventContract implements UnrenamedEventContract {
       this.queuedEventInfos?.push(eventInfo);
       return;
     }
-    this.actionResolver.resolve(eventInfo);
+    if (this.useActionResolver) {
+      this.actionResolver!.resolve(eventInfo);
+    }
     this.dispatcher(eventInfo);
   }
 
@@ -347,11 +355,13 @@ export class EventContract implements UnrenamedEventContract {
     populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction,
   ) {
     this.addA11yClickListener = true;
-    this.actionResolver.addA11yClickSupport(
-      updateEventInfoForA11yClick,
-      preventDefaultForA11yClick,
-      populateClickOnlyAction,
-    );
+    if (this.useActionResolver) {
+      this.actionResolver!.addA11yClickSupport(
+        updateEventInfoForA11yClick,
+        preventDefaultForA11yClick,
+        populateClickOnlyAction,
+      );
+    }
   }
 }
 

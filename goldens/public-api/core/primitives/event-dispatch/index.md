@@ -9,7 +9,8 @@ export function bootstrapEarlyEventContract(field: string, container: HTMLElemen
 
 // @public
 export class Dispatcher {
-    constructor(dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void, { eventReplayer }?: {
+    constructor(dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void, { actionResolver, eventReplayer, }?: {
+        actionResolver?: ActionResolver;
         eventReplayer?: Replayer;
     });
     dispatch(eventInfo: EventInfo): void;
@@ -23,14 +24,14 @@ export interface EarlyJsactionDataContainer {
 
 // @public
 export class EventContract implements UnrenamedEventContract {
-    constructor(containerManager: EventContractContainerManager);
+    constructor(containerManager: EventContractContainerManager, useActionResolver?: boolean);
     // (undocumented)
     static A11Y_CLICK_SUPPORT: boolean;
     addA11yClickSupport(): void;
     addEvent(eventType: string, prefixedEventType?: string): void;
     cleanUp(): void;
     // (undocumented)
-    ecaacs?: (updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick, preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick, populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction) => void;
+    ecaacs?: (updateEventInfoForA11yClick: typeof a11yClick.updateEventInfoForA11yClick, preventDefaultForA11yClick: typeof a11yClick.preventDefaultForA11yClick, populateClickOnlyAction: typeof a11yClick.populateClickOnlyAction) => void;
     ecrd(dispatcher: Dispatcher_2, restriction: Restriction): void;
     exportAddA11yClickSupport(): void;
     handler(eventType: string): EventHandler | undefined;
