@@ -18,6 +18,7 @@ import {EventInfo, EventInfoWrapper} from './event_info';
 import {EventType} from './event_type';
 import {UnrenamedEventContract} from './eventcontract';
 import {Restriction} from './restriction';
+import {ActionResolver} from './action_resolver';
 
 /** Re-exports that should eventually be moved into this file. */
 export type {
@@ -79,9 +80,10 @@ export class LegacyDispatcher {
       eventInfoWrapper: EventInfoWrapper,
     ) => EventInfoWrapperHandler | void,
     {
+      actionResolver,
+      eventReplayer,
       stopPropagation = false,
-      eventReplayer = undefined,
-    }: {stopPropagation?: boolean; eventReplayer?: Replayer} = {},
+    }: {actionResolver?: ActionResolver; eventReplayer?: Replayer; stopPropagation?: boolean} = {},
   ) {
     this.eventReplayer = eventReplayer;
     this.dispatcher = new Dispatcher(
@@ -89,6 +91,7 @@ export class LegacyDispatcher {
         this.dispatchToHandler(eventInfoWrapper);
       },
       {
+        actionResolver,
         eventReplayer: (eventInfoWrappers) => {
           this.eventInfoWrapperQueue = eventInfoWrappers;
           this.eventReplayer?.(this.eventInfoWrapperQueue, this);
