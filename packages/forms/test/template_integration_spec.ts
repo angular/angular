@@ -721,7 +721,7 @@ describe('template-driven forms integration tests', () => {
           .withContext('Expected ngModelChanges not to fire if value unchanged.')
           .toEqual([]);
 
-        input.value = 'Carson';
+        input.value = 'Not Carson !'; // changing the existing input value
         dispatchEvent(input, 'input');
         fixture.detectChanges();
         tick();
@@ -1077,7 +1077,7 @@ describe('template-driven forms integration tests', () => {
           .toEqual([]);
 
         const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        input.value = 'Carson';
+        input.value = 'Not Carson !'; // Changing the existing input value
         dispatchEvent(input, 'input');
         fixture.detectChanges();
         tick();
@@ -1095,11 +1095,11 @@ describe('template-driven forms integration tests', () => {
 
         dispatchEvent(formEl, 'submit');
         fixture.detectChanges();
+        tick();
 
-        expect(fixture.componentInstance.events).toEqual(
-          ['fired'],
-          'Expected ngModelChanges not to fire again on submit unless value changed.',
-        );
+        expect(fixture.componentInstance.events)
+          .withContext('Expected ngModelChanges not to fire again on submit unless value changed.')
+          .toEqual(['fired']);
 
         input.value = 'Bess';
         dispatchEvent(input, 'input');
