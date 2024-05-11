@@ -13,8 +13,6 @@ export class Dispatcher {
         eventReplayer?: Replayer;
     });
     dispatch(eventInfo: EventInfo): void;
-    queueEventInfoWrapper(eventInfoWrapper: EventInfoWrapper): void;
-    scheduleEventReplay(): void;
 }
 
 // @public (undocumented)

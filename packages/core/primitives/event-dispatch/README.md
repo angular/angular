@@ -201,7 +201,7 @@ you'll need to create a `Dispatcher` and register it with the `EventContract`
 that has been queueing events.
 
 ```javascript
-import {Dispatcher, registerDispatcher} from '@angular/core/primitives/event-dispatch/src/dispatcher';
+import {Dispatcher, registerDispatcher} from '@angular/core/primitives/event-dispatch';
 
 function handleEvent(eventInfoWrapper) {
   // eventInfoWrapper contains all the information about the event

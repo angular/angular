@@ -27,8 +27,8 @@ export type EventInfoHandler = (eventInfoWrapper: EventInfoWrapper) => void;
  * A global handler is dispatched to before normal handler dispatch. Returning
  * false will `preventDefault` on the event.
  */
-
 export type GlobalHandler = (event: Event) => boolean | void;
+
 /**
  * Receives a DOM event, determines the jsaction associated with the source
  * element of the DOM event, and invokes the handler associated with the
@@ -36,7 +36,7 @@ export type GlobalHandler = (event: Event) => boolean | void;
  */
 export class Dispatcher {
   /** The queue of events. */
-  private readonly queuedEventInfoWrappers: EventInfoWrapper[] = [];
+  private readonly replayEventInfoWrappers: EventInfoWrapper[] = [];
   /** The replayer function to be called when there are queued events. */
   private eventReplayer?: Replayer;
   /** Whether the event replay is scheduled. */
@@ -82,35 +82,26 @@ export class Dispatcher {
       if (!this.eventReplayer) {
         return;
       }
-      this.queueEventInfoWrapper(eventInfoWrapper);
-      this.scheduleEventReplay();
+      this.scheduleEventInfoWrapperReplay(eventInfoWrapper);
       return;
     }
     this.dispatchDelegate(eventInfoWrapper);
   }
 
-  /** Queue an `EventInfoWrapper` for replay. */
-  queueEventInfoWrapper(eventInfoWrapper: EventInfoWrapper) {
-    this.queuedEventInfoWrappers.push(eventInfoWrapper);
-  }
-
   /**
-   * Replays queued events, if any. The replaying will happen in its own
+   * Schedules an `EventInfoWrapper` for replay. The replaying will happen in its own
    * stack once the current flow cedes control. This is done to mimic
    * browser event handling.
    */
-  scheduleEventReplay() {
-    if (
-      this.eventReplayScheduled ||
-      !this.eventReplayer ||
-      this.queuedEventInfoWrappers.length === 0
-    ) {
+  private scheduleEventInfoWrapperReplay(eventInfoWrapper: EventInfoWrapper) {
+    this.replayEventInfoWrappers.push(eventInfoWrapper);
+    if (this.eventReplayScheduled || !this.eventReplayer) {
       return;
     }
     this.eventReplayScheduled = true;
     Promise.resolve().then(() => {
       this.eventReplayScheduled = false;
-      this.eventReplayer!(this.queuedEventInfoWrappers);
+      this.eventReplayer!(this.replayEventInfoWrappers);
     });
   }
 }

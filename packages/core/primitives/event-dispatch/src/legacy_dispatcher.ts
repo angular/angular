@@ -60,6 +60,12 @@ export class LegacyDispatcher {
   /** The event replayer. */
   private eventReplayer?: Replayer;
 
+  /** The event infos that have be replayed. */
+  private eventInfoWrapperQueue?: EventInfoWrapper[];
+
+  /** Whether event replay is scheduled. */
+  private eventReplayScheduled: boolean = false;
+
   /**
    * Receives a DOM event, determines the jsaction associated with the source
    * element of the DOM event, and invokes the handler associated with the
@@ -84,7 +90,8 @@ export class LegacyDispatcher {
       },
       {
         eventReplayer: (eventInfoWrappers) => {
-          this.eventReplayer?.(eventInfoWrappers, this);
+          this.eventInfoWrapperQueue = eventInfoWrappers;
+          this.eventReplayer?.(this.eventInfoWrapperQueue, this);
         },
       },
     );
@@ -169,7 +176,7 @@ export class LegacyDispatcher {
     }
 
     // No handler was found.
-    this.dispatcher.queueEventInfoWrapper(eventInfoWrapper);
+    this.eventInfoWrapperQueue?.push(eventInfoWrapper);
   }
 
   /**
@@ -207,7 +214,7 @@ export class LegacyDispatcher {
       }
     }
 
-    this.dispatcher.scheduleEventReplay();
+    this.scheduleEventReplay();
   }
 
   /**
@@ -290,6 +297,22 @@ export class LegacyDispatcher {
    */
   setEventReplayer(eventReplayer: Replayer) {
     this.eventReplayer = eventReplayer;
+  }
+
+  /**
+   * Replays queued events, if any. The replaying will happen in its own
+   * stack once the current flow cedes control. This is done to mimic
+   * browser event handling.
+   */
+  private scheduleEventReplay() {
+    if (this.eventReplayScheduled || !this.eventReplayer || !this.eventInfoWrapperQueue?.length) {
+      return;
+    }
+    this.eventReplayScheduled = true;
+    Promise.resolve().then(() => {
+      this.eventReplayScheduled = false;
+      this.eventReplayer!(this.eventInfoWrapperQueue!, this);
+    });
   }
 }
 

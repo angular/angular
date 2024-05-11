@@ -1323,6 +1323,9 @@
     "name": "init_discovery_utils"
   },
   {
+    "name": "init_dispatcher"
+  },
+  {
     "name": "init_document"
   },
   {
