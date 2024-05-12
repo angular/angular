@@ -19,8 +19,8 @@ When you open the extension, you'll see two additional tabs:
 
 | Tabs                                     | Details |
 |:---                                      |:---     |
-| [Components](tools/devtools#components) | Lets you explore the components and directives in your application and preview or edit their state.                    |
-| [Profiler](tools/devtools#profiler)     | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
+| [Components](tools/devtools#debug-your-application) | Lets you explore the components and directives in your application and preview or edit their state.                    |
+| [Profiler](tools/devtools#profile-your-application)     | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
 
 <img src="assets/images/guide/devtools/devtools-tabs.png" alt="A screenshot of the top of Angular DevTools illustrating two tabs in the upper-left corner, one labeled 'Components' and another labeled 'Profiler'.">
 
@@ -108,7 +108,7 @@ Interact with your application to trigger change detection and generate data Ang
 To finish recording, click the circle again to **Stop recording**.
 
 You can also import an existing recording.
-Read more about this feature in the [Import recording](tools/devtools#import-recording) section.
+Read more about this feature in the [Import recording](tools/devtools#import-and-export-recordings) section.
 
 ### Understand your application's execution
 
