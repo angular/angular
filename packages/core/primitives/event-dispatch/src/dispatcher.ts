@@ -20,17 +20,6 @@ import {ActionResolver} from './action_resolver';
 export type Replayer = (eventInfoWrappers: EventInfoWrapper[]) => void;
 
 /**
- * A handler is dispatched to during normal handling.
- */
-export type EventInfoHandler = (eventInfoWrapper: EventInfoWrapper) => void;
-
-/**
- * A global handler is dispatched to before normal handler dispatch. Returning
- * false will `preventDefault` on the event.
- */
-export type GlobalHandler = (event: Event) => boolean | void;
-
-/**
  * Receives a DOM event, determines the jsaction associated with the source
  * element of the DOM event, and invokes the handler associated with the
  * jsaction.
@@ -50,20 +39,26 @@ export class Dispatcher {
 
   /**
    * Options are:
-   *   1. `eventReplayer`: When the event contract dispatches replay events
+   *   - `eventReplayer`: When the event contract dispatches replay events
    *      to the Dispatcher, the Dispatcher collects them and in the next tick
-   *      dispatches them to the `eventReplayer`.
+   *      dispatches them to the `eventReplayer`. Defaults to dispatching to `dispatchDelegate`.
    * @param dispatchDelegate A function that should handle dispatching an `EventInfoWrapper` to handlers.
    */
   constructor(
     private readonly dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void,
     {
-      actionResolver = undefined,
-      eventReplayer = undefined,
+      actionResolver,
+      eventReplayer,
     }: {actionResolver?: ActionResolver; eventReplayer?: Replayer} = {},
   ) {
     this.actionResolver = actionResolver;
-    this.eventReplayer = eventReplayer;
+    this.eventReplayer =
+      eventReplayer ??
+      ((eventInfoWrappers: EventInfoWrapper[]) => {
+        for (const eventInfoWrapper of eventInfoWrappers) {
+          this.dispatchDelegate(eventInfoWrapper);
+        }
+      });
   }
 
   /**
@@ -119,31 +114,6 @@ export class Dispatcher {
       this.eventReplayer!(this.replayEventInfoWrappers);
     });
   }
-}
-
-/** Stop propagation for an `EventInfo`. */
-export function stopPropagation(eventInfoWrapper: EventInfoWrapper) {
-  if (
-    eventLib.isGecko &&
-    (eventInfoWrapper.getTargetElement().tagName === 'INPUT' ||
-      eventInfoWrapper.getTargetElement().tagName === 'TEXTAREA') &&
-    eventInfoWrapper.getEventType() === EventType.FOCUS
-  ) {
-    /**
-     * Do nothing since stopping propagation on a focus event on an input
-     * element in Firefox makes the text cursor disappear:
-     * https://bugzilla.mozilla.org/show_bug.cgi?id=509684
-     */
-    return;
-  }
-
-  const event = eventInfoWrapper.getEvent();
-  // There are some cases where users of the `Dispatcher` will call dispatch
-  // with a fake event that does not support `stopPropagation`.
-  if (!event.stopPropagation) {
-    return;
-  }
-  event.stopPropagation();
 }
 
 /**
