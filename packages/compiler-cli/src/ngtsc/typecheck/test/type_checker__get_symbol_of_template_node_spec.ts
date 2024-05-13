@@ -1294,6 +1294,72 @@ runInEachFileSystem(() => {
         ).toEqual('inputB');
       });
 
+      // Note that `honorAccessModifiersForInputBindings` is `false` even with `--strictTemplates`,
+      // so this captures a potential common scenario, assuming the input is restricted.
+      it('should not throw when retrieving a symbol for a signal-input with restricted access', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const templateString = `
+          @if (true) {
+            <div dir [inputA]="'ok'"></div>
+          }
+        `;
+        const {program, templateTypeChecker} = setup(
+          [
+            {
+              fileName,
+              templates: {'Cmp': templateString},
+              declarations: [
+                {
+                  name: 'TestDir',
+                  selector: '[dir]',
+                  file: dirFile,
+                  type: 'directive',
+                  restrictedInputFields: ['inputA'],
+                  inputs: {
+                    inputA: {
+                      bindingPropertyName: 'inputA',
+                      isSignal: true,
+                      classPropertyName: 'inputA',
+                      required: false,
+                      transform: null,
+                    },
+                  },
+                },
+              ],
+            },
+            {
+              fileName: dirFile,
+              source: `
+                import {InputSignal} from '@angular/core';
+
+                export class TestDir {
+                  protected inputA: InputSignal<string> = null!;
+                }
+              `,
+              templates: {},
+            },
+          ],
+          {honorAccessModifiersForInputBindings: false},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+        const ifNode = nodes[0] as TmplAstIfBlock;
+        const ifBranchNode = ifNode.branches[0];
+        const testElement = ifBranchNode.children[0] as TmplAstElement;
+
+        const inputAbinding = testElement.inputs[0];
+        const aSymbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp);
+        expect(aSymbol)
+          .withContext(
+            'Symbol builder does not return symbols for restricted inputs with ' +
+              '`honorAccessModifiersForInputBindings = false` (same for decorator inputs)',
+          )
+          .toBe(null);
+      });
+
       it('does not retrieve a symbol for an input when undeclared', () => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');
