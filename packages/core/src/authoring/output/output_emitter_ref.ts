@@ -13,6 +13,8 @@ import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DestroyRef} from '../../linker/destroy_ref';
 
+import {signal} from '../../render3/reactivity/signal';
+import {computed} from '../../render3/reactivity/computed';
 import {OutputRef, OutputRefSubscription} from './output_ref';
 
 /**
@@ -30,8 +32,14 @@ import {OutputRef, OutputRefSubscription} from './output_ref';
  */
 export class OutputEmitterRef<T> implements OutputRef<T> {
   private destroyed = false;
-  private listeners: Array<(value: T) => void> | null = null;
+  private listeners = signal<Array<(value: T) => void> | null>(null);
   private errorHandler = inject(ErrorHandler, {optional: true});
+
+  /**
+   * The following signal indicates whether there are any active listeners
+   * registered for this output.
+   */
+  readonly observed = computed(() => (this.listeners()?.length ?? 0) > 0);
 
   /** @internal */
   destroyRef: DestroyRef = inject(DestroyRef);
@@ -40,7 +48,7 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
     // Clean-up all listeners and mark as destroyed upon destroy.
     this.destroyRef.onDestroy(() => {
       this.destroyed = true;
-      this.listeners = null;
+      this.listeners.set(null);
     });
   }
 
@@ -54,13 +62,17 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
       );
     }
 
-    (this.listeners ??= []).push(callback);
+    const listeners = this.listeners() ?? [];
+    listeners.push(callback);
+    this.listeners.set(listeners);
 
     return {
       unsubscribe: () => {
-        const idx = this.listeners?.indexOf(callback);
+        const listeners = this.listeners();
+        const idx = listeners?.indexOf(callback);
         if (idx !== undefined && idx !== -1) {
-          this.listeners?.splice(idx, 1);
+          listeners!.splice(idx, 1);
+          this.listeners.set(listeners);
         }
       },
     };
@@ -77,13 +89,15 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
       );
     }
 
-    if (this.listeners === null) {
+    const listeners = this.listeners();
+
+    if (listeners === null) {
       return;
     }
 
     const previousConsumer = setActiveConsumer(null);
     try {
-      for (const listenerFn of this.listeners) {
+      for (const listenerFn of listeners) {
         try {
           listenerFn(value);
         } catch (err: unknown) {

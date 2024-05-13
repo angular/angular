@@ -7,6 +7,7 @@
 import { EnvironmentProviders as EnvironmentProviders_2 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SIGNAL } from '@angular/core/primitives/signals';
+import { Signal as Signal_2 } from '@angular/core';
 import { SignalNode } from '@angular/core/primitives/signals';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
@@ -1294,6 +1295,7 @@ export interface OutputDecorator {
 export class OutputEmitterRef<T> implements OutputRef<T> {
     constructor();
     emit(value: T): void;
+    readonly observed: Signal_2<boolean>;
     // (undocumented)
     subscribe(callback: (value: T) => void): OutputRefSubscription;
 }

@@ -381,4 +381,42 @@ describe('output() function', () => {
       expect(triggered).toBe(1);
     });
   });
+
+  describe('observed()', () => {
+    it('should support counting listeners through observed()', () => {
+      @Component({
+        selector: 'app-dir',
+        template: 'Observed: {{ onBla.observed() }}',
+        standalone: true,
+      })
+      class Dir {
+        onBla = output<number>();
+      }
+
+      @Component({
+        template: `
+        @if (withListener) {
+          <app-dir (onBla)="true" />
+        } @else {
+          <app-dir />
+        }
+        `,
+        standalone: true,
+        imports: [Dir],
+      })
+      class App {
+        withListener = true;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toContain('Observed: true');
+
+      fixture.componentInstance.withListener = false;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toContain('Observed: false');
+    });
+  });
 });
