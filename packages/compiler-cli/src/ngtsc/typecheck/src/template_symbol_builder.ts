@@ -416,6 +416,7 @@ export class SymbolBuilder {
       }
 
       const signalInputAssignment = unwrapSignalInputWriteTAccessor(node.left);
+      let fieldAccessExpr: ts.PropertyAccessExpression | ts.ElementAccessExpression;
       let symbolInfo: TsNodeSymbolInfo | null = null;
 
       // Signal inputs need special treatment because they are generated with an extra keyed
@@ -424,9 +425,18 @@ export class SymbolBuilder {
       //   - The definition symbol of the input should be the input class member, and not the
       //     internal write accessor. Symbol should resolve `_t1.prop`.
       if (signalInputAssignment !== null) {
+        // Note: If the field expression for the input binding refers to just an identifier,
+        // then we are handling the case of a temporary variable being used for the input field.
+        // This is the case with `honorAccessModifiersForInputBindings = false` and in those cases
+        // we cannot resolve the owning directive, similar to how we guard above with `isAccessExpression`.
+        if (ts.isIdentifier(signalInputAssignment.fieldExpr)) {
+          continue;
+        }
+
         const fieldSymbol = this.getSymbolOfTsNode(signalInputAssignment.fieldExpr);
         const typeSymbol = this.getSymbolOfTsNode(signalInputAssignment.typeExpr);
 
+        fieldAccessExpr = signalInputAssignment.fieldExpr;
         symbolInfo =
           fieldSymbol === null || typeSymbol === null
             ? null
@@ -436,6 +446,7 @@ export class SymbolBuilder {
                 tsType: typeSymbol.tsType,
               };
       } else {
+        fieldAccessExpr = node.left;
         symbolInfo = this.getSymbolOfTsNode(node.left);
       }
 
@@ -443,10 +454,7 @@ export class SymbolBuilder {
         continue;
       }
 
-      const target = this.getDirectiveSymbolForAccessExpression(
-        signalInputAssignment?.fieldExpr ?? node.left,
-        consumer,
-      );
+      const target = this.getDirectiveSymbolForAccessExpression(fieldAccessExpr, consumer);
       if (target === null) {
         continue;
       }
@@ -771,7 +779,7 @@ function sourceSpanEqual(a: ParseSourceSpan, b: ParseSourceSpan) {
 }
 
 function unwrapSignalInputWriteTAccessor(expr: ts.LeftHandSideExpression): null | {
-  fieldExpr: ts.ElementAccessExpression | ts.PropertyAccessExpression;
+  fieldExpr: ts.ElementAccessExpression | ts.PropertyAccessExpression | ts.Identifier;
   typeExpr: ts.ElementAccessExpression;
 } {
   // e.g. `_t2.inputA[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]`
@@ -793,11 +801,15 @@ function unwrapSignalInputWriteTAccessor(expr: ts.LeftHandSideExpression): null 
     return null;
   }
 
-  // Assert that the `_t2.inputA` is actually either a keyed element access, or
-  // property access expression. This is checked for type safety and to catch unexpected cases.
+  // Assert that the expression is either:
+  //   - `_t2.inputA[ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]` or (common case)
+  //   - or `_t2['input-A'][ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]` (non-identifier input field names)
+  //   - or `_dirInput[ɵINPUT_SIGNAL_BRAND_WRITE_TYPE` (honorAccessModifiersForInputBindings=false)
+  // This is checked for type safety and to catch unexpected cases.
   if (
     !ts.isPropertyAccessExpression(expr.expression) &&
-    !ts.isElementAccessExpression(expr.expression)
+    !ts.isElementAccessExpression(expr.expression) &&
+    !ts.isIdentifier(expr.expression)
   ) {
     throw new Error('Unexpected expression for signal input write type.');
   }
