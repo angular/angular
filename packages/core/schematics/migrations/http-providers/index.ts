@@ -21,7 +21,7 @@ export default function (): Rule {
 
     if (!allPaths.length) {
       throw new SchematicsException(
-        'Could not find any tsconfig file. Cannot run the transfer state migration.',
+        'Could not find any tsconfig file. Cannot run the http providers migration.',
       );
     }
 

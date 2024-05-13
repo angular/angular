@@ -63,7 +63,13 @@ export function migrateFile(
     if (ts.isClassDeclaration(node)) {
       const decorators = getAngularDecorators(typeChecker, ts.getDecorators(node) || []);
       decorators.forEach((decorator) => {
-        migrateDecorator(decorator, commonHttpIdentifiers, addedImports, changeTracker);
+        migrateDecorator(
+          decorator,
+          commonHttpIdentifiers,
+          commonHttpTestingIdentifiers,
+          addedImports,
+          changeTracker,
+        );
       });
     }
 
@@ -137,6 +143,7 @@ export function migrateFile(
 function migrateDecorator(
   decorator: NgDecorator,
   commonHttpIdentifiers: Set<string>,
+  commonHttpTestingIdentifiers: Set<string>,
   addedImports: Map<string, Set<string>>,
   changeTracker: ChangeTracker,
 ) {
@@ -161,7 +168,11 @@ function migrateDecorator(
   }
 
   // Does the decorator import any of the HTTP modules?
-  const importedModules = getImportedHttpModules(moduleImports, commonHttpIdentifiers);
+  const importedModules = getImportedHttpModules(
+    moduleImports,
+    commonHttpIdentifiers,
+    commonHttpTestingIdentifiers,
+  );
   if (!importedModules) {
     return;
   }
@@ -170,7 +181,8 @@ function migrateDecorator(
 
   // Handle the different imported Http modules
   const commonHttpAddedImports = addedImports.get(COMMON_HTTP);
-  if (importedModules.client) {
+  commonHttpAddedImports?.add(PROVIDE_HTTP_CLIENT);
+  if (importedModules.client || importedModules.clientTesting) {
     commonHttpAddedImports?.add(WITH_INTERCEPTORS_FROM_DI);
     addedProviders.add(createCallExpression(WITH_INTERCEPTORS_FROM_DI));
   }
@@ -201,25 +213,36 @@ function migrateDecorator(
       (item) =>
         item !== importedModules.client &&
         item !== importedModules.clientJsonp &&
-        item !== importedModules.xsrf,
+        item !== importedModules.xsrf &&
+        item !== importedModules.clientTesting,
     ),
   ]);
 
   // Adding the new providers
-  commonHttpAddedImports?.add(PROVIDE_HTTP_CLIENT);
   const providers = getProvidersFromLiteralExpr(metadata);
+
+  // handle the HttpClientTestingModule
+  let provideHttpClientTestingExpr: ts.CallExpression | undefined;
+  if (importedModules.clientTesting) {
+    const commonHttpTestingAddedImports = addedImports.get(COMMON_HTTP_TESTING);
+    commonHttpTestingAddedImports?.add(PROVIDE_HTTP_CLIENT_TESTING);
+    provideHttpClientTestingExpr = createCallExpression(PROVIDE_HTTP_CLIENT_TESTING);
+  }
   const provideHttpExpr = createCallExpression(PROVIDE_HTTP_CLIENT, [...addedProviders]);
+  const providersToAppend = provideHttpClientTestingExpr
+    ? [provideHttpExpr, provideHttpClientTestingExpr]
+    : [provideHttpExpr];
 
   let newProviders: ts.ArrayLiteralExpression;
   if (!providers) {
     // No existing providers, we add a property to the literal
-    newProviders = ts.factory.createArrayLiteralExpression([provideHttpExpr]);
+    newProviders = ts.factory.createArrayLiteralExpression(providersToAppend);
   } else {
     // We add the provider to the existing provider array
     newProviders = ts.factory.updateArrayLiteralExpression(
       providers,
       ts.factory.createNodeArray(
-        [...providers.elements, provideHttpExpr],
+        [...providers.elements, ...providersToAppend],
         providers.elements.hasTrailingComma,
       ),
     );
@@ -394,10 +417,12 @@ function getProvidersFromLiteralExpr(literal: ts.ObjectLiteralExpression) {
 function getImportedHttpModules(
   imports: ts.ArrayLiteralExpression,
   commonHttpIdentifiers: Set<string>,
+  commonHttpTestingIdentifiers: Set<string>,
 ) {
   let client: ts.Identifier | ts.CallExpression | null = null;
   let clientJsonp: ts.Identifier | ts.CallExpression | null = null;
   let xsrf: ts.Identifier | ts.CallExpression | null = null;
+  let clientTesting: ts.Identifier | ts.CallExpression | null = null;
 
   // represents respectively:
   // HttpClientXsrfModule.disable()
@@ -405,13 +430,14 @@ function getImportedHttpModules(
   // base HttpClientXsrfModule
   let xsrfOptions: 'disable' | {options: ts.Expression} | null = null;
 
-  // Handling the 3 http modules from @angular/common/http and skipping the rest
+  // Handling the http modules from @angular/common/http and the http testing module from @angular/common/http/testing
+  // and skipping the rest
   for (const item of imports.elements) {
     if (ts.isIdentifier(item)) {
       const moduleName = item.getText();
 
-      // We only care about the modules from @angular/common/http
-      if (!commonHttpIdentifiers.has(moduleName)) {
+      // We only care about the modules from @angular/common/http and @angular/common/http/testing
+      if (!commonHttpIdentifiers.has(moduleName) && !commonHttpTestingIdentifiers.has(moduleName)) {
         continue;
       }
 
@@ -421,6 +447,8 @@ function getImportedHttpModules(
         clientJsonp = item;
       } else if (moduleName === HTTP_CLIENT_XSRF_MODULE) {
         xsrf = item;
+      } else if (moduleName === HTTP_CLIENT_TESTING_MODULE) {
+        clientTesting = item;
       }
     } else if (ts.isCallExpression(item) && ts.isPropertyAccessExpression(item.expression)) {
       const moduleName = item.expression.expression.getText();
@@ -441,8 +469,8 @@ function getImportedHttpModules(
     }
   }
 
-  if (client !== null || clientJsonp !== null || xsrf !== null) {
-    return {client, clientJsonp, xsrf, xsrfOptions};
+  if (client !== null || clientJsonp !== null || xsrf !== null || clientTesting !== null) {
+    return {client, clientJsonp, xsrf, xsrfOptions, clientTesting};
   }
 
   return null;
