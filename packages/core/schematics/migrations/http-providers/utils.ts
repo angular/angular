@@ -227,7 +227,10 @@ function migrateDecorator(
 
   // Replacing the existing decorator with the new one (with the new imports and providers)
   const newDecoratorArgs = ts.factory.createObjectLiteralExpression([
-    ...metadata.properties.filter((p) => p.getText() === 'imports'),
+    ...metadata.properties.filter(
+      (property) =>
+        property.name?.getText() !== 'imports' && property.name?.getText() !== 'providers',
+    ),
     ts.factory.createPropertyAssignment('imports', newImports),
     ts.factory.createPropertyAssignment('providers', newProviders),
   ]);
@@ -459,6 +462,10 @@ function updateTestBedConfiguration(
   newProviders: ts.ArrayLiteralExpression,
 ): ts.ObjectLiteralExpression {
   return ts.factory.updateObjectLiteralExpression(configureTestingModuleArgs, [
+    ...configureTestingModuleArgs.properties.filter(
+      (property) =>
+        property.name?.getText() !== 'imports' && property.name?.getText() !== 'providers',
+    ),
     ts.factory.createPropertyAssignment('imports', newImports),
     ts.factory.createPropertyAssignment('providers', newProviders),
   ]);
