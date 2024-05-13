@@ -679,7 +679,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'tools/cli/end-to-end',
           },
           {
-            label: 'ESBuild',
+            label: 'Migrating to new build system',
             path: 'tools/cli/esbuild',
             contentPath: 'tools/cli/esbuild',
           },
