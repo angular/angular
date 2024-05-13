@@ -625,6 +625,8 @@ export interface Component extends Directive {
 
   /**
    * Overrides the default interpolation start and end delimiters (`{{` and `}}`).
+   *
+   * @deprecated use Angular's default interpolation delimiters instead.
    */
   interpolation?: [string, string];
 
