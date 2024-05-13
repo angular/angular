@@ -419,11 +419,39 @@ describe('Http providers migration', () => {
     );
 
     expect(content).toContain(
-      `import { withInterceptorsFromDi, withJsonpSupport, provideHttpClient } from '@angular/common/http';`,
+      `import { provideHttpClient, withInterceptorsFromDi, withJsonpSupport } from '@angular/common/http';`,
     );
     expect(content).toContain(
       `import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';`,
     );
+  });
+
+  it('should migrate HttpClientTestingModule in NgModule', async () => {
+    writeFile(
+      '/index.ts',
+      `
+        import { NgModule } from '@angular/core';
+        import { TestBed } from '@angular/core/testing';
+        import { HttpClientTestingModule } from '@angular/common/http/testing';
+
+        @NgModule({
+          declarations: [AppComponent],
+          imports: [HttpClientTestingModule],
+        })
+        export class TestModule {}
+    `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts');
+    expect(content).toMatch(/import.*provideHttpClient.*withInterceptorsFromDi.*from/);
+    expect(content).not.toContain(`HttpClientTestingModule`);
+    expect(content).toMatch(/import.*provideHttpClientTesting/);
+    expect(content).toContain(
+      `provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()`,
+    );
+    expect(content).toContain(`declarations: [AppComponent]`);
   });
 
   it('should not change a decorator with no arguments', async () => {
