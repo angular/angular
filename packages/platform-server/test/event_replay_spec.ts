@@ -227,6 +227,7 @@ describe('event replay', () => {
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(2);
     });
+
     it('should not propagate events if stopPropagation is called', async () => {
       @Component({
         standalone: true,
@@ -259,6 +260,7 @@ describe('event replay', () => {
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
     });
+
     it('should not have differences in event fields', async () => {
       let currentEvent!: Event;
       @Component({
