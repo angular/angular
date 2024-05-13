@@ -22,7 +22,7 @@ import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
 import {setDisableEventReplayImpl} from '../render3/instructions/listener';
 import {TNode, TNodeType} from '../render3/interfaces/node';
-import {RNode} from '../render3/interfaces/renderer_dom';
+import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
@@ -42,6 +42,11 @@ function getJsactionData(container: EarlyJsactionDataContainer) {
 }
 
 const JSACTION_ATTRIBUTE = 'jsaction';
+
+/**
+ * Associates a DOM element with `jsaction` attribute to a map that contains info about all event
+ * types (event names) and corresponding listeners.
+ */
 const jsactionMap: Map<Element, Map<string, Function[]>> = new Map();
 
 /**
@@ -57,18 +62,19 @@ export function withEventReplay(): Provider[] {
     {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
-        setDisableEventReplayImpl((rEl, eventName, listenerFn) => {
+        setDisableEventReplayImpl((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
           if (rEl.hasAttribute(JSACTION_ATTRIBUTE)) {
-            const el = unwrapRNode(rEl) as Element;
+            const el = rEl as unknown as Element;
             // We don't immediately remove the attribute here because
             // we need it for replay that happens after hydration.
             if (!jsactionMap.has(el)) {
               jsactionMap.set(el, new Map());
             }
-            if (!jsactionMap.get(el)!.has(eventName)) {
-              jsactionMap.get(el)!.set(eventName, []);
+            const eventMap = jsactionMap.get(el)!;
+            if (!eventMap.has(eventName)) {
+              eventMap.set(eventName, []);
             }
-            jsactionMap.get(el)!.get(eventName)!.push(listenerFn);
+            eventMap.get(eventName)!.push(listenerFn);
           }
         });
       },
@@ -192,7 +198,7 @@ export function setJSActionAttribute(
 }
 
 function handleEvent(event: EventInfoWrapper) {
-  const nativeElement = unwrapRNode(event.getAction()!.element) as Element;
+  const nativeElement = event.getAction()!.element as Element;
   const handlerFns = jsactionMap.get(nativeElement)?.get(event.getEventType());
   if (!handlerFns) {
     return;
