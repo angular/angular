@@ -20,17 +20,6 @@ import {ActionResolver} from './action_resolver';
 export type Replayer = (eventInfoWrappers: EventInfoWrapper[]) => void;
 
 /**
- * A handler is dispatched to during normal handling.
- */
-export type EventInfoHandler = (eventInfoWrapper: EventInfoWrapper) => void;
-
-/**
- * A global handler is dispatched to before normal handler dispatch. Returning
- * false will `preventDefault` on the event.
- */
-export type GlobalHandler = (event: Event) => boolean | void;
-
-/**
  * Receives a DOM event, determines the jsaction associated with the source
  * element of the DOM event, and invokes the handler associated with the
  * jsaction.
@@ -40,7 +29,7 @@ export class Dispatcher {
   private actionResolver?: ActionResolver;
 
   /** The replayer function to be called when there are queued events. */
-  private eventReplayer?: Replayer;
+  private eventReplayer: Replayer;
 
   /** Whether the event replay is scheduled. */
   private eventReplayScheduled = false;
@@ -50,16 +39,16 @@ export class Dispatcher {
 
   /**
    * Options are:
-   *   1. `eventReplayer`: When the event contract dispatches replay events
+   *   - `eventReplayer`: When the event contract dispatches replay events
    *      to the Dispatcher, the Dispatcher collects them and in the next tick
-   *      dispatches them to the `eventReplayer`.
+   *      dispatches them to the `eventReplayer`. Defaults to dispatching to `dispatchDelegate`.
    * @param dispatchDelegate A function that should handle dispatching an `EventInfoWrapper` to handlers.
    */
   constructor(
     private readonly dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void,
     {
-      actionResolver = undefined,
-      eventReplayer = undefined,
+      actionResolver,
+      eventReplayer = createEventReplayer(dispatchDelegate),
     }: {actionResolver?: ActionResolver; eventReplayer?: Replayer} = {},
   ) {
     this.actionResolver = actionResolver;
@@ -94,9 +83,6 @@ export class Dispatcher {
       eventLib.preventDefault(eventInfoWrapper.getEvent());
     }
     if (eventInfoWrapper.getIsReplay()) {
-      if (!this.eventReplayer) {
-        return;
-      }
       this.scheduleEventInfoWrapperReplay(eventInfoWrapper);
       return;
     }
@@ -110,40 +96,27 @@ export class Dispatcher {
    */
   private scheduleEventInfoWrapperReplay(eventInfoWrapper: EventInfoWrapper) {
     this.replayEventInfoWrappers.push(eventInfoWrapper);
-    if (this.eventReplayScheduled || !this.eventReplayer) {
+    if (this.eventReplayScheduled) {
       return;
     }
     this.eventReplayScheduled = true;
     Promise.resolve().then(() => {
       this.eventReplayScheduled = false;
-      this.eventReplayer!(this.replayEventInfoWrappers);
+      this.eventReplayer(this.replayEventInfoWrappers);
     });
   }
 }
 
-/** Stop propagation for an `EventInfo`. */
-export function stopPropagation(eventInfoWrapper: EventInfoWrapper) {
-  if (
-    eventLib.isGecko &&
-    (eventInfoWrapper.getTargetElement().tagName === 'INPUT' ||
-      eventInfoWrapper.getTargetElement().tagName === 'TEXTAREA') &&
-    eventInfoWrapper.getEventType() === EventType.FOCUS
-  ) {
-    /**
-     * Do nothing since stopping propagation on a focus event on an input
-     * element in Firefox makes the text cursor disappear:
-     * https://bugzilla.mozilla.org/show_bug.cgi?id=509684
-     */
-    return;
-  }
-
-  const event = eventInfoWrapper.getEvent();
-  // There are some cases where users of the `Dispatcher` will call dispatch
-  // with a fake event that does not support `stopPropagation`.
-  if (!event.stopPropagation) {
-    return;
-  }
-  event.stopPropagation();
+/**
+ * Creates an `EventReplayer` that calls the `replay` function for every `eventInfoWrapper` in
+ * the queue.
+ */
+export function createEventReplayer(replay: (eventInfoWrapper: EventInfoWrapper) => void) {
+  return (eventInfoWrappers: EventInfoWrapper[]) => {
+    for (const eventInfoWrapper of eventInfoWrappers) {
+      replay(eventInfoWrapper);
+    }
+  };
 }
 
 /**
