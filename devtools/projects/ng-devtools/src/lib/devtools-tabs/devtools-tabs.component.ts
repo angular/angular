@@ -73,6 +73,9 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   routerTreeEnabled = false;
   showCommentNodes = false;
   timingAPIEnabled = false;
+  profilingNotificationsSupported = Boolean(
+    (window.chrome?.devtools as any)?.performance?.onProfilingStarted,
+  );
 
   currentTheme!: Theme;
   routes: Route[] = [];
