@@ -16,12 +16,6 @@
  */
 export const JSACTION = '__jsaction';
 
-/**
- * The parsed value of the jsnamespace attribute is stored in this
- * property on the DOM node.
- */
-export const JSNAMESPACE = '__jsnamespace';
-
 /** The value of the oi attribute as a property, for faster access. */
 export const OI = '__oi';
 
@@ -36,7 +30,6 @@ export const OWNER = '__owner';
 /** All properties that are used by jsaction. */
 export const Property = {
   JSACTION,
-  JSNAMESPACE,
   OI,
   OWNER,
 };
@@ -44,7 +37,6 @@ export const Property = {
 declare global {
   interface Node {
     [JSACTION]?: string;
-    [JSNAMESPACE]?: string;
     [OI]?: string;
     [OWNER]?: ParentNode;
   }

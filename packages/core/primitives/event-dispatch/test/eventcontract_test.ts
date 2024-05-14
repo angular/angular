@@ -175,19 +175,6 @@ const domContent = `
     <div id="pointerleave-target-element"></div>
   </div>
 </div>
-
-<div id="jsnamespace-container">
-  <div id="jsnamespace-namespace-element" jsnamespace="namespace">
-    <div id="jsnamespace-action-element" jsaction="handleClick">
-      <div id="jsnamespace-target-element"></div>
-    </div>
-  </div>
-</div>
-<div id="focus-container">
-  <div id="focus-action-element" jsaction="focus:handleFocus">
-    <button id="focus-target-element">Focus Button</button>
-  </div>
-</div>
 `;
 
 function getRequiredElementById(id: string) {
