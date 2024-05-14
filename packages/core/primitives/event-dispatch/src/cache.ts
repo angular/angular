@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {JSACTION, JSNAMESPACE} from './property';
+import {JSACTION} from './property';
 
 /**
  * Map from jsaction annotation to a parsed map from event name to action name.
