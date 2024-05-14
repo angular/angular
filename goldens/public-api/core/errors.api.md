@@ -149,6 +149,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNEXPECTED_ZONEJS_PRESENT_IN_ZONELESS_MODE = 914,
     // (undocumented)
+    UNINITIALIZED_LET_ACCESS = 314,
+    // (undocumented)
     UNKNOWN_BINDING = 303,
     // (undocumented)
     UNKNOWN_ELEMENT = 304,
