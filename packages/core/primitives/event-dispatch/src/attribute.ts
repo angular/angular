@@ -14,23 +14,11 @@
  * an optional DOM event name and a jsaction name. If the optional
  * DOM event name is omitted, 'click' is assumed. The jsaction names
  * are dot separated pairs of a namespace and a simple jsaction
- * name. If the namespace is absent, it is taken from the closest
- * ancestor element with a jsnamespace attribute, if there is
- * any. If there is no ancestor with a jsnamespace attribute, the
- * simple name is assumed to be the jsaction name.
+ * name.
  *
- * Used by EventContract.
+ * See grammar in README.md for expected syntax in the attribute value.
  */
 export const JSACTION = 'jsaction';
-
-/**
- * The jsnamespace attribute provides the namespace part of the
- * jaction names occurring in the jsaction attribute where it's
- * missing.
- *
- * Used by EventContract.
- */
-export const JSNAMESPACE = 'jsnamespace';
 
 /**
  * The oi attribute is a log impression tag for impression logging
@@ -74,4 +62,4 @@ export const JSINSTANCE = 'jsinstance';
  */
 export const JSTRACK = 'jstrack';
 
-export const Attribute = {JSACTION, JSNAMESPACE, OI, VED, VET, JSINSTANCE, JSTRACK};
+export const Attribute = {JSACTION, OI, VED, VET, JSINSTANCE, JSTRACK};
