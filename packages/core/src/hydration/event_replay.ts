@@ -121,6 +121,7 @@ export function withEventReplay(): Provider[] {
                 for (const el of jsactionMap.keys()) {
                   el.removeAttribute(JSACTION_ATTRIBUTE);
                 }
+                setDisableEventReplayImpl(() => {});
               }
             });
           };
