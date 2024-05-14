@@ -282,3 +282,85 @@ export const EventType = {
    */
   CUSTOM: '_custom',
 };
+
+export const MOUSE_EVENTS = new Set([
+  EventType.MOUSEENTER,
+  EventType.MOUSELEAVE,
+  'pointerenter',
+  'pointerleave',
+]);
+
+export const SIMPLE_CONTRACT_EVENTS = new Set([
+  EventType.CLICK,
+  EventType.DBLCLICK,
+  EventType.FOCUS,
+  EventType.FOCUSIN,
+  EventType.BLUR,
+  EventType.ERROR,
+  EventType.FOCUSOUT,
+  EventType.KEYDOWN,
+  EventType.KEYUP,
+  EventType.KEYPRESS,
+  EventType.LOAD,
+  EventType.MOUSEOVER,
+  EventType.MOUSEOUT,
+  EventType.SUBMIT,
+  EventType.TOGGLE,
+  EventType.TOUCHSTART,
+  EventType.TOUCHEND,
+  EventType.TOUCHMOVE,
+  'touchcancel',
+
+  'auxclick',
+  'change',
+  'compositionstart',
+  'compositionupdate',
+  'compositionend',
+  'beforeinput',
+  'input',
+  'select',
+
+  'copy',
+  'cut',
+  'paste',
+  'mousedown',
+  'mouseup',
+  'wheel',
+  'contextmenu',
+
+  'dragover',
+  'dragenter',
+  'dragleave',
+  'drop',
+  'dragstart',
+  'dragend',
+
+  'pointerdown',
+  'pointermove',
+  'pointerup',
+  'pointercancel',
+  'pointerover',
+  'pointerout',
+  'gotpointercapture',
+  'lostpointercapture',
+
+  // Video events.
+  'ended',
+  'loadedmetadata',
+
+  // Page visibility events.
+  'pagehide',
+  'pageshow',
+  'visibilitychange',
+
+  // Content visibility events.
+  'beforematch',
+]);
+
+export const CAPTURE_EVENTS = new Set([
+  EventType.FOCUS,
+  EventType.BLUR,
+  EventType.ERROR,
+  EventType.LOAD,
+  EventType.TOGGLE,
+]);

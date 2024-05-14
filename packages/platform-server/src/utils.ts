@@ -88,12 +88,16 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
 
   appendSsrContentIntegrityMarker(doc);
 
-  const eventTypesToBeReplayed = annotateForHydration(applicationRef, doc);
-  if (eventTypesToBeReplayed) {
+  const [eventTypesToBeReplayed, captureEventTypesToReplay] = annotateForHydration(
+    applicationRef,
+    doc,
+  );
+  if (eventTypesToBeReplayed || captureEventTypesToReplay) {
     insertEventRecordScript(
       environmentInjector.get(APP_ID),
       doc,
       eventTypesToBeReplayed,
+      captureEventTypesToReplay,
       environmentInjector.get(CSP_NONCE, null),
     );
   } else {
@@ -136,31 +140,16 @@ function appendServerContextInfo(applicationRef: ApplicationRef) {
 function insertEventRecordScript(
   appId: string,
   doc: Document,
-  eventTypesToBeReplayed: Set<string>,
+  eventTypes: Set<string> | undefined,
+  captureEventTypes: Set<string> | undefined,
   nonce: string | null,
 ): void {
   const eventDispatchScript = findEventDispatchScript(doc);
   if (eventDispatchScript) {
-    const events = Array.from(eventTypesToBeReplayed);
-    const captureEventTypes = [];
-    const eventTypes = [];
-    for (const eventType of events) {
-      if (
-        eventType === 'focus' ||
-        eventType === 'blur' ||
-        eventType === 'error' ||
-        eventType === 'load' ||
-        eventType === 'toggle'
-      ) {
-        captureEventTypes.push(eventType);
-      } else {
-        eventTypes.push(eventType);
-      }
-    }
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
     const replayScriptContents = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
       appId,
-    )}, ${JSON.stringify(eventTypes)}${captureEventTypes.length ? ',' + JSON.stringify(captureEventTypes) : ''});`;
+    )}, ${JSON.stringify(eventTypes ? Array.from(eventTypes) : [])}${captureEventTypes ? ',' + JSON.stringify(Array.from(captureEventTypes)) : ''});`;
 
     const replayScript = createScript(doc, replayScriptContents, nonce);
 

@@ -131,6 +131,7 @@ export interface HydrationContext {
   isI18nHydrationEnabled: boolean;
   i18nChildren: Map<TView, Set<number> | null>;
   eventTypesToReplay: Set<string>;
+  captureEventTypesToReplay: Set<string>;
   shouldReplayEvents: boolean;
 }
 
@@ -220,6 +221,7 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const viewRefs = appRef._views;
   const shouldReplayEvents = injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT);
   const eventTypesToReplay = new Set<string>();
+  const captureEventTypesToReplay = new Set<string>();
   for (const viewRef of viewRefs) {
     const lNode = getLNodeForHydration(viewRef);
 
@@ -232,6 +234,7 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
         isI18nHydrationEnabled: isI18nHydrationEnabledVal,
         i18nChildren: new Map(),
         eventTypesToReplay,
+        captureEventTypesToReplay,
         shouldReplayEvents,
       };
       if (isLContainer(lNode)) {
@@ -251,7 +254,10 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const serializedViews = serializedViewCollection.getAll();
   const transferState = injector.get(TransferState);
   transferState.set(NGH_DATA_KEY, serializedViews);
-  return eventTypesToReplay.size > 0 ? eventTypesToReplay : undefined;
+  return [
+    eventTypesToReplay.size > 0 ? eventTypesToReplay : undefined,
+    captureEventTypesToReplay.size > 0 ? captureEventTypesToReplay : undefined,
+  ];
 }
 
 /**
@@ -384,7 +390,12 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
   const tView = lView[TVIEW];
   const i18nChildren = getOrComputeI18nChildren(tView, context);
   const nativeElementsToEventTypes = context.shouldReplayEvents
-    ? collectDomEventsInfo(tView, lView, context.eventTypesToReplay)
+    ? collectDomEventsInfo(
+        tView,
+        lView,
+        context.eventTypesToReplay,
+        context.captureEventTypesToReplay,
+      )
     : null;
   // Iterate over DOM element references in an LView.
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {

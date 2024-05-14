@@ -14,3 +14,4 @@ export {bootstrapEarlyEventContract} from './src/register_events';
 
 export type {EventContractTracker} from './src/register_events';
 export {EventInfoWrapper} from './src/event_info';
+export {SIMPLE_CONTRACT_EVENTS, MOUSE_EVENTS, CAPTURE_EVENTS} from './src/event_type';

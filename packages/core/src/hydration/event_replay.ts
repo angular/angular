@@ -13,6 +13,8 @@ import {
   EventContractContainer,
   EventInfoWrapper,
   registerDispatcher,
+  SIMPLE_CONTRACT_EVENTS,
+  CAPTURE_EVENTS,
 } from '@angular/core/primitives/event-dispatch';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
@@ -135,6 +137,7 @@ export function collectDomEventsInfo(
   tView: TView,
   lView: LView,
   eventTypesToReplay: Set<string>,
+  captureEventTypesToReplay: Set<string>,
 ): Map<Element, string[]> {
   const events = new Map<Element, string[]>();
   const lCleanup = lView[CLEANUP];
@@ -149,15 +152,14 @@ export function collectDomEventsInfo(
       continue;
     }
     const name: string = firstParam;
-    if (
-      name === 'mouseenter' ||
-      name === 'mouseleave' ||
-      name === 'pointerenter' ||
-      name === 'pointerleave'
-    ) {
+    if (!SIMPLE_CONTRACT_EVENTS.has(name)) {
       continue;
     }
-    eventTypesToReplay.add(name);
+    if (CAPTURE_EVENTS.has(name)) {
+      captureEventTypesToReplay.add(name);
+    } else {
+      eventTypesToReplay.add(name);
+    }
     const listenerElement = unwrapRNode(lView[secondParam]) as any as Element;
     i++; // move the cursor to the next position (location of the listener idx)
     const useCaptureOrIndx = tCleanup[i++];
