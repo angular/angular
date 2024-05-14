@@ -2237,6 +2237,45 @@ describe('Zone', function () {
         expect(logs).toEqual(['click2', 'click4']);
       });
 
+      // https://github.com/angular/angular/issues/54831
+      // https://github.com/angular/angular/issues/54142
+      it('should support passing `AbortController` directly to `addEventListener`', function () {
+        let logs: string[] = [];
+        const ac = new AbortController();
+
+        button.addEventListener(
+          'click',
+          function () {
+            logs.push('click1');
+          },
+          ac,
+        );
+        button.addEventListener('click', function () {
+          logs.push('click2');
+        });
+        button.addEventListener(
+          'click',
+          function () {
+            logs.push('click3');
+          },
+          ac,
+        );
+        let listeners = button.eventListeners!('click');
+        expect(listeners.length).toBe(3);
+
+        button.dispatchEvent(clickEvent);
+        expect(logs.length).toBe(3);
+        expect(logs).toEqual(['click1', 'click2', 'click3']);
+        ac.abort();
+        logs = [];
+
+        listeners = button.eventListeners!('click');
+        button.dispatchEvent(clickEvent);
+        expect(logs.length).toBe(1);
+        expect(listeners.length).toBe(1);
+        expect(logs).toEqual(['click2']);
+      });
+
       it('should not add event listeners with aborted signal', function () {
         let logs: string[] = [];
 

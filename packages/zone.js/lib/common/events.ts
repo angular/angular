@@ -26,6 +26,24 @@ import {
 interface EventTaskData extends TaskData {
   // use global callback or not
   readonly useG?: boolean;
+  taskData?: any;
+  removeAbortListener?: VoidFunction | null;
+}
+
+/** @internal **/
+interface InternalTaskData {
+  // This is used internally to avoid duplicating event listeners on
+  // the same target when the event name is the same, such as when
+  // `addEventListener` is called multiple times on the `document`
+  // for the `keydown` event.
+  isExisting?: boolean;
+  // `target` is the actual event target on which `addEventListener`
+  // is being called.
+  target?: any;
+  eventName?: string;
+  capture?: boolean;
+  // Not changing the type to avoid any regressions.
+  options?: any; // boolean | AddEventListenerOptions
 }
 
 let passiveSupported = false;
@@ -247,7 +265,7 @@ export function patchEventTarget(
 
     // a shared global taskData to pass data for scheduleEventTask
     // so we do not need to create a new object just for pass some data
-    const taskData: any = {};
+    const taskData: InternalTaskData = {};
 
     const nativeAddEventListener = (proto[zoneSymbolAddEventListener] = proto[ADD_EVENT_LISTENER]);
     const nativeRemoveEventListener = (proto[zoneSymbol(REMOVE_EVENT_LISTENER)] =
@@ -386,6 +404,30 @@ export function patchEventTarget(
     const unpatchedEvents: string[] = (Zone as any)[zoneSymbol('UNPATCHED_EVENTS')];
     const passiveEvents: string[] = _global[zoneSymbol('PASSIVE_EVENTS')];
 
+    function copyEventListenerOptions(options: any) {
+      if (typeof options === 'object' && options !== null) {
+        // We need to destructure the target `options` object since it may
+        // be frozen or sealed (possibly provided implicitly by a third-party
+        // library), or its properties may be readonly.
+        const newOptions: any = {...options};
+        // The `signal` option was recently introduced, which caused regressions in
+        // third-party scenarios where `AbortController` was directly provided to
+        // `addEventListener` as options. For instance, in cases like
+        // `document.addEventListener('keydown', callback, abortControllerInstance)`,
+        // which is valid because `AbortController` includes a `signal` getter, spreading
+        // `{...options}` wouldn't copy the `signal`. Additionally, using `Object.create`
+        // isn't feasible since `AbortController` is a built-in object type, and attempting
+        // to create a new object directly with it as the prototype might result in
+        // unexpected behavior.
+        if (options.signal) {
+          newOptions.signal = options.signal;
+        }
+        return newOptions;
+      }
+
+      return options;
+    }
+
     const makeAddListener = function (
       nativeListener: any,
       addSource: string,
@@ -426,7 +468,7 @@ export function patchEventTarget(
 
         const passive =
           passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
-        const options = buildEventListenerOptions(arguments[2], passive);
+        const options = copyEventListenerOptions(buildEventListenerOptions(arguments[2], passive));
         const signal: AbortSignal | undefined = options?.signal;
         if (signal?.aborted) {
           // the signal is an aborted one, just return without attaching the event listener.
@@ -484,13 +526,18 @@ export function patchEventTarget(
             addSource +
             (eventNameToString ? eventNameToString(eventName) : eventName);
         }
-        // do not create a new object as task.data to pass those things
-        // just use the global shared one
+
+        // In the code below, `options` should no longer be reassigned; instead, it
+        // should only be mutated. This is because we pass that object to the native
+        // `addEventListener`.
+        // It's generally recommended to use the same object reference for options.
+        // This ensures consistency and avoids potential issues.
         taskData.options = options;
+
         if (once) {
-          // if addEventListener with once options, we don't pass it to
-          // native addEventListener, instead we keep the once setting
-          // and handle ourselves.
+          // When using `addEventListener` with the `once` option, we don't pass
+          // the `once` option directly to the native `addEventListener` method.
+          // Instead, we keep the `once` setting and handle it ourselves.
           taskData.options.once = false;
         }
         taskData.target = target;
@@ -502,15 +549,20 @@ export function patchEventTarget(
 
         // keep taskData into data to allow onScheduleEventTask to access the task information
         if (data) {
-          (data as any).taskData = taskData;
+          data.taskData = taskData;
         }
 
         if (signal) {
-          // if addEventListener with signal options, we don't pass it to
-          // native addEventListener, instead we keep the signal setting
-          // and handle ourselves.
+          // When using `addEventListener` with the `signal` option, we don't pass
+          // the `signal` option directly to the native `addEventListener` method.
+          // Instead, we keep the `signal` setting and handle it ourselves.
           taskData.options.signal = undefined;
         }
+
+        // The `scheduleEventTask` function will ultimately call `customScheduleGlobal`,
+        // which in turn calls the native `addEventListener`. This is why `taskData.options`
+        // is updated before scheduling the task, as `customScheduleGlobal` uses
+        // `taskData.options` to pass it to the native `addEventListener`.
         const task: any = zone.scheduleEventTask(
           source,
           delegate,
@@ -532,7 +584,7 @@ export function patchEventTarget(
           // `task` object even after it goes out of scope, preventing `task` from being garbage
           // collected.
           if (data) {
-            (data as any).removeAbortListener = () => signal.removeEventListener('abort', onAbort);
+            data.removeAbortListener = () => signal.removeEventListener('abort', onAbort);
           }
         }
 
@@ -542,13 +594,13 @@ export function patchEventTarget(
 
         // need to clear up taskData because it is a global object
         if (data) {
-          (data as any).taskData = null;
+          data.taskData = null;
         }
 
         // have to save those information to task in case
         // application may call task.zone.cancelTask() directly
         if (once) {
-          options.once = true;
+          taskData.options.once = true;
         }
         if (!(!passiveSupported && typeof task.options === 'boolean')) {
           // if not support passive, and we pass an option object
@@ -644,7 +696,7 @@ export function patchEventTarget(
 
             // Note that `removeAllListeners` would ultimately call `removeEventListener`,
             // so we're safe to remove the abort listener only once here.
-            const taskData = existingTask.data as any;
+            const taskData = existingTask.data as EventTaskData;
             if (taskData?.removeAbortListener) {
               taskData.removeAbortListener();
               taskData.removeAbortListener = null;
