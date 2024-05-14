@@ -95,7 +95,7 @@ Read about how to enable CORS for specific servers at [enable-cors.org](https://
 | Features                                                           | Details                                                                                       |
 |:---                                                                |:---                                                                                           |
 | [Ahead-of-Time (AOT) Compilation](tools/cli/aot-compiler)          | Pre-compiles Angular component templates.                                                     |
-| [Production mode](tools/cli/deployment#production-mode-at-runtime) | Optimizes the application for the best runtime performance                                    |
+| [Production mode](tools/cli/deployment#development-only-features) | Optimizes the application for the best runtime performance                                    |
 | Bundling                                                           | Concatenates your many application and library files into a minimum number of deployed files. |
 | Minification                                                       | Removes excess whitespace, comments, and optional tokens.                                     |
 | Mangling                                                           | Renames functions, classes, and variables to use shorter, arbitrary identifiers.              |
