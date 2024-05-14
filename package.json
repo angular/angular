@@ -196,7 +196,7 @@
     "check-side-effects": "0.0.23",
     "cldr": "7.5.0",
     "cldrjs": "0.5.5",
-    "conventional-changelog": "^5.0.0",
+    "conventional-changelog": "^6.0.0",
     "fast-glob": "3.3.2",
     "firebase-tools": "^13.0.0",
     "glob": "8.1.0",
