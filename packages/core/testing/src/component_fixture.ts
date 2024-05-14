@@ -194,7 +194,7 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
     }
   }
 
-  override detectChanges(checkNoChanges: boolean = true): void {
+  override detectChanges(checkNoChanges = true): void {
     if (!checkNoChanges) {
       throw new Error(
         'Cannot disable `checkNoChanges` in this configuration. ' +
@@ -206,7 +206,7 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
     this._effectRunner.flush();
   }
 
-  override autoDetectChanges(autoDetect?: boolean | undefined): void {
+  override autoDetectChanges(autoDetect = true): void {
     if (!autoDetect) {
       throw new Error(
         'Cannot disable autoDetect after it has been enabled when using the zoneless scheduler. ' +
