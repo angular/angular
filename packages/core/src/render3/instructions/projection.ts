@@ -111,17 +111,20 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
     let componentChild: TNode | null = componentNode.child;
 
     while (componentChild !== null) {
-      const slotIndex = projectionSlots
-        ? matchingProjectionSlotIndex(componentChild, projectionSlots)
-        : 0;
+      // Do not project let declarations so they don't occupy a slot.
+      if (componentChild.type !== TNodeType.LetDeclaration) {
+        const slotIndex = projectionSlots
+          ? matchingProjectionSlotIndex(componentChild, projectionSlots)
+          : 0;
 
-      if (slotIndex !== null) {
-        if (tails[slotIndex]) {
-          tails[slotIndex]!.projectionNext = componentChild;
-        } else {
-          projectionHeads[slotIndex] = componentChild;
+        if (slotIndex !== null) {
+          if (tails[slotIndex]) {
+            tails[slotIndex]!.projectionNext = componentChild;
+          } else {
+            projectionHeads[slotIndex] = componentChild;
+          }
+          tails[slotIndex] = componentChild;
         }
-        tails[slotIndex] = componentChild;
       }
 
       componentChild = componentChild.next;

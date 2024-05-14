@@ -633,8 +633,12 @@ export function getClosestRElement(
 ): RElement | null {
   let parentTNode: TNode | null = tNode;
   // Skip over element and ICU containers as those are represented by a comment node and
-  // can't be used as a render parent.
-  while (parentTNode !== null && parentTNode.type & (TNodeType.ElementContainer | TNodeType.Icu)) {
+  // can't be used as a render parent. Also skip let declarations since they don't have a
+  // corresponding DOM node at all.
+  while (
+    parentTNode !== null &&
+    parentTNode.type & (TNodeType.ElementContainer | TNodeType.Icu | TNodeType.LetDeclaration)
+  ) {
     tNode = parentTNode;
     parentTNode = tNode.parent;
   }
@@ -970,6 +974,13 @@ function applyNodes(
 ) {
   while (tNode != null) {
     ngDevMode && assertTNodeForLView(tNode, lView);
+
+    // Let declarations don't have corresponding DOM nodes so we skip over them.
+    if (tNode.type === TNodeType.LetDeclaration) {
+      tNode = tNode.next;
+      continue;
+    }
+
     ngDevMode &&
       assertTNodeType(
         tNode,
