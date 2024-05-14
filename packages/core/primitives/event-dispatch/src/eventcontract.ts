@@ -37,7 +37,7 @@ import * as eventLib from './event';
 import {EventContractContainerManager} from './event_contract_container';
 import {A11Y_CLICK_SUPPORT, MOUSE_SPECIAL_SUPPORT} from './event_contract_defines';
 import * as eventInfoLib from './event_info';
-import {EventType} from './event_type';
+import {EventType, NON_BUBBLING_MOUSE_EVENTS} from './event_type';
 import {Restriction} from './restriction';
 
 /**
@@ -187,13 +187,7 @@ export class EventContract implements UnrenamedEventContract {
       return;
     }
 
-    if (
-      !EventContract.MOUSE_SPECIAL_SUPPORT &&
-      (eventType === EventType.MOUSEENTER ||
-        eventType === EventType.MOUSELEAVE ||
-        eventType === EventType.POINTERENTER ||
-        eventType === EventType.POINTERLEAVE)
-    ) {
+    if (!EventContract.MOUSE_SPECIAL_SUPPORT && NON_BUBBLING_MOUSE_EVENTS.indexOf(eventType) >= 0) {
       return;
     }
 

@@ -88,12 +88,12 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
 
   appendSsrContentIntegrityMarker(doc);
 
-  const eventTypesToBeReplayed = annotateForHydration(applicationRef, doc);
-  if (eventTypesToBeReplayed) {
+  const eventTypesToReplay = annotateForHydration(applicationRef, doc);
+  if (eventTypesToReplay.regular.size || eventTypesToReplay.capture.size) {
     insertEventRecordScript(
       environmentInjector.get(APP_ID),
       doc,
-      eventTypesToBeReplayed,
+      eventTypesToReplay,
       environmentInjector.get(CSP_NONCE, null),
     );
   } else {
@@ -136,31 +136,16 @@ function appendServerContextInfo(applicationRef: ApplicationRef) {
 function insertEventRecordScript(
   appId: string,
   doc: Document,
-  eventTypesToBeReplayed: Set<string>,
+  eventTypesToReplay: {regular: Set<string>; capture: Set<string>},
   nonce: string | null,
 ): void {
+  const {regular, capture} = eventTypesToReplay;
   const eventDispatchScript = findEventDispatchScript(doc);
   if (eventDispatchScript) {
-    const events = Array.from(eventTypesToBeReplayed);
-    const captureEventTypes = [];
-    const eventTypes = [];
-    for (const eventType of events) {
-      if (
-        eventType === 'focus' ||
-        eventType === 'blur' ||
-        eventType === 'error' ||
-        eventType === 'load' ||
-        eventType === 'toggle'
-      ) {
-        captureEventTypes.push(eventType);
-      } else {
-        eventTypes.push(eventType);
-      }
-    }
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
     const replayScriptContents = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
       appId,
-    )}, ${JSON.stringify(eventTypes)}${captureEventTypes.length ? ',' + JSON.stringify(captureEventTypes) : ''});`;
+    )}, ${JSON.stringify(Array.from(regular))}${capture.size ? ',' + JSON.stringify(Array.from(capture)) : ''});`;
 
     const replayScript = createScript(doc, replayScriptContents, nonce);
 

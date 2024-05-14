@@ -130,7 +130,7 @@ export interface HydrationContext {
   corruptedTextNodes: Map<HTMLElement, TextNodeMarker>;
   isI18nHydrationEnabled: boolean;
   i18nChildren: Map<TView, Set<number> | null>;
-  eventTypesToReplay: Set<string>;
+  eventTypesToReplay: {regular: Set<string>; capture: Set<string>};
   shouldReplayEvents: boolean;
 }
 
@@ -219,7 +219,10 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const corruptedTextNodes = new Map<HTMLElement, TextNodeMarker>();
   const viewRefs = appRef._views;
   const shouldReplayEvents = injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT);
-  const eventTypesToReplay = new Set<string>();
+  const eventTypesToReplay = {
+    regular: new Set<string>(),
+    capture: new Set<string>(),
+  };
   for (const viewRef of viewRefs) {
     const lNode = getLNodeForHydration(viewRef);
 
@@ -251,7 +254,7 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const serializedViews = serializedViewCollection.getAll();
   const transferState = injector.get(TransferState);
   transferState.set(NGH_DATA_KEY, serializedViews);
-  return eventTypesToReplay.size > 0 ? eventTypesToReplay : undefined;
+  return eventTypesToReplay;
 }
 
 /**

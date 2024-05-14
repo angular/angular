@@ -102,6 +102,12 @@ export class EventInfoWrapper {
 }
 
 // @public
+export const isCaptureEvent: (eventType: string) => boolean;
+
+// @public
+export const isSupportedEvent: (eventType: string) => boolean;
+
+// @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher): void;
 
 // (No @packageDocumentation comment for this package)

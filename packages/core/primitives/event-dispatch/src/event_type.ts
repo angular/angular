@@ -282,3 +282,99 @@ export const EventType = {
    */
   CUSTOM: '_custom',
 };
+
+export const NON_BUBBLING_MOUSE_EVENTS = [
+  EventType.MOUSEENTER,
+  EventType.MOUSELEAVE,
+  'pointerenter',
+  'pointerleave',
+];
+
+/**
+ * Detects whether a given event type is supported by JSAction.
+ */
+export const isSupportedEvent = (eventType: string) => SUPPORTED_EVENTS.includes(eventType);
+
+const SUPPORTED_EVENTS = [
+  EventType.CLICK,
+  EventType.DBLCLICK,
+  EventType.FOCUS,
+  EventType.FOCUSIN,
+  EventType.BLUR,
+  EventType.ERROR,
+  EventType.FOCUSOUT,
+  EventType.KEYDOWN,
+  EventType.KEYUP,
+  EventType.KEYPRESS,
+  EventType.LOAD,
+  EventType.MOUSEOVER,
+  EventType.MOUSEOUT,
+  EventType.SUBMIT,
+  EventType.TOGGLE,
+  EventType.TOUCHSTART,
+  EventType.TOUCHEND,
+  EventType.TOUCHMOVE,
+  'touchcancel',
+
+  'auxclick',
+  'change',
+  'compositionstart',
+  'compositionupdate',
+  'compositionend',
+  'beforeinput',
+  'input',
+  'select',
+
+  'copy',
+  'cut',
+  'paste',
+  'mousedown',
+  'mouseup',
+  'wheel',
+  'contextmenu',
+
+  'dragover',
+  'dragenter',
+  'dragleave',
+  'drop',
+  'dragstart',
+  'dragend',
+
+  'pointerdown',
+  'pointermove',
+  'pointerup',
+  'pointercancel',
+  'pointerover',
+  'pointerout',
+  'gotpointercapture',
+  'lostpointercapture',
+
+  // Video events.
+  'ended',
+  'loadedmetadata',
+
+  // Page visibility events.
+  'pagehide',
+  'pageshow',
+  'visibilitychange',
+
+  // Content visibility events.
+  'beforematch',
+];
+
+/**
+ *
+ * Decides whether or not an event type is an event that only has a capture phase.
+ *
+ * @param eventType
+ * @returns bool
+ */
+export const isCaptureEvent = (eventType: string) => CAPTURE_EVENTS.indexOf(eventType) >= 0;
+
+const CAPTURE_EVENTS = [
+  EventType.FOCUS,
+  EventType.BLUR,
+  EventType.ERROR,
+  EventType.LOAD,
+  EventType.TOGGLE,
+];
