@@ -247,6 +247,7 @@ jobs:
         run: ./tools/saucelabs/sauce-service.sh stop
 
   adev-deploy:
+    needs: [adev]
     if: needs.adev.result == 'success' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
