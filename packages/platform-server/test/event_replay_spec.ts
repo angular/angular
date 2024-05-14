@@ -103,6 +103,53 @@ describe('event replay', () => {
     }
   }
 
+  it('should route to the appropriate component with content projection', async () => {
+    const outerOnClickSpy = jasmine.createSpy();
+    const innerOnClickSpy = jasmine.createSpy();
+    @Component({
+      selector: 'app-card',
+      standalone: true,
+      template: `
+        <div class="card">
+          <button id="inner-button" (click)="onClick()"></button>
+          <ng-content></ng-content> 
+        </div>
+      `,
+    })
+    class CardComponent {
+      onClick = innerOnClickSpy;
+    }
+
+    @Component({
+      selector: 'app',
+      imports: [CardComponent],
+      standalone: true,
+      template: `
+        <app-card>
+          <h2>Card Title</h2>
+          <p>This is some card content.</p>
+          <button id="outer-button" (click)="onClick()">Click Me</button>
+        </app-card>
+      `,
+    })
+    class AppComponent {
+      onClick = outerOnClickSpy;
+    }
+    const html = await ssr(AppComponent);
+    const ssrContents = getAppContents(html);
+    render(doc, ssrContents);
+    resetTViewsFor(AppComponent);
+    const outer = doc.getElementById('outer-button')!;
+    const inner = doc.getElementById('inner-button')!;
+    outer.click();
+    inner.click();
+    const appRef = await hydrate(doc, AppComponent, {
+      hydrationFeatures: [withEventReplay()],
+    });
+    appRef.tick();
+    expect(outerOnClickSpy).toHaveBeenCalledBefore(innerOnClickSpy);
+  });
+
   it('should serialize event types to be listened to and jsaction attribute', async () => {
     const clickSpy = jasmine.createSpy('onClick');
     const focusSpy = jasmine.createSpy('onFocus');
