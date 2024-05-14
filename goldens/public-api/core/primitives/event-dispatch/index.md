@@ -7,6 +7,9 @@
 // @public
 export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
 
+// @public (undocumented)
+export const CAPTURE_EVENTS: Set<string>;
+
 // @public
 export class Dispatcher {
     constructor(dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void, { actionResolver, eventReplayer, }?: {
@@ -97,8 +100,14 @@ export class EventInfoWrapper {
     setTimestamp(timestamp: number): void;
 }
 
+// @public (undocumented)
+export const MOUSE_EVENTS: Set<string>;
+
 // @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher): void;
+
+// @public (undocumented)
+export const SIMPLE_CONTRACT_EVENTS: Set<string>;
 
 // (No @packageDocumentation comment for this package)
 
