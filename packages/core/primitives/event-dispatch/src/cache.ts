@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {JSACTION, JSNAMESPACE} from './property';
+import {JSACTION} from './property';
 
 /**
  * Map from jsaction annotation to a parsed map from event name to action name.
@@ -64,41 +64,5 @@ export function setParsed(text: string, parsed: {[key: string]: string}) {
 export function clear(element: Element) {
   if (JSACTION in element) {
     delete element[JSACTION];
-  }
-}
-
-/**
- * Reads the cached jsaction namespace from the given DOM
- * Element. Undefined means there is no cached value; null is a cached
- * jsnamespace attribute that's absent.
- *
- * @param element .
- * @return .
- */
-export function getNamespace(element: Element): string | null | undefined {
-  // @ts-ignore
-  return element[JSNAMESPACE];
-}
-
-/**
- * Writes the cached jsaction namespace to the given DOM Element. Null
- * represents a jsnamespace attribute that's absent.
- *
- * @param element .
- * @param jsnamespace .
- */
-export function setNamespace(element: Element, jsnamespace: string | null) {
-  // @ts-ignore
-  element[JSNAMESPACE] = jsnamespace;
-}
-
-/**
- * Clears the cached jsaction namespace from the given DOM Element.
- *
- * @param element .
- */
-export function clearNamespace(element: Element) {
-  if (JSNAMESPACE in element) {
-    delete element[JSNAMESPACE];
   }
 }
