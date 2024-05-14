@@ -28,13 +28,14 @@ export function assertTNodeType(
 export function assertPureTNodeType(type: TNodeType) {
   if (
     !(
-      type === TNodeType.Element || //
-      type === TNodeType.Text || //
-      type === TNodeType.Container || //
-      type === TNodeType.ElementContainer || //
-      type === TNodeType.Icu || //
-      type === TNodeType.Projection || //
-      type === TNodeType.Placeholder
+      type === TNodeType.Element ||
+      type === TNodeType.Text ||
+      type === TNodeType.Container ||
+      type === TNodeType.ElementContainer ||
+      type === TNodeType.Icu ||
+      type === TNodeType.Projection ||
+      type === TNodeType.Placeholder ||
+      type === TNodeType.LetDeclaration
     )
   ) {
     throwError(
