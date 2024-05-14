@@ -137,7 +137,7 @@ describe('event replay', () => {
         const html = await ssr(SimpleComponent, {doc: docContents});
         const ssrContents = getAppContents(html);
         expect(ssrContents).toContain(
-          `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click"],["focus"]);</script>`,
+          `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click"], ["focus"]);</script>`,
         );
 
         render(doc, ssrContents);

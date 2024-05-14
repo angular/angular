@@ -123,7 +123,7 @@ function appendSsrContentIntegrityMarker(doc: Document) {
  */
 function appendServerContextInfo(applicationRef: ApplicationRef) {
   const injector = applicationRef.injector;
-  let serverContext = sanitizeServerContext(injector.get(SERVER_CONTEXT, DEFAULT_SERVER_CONTEXT));
+  const serverContext = sanitizeServerContext(injector.get(SERVER_CONTEXT, DEFAULT_SERVER_CONTEXT));
   applicationRef.components.forEach((componentRef) => {
     const renderer = componentRef.injector.get(Renderer2);
     const element = componentRef.location.nativeElement;
@@ -133,6 +133,14 @@ function appendServerContextInfo(applicationRef: ApplicationRef) {
   });
 }
 
+const DISALLOWED_EVENT_TYPES = new Set<string>([
+  'mouseenter',
+  'mouseleave',
+  'pointerenter',
+  'pointerleave',
+]);
+const ALLOWED_CAPTAURE_EVENT_TYPES = new Set<string>(['focus', 'blur', 'error', 'load', 'toggle']);
+
 function insertEventRecordScript(
   appId: string,
   doc: Document,
@@ -140,42 +148,41 @@ function insertEventRecordScript(
   nonce: string | null,
 ): void {
   const eventDispatchScript = findEventDispatchScript(doc);
-  if (eventDispatchScript) {
-    const events = Array.from(eventTypesToBeReplayed);
-    const captureEventTypes = [];
-    const eventTypes = [];
-    for (const eventType of events) {
-      if (
-        eventType === 'mouseenter' ||
-        eventType === 'mouseleave' ||
-        eventType === 'pointerenter' ||
-        eventType === 'pointerleave'
-      ) {
-        continue;
-      }
-      if (
-        eventType === 'focus' ||
-        eventType === 'blur' ||
-        eventType === 'error' ||
-        eventType === 'load' ||
-        eventType === 'toggle'
-      ) {
-        captureEventTypes.push(eventType);
-      } else {
-        eventTypes.push(eventType);
-      }
-    }
-    // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
-    const replayScriptContents = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
-      appId,
-    )}, ${JSON.stringify(eventTypes)}${captureEventTypes.length ? ',' + JSON.stringify(captureEventTypes) : ''});`;
-
-    const replayScript = createScript(doc, replayScriptContents, nonce);
-
-    // Insert replay script right after inlined event dispatch script, since it
-    // relies on `__jsaction_bootstrap` to be defined in the global scope.
-    eventDispatchScript.after(replayScript);
+  if (!eventDispatchScript) {
+    return;
   }
+
+  const captureEventTypes = [];
+  const eventTypes = [];
+  for (const eventType of eventTypesToBeReplayed) {
+    if (DISALLOWED_EVENT_TYPES.has(eventType)) {
+      continue;
+    }
+    if (ALLOWED_CAPTAURE_EVENT_TYPES.has(eventType)) {
+      captureEventTypes.push(eventType);
+    } else {
+      eventTypes.push(eventType);
+    }
+  }
+
+  // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
+  const jsActionBootstrapParams = [
+    `'ngContracts'`,
+    'document.body',
+    JSON.stringify(appId),
+    JSON.stringify(eventTypes),
+  ];
+
+  if (captureEventTypes.length) {
+    jsActionBootstrapParams.push(JSON.stringify(captureEventTypes));
+  }
+
+  const replayScriptContents = `window.__jsaction_bootstrap(${jsActionBootstrapParams.join(', ')});`;
+  const replayScript = createScript(doc, replayScriptContents, nonce);
+
+  // Insert replay script right after inlined event dispatch script, since it
+  // relies on `__jsaction_bootstrap` to be defined in the global scope.
+  eventDispatchScript.after(replayScript);
 }
 
 async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {
