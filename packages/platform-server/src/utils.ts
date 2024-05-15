@@ -16,16 +16,17 @@ import {
   Renderer2,
   StaticProvider,
   Type,
+  ɵConsole as Console,
   ɵannotateForHydration as annotateForHydration,
   ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
-  ɵwhenStable as whenStable,
 } from '@angular/core';
 
 import {PlatformState} from './platform_state';
 import {platformServer} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 import {createScript} from './transfer_state';
+import {ErrorInterceptor} from './error_interceptor';
 
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
@@ -178,52 +179,48 @@ function insertEventRecordScript(
   }
 }
 
-async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {
-  // Block until application is stable.
-  await whenStable(applicationRef);
+async function render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {
+  try {
+    const envInjector = applicationRef.injector;
+    // Block until application is stable.
+    await envInjector.get(ErrorInterceptor).whenStableWithoutError;
 
-  const platformState = platformRef.injector.get(PlatformState);
-  prepareForHydration(platformState, applicationRef);
+    const platformState = platformRef.injector.get(PlatformState);
+    prepareForHydration(platformState, applicationRef);
 
-  // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
-  const environmentInjector = applicationRef.injector;
-  const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
-  if (callbacks) {
-    const asyncCallbacks: Promise<void>[] = [];
-    for (const callback of callbacks) {
-      try {
-        const callbackResult = callback();
-        if (callbackResult) {
-          asyncCallbacks.push(callbackResult);
+    // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
+    const callbacks = envInjector.get(BEFORE_APP_SERIALIZED, null);
+    if (callbacks) {
+      const console = envInjector.get(Console);
+      const asyncCallbacks: Promise<void>[] = [];
+
+      for (const callback of callbacks) {
+        try {
+          const callbackResult = callback();
+          if (callbackResult) {
+            asyncCallbacks.push(callbackResult);
+          }
+        } catch (e) {
+          // Ignore exceptions.
+          console.warn(`Ignoring BEFORE_APP_SERIALIZED Exception: ${e}`);
         }
-      } catch (e) {
-        // Ignore exceptions.
-        console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', e);
+      }
+
+      if (asyncCallbacks.length) {
+        for (const result of await Promise.allSettled(asyncCallbacks)) {
+          if (result.status === 'rejected') {
+            console.warn(`Ignoring BEFORE_APP_SERIALIZED Exception: ${result.reason}`);
+          }
+        }
       }
     }
 
-    if (asyncCallbacks.length) {
-      for (const result of await Promise.allSettled(asyncCallbacks)) {
-        if (result.status === 'rejected') {
-          console.warn('Ignoring BEFORE_APP_SERIALIZED Exception: ', result.reason);
-        }
-      }
-    }
+    appendServerContextInfo(applicationRef);
+
+    return platformState.renderToString();
+  } finally {
+    platformRef.destroy();
   }
-
-  appendServerContextInfo(applicationRef);
-  const output = platformState.renderToString();
-
-  // Destroy the application in a macrotask, this allows pending promises to be settled and errors
-  // to be surfaced to the users.
-  await new Promise<void>((resolve) => {
-    setTimeout(() => {
-      platformRef.destroy();
-      resolve();
-    }, 0);
-  });
-
-  return output;
 }
 
 /**
@@ -268,7 +265,8 @@ export async function renderModule<T>(
   const platformRef = createServerPlatform({document, url, platformProviders});
   const moduleRef = await platformRef.bootstrapModule(moduleType);
   const applicationRef = moduleRef.injector.get(ApplicationRef);
-  return _render(platformRef, applicationRef);
+
+  return render(platformRef, applicationRef);
 }
 
 /**
@@ -297,5 +295,6 @@ export async function renderApplication<T>(
 ): Promise<string> {
   const platformRef = createServerPlatform(options);
   const applicationRef = await bootstrap();
-  return _render(platformRef, applicationRef);
+
+  return render(platformRef, applicationRef);
 }

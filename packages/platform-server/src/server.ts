@@ -30,6 +30,8 @@ import {
   ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS,
   ɵsetDocument,
   ɵTESTABILITY as TESTABILITY,
+  APP_INITIALIZER,
+  inject,
 } from '@angular/core';
 import {BrowserModule, EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -41,6 +43,7 @@ import {PlatformState} from './platform_state';
 import {ServerEventManagerPlugin} from './server_events';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 import {TRANSFER_STATE_SERIALIZATION_PROVIDERS} from './transfer_state';
+import {ErrorInterceptor} from './error_interceptor';
 
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
@@ -73,6 +76,15 @@ export const PLATFORM_SERVER_PROVIDERS: Provider[] = [
   {provide: Testability, useValue: null}, // Keep for backwards-compatibility.
   {provide: TESTABILITY, useValue: null},
   {provide: ViewportScroller, useClass: NullViewportScroller},
+  {
+    provide: APP_INITIALIZER,
+    multi: true,
+    useFactory: () => {
+      const errorInterceptor = inject(ErrorInterceptor);
+
+      return () => errorInterceptor.intercept();
+    },
+  },
 ];
 
 /**

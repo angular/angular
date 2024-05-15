@@ -576,6 +576,63 @@ class HiddenModule {}
       platform.destroy();
     });
 
+    it(`'renderApplication' should be rejected when an error is thrown in 'ngOnInit'`, async () => {
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `Works!`,
+      })
+      class MyServerApp {
+        ngOnInit() {
+          throw new Error('Error in ngOnInit');
+        }
+      }
+
+      const bootstrap = getStandaloneBootstrapFn(MyServerApp);
+      const render = renderApplication(bootstrap, {document: '<app></app>'});
+
+      await expectAsync(render).toBeRejectedWithError(/Error in ngOnInit/);
+    });
+
+    it(`'renderApplication' should be rejected when a promise is rejected in 'ngOnInit'`, async () => {
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `Works!`,
+      })
+      class MyServerApp {
+        ngOnInit() {
+          Promise.reject(new Error('Error in ngOnInit'));
+        }
+      }
+
+      const bootstrap = getStandaloneBootstrapFn(MyServerApp);
+      const render = renderApplication(bootstrap, {document: '<app></app>'});
+
+      await expectAsync(render).toBeRejectedWithError(/Error in ngOnInit/);
+    });
+
+    it(`'renderApplication' should be rejected when a error is thrown in an async on 'ngOnInit'`, async () => {
+      // Jasmine has it's own listeners which would cause the tests to fail.
+      process.removeAllListeners('unhandledRejection');
+
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `Works!`,
+      })
+      class MyServerApp {
+        async ngOnInit() {
+          throw new Error('Error in ngOnInit');
+        }
+      }
+
+      const bootstrap = getStandaloneBootstrapFn(MyServerApp);
+      const render = renderApplication(bootstrap, {document: '<app></app>'});
+
+      await expectAsync(render).toBeRejectedWithError(/Error in ngOnInit/);
+    });
+
     it('should allow multiple platform instances', async () => {
       const platform = platformServer([
         {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
