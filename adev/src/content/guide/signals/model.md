@@ -111,7 +111,7 @@ its `set` or `update` methods.
 ## Customizing model inputs
 
 You can mark a model input as required or provide an alias in the same way as a
-[standard input](guide/signal-inputs).
+[standard input](guide/signals/inputs).
 
 Model inputs do not support input transforms.
 
