@@ -8,7 +8,10 @@
 
 import {Subscription} from 'rxjs';
 
-import {internalProvideZoneChangeDetection} from '../change_detection/scheduling/ng_zone_scheduling';
+import {
+  internalProvideZoneChangeDetection,
+  PROVIDED_NG_ZONE,
+} from '../change_detection/scheduling/ng_zone_scheduling';
 import {EnvironmentProviders, Provider, StaticProvider} from '../di/interface/provider';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler} from '../error_handler';
@@ -26,6 +29,7 @@ import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
 import {_callAndReportToErrorHandler, ApplicationRef} from './application_ref';
+import {PROVIDED_ZONELESS} from '../change_detection/scheduling/zoneless_scheduling';
 
 /**
  * Internal create application API that implements the core application creation logic and optional
@@ -70,11 +74,20 @@ export function internalCreateApplication(config: {
     return ngZone.run(() => {
       envInjector.resolveInjectorInitializers();
       const exceptionHandler: ErrorHandler | null = envInjector.get(ErrorHandler, null);
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && !exceptionHandler) {
-        throw new RuntimeError(
-          RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-          'No `ErrorHandler` found in the Dependency Injection tree.',
-        );
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (!exceptionHandler) {
+          throw new RuntimeError(
+            RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+            'No `ErrorHandler` found in the Dependency Injection tree.',
+          );
+        }
+        if (envInjector.get(PROVIDED_ZONELESS) && envInjector.get(PROVIDED_NG_ZONE)) {
+          throw new RuntimeError(
+            RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
+            'Invalid change detection configuration: ' +
+              'provideZoneChangeDetection and provideExperimentalZonelessChangeDetection cannot be used together.',
+          );
+        }
       }
 
       let onErrorSubscription: Subscription;
