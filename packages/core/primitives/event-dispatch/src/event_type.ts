@@ -283,12 +283,16 @@ export const EventType = {
   CUSTOM: '_custom',
 };
 
+export const isMouseEvent = (eventType: string) => MOUSE_EVENTS.has(eventType);
+
 export const MOUSE_EVENTS = new Set([
   EventType.MOUSEENTER,
   EventType.MOUSELEAVE,
   'pointerenter',
   'pointerleave',
 ]);
+
+export const isSupportedEvent = (eventType: string) => SIMPLE_CONTRACT_EVENTS.has(eventType);
 
 export const SIMPLE_CONTRACT_EVENTS = new Set([
   EventType.CLICK,
@@ -356,6 +360,8 @@ export const SIMPLE_CONTRACT_EVENTS = new Set([
   // Content visibility events.
   'beforematch',
 ]);
+
+export const isCaptureEvent = (eventType: string) => CAPTURE_EVENTS.has(eventType);
 
 export const CAPTURE_EVENTS = new Set([
   EventType.FOCUS,

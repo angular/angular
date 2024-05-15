@@ -13,8 +13,8 @@ import {
   EventContractContainer,
   EventInfoWrapper,
   registerDispatcher,
-  SIMPLE_CONTRACT_EVENTS,
-  CAPTURE_EVENTS,
+  isSupportedEvent,
+  isCaptureEvent,
 } from '@angular/core/primitives/event-dispatch';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
@@ -117,6 +117,8 @@ export function withEventReplay(): Provider[] {
                 for (const el of jsactionMap.keys()) {
                   el.removeAttribute(JSACTION_ATTRIBUTE);
                 }
+                // After hydration, we shouldn't need to do anymore work related to
+                // event replay anymore.
                 setDisableEventReplayImpl(() => {});
               }
             });
@@ -136,8 +138,7 @@ export function withEventReplay(): Provider[] {
 export function collectDomEventsInfo(
   tView: TView,
   lView: LView,
-  eventTypesToReplay: Set<string>,
-  captureEventTypesToReplay: Set<string>,
+  eventTypesToReplay: {regular: Set<string>; capture: Set<string>},
 ): Map<Element, string[]> {
   const events = new Map<Element, string[]>();
   const lCleanup = lView[CLEANUP];
@@ -152,13 +153,13 @@ export function collectDomEventsInfo(
       continue;
     }
     const name: string = firstParam;
-    if (!SIMPLE_CONTRACT_EVENTS.has(name)) {
+    if (!isSupportedEvent(name)) {
       continue;
     }
-    if (CAPTURE_EVENTS.has(name)) {
-      captureEventTypesToReplay.add(name);
+    if (isCaptureEvent(name)) {
+      eventTypesToReplay.capture.add(name);
     } else {
-      eventTypesToReplay.add(name);
+      eventTypesToReplay.regular.add(name);
     }
     const listenerElement = unwrapRNode(lView[secondParam]) as any as Element;
     i++; // move the cursor to the next position (location of the listener idx)
