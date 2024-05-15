@@ -97,13 +97,10 @@ export class EventInfoWrapper {
     setTimestamp(timestamp: number): void;
 }
 
-// @public (undocumented)
+// @public
 export const isCaptureEvent: (eventType: string) => boolean;
 
-// @public (undocumented)
-export const isMouseEvent: (eventType: string) => boolean;
-
-// @public (undocumented)
+// @public
 export const isSupportedEvent: (eventType: string) => boolean;
 
 // @public

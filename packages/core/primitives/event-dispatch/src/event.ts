@@ -8,7 +8,7 @@
 
 import * as dom from './dom';
 import {EventHandlerInfo} from './event_handler';
-import {CAPTURE_EVENTS, EventType} from './event_type';
+import {isCaptureEvent, EventType} from './event_type';
 import {KeyCode} from './key_code';
 
 /**
@@ -62,7 +62,7 @@ export function addEventListener(
   // handled in the capture phase.
   let capture = false;
 
-  if (CAPTURE_EVENTS.has(eventType)) {
+  if (isCaptureEvent(eventType)) {
     capture = true;
   }
   element.addEventListener(eventType, handler, capture);

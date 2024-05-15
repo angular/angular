@@ -283,18 +283,19 @@ export const EventType = {
   CUSTOM: '_custom',
 };
 
-export const isMouseEvent = (eventType: string) => MOUSE_EVENTS.has(eventType);
-
-export const MOUSE_EVENTS = new Set([
+export const NON_BUBBLING_MOUSE_EVENTS = new Set([
   EventType.MOUSEENTER,
   EventType.MOUSELEAVE,
   'pointerenter',
   'pointerleave',
 ]);
 
-export const isSupportedEvent = (eventType: string) => SIMPLE_CONTRACT_EVENTS.has(eventType);
+/**
+ * A default set of events that clients should use to install the event contract.
+ */
+export const isSupportedEvent = (eventType: string) => SUPPORTED_EVENTS.has(eventType);
 
-export const SIMPLE_CONTRACT_EVENTS = new Set([
+const SUPPORTED_EVENTS = new Set([
   EventType.CLICK,
   EventType.DBLCLICK,
   EventType.FOCUS,
@@ -361,9 +362,16 @@ export const SIMPLE_CONTRACT_EVENTS = new Set([
   'beforematch',
 ]);
 
+/**
+ *
+ * Decides whether or not an event type is an event that only has a capture phase.
+ *
+ * @param eventType
+ * @returns bool
+ */
 export const isCaptureEvent = (eventType: string) => CAPTURE_EVENTS.has(eventType);
 
-export const CAPTURE_EVENTS = new Set([
+const CAPTURE_EVENTS = new Set([
   EventType.FOCUS,
   EventType.BLUR,
   EventType.ERROR,
