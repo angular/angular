@@ -59,6 +59,12 @@ export const ZONELESS_ENABLED = new InjectionToken<boolean>(
   {providedIn: 'root', factory: () => false},
 );
 
+/** Token used to indicate `provideExperimentalZonelessChangeDetection` was used. */
+export const PROVIDED_ZONELESS = new InjectionToken<boolean>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'Zoneless provided' : '',
+  {providedIn: 'root', factory: () => false},
+);
+
 export const ZONELESS_SCHEDULER_DISABLED = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'scheduler disabled' : '',
 );

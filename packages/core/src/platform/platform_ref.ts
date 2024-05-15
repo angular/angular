@@ -95,25 +95,20 @@ export class PlatformRef {
         internalProvideZoneChangeDetection({ngZoneFactory: () => ngZone, ignoreChangesOutsideZone}),
       );
 
-      if (
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
-        moduleRef.injector.get(PROVIDED_NG_ZONE, null) !== null
-      ) {
-        throw new RuntimeError(
-          RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
-          '`bootstrapModule` does not support `provideZoneChangeDetection`. Use `BootstrapOptions` instead.',
-        );
-      }
-      if (
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
-        moduleRef.injector.get(ZONELESS_ENABLED, null) &&
-        options?.ngZone !== 'noop'
-      ) {
-        throw new RuntimeError(
-          RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
-          'Invalid change detection configuration: ' +
-            "`ngZone: 'noop'` must be set in `BootstrapOptions` with provideExperimentalZonelessChangeDetection.",
-        );
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (moduleRef.injector.get(PROVIDED_NG_ZONE)) {
+          throw new RuntimeError(
+            RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
+            '`bootstrapModule` does not support `provideZoneChangeDetection`. Use `BootstrapOptions` instead.',
+          );
+        }
+        if (moduleRef.injector.get(ZONELESS_ENABLED) && options?.ngZone !== 'noop') {
+          throw new RuntimeError(
+            RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
+            'Invalid change detection configuration: ' +
+              "`ngZone: 'noop'` must be set in `BootstrapOptions` with provideExperimentalZonelessChangeDetection.",
+          );
+        }
       }
 
       const exceptionHandler = moduleRef.injector.get(ErrorHandler, null);

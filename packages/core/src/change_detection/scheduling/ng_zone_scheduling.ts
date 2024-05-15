@@ -38,7 +38,6 @@ export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
   private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler, {optional: true});
   private readonly applicationRef = inject(ApplicationRef);
-  private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
 
   private _onMicrotaskEmptySubscription?: Subscription;
 
@@ -73,6 +72,7 @@ export class NgZoneChangeDetectionScheduler {
  */
 export const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'provideZoneChangeDetection token' : '',
+  {factory: () => false},
 );
 
 export function internalProvideZoneChangeDetection({
@@ -167,8 +167,9 @@ export function provideZoneChangeDetection(options?: NgZoneOptions): Environment
   });
   return makeEnvironmentProviders([
     typeof ngDevMode === 'undefined' || ngDevMode
-      ? [{provide: PROVIDED_NG_ZONE, useValue: true}, bothZoneAndZonelessErrorCheckProvider]
+      ? [{provide: PROVIDED_NG_ZONE, useValue: true}]
       : [],
+    {provide: ZONELESS_ENABLED, useValue: false},
     zoneProviders,
   ]);
 }
@@ -301,19 +302,3 @@ export class ZoneStablePendingTask {
     this.subscription.unsubscribe();
   }
 }
-
-const bothZoneAndZonelessErrorCheckProvider = {
-  provide: ENVIRONMENT_INITIALIZER,
-  multi: true,
-  useFactory: () => {
-    const providedZoneless = inject(ZONELESS_ENABLED, {optional: true});
-    if (providedZoneless) {
-      throw new RuntimeError(
-        RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
-        'Invalid change detection configuration: ' +
-          'provideZoneChangeDetection and provideExperimentalZonelessChangeDetection cannot be used together.',
-      );
-    }
-    return () => {};
-  },
-};
