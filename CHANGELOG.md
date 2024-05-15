@@ -1,3 +1,26 @@
+<a name="18.0.0-rc.2"></a>
+# 18.0.0-rc.2 (2024-05-15)
+## Deprecations
+### core
+- `@Component.interpolation` is deprecated. Use Angular's
+  delimiters instead.
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1fd63e9cff](https://github.com/angular/angular/commit/1fd63e9cff9159a8c10c35a0af43bc986e4e8e26) | refactor | deprecate `@Component.interpolation` ([#55778](https://github.com/angular/angular/pull/55778)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [61007dced0](https://github.com/angular/angular/commit/61007dced0f3396c40efcd2617c130633fb9837a) | fix | Add event for forms submitted & reset ([#55667](https://github.com/angular/angular/pull/55667)) |
+| [2e27ca9ddf](https://github.com/angular/angular/commit/2e27ca9ddfc1f3f0387cd720071e85ff46f19db6) | fix | Allow canceled async validators to emit. ([#55134](https://github.com/angular/angular/pull/55134)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c4b2f18709](https://github.com/angular/angular/commit/c4b2f18709076f8c400bd26226be37ae07e5e83d) | fix | migrate HttpClientTestingModule in test modules ([#55803](https://github.com/angular/angular/pull/55803)) |
+| [bb4a4016a9](https://github.com/angular/angular/commit/bb4a4016a9a29a9c56342ee01d866b0c8a3fb419) | fix | preserve existing properties in HttpClientModule migration ([#55777](https://github.com/angular/angular/pull/55777)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-rc.1"></a>
 # 18.0.0-rc.1 (2024-05-08)
 ### compiler
