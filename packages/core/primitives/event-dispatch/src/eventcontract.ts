@@ -163,7 +163,8 @@ export class EventContract implements UnrenamedEventContract {
       return;
     }
     if (this.useActionResolver) {
-      this.actionResolver!.resolve(eventInfo);
+      this.actionResolver!.resolveEventType(eventInfo);
+      this.actionResolver!.resolveAction(eventInfo);
     }
     this.dispatcher(eventInfo);
   }

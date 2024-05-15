@@ -77,7 +77,8 @@ export class Dispatcher {
    */
   dispatch(eventInfo: EventInfo): void {
     const eventInfoWrapper = new EventInfoWrapper(eventInfo);
-    this.actionResolver?.resolve(eventInfo);
+    this.actionResolver?.resolveEventType(eventInfo);
+    this.actionResolver?.resolveAction(eventInfo);
     const action = eventInfoWrapper.getAction();
     if (action && shouldPreventDefaultBeforeDispatching(action.element, eventInfoWrapper)) {
       eventLib.preventDefault(eventInfoWrapper.getEvent());
