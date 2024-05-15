@@ -7,6 +7,7 @@
  */
 
 const UNUSABLE_INTERPOLATION_REGEXPS = [
+  /@/, // control flow reserved symbol
   /^\s*$/, // empty
   /[<>]/, // html tag
   /^[{}]$/, // i18n expansion
