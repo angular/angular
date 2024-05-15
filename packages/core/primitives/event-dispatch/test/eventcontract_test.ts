@@ -175,6 +175,12 @@ const domContent = `
     <div id="pointerleave-target-element"></div>
   </div>
 </div>
+
+<div id="focus-container">
+  <div id="focus-action-element" jsaction="focus:handleFocus">
+    <button id="focus-target-element">Focus Button</button>
+  </div>
+</div>
 `;
 
 function getRequiredElementById(id: string) {
