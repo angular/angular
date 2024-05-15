@@ -104,7 +104,7 @@ export enum TranslationWidth {
  */
 export enum FormatWidth {
   /**
-   * For `en-US`, 'M/d/yy, h:mm a'`
+   * For `en-US`, `'M/d/yy, h:mm a'`
    * (Example: `6/15/15, 9:03 AM`)
    */
   Short,
