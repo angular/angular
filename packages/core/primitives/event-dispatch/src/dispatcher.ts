@@ -29,7 +29,7 @@ export class Dispatcher {
   private actionResolver?: ActionResolver;
 
   /** The replayer function to be called when there are queued events. */
-  private eventReplayer?: Replayer;
+  private eventReplayer: Replayer;
 
   /** Whether the event replay is scheduled. */
   private eventReplayScheduled = false;
@@ -89,9 +89,6 @@ export class Dispatcher {
       eventLib.preventDefault(eventInfoWrapper.getEvent());
     }
     if (eventInfoWrapper.getIsReplay()) {
-      if (!this.eventReplayer) {
-        return;
-      }
       this.scheduleEventInfoWrapperReplay(eventInfoWrapper);
       return;
     }
@@ -105,13 +102,13 @@ export class Dispatcher {
    */
   private scheduleEventInfoWrapperReplay(eventInfoWrapper: EventInfoWrapper) {
     this.replayEventInfoWrappers.push(eventInfoWrapper);
-    if (this.eventReplayScheduled || !this.eventReplayer) {
+    if (this.eventReplayScheduled) {
       return;
     }
     this.eventReplayScheduled = true;
     Promise.resolve().then(() => {
       this.eventReplayScheduled = false;
-      this.eventReplayer!(this.replayEventInfoWrappers);
+      this.eventReplayer(this.replayEventInfoWrappers);
     });
   }
 }
