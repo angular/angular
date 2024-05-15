@@ -147,6 +147,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNEXPECTED_ZONE_STATE = 909,
     // (undocumented)
+    UNEXPECTED_ZONEJS_PRESENT_IN_ZONELESS_MODE = 914,
+    // (undocumented)
     UNKNOWN_BINDING = 303,
     // (undocumented)
     UNKNOWN_ELEMENT = 304,
