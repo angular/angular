@@ -26,6 +26,7 @@ import {
   ChangeDetectionScheduler,
   NotificationSource,
   ZONELESS_ENABLED,
+  PROVIDED_ZONELESS,
   ZONELESS_SCHEDULER_DISABLED,
 } from './zoneless_scheduling';
 
@@ -297,5 +298,8 @@ export function provideExperimentalZonelessChangeDetection(): EnvironmentProvide
     {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
     {provide: NgZone, useClass: NoopNgZone},
     {provide: ZONELESS_ENABLED, useValue: true},
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? [{provide: PROVIDED_ZONELESS, useValue: true}]
+      : [],
   ]);
 }
