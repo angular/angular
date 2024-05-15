@@ -52,27 +52,7 @@ export class ActionResolver {
     this.syntheticMouseEventSupport = syntheticMouseEventSupport;
   }
 
-  resolve(eventInfo: eventInfoLib.EventInfo) {
-    if (eventInfoLib.getResolved(eventInfo)) {
-      return;
-    }
-    this.populateAction(eventInfo);
-    eventInfoLib.setResolved(eventInfo, true);
-  }
-
-  /**
-   * Searches for a jsaction that the DOM event maps to and creates an
-   * object containing event information used for dispatching by
-   * jsaction.Dispatcher. This method populates the `action` and `actionElement`
-   * fields of the EventInfo object passed in by finding the first
-   * jsaction attribute above the target Node of the event, and below
-   * the container Node, that specifies a jsaction for the event
-   * type. If no such jsaction is found, then action is undefined.
-   *
-   * @param eventInfo `EventInfo` to set `action` and `actionElement` if an
-   *    action is found on any `Element` in the path of the `Event`.
-   */
-  private populateAction(eventInfo: eventInfoLib.EventInfo) {
+  resolveEventType(eventInfo: eventInfoLib.EventInfo) {
     // We distinguish modified and plain clicks in order to support the
     // default browser behavior of modified clicks on links; usually to
     // open the URL of the link in new tab or new window on ctrl/cmd
@@ -114,11 +94,41 @@ export class ActionResolver {
     } else if (this.a11yClickSupport) {
       this.updateEventInfoForA11yClick!(eventInfo);
     }
+  }
 
-    // Walk to the parent node, unless the node has a different owner in
-    // which case we walk to the owner. Attempt to walk to host of a
-    // shadow root if needed.
-    let actionElement: Element | null = eventInfoLib.getTargetElement(eventInfo);
+  resolveAction(eventInfo: eventInfoLib.EventInfo) {
+    if (eventInfoLib.getResolved(eventInfo)) {
+      return;
+    }
+    this.populateAction(eventInfo, eventInfoLib.getTargetElement(eventInfo));
+    eventInfoLib.setResolved(eventInfo, true);
+  }
+
+  resolveParentAction(eventInfo: eventInfoLib.EventInfo) {
+    const action = eventInfoLib.getAction(eventInfo);
+    const actionElement = action && eventInfoLib.getActionElement(action);
+    eventInfoLib.unsetAction(eventInfo);
+    const parentNode = actionElement && this.getParentNode(actionElement);
+    if (!parentNode) {
+      return;
+    }
+    this.populateAction(eventInfo, parentNode);
+  }
+
+  /**
+   * Searches for a jsaction that the DOM event maps to and creates an
+   * object containing event information used for dispatching by
+   * jsaction.Dispatcher. This method populates the `action` and `actionElement`
+   * fields of the EventInfo object passed in by finding the first
+   * jsaction attribute above the target Node of the event, and below
+   * the container Node, that specifies a jsaction for the event
+   * type. If no such jsaction is found, then action is undefined.
+   *
+   * @param eventInfo `EventInfo` to set `action` and `actionElement` if an
+   *    action is found on any `Element` in the path of the `Event`.
+   */
+  private populateAction(eventInfo: eventInfoLib.EventInfo, currentTarget: Element) {
+    let actionElement: Element | null = currentTarget;
     while (actionElement && actionElement !== eventInfoLib.getContainer(eventInfo)) {
       if (actionElement.nodeType === Node.ELEMENT_NODE) {
         this.populateActionOnElement(actionElement, eventInfo);
@@ -130,15 +140,7 @@ export class ActionResolver {
         // ancestor chain of the event target node.
         break;
       }
-      if (actionElement[OWNER]) {
-        actionElement = actionElement[OWNER] as Element;
-        continue;
-      }
-      if (actionElement.parentNode?.nodeName !== '#document-fragment') {
-        actionElement = actionElement.parentNode as Element | null;
-      } else {
-        actionElement = (actionElement.parentNode as ShadowRoot | null)?.host ?? null;
-      }
+      actionElement = this.getParentNode(actionElement);
     }
 
     const action = eventInfoLib.getAction(eventInfo);
@@ -190,6 +192,23 @@ export class ActionResolver {
         }
       }
     }
+  }
+
+  /**
+   * Walk to the parent node, unless the node has a different owner in
+   * which case we walk to the owner. Attempt to walk to host of a
+   * shadow root if needed.
+   */
+  private getParentNode(element: Element): Element | null {
+    const owner = element[OWNER];
+    if (owner) {
+      return owner as Element;
+    }
+    const parentNode = element.parentNode;
+    if (parentNode?.nodeName === '#document-fragment') {
+      return (parentNode as ShadowRoot | null)?.host ?? null;
+    }
+    return parentNode as Element | null;
   }
 
   /**
