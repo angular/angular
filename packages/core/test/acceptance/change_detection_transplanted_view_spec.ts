@@ -28,6 +28,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
+import {provideExperimentalCheckNoChangesForDebug} from '@angular/core/src/change_detection/scheduling/exhaustive_check_no_changes';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {of} from 'rxjs';
@@ -1104,6 +1105,45 @@ describe('change detection for transplanted views', () => {
     // goes and marks the root view dirty, which then starts the process all over again by
     // checking the declaration.
     expect(() => appRef.tick()).not.toThrow();
+  });
+  it('does not cause infinite loops with exhaustive checkNoChanges', async () => {
+    TestBed.configureTestingModule({
+      providers: [provideExperimentalCheckNoChangesForDebug({interval: 1})],
+    });
+    const errorSpy = spyOn(console, 'error').and.callFake((...v) => {
+      fail('console errored with ' + v);
+    });
+    @Component({
+      standalone: true,
+      selector: 'insertion',
+      template: `<ng-container #vc></ng-container>`,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+    })
+    class Insertion {
+      @ViewChild('vc', {read: ViewContainerRef, static: true}) viewContainer!: ViewContainerRef;
+      @Input() template!: TemplateRef<{}>;
+      ngOnChanges() {
+        return this.viewContainer.createEmbeddedView(this.template);
+      }
+    }
+
+    @Component({
+      standalone: true,
+      template: `
+          <ng-template #template>hello world</ng-template>
+          <insertion [template]="transplantedTemplate"></insertion>
+        `,
+      imports: [Insertion],
+    })
+    class Root {
+      @ViewChild('template', {static: true}) transplantedTemplate!: TemplateRef<{}>;
+    }
+
+    const fixture = TestBed.createComponent(Root);
+    TestBed.inject(ApplicationRef).attachView(fixture.componentRef.hostView);
+    // wait the 1 tick for exhaustive check to trigger
+    await new Promise((r) => setTimeout(r, 1));
+    expect(errorSpy).not.toHaveBeenCalled();
   });
 });
 
