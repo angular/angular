@@ -1309,7 +1309,7 @@ describe('change detection', () => {
         expect(comp.viewCheckCount).toEqual(1);
       });
 
-      describe('provideCheckNoChangesForDebug', () => {
+      describe('provideExperimentalCheckNoChangesForDebug', () => {
         // Needed because tests in this repo patch rAF to be setTimeout
         // and coalescing tries to get the native one but fails so
         // coalescing will run a timeout in the zone and cause an infinite loop.
