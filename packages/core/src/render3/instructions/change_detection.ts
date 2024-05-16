@@ -15,14 +15,8 @@ import {
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertEqual} from '../../util/assert';
-import {assertLContainer} from '../assert';
 import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} from '../hooks';
-import {
-  CONTAINER_HEADER_OFFSET,
-  LContainer,
-  LContainerFlags,
-  MOVED_VIEWS,
-} from '../interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainerFlags, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentTemplate, RenderFlags} from '../interfaces/definition';
 import {
   CONTEXT,
@@ -32,7 +26,6 @@ import {
   InitPhaseState,
   LView,
   LViewFlags,
-  PARENT,
   REACTIVE_TEMPLATE_CONSUMER,
   TVIEW,
   TView,
@@ -119,6 +112,13 @@ function detectChangesInViewWhileDirty(lView: LView, mode: ChangeDetectionMode) 
     setIsRefreshingViews(true);
     detectChangesInView(lView, mode);
 
+    // We don't need or want to do any looping when in exhaustive checkNoChanges because we
+    // already traverse all the views and nothing should change so we shouldn't have to do
+    // another pass to pick up new changes.
+    if (ngDevMode && isExhaustiveCheckNoChanges()) {
+      return;
+    }
+
     let retries = 0;
     // If after running change detection, this view still needs to be refreshed or there are
     // descendants views that need to be refreshed due to re-dirtying during the change detection
@@ -199,6 +199,7 @@ export function refreshView<T>(
   // Check no changes mode is a dev only mode used to verify that bindings have not changed
   // since they were assigned. We do not want to execute lifecycle hooks in that mode.
   const isInCheckNoChangesPass = ngDevMode && isInCheckNoChangesMode();
+  const isInExhaustiveCheckNoChangesPass = ngDevMode && isExhaustiveCheckNoChanges();
 
   !isInCheckNoChangesPass && lView[ENVIRONMENT].inlineEffectRunner?.flush();
 
@@ -241,10 +242,14 @@ export function refreshView<T>(
       }
     }
 
-    // First mark transplanted views that are declared in this lView as needing a refresh at their
-    // insertion points. This is needed to avoid the situation where the template is defined in this
-    // `LView` but its declaration appears after the insertion component.
-    markTransplantedViewsForRefresh(lView);
+    // We do not need to mark transplanted views for refresh when doing exhaustive checks
+    // because all views will be reached anyways during the traversal.
+    if (!isInExhaustiveCheckNoChangesPass) {
+      // First mark transplanted views that are declared in this lView as needing a refresh at their
+      // insertion points. This is needed to avoid the situation where the template is defined in this
+      // `LView` but its declaration appears after the insertion component.
+      markTransplantedViewsForRefresh(lView);
+    }
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Global);
 
     // Content query results must be refreshed before content hooks are called.
