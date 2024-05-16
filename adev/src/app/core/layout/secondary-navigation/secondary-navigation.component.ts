@@ -14,6 +14,7 @@ import {
   PLATFORM_ID,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
@@ -76,7 +77,7 @@ export class SecondaryNavigation implements OnInit {
     const level = this.navigationState.expandedItems()?.length ?? 0;
     return `translateX(${-level * 100}%)`;
   });
-  transition: string = '0ms';
+  transition = signal('0ms');
 
   readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
@@ -182,7 +183,7 @@ export class SecondaryNavigation implements OnInit {
       return;
     }
     setTimeout(() => {
-      this.transition = `${ANIMATION_DURATION}ms`;
+      this.transition.set(`${ANIMATION_DURATION}ms`);
     }, ANIMATION_DURATION);
   }
 
