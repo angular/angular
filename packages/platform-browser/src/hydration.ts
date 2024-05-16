@@ -100,8 +100,18 @@ export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSup
 /**
  * Enables support for event replay
  *
+ * @usageNotes
+ *
+ * Basic example of how you can enable event replay in your application when
+ * `bootstrapApplication` function is used:
+ * ```
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideClientHydration(withEventReplay())]
+ * });
+ * ```
  * @developerPreview
  * @publicApi
+ * @see {@link provideClientHydration}
  */
 export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventReplay> {
   return hydrationFeature(HydrationFeatureKind.EventReplay, ɵwithEventReplay());
