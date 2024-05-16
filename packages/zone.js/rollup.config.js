@@ -54,6 +54,19 @@ const banner = `'use strict';
  */`;
 
 module.exports = {
+  external: (id) => {
+    if (id[0] === '.') {
+      // Relative paths are always non external.
+      return false;
+    }
+
+    if (/zone\.js[\\/]lib/.test(id)) {
+      return false;
+    }
+
+    return /rxjs|electron/.test(id);
+  },
+
   plugins: [
     node({
       mainFields: ['es2015', 'module', 'jsnext:main', 'main'],
@@ -61,13 +74,6 @@ module.exports = {
     commonjs(),
     stripBannerPlugin,
   ],
-  external: (id) => {
-    if (/zone\.js[\\/]lib/.test(id)) {
-      return false;
-    }
-
-    return /rxjs|^electron/.test(id);
-  },
   output: {
     globals: {
       electron: 'electron',
