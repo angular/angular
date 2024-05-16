@@ -80,8 +80,7 @@ export interface ReactiveNode {
     consumerOnSignalRead(node: unknown): void;
     dirty: boolean;
     lastCleanEpoch: Version;
-    liveConsumerIndexOfThis: number[] | undefined;
-    liveConsumerNode: ReactiveNode[] | undefined;
+    liveConsumerNode: SpeedySet<ReactiveNode> | undefined;
     nextProducerIndex: number;
     producerIndexOfThis: number[] | undefined;
     producerLastReadVersion: Version[] | undefined;

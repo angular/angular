@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// TODO: what and why is this
+// @ng_package: ignore-cross-repo-import
+import {LiteSet, addToLiteSet, createLiteSet, removeFromLiteSet} from '../../set';
+
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.
 declare const ngDevMode: boolean | undefined;
@@ -63,7 +67,6 @@ export const REACTIVE_NODE: ReactiveNode = {
   producerIndexOfThis: undefined,
   nextProducerIndex: 0,
   liveConsumerNode: undefined,
-  liveConsumerIndexOfThis: undefined,
   consumerAllowSignalWrites: false,
   consumerIsAlwaysLive: false,
   producerMustRecompute: () => false,
@@ -148,14 +151,7 @@ export interface ReactiveNode {
    *
    * `liveConsumerNode.length` is effectively our reference count for this node.
    */
-  liveConsumerNode: ReactiveNode[] | undefined;
-
-  /**
-   * Index of `this` (producer) in each consumer's `producerNode` array.
-   *
-   * Uses the same indices as the `liveConsumerNode` array.
-   */
-  liveConsumerIndexOfThis: number[] | undefined;
+  liveConsumerNode: LiteSet<ReactiveNode> | undefined;
 
   /**
    * Whether writes to signals are allowed when this consumer is the `activeConsumer`.
@@ -189,7 +185,6 @@ interface ConsumerNode extends ReactiveNode {
 
 interface ProducerNode extends ReactiveNode {
   liveConsumerNode: NonNullable<ReactiveNode['liveConsumerNode']>;
-  liveConsumerIndexOfThis: NonNullable<ReactiveNode['liveConsumerIndexOfThis']>;
 }
 
 /**
@@ -226,7 +221,7 @@ export function producerAccessed(node: ReactiveNode): void {
     // to remove it from the stale producer's `liveConsumer`s.
     if (consumerIsLive(activeConsumer)) {
       const staleProducer = activeConsumer.producerNode[idx];
-      producerRemoveLiveConsumerAtIndex(staleProducer, activeConsumer.producerIndexOfThis[idx]);
+      producerRemoveLiveConsumer(staleProducer, activeConsumer);
 
       // At this point, the only record of `staleProducer` is the reference at
       // `activeConsumer.producerNode[idx]` which will be overwritten below.
@@ -237,11 +232,7 @@ export function producerAccessed(node: ReactiveNode): void {
     // We're a new dependency of the consumer (at `idx`).
     activeConsumer.producerNode[idx] = node;
 
-    // If the active consumer is live, then add it as a live consumer. If not, then use 0 as a
-    // placeholder value.
-    activeConsumer.producerIndexOfThis[idx] = consumerIsLive(activeConsumer)
-      ? producerAddLiveConsumer(node, activeConsumer, idx)
-      : 0;
+    producerAddLiveConsumer(node, activeConsumer);
   }
   activeConsumer.producerLastReadVersion[idx] = node.version;
 }
@@ -359,7 +350,7 @@ export function consumerAfterComputation(
     // For live consumers, we need to remove the producer -> consumer edge for any stale producers
     // which weren't dependencies after the recomputation.
     for (let i = node.nextProducerIndex; i < node.producerNode.length; i++) {
-      producerRemoveLiveConsumerAtIndex(node.producerNode[i], node.producerIndexOfThis[i]);
+      producerRemoveLiveConsumer(node.producerNode[i], node);
     }
   }
 
@@ -413,7 +404,7 @@ export function consumerDestroy(node: ReactiveNode): void {
   if (consumerIsLive(node)) {
     // Drop all connections from the graph to this node.
     for (let i = 0; i < node.producerNode.length; i++) {
-      producerRemoveLiveConsumerAtIndex(node.producerNode[i], node.producerIndexOfThis[i]);
+      producerRemoveLiveConsumer(node.producerNode[i], node);
     }
   }
 
@@ -423,7 +414,7 @@ export function consumerDestroy(node: ReactiveNode): void {
     node.producerIndexOfThis.length =
       0;
   if (node.liveConsumerNode) {
-    node.liveConsumerNode.length = node.liveConsumerIndexOfThis!.length = 0;
+    node.liveConsumerNode.length = 0;
   }
 }
 
@@ -433,26 +424,21 @@ export function consumerDestroy(node: ReactiveNode): void {
  * Note that this operation is potentially transitive. If this node becomes live, then it becomes
  * a live consumer of all of its current producers.
  */
-function producerAddLiveConsumer(
-  node: ReactiveNode,
-  consumer: ReactiveNode,
-  indexOfThis: number,
-): number {
+function producerAddLiveConsumer(node: ReactiveNode, consumer: ReactiveNode) {
   assertProducerNode(node);
   if (node.liveConsumerNode.length === 0 && isConsumerNode(node)) {
     // When going from 0 to 1 live consumers, we become a live consumer to our producers.
     for (let i = 0; i < node.producerNode.length; i++) {
-      node.producerIndexOfThis[i] = producerAddLiveConsumer(node.producerNode[i], node, i);
+      producerAddLiveConsumer(node.producerNode[i], node);
     }
   }
-  node.liveConsumerIndexOfThis.push(indexOfThis);
-  return node.liveConsumerNode.push(consumer) - 1;
+  addToLiteSet(node.liveConsumerNode, consumer);
 }
 
 /**
  * Remove the live consumer at `idx`.
  */
-function producerRemoveLiveConsumerAtIndex(node: ReactiveNode, idx: number): void {
+function producerRemoveLiveConsumer(node: ReactiveNode, consumer: ReactiveNode): void {
   assertProducerNode(node);
 
   if (typeof ngDevMode !== 'undefined' && ngDevMode && idx >= node.liveConsumerNode.length) {
@@ -466,28 +452,11 @@ function producerRemoveLiveConsumerAtIndex(node: ReactiveNode, idx: number): voi
     // ourselves from our producers' tracking (which may cause consumer-producers to lose
     // liveness as well).
     for (let i = 0; i < node.producerNode.length; i++) {
-      producerRemoveLiveConsumerAtIndex(node.producerNode[i], node.producerIndexOfThis[i]);
+      producerRemoveLiveConsumer(node.producerNode[i], node);
     }
   }
 
-  // Move the last value of `liveConsumers` into `idx`. Note that if there's only a single
-  // live consumer, this is a no-op.
-  const lastIdx = node.liveConsumerNode.length - 1;
-  node.liveConsumerNode[idx] = node.liveConsumerNode[lastIdx];
-  node.liveConsumerIndexOfThis[idx] = node.liveConsumerIndexOfThis[lastIdx];
-
-  // Truncate the array.
-  node.liveConsumerNode.length--;
-  node.liveConsumerIndexOfThis.length--;
-
-  // If the index is still valid, then we need to fix the index pointer from the producer to this
-  // consumer, and update it from `lastIdx` to `idx` (accounting for the move above).
-  if (idx < node.liveConsumerNode.length) {
-    const idxProducer = node.liveConsumerIndexOfThis[idx];
-    const consumer = node.liveConsumerNode[idx];
-    assertConsumerNode(consumer);
-    consumer.producerIndexOfThis[idxProducer] = idx;
-  }
+  removeFromLiteSet(node.liveConsumerNode, consumer);
 }
 
 function consumerIsLive(node: ReactiveNode): boolean {
@@ -501,8 +470,7 @@ function assertConsumerNode(node: ReactiveNode): asserts node is ConsumerNode {
 }
 
 function assertProducerNode(node: ReactiveNode): asserts node is ProducerNode {
-  node.liveConsumerNode ??= [];
-  node.liveConsumerIndexOfThis ??= [];
+  node.liveConsumerNode ??= createLiteSet();
 }
 
 function isConsumerNode(node: ReactiveNode): node is ConsumerNode {
