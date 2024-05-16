@@ -202,7 +202,8 @@ export class Navigation implements OnInit {
       this.activeRouteItem.set(PagePrefix.DOCS);
     } else if (
       urlAfterRedirects.startsWith(PagePrefix.REFERENCE) ||
-      urlAfterRedirects.startsWith(PagePrefix.API)
+      urlAfterRedirects.startsWith(PagePrefix.API) ||
+      urlAfterRedirects.startsWith(PagePrefix.UPDATE)
     ) {
       this.activeRouteItem.set(PagePrefix.REFERENCE);
     } else if (urlAfterRedirects === PagePrefix.PLAYGROUND) {

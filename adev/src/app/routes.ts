@@ -41,6 +41,12 @@ const referencePageRoutes = mapNavigationItemsToRoutes(
   },
 );
 
+const updateGuidePageRoute: Route = {
+  path: referenceNavigationItems.find((r) => r.path === DefaultPage.UPDATE)!.path,
+  loadComponent: () => import('./features/update/update.component'),
+  data: commonReferenceRouteData,
+};
+
 const cliReferencePageRoutes = mapNavigationItemsToRoutes(
   referenceNavigationItems.filter((r) => r.path?.startsWith(`${PagePrefix.CLI}/`)),
   {
@@ -61,6 +67,7 @@ const docsReferencePageRoutes = mapNavigationItemsToRoutes(
   referenceNavigationItems.filter(
     (r) =>
       r.path !== DefaultPage.REFERENCE &&
+      r.path !== DefaultPage.UPDATE &&
       !r.path?.startsWith(`${PagePrefix.API}/`) &&
       !r.path?.startsWith(`${PagePrefix.CLI}/`),
   ),
@@ -143,6 +150,7 @@ export const routes: Route[] = [
       ...SUB_NAVIGATION_ROUTES,
       ...API_REFERENCE_ROUTES,
       ...FOOTER_ROUTES,
+      updateGuidePageRoute,
     ],
   },
   // Error page
