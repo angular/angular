@@ -1371,6 +1371,10 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
     contentPath: 'reference/versions',
   },
   {
+    label: 'Update guide',
+    path: 'update-guide',
+  },
+  {
     label: 'Configurations',
     children: [
       {
