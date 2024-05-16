@@ -7,9 +7,6 @@
   "es2015": "./fesm2015/zone.js",
   "fesm2015": "./fesm2015/zone.js",
   "typings": "./zone.d.ts",
-  "dependencies": {
-    "tslib": "^2.3.0"
-  },
   "devDependencies": {
     "@externs/nodejs": "^1.5.0",
     "@types/node": "^10.9.4",
@@ -19,7 +16,8 @@
     "jest-environment-jsdom": "^29.0.3",
     "jest-environment-node": "^29.0.3",
     "mocha": "^10.2.0",
-    "mock-require": "3.0.3"
+    "mock-require": "3.0.3",
+    "tslib": "^2.3.0"
   },
   "scripts": {
     "electrontest": "cd test/extra && node electron.js",
