@@ -65,12 +65,12 @@ export class SecondaryNavigation implements OnInit {
   private readonly router = inject(Router);
   private readonly window = inject(WINDOW);
 
-  isSecondaryNavVisible = this.navigationState.isMobileNavVisible;
-  primaryActiveRouteItem = this.navigationState.primaryActiveRouteItem;
-  maxVisibleLevelsOnSecondaryNav = computed(() =>
+  readonly isSecondaryNavVisible = this.navigationState.isMobileNavVisible;
+  readonly primaryActiveRouteItem = this.navigationState.primaryActiveRouteItem;
+  readonly maxVisibleLevelsOnSecondaryNav = computed(() =>
     this.primaryActiveRouteItem() === PagePrefix.REFERENCE ? 1 : 2,
   );
-  navigationItemsSlides = this.navigationState.expandedItems;
+  readonly navigationItemsSlides = this.navigationState.expandedItems;
   navigationItems: NavigationItem[] | undefined;
 
   translateX = computed(() => {
