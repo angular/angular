@@ -1,3 +1,59 @@
+## [0.14.6](https://github.com/angular/angular/compare/zone.js-0.11.8...zone.js-0.14.6) (2024-05-16)
+
+
+### Bug Fixes
+
+* **zone.js:** Add 'declare' to each interface to prevent renaming ([#54966](https://github.com/angular/angular/issues/54966)) ([b3d045b](https://github.com/angular/angular/commit/b3d045b9a4383d97ea3c5d770d9413ffed35d760))
+* **zone.js:** add `__Zone_ignore_on_properties` to `ZoneGlobalConfigurations` ([#50737](https://github.com/angular/angular/issues/50737)) ([f87f058](https://github.com/angular/angular/commit/f87f058a69443d9427530c979b39e3630190a7fd))
+* **zone.js:** add conditional exports to zone.js package ([#51652](https://github.com/angular/angular/issues/51652)) ([4798ec4](https://github.com/angular/angular/commit/4798ec41668d47fd5e1504c61d96d5e56dcff345))
+* **zone.js:** add missing APIs to Node.js `fs` patch ([#54396](https://github.com/angular/angular/issues/54396)) ([9e07b62](https://github.com/angular/angular/commit/9e07b621ead050d27d36cde0549b01ac3f1e9e73))
+* **zone.js:** cancel tasks only when they are scheduled or running ([#46435](https://github.com/angular/angular/issues/46435)) ([b618b5a](https://github.com/angular/angular/commit/b618b5aa86138c900055c5496967e3348a7b98fc)), closes [#45711](https://github.com/angular/angular/issues/45711)
+* **zone.js:** correctly bundle `zone-patch-rxjs` ([#55826](https://github.com/angular/angular/issues/55826)) ([20a530a](https://github.com/angular/angular/commit/20a530acb6ca6efe73cb97c64e9d23a0f5d912c8)), closes [#55825](https://github.com/angular/angular/issues/55825)
+* **zone.js:** disable wrapping unhandled promise error by default ([#52492](https://github.com/angular/angular/issues/52492)) ([435dd32](https://github.com/angular/angular/commit/435dd329128f32258ea197f686f411f56a018435))
+* **zone.js:** enable monkey patching of the `queueMicrotask()` API in node.js ([#50467](https://github.com/angular/angular/issues/50467)) ([381cb98](https://github.com/angular/angular/commit/381cb982264d30e8c79e77e9186acd6da006e718))
+* **zone.js:** enable monkey patching of the `queueMicrotask()` API in node.js ([#50530](https://github.com/angular/angular/issues/50530)) ([7837f71](https://github.com/angular/angular/commit/7837f7119f8cdfb0ae95551f48608f156985113a))
+* **zone.js:** Fix ConsoleTask interface typo ([#47090](https://github.com/angular/angular/issues/47090)) ([91954cf](https://github.com/angular/angular/commit/91954cf20e17a386d71cc8ea25d1d17b9ae1e31c))
+* **zone.js:** handle fetch with AbortSignal ([#49595](https://github.com/angular/angular/issues/49595)) ([b06b24b](https://github.com/angular/angular/commit/b06b24b5049c07fbc18c76fd2a10e49fc93870be))
+* **zone.js:** make sure fakeasync use the same id pool with native ([#54600](https://github.com/angular/angular/issues/54600)) ([ddbf6bb](https://github.com/angular/angular/commit/ddbf6bb038d101daf5280abbd2a0efaa0b7fd3a0)), closes [#54323](https://github.com/angular/angular/issues/54323)
+* **zone.js:** patch `fs.realpath.native` as macrotask ([#54208](https://github.com/angular/angular/issues/54208)) ([19fae76](https://github.com/angular/angular/commit/19fae76bada7146e8993fb672b8d321fb08967f2)), closes [#45546](https://github.com/angular/angular/issues/45546)
+* **zone.js:** patch `Response` methods returned by `fetch` ([#50653](https://github.com/angular/angular/issues/50653)) ([260d3ed](https://github.com/angular/angular/commit/260d3ed0d91648d3ba75d7d9896f38195093c7e4)), closes [#50327](https://github.com/angular/angular/issues/50327)
+* **zone.js:** patch entire promise in node ([#50552](https://github.com/angular/angular/issues/50552)) ([cb31dbc](https://github.com/angular/angular/commit/cb31dbc75ca4141d61cec3ba6e60505198208a0a)), closes [#50513](https://github.com/angular/angular/issues/50513) [#50457](https://github.com/angular/angular/issues/50457) [#50414](https://github.com/angular/angular/issues/50414) [#49930](https://github.com/angular/angular/issues/49930)
+* **zone.js:** patch form-associated custom element callbacks ([#50686](https://github.com/angular/angular/issues/50686)) ([1c990cd](https://github.com/angular/angular/commit/1c990cdb2962fa879762d5e26f87f547a00e1795))
+* **zone.js:** Promise.resolve(subPromise) should return subPromise ([#53423](https://github.com/angular/angular/issues/53423)) ([08b0c87](https://github.com/angular/angular/commit/08b0c87a948007e086a2c5a5c17ccca5fd7a24c4)), closes [/promisesaplus.com/#point-51](https://github.com//promisesaplus.com//issues/point-51)
+* **zone.js:** remove `abort` listener on a signal when actual event is removed ([#55339](https://github.com/angular/angular/issues/55339)) ([a9460d0](https://github.com/angular/angular/commit/a9460d08a0e95dcd8fcd0ea7eca8470af921bfe2)), closes [#54739](https://github.com/angular/angular/issues/54739)
+* **zone.js:** rename `typings` conditional export to `types` ([#51737](https://github.com/angular/angular/issues/51737)) ([74755c4](https://github.com/angular/angular/commit/74755c4b5e6d4d62d2c81f35e6152bb8649fbb5c))
+* **zone.js:** revert Mocha it.skip, describe.skip method patch ([#49329](https://github.com/angular/angular/issues/49329)) ([5a2b622](https://github.com/angular/angular/commit/5a2b6227b30a4d3f2090077e8881c753db00798c))
+* **zone.js:** should not clear onhandler when remove capture listener ([#54602](https://github.com/angular/angular/issues/54602)) ([e44b077](https://github.com/angular/angular/commit/e44b077cbd4fc1ac16b3edd0fea758842ce6e29f)), closes [#54581](https://github.com/angular/angular/issues/54581)
+* **zone.js:** support addEventListener with signal option. ([#49595](https://github.com/angular/angular/issues/49595)) ([d4973ff](https://github.com/angular/angular/commit/d4973ff9b074f4db918f71163e79b7d112c309f5)), closes [#49591](https://github.com/angular/angular/issues/49591)
+* **zone.js:** temporary allow deep imports ([#51737](https://github.com/angular/angular/issues/51737)) ([e86d6db](https://github.com/angular/angular/commit/e86d6dba27997cb2cad13c43ac5e94eeb7a67725))
+* **zone.js:** use `globalThis` instead of `global` and `window` ([#52367](https://github.com/angular/angular/issues/52367)) ([def719e](https://github.com/angular/angular/commit/def719e2cac50bbf1cda4a2c4bf96de2d4ba4bfd))
+* **zone.js:** zone-node only patch Promise.prototype.then ([#49144](https://github.com/angular/angular/issues/49144)) ([d1ac3aa](https://github.com/angular/angular/commit/d1ac3aa14e5d3c5415937199a6fb63437ddee0b8)), closes [#47872](https://github.com/angular/angular/issues/47872)
+
+
+### Features
+
+* **zone.js:** implement Promise.withResolvers() ([#53514](https://github.com/angular/angular/issues/53514)) ([7a28f50](https://github.com/angular/angular/commit/7a28f50711535fcc285c7ee9021e8e7dc34a655d))
+* **zone.js:** jest 29 should ignore uncaught error console log ([#49325](https://github.com/angular/angular/issues/49325)) ([bc412fd](https://github.com/angular/angular/commit/bc412fd537f965b20dce69232ef66f152962dc06)), closes [#49110](https://github.com/angular/angular/issues/49110)
+* **zone.js:** remove legacy files and access to deep imports ([#51752](https://github.com/angular/angular/issues/51752)) ([a8efc60](https://github.com/angular/angular/commit/a8efc605ea9c3cf03d85b5c567218202e304fef9))
+
+
+### Reverts
+
+* Revert "fix(zone.js): enable monkey patching of the `queueMicrotask()` API in node.js (#50467)" (#50529) ([7567348](https://github.com/angular/angular/commit/7567348c54917b2f881d6c68d45f7c15d101954b)), closes [#50467](https://github.com/angular/angular/issues/50467) [#50529](https://github.com/angular/angular/issues/50529) [#50529](https://github.com/angular/angular/issues/50529)
+
+
+### BREAKING CHANGES
+
+* **zone.js:** Deep and legacy `dist/` imports like `zone.js/bundles/zone-testing.js` and `zone.js/dist/zone` are no longer allowed. `zone-testing-bundle` and `zone-testing-node-bundle` are also no longer part of the package.
+
+The proper way to import `zone.js` and `zone.js/testing` is:
+```js
+import 'zone.js';
+import 'zone.js/testing';
+```
+
+
+
 ## [0.14.5](https://github.com/angular/angular/compare/zone.js-0.14.4...zone.js-0.14.5) (2024-04-30)
 
 
