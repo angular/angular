@@ -24,9 +24,9 @@ import {ZONELESS_ENABLED} from './zoneless_scheduling';
  *
  * @param options Used to configure when the check will execute.
  *   - `interval` will periodically run exhaustive `checkNoChanges` on application views
- *   - `useNgZoneOnStable` will us ZoneJS to determine when change detection might have run
+ *   - `useNgZoneOnStable` will use ZoneJS to determine when change detection might have run
  *      in an application using ZoneJS to drive change detection. When the `NgZone.onStable` would
- *      have emit, all views attached to the `ApplicationRef` are checked for changes.
+ *      have emitted, all views attached to the `ApplicationRef` are checked for changes.
  *   - 'exhaustive' means that all views attached to `ApplicationRef` and all the descendants of those views will be
  *     checked for changes (excluding those subtrees which are detached via `ChangeDetectorRef.detach()`).
  *     This is useful because the check that runs after regular change detection does not work for components using `ChangeDetectionStrategy.OnPush`.
@@ -68,7 +68,7 @@ export function provideExperimentalCheckNoChangesForDebug(options: {
             !(inject(NgZone) instanceof DebugNgZoneForCheckNoChanges)
           ) {
             throw new Error(
-              '`provideCheckNoChangesForDebug` with `useNgZoneOnStable` must be after any other provider for `NgZone`.',
+              '`provideExperimentalCheckNoChangesForDebug` with `useNgZoneOnStable` must be after any other provider for `NgZone`.',
             );
           }
         },
@@ -87,7 +87,7 @@ export class DebugNgZoneForCheckNoChanges extends NgZone {
 
   constructor(private readonly checkNoChangesMode: CheckNoChangesMode) {
     const zonelessEnabled = inject(ZONELESS_ENABLED);
-    // Use coalsecing to ensure we aren't ever running this check synchronously
+    // Use coalescing to ensure we aren't ever running this check synchronously
     super({
       shouldCoalesceEventChangeDetection: true,
       shouldCoalesceRunChangeDetection: zonelessEnabled,
