@@ -640,6 +640,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
           },
         ],
       },
+      {
+        label: 'Experimental features',
+        children: [
+          {label: 'Zoneless', path: 'guide/experimental/zoneless', contentPath: 'guide/zoneless'},
+        ],
+      },
     ],
   },
   {
