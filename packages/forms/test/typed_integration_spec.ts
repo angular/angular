@@ -160,6 +160,23 @@ describe('Typed Class', () => {
   });
 
   describe('FormGroup', () => {
+    it('supports a messy group', () => {
+      function asAbstractControl<T, U extends T, V>(control: AbstractControl<T, U, V>) {
+        return control;
+      }
+
+      // function valueChanges<TControl extends {[K in keyof TControl]: AbstractControl}>(
+      //   control: FormGroup<TControl>,
+      // ) {
+      //   return control.valueChanges;
+      // }
+
+      const fg = new FormGroup({foo: new FormControl('')});
+      fg.valueChanges;
+      const a = asAbstractControl(fg);
+      a.reset();
+    });
+
     it('supports inferred groups', () => {
       const c = new FormGroup({
         c: new FormControl('', {nonNullable: true}),

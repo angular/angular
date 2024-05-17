@@ -185,7 +185,8 @@ export class FormGroup<
   TControl extends {[K in keyof TControl]: AbstractControl<any>} = any,
 > extends AbstractControl<
   ɵTypedOrUntyped<TControl, ɵFormGroupValue<TControl>, any>,
-  ɵTypedOrUntyped<TControl, ɵFormGroupRawValue<TControl>, any>
+  ɵTypedOrUntyped<TControl, ɵFormGroupRawValue<TControl>, any>,
+  ɵTypedOrUntyped<TControl, ɵFormGroupArgumentValue<TControl>, any>
 > {
   /**
    * Creates a new `FormGroup` instance.
