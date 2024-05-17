@@ -163,3 +163,9 @@ Occasionally we introduce new APIs under the label of "Developer Preview". These
 This may be because we want to gather feedback from real applications before stabilization, or because the associated documentation or migration tooling is not fully complete.
 
 The policies and practices that are described in this document do not apply to APIs marked as Developer Preview. Such APIs can change at any time, even in new patch versions of the framework. Teams should decide for themselves whether the benefits of using Developer Preview APIs are worth the risk of breaking changes outside of our normal use of semantic versioning.
+
+## Experimental
+
+These are APIs might not become stable at all or have significant changes before becoming stable.
+
+The policies and practices that are described in this document do not apply to APIs marked as experimental. Such APIs can change at any time, even in new patch versions of the framework. Teams should decide for themselves whether the benefits of using experimental APIs are worth the risk of breaking changes outside of our normal use of semantic versioning.
