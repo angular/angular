@@ -8,7 +8,7 @@
 
 // TODO: what and why is this
 // @ng_package: ignore-cross-repo-import
-import {LiteSet, addToLiteSet, createLiteSet, removeFromLiteSet} from '../../set';
+import {LiteSet, addToLiteSet, createLiteSet, removeFromLiteSet} from './set';
 
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.

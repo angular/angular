@@ -14,9 +14,6 @@ ts_library(
             "**/*.ts",
         ],
     ),
-    deps = [
-      "//packages/core/primitives/set"
-    ]
 )
 
 tsec_test(
