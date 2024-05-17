@@ -9,7 +9,7 @@ const SET_ID = Symbol('SET_ID');
  * Use the functions below to manipulate the set. Read from the set with
  * standard indexing syntax.
  */
-export interface LiteSet<T extends Object, METADATA = {}> extends Array<T & METADATA> {
+export interface LiteSet<T extends Object> extends Array<T> {
   /**
    * A hidden identifier for this instance of the set. Used to key the
    * information stored on the set's items.
@@ -28,32 +28,26 @@ interface LiteSetItem {
 let nextSetId = 0;
 
 /** Create an instance of a LiteSet. */
-export function createLiteSet<T extends Object, METADATA>(): LiteSet<T, METADATA> {
-  const set = [] as unknown as LiteSet<T, METADATA>;
+export function createLiteSet<T extends Object>(): LiteSet<T> {
+  const set = [] as unknown as LiteSet<T>;
   set[SET_ID] = nextSetId++;
   return set;
 }
 
-function indexOf<T extends Object, METADATA>(
-  set: LiteSet<T, METADATA>,
-  item: T,
-): number | undefined {
+function indexOf<T extends Object>(set: LiteSet<T>, item: T): number | undefined {
   return (item as unknown as LiteSetItem)[`__idx_for_set_${set[SET_ID]}`];
 }
 
 /** Add an item to the LiteSet. No-op if the item is already in the set. */
-export function addToLiteSet<T extends Object, METADATA>(set: LiteSet<T, METADATA>, item: T): void {
+export function addToLiteSet<T extends Object>(set: LiteSet<T>, item: T): void {
   if (indexOf(set, item) === undefined) {
-    const index = set.push(item as T & METADATA) - 1;
+    const index = set.push(item as T) - 1;
     (item as unknown as LiteSetItem)[`__idx_for_set_${set[SET_ID]}`] = index;
   }
 }
 
 /** Remove an item to the LiteSet. No-op if the item isn't in the set. */
-export function removeFromLiteSet<T extends Object, METADATA>(
-  set: LiteSet<T, METADATA>,
-  item: T,
-): void {
+export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): void {
   const index = indexOf(set, item);
   if (index === undefined) return;
 
