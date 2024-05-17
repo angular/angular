@@ -1,4 +1,4 @@
-const SET_ID = Symbol('SET_ID');
+const ITEM_ID = Symbol('ITEM_ID');
 
 /**
  * A simplified alternate implementation of a Set implemented with a single
@@ -14,38 +14,39 @@ const SET_ID = Symbol('SET_ID');
  */
 export interface LiteSet<T extends Object> extends Array<T> {
   /**
-   * A hidden identifier for this instance of the set. Used to key the
-   * information stored on the set's items.
+   * Key where we store the index the item is at. Sort of makes a reverse map from item to index.
    */
-  [SET_ID]: number;
+  [index: `__idx_for_item_${number}`]: number | undefined;
 }
 
 interface LiteSetItem {
   /**
-   * Key where we store the index the item is at on a given set.
-   * Example: {'__idx_for_set_3': 1} Stored in set with ID 3 in 1th position.
+   * A hidden globally unique identifier for any item used with LiteSets. Used
+   * to key the index reverse map on the set.
+   * NOTE: LiteSet doesn't make any effort to clean this up on items!
    */
-  [index: `__idx_for_set_${number}`]: number | undefined;
+  [ITEM_ID]: number;
 }
 
-let nextSetId = 0;
+let nextItemId = 0;
 
 /** Create an instance of a LiteSet. */
 export function createLiteSet<T extends Object>(): LiteSet<T> {
-  const set = [] as unknown as LiteSet<T>;
-  set[SET_ID] = nextSetId++;
-  return set;
+  return [] as unknown as LiteSet<T>;
 }
 
 function indexOf<T extends Object>(set: LiteSet<T>, item: T): number | undefined {
-  return (item as unknown as LiteSetItem)[`__idx_for_set_${set[SET_ID]}`];
+  const liteSetItem = item as unknown as LiteSetItem;
+  return set[`__idx_for_item_${liteSetItem[ITEM_ID]}`];
 }
 
 /** Add an item to the LiteSet. No-op if the item is already in the set. */
 export function addToLiteSet<T extends Object>(set: LiteSet<T>, item: T): void {
   if (indexOf(set, item) === undefined) {
     const index = set.push(item) - 1;
-    (item as unknown as LiteSetItem)[`__idx_for_set_${set[SET_ID]}`] = index;
+    const liteSetItem = item as unknown as LiteSetItem;
+    liteSetItem[ITEM_ID] ??= nextItemId++;
+    set[`__idx_for_item_${liteSetItem[ITEM_ID]}`] = index;
   }
 }
 
@@ -54,14 +55,16 @@ export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): v
   const index = indexOf(set, item);
   if (index === undefined) return;
 
+  const liteSetItem = item as unknown as LiteSetItem;
+
   // Cleanup the stored index on the item.
-  delete (set[index] as unknown as LiteSetItem)[`__idx_for_set_${set[SET_ID]}`];
+  delete set[`__idx_for_item_${liteSetItem[ITEM_ID]}`];
 
   if (index === set.length - 1) {
     // Swap the last item into the deleted position
     const lastIndex = set.length - 1;
     set[index] = set[lastIndex];
-    (set[index] as unknown as LiteSetItem)[`__idx_for_set_${set[SET_ID]}`] = index;
+    set[`__idx_for_item_${liteSetItem[ITEM_ID]}`] = index;
   }
 
   // Truncate the array
@@ -73,8 +76,4 @@ export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): v
  */
 export function clearLiteSet<T extends Object>(set: LiteSet<T>): void {
   set.length = 0;
-  // This invalidates
-  set[SET_ID] = nextSetId++;
-  // TODO: This will keep leaking index props on the items. Slightly concerning since consumers are constnatly being recreated....
-  // Alternate idea: instead of SET_ID, add ITEM_ID to each item and use that to index on the set.
 }
