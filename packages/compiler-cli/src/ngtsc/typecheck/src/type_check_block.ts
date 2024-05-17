@@ -1612,10 +1612,14 @@ class TcbIfOp extends TcbOp {
     expressionScope.render().forEach((stmt) => this.scope.addStatement(stmt));
     this.expressionScopes.set(branch, expressionScope);
 
-    const expression =
-      branch.expressionAlias === null
-        ? tcbExpression(branch.expression, this.tcb, expressionScope)
-        : expressionScope.resolve(branch.expressionAlias);
+    let expression = tcbExpression(branch.expression, this.tcb, expressionScope);
+    if (branch.expressionAlias !== null) {
+      expression = ts.factory.createBinaryExpression(
+        ts.factory.createParenthesizedExpression(expression),
+        ts.SyntaxKind.AmpersandAmpersandToken,
+        expressionScope.resolve(branch.expressionAlias),
+      );
+    }
     const bodyScope = this.getBranchScope(expressionScope, branch, index);
 
     return ts.factory.createIfStatement(
@@ -1661,15 +1665,18 @@ class TcbIfOp extends TcbOp {
       const expressionScope = this.expressionScopes.get(branch)!;
       let expression: ts.Expression;
 
-      if (branch.expressionAlias === null) {
-        // We need to recreate the expression and mark it to be ignored for diagnostics,
-        // because it was already checked as a part of the block's condition and we don't
-        // want it to produce a duplicate diagnostic.
-        expression = tcbExpression(branch.expression, this.tcb, expressionScope);
-        markIgnoreDiagnostics(expression);
-      } else {
-        expression = expressionScope.resolve(branch.expressionAlias);
+      // We need to recreate the expression and mark it to be ignored for diagnostics,
+      // because it was already checked as a part of the block's condition and we don't
+      // want it to produce a duplicate diagnostic.
+      expression = tcbExpression(branch.expression, this.tcb, expressionScope);
+      if (branch.expressionAlias !== null) {
+        expression = ts.factory.createBinaryExpression(
+          ts.factory.createParenthesizedExpression(expression),
+          ts.SyntaxKind.AmpersandAmpersandToken,
+          expressionScope.resolve(branch.expressionAlias),
+        );
       }
+      markIgnoreDiagnostics(expression);
 
       // The expressions of the preceding branches have to be negated
       // (e.g. `expr` becomes `!(expr)`) when comparing in the guard, except

@@ -1732,7 +1732,7 @@ describe('type check blocks', () => {
       }`;
 
       expect(tcb(TEMPLATE)).toContain(
-        'var _t1 = ((((this).expr)) === (1)); if (_t1) { "" + (_t1); } } }',
+        'var _t1 = ((((this).expr)) === (1)); if (((((this).expr)) === (1)) && _t1) { "" + (_t1); } } }',
       );
     });
 
