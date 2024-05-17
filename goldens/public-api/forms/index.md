@@ -461,7 +461,7 @@ export class FormGroup<TControl extends {
     removeControl<S extends string>(name: ɵOptionalKeys<TControl> & S, options?: {
         emitEvent?: boolean;
     }): void;
-    reset(value?: ɵTypedOrUntyped<TControl, ɵFormGroupValue<TControl>, any>, options?: {
+    reset(value?: ɵTypedOrUntyped<TControl, ɵFormGroupArgumentValue<TControl>, any>, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
