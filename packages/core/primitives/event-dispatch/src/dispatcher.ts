@@ -48,17 +48,11 @@ export class Dispatcher {
     private readonly dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void,
     {
       actionResolver,
-      eventReplayer,
+      eventReplayer = createEventReplayer(dispatchDelegate),
     }: {actionResolver?: ActionResolver; eventReplayer?: Replayer} = {},
   ) {
     this.actionResolver = actionResolver;
-    this.eventReplayer =
-      eventReplayer ??
-      ((eventInfoWrappers: EventInfoWrapper[]) => {
-        for (const eventInfoWrapper of eventInfoWrappers) {
-          this.dispatchDelegate(eventInfoWrapper);
-        }
-      });
+    this.eventReplayer = eventReplayer;
   }
 
   /**
@@ -111,6 +105,18 @@ export class Dispatcher {
       this.eventReplayer(this.replayEventInfoWrappers);
     });
   }
+}
+
+/**
+ * Creates an `EventReplayer` that calls the `replay` function for every `eventInfoWrapper` in
+ * the queue.
+ */
+export function createEventReplayer(replay: (eventInfoWrapper: EventInfoWrapper) => void) {
+  return (eventInfoWrappers: EventInfoWrapper[]) => {
+    for (const eventInfoWrapper of eventInfoWrappers) {
+      replay(eventInfoWrapper);
+    }
+  };
 }
 
 /**
