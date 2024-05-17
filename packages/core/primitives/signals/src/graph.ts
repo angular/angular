@@ -389,7 +389,9 @@ export function consumerDestroy(node: ReactiveNode): void {
   // Truncate all the arrays to drop all connection from this node to the graph.
   node.producerNode.length = node.producerLastReadVersion.length = 0;
   if (node.liveConsumerNode) {
-    clearLiteSet(node.liveConsumerNode);
+    // clearLiteSet(node.liveConsumerNode);
+    // TODO: attempted temporary fix of memory leak.. why doesn't this work?
+    delete node.liveConsumerNode;
   }
 }
 

@@ -71,9 +71,10 @@ export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): v
   set.length--;
 }
 
-/**
- * Empty the set. This will leave some stale index tracking props on the objects
- */
-export function clearLiteSet<T extends Object>(set: LiteSet<T>): void {
-  set.length = 0;
-}
+// TODO: temp fix of memory leak.. why doesn't this work?
+// /**
+//  * Empty the set. This will leave some stale index tracking props on the objects
+//  */
+// export function clearLiteSet<T extends Object>(set: LiteSet<T>): void {
+//   set.length = 0;
+// }
