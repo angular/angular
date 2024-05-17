@@ -60,9 +60,9 @@ export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): v
   // Cleanup the stored index on the item.
   delete set[`__idx_for_item_${liteSetItem[ITEM_ID]}`];
 
-  if (index === set.length - 1) {
+  const lastIndex = set.length - 1;
+  if (index !== lastIndex) {
     // Swap the last item into the deleted position
-    const lastIndex = set.length - 1;
     set[index] = set[lastIndex];
     set[`__idx_for_item_${liteSetItem[ITEM_ID]}`] = index;
   }
