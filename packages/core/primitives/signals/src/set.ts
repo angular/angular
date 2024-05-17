@@ -16,6 +16,7 @@ export interface LiteSet<T extends Object> extends Array<T> {
   /**
    * Key where we store the index the item is at. Sort of makes a reverse map from item to index.
    */
+  idxMap: {[id: number]: number; length: number};
   [index: `__idx_for_item_${number}`]: number | undefined;
 }
 
@@ -32,12 +33,14 @@ let nextItemId = 0;
 
 /** Create an instance of a LiteSet. */
 export function createLiteSet<T extends Object>(): LiteSet<T> {
-  return [] as unknown as LiteSet<T>;
+  const set = [] as unknown as LiteSet<T>;
+  set.idxMap = [];
+  return set;
 }
 
 function indexOf<T extends Object>(set: LiteSet<T>, item: T): number | undefined {
   const liteSetItem = item as unknown as LiteSetItem;
-  return set[`__idx_for_item_${liteSetItem[ITEM_ID]}`];
+  return set.idxMap[liteSetItem[ITEM_ID]];
 }
 
 /** Add an item to the LiteSet. No-op if the item is already in the set. */
@@ -46,7 +49,7 @@ export function addToLiteSet<T extends Object>(set: LiteSet<T>, item: T): void {
     const index = set.push(item) - 1;
     const liteSetItem = item as unknown as LiteSetItem;
     liteSetItem[ITEM_ID] ??= nextItemId++;
-    set[`__idx_for_item_${liteSetItem[ITEM_ID]}`] = index;
+    set.idxMap[liteSetItem[ITEM_ID]] = index;
   }
 }
 
@@ -58,22 +61,24 @@ export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): v
   const liteSetItem = item as unknown as LiteSetItem;
 
   // Cleanup the stored index on the item.
-  delete set[`__idx_for_item_${liteSetItem[ITEM_ID]}`];
+  delete set.idxMap[liteSetItem[ITEM_ID]];
 
   const lastIndex = set.length - 1;
   if (index !== lastIndex) {
     // Swap the last item into the deleted position
     set[index] = set[lastIndex];
-    set[`__idx_for_item_${(set[index] as unknown as LiteSetItem)[ITEM_ID]}`] = index;
+    set.idxMap[(set[index] as unknown as LiteSetItem)[ITEM_ID]] = index;
   }
 
   // Truncate the array
   set.length--;
 }
 
-// /**
-//  * Empty the set. This will leave some stale index tracking props on the objects
-//  */
-// export function clearLiteSet<T extends Object>(set: LiteSet<T>): void {
-//   set.length = 0;
-// }
+/**
+ * Empty the set. This will leave some stale index tracking props on the objects
+ */
+export function clearLiteSet<T extends Object>(set: LiteSet<T>): void {
+  // o_o will this really work with sparse arrays?
+  set.length = 0;
+  set.idxMap.length = 0;
+}
