@@ -64,7 +64,6 @@ export const REACTIVE_NODE: ReactiveNode = {
   dirty: false,
   producerNode: undefined,
   producerLastReadVersion: undefined,
-  producerIndexOfThis: undefined,
   nextProducerIndex: 0,
   liveConsumerNode: undefined,
   consumerAllowSignalWrites: false,
@@ -115,26 +114,16 @@ export interface ReactiveNode {
   /**
    * Producers which are dependencies of this consumer.
    *
-   * Uses the same indices as the `producerLastReadVersion` and `producerIndexOfThis` arrays.
+   * Uses the same indices as the `producerLastReadVersion` array.
    */
   producerNode: ReactiveNode[] | undefined;
 
   /**
    * `Version` of the value last read by a given producer.
    *
-   * Uses the same indices as the `producerNode` and `producerIndexOfThis` arrays.
+   * Uses the same indices as the `producerNode` array.
    */
   producerLastReadVersion: Version[] | undefined;
-
-  /**
-   * Index of `this` (consumer) in each producer's `liveConsumers` array.
-   *
-   * This value is only meaningful if this node is live (`liveConsumers.length > 0`). Otherwise
-   * these indices are stale.
-   *
-   * Uses the same indices as the `producerNode` and `producerLastReadVersion` arrays.
-   */
-  producerIndexOfThis: number[] | undefined;
 
   /**
    * Index into the producer arrays that the next dependency of this node as a consumer will use.
@@ -179,7 +168,6 @@ export interface ReactiveNode {
 
 interface ConsumerNode extends ReactiveNode {
   producerNode: NonNullable<ReactiveNode['producerNode']>;
-  producerIndexOfThis: NonNullable<ReactiveNode['producerIndexOfThis']>;
   producerLastReadVersion: NonNullable<ReactiveNode['producerLastReadVersion']>;
 }
 
@@ -337,12 +325,7 @@ export function consumerAfterComputation(
 ): void {
   setActiveConsumer(prevConsumer);
 
-  if (
-    !node ||
-    node.producerNode === undefined ||
-    node.producerIndexOfThis === undefined ||
-    node.producerLastReadVersion === undefined
-  ) {
+  if (!node || node.producerNode === undefined || node.producerLastReadVersion === undefined) {
     return;
   }
 
@@ -360,7 +343,6 @@ export function consumerAfterComputation(
   while (node.producerNode.length > node.nextProducerIndex) {
     node.producerNode.pop();
     node.producerLastReadVersion.pop();
-    node.producerIndexOfThis.pop();
   }
 }
 
@@ -409,10 +391,7 @@ export function consumerDestroy(node: ReactiveNode): void {
   }
 
   // Truncate all the arrays to drop all connection from this node to the graph.
-  node.producerNode.length =
-    node.producerLastReadVersion.length =
-    node.producerIndexOfThis.length =
-      0;
+  node.producerNode.length = node.producerLastReadVersion.length = 0;
   if (node.liveConsumerNode) {
     node.liveConsumerNode.length = 0;
   }
@@ -465,7 +444,6 @@ function consumerIsLive(node: ReactiveNode): boolean {
 
 function assertConsumerNode(node: ReactiveNode): asserts node is ConsumerNode {
   node.producerNode ??= [];
-  node.producerIndexOfThis ??= [];
   node.producerLastReadVersion ??= [];
 }
 
