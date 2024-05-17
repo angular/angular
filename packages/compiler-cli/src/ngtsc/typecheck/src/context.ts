@@ -250,9 +250,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const templateDiagnostics: TemplateDiagnostic[] = [];
 
     if (parseErrors !== null) {
-      templateDiagnostics.push(
-        ...this.getTemplateDiagnostics(parseErrors, templateId, sourceMapping),
-      );
+      templateDiagnostics.push(...getTemplateDiagnostics(parseErrors, templateId, sourceMapping));
     }
 
     const boundTarget = binder.bind({template});
@@ -559,33 +557,33 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
     return this.fileMap.get(sfPath)!;
   }
+}
 
-  private getTemplateDiagnostics(
-    parseErrors: ParseError[],
-    templateId: TemplateId,
-    sourceMapping: TemplateSourceMapping,
-  ): TemplateDiagnostic[] {
-    return parseErrors.map((error) => {
-      const span = error.span;
+export function getTemplateDiagnostics(
+  parseErrors: ParseError[],
+  templateId: TemplateId,
+  sourceMapping: TemplateSourceMapping,
+): TemplateDiagnostic[] {
+  return parseErrors.map((error) => {
+    const span = error.span;
 
-      if (span.start.offset === span.end.offset) {
-        // Template errors can contain zero-length spans, if the error occurs at a single point.
-        // However, TypeScript does not handle displaying a zero-length diagnostic very well, so
-        // increase the ending offset by 1 for such errors, to ensure the position is shown in the
-        // diagnostic.
-        span.end.offset++;
-      }
+    if (span.start.offset === span.end.offset) {
+      // Template errors can contain zero-length spans, if the error occurs at a single point.
+      // However, TypeScript does not handle displaying a zero-length diagnostic very well, so
+      // increase the ending offset by 1 for such errors, to ensure the position is shown in the
+      // diagnostic.
+      span.end.offset++;
+    }
 
-      return makeTemplateDiagnostic(
-        templateId,
-        sourceMapping,
-        span,
-        ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR),
-        error.msg,
-      );
-    });
-  }
+    return makeTemplateDiagnostic(
+      templateId,
+      sourceMapping,
+      span,
+      ts.DiagnosticCategory.Error,
+      ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR),
+      error.msg,
+    );
+  });
 }
 
 /**
