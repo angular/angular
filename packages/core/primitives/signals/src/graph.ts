@@ -202,7 +202,7 @@ export function producerAccessed(node: ReactiveNode): void {
   if (idx < activeConsumer.producerNode.length && activeConsumer.producerNode[idx] !== node) {
     // There's been a change in producers since the last execution of `activeConsumer`.
     // `activeConsumer.producerNode[idx]` holds a stale dependency which will be be removed and
-    // replaced with `this`.
+    // replaced with `node`.
     //
     // If `activeConsumer` isn't live, then this is a no-op, since we can replace the producer in
     // `activeConsumer.producerNode` directly. However, if `activeConsumer` is live, then we need
@@ -216,6 +216,7 @@ export function producerAccessed(node: ReactiveNode): void {
     }
   }
 
+  // TODO: replace operation?
   if (activeConsumer.producerNode[idx] !== node) {
     // We're a new dependency of the consumer (at `idx`).
     activeConsumer.producerNode[idx] = node;
