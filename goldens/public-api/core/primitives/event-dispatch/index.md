@@ -78,6 +78,8 @@ export class EventInfoWrapper {
     // (undocumented)
     getIsReplay(): boolean | undefined;
     // (undocumented)
+    getResolved(): boolean | undefined;
+    // (undocumented)
     getTargetElement(): Element;
     // (undocumented)
     getTimestamp(): number;
@@ -91,6 +93,8 @@ export class EventInfoWrapper {
     setEventType(eventType: string): void;
     // (undocumented)
     setIsReplay(replay: boolean): void;
+    // (undocumented)
+    setResolved(resolved: boolean): void;
     // (undocumented)
     setTargetElement(targetElement: Element): void;
     // (undocumented)
