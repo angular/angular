@@ -329,19 +329,15 @@ export function consumerAfterComputation(
     return;
   }
 
-  if (consumerIsLive(node)) {
-    // For live consumers, we need to remove the producer -> consumer edge for any stale producers
-    // which weren't dependencies after the recomputation.
-    for (let i = node.nextProducerIndex; i < node.producerNode.length; i++) {
-      producerRemoveLiveConsumer(node.producerNode[i], node);
-    }
-  }
-
+  const isLive = consumerIsLive(node);
   // Truncate the producer tracking arrays.
   // Perf note: this is essentially truncating the length to `node.nextProducerIndex`, but
   // benchmarking has shown that individual pop operations are faster.
   while (node.producerNode.length > node.nextProducerIndex) {
-    node.producerNode.pop();
+    const producer = node.producerNode.pop()!;
+    if (isLive) {
+      producerRemoveLiveConsumer(producer, node);
+    }
     node.producerLastReadVersion.pop();
   }
 }
