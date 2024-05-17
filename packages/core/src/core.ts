@@ -124,3 +124,4 @@ if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     );
   };
 }
+export * from '../primitives/signals/src/set';

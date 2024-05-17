@@ -8,7 +8,7 @@
 
 // TODO: what and why is this
 // @ng_package: ignore-cross-repo-import
-import {LiteSet, addToLiteSet, clearLiteSet, createLiteSet, removeFromLiteSet} from './set';
+import {LiteSet, addToLiteSet, createLiteSet, removeFromLiteSet} from './set';
 
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.
@@ -390,7 +390,6 @@ export function consumerDestroy(node: ReactiveNode): void {
   node.producerNode.length = node.producerLastReadVersion.length = 0;
   if (node.liveConsumerNode) {
     // clearLiteSet(node.liveConsumerNode);
-    // TODO: attempted temporary fix of memory leak.. why doesn't this work?
     delete node.liveConsumerNode;
   }
 }

@@ -64,14 +64,13 @@ export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): v
   if (index !== lastIndex) {
     // Swap the last item into the deleted position
     set[index] = set[lastIndex];
-    set[`__idx_for_item_${liteSetItem[ITEM_ID]}`] = index;
+    set[`__idx_for_item_${(set[index] as unknown as LiteSetItem)[ITEM_ID]}`] = index;
   }
 
   // Truncate the array
   set.length--;
 }
 
-// TODO: temp fix of memory leak.. why doesn't this work?
 // /**
 //  * Empty the set. This will leave some stale index tracking props on the objects
 //  */
