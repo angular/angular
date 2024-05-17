@@ -450,6 +450,7 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
     expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
     expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
+    expect(eventInfoWrapper.getResolved()).toBe(true);
   });
 
   it('dispatches event when targetElement is actionElement', () => {

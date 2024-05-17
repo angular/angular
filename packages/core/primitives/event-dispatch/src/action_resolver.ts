@@ -53,7 +53,11 @@ export class ActionResolver {
   }
 
   resolve(eventInfo: eventInfoLib.EventInfo) {
+    if (eventInfoLib.getResolved(eventInfo)) {
+      return;
+    }
     this.populateAction(eventInfo);
+    eventInfoLib.setResolved(eventInfo, true);
   }
 
   /**
