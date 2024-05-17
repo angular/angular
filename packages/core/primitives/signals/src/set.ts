@@ -7,7 +7,7 @@ const SET_ID = Symbol('SET_ID');
  * stashes information on hidden props on the array items themselves.
  *
  * NOTE: This also assumes that the item objects isn't used as a dict (since
- * the index would appear in things like Object.keys)
+ * the index would appear in things like Object.keys).
  *
  * Use the functions below to manipulate the set. Read from the set with
  * standard indexing syntax.
@@ -57,7 +57,7 @@ export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): v
   // Cleanup the stored index on the item.
   delete (set[index] as unknown as LiteSetItem)[`__idx_for_set_${set[SET_ID]}`];
 
-  if (set.length > 1) {
+  if (index === set.length - 1) {
     // Swap the last item into the deleted position
     const lastIndex = set.length - 1;
     set[index] = set[lastIndex];
@@ -66,4 +66,15 @@ export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): v
 
   // Truncate the array
   set.length--;
+}
+
+/**
+ * Empty the set. This will leave some stale index tracking props on the objects
+ */
+export function clearLiteSet<T extends Object>(set: LiteSet<T>): void {
+  set.length = 0;
+  // This invalidates
+  set[SET_ID] = nextSetId++;
+  // TODO: This will keep leaking index props on the items. Slightly concerning since consumers are constnatly being recreated....
+  // Alternate idea: instead of SET_ID, add ITEM_ID to each item and use that to index on the set.
 }
