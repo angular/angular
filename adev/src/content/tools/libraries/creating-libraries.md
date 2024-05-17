@@ -134,7 +134,7 @@ For more information, see [Schematics Overview](tools/cli/schematics) and [Schem
 Use the Angular CLI and the npm package manager to build and publish your library as an npm package.
 
 Angular CLI uses a tool called [ng-packagr](https://github.com/ng-packagr/ng-packagr/blob/master/README.md) to create packages from your compiled code that can be published to npm.
-See [Building libraries with Ivy](tools/libraries/creating-libraries#ivy-libraries) for information on the distribution formats supported by `ng-packagr` and guidance on how
+See [Building libraries with Ivy](tools/libraries/creating-libraries#publishing-libraries) for information on the distribution formats supported by `ng-packagr` and guidance on how
 to choose the right format for your library.
 
 You should always build libraries for distribution using the `production` configuration.
