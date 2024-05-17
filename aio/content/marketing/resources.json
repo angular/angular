@@ -249,7 +249,7 @@
             "desc": "JitBlox is an online visual environment for designing and prototyping Angular apps without coding. It provides real-time preview, source code download and seamlessly integrates popular UI libraries such as Bootstrap and Material Design.",			
             "title": "JitBlox",
             "url": "https://www.jitblox.com/"
-          },
+          }
         }
       },
       "Tooling": {
