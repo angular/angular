@@ -427,6 +427,68 @@ describe('type check blocks', () => {
     expect(block).not.toContain('.style = ');
   });
 
+  it('should handle 2way control binding specifically', () => {
+    const TEMPLATE = `
+    <input [(value)]="foo">
+    <input [(valueAsNumber)]="fooNumber">
+    <input [(valueAsDate)]="fooDate">
+    <input [(checked)]="fooBoolean">
+    <textarea [(value)]="foo"></textarea>
+    <select [(value)]="foo"></select>
+    `;
+
+    const block = tcb(TEMPLATE, /* declarations */ undefined, {...ALL_ENABLED_CONFIG});
+    expect(block).toContain(
+      'var _t1 = document.createElement("input"); _t1["value"] = (i1.ɵunwrapWritableSignal(((this).foo))); _t1.addEventListener("valueChange", ($event): any => { var _t2 = i1.ɵunwrapWritableSignal(((this).foo)); _t2 = $event; });',
+    );
+    expect(block).toContain(
+      'var _t3 = document.createElement("input"); _t3["valueAsNumber"] = (i1.ɵunwrapWritableSignal(((this).fooNumber))); _t3.addEventListener("valueAsNumberChange", ($event): any => { var _t4 = i1.ɵunwrapWritableSignal(((this).fooNumber)); ',
+    );
+    expect(block).toContain(
+      'var _t5 = document.createElement("input"); _t5["valueAsDate"] = (i1.ɵunwrapWritableSignal(((this).fooDate))); _t5.addEventListener("valueAsDateChange", ($event): any => { var _t6 = i1.ɵunwrapWritableSignal(((this).fooDate)); ',
+    );
+    expect(block).toContain(
+      'var _t7 = document.createElement("input"); _t7["checked"] = (i1.ɵunwrapWritableSignal(((this).fooBoolean))); _t7.addEventListener("checkedChange", ($event): any => { var _t8 = i1.ɵunwrapWritableSignal(((this).fooBoolean)); ',
+    );
+    expect(block).toContain(
+      'var _t9 = document.createElement("textarea"); _t9["value"] = (i1.ɵunwrapWritableSignal(((this).foo))); _t9.addEventListener("valueChange", ($event): any => { var _t10 = i1.ɵunwrapWritableSignal(((this).foo)); ',
+    );
+    expect(block).toContain(
+      'var _t11 = document.createElement("select"); _t11["value"] = (i1.ɵunwrapWritableSignal(((this).foo))); _t11.addEventListener("valueChange", ($event): any => { var _t12 = i1.ɵunwrapWritableSignal(((this).foo)); ',
+    );
+  });
+
+  it('should handle synthetic change event on controls', () => {
+    const TEMPLATE = `
+    <input (valueChange)="foo($event)">
+    <input (valueAsNumberChange)="fooNumber($event)">
+    <input (valueAsDateChange)="fooDate($event)">
+    <input (checkedChange)="fooBoolean($event)">
+    <textarea (valueChange)="foo($event)"></textarea>
+    <select (valueChange)="foo($event)"></select>
+    `;
+
+    const block = tcb(TEMPLATE, /* declarations */ undefined, {...ALL_ENABLED_CONFIG});
+    expect(block).toContain(
+      'var _t1 = document.createElement("input"); (($event): any => { (this).foo($event); })(_t1["value"]);',
+    );
+    expect(block).toContain(
+      'var _t2 = document.createElement("input"); (($event): any => { (this).fooNumber($event); })(_t2["valueAsNumber"]);',
+    );
+    expect(block).toContain(
+      'var _t3 = document.createElement("input"); (($event): any => { (this).fooDate($event); })(_t3["valueAsDate"]);',
+    );
+    expect(block).toContain(
+      'var _t4 = document.createElement("input"); (($event): any => { (this).fooBoolean($event); })(_t4["checked"]);',
+    );
+    expect(block).toContain(
+      'var _t5 = document.createElement("textarea"); (($event): any => { (this).foo($event); })(_t5["value"]);',
+    );
+    expect(block).toContain(
+      'var _t6 = document.createElement("select"); (($event): any => { (this).foo($event); })(_t6["value"]);',
+    );
+  });
+
   it('should only apply property bindings to directives', () => {
     const TEMPLATE = `
       <div dir [style.color]="'blue'" [class.strong]="false" [attr.enabled]="true"></div>
