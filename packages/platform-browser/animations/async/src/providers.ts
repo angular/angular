@@ -25,7 +25,7 @@ import {AsyncAnimationRendererFactory} from './async_animation_renderer';
  * to learn more about animations in Angular.
  *
  * When you use this function instead of the eager `provideAnimations()`, animations won't be
- * renderered until the renderer is loaded.
+ * rendered until the renderer is loaded.
  *
  * @usageNotes
  *
@@ -45,7 +45,6 @@ import {AsyncAnimationRendererFactory} from './async_animation_renderer';
  * @param type pass `'noop'` as argument to disable animations.
  *
  * @publicApi
- * @developerPreview
  */
 export function provideAnimationsAsync(
   type: 'animations' | 'noop' = 'animations',
