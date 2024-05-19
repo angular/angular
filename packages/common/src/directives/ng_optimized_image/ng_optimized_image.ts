@@ -51,15 +51,6 @@ import {PreconnectLinkChecker} from './preconnect_link_checker';
 import {PreloadLinkCreator} from './preload-link-creator';
 
 /**
- * When a Base64-encoded image is passed as an input to the `NgOptimizedImage` directive,
- * an error is thrown. The image content (as a string) might be very long, thus making
- * it hard to read an error message if the entire string is included. This const defines
- * the number of characters that should be included into the error message. The rest
- * of the content is truncated.
- */
-const BASE64_IMG_MAX_LENGTH_IN_ERROR = 50;
-
-/**
  * RegExpr to determine whether a src in a srcset is using width descriptors.
  * Should match something like: "100w, 200w".
  */
@@ -388,8 +379,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       if (this.ngSrcset) {
         assertNoConflictingSrcset(this);
       }
-      assertNotBase64Image(this);
-      assertNotBlobUrl(this);
       if (this.fill) {
         assertEmptyWidthAndHeight(this);
         // This leaves the Angular zone to avoid triggering unnecessary change detection cycles when
@@ -721,25 +710,6 @@ function assertNoConflictingSrcset(dir: NgOptimizedImage) {
 }
 
 /**
- * Verifies that the `ngSrc` is not a Base64-encoded image.
- */
-function assertNotBase64Image(dir: NgOptimizedImage) {
-  let ngSrc = dir.ngSrc.trim();
-  if (ngSrc.startsWith('data:')) {
-    if (ngSrc.length > BASE64_IMG_MAX_LENGTH_IN_ERROR) {
-      ngSrc = ngSrc.substring(0, BASE64_IMG_MAX_LENGTH_IN_ERROR) + '...';
-    }
-    throw new RuntimeError(
-      RuntimeErrorCode.INVALID_INPUT,
-      `${imgDirectiveDetails(dir.ngSrc, false)} \`ngSrc\` is a Base64-encoded string ` +
-        `(${ngSrc}). NgOptimizedImage does not support Base64-encoded strings. ` +
-        `To fix this, disable the NgOptimizedImage directive for this element ` +
-        `by removing \`ngSrc\` and using a standard \`src\` attribute instead.`,
-    );
-  }
-}
-
-/**
  * Verifies that the 'sizes' only includes responsive values.
  */
 function assertNoComplexSizes(dir: NgOptimizedImage) {
@@ -826,22 +796,6 @@ function assertNoOversizedDataUrl(dir: NgOptimizedImage) {
         ),
       );
     }
-  }
-}
-
-/**
- * Verifies that the `ngSrc` is not a Blob URL.
- */
-function assertNotBlobUrl(dir: NgOptimizedImage) {
-  const ngSrc = dir.ngSrc.trim();
-  if (ngSrc.startsWith('blob:')) {
-    throw new RuntimeError(
-      RuntimeErrorCode.INVALID_INPUT,
-      `${imgDirectiveDetails(dir.ngSrc)} \`ngSrc\` was set to a blob URL (${ngSrc}). ` +
-        `Blob URLs are not supported by the NgOptimizedImage directive. ` +
-        `To fix this, disable the NgOptimizedImage directive for this element ` +
-        `by removing \`ngSrc\` and using a regular \`src\` attribute instead.`,
-    );
   }
 }
 
