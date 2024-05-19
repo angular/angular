@@ -636,6 +636,15 @@ declare global {
      * trace.
      */
     __zone_symbol__DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION?: boolean;
+
+    /**
+     * https://github.com/angular/angular/issues/47579
+     *
+     * Enables the default `beforeunload` handling behavior, allowing the result of the event
+     * handling invocation to be set on the event's `returnValue`. The browser may then prompt
+     * the user with a string returned from the event handler.
+     */
+    __zone_symbol__enable_beforeunload?: boolean;
   }
 
   /**
