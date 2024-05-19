@@ -216,7 +216,7 @@ export function listenerInternal(
       (<any>existingListener).__ngLastListenerFn__ = listenerFn;
       processOutputs = false;
     } else {
-      listenerFn = wrapListener(tNode, lView, context, listenerFn, false /** preventDefault */);
+      listenerFn = wrapListener(tNode, lView, context, listenerFn);
       const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
       ngDevMode && ngDevMode.rendererAddEventListener++;
 
@@ -226,7 +226,7 @@ export function listenerInternal(
   } else {
     // Even if there is no native listener to add, we still need to wrap the listener so that OnPush
     // ancestors are marked dirty when an event occurs.
-    listenerFn = wrapListener(tNode, lView, context, listenerFn, false /** preventDefault */);
+    listenerFn = wrapListener(tNode, lView, context, listenerFn);
   }
 
   // subscribe to directive outputs
@@ -292,7 +292,6 @@ function wrapListener(
   lView: LView<{} | null>,
   context: {} | null,
   listenerFn: (e?: any) => any,
-  wrapWithPreventDefault: boolean,
 ): EventListener {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
@@ -317,10 +316,6 @@ function wrapListener(
       // We should prevent default if any of the listeners explicitly return false
       result = executeListenerWithErrorHandling(lView, context, nextListenerFn, e) && result;
       nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
-    }
-
-    if (wrapWithPreventDefault && result === false) {
-      e.preventDefault();
     }
 
     return result;
