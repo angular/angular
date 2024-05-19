@@ -177,6 +177,14 @@ export function listenerInternal(
   //   such as `window` or `document`).
   if (tNode.type & TNodeType.AnyRNode || eventTargetResolver) {
     const native = getNativeByTNode(tNode, lView) as RElement;
+
+    // Specific behavior for value two-way binding on an input element.
+    const eventMapping = createTwoWayBindingEventMapping(native, eventName);
+    const eventMapperFn = eventMapping ? eventMapping.mapperFn : null;
+    if (eventMapping) {
+      eventName = eventMapping.eventName;
+    }
+
     const target = eventTargetResolver ? eventTargetResolver(native) : native;
     const lCleanupIndex = lCleanup.length;
     const idxOrTargetGetter = eventTargetResolver
@@ -216,7 +224,7 @@ export function listenerInternal(
       (<any>existingListener).__ngLastListenerFn__ = listenerFn;
       processOutputs = false;
     } else {
-      listenerFn = wrapListener(tNode, lView, context, listenerFn);
+      listenerFn = wrapListener(tNode, lView, context, listenerFn, eventMapperFn);
       stashEventListener(native, eventName, listenerFn);
       const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
       ngDevMode && ngDevMode.rendererAddEventListener++;
@@ -227,7 +235,7 @@ export function listenerInternal(
   } else {
     // Even if there is no native listener to add, we still need to wrap the listener so that OnPush
     // ancestors are marked dirty when an event occurs.
-    listenerFn = wrapListener(tNode, lView, context, listenerFn);
+    listenerFn = wrapListener(tNode, lView, context, listenerFn, null);
   }
 
   // subscribe to directive outputs
@@ -293,6 +301,7 @@ function wrapListener(
   lView: LView<{} | null>,
   context: {} | null,
   listenerFn: (e?: any) => any,
+  eventMapperFn: ((e: any) => any) | null,
 ): EventListener {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
@@ -301,6 +310,10 @@ function wrapListener(
     // so that it can be invoked programmatically by `DebugNode.triggerEventHandler`.
     if (e === Function) {
       return listenerFn;
+    }
+
+    if (eventMapperFn) {
+      e = eventMapperFn(e);
     }
 
     // In order to be backwards compatible with View Engine, events on component host nodes
@@ -320,6 +333,97 @@ function wrapListener(
 
     return result;
   };
+}
+
+const VALUE_CHANGE_EVENT = 'valueChange';
+const VALUE_AS_NUMBER_CHANGE_EVENT = 'valueAsNumberChange';
+const VALUE_AS_DATE_CHANGE_EVENT = 'valueAsDateChange';
+const CHECKED_CHANGE_EVENT = 'checkedChange';
+const FILES_CHANGE_EVENT = 'filesChange';
+
+/**
+ * In the case of two-way binding on a control element, we need to map the `change` event to `input`
+ */
+function createTwoWayBindingEventMapping(
+  nativeElement: RElement,
+  eventName: string,
+): {mapperFn: (e: Event) => unknown; eventName: string} | null {
+  const tagName = nativeElement.tagName;
+  if (tagName !== 'SELECT' && tagName !== 'INPUT' && tagName !== 'TEXTAREA') {
+    //We don't support 2-way bindings for other native elements
+    return null;
+  }
+
+  const isOneOfSupportedChangeEvents = [
+    VALUE_CHANGE_EVENT,
+    VALUE_AS_NUMBER_CHANGE_EVENT,
+    VALUE_AS_DATE_CHANGE_EVENT,
+    CHECKED_CHANGE_EVENT,
+    FILES_CHANGE_EVENT,
+  ].includes(eventName);
+
+  if (isOneOfSupportedChangeEvents) {
+    return {
+      mapperFn: (e) => {
+        const target = e.target as
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement
+          | null;
+        if (!target) {
+          return null;
+        }
+
+        if (target?.tagName === 'INPUT') {
+          const type = target.type;
+          const input = target as HTMLInputElement;
+
+          // We need to synthesize input events for all the other radio buttons within the same group
+          // in order to update their binded value.
+          if (type === 'radio') {
+            [
+              // This only works on browsers (in node tests this returns an empty array)
+              ...document.querySelectorAll(`input[type="radio"][name="${input.name}"]`),
+            ]
+              .filter((radio) => radio !== input)
+              .forEach((radio) => {
+                radio.dispatchEvent(new Event('input'));
+              });
+          }
+
+          switch (eventName) {
+            case CHECKED_CHANGE_EVENT:
+              // should we throw if type attribute is a radio ?
+              return input.checked;
+
+            case VALUE_AS_NUMBER_CHANGE_EVENT:
+              // By spec, the runtime throws if the type is not a valid "date- or time-based nor numeric" type (number, range, date, time, datetime, datetime-local)
+              // Thus "type=text" throws at runtime
+              // https://html.spec.whatwg.org/multipage/input.html#common-input-element-apis
+              return input.valueAsNumber;
+
+            case VALUE_AS_DATE_CHANGE_EVENT:
+              // By spec, the runtime throws if the type is not a valid "date" type (date, time, datetime, datetime-local)
+              // https://html.spec.whatwg.org/multipage/input.html#common-input-element-apis
+              return input.valueAsDate;
+
+            case FILES_CHANGE_EVENT:
+              // By spec, the runtime throws if the type is not a valid "date" type (date, time, datetime, datetime-local)
+              return input.files;
+
+            // In the future we might want to support valueAsTemporal
+            // https://github.com/tc39/proposal-temporal/issues/3075
+            // https://github.com/whatwg/html/issues/10882
+          }
+        }
+
+        return target.value;
+      },
+      eventName: 'input',
+    };
+  }
+
+  return null;
 }
 
 /** Describes a subscribable output field value. */
