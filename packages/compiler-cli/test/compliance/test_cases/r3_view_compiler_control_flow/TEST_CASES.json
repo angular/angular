@@ -422,6 +422,21 @@
       ]
     },
     {
+      "description": "should optimize tracking function that calls a method on the component only with $index from the root template",
+      "inputFiles": ["for_template_track_method_only_index.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "for_template_track_method_only_index_template.js",
+              "generated": "for_template_track_method_only_index.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should reuse identical pure tracking functions",
       "inputFiles": ["for_pure_track_reuse.ts"],
       "expectations": [

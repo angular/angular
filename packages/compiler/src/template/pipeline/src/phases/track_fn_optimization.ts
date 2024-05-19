@@ -79,7 +79,7 @@ function isTrackByFunctionCall(
     receiver: ir.ContextExpr;
   };
 } {
-  if (!(expr instanceof o.InvokeFunctionExpr) || expr.args.length !== 2) {
+  if (!(expr instanceof o.InvokeFunctionExpr) || expr.args.length === 0 || expr.args.length > 2) {
     return false;
   }
 
@@ -95,6 +95,8 @@ function isTrackByFunctionCall(
   const [arg0, arg1] = expr.args;
   if (!(arg0 instanceof o.ReadVarExpr) || arg0.name !== '$index') {
     return false;
+  } else if (expr.args.length === 1) {
+    return true;
   }
   if (!(arg1 instanceof o.ReadVarExpr) || arg1.name !== '$item') {
     return false;
