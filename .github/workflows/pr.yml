@@ -1,10 +1,8 @@
-name: CI
+name: Pull Request
 
 on:
-  push:
-    branches:
-      - main
-      - '[0-9]+.[0-9]+.x'
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,8 +24,6 @@ jobs:
           cache-node-modules: true
       - name: Install node modules
         run: yarn install --frozen-lockfile
-      - name: Install node modules in aio
-        run: yarn install --frozen-lockfile --cwd aio
       - name: Check code lint
         run: yarn -s tslint
       - name: Check for circular dependencies
@@ -38,6 +34,10 @@ jobs:
         run: yarn -s ng-dev ngbot verify
       - name: Confirm code builds with typescript as expected
         run: yarn -s check-tooling-setup
+      - name: Check commit message
+        run: yarn ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
+      - name: Check code format
+        run: yarn ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
 
   devtools:
     runs-on: ubuntu-latest
@@ -90,24 +90,6 @@ jobs:
       - name: Run tests
         run: yarn bazel test //adev:test
 
-  publish-snapshots:
-    runs-on:
-      labels: ubuntu-latest
-    steps:
-      - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
-        with:
-          cache-node-modules: true
-      - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
-      - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
-      - name: Install node modules
-        run: yarn install --frozen-lockfile
-      - run: echo "https://${{secrets.SNAPSHOT_BUILDS_GITHUB_TOKEN}}:@github.com" > ${HOME}/.git_credentials
-      - run: yarn build
-      - run: ./scripts/ci/publish-build-artifacts.sh
-
   zone-js:
     runs-on:
       labels: ubuntu-latest-4core
@@ -154,10 +136,10 @@ jobs:
       - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
       - run: yarn --cwd packages/zone.js/test/typings test
 
-  bazel-saucelabs:
+  saucelabs:
     runs-on: ubuntu-latest-4core
     env:
-      JOBS: 2
+      SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
@@ -167,37 +149,35 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
-      - name: Setup Bazel Remote Caching
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
       - name: Setup Saucelabs Variables
         uses: angular/dev-infra/github-actions/saucelabs@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
-      - name: Set up Sauce Tunnel Daemon
-        run: yarn bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
-        env:
-          SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
-      - name: Run all saucelabs bazel tests
+      - name: Starting Saucelabs tunnel service
+        run: ./tools/saucelabs/sauce-service.sh run &
+      # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
+      # specific tests which are reliant on such generated fixtures is not an option as SystemJS
+      # in the Saucelabs legacy job always fetches referenced files, even if the imports would be
+      # guarded by an check to skip in the Saucelabs legacy job. We should be good running such
+      # test in all supported browsers on Saucelabs anyway until this job can be removed.
+      - name: Preparing Bazel-generated fixtures required in legacy tests
         run: |
-          TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
-          yarn bazel test --config=saucelabs --jobs=$JOBS ${TESTS}
-
-  adev-deploy:
-    needs: [adev]
-    if: needs.adev.result == 'success'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
-      - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
-      - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
-      - name: Install node modules
-        run: yarn install --frozen-lockfile
-      - name: Build adev to ensure it continues to work
-        run: yarn bazel build //adev:build
-      - name: Deploy to firebase
-        uses: ./.github/actions/deploy-docs-site
-        with:
-          serviceKey: ${{ secrets.ANGULAR_DEV_SITE_DEPLOY }}
-          configPath: 'adev/firebase.json'
-          distDir: 'dist/bin/adev/build/browser'
+          yarn bazel build //packages/core/test:downleveled_es5_fixture //packages/common/locales
+          # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
+          mkdir -p dist/legacy-test-out/core/test/reflection/
+          cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
+            dist/legacy-test-out/core/test/reflection/es5_downleveled_inheritance_fixture.js
+          # Locale files are needed for i18n tests running within Saucelabs. These are added
+          # directly as sources so that the TypeScript compilation of `/packages/tsconfig.json`
+          # can succeed. Note that the base locale and currencies files are checked-in, so
+          # we do not need to re-generate those through Bazel.
+          mkdir -p packages/common/locales/extra
+          cp dist/bin/packages/common/locales/*.ts packages/common/locales
+          cp dist/bin/packages/common/locales/extra/*.ts packages/common/locales/extra
+      - name: Build bundle of tests to run on Saucelabs
+        run: node tools/legacy-saucelabs/build-saucelabs-test-bundle.mjs
+      - name: Wait and confirm Saucelabs tunnel has connected
+        run: ./tools/saucelabs/sauce-service.sh ready-wait
+        timeout-minutes: 3
+      - name: Running tests on Saucelabs.
+        run: KARMA_WEB_TEST_MODE=SL_REQUIRED yarn karma start ./karma-js.conf.js --single-run
+      - name: Stop Saucelabs tunnel service
+        run: ./tools/saucelabs/sauce-service.sh stop
