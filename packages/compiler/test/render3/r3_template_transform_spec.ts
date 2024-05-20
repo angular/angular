@@ -166,6 +166,10 @@ class R3AstHumanizer implements t.Visitor<void> {
     this.result.push(['UnknownBlock', block.name]);
   }
 
+  visitLetDeclaration(decl: t.LetDeclaration) {
+    this.result.push(['LetDeclaration', decl.name, unparse(decl.value)]);
+  }
+
   private visitAll(nodes: t.Node[][]) {
     nodes.forEach((node) => t.visitAll(this, node));
   }
@@ -2221,6 +2225,41 @@ describe('R3 template transform', () => {
   describe('unknown blocks', () => {
     it('should parse unknown blocks', () => {
       expectFromHtml('@unknown {}', true /* ignoreError */).toEqual([['UnknownBlock', 'unknown']]);
+    });
+  });
+
+  describe('@let declarations', () => {
+    function parseLet(html: string, ignoreError = false) {
+      return parse(html, {ignoreError, tokenizeLet: true});
+    }
+
+    function expectLet(html: string, ignoreError = false) {
+      const res = parseLet(html, ignoreError);
+      return expectFromR3Nodes(res.nodes);
+    }
+
+    it('should parse a let declaration', () => {
+      expectLet('@let foo = 123 + 456;').toEqual([['LetDeclaration', 'foo', '123 + 456']]);
+    });
+
+    it('should report syntax errors in the let declaration value', () => {
+      expect(() => parseLet('@let foo = {one: 1;')).toThrowError(
+        /Parser Error: Missing expected } at the end of the expression \[\{one: 1]/,
+      );
+    });
+
+    it('should report a let declaration with no value', () => {
+      expect(() => parseLet('@let foo =  ;')).toThrowError(
+        /@let declaration value cannot be empty/,
+      );
+    });
+
+    it('should produce a text node when @let is used inside ngNonBindable', () => {
+      expectLet('<div ngNonBindable>@let foo = 123;</div>').toEqual([
+        ['Element', 'div'],
+        ['TextAttribute', 'ngNonBindable', ''],
+        ['Text', '@let foo = 123;'],
+      ]);
     });
   });
 });
