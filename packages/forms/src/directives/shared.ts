@@ -6,22 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {InjectionToken, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
-import {AbstractControl} from '../model/abstract_model';
-import {FormArray} from '../model/form_array';
-import {FormControl} from '../model/form_control';
-import {FormGroup} from '../model/form_group';
+import type {AbstractControl} from '../model/abstract_model';
+import type {FormArray} from '../model/form_array';
+import type {FormControl} from '../model/form_control';
+import type {FormGroup} from '../model/form_group';
 import {getControlAsyncValidators, getControlValidators, mergeValidators} from '../validators';
 
-import {AbstractControlDirective} from './abstract_control_directive';
-import {AbstractFormGroupDirective} from './abstract_form_group_directive';
-import {ControlContainer} from './control_container';
+import type {AbstractControlDirective} from './abstract_control_directive';
+import type {AbstractFormGroupDirective} from './abstract_form_group_directive';
+import type {ControlContainer} from './control_container';
 import {BuiltInControlValueAccessor, ControlValueAccessor} from './control_value_accessor';
 import {DefaultValueAccessor} from './default_value_accessor';
-import {NgControl} from './ng_control';
-import {FormArrayName} from './reactive_directives/form_group_name';
+import type {NgControl} from './ng_control';
+import type {FormArrayName} from './reactive_directives/form_group_name';
 import {ngModelWarning} from './reactive_errors';
 import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
