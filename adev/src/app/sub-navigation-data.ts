@@ -680,8 +680,8 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
           },
           {
             label: 'Migrating to new build system',
-            path: 'tools/cli/esbuild',
-            contentPath: 'tools/cli/esbuild',
+            path: 'tools/cli/build-system-migration',
+            contentPath: 'tools/cli/build-system-migration',
           },
           {
             label: 'Build environments',
