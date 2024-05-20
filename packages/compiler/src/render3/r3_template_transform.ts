@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
+import {EmptyExpr, ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
 import * as i18n from '../i18n/i18n_ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
@@ -390,7 +390,18 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   visitLetDeclaration(decl: html.LetDeclaration, context: any) {
-    throw new Error('TODO: implement R3 LetDeclaration');
+    const value = this.bindingParser.parseBinding(
+      decl.value,
+      false,
+      decl.valueSpan,
+      decl.valueSpan.start.offset,
+    );
+
+    if (value.errors.length === 0 && value.ast instanceof EmptyExpr) {
+      this.reportError('@let declaration value cannot be empty', decl.valueSpan);
+    }
+
+    return new t.LetDeclaration(decl.name, value, decl.sourceSpan, decl.nameSpan, decl.valueSpan);
   }
 
   visitBlockParameter() {
@@ -899,7 +910,7 @@ class NonBindableVisitor implements html.Visitor {
   }
 
   visitLetDeclaration(decl: html.LetDeclaration, context: any) {
-    throw new Error('TODO: implement R3 LetDeclaration');
+    return new t.Text(`@let ${decl.name} = ${decl.value};`, decl.sourceSpan);
   }
 }
 

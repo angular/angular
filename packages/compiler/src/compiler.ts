@@ -158,6 +158,7 @@ export {
   IfBlockBranch as TmplAstIfBlockBranch,
   DeferredBlockTriggers as TmplAstDeferredBlockTriggers,
   UnknownBlock as TmplAstUnknownBlock,
+  LetDeclaration as TmplAstLetDeclaration,
 } from './render3/r3_ast';
 export * from './render3/view/t2_api';
 export * from './render3/view/t2_binder';

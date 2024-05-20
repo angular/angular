@@ -27,6 +27,7 @@ import {
   TmplAstIcu,
   TmplAstIfBlock,
   TmplAstIfBlockBranch,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstRecursiveVisitor,
   TmplAstReference,
@@ -262,6 +263,10 @@ class TemplateVisitor<Code extends ErrorCode>
     block.expression && this.visitAst(block.expression);
     block.expressionAlias?.visit(this);
     this.visitAllNodes(block.children);
+  }
+
+  visitLetDeclaration(decl: TmplAstLetDeclaration): void {
+    this.visitAst(decl.value);
   }
 
   getDiagnostics(template: TmplAstNode[]): NgTemplateDiagnostic<Code>[] {

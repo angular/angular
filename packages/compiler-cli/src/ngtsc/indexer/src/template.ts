@@ -28,6 +28,7 @@ import {
   TmplAstForLoopBlockEmpty,
   TmplAstIfBlock,
   TmplAstIfBlockBranch,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstRecursiveVisitor,
   TmplAstReference,
@@ -349,6 +350,10 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     block.expression && this.visitExpression(block.expression);
     block.expressionAlias?.visit(this);
     this.visitAll(block.children);
+  }
+
+  override visitLetDeclaration(decl: TmplAstLetDeclaration): void {
+    this.visitExpression(decl.value);
   }
 
   /** Creates an identifier for a template element or template node. */

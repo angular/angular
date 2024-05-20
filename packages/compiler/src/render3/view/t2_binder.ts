@@ -35,6 +35,7 @@ import {
   IfBlock,
   IfBlockBranch,
   InteractionDeferredTrigger,
+  LetDeclaration,
   Node,
   Reference,
   SwitchBlock,
@@ -271,6 +272,10 @@ class Scope implements Visitor {
 
   visitContent(content: Content) {
     this.ingestScopedNode(content);
+  }
+
+  visitLetDeclaration(decl: LetDeclaration) {
+    // TODO(crisbeto): needs further integration
   }
 
   // Unused visitors.
@@ -536,6 +541,10 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     content.children.forEach((child) => child.visit(this));
   }
 
+  visitLetDeclaration(decl: LetDeclaration) {
+    // TODO(crisbeto): needs further integration
+  }
+
   // Unused visitors.
   visitVariable(variable: Variable): void {}
   visitReference(reference: Reference): void {}
@@ -792,6 +801,12 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   visitBoundText(text: BoundText) {
     text.value.visit(this);
   }
+
+  visitLetDeclaration(decl: LetDeclaration) {
+    // TODO(crisbeto): needs further integration
+    decl.value.visit(this);
+  }
+
   override visitPipe(ast: BindingPipe, context: any): any {
     this.usedPipes.add(ast.name);
     if (!this.scope.isDeferred) {
