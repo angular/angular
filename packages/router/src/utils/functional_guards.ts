@@ -109,7 +109,7 @@ export function mapToResolve<T>(provider: Type<{resolve: ResolveFn<T>}>): Resolv
  * @publicApi
  * @see {@link Route}
  */
-export function runSerially(
+export function runCanActivateGuardsSerially(
   guards: CanActivateFn[] | CanActivateChildFn[],
 ): CanActivateFn | CanActivateChildFn {
   return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {

@@ -982,10 +982,10 @@ export class RoutesRecognized extends RouterEvent {
 }
 
 // @public
-export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParamsChange' | 'paramsChange' | 'paramsOrQueryParamsChange' | 'always' | ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
+export function runCanActivateGuardsSerially(guards: CanActivateFn[] | CanActivateChildFn[]): CanActivateFn | CanActivateChildFn;
 
 // @public
-export function runSerially(guards: CanActivateFn[] | CanActivateChildFn[]): CanActivateFn | CanActivateChildFn;
+export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParamsChange' | 'paramsChange' | 'paramsOrQueryParamsChange' | 'always' | ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
 
 // @public
 export class Scroll {

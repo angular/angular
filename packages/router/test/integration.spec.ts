@@ -79,7 +79,7 @@ import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 import {CanActivateFn, CanMatchFn, Data, ResolveFn, RedirectCommand} from '../src/models';
 import {provideRouter, withNavigationErrorHandler, withRouterConfig} from '../src/provide_router';
 import {getLoadedRoutes} from '../src/utils/config';
-import {runSerially} from '../src/utils/functional_guards';
+import {runCanActivateGuardsSerially} from '../src/utils/functional_guards';
 
 const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
 
@@ -5852,7 +5852,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
             {
               path: '**',
               component: BlankCmp,
-              canActivate: [runSerially([guard1, guard2, guard3, guard4])],
+              canActivate: [runCanActivateGuardsSerially([guard1, guard2, guard3, guard4])],
             },
           ]);
           router.navigateByUrl('');
@@ -5871,7 +5871,9 @@ for (const browserAPI of ['navigation', 'history'] as const) {
             {
               path: '**',
               component: BlankCmp,
-              canActivate: [runSerially([() => of(true), async () => true, () => true])],
+              canActivate: [
+                runCanActivateGuardsSerially([() => of(true), async () => true, () => true]),
+              ],
             },
           ]);
           expect(await router.navigateByUrl('')).toBeTrue();
@@ -5884,7 +5886,9 @@ for (const browserAPI of ['navigation', 'history'] as const) {
             {
               path: '**',
               component: BlankCmp,
-              canActivate: [runSerially([() => false, () => (lastGuardRan = true)])],
+              canActivate: [
+                runCanActivateGuardsSerially([() => false, () => (lastGuardRan = true)]),
+              ],
             },
           ]);
           expect(await router.navigateByUrl('')).toBeFalse();
@@ -5900,7 +5904,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
               path: '',
               component: BlankCmp,
               canActivate: [
-                runSerially([
+                runCanActivateGuardsSerially([
                   () => new RedirectCommand(router.parseUrl('pass')),
                   () => new RedirectCommand(router.parseUrl('fail')),
                   () => (lastGuardRan = true),
