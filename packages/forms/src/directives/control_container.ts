@@ -7,7 +7,7 @@
  */
 
 import {AbstractControlDirective} from './abstract_control_directive';
-import {Form} from './form_interface';
+import type {Form} from './form_interface';
 
 /**
  * @description

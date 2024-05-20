@@ -46,8 +46,8 @@ import {
 } from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
-import {FormControlName} from './form_control_name';
-import {FormArrayName, FormGroupName} from './form_group_name';
+import type {FormControlName} from './form_control_name';
+import type {FormArrayName, FormGroupName} from './form_group_name';
 import {FormResetEvent, FormSubmittedEvent} from '../../model/abstract_model';
 
 const formDirectiveProvider: Provider = {
