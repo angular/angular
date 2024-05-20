@@ -148,12 +148,14 @@ export function parseR3(
     preserveWhitespaces?: boolean;
     leadingTriviaChars?: string[];
     ignoreError?: boolean;
+    tokenizeLet?: boolean;
   } = {},
 ): Render3ParseResult {
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(input, 'path:://to/template', {
     tokenizeExpansionForms: true,
     leadingTriviaChars: options.leadingTriviaChars ?? LEADING_TRIVIA_CHARS,
+    tokenizeLet: options.tokenizeLet,
   });
 
   if (parseResult.errors.length > 0 && !options.ignoreError) {
