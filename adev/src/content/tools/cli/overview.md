@@ -37,7 +37,7 @@ Boolean options have two forms: `--this-option` sets the flag to `true`, `--no-t
 You can also use `--this-option=false` or `--this-option=true`.
 If neither option is supplied, the flag remains in its default state, as listed in the reference documentation.
 
-### Array options
+### Array options caution 
 
 Array options can be provided in two forms: `--option value1 value2` or `--option value1 --option value2`.
 
