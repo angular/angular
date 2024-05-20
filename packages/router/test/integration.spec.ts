@@ -11,7 +11,6 @@ import {ɵprovideFakePlatformNavigation} from '@angular/common/testing';
 import {
   ChangeDetectionStrategy,
   Component,
-  EnvironmentInjector,
   inject as coreInject,
   Inject,
   Injectable,
@@ -74,22 +73,13 @@ import {
   UrlTree,
 } from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
-import {concat, EMPTY, firstValueFrom, Observable, Observer, of, Subscription} from 'rxjs';
-import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
+import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
+import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
-import {
-  CanActivateChildFn,
-  CanActivateFn,
-  CanMatchFn,
-  Data,
-  ResolveFn,
-  RedirectCommand,
-  GuardResult,
-  MaybeAsync,
-} from '../src/models';
+import {CanActivateFn, CanMatchFn, Data, ResolveFn, RedirectCommand} from '../src/models';
 import {provideRouter, withNavigationErrorHandler, withRouterConfig} from '../src/provide_router';
-import {wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
+import {runSerially} from '../src/utils/functional_guards';
 
 const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
 
@@ -5837,58 +5827,97 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         expect(guards.canDeactivate).toHaveBeenCalled();
       }));
 
-      it('can run functional guards serially', fakeAsync(() => {
-        function runSerially(
-          guards: CanActivateFn[] | CanActivateChildFn[],
-        ): CanActivateFn | CanActivateChildFn {
-          return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-            const injector = coreInject(EnvironmentInjector);
-            const observables = guards.map((guard) => {
-              const guardResult = injector.runInContext(() => guard(route, state));
-              return wrapIntoObservable(guardResult).pipe(first());
-            });
-            return concat(...observables).pipe(
-              takeWhile((v) => v === true),
-              last(),
+      describe('runSerially', () => {
+        it('can run functional guards serially', fakeAsync(() => {
+          const guardDone: string[] = [];
+
+          const guard1: CanActivateFn = () =>
+            of(true).pipe(
+              delay(100),
+              tap(() => guardDone.push('guard1')),
             );
-          };
-        }
+          const guard2: CanActivateFn = () => of(true).pipe(tap(() => guardDone.push('guard2')));
+          const guard3: CanActivateFn = () =>
+            of(true).pipe(
+              delay(50),
+              tap(() => guardDone.push('guard3')),
+            );
+          const guard4: CanActivateFn = () =>
+            of(true).pipe(
+              delay(200),
+              tap(() => guardDone.push('guard4')),
+            );
+          const router = TestBed.inject(Router);
+          router.resetConfig([
+            {
+              path: '**',
+              component: BlankCmp,
+              canActivate: [runSerially([guard1, guard2, guard3, guard4])],
+            },
+          ]);
+          router.navigateByUrl('');
 
-        const guardDone: string[] = [];
+          tick(100);
+          expect(guardDone).toEqual(['guard1', 'guard2']);
+          tick(50);
+          expect(guardDone).toEqual(['guard1', 'guard2', 'guard3']);
+          tick(200);
+          expect(guardDone).toEqual(['guard1', 'guard2', 'guard3', 'guard4']);
+        }));
 
-        const guard1: CanActivateFn = () =>
-          of(true).pipe(
-            delay(100),
-            tap(() => guardDone.push('guard1')),
-          );
-        const guard2: CanActivateFn = () => of(true).pipe(tap(() => guardDone.push('guard2')));
-        const guard3: CanActivateFn = () =>
-          of(true).pipe(
-            delay(50),
-            tap(() => guardDone.push('guard3')),
-          );
-        const guard4: CanActivateFn = () =>
-          of(true).pipe(
-            delay(200),
-            tap(() => guardDone.push('guard4')),
-          );
-        const router = TestBed.inject(Router);
-        router.resetConfig([
-          {
-            path: '**',
-            component: BlankCmp,
-            canActivate: [runSerially([guard1, guard2, guard3, guard4])],
-          },
-        ]);
-        router.navigateByUrl('');
+        it('should activate if all guards return true', async () => {
+          const router = TestBed.inject(Router);
+          router.resetConfig([
+            {
+              path: '**',
+              component: BlankCmp,
+              canActivate: [runSerially([() => of(true), async () => true, () => true])],
+            },
+          ]);
+          expect(await router.navigateByUrl('')).toBeTrue();
+        });
 
-        tick(100);
-        expect(guardDone).toEqual(['guard1', 'guard2']);
-        tick(50);
-        expect(guardDone).toEqual(['guard1', 'guard2', 'guard3']);
-        tick(200);
-        expect(guardDone).toEqual(['guard1', 'guard2', 'guard3', 'guard4']);
-      }));
+        it('should not activate if any guard returns false (and stop execution)', async () => {
+          let lastGuardRan = false;
+          const router = TestBed.inject(Router);
+          router.resetConfig([
+            {
+              path: '**',
+              component: BlankCmp,
+              canActivate: [runSerially([() => false, () => (lastGuardRan = true)])],
+            },
+          ]);
+          expect(await router.navigateByUrl('')).toBeFalse();
+          expect(lastGuardRan).toBeFalse();
+        });
+
+        it('should redirect according to the first guard that returns a redirect (and stop execution)', async () => {
+          let redirected = false;
+          let lastGuardRan = false;
+          const router = TestBed.inject(Router);
+          router.resetConfig([
+            {
+              path: '',
+              component: BlankCmp,
+              canActivate: [
+                runSerially([
+                  () => new RedirectCommand(router.parseUrl('pass')),
+                  () => new RedirectCommand(router.parseUrl('fail')),
+                  () => (lastGuardRan = true),
+                ]),
+              ],
+            },
+            {
+              path: 'pass',
+              component: BlankCmp,
+              canActivate: [() => (redirected = true)],
+            },
+          ]);
+          expect(await router.navigateByUrl('')).toBeTrue();
+          expect(redirected).toBeTrue();
+          expect(lastGuardRan).toBeFalse();
+        });
+      });
     });
 
     describe('route events', () => {

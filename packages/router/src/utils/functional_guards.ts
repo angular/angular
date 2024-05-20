@@ -6,9 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Type} from '@angular/core';
+import {EnvironmentInjector, inject, runInInjectionContext, Type} from '@angular/core';
+import {concatMap, defaultIfEmpty, first, skipWhile} from 'rxjs/operators';
+import {of} from 'rxjs';
 
 import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanMatchFn, ResolveFn} from '../models';
+import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
+import {wrapIntoObservable} from './collection';
 
 /**
  * Maps an array of injectable classes with canMatch functions to an array of equivalent
@@ -92,4 +96,29 @@ export function mapToCanDeactivate<T = unknown>(
  */
 export function mapToResolve<T>(provider: Type<{resolve: ResolveFn<T>}>): ResolveFn<T> {
   return (...params) => inject(provider).resolve(...params);
+}
+
+/**
+ * Creates a new functional guard that is the concatenation of the specified guards.
+ * If any of the guards returns a result other than `true`, this one will be the result of the
+ * combined guard and the following guards in the chain are skipped.
+ *
+ * @param guards An array of functional guards that should be executed in the declared order.
+ * @returns The combined functional guard.
+ */
+export function runSerially(
+  guards: CanActivateFn[] | CanActivateChildFn[],
+): CanActivateFn | CanActivateChildFn {
+  return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+    const injector = inject(EnvironmentInjector);
+    return of(...guards).pipe(
+      concatMap((guard) => {
+        const guardResult = runInInjectionContext(injector, () => guard(route, state));
+        return wrapIntoObservable(guardResult).pipe(first());
+      }),
+      skipWhile((v) => v === true),
+      defaultIfEmpty(true),
+      first(),
+    );
+  };
 }
