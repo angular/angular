@@ -985,6 +985,9 @@ export class RoutesRecognized extends RouterEvent {
 export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParamsChange' | 'paramsChange' | 'paramsOrQueryParamsChange' | 'always' | ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
 
 // @public
+export function runSerially(guards: CanActivateFn[] | CanActivateChildFn[]): CanActivateFn | CanActivateChildFn;
+
+// @public
 export class Scroll {
     constructor(
     routerEvent: NavigationEnd | NavigationSkipped,

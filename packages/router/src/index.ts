@@ -134,6 +134,7 @@ export {
   mapToCanDeactivate,
   mapToCanMatch,
   mapToResolve,
+  runSerially,
 } from './utils/functional_guards';
 export {VERSION} from './version';
 

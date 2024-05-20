@@ -105,6 +105,9 @@ export function mapToResolve<T>(provider: Type<{resolve: ResolveFn<T>}>): Resolv
  *
  * @param guards An array of functional guards that should be executed in the declared order.
  * @returns The combined functional guard.
+ *
+ * @publicApi
+ * @see {@link Route}
  */
 export function runSerially(
   guards: CanActivateFn[] | CanActivateChildFn[],
