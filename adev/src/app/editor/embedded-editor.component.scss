@@ -8,6 +8,7 @@ $width-breakpoint: 950px;
   container-name: embedded-editor;
   height: 100%;
   position: relative;
+  border: 1px solid var(--senary-contrast);
 }
 
 // The entire thing - editor, terminal, console
