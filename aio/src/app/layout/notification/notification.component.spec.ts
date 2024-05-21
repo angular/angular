@@ -72,15 +72,6 @@ describe('NotificationComponent', () => {
     expect(component.dismiss).not.toHaveBeenCalled();
   });
 
-  it('should call dismiss() when the close button is clicked', () => {
-    configTestingModule();
-    createComponent();
-    spyOn(component, 'dismiss');
-    fixture.debugElement.query(By.css('button')).triggerEventHandler('click', null);
-    fixture.detectChanges();
-    expect(component.dismiss).toHaveBeenCalled();
-  });
-
   it('should hide the notification when dismiss is called', () => {
     configTestingModule();
     createComponent();

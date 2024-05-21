@@ -22,6 +22,7 @@ import { TocService } from 'app/shared/toc.service';
 import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
+import { rewriteLink } from './shared/angular-dot-dev-redirects';
 
 const sideNavView = 'SideNav';
 export const showTopMenuWidth = 1150;
@@ -47,6 +48,9 @@ export class AppComponent implements OnInit {
   docVersions: NavigationNode[];
   dtOn = false;
   footerNodes: NavigationNode[];
+
+  // Redirect location for Angular.dev
+  redirectUrl = 'https://angular.dev';
 
   /**
    * An HTML friendly identifier for the currently displayed page.
@@ -148,6 +152,9 @@ export class AppComponent implements OnInit {
       } else {
         // don't scroll; leave that to `onDocRendered`
         this.currentPath = path;
+
+        // Change the link in the banner to redirect to the moest relevent page on Angular.dev
+        this.redirectUrl = rewriteLink(this.currentPath);
 
         // Start progress bar if doc not rendered within brief time
         clearTimeout(this.isFetchingTimeout);
