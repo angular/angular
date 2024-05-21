@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventDispatcher, eventPhase} from '../src/event_dispatcher';
-import {ActionInfo, createEventInfo, EventInfo, EventInfoWrapper} from '../src/event_info';
+import {EventDispatcher, EventPhase} from '../src/event_dispatcher';
+import {createEventInfo, EventInfoWrapper} from '../src/event_info';
 import {safeElement, testonlyHtml} from './html';
 
 const domContent = `
@@ -90,7 +90,7 @@ describe('EventDispatcher', () => {
       .and.callFake((event) => {
         expect(event.currentTarget).toBe(getRequiredElementById('click-action-element'));
         expect(event.target).toBe(getRequiredElementById('click-target-element'));
-        expect(event.eventPhase).toBe(eventPhase.REPLAY);
+        expect(event.eventPhase).toBe(EventPhase.REPLAY);
         expect(() => {
           event.preventDefault();
         }).toThrow();

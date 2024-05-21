@@ -21,7 +21,7 @@ export type Replayer = (eventInfoWrappers: Event[]) => void;
 export const PROPAGATION_STOPPED_SYMBOL = Symbol.for('propagationStopped');
 
 /** Extra event phases beyond what the browser provides. */
-export const eventPhase = {
+export const EventPhase = {
   REPLAY: 101,
 };
 
@@ -104,26 +104,28 @@ function prepareEventForReplay(eventInfoWrapper: EventInfoWrapper) {
     value: target,
   });
   Object.defineProperty(event, 'eventPhase', {
-    value: eventPhase.REPLAY,
+    value: EventPhase.REPLAY,
   });
-  Object.defineProperty(event, 'preventDefault', {
-    value: () => {
-      throw new Event(
-        '`preventDefault` called during event replay. Because event replay occurs after browser ' +
-          'dispatch, `preventDefault` would have no effect. You can check whether an event is ' +
-          'being replayed by accessing the event phase: `event.eventPhase === eventPhase.REPLAY`.',
-      );
-    },
-  });
-  Object.defineProperty(event, 'composedPath', {
-    value: () => {
-      throw new Event(
-        '`composedPath` called during event replay. Because event replay occurs after browser ' +
-          'dispatch, `composedPath()` will be empty. Iterate parent nodes from `event.target` or ' +
-          '`event.currentTarget` if you need to check elements in the event path.',
-      );
-    },
-  });
+  if (ngDevMode) {
+    Object.defineProperty(event, 'preventDefault', {
+      value: () => {
+        throw new Error(
+          '`preventDefault` called during event replay. Because event replay occurs after browser ' +
+            'dispatch, `preventDefault` would have no effect. You can check whether an event is ' +
+            'being replayed by accessing the event phase: `event.eventPhase === EventPhase.REPLAY`.',
+        );
+      },
+    });
+    Object.defineProperty(event, 'composedPath', {
+      value: () => {
+        throw new Error(
+          '`composedPath` called during event replay. Because event replay occurs after browser ' +
+            'dispatch, `composedPath()` will be empty. Iterate parent nodes from `event.target` or ' +
+            '`event.currentTarget` if you need to check elements in the event path.',
+        );
+      },
+    });
+  }
 }
 
 function prepareEventForDispatch(eventInfoWrapper: EventInfoWrapper) {
