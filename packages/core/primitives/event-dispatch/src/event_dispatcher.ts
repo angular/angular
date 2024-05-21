@@ -74,7 +74,7 @@ export class EventDispatcher {
       if (propagationStopped(eventInfoWrapper)) {
         return;
       }
-      this.actionResolver.resolveNextAction(eventInfoWrapper.eventInfo);
+      this.actionResolver.resolveParentAction(eventInfoWrapper.eventInfo);
     }
   }
 }

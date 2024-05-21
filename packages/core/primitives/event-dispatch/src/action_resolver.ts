@@ -104,7 +104,7 @@ export class ActionResolver {
     eventInfoLib.setResolved(eventInfo, true);
   }
 
-  resolveNextAction(eventInfo: eventInfoLib.EventInfo) {
+  resolveParentAction(eventInfo: eventInfoLib.EventInfo) {
     const action = eventInfoLib.getAction(eventInfo);
     const actionElement = action && eventInfoLib.getActionElement(action);
     eventInfoLib.unsetAction(eventInfo);
@@ -199,14 +199,16 @@ export class ActionResolver {
    * which case we walk to the owner. Attempt to walk to host of a
    * shadow root if needed.
    */
-  private getParentNode(element: Element) {
-    if (element[OWNER]) {
-      return element[OWNER] as Element;
+  private getParentNode(element: Element): Element | null {
+    const owner = element[OWNER];
+    if (owner) {
+      return owner as Element;
     }
-    if (element.parentNode?.nodeName === '#document-fragment') {
-      return (element.parentNode as ShadowRoot | null)?.host ?? null;
+    const parentNode = element.parentNode;
+    if (parentNode?.nodeName === '#document-fragment') {
+      return (parentNode as ShadowRoot | null)?.host ?? null;
     }
-    return element.parentNode as Element | null;
+    return parentNode as Element | null;
   }
 
   /**
