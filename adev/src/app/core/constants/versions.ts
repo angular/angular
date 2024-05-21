@@ -11,8 +11,20 @@ export const VERSIONS_CONFIG = {
   historicalVersionsLinkPattern: 'https://v{{version}}.angular.dev',
   mainVersions: [
     {
+      version: 'next',
+      url: 'https://next.angular.dev',
+    },
+    {
+      version: 'rc',
+      url: 'https://rc.angular.dev',
+    },
+    {
       version: 'stable',
       url: 'https://angular.dev',
+    },
+    {
+      version: 'v17',
+      url: 'https://v17.angular.dev',
     },
     {
       version: 'v16',
