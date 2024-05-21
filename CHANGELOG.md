@@ -1,3 +1,29 @@
+<a name="18.0.0-rc.3"></a>
+# 18.0.0-rc.3 (2024-05-21)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [33d0102304](https://github.com/angular/angular/commit/33d0102304e2213ee0af0bc86028a4f564c81ed4) | fix | allow comments between connected blocks ([#55966](https://github.com/angular/angular/pull/55966)) |
+| [eba92cfa55](https://github.com/angular/angular/commit/eba92cfa55500f3558c02edd0aa348ae118794e0) | fix | prevent usage of reserved control flow symbol in custom interpolation context. ([#55809](https://github.com/angular/angular/pull/55809)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [69a83993b3](https://github.com/angular/angular/commit/69a83993b3772dd98cc10d3e12b0ca6c66293cf2) | fix | do not throw when retrieving TCB symbol for signal input with restricted access ([#55774](https://github.com/angular/angular/pull/55774)) |
+| [4f4f41016e](https://github.com/angular/angular/commit/4f4f41016e897c3fab77ffc23fcfeddadaa782c1) | fix | dom property binding check in signal extended diagnostic ([#54324](https://github.com/angular/angular/pull/54324)) |
+| [8d93597a82](https://github.com/angular/angular/commit/8d93597a82860112a5398828745653a7e27dcef0) | fix | fix type narrowing of `@if` with aliases ([#55835](https://github.com/angular/angular/pull/55835)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0cbd73c6e9](https://github.com/angular/angular/commit/0cbd73c6e9931dc4938054fc6f7831bdee2606a4) | fix | add warning when using zoneless but zone.js is still loaded ([#55769](https://github.com/angular/angular/pull/55769)) |
+| [69085ea26e](https://github.com/angular/angular/commit/69085ea26e11f372578999337b2d8f099600b630) | fix | error about provideExperimentalCheckNoChangesForDebug uses wrong name ([#55824](https://github.com/angular/angular/pull/55824)) |
+| [0147e0b85a](https://github.com/angular/angular/commit/0147e0b85a4f1201b1ae5edaa0d2bc708a13673e) | fix | exhaustive checkNoChanges should only do a single pass ([#55839](https://github.com/angular/angular/pull/55839)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e598634c10](https://github.com/angular/angular/commit/e598634c10a60936ec4199b221eca4e901220763) | fix | remove `controllerchange` listener when app is destroyed ([#55365](https://github.com/angular/angular/pull/55365)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-rc.2"></a>
 # 18.0.0-rc.2 (2024-05-15)
 ## Deprecations
