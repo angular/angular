@@ -1,7 +1,7 @@
 # Launching your app with a root module
 
 An NgModule describes how the application parts fit together.
-Every application has at least one Angular module, the *root* module, which must be present for bootstrapping the application on launch.
+An application can have a *root* module, which is present for bootstrapping the application on launch.
 By convention and by default, this NgModule is named `AppModule`.
 
 When you use the [Angular CLI](/tools/cli) `ng new` command to generate an app, the default `AppModule` looks like the following:
