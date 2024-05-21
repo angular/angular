@@ -15,10 +15,10 @@
  *
  * @publicApi
  */
-export class SimpleChange {
+export class SimpleChange<T = any> {
   constructor(
-    public previousValue: any,
-    public currentValue: any,
+    public previousValue: T,
+    public currentValue: T,
     public firstChange: boolean,
   ) {}
   /**
@@ -38,6 +38,4 @@ export class SimpleChange {
  *
  * @publicApi
  */
-export interface SimpleChanges {
-  [propName: string]: SimpleChange;
-}
+export type SimpleChanges<T = Record<string, any>> = {[K in keyof T]: SimpleChange<T[K]>};
