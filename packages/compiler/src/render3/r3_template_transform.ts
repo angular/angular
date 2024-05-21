@@ -478,6 +478,11 @@ class HtmlAstToIvyAst implements html.Visitor {
     for (let i = primaryBlockIndex + 1; i < siblings.length; i++) {
       const node = siblings[i];
 
+      // Skip over comments.
+      if (node instanceof html.Comment) {
+        continue;
+      }
+
       // Ignore empty text nodes between blocks.
       if (node instanceof html.Text && node.value.trim().length === 0) {
         // Add the text node to the processed nodes since we don't want

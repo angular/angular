@@ -918,6 +918,25 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse a deferred block with comments between the connected blocks', () => {
+      expectFromHtml(
+        '@defer {<calendar-cmp [date]="current"/>}' +
+          '<!-- Show this while loading --> @loading {Loading...}' +
+          '<!-- Show this on the server --> @placeholder {Placeholder content!}' +
+          '<!-- Show this on error --> @error {Loading failed :(}',
+      ).toEqual([
+        ['DeferredBlock'],
+        ['Element', 'calendar-cmp'],
+        ['BoundAttribute', 0, 'date', 'current'],
+        ['DeferredBlockPlaceholder'],
+        ['Text', 'Placeholder content!'],
+        ['DeferredBlockLoading'],
+        ['Text', 'Loading...'],
+        ['DeferredBlockError'],
+        ['Text', 'Loading failed :('],
+      ]);
+    });
+
     it(
       'should parse a deferred block with connected blocks that have an arbitrary ' +
         'amount of whitespace between them when preserveWhitespaces is enabled',
@@ -2067,6 +2086,31 @@ describe('R3 template transform', () => {
         ['Text', ' Main case was true! '],
         ['IfBlockBranch', 'other.expr'],
         ['Text', ' Other case was true! '],
+      ]);
+    });
+
+    it('should parse an if block containing comments between the branches', () => {
+      expectFromHtml(`
+        @if (cond.expr; as foo) {
+          Main case was true!
+        }
+        <!-- Extra case -->
+        @else if (other.expr) {
+          Extra case was true!
+        }
+        <!-- False case -->
+        @else {
+          False case!
+        }
+        `).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'cond.expr'],
+        ['Variable', 'foo', 'foo'],
+        ['Text', ' Main case was true! '],
+        ['IfBlockBranch', 'other.expr'],
+        ['Text', ' Extra case was true! '],
+        ['IfBlockBranch', null],
+        ['Text', ' False case! '],
       ]);
     });
 
