@@ -65,8 +65,8 @@ In the **Explorer** pane of your IDE:
     1.  In the file explorer, find the image directory (`/assets`) that contains images used by the app.
     1.  In the file explorer, find the files and directories that an Angular app needs to build and run, but they are not files that you normally interact with.
         1.  `.angular` has files required to build the Angular app.
-        1.  `.e2e` has files used to test the app.
-        1.  `.node_modules` has the node.js packages that the app uses.
+        1.  `e2e` has files used to test the app.
+        1.  `node_modules` has the node.js packages that the app uses.
         1.  `angular.json` describes the Angular app to the app building tools.
         1.  `package.json` is used by `npm` (the node package manager) to run the finished app.
         1.  `tsconfig.*` are the files that describe the app's configuration to the TypeScript compiler.
