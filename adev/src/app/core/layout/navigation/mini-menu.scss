@@ -77,6 +77,8 @@
 }
 
 .adev-version-picker {
+  overflow-y: auto;
+  max-height: 90vh;
   top: 30px;
   left: 10px;
   position: absolute;

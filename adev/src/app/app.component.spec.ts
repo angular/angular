@@ -14,7 +14,7 @@ import {Search, WINDOW} from '@angular/docs';
 
 describe('AppComponent', () => {
   const fakeSearch = {};
-  const fakeWindow = {};
+  const fakeWindow = {location: {hostname: 'angular.dev'}};
 
   it('should create the app', () => {
     TestBed.configureTestingModule({
