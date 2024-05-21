@@ -7,12 +7,11 @@
  */
 
 export const VERSIONS_CONFIG = {
-  currentVersion: 'stable',
-  historicalVersionsLinkPattern: 'https://v{{version}}.angular.dev',
-  mainVersions: [
+  aDevVersionsLinkPattern: 'https://{{prefix}}{{version}}angular.dev',
+  aioVersions: [
     {
-      version: 'stable',
-      url: 'https://angular.dev',
+      version: 'v17',
+      url: 'https://v17.angular.io/docs',
     },
     {
       version: 'v16',

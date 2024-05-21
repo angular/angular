@@ -69,6 +69,7 @@
   padding-block-end: 2rem;
   box-sizing: border-box;
 
+  &.adev-nav-primary--next,
   &.adev-nav-primary--rc {
     // change nav background to indicate this is the rc docs
     background: linear-gradient(
@@ -78,11 +79,6 @@
       color-mix(in srgb, var(--electric-violet), transparent 70%) 25%,
       color-mix(in srgb, var(--bright-blue), transparent 60%) 90%,
       );
-  }
-  
-  &.adev-nav-primary--next {
-    // change nav background to indicate this is the rc docs
-    background-color: color-mix(in srgb, var(--orange-red), transparent 60%);
   }
 
   &.adev-nav-primary--deprecated {
