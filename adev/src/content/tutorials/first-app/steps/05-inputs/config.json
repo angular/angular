@@ -1,6 +1,6 @@
 {
   "title": "Add inputs to components",
-  "type": "editor",
+  "type": "local",
   "answerSrc": "../06-property-binding/src",
   "openFiles": ["src/app/housing-location/housing-location.component.ts"]
 }
