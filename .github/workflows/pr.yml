@@ -86,9 +86,9 @@ jobs:
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Build adev in fast mode to ensure it continues to work
-        run: yarn bazel build //adev:build --fast_adev
+        run: yarn bazel build //adev:build --fast_adev --config=release
       - name: Run tests
-        run: yarn bazel test //adev:test
+        run: yarn bazel test //adev:test --config=release
 
   zone-js:
     runs-on:
