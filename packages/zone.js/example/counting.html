@@ -32,12 +32,12 @@
       onScheduleTask(parent, current, target, task) {
         parent.scheduleTask(target, task);
         console.log('Scheduled ' + task.source + ' => ' + task.data.handleId);
-        outputElem.innerText = countingZoneSpec.counter();
+        outputElem.textContent = countingZoneSpec.counter();
       },
       onInvokeTask(parent, current, target, task) {
         console.log('Invoking ' + task.source + ' => ' + task.data.handleId);
         parent.invokeTask(target, task);
-        outputElem.innerText = countingZoneSpec.counter();
+        outputElem.textContent = countingZoneSpec.counter();
       },
       onHasTask(parent, current, target, hasTask) {
         if (hasTask.macroTask) {
