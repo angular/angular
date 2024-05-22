@@ -11,6 +11,7 @@ const ORIGINS = {
   Next: 'https://next.angular.io',
   Rc: 'https://rc.angular.io',
   Stable: 'https://angular.io',
+  Version17: 'https://v17.angular.io',
 };
 const _GIT_REMOTE_REFS_CACHE = new Map();
 

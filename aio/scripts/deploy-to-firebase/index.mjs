@@ -248,6 +248,23 @@ function computeDeploymentsInfo(
         post.testNoActiveRcDeployment,
       ],
     },
+    redirectStableToVersion: {
+      name: 'redirectStableToVersion',
+      type: 'secondary',
+      deployEnv: 'archive',
+      projectId: 'angular-io',
+      siteId: 'stable-angular-io-site',
+      deployedUrl: 'https://angular.io/',
+      preDeployActions: [
+        pre.disableServiceWorker,
+        pre.redirectNonFilesToVersion17,
+      ],
+      postDeployActions: [
+        pre.undo.redirectNonFilesToVersion17,
+        pre.undo.disableServiceWorker,
+      ],
+      
+    }
   };
 
   // Determine if there is an active RC version by checking whether the most recent minor branch is
@@ -339,6 +356,14 @@ function computeDeploymentsInfo(
           `Skipping deploy of branch "${currentBranch}" to Firebase.\n` +
           'This branch has an equal or higher major version than the stable branch ' +
           `("${stableBranch}") and is not the most recent minor branch.`),
+    ];
+  }
+
+  // v17 is special cased so to release 
+  if (currentBranchMajorVersion === 17) {
+    return [
+      deploymentInfoPerTarget.archive,
+      deploymentInfoPerTarget.redirectStableToVersion,
     ];
   }
 
