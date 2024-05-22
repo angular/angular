@@ -291,7 +291,7 @@ export const NON_BUBBLING_MOUSE_EVENTS = [
 ];
 
 /**
- * A default set of events that clients should use to install the event contract.
+ * Detects whether a given event type is supported by JSAction.
  */
 export const isSupportedEvent = (eventType: string) => SUPPORTED_EVENTS.includes(eventType);
 
