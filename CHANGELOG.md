@@ -1,3 +1,10 @@
+<a name="17.3.10"></a>
+# 17.3.10 (2024-05-22)
+
+This release includes some internal updates for Angular's documentation infrastructure.
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.3.9"></a>
 # 17.3.9 (2024-05-15)
 
