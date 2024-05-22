@@ -27,6 +27,7 @@ describe('deploy-to-firebase:', () => {
       '4.3.x': u.getLatestCommit('4.3.x'),
       '4.4.x': u.getLatestCommit('4.4.x'),
       '9.1.x': u.getLatestCommit('9.1.x'),
+      '17.3.x': u.getLatestCommit('17.3.x'),
       [mostRecentMinorBranch]: u.getLatestCommit(mostRecentMinorBranch),
     };
   });
@@ -349,26 +350,40 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  // v9 used to be special-cased, because it was piloting the Firebase hosting "multisites" setup.
-  // See https://angular-team.atlassian.net/browse/DEV-125 for more info.
-  it('archive - deploy success (no special case for v9)', () => {
+  it('archive - deploy success (special case for v17)', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: '9.1.x',
-      CI_STABLE_BRANCH: '10.0.x',
-      CI_COMMIT: latestCommits['9.1.x'],
+      CI_BRANCH: '17.3.x',
+      CI_STABLE_BRANCH: '18.1.x',
+      CI_COMMIT: latestCommits['17.3.x'],
     })).toEqual([
       {
         name: 'archive',
         type: 'primary',
         deployEnv: 'archive',
         projectId: 'angular-io',
-        siteId: 'v9-angular-io-site',
-        deployedUrl: 'https://v9.angular.io/',
+        siteId: 'v17-angular-io-site',
+        deployedUrl: 'https://v17.angular.io/',
         preDeployActions: ['function:build', 'function:checkPayloadSize'],
         postDeployActions: ['function:testPwaScore'],
+      },
+      {
+        name: 'redirectStableToVersion',
+        type: 'secondary',
+        deployEnv: 'archive',
+        projectId: 'angular-io',
+        siteId: 'stable-angular-io-site',
+        deployedUrl: 'https://angular.io/',
+        preDeployActions: [
+          'function:disableServiceWorker',
+          'function:redirectNonFilesToVersion17',
+        ],
+        postDeployActions: [
+          'function:undoRedirectNonFilesToVersion17',
+          'function:undoDisableServiceWorker',
+        ],
       },
     ]);
   });
