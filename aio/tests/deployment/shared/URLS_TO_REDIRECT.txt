@@ -244,3 +244,4 @@
 /analytics --> /cli/analytics
 /errors/NG6999 --> https://v13.angular.io/errors/NG6999
 /guide/universal --> /guide/ssr
+/ --> https://angular.dev/
