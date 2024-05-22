@@ -11144,11 +11144,7 @@ async function getDeployments() {
   } else {
     docSites.set(releaseTrains.next.branchName, {
       branch: releaseTrains.next.branchName,
-      destination: "next-angular-dev",
-      redirect: {
-        from: `v${releaseTrains.next.version.major}-angular-dev`,
-        to: "https://next.angular.dev"
-      }
+      destination: "next-angular-dev"
     });
   }
   return docSites;
