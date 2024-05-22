@@ -90,9 +90,9 @@ export default class AppComponent {
     {name: '2.1', number: 201},
     {name: '2.0', number: 200},
   ];
-  protected from = this.versions.find((version) => version.name === '16.0')!;
-  protected to = this.versions.find((version) => version.name === '17.0')!;
-  protected futureVersion = 1800;
+  protected from = this.versions.find((version) => version.name === '17.0')!;
+  protected to = this.versions.find((version) => version.name === '18.0')!;
+  protected futureVersion = 1900;
 
   protected readonly steps: Step[] = RECOMMENDATIONS;
 
