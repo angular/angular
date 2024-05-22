@@ -240,6 +240,7 @@ const linksMap = new Map<string, string>([
 
 const AIO_URL = 'https://angular.io';
 const ADEV_URL = 'https://angular.dev/';
+const URL_PREFIX = 'https:/';
 
 const normalizePath = (path: string): string => {
   if (path[0] === '/') {
@@ -254,5 +255,8 @@ export function rewriteLink(aioLink: string): string {
   const linkWithoutFragment = normalizePath(link).split('#')[0];
   const newPath = linksMap.get(linkWithoutFragment) ?? linkWithoutFragment;
 
+  if (newPath.startsWith(URL_PREFIX)) {
+      return newPath;
+  }
   return ADEV_URL + newPath;
 }
