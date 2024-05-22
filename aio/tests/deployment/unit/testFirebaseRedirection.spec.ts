@@ -7,6 +7,12 @@ describe('firebase.json redirect config', () => {
     const redirector = getRedirector();
 
     loadLocalSitemapUrls().forEach(url => {
+      // Skip check for `/` because it is not handled by the service worker because the redirect
+      // sending all trafic away from the site anyway on firebase.  We are okay with it being handled
+      // locally by the service worker during fallback.
+      if (url === '/') {
+        return;
+      }
       it(`should not redirect sitemap URL '${url}'`, () => {
         expect(redirector.redirect(url)).toEqual(url);
       });
