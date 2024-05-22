@@ -391,7 +391,7 @@ export function isDollarEvent(n: TmplAstNode | AST): n is PropertyRead {
 }
 
 export function isTypeScriptFile(fileName: string): boolean {
-  return /\.[cm]?tsx?$/i.test(fileName);
+  return fileName.endsWith('.ts');
 }
 
 export function isExternalTemplate(fileName: string): boolean {
