@@ -10,12 +10,12 @@
         <span class="adev-template-select">
           From v.
 
-          <button [cdkMenuTriggerFor]="templatesMenu">
+          <button [cdkMenuTriggerFor]="templatesMenuFrom">
             <span>{{ from.name }}</span>
             <docs-icon>expand_more</docs-icon>
           </button>
 
-          <ng-template #templatesMenu>
+          <ng-template #templatesMenuFrom>
             <ul class="adev-template-dropdown" cdkMenu>
               @for (version of versions; track $index) {
                 <li>
@@ -31,12 +31,12 @@
         <span>
           <span class="adev-template-select">
             To v.
-            <button [cdkMenuTriggerFor]="templatesMenu">
+            <button [cdkMenuTriggerFor]="templatesMenuTo">
               <span>{{ to.name }}</span>
               <docs-icon>expand_more</docs-icon>
             </button>
 
-            <ng-template #templatesMenu>
+            <ng-template #templatesMenuTo>
               <ul class="adev-template-dropdown" cdkMenu>
                 @for (version of versions; track $index) {
                   <li>
