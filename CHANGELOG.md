@@ -5,6 +5,9 @@
 
 <a name="18.0.0"></a>
 # 18.0.0 (2024-05-22)
+
+[Blog post "Angular v18 is now available"](http://goo.gle/angular-v18).
+
 ## Breaking Changes
 ### animations
 - Deprecated `matchesElement` method has been removed from `AnimationDriver` as it is unused.
