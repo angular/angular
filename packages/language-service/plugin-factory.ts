@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript';
+// Note: use a type-only import to prevent TypeScript from being bundled in.
+import type ts from 'typescript';
 
 import {NgLanguageService, PluginConfig} from './api';
 
@@ -24,7 +25,7 @@ export const factory: ts.server.PluginModuleFactory = (tsModule): PluginModule =
       return plugin.create(info);
     },
     getExternalFiles(project: ts.server.Project): string[] {
-      return plugin?.getExternalFiles?.(project, ts.ProgramUpdateLevel.Full) ?? [];
+      return plugin?.getExternalFiles?.(project, tsModule.typescript.ProgramUpdateLevel.Full) ?? [];
     },
     onConfigurationChanged(config: PluginConfig): void {
       plugin?.onConfigurationChanged?.(config);
