@@ -7,10 +7,6 @@ readonly parentDir=$(dirname $thisDir)
 readonly target=${1:-aio}
 readonly PROJECT_ROOT=$(realpath "$(dirname ${thisDir})/..")
 
-# Track payload size functions
-source ../scripts/ci/payload-size.sh
 
-# Provide node_modules from aio
-NODE_MODULES_BIN=$PROJECT_ROOT/aio/node_modules/.bin/
-
-trackPayloadSize "$target" "../dist/bin/aio/build/*.css ../dist/bin/aio/build/*.js" true "$PROJECT_ROOT/goldens/size-tracking/aio-payloads.json"
+echo "Payload checks are disabled now as we no longe publish to this branch"
+exit 0
