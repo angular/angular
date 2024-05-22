@@ -53,24 +53,21 @@ export class LanguageService {
   private options: CompilerOptions;
   readonly compilerFactory: CompilerFactory;
   private readonly codeFixes: CodeFixes;
+  private readonly parseConfigHost: LSParseConfigHost;
 
   constructor(
     private readonly project: ts.server.Project,
     private readonly tsLS: ts.LanguageService,
     private readonly config: Omit<PluginConfig, 'angularOnly'>,
   ) {
-    if (project.projectKind === ts.server.ProjectKind.Configured) {
-      const parseConfigHost = new LSParseConfigHost(project.projectService.host);
-      this.options = parseNgCompilerOptions(project, parseConfigHost, config);
-      this.watchConfigFile(project, parseConfigHost);
-    } else {
-      this.options = project.getCompilerOptions();
-    }
+    this.parseConfigHost = new LSParseConfigHost(project.projectService.host);
+    this.options = parseNgCompilerOptions(project, this.parseConfigHost, config);
     logCompilerOptions(project, this.options);
 
     const programDriver = createProgramDriver(project);
     const adapter = new LanguageServiceAdapter(project);
     this.compilerFactory = new CompilerFactory(adapter, programDriver, this.options);
+    this.watchConfigFile(project);
     this.codeFixes = new CodeFixes(tsLS, ALL_CODE_FIXES_METAS);
   }
 
@@ -578,7 +575,7 @@ export class LanguageService {
     });
   }
 
-  private watchConfigFile(project: ts.server.Project, parseConfigHost: LSParseConfigHost) {
+  private watchConfigFile(project: ts.server.Project) {
     // TODO: Check the case when the project is disposed. An InferredProject
     // could be disposed when a tsconfig.json is added to the workspace,
     // in which case it becomes a ConfiguredProject (or vice-versa).
@@ -592,7 +589,7 @@ export class LanguageService {
       (fileName: string, eventKind: ts.FileWatcherEventKind) => {
         project.log(`Config file changed: ${fileName}`);
         if (eventKind === ts.FileWatcherEventKind.Changed) {
-          this.options = parseNgCompilerOptions(project, parseConfigHost, this.config);
+          this.options = parseNgCompilerOptions(project, this.parseConfigHost, this.config);
           logCompilerOptions(project, this.options);
         }
       },
