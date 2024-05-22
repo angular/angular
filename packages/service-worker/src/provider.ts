@@ -39,13 +39,18 @@ export function ngswAppInitializer(
       return;
     }
 
+    const appRef = injector.get(ApplicationRef);
+
     // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
     // becomes active. This allows the SW to initialize itself even if there is no application
     // traffic.
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (navigator.serviceWorker.controller !== null) {
-        navigator.serviceWorker.controller.postMessage({action: 'INITIALIZE'});
-      }
+    const sw = navigator.serviceWorker;
+    const onControllerChange = () => sw.controller?.postMessage({action: 'INITIALIZE'});
+
+    sw.addEventListener('controllerchange', onControllerChange);
+
+    appRef.onDestroy(() => {
+      sw.removeEventListener('controllerchange', onControllerChange);
     });
 
     let readyToRegister$: Observable<unknown>;
