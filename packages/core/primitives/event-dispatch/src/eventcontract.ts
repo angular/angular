@@ -186,7 +186,7 @@ export class EventContract implements UnrenamedEventContract {
       return;
     }
 
-    if (!EventContract.MOUSE_SPECIAL_SUPPORT && NON_BUBBLING_MOUSE_EVENTS.has(eventType)) {
+    if (!EventContract.MOUSE_SPECIAL_SUPPORT && NON_BUBBLING_MOUSE_EVENTS.indexOf(eventType) >= 0) {
       return;
     }
 

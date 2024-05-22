@@ -283,19 +283,19 @@ export const EventType = {
   CUSTOM: '_custom',
 };
 
-export const NON_BUBBLING_MOUSE_EVENTS = new Set([
+export const NON_BUBBLING_MOUSE_EVENTS = [
   EventType.MOUSEENTER,
   EventType.MOUSELEAVE,
   'pointerenter',
   'pointerleave',
-]);
+];
 
 /**
  * A default set of events that clients should use to install the event contract.
  */
-export const isSupportedEvent = (eventType: string) => SUPPORTED_EVENTS.has(eventType);
+export const isSupportedEvent = (eventType: string) => SUPPORTED_EVENTS.includes(eventType);
 
-const SUPPORTED_EVENTS = new Set([
+const SUPPORTED_EVENTS = [
   EventType.CLICK,
   EventType.DBLCLICK,
   EventType.FOCUS,
@@ -360,7 +360,7 @@ const SUPPORTED_EVENTS = new Set([
 
   // Content visibility events.
   'beforematch',
-]);
+];
 
 /**
  *
@@ -369,12 +369,12 @@ const SUPPORTED_EVENTS = new Set([
  * @param eventType
  * @returns bool
  */
-export const isCaptureEvent = (eventType: string) => CAPTURE_EVENTS.has(eventType);
+export const isCaptureEvent = (eventType: string) => CAPTURE_EVENTS.indexOf(eventType) >= 0;
 
-const CAPTURE_EVENTS = new Set([
+const CAPTURE_EVENTS = [
   EventType.FOCUS,
   EventType.BLUR,
   EventType.ERROR,
   EventType.LOAD,
   EventType.TOGGLE,
-]);
+];
