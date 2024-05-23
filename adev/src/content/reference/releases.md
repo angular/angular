@@ -94,11 +94,11 @@ The following table provides the status for Angular versions under support.
 
 | Version | Status | Released   | Active ends | LTS ends   |
 |:--------|:-------|:-----------|:------------|:-----------|
-| ^17.0.0 | Active | 2023-11-08 | 2024-05-08  | 2025-05-15 |
+| ^18.0.0 | Active | 2024-05-22 | 2024-11-xx  | 2025-11-xx |
+| ^17.0.0 | LTS    | 2023-11-08 | 2024-05-08  | 2025-05-15 |
 | ^16.0.0 | LTS    | 2023-05-03 | 2023-11-08  | 2024-11-08 |
-| ^15.0.0 | LTS    | 2022-11-18 | 2023-05-03  | 2024-05-18 |
 
-Angular versions v2 to v14 are no longer supported.
+Angular versions v2 to v15 are no longer supported.
 
 ### LTS fixes
 
