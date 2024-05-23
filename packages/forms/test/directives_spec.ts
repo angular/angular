@@ -212,7 +212,7 @@ describe('Form Directives', () => {
 
         expect(() => form.addControl(dir)).toThrowError(
           new RegExp(
-            `NG01203: No value accessor for form control name: 'login'. Find more at https://angular.io/errors/NG01203`,
+            `NG01203: No value accessor for form control name: 'login'. Find more at https://angular.dev/errors/NG01203`,
           ),
         );
       });
@@ -225,7 +225,7 @@ describe('Form Directives', () => {
 
         expect(() => form.addControl(dir)).toThrowError(
           new RegExp(
-            `NG01203: No value accessor for form control path: 'passwords -> password'. Find more at https://angular.io/errors/NG01203`,
+            `NG01203: No value accessor for form control path: 'passwords -> password'. Find more at https://angular.dev/errors/NG01203`,
           ),
         );
       });
@@ -620,7 +620,7 @@ describe('Form Directives', () => {
 
       expect(() => namedDir.ngOnChanges({})).toThrowError(
         new RegExp(
-          `NG01203: No value accessor for form control name: 'one'. Find more at https://angular.io/errors/NG01203`,
+          `NG01203: No value accessor for form control name: 'one'. Find more at https://angular.dev/errors/NG01203`,
         ),
       );
     });
@@ -630,7 +630,7 @@ describe('Form Directives', () => {
 
       expect(() => unnamedDir.ngOnChanges({})).toThrowError(
         new RegExp(
-          `NG01203: No value accessor for form control unspecified name attribute. Find more at https://angular.io/errors/NG01203`,
+          `NG01203: No value accessor for form control unspecified name attribute. Find more at https://angular.dev/errors/NG01203`,
         ),
       );
     });

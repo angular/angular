@@ -666,7 +666,7 @@ describe('View injector', () => {
     it('should not instantiate a directive with cyclic dependencies', () => {
       TestBed.configureTestingModule({declarations: [CycleDirective]});
       expect(() => createComponent('<div cycleDirective></div>')).toThrowError(
-        'NG0200: Circular dependency in DI detected for CycleDirective. Find more at https://angular.io/errors/NG0200',
+        'NG0200: Circular dependency in DI detected for CycleDirective. Find more at https://angular.dev/errors/NG0200',
       );
     });
 
@@ -683,7 +683,7 @@ describe('View injector', () => {
         });
 
         expect(() => createComponent('<div simpleComponent></div>')).toThrowError(
-          'NG0201: No provider for service found in NodeInjector. Find more at https://angular.io/errors/NG0201',
+          'NG0201: No provider for service found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
         );
       },
     );
@@ -705,7 +705,7 @@ describe('View injector', () => {
         expect(() =>
           createComponent('<div simpleComponent someOtherDirective></div>'),
         ).toThrowError(
-          'NG0201: No provider for service found in NodeInjector. Find more at https://angular.io/errors/NG0201',
+          'NG0201: No provider for service found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
         );
       },
     );
@@ -715,7 +715,7 @@ describe('View injector', () => {
       expect(() =>
         createComponent('<div simpleDirective><div needsDirectiveFromSelf></div></div>'),
       ).toThrowError(
-        'NG0201: No provider for SimpleDirective found in NodeInjector. Find more at https://angular.io/errors/NG0201',
+        'NG0201: No provider for SimpleDirective found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
       );
     });
 
@@ -761,7 +761,7 @@ describe('View injector', () => {
         set: {template: '<div needsDirectiveFromHost></div>'},
       });
       expect(() => createComponent('<div simpleComponent simpleDirective></div>')).toThrowError(
-        'NG0201: No provider for SimpleDirective found in NodeInjector. Find more at https://angular.io/errors/NG0201',
+        'NG0201: No provider for SimpleDirective found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
       );
     });
 
