@@ -13,7 +13,7 @@
  *  - packages/compiler-cli/src/ngtsc/diagnostics/src/error_details_base_url.ts
  *  - packages/core/src/error_details_base_url.ts
  */
-export const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.dev/errors';
+export const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.io/errors';
 
 /**
  * URL for the XSS security documentation.
