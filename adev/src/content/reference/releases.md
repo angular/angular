@@ -141,7 +141,7 @@ To support you in case of breaking changes in Angular:
 
 * We follow our [deprecation policy](#deprecation-policy) before we remove a public API
 * Support update automation via the `ng update` command. It provides code transformations which we often have tested ahead of time over hundreds of thousands of projects at Google
-* Step by step instructions how to update from one major version to another at the ["Angular Update Guide"](https://update.angular.io/)
+* Step by step instructions how to update from one major version to another at the ["Angular Update Guide"](update-guide)
 
 You can `ng update` to any version of Angular, provided that the following criteria are met:
 
