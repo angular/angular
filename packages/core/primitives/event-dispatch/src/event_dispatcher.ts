@@ -12,6 +12,8 @@ import {EventInfo, EventInfoWrapper} from './event_info';
 import {UnrenamedEventContract} from './eventcontract';
 import {Restriction} from './restriction';
 
+declare const ngDevMode: boolean | undefined;
+
 /**
  * A replayer is a function that is called when there are queued events, from the `EventContract`.
  */
@@ -25,18 +27,18 @@ export const EventPhase = {
   REPLAY: 101,
 };
 
-const PREVENT_DEFAULT_ERROR_MESSAGE_DETAILS = ngDevMode
-  ? ' Because event replay occurs after browser dispatch, `preventDefault` would have no ' +
-    'effect. You can check whether an event is being replayed by accessing the event phase: ' +
-    '`event.eventPhase === EventPhase.REPLAY`.'
-  : '';
-const PREVENT_DEFAULT_ERROR_MESSAGE = `\`preventDefault\` called during event replay.${PREVENT_DEFAULT_ERROR_MESSAGE_DETAILS}`;
-const COMPOSED_PATH_ERROR_MESSAGE_DETAILS = ngDevMode
-  ? ' Because event replay occurs after browser ' +
-    'dispatch, `composedPath()` will be empty. Iterate parent nodes from `event.target` or ' +
-    '`event.currentTarget` if you need to check elements in the event path.'
-  : '';
-const COMPOSED_PATH_ERROR_MESSAGE = `\`composedPath\` called during event replay.${COMPOSED_PATH_ERROR_MESSAGE_DETAILS}`;
+const PREVENT_DEFAULT_ERROR_MESSAGE_DETAILS =
+  ' Because event replay occurs after browser dispatch, `preventDefault` would have no ' +
+  'effect. You can check whether an event is being replayed by accessing the event phase: ' +
+  '`event.eventPhase === EventPhase.REPLAY`.';
+const PREVENT_DEFAULT_ERROR_MESSAGE = `\`preventDefault\` called during event replay.`;
+const COMPOSED_PATH_ERROR_MESSAGE_DETAILS = () =>
+  ngDevMode
+    ? ' Because event replay occurs after browser ' +
+      'dispatch, `composedPath()` will be empty. Iterate parent nodes from `event.target` or ' +
+      '`event.currentTarget` if you need to check elements in the event path.'
+    : '';
+const COMPOSED_PATH_ERROR_MESSAGE = `\`composedPath\` called during event replay.`;
 
 declare global {
   interface Event {
@@ -112,10 +114,14 @@ function prepareEventForReplay(eventInfoWrapper: EventInfoWrapper) {
   patchEventInstance(event, 'target', target);
   patchEventInstance(event, 'eventPhase', EventPhase.REPLAY);
   patchEventInstance(event, 'preventDefault', () => {
-    throw new Error(PREVENT_DEFAULT_ERROR_MESSAGE);
+    throw new Error(
+      PREVENT_DEFAULT_ERROR_MESSAGE + (ngDevMode ? PREVENT_DEFAULT_ERROR_MESSAGE_DETAILS : ''),
+    );
   });
   patchEventInstance(event, 'composedPath', () => {
-    throw new Error(COMPOSED_PATH_ERROR_MESSAGE);
+    throw new Error(
+      COMPOSED_PATH_ERROR_MESSAGE + (ngDevMode ? COMPOSED_PATH_ERROR_MESSAGE_DETAILS : ''),
+    );
   });
 }
 
