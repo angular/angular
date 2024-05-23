@@ -13,11 +13,11 @@ HELPFUL: If you are currently using AngularJS, see [Upgrading from AngularJS](ht
 
 ## Getting notified of new releases
 
-To be notified when new releases are available, follow [@angular](https://twitter.com/angular "@angular on Twitter") on Twitter or subscribe to the [Angular blog](https://blog.angular.io "Angular blog").
+To be notified when new releases are available, follow [@angular](https://twitter.com/angular "@angular on Twitter") on Twitter or subscribe to the [Angular blog](https://blog.angular.dev "Angular blog").
 
 ## Learning about new features
 
-What's new? What's changed? We share the most important things you need to know on the Angular blog in [release announcements]( https://blog.angular.io/ "Angular blog - release announcements").
+What's new? What's changed? We share the most important things you need to know on the Angular blog in [release announcements]( https://blog.angular.dev/ "Angular blog - release announcements").
 
 To review a complete list of changes, organized by version, see the [Angular change log](https://github.com/angular/angular/blob/main/CHANGELOG.md "Angular change log").
 
@@ -49,7 +49,7 @@ It also describes supported update paths.
 ## Resource summary
 
 * Release announcements:
-    [Angular blog - release announcements](https://blog.angular.io/ "Angular blog announcements about recent releases")
+    [Angular blog - release announcements](https://blog.angular.dev/ "Angular blog announcements about recent releases")
 
 * Release details:
     [Angular change log](https://github.com/angular/angular/blob/main/CHANGELOG.md "Angular change log")
