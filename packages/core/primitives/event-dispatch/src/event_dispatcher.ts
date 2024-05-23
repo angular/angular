@@ -61,12 +61,6 @@ export class EventDispatcher {
       },
       {
         actionResolver: this.actionResolver,
-        eventReplayer: (eventInfoWrappers: EventInfoWrapper[]) => {
-          for (const eventInfoWrapper of eventInfoWrappers) {
-            prepareEventForReplay(eventInfoWrapper);
-            this.dispatchToDelegate(eventInfoWrapper);
-          }
-        },
       },
     );
   }
@@ -80,6 +74,9 @@ export class EventDispatcher {
 
   /** Internal method that does basic disaptching. */
   private dispatchToDelegate(eventInfoWrapper: EventInfoWrapper) {
+    if (eventInfoWrapper.getIsReplay()) {
+      prepareEventForReplay(eventInfoWrapper);
+    }
     prepareEventForBubbling(eventInfoWrapper);
     while (eventInfoWrapper.getAction()) {
       prepareEventForDispatch(eventInfoWrapper);

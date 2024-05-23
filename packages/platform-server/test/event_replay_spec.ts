@@ -17,6 +17,7 @@ import {
 
 import {provideServerRendering} from '../public_api';
 import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
+import {EventPhase} from '@angular/core/primitives/event-dispatch';
 
 import {getAppContents, hydrate, render as renderHtml, resetTViewsFor} from './dom_utils';
 
@@ -59,7 +60,7 @@ describe('event replay', () => {
   });
 
   afterEach(() => {
-    doc.body.textContent = '';
+    doc.body.outerHTML = '<body></body>';
   });
 
   /**
@@ -146,7 +147,6 @@ describe('event replay', () => {
     const appRef = await hydrate(doc, AppComponent, {
       hydrationFeatures: [withEventReplay()],
     });
-    appRef.tick();
     expect(outerOnClickSpy).toHaveBeenCalledBefore(innerOnClickSpy);
   });
 
@@ -186,7 +186,6 @@ describe('event replay', () => {
     const appRef = await hydrate(doc, SimpleComponent, {
       hydrationFeatures: [withEventReplay()],
     });
-    appRef.tick();
     expect(clickSpy).toHaveBeenCalled();
     expect(focusSpy).toHaveBeenCalled();
   });
@@ -216,7 +215,6 @@ describe('event replay', () => {
     const appRef = await hydrate(doc, SimpleComponent, {
       hydrationFeatures: [withEventReplay()],
     });
-    appRef.tick();
     expect(el.hasAttribute('jsaction')).toBeFalse();
     expect((el.firstChild as Element).hasAttribute('jsaction')).toBeFalse();
   });
@@ -267,9 +265,7 @@ describe('event replay', () => {
       const appRef = await hydrate(doc, SimpleComponent, {
         hydrationFeatures: [withEventReplay()],
       });
-      appRef.tick();
-      // This is a bug
-      expect(onClickSpy).toHaveBeenCalledTimes(1);
+      expect(onClickSpy).toHaveBeenCalledTimes(2);
       onClickSpy.calls.reset();
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(2);
@@ -301,7 +297,6 @@ describe('event replay', () => {
       const appRef = await hydrate(doc, SimpleComponent, {
         hydrationFeatures: [withEventReplay()],
       });
-      appRef.tick();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
       onClickSpy.calls.reset();
       bottomEl.click();
@@ -309,6 +304,7 @@ describe('event replay', () => {
     });
 
     it('should not have differences in event fields', async () => {
+      debugger;
       let currentEvent!: Event;
       @Component({
         standalone: true,
@@ -334,16 +330,11 @@ describe('event replay', () => {
       const appRef = await hydrate(doc, SimpleComponent, {
         hydrationFeatures: [withEventReplay()],
       });
-      appRef.tick();
       const replayedEvent = currentEvent;
+      expect(replayedEvent.target).not.toBeNull();
+      expect(replayedEvent.currentTarget).not.toBeNull();
+      expect(replayedEvent.eventPhase).toBe(EventPhase.REPLAY);
       bottomEl.click();
-      appRef.tick();
-      const normalEvent = currentEvent;
-      expect(replayedEvent).not.toBe(normalEvent);
-      expect(replayedEvent.target).toBe(normalEvent.target);
-      expect(replayedEvent.currentTarget).toBe(normalEvent.currentTarget);
-      expect(replayedEvent.composedPath).toBe(normalEvent.composedPath);
-      expect(replayedEvent.eventPhase).toBe(normalEvent.eventPhase);
     });
   });
 

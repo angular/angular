@@ -7,7 +7,7 @@
  */
 
 import {
-  Dispatcher,
+  EventDispatcher,
   EarlyJsactionDataContainer,
   EventContract,
   EventContractContainer,
@@ -108,19 +108,12 @@ export function withEventReplay(): Provider[] {
                   eventContract.addEvent(et);
                 }
                 eventContract.replayEarlyEvents(container);
-                const dispatcher = new Dispatcher(() => {}, {
-                  eventReplayer: (queue) => {
-                    for (const event of queue) {
-                      handleEvent(event);
-                    }
-                    jsactionMap.clear();
-                    queue.length = 0;
-                  },
-                });
+                const dispatcher = new EventDispatcher(handleEvent);
                 registerDispatcher(eventContract, dispatcher);
                 for (const el of jsactionMap.keys()) {
                   el.removeAttribute(JSACTION_ATTRIBUTE);
                 }
+                jsactionMap.clear();
               }
             });
           };
@@ -197,13 +190,12 @@ export function setJSActionAttribute(
   }
 }
 
-function handleEvent(event: EventInfoWrapper) {
-  const nativeElement = event.getAction()!.element as Element;
-  const handlerFns = jsactionMap.get(nativeElement)?.get(event.getEventType());
+function handleEvent(event: Event) {
+  const handlerFns = jsactionMap.get(event.currentTarget as Element)?.get(event.type);
   if (!handlerFns) {
     return;
   }
   for (const handler of handlerFns) {
-    handler(event.getEvent());
+    handler(event);
   }
 }
