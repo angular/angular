@@ -968,7 +968,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v11 browser support',
     action:
-      'Support for IE9, IE10, and IE mobile has been removed. This was announced in the [v10 update](http://blog.angular.io/version-10-of-angular-now-available-78960babd41#c357). ',
+      'Support for IE9, IE10, and IE mobile has been removed. This was announced in the [v10 update](http://blog.angular.dev/version-10-of-angular-now-available-78960babd41#c357). ',
   },
   {
     possibleIn: 1100,

@@ -71,7 +71,7 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 <docs-card-container>
   <docs-card title="Modernize unit testing tooling with ng test" href="">
-  In v12, we revisited the Angular end-to-end testing experience by replacing Protractor with modern alternatives such as Cypress, Nightwatch, and Webdriver.io. Next, we'd like to tackle `ng test` to modernize Angular's unit testing experience. In Q2 2023, we introduced experimental [Jest](https://jestjs.io/) support and [announced](https://blog.angular.io/moving-angular-cli-to-jest-and-web-test-runner-ef85ef69ceca) the transition from Karma to the [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/).
+  In v12, we revisited the Angular end-to-end testing experience by replacing Protractor with modern alternatives such as Cypress, Nightwatch, and Webdriver.io. Next, we'd like to tackle `ng test` to modernize Angular's unit testing experience. In Q2 2023, we introduced experimental [Jest](https://jestjs.io/) support and [announced](https://blog.angular.dev/moving-angular-cli-to-jest-and-web-test-runner-ef85ef69ceca) the transition from Karma to the [Web Test Runner](https://modern-web.dev/docs/test-runner/overview/).
 
   Later this year we'll continue making progress towards introducing Web Test Runner as the replacement of Karma.
   </docs-card>
@@ -164,7 +164,7 @@ This section represents explorations and prototyping of potential future project
   We released a developer preview of the `ng new --standalone` schematics collection, allowing you to create apps free of NgModules. In v17 we switched the new application authoring format to standalone APIs and changed the documentation to reflect the recommendation. Additionally, we shipped schematics which support updating existing applications to standalone components, directives, and pipes. Even though NgModules will stick around for foreseeable future, we recommend you to explore the benefits of the new APIs to improve developer experience and benefit from the new features we build for them.
   </docs-card>
   <docs-card title="Explore hydration and server-side rendering improvements" link="Completed Q4 2023">
-  In v16, we released a developer preview of non-destructive full hydration, see the [hydration guide](guide/hydration) and the [blog post](https://blog.angular.io/whats-next-for-server-side-rendering-in-angular-2a6f27662b67) for additional information. We're already seeing significant improvements to Core Web Vitals, including [LCP](https://web.dev/lcp) and [CLS](https://web.dev/cls). In lab tests, we consistently observed 45% better LCP of a real-world app.
+  In v16, we released a developer preview of non-destructive full hydration, see the [hydration guide](guide/hydration) and the [blog post](https://blog.angular.dev/whats-next-for-server-side-rendering-in-angular-2a6f27662b67) for additional information. We're already seeing significant improvements to Core Web Vitals, including [LCP](https://web.dev/lcp) and [CLS](https://web.dev/cls). In lab tests, we consistently observed 45% better LCP of a real-world app.
 
   In v17 we launched hydration outside developer preview and did a series of improvements in the server-side rendering story, including: route discovery at runtime for SSG, up to 87% faster build times for hybrid rendered applications, prompt that enables hybrid rendering for new projects.
   </docs-card>
@@ -180,7 +180,7 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="Improve image performance" link="Completed Q4 2022" href="guide/image-optimization">
   The Aurora and the Angular teams are working on the implementation of an image directive that aims to improve Core Web Vitals. We shipped a stable version of the image directive in v15.
   </docs-card>
-  <docs-card title="Modern CSS" link="Completed Q4 2022" href="https://blog.angular.io/modern-css-in-angular-layouts-4a259dca9127">
+  <docs-card title="Modern CSS" link="Completed Q4 2022" href="https://blog.angular.dev/modern-css-in-angular-layouts-4a259dca9127">
   The Web ecosystem evolves constantly and we want to reflect the latest modern standards in Angular. In this project we aim to provide guidelines on using modern CSS features in Angular to ensure developers follow best practices for layout, styling, etc. We shared official guidelines for layout and as part of the initiative stopped publishing flex layout.
   </docs-card>
   <docs-card title="Support adding directives to host elements" link="Completed Q4 2022" href="guide/directives/directive-composition-api">
@@ -192,7 +192,7 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="Enhanced Angular Material components by integrating MDC Web" link="Completed Q4 2022" href="https://material.angular.io/guide/mdc-migration">
   MDC Web is a library created by the Google Material Design team that provides reusable primitives for building Material Design components. The Angular team is incorporating these primitives into Angular Material. Using MDC Web aligns Angular Material more closely with the Material Design specification, expands accessibility, improves component quality, and improves the velocity of our team.
   </docs-card>
-  <docs-card title="Implement APIs for optional NgModules" link="Completed Q4 2022" href="https://blog.angular.io/angular-v15-is-now-available-df7be7f2f4c8">
+  <docs-card title="Implement APIs for optional NgModules" link="Completed Q4 2022" href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
   In the process of making Angular simpler, we are working on introducing APIs that allow developers to initialize apps, instantiate components, and use the router without NgModules. Angular v14 introduces developer preview of the APIs for standalone components, directives, and pipes. In the next few quarters we'll collect feedback from developers and finalize the project making the APIs stable. As the next step we will work on improving use cases such as TestBed, Angular elements, etc.
   </docs-card>
   <docs-card title="Allow binding to protected fields in templates" link="Completed Q2 2022" href="guide/templates/binding">
@@ -204,10 +204,10 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="Rollout strict typings for @angular/forms" link="Completed Q2 2022" href="guide/forms/typed-forms">
   In Q4 2021 we designed a solution for introducing strict typings for forms and in Q1 2022 we concluded the corresponding request for comments. Currently, we are implementing a rollout strategy with an automated migration step that will enable the improvements for existing projects. We are first testing the solution with more than 2,500 projects at Google to ensure a smooth migration path for the external community.
   </docs-card>
-  <docs-card title="Remove legacy View Engine" link="Completed Q1 2022" href="https://blog.angular.io/angular-v15-is-now-available-df7be7f2f4c8">
+  <docs-card title="Remove legacy View Engine" link="Completed Q1 2022" href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
   After the transition of all our internal tooling to Ivy is completed, we will remove the legacy View Engine for reduced Angular conceptual overhead, smaller package size, lower maintenance cost, and lower codebase complexity.
   </docs-card>
-  <docs-card title="Simplified Angular mental model with optional NgModules" link="Completed Q1 2022" href="https://blog.angular.io/angular-v15-is-now-available-df7be7f2f4c8">
+  <docs-card title="Simplified Angular mental model with optional NgModules" link="Completed Q1 2022" href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
   To simplify the Angular mental model and learning journey, we will be working on making NgModules optional. This work lets developers develop standalone components and implement an alternative API for declaring the compilation scope of the component. We kicked this project off with high-level design discussions that we captured in an RFC.
   </docs-card>
   <docs-card title="Design strict typing for @angular/forms" link="Completed Q1 2022" href="guide/forms/typed-forms">

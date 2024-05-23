@@ -18,7 +18,7 @@
   ·
   <a href="https://github.com/angular/angular/issues">Submit an Issue</a>
   ·
-  <a href="https://blog.angular.io/">Blog</a>
+  <a href="https://blog.angular.dev/">Blog</a>
   <br>
   <br>
 </p>
