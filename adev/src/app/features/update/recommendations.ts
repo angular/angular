@@ -200,7 +200,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'Http',
     action:
-      "If you use the legacy `HttpModule` and the `Http` service, switch to `HttpClientModule` and the `HttpClient` service. HttpClient simplifies the default ergonomics (you don't need to map to JSON anymore) and now supports typed return values and interceptors. Read more on [angular.io](https://angular.io/guide/http).",
+      "If you use the legacy `HttpModule` and the `Http` service, switch to `HttpClientModule` and the `HttpClient` service. HttpClient simplifies the default ergonomics (you don't need to map to JSON anymore) and now supports typed return values and interceptors. Read more on [angular.dev](https://angular.io/guide/http).",
   },
   {
     possibleIn: 430,
@@ -1853,6 +1853,14 @@ export const RECOMMENDATIONS: Step[] = [
     possibleIn: 1600,
     necessaryAsOf: 1600,
     level: ApplicationComplexity.Basic,
+    material: true,
+    step: 'update @angular/material',
+    action: 'Run `ng update @angular/material@16`.',
+  },
+  {
+    possibleIn: 1600,
+    necessaryAsOf: 1600,
+    level: ApplicationComplexity.Basic,
     step: 'v16 zone.js support',
     action:
       'Make sure that you are using a supported version of Zone.js before you upgrade your application. Angular v16 supports Zone.js version 0.13.x or later.',
@@ -2099,6 +2107,14 @@ export const RECOMMENDATIONS: Step[] = [
   {
     possibleIn: 1700,
     necessaryAsOf: 1700,
+    level: ApplicationComplexity.Basic,
+    material: true,
+    step: 'update @angular/material',
+    action: 'Run `ng update @angular/material@17`.',
+  },
+  {
+    possibleIn: 1700,
+    necessaryAsOf: 1700,
     level: ApplicationComplexity.Medium,
     step: 'v17 style removal',
     action:
@@ -2200,6 +2216,14 @@ export const RECOMMENDATIONS: Step[] = [
     step: 'v18 ng update',
     action:
       "In the application's project directory, run `ng update @angular/core@18 @angular/cli@18` to update your application to Angular v18.",
+  },
+  {
+    possibleIn: 1800,
+    necessaryAsOf: 1800,
+    level: ApplicationComplexity.Basic,
+    material: true,
+    step: 'update @angular/material',
+    action: 'Run `ng update @angular/material@18`.',
   },
   {
     possibleIn: 1800,
