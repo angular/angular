@@ -12,6 +12,8 @@ import {EventInfo, EventInfoWrapper} from './event_info';
 import {UnrenamedEventContract} from './eventcontract';
 import {Restriction} from './restriction';
 
+declare const ngDevMode: boolean | undefined;
+
 /**
  * A replayer is a function that is called when there are queued events, from the `EventContract`.
  */
