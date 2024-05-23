@@ -7,11 +7,10 @@
  */
 
 import {
-  Dispatcher,
+  EventDispatcher,
   EarlyJsactionDataContainer,
   EventContract,
   EventContractContainer,
-  EventInfoWrapper,
   registerDispatcher,
   isSupportedEvent,
   isCaptureEvent,
@@ -36,6 +35,9 @@ export const CONTRACT_PROPERTY = 'ngContracts';
 
 declare global {
   var ngContracts: {[key: string]: EarlyJsactionDataContainer};
+  interface Element {
+    __jsaction_fns: Map<string, Function[]> | undefined;
+  }
 }
 
 // TODO: Upstream this back into event-dispatch.
@@ -46,10 +48,9 @@ function getJsactionData(container: EarlyJsactionDataContainer) {
 const JSACTION_ATTRIBUTE = 'jsaction';
 
 /**
- * Associates a DOM element with `jsaction` attribute to a map that contains info about all event
- * types (event names) and corresponding listeners.
+ * A set of DOM elements with `jsaction` attributes.
  */
-const jsactionMap: Map<Element, Map<string, Function[]>> = new Map();
+const jsactionSet = new Set<Element>();
 
 /**
  * Returns a set of providers required to setup support for event replay.
@@ -69,10 +70,11 @@ export function withEventReplay(): Provider[] {
             const el = rEl as unknown as Element;
             // We don't immediately remove the attribute here because
             // we need it for replay that happens after hydration.
-            if (!jsactionMap.has(el)) {
-              jsactionMap.set(el, new Map());
+            if (!jsactionSet.has(el)) {
+              jsactionSet.add(el);
+              el.__jsaction_fns = new Map();
             }
-            const eventMap = jsactionMap.get(el)!;
+            const eventMap = el.__jsaction_fns!;
             if (!eventMap.has(eventName)) {
               eventMap.set(eventName, []);
             }
@@ -110,18 +112,11 @@ export function withEventReplay(): Provider[] {
                   eventContract.addEvent(et);
                 }
                 eventContract.replayEarlyEvents(container);
-                const dispatcher = new Dispatcher(() => {}, {
-                  eventReplayer: (queue) => {
-                    for (const event of queue) {
-                      handleEvent(event);
-                    }
-                    jsactionMap.clear();
-                    queue.length = 0;
-                  },
-                });
+                const dispatcher = new EventDispatcher(handleEvent);
                 registerDispatcher(eventContract, dispatcher);
-                for (const el of jsactionMap.keys()) {
+                for (const el of jsactionSet) {
                   el.removeAttribute(JSACTION_ATTRIBUTE);
+                  el.__jsaction_fns = undefined;
                 }
                 // After hydration, we shouldn't need to do anymore work related to
                 // event replay anymore.
@@ -201,13 +196,12 @@ export function setJSActionAttribute(
   }
 }
 
-function handleEvent(event: EventInfoWrapper) {
-  const nativeElement = event.getAction()!.element as Element;
-  const handlerFns = jsactionMap.get(nativeElement)?.get(event.getEventType());
+function handleEvent(event: Event) {
+  const handlerFns = (event.currentTarget as Element)?.__jsaction_fns?.get(event.type);
   if (!handlerFns) {
     return;
   }
   for (const handler of handlerFns) {
-    handler(event.getEvent());
+    handler(event);
   }
 }
