@@ -1344,6 +1344,9 @@
     "name": "init_dom2"
   },
   {
+    "name": "init_dom_ref"
+  },
+  {
     "name": "init_dom_triggers"
   },
   {

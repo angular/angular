@@ -609,6 +609,18 @@ export interface DoCheck {
 }
 
 // @public
+export interface DomRef<T> {
+    // (undocumented)
+    readonly [DOMREF]: unknown;
+    // (undocumented)
+    (): T;
+}
+
+// @public (undocumented)
+export class DomRef<T> {
+}
+
+// @public
 export function effect(effectFn: (onCleanup: EffectCleanupRegisterFn) => void, options?: CreateEffectOptions): EffectRef;
 
 // @public

@@ -31,6 +31,10 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     DEFER_LOADING_FAILED = 750,
     // (undocumented)
+    DOMREF_CONSTRUCTOR = 916,
+    // (undocumented)
+    DOMREF_NOT_READY = 915,
+    // (undocumented)
     DUPLICATE_DIRECTIVE = 309,
     // (undocumented)
     EXPORT_NOT_FOUND = -301,

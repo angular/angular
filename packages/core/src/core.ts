@@ -109,6 +109,7 @@ export {
 export {ApplicationConfig, mergeApplicationConfig} from './application/application_config';
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
+export {DomRef} from './linker/dom_ref';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {

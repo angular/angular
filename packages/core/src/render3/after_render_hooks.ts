@@ -189,6 +189,20 @@ export function internalAfterNextRender(
 }
 
 /**
+ * Registers the given callback as a DomRef initializer, ensuring
+ * that it will be run prior to any user after*Render callbacks.
+ */
+export function registerDomRefInitializer<T>(callback: VoidFunction) {
+  const injector = inject(Injector);
+
+  // DomRef initializers are only registered on the browser.
+  if (!isPlatformBrowser(injector)) return;
+
+  const afterRenderEventManager = injector.get(AfterRenderEventManager);
+  afterRenderEventManager.domRefCallbacks.push(callback);
+}
+
+/**
  * Register callbacks to be invoked each time the application finishes rendering, during the
  * specified phases. The available phases are:
  * - `earlyRead`
@@ -744,11 +758,18 @@ export class AfterRenderEventManager {
   /* @internal */
   internalCallbacks: VoidFunction[] = [];
 
+  /* @internal */
+  domRefCallbacks: VoidFunction[] = [];
+
   /**
    * Executes internal and user-provided callbacks.
    */
   execute(): void {
     this.executeInternalCallbacks();
+    for (const domRefCallback of this.domRefCallbacks) {
+      domRefCallback();
+    }
+    this.domRefCallbacks.length = 0;
     this.handler?.execute();
   }
 
