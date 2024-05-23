@@ -7,15 +7,6 @@
 // @public
 export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
 
-// @public
-export class Dispatcher {
-    constructor(dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void, { actionResolver, eventReplayer, }?: {
-        actionResolver?: ActionResolver;
-        eventReplayer?: Replayer;
-    });
-    dispatch(eventInfo: EventInfo): void;
-}
-
 // @public (undocumented)
 export interface EarlyJsactionDataContainer {
     // (undocumented)
@@ -31,13 +22,13 @@ export class EventContract implements UnrenamedEventContract {
     addEvent(eventType: string, prefixedEventType?: string): void;
     cleanUp(): void;
     // (undocumented)
-    ecaacs?: (updateEventInfoForA11yClick: typeof a11yClick.updateEventInfoForA11yClick, preventDefaultForA11yClick: typeof a11yClick.preventDefaultForA11yClick, populateClickOnlyAction: typeof a11yClick.populateClickOnlyAction) => void;
-    ecrd(dispatcher: Dispatcher_2, restriction: Restriction): void;
+    ecaacs?: (updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick, preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick, populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction) => void;
+    ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
     exportAddA11yClickSupport(): void;
     handler(eventType: string): EventHandler | undefined;
     // (undocumented)
     static MOUSE_SPECIAL_SUPPORT: boolean;
-    registerDispatcher(dispatcher: Dispatcher_2, restriction: Restriction): void;
+    registerDispatcher(dispatcher: Dispatcher, restriction: Restriction): void;
     replayEarlyEvents(earlyJsactionContainer?: EarlyJsactionDataContainer): void;
 }
 
@@ -56,6 +47,12 @@ export type EventContractTracker<T> = {
         [appId: string]: T;
     };
 };
+
+// @public
+export class EventDispatcher {
+    constructor(dispatchDelegate: (event: Event, actionName: string) => void);
+    dispatch(eventInfo: EventInfo): void;
+}
 
 // @public
 export class EventInfoWrapper {
@@ -102,13 +99,18 @@ export class EventInfoWrapper {
 }
 
 // @public
+export const EventPhase: {
+    REPLAY: number;
+};
+
+// @public
 export const isCaptureEvent: (eventType: string) => boolean;
 
 // @public
 export const isSupportedEvent: (eventType: string) => boolean;
 
 // @public
-export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher): void;
+export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: EventDispatcher): void;
 
 // (No @packageDocumentation comment for this package)
 

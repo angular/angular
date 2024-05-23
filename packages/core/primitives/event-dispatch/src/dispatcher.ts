@@ -29,7 +29,7 @@ export class Dispatcher {
   private actionResolver?: ActionResolver;
 
   /** The replayer function to be called when there are queued events. */
-  private eventReplayer: Replayer;
+  private eventReplayer?: Replayer;
 
   /** Whether the event replay is scheduled. */
   private eventReplayScheduled = false;
@@ -48,7 +48,7 @@ export class Dispatcher {
     private readonly dispatchDelegate: (eventInfoWrapper: EventInfoWrapper) => void,
     {
       actionResolver,
-      eventReplayer = createEventReplayer(dispatchDelegate),
+      eventReplayer,
     }: {actionResolver?: ActionResolver; eventReplayer?: Replayer} = {},
   ) {
     this.actionResolver = actionResolver;
@@ -83,7 +83,7 @@ export class Dispatcher {
     if (action && shouldPreventDefaultBeforeDispatching(action.element, eventInfoWrapper)) {
       eventLib.preventDefault(eventInfoWrapper.getEvent());
     }
-    if (eventInfoWrapper.getIsReplay()) {
+    if (this.eventReplayer && eventInfoWrapper.getIsReplay()) {
       this.scheduleEventInfoWrapperReplay(eventInfoWrapper);
       return;
     }
@@ -103,7 +103,7 @@ export class Dispatcher {
     this.eventReplayScheduled = true;
     Promise.resolve().then(() => {
       this.eventReplayScheduled = false;
-      this.eventReplayer(this.replayEventInfoWrappers);
+      this.eventReplayer!(this.replayEventInfoWrappers);
     });
   }
 }

@@ -1410,6 +1410,9 @@
     "name": "init_event_dispatch"
   },
   {
+    "name": "init_event_dispatcher"
+  },
+  {
     "name": "init_event_emitter"
   },
   {
