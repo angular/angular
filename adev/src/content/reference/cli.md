@@ -17,5 +17,5 @@
 | [`run`](cli/run)                  |        | Runs an Architect target with an optional custom builder configuration defined in your project. |
 | [`serve`](cli/serve)              | `s`, `dev`      | Builds and serves your application, rebuilding on file changes. |
 | [`test`](cli/test)                | `t`      | Runs unit tests in a project. |
-| [`update`](cli/update)            |        | Updates your workspace and its dependencies. See https://update.angular.io/.             |
+| [`update`](cli/update)            |        | Updates your workspace and its dependencies. See https://angular.dev/update-guide/.             |
 | [`version`](cli/version)          | `v`      | Outputs Angular CLI version. |

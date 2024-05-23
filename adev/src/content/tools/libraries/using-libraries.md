@@ -186,7 +186,7 @@ If you do not add the interface for the script-defined extension, your IDE shows
 
 [AngularMaterialMain]: https://material.angular.io "Angular Material | Angular"
 
-[AngularUpdateMain]: https://update.angular.io "Angular Update Guide | Angular"
+[AngularUpdateMain]: https://angular.dev/update-guide "Angular Update Guide | Angular"
 
 [GetbootstrapDocs40GettingStartedIntroduction]: https://getbootstrap.com/docs/4.0/getting-started/introduction "Introduction | Bootstrap"
 
