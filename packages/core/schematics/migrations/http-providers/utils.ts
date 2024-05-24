@@ -69,6 +69,7 @@ export function migrateFile(
           commonHttpTestingIdentifiers,
           addedImports,
           changeTracker,
+          sourceFile,
         );
       });
     }
@@ -146,6 +147,7 @@ function migrateDecorator(
   commonHttpTestingIdentifiers: Set<string>,
   addedImports: Map<string, Set<string>>,
   changeTracker: ChangeTracker,
+  sourceFile: ts.SourceFile,
 ) {
   // Only @NgModule and @Component support `imports`.
   // Also skip decorators with no arguments.
@@ -174,6 +176,25 @@ function migrateDecorator(
     commonHttpTestingIdentifiers,
   );
   if (!importedModules) {
+    return;
+  }
+
+  // HttpClient imported in component is actually a mistake
+  // Schematics will be no-op but add a TODO
+  const isComponent = decorator.name === 'Component';
+  if (isComponent && importedModules.client) {
+    const httpClientModuleIdentifier = importedModules.client;
+    const commentText =
+      '\n// TODO: `HttpClientModule` should not be imported into a component directly.\n' +
+      '// Please refactor the code to add `provideHttpClient()` call to the provider list in the\n' +
+      '// application bootstrap logic and remove the `HttpClientModule` import from this component.\n';
+    ts.addSyntheticLeadingComment(
+      httpClientModuleIdentifier,
+      ts.SyntaxKind.SingleLineCommentTrivia,
+      commentText,
+      true,
+    );
+    changeTracker.insertText(sourceFile, httpClientModuleIdentifier.getStart(), commentText);
     return;
   }
 
