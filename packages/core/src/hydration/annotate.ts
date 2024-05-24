@@ -393,9 +393,6 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
     const tNode = tView.data[i] as TNode;
     const noOffsetIndex = i - HEADER_OFFSET;
-    if (nativeElementsToEventTypes) {
-      setJSActionAttribute(tNode, lView[i], nativeElementsToEventTypes);
-    }
 
     // Attempt to serialize any i18n data for the given slot. We do this first, as i18n
     // has its own process for serialization.
@@ -434,6 +431,13 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       appendDisconnectedNodeIndex(ngh, tNode);
       continue;
     }
+
+    if (nativeElementsToEventTypes) {
+      // Attach `jsaction` attribute to elements that have registered listeners,
+      // thus potentially having a need to do an event replay.
+      setJSActionAttribute(tNode, lView[i], nativeElementsToEventTypes);
+    }
+
     if (Array.isArray(tNode.projection)) {
       for (const projectionHeadTNode of tNode.projection) {
         // We may have `null`s in slots with no projected content.
