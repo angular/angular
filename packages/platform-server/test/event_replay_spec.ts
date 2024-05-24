@@ -103,6 +103,32 @@ describe('event replay', () => {
     }
   }
 
+  it('should work for elements with local refs', async () => {
+    const onClickSpy = jasmine.createSpy();
+
+    @Component({
+      selector: 'app',
+      standalone: true,
+      template: `
+        <button id="btn" (click)="onClick()" #localRef></button>
+      `,
+    })
+    class AppComponent {
+      onClick = onClickSpy;
+    }
+    const html = await ssr(AppComponent);
+    const ssrContents = getAppContents(html);
+    render(doc, ssrContents);
+    resetTViewsFor(AppComponent);
+    const btn = doc.getElementById('btn')!;
+    btn.click();
+    const appRef = await hydrate(doc, AppComponent, {
+      hydrationFeatures: [withEventReplay()],
+    });
+    appRef.tick();
+    expect(onClickSpy).toHaveBeenCalled();
+  });
+
   it('should route to the appropriate component with content projection', async () => {
     const outerOnClickSpy = jasmine.createSpy();
     const innerOnClickSpy = jasmine.createSpy();
