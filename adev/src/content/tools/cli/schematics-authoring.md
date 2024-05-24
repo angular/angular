@@ -33,7 +33,7 @@ A change can be accepted or ignored, or throw an exception.
 
 ### Defining rules and actions
 
-When you create a new blank schematic with the [Schematics CLI](#cli), the generated entry function is a *rule factory*.
+When you create a new blank schematic with the [Schematics CLI](#schematics-cli), the generated entry function is a *rule factory*.
 A `RuleFactory` object defines a higher-order function that creates a `Rule`.
 
 <docs-code header="index.ts" language="typescript">
