@@ -28,7 +28,7 @@ describe('ApiItemLabel', () => {
     component.type = ApiItemType.CLASS;
     fixture.detectChanges();
 
-    const label = fixture.nativeElement.innerText;
+    const label = fixture.nativeElement.textContent;
 
     expect(label).toBe('C');
   });
@@ -38,7 +38,7 @@ describe('ApiItemLabel', () => {
     component.mode = 'full';
     fixture.detectChanges();
 
-    const label = fixture.nativeElement.innerText;
+    const label = fixture.nativeElement.textContent;
 
     expect(label).toBe('Class');
   });
