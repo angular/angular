@@ -12,6 +12,7 @@ import {
   ApplicationConfig,
   ENVIRONMENT_INITIALIZER,
   ErrorHandler,
+  VERSION,
   inject,
   provideZoneChangeDetection,
 } from '@angular/core';
@@ -44,6 +45,7 @@ import {ExampleContentLoader} from './core/services/example-content-loader.servi
 import {ReuseTutorialsRouteStrategy} from './features/tutorial/tutorials-route-reuse-strategy';
 import {routes} from './routes';
 import {ReferenceScrollHandler} from './features/references/services/reference-scroll-handler.service';
+import {CURRENT_MAJOR_VERSION} from './core/providers/current-version';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -71,6 +73,10 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideHttpClient(withFetch()),
     provideAnimationsAsync(),
+    {
+      provide: CURRENT_MAJOR_VERSION,
+      useValue: Number(VERSION.major),
+    },
     {provide: ENVIRONMENT, useValue: environment},
     {
       provide: ENVIRONMENT_INITIALIZER,
