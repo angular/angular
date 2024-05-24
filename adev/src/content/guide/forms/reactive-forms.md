@@ -20,7 +20,7 @@ See the [Forms Overview](guide/forms) for detailed comparisons between the two p
 
 ## Adding a basic form control
 
-There are three steps to using form controls.
+There are two steps to using form controls.
 
 1. Register the reactive forms module in your application.
     This module declares the reactive-form directives that you need to use reactive forms.
