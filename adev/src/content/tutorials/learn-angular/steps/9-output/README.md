@@ -25,7 +25,7 @@ class ChildComponent {
 
     onClick() {
         this.count++;
-        this.incrementCountEvent.emit(count);
+        this.incrementCountEvent.emit(this.count);
     }
 
 }
