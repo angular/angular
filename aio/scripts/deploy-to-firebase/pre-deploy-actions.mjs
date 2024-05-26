@@ -109,7 +109,7 @@ function generateFn_undoRedirectTo(originLabel, allRequests) {
 }
 
 function getFirebaseRedirectRuleTo(origin, allRequests) {
-  const re = allRequests ? '^(.*)$' : '^(.*/[^./]*)$';
+  const re = allRequests ? '^(.*)$' : '^(.*/[^./]*|.*/index.html)$';
   return `{"type": 302, "regex": "${re}", "destination": "${origin}:1"}`;
 }
 

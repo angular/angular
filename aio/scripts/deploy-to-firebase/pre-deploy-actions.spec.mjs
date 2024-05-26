@@ -116,7 +116,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
         });
 
         it(`should add a redirect rule to '${origin}'`, () => {
-          const re = allRequests ? '^(.*)$' : '^(.*/[^./]*)$';
+          const re = allRequests ? '^(.*)$' : '^(.*/[^./]*|.*/index.html)$';
           readFileSpy.and.returnValue(`
             {
               "foo": "bar",
@@ -200,7 +200,7 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
         });
 
         it('should remove a redirect rule to `angular.io`', () => {
-          const re = allRequests ? '^(.*)$' : '^(.*/[^./]*)$';
+          const re = allRequests ? '^(.*)$' : '^(.*/[^./]*|.*/index.html)$';
           readFileSpy.and.returnValue(`
             {
               "foo": "bar",
