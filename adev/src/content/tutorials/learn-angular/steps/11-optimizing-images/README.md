@@ -42,7 +42,7 @@ import { NgOptimizedImage } from '@angular/common';
     <li>
       Dynamic Image:
       <img [ngSrc]="logoUrl" [alt]="logoAlt" width="32" height="32" />
-    </li>`,
+    </li>
     ...
   `,
   imports: [NgOptimizedImage],
