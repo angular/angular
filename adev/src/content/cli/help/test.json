@@ -106,7 +106,7 @@
       "name": "source-map",
       "type": "boolean",
       "default": true,
-      "description": "Output source maps for scripts and styles. For more information, see https://angular.io/guide/workspace-config#source-map-configuration."
+      "description": "Output source maps for scripts and styles. For more information, see https://angular.dev/reference/configs/workspace-config#source-map-configuration."
     },
     {
       "name": "ts-config",

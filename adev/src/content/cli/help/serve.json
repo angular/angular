@@ -101,7 +101,7 @@
     {
       "name": "proxy-config",
       "type": "string",
-      "description": "Proxy configuration file. For more information, see https://angular.io/guide/build#proxying-to-a-backend-server."
+      "description": "Proxy configuration file. For more information, see https://angular.dev/tools/cli/serve#proxying-to-a-backend-server."
     },
     {
       "name": "public-host",
