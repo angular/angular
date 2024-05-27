@@ -1755,6 +1755,9 @@
     "name": "stringifyCSSSelector"
   },
   {
+    "name": "syncPendingControls"
+  },
+  {
     "name": "throwProviderNotFoundError"
   },
   {
