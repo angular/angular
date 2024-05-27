@@ -74,7 +74,6 @@ const commonModulePipes = [
   'uppercase',
   'titlecase',
   'percent',
-  'titlecase',
 ].map((name) => pipeMatchRegExpFor(name));
 
 /**
