@@ -184,7 +184,7 @@ In this test suite, the *only* provider of `UserService` is the root testing mod
 
 <docs-code header="TestBed injector" path="adev/src/content/examples/testing/src/app/welcome/welcome.component.spec.ts" visibleRegion="inject-from-testbed" />
 
-HELPFUL: For a use case in which `TestBed.inject()` does not work, see the [*Override component providers*](#component-override) section that explains when and why you must get the service from the component's injector instead.
+HELPFUL: For a use case in which `TestBed.inject()` does not work, see the [*Override component providers*](#override-component-providers) section that explains when and why you must get the service from the component's injector instead.
 
 ### Final setup and tests
 
