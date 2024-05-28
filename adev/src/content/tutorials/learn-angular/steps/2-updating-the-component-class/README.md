@@ -13,7 +13,7 @@ Update the component class by adding a property called `city` to the `AppCompone
 
 ```ts
 export class AppComponent {
-  city = 'San Francisco';
+  city: string = 'San Francisco';
 }
 ```
 
