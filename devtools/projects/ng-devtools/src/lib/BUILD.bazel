@@ -17,6 +17,7 @@ ng_module(
         exclude = [
             "theme-service.ts",
             "frame_manager.ts",
+            "feature-flags.ts",
             "*_spec.ts",
         ],
     ),
@@ -25,6 +26,7 @@ ng_module(
         ":devtools_component_styles",
     ],
     deps = [
+        ":feature_flags",
         ":frame_manager",
         ":theme",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs",
@@ -103,4 +105,11 @@ ng_module(
         "@npm//@types",
         "@npm//rxjs",
     ],
+)
+
+ng_module(
+    name = "feature_flags",
+    srcs = glob(
+        include = ["feature-flags.ts"],
+    ),
 )

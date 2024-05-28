@@ -21,6 +21,8 @@ import {PropertyViewTreeComponent} from './property-view-tree.component';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {SignalGraphComponent} from '../../signal-graph/signal-graph.component';
+import {SHOW_SIGNAL_DEPENDENCY_GRAPH} from '../../../../feature-flags';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -35,6 +37,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
     forwardRef(() => InjectedServicesComponent),
     CdkDrag,
     PropertyViewTreeComponent,
+    SignalGraphComponent,
   ],
 })
 export class PropertyViewBodyComponent {
@@ -103,6 +106,8 @@ export class PropertyViewBodyComponent {
       directivePosition: this.controller().directivePosition,
     });
   }
+
+  readonly showSignalDependencyGraph = SHOW_SIGNAL_DEPENDENCY_GRAPH;
 }
 
 @Component({

@@ -513,3 +513,17 @@ function extractInputDebugMetadata<T>(inputs: DirectiveDef<T>['inputs']) {
 
   return res;
 }
+
+/**
+ * Retrieves the signal graph for a given component. It includes both producers
+ * and consumers of the reactive node - both created and consumed within the component.
+ *
+ * @param componentOrDirective Component for which the signal graph is retrieved
+ * @returns A signal graph for the component
+ *
+ * @publicApi
+ * @globalApi ng
+ */
+export function getSignalGraphForComponent(componentOrDirective: {}) {
+  return 'no implementation yet';
+}
