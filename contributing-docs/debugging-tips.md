@@ -1,7 +1,18 @@
-# Developer Tools for Angular
+# Debugging tips for developing on Angular
 
-Here you will find a collection of tools and tips for keeping your application
-perform well and contain fewer bugs.
+## Debugging tests
+
+The Angular project has comprehensive unit tests for the core packages and the tools.
+Packages are tested both in the browser (via Karma) and on the server (via node.js).
+Angular uses the Jasmine test framework. 
+
+You can focus your debugging on one test at a time by changing that test to be
+defined using the `fit(...)` function, rather than `it(...)`. Moreover, it can be helpful
+to place a `debugger` statement in this `fit` clause to cause the debugger to stop when
+it hits this test.
+
+For instructions on debugging both Karma and node.js tests, see
+[Building with bazel](./building-with-bazel.md).
 
 ## Angular debug tools in the dev console
 
@@ -11,7 +22,7 @@ Ctrl + Shift + j.
 
 ### Enabling debug tools
 
-By default the debug tools are disabled. You can enable debug tools as follows:
+By default, the debug tools are disabled. You can enable debug tools as follows:
 
 ```typescript
 import {ApplicationRef} from '@angular/core';

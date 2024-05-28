@@ -168,6 +168,16 @@ Use `readonly` members wherever possible.
 * Prefer *exact* names over short names (within reason). For example, `labelPosition` is better than
 `align` because the former much more exactly communicates what the property means.
 * Except for `@Input()` properties, use `is` and `has` prefixes for boolean properties / methods.
+* Name identifiers based on their responsibility. Names should capture what the code *does*,
+  not how it is used:
+
+  ```typescript
+  /** NO: */
+  class DefaultRouteReuseStrategy { }
+  
+  /** YES: */
+  class NonStoringRouteReuseStrategy { }
+  ```
 
 ##### Observables
 
@@ -175,19 +185,19 @@ Don't suffix observables with `$`.
 
 ##### Classes
 
-Name classes based on their responsibility. Names should capture what the code *does*,
-not how it is used:
-```typescript
-/** NO: */
-class DefaultRouteReuseStrategy { }
+* Use PascalCase (aka UpperCamelCase).
+* Class names should not end in `Impl`.
 
-/** YES: */
-class NonStoringRouteReuseStrategy { }
-```
+##### Interfaces
 
-##### Methods
+* Do not prefix interfaces with `I`.
+* Do not suffix interfaces with `Interface`.
 
-The name of a method should capture the action performed *by* that method rather than
+##### Functions and methods
+
+Use camelCase (aka lowerCamelCase).
+
+The name of a function should capture the action performed *by* that method rather than
 describing when the method will be called. For example:
 
 ```typescript
@@ -201,6 +211,10 @@ activateRipple() {
   // ...
 }
 ```
+
+##### Constants and injection tokens
+
+Use UPPER_SNAKE_CASE.
 
 ##### Test classes and examples
 
