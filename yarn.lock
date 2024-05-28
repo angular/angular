@@ -490,9 +490,9 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#c4a61e9c98e052eab8c49f5e149510f84360ffd5":
-  version "0.0.0-8b117748ae8243f98d261a9731908867b8e3d876"
-  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#c4a61e9c98e052eab8c49f5e149510f84360ffd5"
+"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#75c4b2d7c6bc19a35d044b42364f95ac52d7750b":
+  version "0.0.0-239d56b71911f9fa1eeefb6e4505dbe7b0cd81a7"
+  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#75c4b2d7c6bc19a35d044b42364f95ac52d7750b"
   dependencies:
     "@webcontainer/api" "^1.1.8"
     diff "~5.2.0"
