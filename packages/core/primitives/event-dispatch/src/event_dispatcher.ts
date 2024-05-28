@@ -12,6 +12,8 @@ import {EventInfo, EventInfoWrapper} from './event_info';
 import {UnrenamedEventContract} from './eventcontract';
 import {Restriction} from './restriction';
 
+declare const ngDevMode: boolean | undefined;
+
 /**
  * A replayer is a function that is called when there are queued events, from the `EventContract`.
  */
@@ -30,10 +32,12 @@ const PREVENT_DEFAULT_ERROR_MESSAGE_DETAILS =
   'effect. You can check whether an event is being replayed by accessing the event phase: ' +
   '`event.eventPhase === EventPhase.REPLAY`.';
 const PREVENT_DEFAULT_ERROR_MESSAGE = `\`preventDefault\` called during event replay.`;
-const COMPOSED_PATH_ERROR_MESSAGE_DETAILS =
-  ' Because event replay occurs after browser ' +
-  'dispatch, `composedPath()` will be empty. Iterate parent nodes from `event.target` or ' +
-  '`event.currentTarget` if you need to check elements in the event path.';
+const COMPOSED_PATH_ERROR_MESSAGE_DETAILS = () =>
+  ngDevMode
+    ? ' Because event replay occurs after browser ' +
+      'dispatch, `composedPath()` will be empty. Iterate parent nodes from `event.target` or ' +
+      '`event.currentTarget` if you need to check elements in the event path.'
+    : '';
 const COMPOSED_PATH_ERROR_MESSAGE = `\`composedPath\` called during event replay.`;
 
 declare global {
@@ -59,12 +63,6 @@ export class EventDispatcher {
       },
       {
         actionResolver: this.actionResolver,
-        eventReplayer: (eventInfoWrappers: EventInfoWrapper[]) => {
-          for (const eventInfoWrapper of eventInfoWrappers) {
-            prepareEventForReplay(eventInfoWrapper);
-            this.dispatchToDelegate(eventInfoWrapper);
-          }
-        },
       },
     );
   }
@@ -78,6 +76,9 @@ export class EventDispatcher {
 
   /** Internal method that does basic disaptching. */
   private dispatchToDelegate(eventInfoWrapper: EventInfoWrapper) {
+    if (eventInfoWrapper.getIsReplay()) {
+      prepareEventForReplay(eventInfoWrapper);
+    }
     prepareEventForBubbling(eventInfoWrapper);
     while (eventInfoWrapper.getAction()) {
       prepareEventForDispatch(eventInfoWrapper);
