@@ -804,6 +804,7 @@ describe('EventContract', () => {
     const container = getRequiredElementById('click-container');
     const actionElement = getRequiredElementById('click-action-element');
     const targetElement = getRequiredElementById('click-target-element');
+    const clickEvent = dispatchMouseEvent(targetElement);
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     const eventContract = createEventContract({
@@ -811,10 +812,6 @@ describe('EventContract', () => {
       eventTypes: ['click'],
       dispatcher,
     });
-
-    const clickEvent = dispatchMouseEvent(targetElement);
-    // Clear normal dispatcher calls.
-    dispatcher.calls.reset();
 
     const clickHandler = eventContract.handler(EventType.CLICK)!;
     expect(clickHandler).toBeDefined();

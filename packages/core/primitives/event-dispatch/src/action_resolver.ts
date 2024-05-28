@@ -29,6 +29,14 @@ const REGEXP_SEMICOLON = /\s*;\s*/;
 /** If no event type is defined, defaults to `click`. */
 const DEFAULT_EVENT_TYPE: string = EventType.CLICK;
 
+const LAST_CHECKED_ELEMENT = Symbol('eventDispatch.actionResolver.lastCheckedElement');
+
+declare global {
+  interface Event {
+    [LAST_CHECKED_ELEMENT]?: Element;
+  }
+}
+
 /** Resolves actions for Events. */
 export class ActionResolver {
   private a11yClickSupport: boolean = false;
@@ -100,19 +108,18 @@ export class ActionResolver {
     if (eventInfoLib.getResolved(eventInfo)) {
       return;
     }
-    this.populateAction(eventInfo, eventInfoLib.getTargetElement(eventInfo));
+    this.populateAction(eventInfo);
     eventInfoLib.setResolved(eventInfo, true);
   }
 
   resolveParentAction(eventInfo: eventInfoLib.EventInfo) {
     const action = eventInfoLib.getAction(eventInfo);
-    const actionElement = action && eventInfoLib.getActionElement(action);
-    eventInfoLib.unsetAction(eventInfo);
-    const parentNode = actionElement && this.getParentNode(actionElement);
-    if (!parentNode) {
-      return;
+    if (action) {
+      // Start resolution from the last action element.
+      setLastCheckedElement(eventInfo, eventInfoLib.getActionElement(action));
     }
-    this.populateAction(eventInfo, parentNode);
+    eventInfoLib.unsetAction(eventInfo);
+    this.populateAction(eventInfo);
   }
 
   /**
@@ -127,9 +134,14 @@ export class ActionResolver {
    * @param eventInfo `EventInfo` to set `action` and `actionElement` if an
    *    action is found on any `Element` in the path of the `Event`.
    */
-  private populateAction(eventInfo: eventInfoLib.EventInfo, currentTarget: Element) {
-    let actionElement: Element | null = currentTarget;
-    while (actionElement && actionElement !== eventInfoLib.getContainer(eventInfo)) {
+  populateAction(eventInfo: eventInfoLib.EventInfo) {
+    const startElement = getStartElement(eventInfo);
+    if (!startElement) {
+      return;
+    }
+    const endElement = eventInfoLib.getContainer(eventInfo);
+    let actionElement: Element | null = startElement;
+    while (actionElement && actionElement !== endElement) {
       if (actionElement.nodeType === Node.ELEMENT_NODE) {
         this.populateActionOnElement(actionElement, eventInfo);
       }
@@ -140,7 +152,7 @@ export class ActionResolver {
         // ancestor chain of the event target node.
         break;
       }
-      actionElement = this.getParentNode(actionElement);
+      actionElement = getParentNode(actionElement);
     }
 
     const action = eventInfoLib.getAction(eventInfo);
@@ -192,23 +204,6 @@ export class ActionResolver {
         }
       }
     }
-  }
-
-  /**
-   * Walk to the parent node, unless the node has a different owner in
-   * which case we walk to the owner. Attempt to walk to host of a
-   * shadow root if needed.
-   */
-  private getParentNode(element: Element): Element | null {
-    const owner = element[OWNER];
-    if (owner) {
-      return owner as Element;
-    }
-    const parentNode = element.parentNode;
-    if (parentNode?.nodeName === '#document-fragment') {
-      return (parentNode as ShadowRoot | null)?.host ?? null;
-    }
-    return parentNode as Element | null;
   }
 
   /**
@@ -284,4 +279,51 @@ export class ActionResolver {
     this.preventDefaultForA11yClick = preventDefaultForA11yClick;
     this.populateClickOnlyAction = populateClickOnlyAction;
   }
+}
+
+/**
+ * Walk to the parent node, unless the node has a different owner in
+ * which case we walk to the owner. Attempt to walk to host of a
+ * shadow root if needed.
+ */
+function getParentNode(element: Element): Element | null {
+  const owner = element[OWNER];
+  if (owner) {
+    return owner as Element;
+  }
+  const parentNode = element.parentNode;
+  if (parentNode?.nodeName === '#document-fragment') {
+    return (parentNode as ShadowRoot | null)?.host ?? null;
+  }
+  return parentNode as Element | null;
+}
+
+/** Get the last checked element set on the `Event`, or undefined. */
+function getLastCheckedElement(eventInfo: eventInfoLib.EventInfo): Element | undefined {
+  const event = eventInfoLib.getEvent(eventInfo);
+  return event[LAST_CHECKED_ELEMENT];
+}
+
+/** Set the last checked element, or undefined. */
+export function setLastCheckedElement(eventInfo: eventInfoLib.EventInfo, element: Element) {
+  const event = eventInfoLib.getEvent(eventInfo);
+  event[LAST_CHECKED_ELEMENT] = element;
+}
+
+/** Unset the last checked element. */
+export function unsetLastCheckedElement(eventInfo: eventInfoLib.EventInfo) {
+  const event = eventInfoLib.getEvent(eventInfo);
+  event[LAST_CHECKED_ELEMENT] = undefined;
+}
+
+/**
+ * Get the start element, which is either the parent node of the last checked element or the target
+ * element.
+ */
+function getStartElement(eventInfo: eventInfoLib.EventInfo): Element | null {
+  const lastActionElement = getLastCheckedElement(eventInfo);
+  if (lastActionElement) {
+    return getParentNode(lastActionElement);
+  }
+  return eventInfoLib.getTargetElement(eventInfo);
 }

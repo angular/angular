@@ -77,14 +77,27 @@ export class EventDispatcher {
     if (eventInfoWrapper.getIsReplay()) {
       prepareEventForReplay(eventInfoWrapper);
     }
+    let action = eventInfoWrapper.getAction();
+    if (!action) {
+      return;
+    }
+    const event = eventInfoWrapper.getEvent();
+    if (event.currentTarget === action.element) {
+      // If the current target is the action element, then we know we're not delegating and can
+      // dispatch directly.
+      this.dispatchDelegate(eventInfoWrapper.getEvent(), action.name);
+      return;
+    }
+    // Otherwise prepare the `eventInfoWrapper` for delegation or replay.
     prepareEventForBubbling(eventInfoWrapper);
-    while (eventInfoWrapper.getAction()) {
+    while (action) {
       prepareEventForDispatch(eventInfoWrapper);
-      this.dispatchDelegate(eventInfoWrapper.getEvent(), eventInfoWrapper.getAction()!.name);
+      this.dispatchDelegate(eventInfoWrapper.getEvent(), action.name);
       if (propagationStopped(eventInfoWrapper)) {
         return;
       }
       this.actionResolver.resolveParentAction(eventInfoWrapper.eventInfo);
+      action = eventInfoWrapper.getAction();
     }
   }
 }

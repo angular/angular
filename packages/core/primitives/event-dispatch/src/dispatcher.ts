@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventInfo, EventInfoWrapper} from './event_info';
-import {EventType} from './event_type';
+import {EventInfo, EventInfoWrapper, createEventInfo, setResolved} from './event_info';
+import {EventType, isCaptureEvent} from './event_type';
 import {Restriction} from './restriction';
 import {UnrenamedEventContract} from './eventcontract';
 import * as eventLib from './event';
-import {ActionResolver} from './action_resolver';
+import {ActionResolver, setLastCheckedElement, unsetLastCheckedElement} from './action_resolver';
 
 /**
  * A replayer is a function that is called when there are queued events,
@@ -77,8 +77,7 @@ export class Dispatcher {
    */
   dispatch(eventInfo: EventInfo): void {
     const eventInfoWrapper = new EventInfoWrapper(eventInfo);
-    this.actionResolver?.resolveEventType(eventInfo);
-    this.actionResolver?.resolveAction(eventInfo);
+    this.resolveAction(eventInfoWrapper);
     const action = eventInfoWrapper.getAction();
     if (action && shouldPreventDefaultBeforeDispatching(action.element, eventInfoWrapper)) {
       eventLib.preventDefault(eventInfoWrapper.getEvent());
@@ -88,6 +87,40 @@ export class Dispatcher {
       return;
     }
     this.dispatchDelegate(eventInfoWrapper);
+    // Remove all book-keeping for dispatch after root dispatch.
+    unsetLastCheckedElement(eventInfo);
+  }
+
+  /**
+   * Wraps the `listener` so that any children in the `Event` path that have event dispatch
+   * attributes are properly delegated.
+   */
+  createDelegatingEventListener(listener: (event: Event) => void) {
+    return (event: Event) => {
+      const currentTarget = event.currentTarget as Element;
+      const eventInfoWrapper = new EventInfoWrapper(
+        createEventInfo({
+          eventType: event.type,
+          event,
+          targetElement: event.target as Element,
+          container: currentTarget,
+          timestamp: Date.now(),
+        }),
+      );
+      // Delegate dispatch first.
+      const delegateEventInfoWrapper = eventInfoWrapper.clone();
+      this.resolveAction(delegateEventInfoWrapper);
+      this.dispatchDelegate(delegateEventInfoWrapper);
+
+      // Start all future resolutions from this element.
+      setLastCheckedElement(eventInfoWrapper.eventInfo, currentTarget);
+      listener(event);
+    };
+  }
+
+  private resolveAction(eventInfoWrapper: EventInfoWrapper) {
+    this.actionResolver?.resolveEventType(eventInfoWrapper.eventInfo);
+    this.actionResolver?.resolveAction(eventInfoWrapper.eventInfo);
   }
 
   /**
