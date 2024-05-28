@@ -64,7 +64,7 @@ api_golden_test(
         "//packages/router",
     ],
     entry_point = "angular/packages/router/src/errors.d.ts",
-    golden = "angular/goldens/public-api/router/errors.md",
+    golden = "angular/goldens/public-api/router/errors.api.md",
 )
 
 filegroup(

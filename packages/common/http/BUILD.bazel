@@ -34,7 +34,7 @@ api_golden_test(
         "//packages/common/http",
     ],
     entry_point = "angular/packages/common/http/src/errors.d.ts",
-    golden = "angular/goldens/public-api/common/http/errors.md",
+    golden = "angular/goldens/public-api/common/http/errors.api.md",
 )
 
 generate_api_docs(
