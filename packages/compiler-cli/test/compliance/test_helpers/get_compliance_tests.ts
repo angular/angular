@@ -233,7 +233,7 @@ function parseExtraChecks(extraChecks: any = [], testPath: AbsoluteFsPath): Extr
         testPath,
     );
   }
-  return extraChecks;
+  return extraChecks as ExtraCheck[];
 }
 
 function parseRegExp(str: string | undefined): RegExp {

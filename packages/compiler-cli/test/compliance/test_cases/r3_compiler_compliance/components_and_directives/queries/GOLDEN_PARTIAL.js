@@ -10,7 +10,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
             args: [{
-                    selector: '[someDir]',
+                    selector: '[someDir]'
                 }]
         }] });
 
@@ -127,7 +127,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
             args: [{
-                    selector: '[someDir]',
+                    selector: '[someDir]'
                 }]
         }] });
 export class MyModule {
@@ -232,7 +232,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
             args: [{
-                    selector: '[someDir]',
+                    selector: '[someDir]'
                 }]
         }] });
 
@@ -313,7 +313,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
             args: [{
-                    selector: '[someDir]',
+                    selector: '[someDir]'
                 }]
         }] });
 
@@ -404,7 +404,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
             args: [{
-                    selector: '[someDir]',
+                    selector: '[someDir]'
                 }]
         }] });
 
@@ -548,7 +548,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
             args: [{
-                    selector: '[someDir]',
+                    selector: '[someDir]'
                 }]
         }] });
 export class MyModule {
@@ -653,7 +653,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
             args: [{
-                    selector: '[someDir]',
+                    selector: '[someDir]'
                 }]
         }] });
 
@@ -757,7 +757,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
             args: [{
-                    selector: '[someDir]',
+                    selector: '[someDir]'
                 }]
         }] });
 
@@ -848,7 +848,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
             args: [{
-                    selector: '[someDir]',
+                    selector: '[someDir]'
                 }]
         }] });
 

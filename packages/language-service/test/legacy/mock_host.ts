@@ -129,11 +129,11 @@ function createHost(configFileFs: MockConfigFileFs): ts.server.ServerHost {
     watchDirectory(path: string, callback: ts.DirectoryWatcherCallback): ts.FileWatcher {
       return NOOP_FILE_WATCHER;
     },
-    setTimeout() {
-      throw new Error('setTimeout is not implemented');
+    setTimeout(callback: (...args: any[]) => void, delay: number, ...args: any[]) {
+      return setTimeout(callback, delay, ...args);
     },
-    clearTimeout() {
-      throw new Error('clearTimeout is not implemented');
+    clearTimeout(id: any) {
+      clearTimeout(id);
     },
     setImmediate() {
       throw new Error('setImmediate is not implemented');

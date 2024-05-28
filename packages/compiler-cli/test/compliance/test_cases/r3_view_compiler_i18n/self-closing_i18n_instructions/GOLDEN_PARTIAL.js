@@ -15,7 +15,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n>My i18n block #1</div>
-  `,
+  `
                 }]
         }] });
 export class MyModule {
@@ -62,7 +62,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n>{age, select, 10 {ten} 20 {twenty} other {other}}</div>
-  `,
+  `
                 }]
         }] });
 export class MyModule {
@@ -109,7 +109,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <ng-template i18n>My i18n block #1</ng-template>
   <ng-container i18n>My i18n block #2</ng-container>
-`,
+`
                 }]
         }] });
 export class MyModule {
@@ -155,7 +155,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <span i18n class="myClass">Text #1</span>
   <span i18n style="padding: 10px;">Text #2</span>
-`,
+`
                 }]
         }] });
 export class MyModule {

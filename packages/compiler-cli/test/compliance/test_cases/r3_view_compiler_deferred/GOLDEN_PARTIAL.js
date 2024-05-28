@@ -25,7 +25,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       @defer {Deferred content}
       <p>Content after defer block</p>
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -81,7 +81,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         Calendar failed to load <i>sad</i>
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -120,7 +120,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     } @placeholder (minimum 2s) {
       <img src="placeholder.gif">
     }
-  `,
+  `
                 }]
         }] });
 
@@ -157,7 +157,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     } @loading(minimum 2s; after 500ms) {
       <img src="loading.gif">
     }
-  `,
+  `
                 }]
         }] });
 
@@ -226,7 +226,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     </div>
   `,
                     standalone: true,
-                    imports: [EagerDep, LazyDep, LoadingDep],
+                    imports: [EagerDep, LazyDep, LoadingDep]
                 }]
         }] });
 
@@ -264,7 +264,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: 'lazy-dep',
-                    standalone: true,
+                    standalone: true
                 }]
         }] });
 export class MyApp {
@@ -294,7 +294,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     </div>
   `,
                     standalone: true,
-                    imports: [LazyDep],
+                    imports: [LazyDep]
                 }]
         }] });
 
@@ -414,7 +414,7 @@ i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACE
     </div>
   `,
                         standalone: true,
-                        imports: [EagerDep, LazyDep, LoadingDep],
+                        imports: [EagerDep, LazyDep, LoadingDep]
                     }]
             }], ctorParameters: null, propDecorators: null }) });
 
@@ -470,7 +470,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       } @placeholder {
         <button #button>Click me</button>
       }
-  `,
+  `
                 }]
         }] });
 
@@ -529,7 +529,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       } @placeholder {
         <button #button>Click me</button>
       }
-  `,
+  `
                 }]
         }] });
 
@@ -587,7 +587,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
   `,
                     standalone: true,
-                    imports: [TestPipe],
+                    imports: [TestPipe]
                 }]
         }] });
 
@@ -645,7 +645,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         </div>
       </div>
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -696,7 +696,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         </ng-template>
       </ng-template>
     </ng-template>
-  `,
+  `
                 }]
         }] });
 
@@ -747,7 +747,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         </div>
       </div>
     }
-  `,
+  `
                 }]
         }] });
 
@@ -788,7 +788,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     } @placeholder {
       <button>Click me</button>
     }
-  `,
+  `
                 }]
         }] });
 
@@ -839,7 +839,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'local-dep',
                     standalone: true,
-                    template: 'Local dependency',
+                    template: 'Local dependency'
                 }]
         }] });
 export class TestCmp {
@@ -862,7 +862,7 @@ i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACE
 	<cmp-a />
 	<local-dep />
 	}
-`,
+`
                     }]
             }], ctorParameters: null, propDecorators: null }) });
 
@@ -917,7 +917,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'local-dep',
                     standalone: true,
-                    template: 'Local dependency',
+                    template: 'Local dependency'
                 }]
         }] });
 export class TestCmp {
@@ -940,7 +940,7 @@ i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACE
 	<cmp-a />
 	<local-dep />
 	}
-`,
+`
                     }]
             }], ctorParameters: null, propDecorators: null }) });
 
@@ -971,7 +971,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-lazy-cmp',
                     standalone: true,
-                    template: 'Hi!',
+                    template: 'Hi!'
                 }]
         }] });
 class SimpleComponent {

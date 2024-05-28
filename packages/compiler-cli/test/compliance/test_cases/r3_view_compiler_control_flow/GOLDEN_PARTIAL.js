@@ -52,7 +52,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -113,7 +113,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -195,7 +195,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -317,7 +317,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       @switch (message) {}
       {{message}}
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -361,7 +361,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         hello
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -410,7 +410,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         goodbye
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -468,7 +468,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         four
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -543,7 +543,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         three
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -610,7 +610,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     </div>
   `,
                     standalone: true,
-                    imports: [TestPipe],
+                    imports: [TestPipe]
                 }]
         }] });
 
@@ -660,7 +660,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         {{value()}} as {{alias}}
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -714,7 +714,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     }
-  `,
+  `
                 }]
         }] });
 
@@ -768,7 +768,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     }
-  `,
+  `
                 }]
         }] });
 
@@ -813,7 +813,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         {{item.name}}
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -864,7 +864,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         No items!
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -911,7 +911,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         {{item.name}}
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -958,7 +958,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         {{item.name}}
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -1015,7 +1015,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -1073,7 +1073,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         Count: {{$count}}
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -1128,7 +1128,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         Count: {{co}}
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -1197,7 +1197,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         Aliased count: {{co}}
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -1254,7 +1254,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -1303,7 +1303,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         <div (click)="log($index, ev, $first, $count)"></div>
       }
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -1338,7 +1338,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `@for (item of items; track item) {
     {{$odd + ''}}
-  }`,
+  }`
                 }]
         }] });
 
@@ -1385,7 +1385,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       Empty
     }
     <ng-template/>
-  `,
+  `
                 }]
         }] });
 
@@ -1431,7 +1431,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
 
     {{$index}} {{$count}} {{$first}} {{$last}}
-  `,
+  `
                 }]
         }] });
 
@@ -1479,7 +1479,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{message}}
       @for (item of items; track trackFn($index, item)) {}
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -1530,7 +1530,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         @for (item of items; track trackFn($index, item)) {}
       </ng-template>
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -1577,7 +1577,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{message}}
       @for (item of items; track trackFn($index)) {}
     </div>
-  `,
+  `
                 }]
         }] });
 
@@ -1627,7 +1627,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @for (otherItem of otherItems; track otherItem.name[0].toUpperCase()) {
       {{otherItem.name}}
     }
-  `,
+  `
                 }]
         }] });
 
@@ -1682,7 +1682,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @for (otherItem of otherItems; track trackFn(otherItem, message)) {
       {{otherItem.name}}
     }
-  `,
+  `
                 }]
         }] });
 
@@ -1729,7 +1729,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @for (item of items; track trackFn({foo: item, bar: item}, [item, item])) {
       {{item.name}}
     }
-  `,
+  `
                 }]
         }] });
 
@@ -1789,7 +1789,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     </div>
   `,
                     standalone: true,
-                    imports: [TestPipe],
+                    imports: [TestPipe]
                 }]
         }] });
 
@@ -1855,7 +1855,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
   `,
                     standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -1920,7 +1920,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
   `,
                     standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -1981,7 +1981,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
   `,
                     standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -2042,7 +2042,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
   `,
                     standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -2115,7 +2115,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
   `,
                     standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -2188,7 +2188,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
   `,
                     standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -2254,7 +2254,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     }
-  `,
+  `
                 }]
         }] });
 
@@ -2316,7 +2316,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     }
-  `,
+  `
                 }]
         }] });
 
@@ -2367,7 +2367,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     }
-  `,
+  `
                 }]
         }] });
 
@@ -2410,7 +2410,7 @@ it('case 1', () => {
       } @else {
         Second
       }
-    `,
+    `
                     }]
             }] });
 });
@@ -2434,7 +2434,7 @@ it('case 2', () => {
       } @else {
         Second
       }
-    `,
+    `
                     }]
             }] });
 });

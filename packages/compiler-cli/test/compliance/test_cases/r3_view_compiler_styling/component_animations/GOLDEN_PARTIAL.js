@@ -94,7 +94,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div [@foo]='exp'></div>
     <div @bar></div>
-    <div [@baz]></div>`,
+    <div [@baz]></div>`
                 }]
         }] });
 export class MyModule {
@@ -160,7 +160,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                         trigger('myAnimation', [
                             transition('* => state', [style({ 'opacity': '0' }), animate(500, style({ 'opacity': '1' }))]),
                         ]),
-                    ],
+                    ]
                 }]
         }] });
 export class MyModule {

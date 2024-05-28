@@ -59,7 +59,7 @@ export function ngDebugApiIsSupported(api: string): boolean {
   return typeof ng[api] === 'function';
 }
 
-export function isSignal(prop: unknown): prop is () => unknown {
+export function isSignal(prop: unknown): prop is (() => unknown) & {set: (value: unknown) => void} {
   if (!ngDebugApiIsSupported('isSignal')) {
     return false;
   }

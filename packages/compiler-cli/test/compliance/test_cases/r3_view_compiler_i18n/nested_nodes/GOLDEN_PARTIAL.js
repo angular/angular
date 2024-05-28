@@ -154,7 +154,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: '<div i18n>`{{ count }}`</div>',
+                    template: '<div i18n>`{{ count }}`</div>'
                 }]
         }] });
 export class MyModule {
@@ -207,7 +207,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div i18n>My i18n block #2</div>
   <div>My non-i18n block #2</div>
   <div i18n>My i18n block #3</div>
-  `,
+  `
                 }]
         }] });
 export class MyModule {
@@ -261,7 +261,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     Named interpolation: {{ valueA // i18n(ph="PH_A") }}
     Named interpolation with spaces: {{ valueB // i18n(ph="PH B") }}
   </div>
-`,
+`
                 }]
         }] });
 export class MyModule {
@@ -311,7 +311,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <div i18n>{% valueA %}</div>
   `,
-                    interpolation: ['{%', '%}'],
+                    interpolation: ['{%', '%}']
                 }]
         }] });
 export class MyModule {
@@ -537,7 +537,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       </div>
     </div>
   </div>
-`,
+`
                 }]
         }] });
 export class MyModule {
@@ -620,7 +620,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     Plain text in nested element (block #2)
   </span>
 </div>
-`,
+`
                 }]
         }] });
 export class MyModule {
@@ -694,7 +694,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       </div>
     </div>
   </div>
-`,
+`
                 }]
         }] });
 export class MyModule {
@@ -742,7 +742,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <img src="logo.png" i18n />
   <img src="logo.png" i18n *ngIf="visible" />
   <img src="logo.png" i18n *ngIf="visible" i18n-title title="App logo #{{ id }}" />
-  `,
+  `
                 }]
         }] });
 export class MyModule {
@@ -826,7 +826,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       </div>
     </div>
   </div>
-`,
+`
                 }]
         }] });
 export class MyModule {
@@ -967,7 +967,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <ng-content select="special"></ng-content>
     <ng-content></ng-content>
   </div>
-`,
+`
                 }]
         }] });
 
@@ -1004,7 +1004,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   			<input [disabled]="someBoolean">
 			{{ someField }}
 		</span>
-	`,
+	`
                 }]
         }] });
 

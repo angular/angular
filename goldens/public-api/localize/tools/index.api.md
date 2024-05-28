@@ -4,8 +4,6 @@
 
 ```ts
 
-/// <reference types="@angular/compiler-cli/private/babel" />
-
 import { AbsoluteFsPath } from '@angular/compiler-cli/private/localize';
 import { Element as Element_2 } from '@angular/compiler';
 import { Logger } from '@angular/compiler-cli/private/localize';

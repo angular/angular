@@ -235,7 +235,17 @@ export class TsCreateProgramDriver implements ProgramDriver {
     }
 
     for (const [filePath, {newText, originalFile}] of contents.entries()) {
-      const sf = ts.createSourceFile(filePath, newText, ts.ScriptTarget.Latest, true);
+      const sf = ts.createSourceFile(
+        filePath,
+        newText,
+        {
+          // Not passing the implied Node format appears not break program reuse in TS 5.5.
+          impliedNodeFormat: undefined,
+          languageVersion: ts.ScriptTarget.Latest,
+        },
+        true,
+      );
+
       if (originalFile !== null) {
         (sf as MaybeSourceFileWithOriginalFile)[NgOriginalFile] = originalFile;
       }

@@ -83,6 +83,10 @@ export function typeToValue(
         return typeOnlyImport(typeNode, firstDecl);
       }
 
+      if (!ts.isImportDeclaration(firstDecl.parent)) {
+        return unsupportedType(typeNode);
+      }
+
       return {
         kind: TypeValueReferenceKind.LOCAL,
         expression: firstDecl.name,
@@ -112,8 +116,13 @@ export function typeToValue(
       // The first symbol name refers to the local name, which is replaced by `importedName` above.
       // Any remaining symbol names make up the complete path to the value.
       const [_localName, ...nestedPath] = symbols.symbolNames;
+      const importDeclaration = firstDecl.parent.parent.parent;
 
-      const moduleName = extractModuleName(firstDecl.parent.parent.parent);
+      if (!ts.isImportDeclaration(importDeclaration)) {
+        return unsupportedType(typeNode);
+      }
+
+      const moduleName = extractModuleName(importDeclaration);
       return {
         kind: TypeValueReferenceKind.IMPORTED,
         valueDeclaration: decl.valueDeclaration ?? null,
@@ -139,8 +148,13 @@ export function typeToValue(
       // as a new namespace import will be generated. This is followed by the symbol name that needs
       // to be imported and any remaining names that constitute the complete path to the value.
       const [_ns, importedName, ...nestedPath] = symbols.symbolNames;
+      const importDeclaration = firstDecl.parent.parent;
 
-      const moduleName = extractModuleName(firstDecl.parent.parent);
+      if (!ts.isImportDeclaration(importDeclaration)) {
+        return unsupportedType(typeNode);
+      }
+
+      const moduleName = extractModuleName(importDeclaration);
       return {
         kind: TypeValueReferenceKind.IMPORTED,
         valueDeclaration: decl.valueDeclaration ?? null,

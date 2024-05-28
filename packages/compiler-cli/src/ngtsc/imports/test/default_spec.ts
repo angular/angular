@@ -41,7 +41,7 @@ runInEachFileSystem(() => {
         },
       );
       const fooClause = getDeclaration(program, _('/test.ts'), 'Foo', ts.isImportClause);
-      const fooDecl = fooClause.parent;
+      const fooDecl = fooClause.parent as ts.ImportDeclaration;
 
       const tracker = new DefaultImportTracker();
       tracker.recordUsedImport(fooDecl);
@@ -71,7 +71,7 @@ runInEachFileSystem(() => {
       );
       const fooClause = getDeclaration(program, _('/test.ts'), 'Foo', ts.isImportClause);
       const fooId = fooClause.name!;
-      const fooDecl = fooClause.parent;
+      const fooDecl = fooClause.parent as ts.ImportDeclaration;
 
       const tracker = new DefaultImportTracker();
       tracker.recordUsedImport(fooDecl);

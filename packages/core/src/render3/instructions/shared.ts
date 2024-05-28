@@ -121,7 +121,8 @@ import {
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {clearElementContents, updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
-import {profiler, ProfilerEvent} from '../profiler';
+import {profiler} from '../profiler';
+import {ProfilerEvent} from '../profiler_types';
 import {
   getBindingsEnabled,
   getCurrentDirectiveIndex,

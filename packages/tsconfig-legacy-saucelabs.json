@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../dist/legacy-test-out",
-    "target": "ES2015",
+    "target": "ES2020",
     "module": "esnext",
     "importHelpers": true,
     // The project uses Bazel for TypeScript compilation. Unlike with Bazel, we build all

@@ -268,7 +268,7 @@ export {
 } from './render3/jit/partial';
 export {compilePipe as ɵcompilePipe} from './render3/jit/pipe';
 export {isNgModule as ɵisNgModule} from './render3/jit/util';
-export {Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent} from './render3/profiler';
+export {Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent} from './render3/profiler_types';
 export {GlobalDevModeUtils as ɵGlobalDevModeUtils} from './render3/util/global_utils';
 export {ViewRef as ɵViewRef} from './render3/view_ref';
 export {
