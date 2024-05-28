@@ -48,8 +48,7 @@ function getJsactionData(container: EarlyJsactionDataContainer) {
 const JSACTION_ATTRIBUTE = 'jsaction';
 
 /**
- * Associates a DOM element with `jsaction` attribute to a map that contains info about all event
- * types (event names) and corresponding listeners.
+ * A set of DOM elements with `jsaction` attributes.
  */
 const jsactionSet = new Set<Element>();
 
