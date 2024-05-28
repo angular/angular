@@ -1661,7 +1661,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 node support',
     action:
-      'Make sure that you are using a supported version of node.js before you upgrade your application. Angular v15 supports node.js versions: 14.20.x, 16.13.x and 18.10.x. <a href="https://angular.io/guide/update-to-version-15#v15-bc-01" alt="Link to more information about this change">Read further</a>',
+      'Make sure that you are using a supported version of node.js before you upgrade your application. Angular v15 supports node.js versions: 14.20.x, 16.13.x and 18.10.x. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-01" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1669,7 +1669,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 ts support',
     action:
-      'Make sure that you are using a supported version of TypeScript before you upgrade your application. Angular v15 supports TypeScript version 4.8 or later.  <a href="https://angular.io/guide/update-to-version-15#v15-bc-02" alt="Link to more information about this change">Read further</a>',
+      'Make sure that you are using a supported version of TypeScript before you upgrade your application. Angular v15 supports TypeScript version 4.8 or later.  <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-02" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1693,7 +1693,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 keyframe',
     action:
-      'In v15, the Angular compiler prefixes `@keyframes` in CSS with the component\'s scope. This means that any TypeScript code that relies on `keyframes` names no longer works in v15. Update any such instances to: define keyframes programmatically, use global stylesheets, or change the component\'s view encapsulation. <a href="https://angular.io/guide/update-to-version-15#v15-bc-03" alt="Link to more information about this change">Read further</a>',
+      'In v15, the Angular compiler prefixes `@keyframes` in CSS with the component\'s scope. This means that any TypeScript code that relies on `keyframes` names no longer works in v15. Update any such instances to: define keyframes programmatically, use global stylesheets, or change the component\'s view encapsulation. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-03" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1709,7 +1709,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 base-decorators',
     action:
-      'Make sure to use decorators in base classes with child classes that inherit constructors and use dependency injection. Such base classes should be decorated with either `@Injectable` or `@Directive` or the compiler returns an error. <a href="https://angular.io/guide/update-to-version-15#v15-bc-05" alt="Link to more information about this change">Read further</a>',
+      'Make sure to use decorators in base classes with child classes that inherit constructors and use dependency injection. Such base classes should be decorated with either `@Injectable` or `@Directive` or the compiler returns an error. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-05" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1717,7 +1717,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 setDisabledState',
     action:
-      'In v15, `setDisabledState` is always called when a `ControlValueAccessor` is attached. To opt-out of this behavior, use `FormsModule.withConfig` or `ReactiveFormsModule.withConfig`. <a href="https://angular.io/guide/update-to-version-15#v15-bc-06" alt="Link to more information about this change">Read further</a>',
+      'In v15, `setDisabledState` is always called when a `ControlValueAccessor` is attached. To opt-out of this behavior, use `FormsModule.withConfig` or `ReactiveFormsModule.withConfig`. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-06" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1725,7 +1725,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Advanced,
     step: 'v15 canParse',
     action:
-      'Applications that use `canParse` should use `analyze` from `@angular/localize/tools` instead. In v15, the `canParse` method was removed from all translation parsers in `@angular/localize/tools`.  <a href="https://angular.io/guide/update-to-version-15#v15-bc-07" alt="Link to more information about this change">Read further</a>',
+      'Applications that use `canParse` should use `analyze` from `@angular/localize/tools` instead. In v15, the `canParse` method was removed from all translation parsers in `@angular/localize/tools`.  <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-07" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1733,7 +1733,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 ActivatedRoutSnapshot',
     action:
-      'Make sure that all `ActivatedRouteSnapshot` objects have a `title` property. In v15, the `title` property is a required property of `ActivatedRouteSnapshot`. <a href="https://angular.io/guide/update-to-version-15#v15-bc-08" alt="Link to more information about this change">Read further</a>',
+      'Make sure that all `ActivatedRouteSnapshot` objects have a `title` property. In v15, the `title` property is a required property of `ActivatedRouteSnapshot`. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-08" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1741,7 +1741,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Advanced,
     step: 'v15 RouterOutlet',
     action:
-      'If your tests with `RouterOutlet` break, make sure they don\'t depend on the instantiation order of the corresponding component relative to change detection. In v15, `RouterOutlet` instantiates the component after change detection. <a href="https://angular.io/guide/update-to-version-15#v15-bc-09" alt="Link to more information about this change">Read further</a>',
+      'If your tests with `RouterOutlet` break, make sure they don\'t depend on the instantiation order of the corresponding component relative to change detection. In v15, `RouterOutlet` instantiates the component after change detection. <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-09" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1749,7 +1749,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 relativeLinkResolution',
     action:
-      'In v15, `relativeLinkResolution` is not configurable in the Router. It was used to opt out of an earlier bug fix that is now standard.  <a href="https://angular.io/guide/update-to-version-15#v15-bc-10" alt="Link to more information about this change">Read further</a>',
+      'In v15, `relativeLinkResolution` is not configurable in the Router. It was used to opt out of an earlier bug fix that is now standard.  <a href="https://v15.angular.io/guide/update-to-version-15#v15-bc-10" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1757,7 +1757,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 DATE_PIPE_DEFAULT_OPTIONS',
     action:
-      'Change instances of the `DATE_PIPE_DEFAULT_TIMEZONE` token to use `DATE_PIPE_DEFAULT_OPTIONS` to configure time zones.  In v15, the `DATE_PIPE_DEFAULT_TIMEZONE` token is deprecated. <a href="https://angular.io/guide/update-to-version-15#v15-dp-01" alt="Link to more information about this change">Read further</a>',
+      'Change instances of the `DATE_PIPE_DEFAULT_TIMEZONE` token to use `DATE_PIPE_DEFAULT_OPTIONS` to configure time zones.  In v15, the `DATE_PIPE_DEFAULT_TIMEZONE` token is deprecated. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-01" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1765,7 +1765,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 iframe',
     action:
-      "Existing `<iframe>` instances might have security-sensitive attributes applied to them as an attribute or property binding. These security-sensitive attributes can occur in a template or in a directive's host bindings. Such occurrences require an update to ensure compliance with the new and stricter rules about `<iframe>` bindings. For more information, see [the error page](https://angular.io/errors/NG0910).",
+      "Existing `<iframe>` instances might have security-sensitive attributes applied to them as an attribute or property binding. These security-sensitive attributes can occur in a template or in a directive's host bindings. Such occurrences require an update to ensure compliance with the new and stricter rules about `<iframe>` bindings. For more information, see [the error page](https://v15.angular.io/errors/NG0910).",
   },
   {
     possibleIn: 1500,
@@ -1773,7 +1773,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 Injector.get',
     action:
-      'Update instances of `Injector.get()` that use an `InjectFlags` parameter to use an `InjectOptions` parameter. The `InjectFlags` parameter of `Injector.get()` is deprecated in v15. <a href="https://angular.io/guide/update-to-version-15#v15-dp-02" alt="Link to more information about this change">Read further</a>',
+      'Update instances of `Injector.get()` that use an `InjectFlags` parameter to use an `InjectOptions` parameter. The `InjectFlags` parameter of `Injector.get()` is deprecated in v15. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-02" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1781,7 +1781,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 TestBed.inject',
     action:
-      'Update instances of `TestBed.inject()` that use an `InjectFlags` parameter to use an `InjectOptions` parameter. The `InjectFlags` parameter of `TestBed.inject()` is deprecated in v15. <a href="https://angular.io/guide/update-to-version-15#v15-dp-01" alt="Link to more information about this change">Read further</a>',
+      'Update instances of `TestBed.inject()` that use an `InjectFlags` parameter to use an `InjectOptions` parameter. The `InjectFlags` parameter of `TestBed.inject()` is deprecated in v15. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-01" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1789,7 +1789,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 ngModule in providedIn',
     action:
-      'Using `providedIn: ngModule` for an `@Injectable` and `InjectionToken` is deprecated in v15. <a href="https://angular.io/guide/update-to-version-15#v15-dp-04" alt="Link to more information about this change">Read further</a>',
+      'Using `providedIn: ngModule` for an `@Injectable` and `InjectionToken` is deprecated in v15. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-04" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1797,7 +1797,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v15 providedIn any',
     action:
-      'Using `providedIn: \'any\'` for an `@Injectable` or `InjectionToken` is deprecated in v15. <a href="https://angular.io/guide/update-to-version-15#v15-dp-05" alt="Link to more information about this change">Read further</a>',
+      'Using `providedIn: \'any\'` for an `@Injectable` or `InjectionToken` is deprecated in v15. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-05" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
@@ -1805,7 +1805,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'v15 RouterLinkWithHref',
     action:
-      'Update instances of the `RouterLinkWithHref`directive to use the `RouterLink` directive. The `RouterLinkWithHref` directive is deprecated in v15. <a href="https://angular.io/guide/update-to-version-15#v15-dp-06" alt="Link to more information about this change">Read further</a>',
+      'Update instances of the `RouterLinkWithHref`directive to use the `RouterLink` directive. The `RouterLinkWithHref` directive is deprecated in v15. <a href="https://v15.angular.io/guide/update-to-version-15#v15-dp-06" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,
