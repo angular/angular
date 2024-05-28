@@ -38,7 +38,7 @@ TodoModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TodoModule, decorators: [{
             type: NgModule,
             args: [{
-                    declarations: [TodoComponent, MyApp],
+                    declarations: [TodoComponent, MyApp]
                 }]
         }] });
 

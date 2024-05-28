@@ -82,7 +82,8 @@ import {
   TViewType,
 } from './interfaces/view';
 import {assertTNodeType} from './node_assert';
-import {profiler, ProfilerEvent} from './profiler';
+import {profiler} from './profiler';
+import {ProfilerEvent} from './profiler_types';
 import {setUpAttributes} from './util/attrs_utils';
 import {
   getLViewParent,

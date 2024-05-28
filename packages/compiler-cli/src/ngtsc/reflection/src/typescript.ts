@@ -348,7 +348,10 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
 
     const importDeclaration = namespaceDeclaration.parent.parent;
-    if (!ts.isStringLiteral(importDeclaration.moduleSpecifier)) {
+    if (
+      !ts.isImportDeclaration(importDeclaration) ||
+      !ts.isStringLiteral(importDeclaration.moduleSpecifier)
+    ) {
       // Should not happen as this would be invalid TypesScript
       return null;
     }
@@ -356,7 +359,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {
       from: importDeclaration.moduleSpecifier.text,
       name: id.text,
-      node: namespaceDeclaration.parent.parent,
+      node: importDeclaration,
     };
   }
 

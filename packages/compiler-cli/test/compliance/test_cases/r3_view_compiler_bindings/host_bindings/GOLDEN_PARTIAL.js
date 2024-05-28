@@ -101,8 +101,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: '[hostBindingDir]',
                     host: {
                         '[class.a]': 'value ?? "class-a"',
-                        '[class.b]': 'value ?? "class-b"',
-                    },
+                        '[class.b]': 'value ?? "class-b"'
+                    }
                 }]
         }] });
 
@@ -135,8 +135,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: '[hostBindingDir]',
                     host: {
                         '[style.fontSize]': 'value ?? "15px"',
-                        '[style.fontWeight]': 'value ?? "bold"',
-                    },
+                        '[style.fontWeight]': 'value ?? "bold"'
+                    }
                 }]
         }] });
 
@@ -299,7 +299,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                         '[style.opacity]': 'true',
                         'class': 'one two',
                         '[class.three]': 'true',
-                        'title': 'hello there from directive',
+                        'title': 'hello there from directive'
                     }
                 }]
         }] });
@@ -565,7 +565,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: '[my-dir]',
                     host: {
                         '(mousedown)': 'mousedown()',
-                        '(mouseup)': 'mouseup()',
+                        '(mouseup)': 'mouseup()'
                     }
                 }]
         }], propDecorators: { click: [{
@@ -602,7 +602,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-comp',
                     template: '',
                     host: {
-                        '(@animation.done)': 'done()',
+                        '(@animation.done)': 'done()'
                     }
                 }]
         }], propDecorators: { start: [{
@@ -641,7 +641,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     host: {
                         '(mousedown)': 'mousedown()',
                         '(@animation.done)': 'done()',
-                        '(mouseup)': 'mouseup()',
+                        '(mouseup)': 'mouseup()'
                     }
                 }]
         }], propDecorators: { start: [{
@@ -677,7 +677,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: '[hostBindingDir]',
                     host: {
-                        '[style.color]': '$any("red")',
+                        '[style.color]': '$any("red")'
                     },
                     template: ``
                 }]
@@ -707,7 +707,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: '[hostBindingDir]',
                     host: {
                         '[class.a]': 'true',
-                        '[class.b]': 'false',
+                        '[class.b]': 'false'
                     }
                 }]
         }], propDecorators: { true: [{
@@ -818,8 +818,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                         '[href]': 'evil',
                         '[attr.style]': 'evil',
                         '[src]': 'evil',
-                        '[sandbox]': 'evil',
-                    },
+                        '[sandbox]': 'evil'
+                    }
                 }]
         }] });
 export class HostBindingDir2 {
@@ -839,8 +839,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                         '[href]': 'evil',
                         '[attr.style]': 'evil',
                         '[src]': 'evil',
-                        '[sandbox]': 'evil',
-                    },
+                        '[sandbox]': 'evil'
+                    }
                 }]
         }] });
 
@@ -873,7 +873,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     standalone: true,
                     selector: '[hostBindingDir]',
-                    host: { 'src': 'trusted', 'srcdoc': 'trusted' },
+                    host: { 'src': 'trusted', 'srcdoc': 'trusted' }
                 }]
         }] });
 export class HostBindingDir2 {
@@ -885,7 +885,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     standalone: true,
                     selector: 'img',
-                    host: { 'src': 'trusted', 'srcdoc': 'trusted' },
+                    host: { 'src': 'trusted', 'srcdoc': 'trusted' }
                 }]
         }] });
 
@@ -920,7 +920,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     standalone: true,
                     selector: '[hostBindingDir]',
-                    host: { '[style.background-image]': 'imgUrl', '[style]': 'styles' },
+                    host: { '[style.background-image]': 'imgUrl', '[style]': 'styles' }
                 }]
         }] });
 
@@ -953,7 +953,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-cmp',
                     standalone: true,
                     host: {
-                        '(document:dragover)': 'foo($event)',
+                        '(document:dragover)': 'foo($event)'
                     },
                     template: `
   `
@@ -990,7 +990,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-cmp',
                     standalone: true,
                     host: {
-                        'foo': BAR_CONST,
+                        'foo': BAR_CONST
                     },
                     template: ``
                 }]
@@ -1025,7 +1025,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     host: {
                         ['class.is-compact']: 'false',
                         ['style.width']: '0',
-                        ['attr.tabindex']: '5',
+                        ['attr.tabindex']: '5'
                     }
                 }]
         }] });
@@ -1042,7 +1042,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     host: {
                         '[class.is-compact]': 'false',
                         '[style.width]': '0',
-                        '[attr.tabindex]': '5',
+                        '[attr.tabindex]': '5'
                     }
                 }]
         }] });

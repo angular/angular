@@ -16,7 +16,8 @@ import {RElement} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {profiler, ProfilerEvent} from '../profiler';
+import {profiler} from '../profiler';
+import {ProfilerEvent} from '../profiler_types';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
 

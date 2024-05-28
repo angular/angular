@@ -593,16 +593,16 @@ export class FormSubmittedEvent extends ControlEvent {
 }
 
 // @public
-export const isFormArray: (control: unknown) => control is FormArray<any>;
+export const isFormArray: (control: unknown) => control is FormArray;
 
 // @public
-export const isFormControl: (control: unknown) => control is FormControl<any>;
+export const isFormControl: (control: unknown) => control is FormControl;
 
 // @public
-export const isFormGroup: (control: unknown) => control is FormGroup<any>;
+export const isFormGroup: (control: unknown) => control is FormGroup;
 
 // @public
-export const isFormRecord: (control: unknown) => control is FormRecord<AbstractControl<any, any>>;
+export const isFormRecord: (control: unknown) => control is FormRecord;
 
 // @public
 export class MaxLengthValidator extends AbstractValidatorDirective {
@@ -712,7 +712,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
 
 // @public
 export class NgModel extends NgControl implements OnChanges, OnDestroy {
-    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _changeDetectorRef?: ChangeDetectorRef | null | undefined, callSetDisabledState?: SetDisabledStateOption | undefined);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _changeDetectorRef?: (ChangeDetectorRef | null) | undefined, callSetDisabledState?: SetDisabledStateOption | undefined);
     // (undocumented)
     readonly control: FormControl;
     get formDirective(): any;

@@ -33,7 +33,7 @@ export function getImportOfIdentifier(
 
   const importDecl = decl.parent.parent.parent;
 
-  if (!ts.isStringLiteral(importDecl.moduleSpecifier)) {
+  if (!ts.isImportDeclaration(importDecl) || !ts.isStringLiteral(importDecl.moduleSpecifier)) {
     return null;
   }
 

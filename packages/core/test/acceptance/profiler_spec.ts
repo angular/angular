@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ProfilerEvent, setProfiler} from '@angular/core/src/render3/profiler';
+import {setProfiler} from '@angular/core/src/render3/profiler';
+import {ProfilerEvent} from '@angular/core/src/render3/profiler_types';
 import {TestBed} from '@angular/core/testing';
 
 import {

@@ -14,7 +14,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
+                    standalone: true
                 }]
         }] });
 
@@ -46,7 +46,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     standalone: true,
-                    template: 'Works',
+                    template: 'Works'
                 }]
         }] });
 
@@ -84,7 +84,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
+                    standalone: true
                 }]
         }], propDecorators: { decoratorInput: [{
                 type: Input
@@ -123,7 +123,7 @@ function convertToBoolean(value) {
 export class TestDir {
     constructor() {
         this.name = input.required({
-            transform: convertToBoolean,
+            transform: convertToBoolean
         });
     }
 }
@@ -132,7 +132,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
+                    standalone: true
                 }]
         }] });
 
@@ -158,7 +158,7 @@ const complexTransform = (defaultVal) => (v) => v || defaultVal;
 export class TestDir {
     constructor() {
         this.name = input.required({
-            transform: (v) => v === true || v !== '',
+            transform: (v) => v === true || v !== ''
         });
         this.name2 = input.required({ transform: toBoolean });
         this.genericTransform = input.required({ transform: complexTransform(1) });
@@ -170,7 +170,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
+                    standalone: true
                 }]
         }] });
 

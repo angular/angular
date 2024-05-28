@@ -18,7 +18,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
+                    standalone: true
                 }]
         }] });
 
@@ -57,7 +57,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     standalone: true,
-                    template: 'Works',
+                    template: 'Works'
                 }]
         }] });
 
@@ -98,7 +98,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true,
+                    standalone: true
                 }]
         }], propDecorators: { clickDecorator1: [{
                 type: Output
