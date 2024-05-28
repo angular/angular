@@ -1,22 +1,21 @@
 # Building Angular with Bazel
 
-Note: this doc is for developing Angular, it is _not_ public
+Note: This doc is for developing Angular. It is _not_ public
 documentation for building an Angular application with Bazel.
 
 The Bazel build tool (https://bazel.build) provides fast, reliable
-incremental builds. We plan to migrate Angular's build scripts to
-Bazel.
+incremental builds. The majority of Angular's code is built with Bazel.
 
-## Installation
+## Installation and running
 
-In order to ensure that everyone builds Angular in a _consistent_ way, Bazel
-will be installed through NPM. It's not necessary to install Bazel
-manually.
+Angular installs Bazel from npm rather than having contributors install Bazel
+directly. This ensures that everyone uses the same version of Bazel.
 
-The binaries for Bazel will be provided by the [`@bazel/bazelisk`](https://github.com/bazelbuild/bazelisk)
-NPM package and its platform-specific dependencies.
+The binaries for Bazel are provided by
+the [`@bazel/bazelisk`](https://github.com/bazelbuild/bazelisk)
+npm package and its platform-specific dependencies.
 
-You can access Bazel with the `yarn bazel` command
+You can run Bazel with the `yarn bazel` command.
 
 ## Configuration
 
@@ -40,9 +39,8 @@ want Bazel to create several symlinks in your project directory
 - Build a package: `yarn bazel build packages/core`
 - Build all packages: `yarn bazel build packages/...`
 
-You can use [ibazel] to get a "watch mode" that continuously
-keeps the outputs up-to-date as you save sources. Note this is
-new as of May 2017 and not very stable yet.
+You can use [ibazel] to run in a "watch mode" that continuously
+keeps the outputs up-to-date as you save sources.
 
 [ibazel]: https://github.com/bazelbuild/bazel-watcher
 
@@ -53,33 +51,35 @@ new as of May 2017 and not very stable yet.
 - Test all packages: `yarn test packages/...`
 - Test angular.io app locally: `yarn test //aio/... --config=aio_local_deps`
 
-**Note**: The ellipsis in the last command above are not meant to be substituted by a package name, but
+The ellipsis in the examples above are not meant to be substituted by a package name, but
 are used by Bazel as a wildcard to execute all tests in the specified path. To execute all the tests for a
 single package, the commands are (exemplary):
 - `yarn test //packages/core/...` for all tests, or
 - `yarn test //packages/core/test:test` for a particular test suite.
 
-**Note**: The first test run will be much slower than future runs. This is because future runs will
-benefit from Bazel's capability to do incremental builds.
+Bazel very effectively caches build results, so it's common for your first time building a target
+to be much slower than subsequent builds.
 
-You can use [ibazel] to get a "watch mode" that continuously
+You can use [ibazel] to run in a "watch mode" that continuously
 keeps the outputs up-to-date as you save sources.
 
-### Various Flags Used For Tests
+### Testing with flags
 
-If you're experiencing problems with seemingly unrelated tests failing, it may be because you're not using the proper flags with your Bazel test runs in Angular.
+If you're experiencing problems with seemingly unrelated tests failing, it may be because you're not
+using the proper flags with your Bazel test runs in Angular.
 
 - `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
 - `--test_arg=--node_options=--inspect=9228`: change the inspector port.
-- `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config of your rules in any given `BUILD.bazel`.
+- `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config of your rules in
+  any given `BUILD.bazel`.
 
-
-### Debugging a Node Test
+### Debugging a Node Test in Chrome DevTools
 <a id="debugging"></a>
 
-- Open chrome at: [chrome://inspect](chrome://inspect)
+- Open Chrome at: [chrome://inspect](chrome://inspect)
 - Click on `Open dedicated DevTools for Node` to launch a debugger.
-- Run test: `yarn bazel test packages/core/test:test --config=debug`
+- Run your test with the debug configuration,
+  e.g. `yarn bazel test packages/core/test:test --config=debug`
 
 The process should automatically connect to the debugger.
 For more, see the [rules_nodejs Debugging documentation](https://bazelbuild.github.io/rules_nodejs/index.html#debugging).
@@ -87,8 +87,12 @@ For more, see the [rules_nodejs Debugging documentation](https://bazelbuild.gith
 For additional info and testing options, see the
 [nodejs_test documentation](https://bazelbuild.github.io/rules_nodejs/Built-ins.html#nodejs_test).
 
-- Click on "Resume script execution" to let the code run until the first `debugger` statement or a previously set breakpoint.
-- If you're debugging a test and you want to inspect the generated template instructions, find the template of your component in the call stack and click on `(source mapped from [CompName].js)` at the bottom of the code. You can also disable sourcemaps in the options or go to sources and look into ng:// namespace to see all the generated code.
+- Click on "Resume script execution" to let the code run until the first `debugger` statement or a
+  previously set breakpoint.
+- If you want to inspect generated template instructions while debugging, find the
+  template of your component in the call stack and click on `(source mapped from [CompName].js)` at
+  the bottom of the code. You can also disable sourcemaps in Chrome DevTools' options or go to
+  sources and look into ng:// namespace to see all the generated code.
 
 ### Debugging a Node Test in VSCode
 
@@ -105,7 +109,8 @@ First time setup:
     }
 ```
 
-**Setting breakpoints directly in your code files may not work in VSCode**. This is because the files you're actually debugging are built files that exist in a `./private/...` folder.
+**Setting breakpoints directly in your code files may not work in VSCode**. This is because the
+files you're actually debugging are built files that exist in a `./private/...` folder.
 The easiest way to debug a test for now is to add a `debugger` statement in the code
 and launch the bazel corresponding test (`yarn bazel test <target> --config=debug`).
 
@@ -115,13 +120,17 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 
 ### Debugging a Karma Test
 
-- Run test: `yarn bazel run packages/core/test:test_web_debug` (any `karma_web_test_suite` target has a `_debug` target)
+- Run test with `_debug` appended to the target name,
+  e.g. `yarn bazel run packages/core/test:test_web_debug`.
+  Every `karma_web_test_suite` target has an additional `_debug` target.
 - Open any browser at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
-- Open the browser's DevTools to debug the tests (after, for example, having focused on specific tests via `fit` and/or `fdescribe` or having added `debugger` statements in them)
+- Open the browser's DevTools to debug the tests (after, for example, having focused on specific
+  tests via `fit` and/or `fdescribe` or having added `debugger` statements in them)
 
 ### Debugging Bazel rules
 
-Open `external` directory which contains everything that bazel downloaded while executing the workspace file:
+Open `external` directory which contains everything that bazel downloaded while executing the
+workspace file:
 ```sh
 open $(yarn -s bazel info output_base)/external
 ```
@@ -138,68 +147,69 @@ open $(yarn -s bazel info output_base)/external/build_bazel_rules_nodejs/interna
 
 ## Stamping
 
-Bazel supports the ability to include non-hermetic information from the version control system in built artifacts. This is called stamping.
+Bazel supports the ability to include non-hermetic information from the version control system in
+built artifacts. This is called stamping.
 You can see an overview at https://www.kchodorow.com/blog/2017/03/27/stamping-your-builds/
-In our repo, here is how it's configured:
 
-1) In `tools/bazel_stamp_vars.js` we run the `git` commands to generate our versioning info.
-1) In `.bazelrc` we register this script as the value for the `workspace_status_command` flag. Bazel will run the script when it needs to stamp a binary.
+Angular configures stamping as follows:
 
-Note that Bazel has a `--stamp` argument to `yarn bazel build`, but this has no effect since our stamping takes place in Skylark rules. See https://github.com/bazelbuild/bazel/issues/1054
+1. In `tools/bazel_stamp_vars.js` we run the `git` commands to generate our versioning info.
+2. In `.bazelrc` we register this script as the value for the `workspace_status_command` flag. Bazel
+   will run the script when it needs to stamp a binary.
 
 ## Remote cache
 
-Bazel supports fetching action results from a cache, allowing a clean build to pick up artifacts from prior builds.
-This makes builds incremental, even on CI.
-It works because Bazel assigns a content-based hash to all action inputs, which is used as the cache key for the action outputs.
-Thanks to the hermeticity property, we can skip executing an action if the inputs hash is already present in the cache.
+Bazel supports fetching action results from a cache, allowing a clean build to reuse artifacts
+from prior builds. This makes builds incremental, even on CI.
 
-Of course, non-hermeticity in an action can cause problems.
-At worst, you can fetch a broken artifact from the cache, making your build non-reproducible.
-For this reason, we are careful to implement our Bazel rules to depend only on their inputs.
+Bazel assigns a content-based hash to all action inputs, which is used as the cache
+key for the action outputs. Because Bazel builds are hermetic, it can skip executing an action if
+the inputs hash is already present in the cache.
 
-Currently, we only use remote caching on CircleCI. We let Angular core developers enable remote caching to speed up their builds.
+When using this caching feature, non-hermetic actions cause problems. At worst, you can fetch a
+broken artifact from the cache, making your build non-reproducible. For this reason, we are careful
+to implement our Bazel rules to depend _exclusively_ on their inputs, never reading from the
+filesystem or the underlying environment directly.
+
+Currently, we only use remote caching on CI. Angular core developers can enable remote
+caching to speed up their builds.
 
 ### Remote cache in development
+
+Note: this is only available to Googlers
 
 To enable remote caching for your build:
 
 1. Go to the service accounts for the ["internal" project](https://console.cloud.google.com/iam-admin/serviceaccounts?project=internal-200822)
-1. Select "Angular local dev", click on "Edit", scroll to the bottom, and click "Create key"
-1. When the pop-up shows, select "JSON" for "Key type" and click "Create"
-1. Save the key in a secure location
-1. Create a file called `.bazelrc.user` in the root directory of the workspace, and add the following content:
+2. Select "Angular local dev", click on "Edit", scroll to the bottom, and click "Create key"
+3. When the pop-up shows, select "JSON" for "Key type" and click "Create"
+4. Save the key in a secure location
+5. Create a file called `.bazelrc.user` in the root directory of the workspace, and add the following content:
 
 ```
 build --config=angular-team --google_credentials=[ABSOLUTE_PATH_TO_SERVICE_KEY]
 ```
 
-### Remote cache for Circle CI
-
-This feature is experimental, and developed by the CircleCI team with guidance from Angular.
-Contact Alex Eagle with questions.
-
-*How it's configured*:
-
-1. In `.circleci/config.yml`, each CircleCI job downloads a proxy binary, which is built from https://github.com/notnoopci/bazel-remote-proxy. The download is done by running `.circleci/setup_cache.sh`. When the feature graduates from experimental, this proxy will be installed by default on every CircleCI worker, and this step will not be needed.
-1. Next, each job runs the `setup-bazel-remote-cache` anchor. This starts up the proxy running in the background. In the CircleCI UI, you'll see this step continues running while later steps run, and you can see logging from the proxy process.
-1. Bazel must be configured to connect to the proxy on a local port. This configuration lives in `.circleci/bazel.linux.rc` and is enabled because we overwrite the system Bazel settings in /etc/bazel.bazelrc with this file.
-1. Each `bazel` command in `.circleci/config.yml` picks up and uses the caching flags.
-
 ## Diagnosing slow builds
 
 If a build seems slow you can use Bazel to diagnose where time is spent.
 
-The first step is to generate a profile of the build using the `--profile filename_name.profile` flag.
+The first step is to generate a profile of the build using the `--profile filename_name.profile`
+flag.
+
 ```sh
 yarn bazel build //packages/compiler --profile filename_name.profile
 ```
 
-This will generate a `filename_name.profile` that you can then analyse using [analyze-profile](https://docs.bazel.build/versions/master/user-manual.html#analyze-profile) command.
+This generates a `filename_name.profile` that you can then analyse
+using chrome://tracing or
+Bazel's [analyze-profile](https://docs.bazel.build/versions/master/user-manual.html#analyze-profile)
+command.
 
 ## Using the console profile report
 
 You can obtain a simple report directly in the console by running:
+
 ```sh
 yarn bazel analyze-profile filename_name.profile
 ```
@@ -238,22 +248,28 @@ A more comprehensive way to visualize the profile information is through the HTM
 yarn bazel analyze-profile filename_name.profile --html --html_details --html_histograms
 ```
 
-This will generate a `filename_name.profile.html` file that you can open in your browser.
+This generates a `filename_name.profile.html` file that you can open in your browser.
 
-In the upper right corner that is a small table of contents with links to three areas: Tasks, Legend, and Statistics.
+In the upper right corner that is a small table of contents with links to three areas: Tasks,
+Legend, and Statistics.
 
-In the Tasks section you will find a graph of where time is spent. Legend shows what the colors in the Tasks graph mean.
-Hovering over the background will show what phase that is, while hovering over bars will show more details about that specific action.
+In the Tasks section you will find a graph of where time is spent. Legend shows what the colors in
+the Tasks graph mean.
+Hovering over the background will show what phase that is, while hovering over bars will show more
+details about that specific action.
 
 The Statistics section shows how long each phase took and how time was spent in that phase.
 Usually the longest one is the execution phase, which also includes critical path information.
 
-Also in the Statistics section are the Skylark statistic, split in User-Defined and Builtin function execution time.
-You can click the "self" header twice to order the table by functions where the most time (in ms) is spent.
+Also in the Statistics section are the Skylark statistic, split in User-Defined and Builtin function
+execution time.
+You can click the "self" header twice to order the table by functions where the most time (in ms) is
+spent.
 
-When diagnosing slow builds you should focus on the top time spenders across all phases and functions.
-Usually there is a single item (or multiple items of the same kind) where the overwhelming majority of time is spent.
-
+When diagnosing slow builds you should focus on the top time spenders across all phases and
+functions.
+Usually there is a single item (or multiple items of the same kind) where the overwhelming majority
+of time is spent.
 
 ## Known issues
 

@@ -925,8 +925,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'docs/PUBLIC_API.md',
-          'docs/RELEASE_SCHEDULE.md',
+          'contributing-docs/public-api-surface.md',
           'aio/content/guide/npm-packages.md',
           'aio/content/guide/browser-support.md',
           'aio/content/guide/releases.md',
@@ -1184,8 +1183,8 @@ groups:
           '.ng-dev/**/{*,.*}',
           '.vscode/**/{*,.*}',
           '.yarn/**/{*,.*}',
-          'docs/*.md',
-          'docs/images/**/{*,.*}',
+          'contributing-docs/*.md',
+          'contributing-docs/images/**/{*,.*}',
           'goldens/{*,.*}',
           'goldens/public-api/manage.js',
           'modules/{*,.*}',
@@ -1230,7 +1229,6 @@ groups:
       - >
         contains_any_globs(files.exclude("goldens/public-api/manage.js"), [
           'goldens/public-api/**/{*,.*}',
-          'docs/NAMING.md',
           'aio/content/guide/angular-package-format.md',
           'aio/content/guide/glossary.md',
           'aio/content/guide/styleguide.md',

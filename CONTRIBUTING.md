@@ -32,7 +32,7 @@ Stack Overflow is a much better place to ask questions since:
 
 To save your and our time, we will systematically close all issues that are requests for general support and redirect people to Stack Overflow.
 
-If you would like to chat about the question in real-time, you can reach out via [our Discord server][discord].
+If you would like to chat about the question in real-time, you can reach out via [the Angular community Discord server][discord].
 
 
 ## <a name="issue"></a> Found a Bug?
@@ -138,7 +138,7 @@ If we ask for changes via code reviews then:
     git push
     ```
 
-    For more info on working with fixup commits see [here](docs/FIXUP_COMMITS.md).
+    For more info on working with fixup commits see [here](./contributing-docs/using-fixup-commits.md).
 
 That's it! Thank you for your contribution!
 
@@ -207,7 +207,7 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 * All public API methods **must be documented**.
 * We follow [Google's JavaScript Style Guide][js-style-guide], but wrap all code at **100 characters**.
 
-   An automated formatter is available, see [DEVELOPER.md](docs/DEVELOPER.md#formatting-your-source-code).
+   An automated formatter is available, see [DEVELOPER.md](contributing-docs/building-and-testing-angular#formatting-your-source-code).
 
 
 ## <a name="commit"></a> Commit Message Format
@@ -392,7 +392,7 @@ The following documents can help you sort out issues with GitHub accounts and mu
 [coc]: https://github.com/angular/code-of-conduct/blob/main/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
 [corporate-cla]: https://cla.developers.google.com/about/google-corporate
-[dev-doc]: https://github.com/angular/angular/blob/main/docs/DEVELOPER.md
+[dev-doc]: ./contributing-docs/building-and-testing-angular.md
 [github]: https://github.com/angular/angular
 [discord]: https://discord.gg/angular
 [individual-cla]: https://cla.developers.google.com/about/google-individual

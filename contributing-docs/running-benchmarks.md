@@ -31,5 +31,5 @@ You can start a comparison by adding a comment as followed to any PR:
 /benchmark-compare <other-sha> //modules/benchmarks/src/expanding_rows:perf_chromium
 ```
 
-**Note**: An explicit benchmark target must be provided. You can use the prompt of `yarn benchmarks run` to
-discover available benchmarks.
+**Note**: An explicit benchmark target must be provided. You can use the prompt
+of `yarn benchmarks run` to discover available benchmarks.
