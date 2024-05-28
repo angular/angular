@@ -71,7 +71,7 @@ api_golden_test(
         "//packages/platform-browser",
     ],
     entry_point = "angular/packages/platform-browser/src/errors.d.ts",
-    golden = "angular/goldens/public-api/platform-browser/errors.md",
+    golden = "angular/goldens/public-api/platform-browser/errors.api.md",
 )
 
 filegroup(

@@ -1,14 +1,13 @@
 diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel
-index bde72eb..50912e9 100755
+index 23efd35..37927ad 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel
 +++ b/node_modules/@angular/build-tooling/bazel/api-gen/extraction/BUILD.bazel
-@@ -1,5 +1,5 @@
- load("@npm//@bazel/concatjs:index.bzl", "ts_library")
+@@ -1,4 +1,4 @@
 -load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
  load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild")
+ load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
 
- package(default_visibility = ["@npm//@angular/build-tooling/bazel/api-gen:__subpackages__"])
 @@ -17,7 +17,7 @@ esbuild(
      target = "es2022",
      deps = [
@@ -41,7 +40,7 @@ index bde72eb..50912e9 100755
      ],
      entry_point = "bin.mjs",
 diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel
-index 26563a7..f7bc080 100755
+index 89e23a0..971c87a 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel
 +++ b/node_modules/@angular/build-tooling/bazel/api-gen/manifest/BUILD.bazel
 @@ -15,7 +15,7 @@ esbuild_esm_bundle(
@@ -72,11 +71,11 @@ index 26563a7..f7bc080 100755
      entry_point = "bin.mjs",
      # Note: Using the linker here as we need it for ESM. The linker is not
 diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
-index f5e01df..1698016 100755
+index 2d4dc78..e51e065 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
 +++ b/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
 @@ -1,5 +1,5 @@
- load("@npm//@bazel/concatjs:index.bzl", "ts_library")
+ load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
 -load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
 
@@ -157,7 +156,7 @@ index 8bfab84..175cc9d 100755
              "manual",
              "no-remote-exec",
 diff --git a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
-index 6213703..0c1d70f 100755
+index a8d1947..be769eb 100755
 --- a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
 @@ -1,7 +1,7 @@
@@ -166,7 +165,7 @@ index 6213703..0c1d70f 100755
  load("@npm//@angular/build-tooling/bazel:expand_template.bzl", "expand_template")
 -load("@npm//@angular/bazel:index.bzl", "ng_module")
 +load("@angular//tools:defaults.bzl", "ng_module")
- load("@npm//@bazel/concatjs:index.bzl", "ts_library")
+ load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
  load(":benchmark_test.bzl", "benchmark_test")
 
 @@ -37,8 +37,8 @@ def component_benchmark(
@@ -190,13 +189,13 @@ index 6213703..0c1d70f 100755
      if not assets:
          html = prefix + "index.html"
 diff --git a/node_modules/@angular/build-tooling/bazel/http-server/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/http-server/BUILD.bazel
-index 04cc755..ec01017 100755
+index 3a85025..12a2c55 100755
 --- a/node_modules/@angular/build-tooling/bazel/http-server/BUILD.bazel
 +++ b/node_modules/@angular/build-tooling/bazel/http-server/BUILD.bazel
 @@ -1,4 +1,4 @@
 -load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
- load("@npm//@bazel/concatjs:index.bzl", "ts_library")
+ load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
 
  package(default_visibility = ["//visibility:public"])
 diff --git a/node_modules/@angular/build-tooling/bazel/integration/index.bzl b/node_modules/@angular/build-tooling/bazel/integration/index.bzl

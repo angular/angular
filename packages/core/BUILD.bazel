@@ -112,7 +112,7 @@ api_golden_test(
         "//packages/core/src/util",
     ],
     entry_point = "angular/packages/core/src/render3/global_utils_api.d.ts",
-    golden = "angular/goldens/public-api/core/global_utils.md",
+    golden = "angular/goldens/public-api/core/global_utils.api.md",
 )
 
 api_golden_test(
@@ -122,7 +122,7 @@ api_golden_test(
         "//packages/core",
     ],
     entry_point = "angular/packages/core/src/errors.d.ts",
-    golden = "angular/goldens/public-api/core/errors.md",
+    golden = "angular/goldens/public-api/core/errors.api.md",
 )
 
 filegroup(

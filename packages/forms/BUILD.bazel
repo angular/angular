@@ -58,7 +58,7 @@ api_golden_test(
         "//packages/forms",
     ],
     entry_point = "angular/packages/forms/src/errors.d.ts",
-    golden = "angular/goldens/public-api/forms/errors.md",
+    golden = "angular/goldens/public-api/forms/errors.api.md",
 )
 
 filegroup(

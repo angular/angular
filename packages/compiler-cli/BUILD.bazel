@@ -135,7 +135,7 @@ api_golden_test(
         "//goldens:public-api",
     ],
     entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/error_code.d.ts",
-    golden = "angular/goldens/public-api/compiler-cli/error_code.md",
+    golden = "angular/goldens/public-api/compiler-cli/error_code.api.md",
 )
 
 api_golden_test(
@@ -145,7 +145,7 @@ api_golden_test(
         "//goldens:public-api",
     ],
     entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/extended_template_diagnostic_name.d.ts",
-    golden = "angular/goldens/public-api/compiler-cli/extended_template_diagnostic_name.md",
+    golden = "angular/goldens/public-api/compiler-cli/extended_template_diagnostic_name.api.md",
 )
 
 api_golden_test(
@@ -155,7 +155,7 @@ api_golden_test(
         "//goldens:public-api",
     ],
     entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/core/api/src/public_options.d.ts",
-    golden = "angular/goldens/public-api/compiler-cli/compiler_options.md",
+    golden = "angular/goldens/public-api/compiler-cli/compiler_options.api.md",
 )
 
 # Controls whether the Ivy compiler produces performance traces as part of each build
