@@ -30,12 +30,10 @@ const PREVENT_DEFAULT_ERROR_MESSAGE_DETAILS =
   'effect. You can check whether an event is being replayed by accessing the event phase: ' +
   '`event.eventPhase === EventPhase.REPLAY`.';
 const PREVENT_DEFAULT_ERROR_MESSAGE = `\`preventDefault\` called during event replay.`;
-const COMPOSED_PATH_ERROR_MESSAGE_DETAILS = () =>
-  ngDevMode
-    ? ' Because event replay occurs after browser ' +
-      'dispatch, `composedPath()` will be empty. Iterate parent nodes from `event.target` or ' +
-      '`event.currentTarget` if you need to check elements in the event path.'
-    : '';
+const COMPOSED_PATH_ERROR_MESSAGE_DETAILS =
+  ' Because event replay occurs after browser ' +
+  'dispatch, `composedPath()` will be empty. Iterate parent nodes from `event.target` or ' +
+  '`event.currentTarget` if you need to check elements in the event path.';
 const COMPOSED_PATH_ERROR_MESSAGE = `\`composedPath\` called during event replay.`;
 
 declare global {
