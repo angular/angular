@@ -1,3 +1,13 @@
+<a name="18.1.0-next.0"></a>
+# 18.1.0-next.0 (2024-05-29)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e5a6f91722](https://github.com/angular/angular/commit/e5a6f917225aafa7c5c860f280d2aafe3615727e) | feat | support TypeScript 5.5 ([#56096](https://github.com/angular/angular/pull/56096)) |
+| [b2445a0953](https://github.com/angular/angular/commit/b2445a095314aa66da038d3093e6a1b18fe5768b) | fix | link errors to ADEV ([#55554](https://github.com/angular/angular/pull/55554)) ([#56038](https://github.com/angular/angular/pull/56038)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.1"></a>
 # 18.0.1 (2024-05-29)
 ### compiler
