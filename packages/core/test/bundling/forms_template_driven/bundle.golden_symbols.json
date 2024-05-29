@@ -924,9 +924,6 @@
     "name": "diPublicInInjector"
   },
   {
-    "name": "disableEventReplayFn"
-  },
-  {
     "name": "elementPropertyInternal"
   },
   {
@@ -1726,6 +1723,9 @@
   },
   {
     "name": "shouldSearchParent"
+  },
+  {
+    "name": "stashEventListener"
   },
   {
     "name": "storeLViewOnDestroy"
