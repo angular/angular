@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {EventContract} from '@angular/core/primitives/event-dispatch';
 import {InjectionToken} from '../di/injection_token';
 
 /**
@@ -46,4 +47,12 @@ export const IS_I18N_HYDRATION_ENABLED = new InjectionToken<boolean>(
  */
 export const IS_EVENT_REPLAY_ENABLED = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_EVENT_REPLAY_ENABLED' : '',
+);
+
+/**
+ * Internal token to get the event contract from the DOM, or null if it
+ * was not registered.
+ */
+export const EVENT_CONTRACT_FROM_SSR = new InjectionToken<EventContract | null>(
+  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'EVENT_CONTRACT_FROM_SSR' : '',
 );

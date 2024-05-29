@@ -21,24 +21,19 @@ import {APP_ID} from '../application/application_tokens';
 import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
-import {setDisableEventReplayImpl} from '../render3/instructions/listener';
-import {TNode, TNodeType} from '../render3/interfaces/node';
-import {RElement, RNode} from '../render3/interfaces/renderer_dom';
+import {setStashFn} from '../render3/instructions/listener';
+import {RElement} from '../render3/interfaces/renderer_dom';
 import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
 
-import {IS_EVENT_REPLAY_ENABLED} from './tokens';
+import {IS_EVENT_REPLAY_ENABLED, EVENT_CONTRACT_FROM_SSR} from './tokens';
+import {handleEvent, sharedStashFunction} from './event_shared';
+
+export {setJSActionAttribute} from './event_shared';
 
 export const EVENT_REPLAY_ENABLED_DEFAULT = false;
 export const CONTRACT_PROPERTY = 'ngContracts';
-
-declare global {
-  var ngContracts: {[key: string]: EarlyJsactionDataContainer};
-  interface Element {
-    __jsaction_fns: Map<string, Function[]> | undefined;
-  }
-}
 
 // TODO: Upstream this back into event-dispatch.
 function getJsactionData(container: EarlyJsactionDataContainer) {
@@ -63,23 +58,36 @@ export function withEventReplay(): Provider[] {
       useValue: true,
     },
     {
+      provide: EVENT_CONTRACT_FROM_SSR,
+      useFactory: () => {
+        const injector = inject(Injector);
+        const appId = injector.get(APP_ID);
+        // This is set in packages/platform-server/src/utils.ts
+        // Note: globalThis[CONTRACT_PROPERTY] may be undefined in case Event Replay feature
+        // is enabled, but there are no events configured in an application.
+        const container = globalThis[CONTRACT_PROPERTY]?.[appId];
+        const earlyJsactionData = getJsactionData(container);
+        if (earlyJsactionData) {
+          const eventContract = new EventContract(new EventContractContainer(earlyJsactionData.c));
+          for (const et of earlyJsactionData.et) {
+            eventContract.addEvent(et);
+          }
+          for (const et of earlyJsactionData.etc) {
+            eventContract.addEvent(et);
+          }
+          eventContract.replayEarlyEvents(container);
+          return eventContract;
+        }
+        return null;
+      },
+    },
+    {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
-        setDisableEventReplayImpl((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
-          if (rEl.hasAttribute(JSACTION_ATTRIBUTE)) {
-            const el = rEl as unknown as Element;
-            // We don't immediately remove the attribute here because
-            // we need it for replay that happens after hydration.
-            if (!jsactionSet.has(el)) {
-              jsactionSet.add(el);
-              el.__jsaction_fns = new Map();
-            }
-            const eventMap = el.__jsaction_fns!;
-            if (!eventMap.has(eventName)) {
-              eventMap.set(eventName, []);
-            }
-            eventMap.get(eventName)!.push(listenerFn);
-          }
+        const injector = inject(Injector);
+        setStashFn((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
+          sharedStashFunction(rEl, eventName, listenerFn);
+          jsactionSet.add(rEl as unknown as Element);
         });
       },
       multi: true,
@@ -95,33 +103,16 @@ export function withEventReplay(): Provider[] {
             // of the application is completed. This timing is similar to the unclaimed
             // dehydrated views cleanup timing.
             whenStable(appRef).then(() => {
-              const appId = injector.get(APP_ID);
-              // This is set in packages/platform-server/src/utils.ts
-              // Note: globalThis[CONTRACT_PROPERTY] may be undefined in case Event Replay feature
-              // is enabled, but there are no events configured in an application.
-              const container = globalThis[CONTRACT_PROPERTY]?.[appId];
-              const earlyJsactionData = getJsactionData(container);
-              if (earlyJsactionData) {
-                const eventContract = new EventContract(
-                  new EventContractContainer(earlyJsactionData.c),
-                );
-                for (const et of earlyJsactionData.et) {
-                  eventContract.addEvent(et);
-                }
-                for (const et of earlyJsactionData.etc) {
-                  eventContract.addEvent(et);
-                }
-                eventContract.replayEarlyEvents(container);
-                const dispatcher = new EventDispatcher(handleEvent);
-                registerDispatcher(eventContract, dispatcher);
-                for (const el of jsactionSet) {
-                  el.removeAttribute(JSACTION_ATTRIBUTE);
-                  el.__jsaction_fns = undefined;
-                }
-                // After hydration, we shouldn't need to do anymore work related to
-                // event replay anymore.
-                setDisableEventReplayImpl(() => {});
+              const eventContract = injector.get(EVENT_CONTRACT_FROM_SSR)!;
+              const dispatcher = new EventDispatcher(handleEvent);
+              registerDispatcher(eventContract, dispatcher);
+              for (const el of jsactionSet) {
+                el.removeAttribute(JSACTION_ATTRIBUTE);
+                el.__jsaction_fns = undefined;
               }
+              // After hydration, we shouldn't need to do anymore work related to
+              // event replay anymore.
+              setStashFn(() => {});
             });
           };
         }
@@ -179,29 +170,4 @@ export function collectDomEventsInfo(
     }
   }
   return events;
-}
-
-export function setJSActionAttribute(
-  tNode: TNode,
-  rNode: RNode,
-  nativeElementToEvents: Map<Element, string[]>,
-) {
-  if (tNode.type & TNodeType.Element) {
-    const nativeElement = unwrapRNode(rNode) as Element;
-    const events = nativeElementToEvents.get(nativeElement) ?? [];
-    const parts = events.map((event) => `${event}:`);
-    if (parts.length > 0) {
-      nativeElement.setAttribute(JSACTION_ATTRIBUTE, parts.join(';'));
-    }
-  }
-}
-
-function handleEvent(event: Event) {
-  const handlerFns = (event.currentTarget as Element)?.__jsaction_fns?.get(event.type);
-  if (!handlerFns) {
-    return;
-  }
-  for (const handler of handlerFns) {
-    handler(event);
-  }
 }

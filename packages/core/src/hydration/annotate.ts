@@ -432,10 +432,15 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       continue;
     }
 
+    // Attach `jsaction` attribute to elements that have registered listeners,
+    // thus potentially having a need to do an event replay.
     if (nativeElementsToEventTypes) {
-      // Attach `jsaction` attribute to elements that have registered listeners,
-      // thus potentially having a need to do an event replay.
-      setJSActionAttribute(tNode, lView[i], nativeElementsToEventTypes);
+      if (tNode.type & TNodeType.Element) {
+        const nativeElement = unwrapRNode(lView[i]) as Element;
+        if (nativeElementsToEventTypes.has(nativeElement)) {
+          setJSActionAttribute(nativeElement, nativeElementsToEventTypes.get(nativeElement)!);
+        }
+      }
     }
 
     if (Array.isArray(tNode.projection)) {
