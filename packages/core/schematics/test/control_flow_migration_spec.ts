@@ -2189,6 +2189,64 @@ describe('control flow migration', () => {
       );
     });
 
+    it('should not generate aliased variables declared via the `as` syntax with the same name as the original', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor],
+          template: \`<div *ngFor="let item of items; index as $index;">{{$index}}</div>\`
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'}, {id: 2, text: 'stuff'}];
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+        'template: `@for (item of items; track item) {<div>{{$index}}</div>}`',
+      );
+    });
+
+    it('should not generate aliased variables declared via the `let` syntax with the same name as the original', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor],
+          template: \`<div *ngFor="let item of items; let $index = index">{{$index}}</div>\`
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'}, {id: 2, text: 'stuff'}];
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+        'template: `@for (item of items; track item) {<div>{{$index}}</div>}`',
+      );
+    });
+
     it('should migrate with a trackBy function and an aliased index', async () => {
       writeFile(
         '/comp.ts',
