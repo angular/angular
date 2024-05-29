@@ -730,7 +730,7 @@ If the property is hard to construct a default value for, use `?` to explicitly 
 
 You may want to have a required `@Input` field, meaning all your component users are required to pass that attribute.
 In such cases, use a default value.
-Just suppressing the TypeScript error with `!` is insufficient and should be avoided because it will prevent the type checker ensure the input value is provided.
+Just suppressing the TypeScript error with `!` is insufficient and should be avoided because it will prevent the type checker from ensuring the input value is provided.
 
 <docs-code header="app/heroes/hero/hero.component.ts" path="adev/src/content/examples/styleguide/src/05-18/app/heroes/hero/hero.component.avoid.ts" visibleRegion="example"/>
 
