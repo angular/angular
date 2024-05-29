@@ -38,11 +38,8 @@ import {unwrapLView, unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
-import {
-  collectDomEventsInfo,
-  EVENT_REPLAY_ENABLED_DEFAULT,
-  setJSActionAttribute,
-} from './event_replay';
+import {collectDomEventsInfo} from './event_replay';
+import {setJSActionAttribute} from '../event_delegation_utils';
 import {
   getOrComputeI18nChildren,
   isI18nHydrationEnabled,
@@ -64,7 +61,7 @@ import {
 } from './interfaces';
 import {calcPathForNode, isDisconnectedNode} from './node_lookup_utils';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
-import {IS_EVENT_REPLAY_ENABLED} from './tokens';
+import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './tokens';
 import {
   getLNodeForHydration,
   NGH_ATTR_NAME,
@@ -440,10 +437,13 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       continue;
     }
 
-    if (nativeElementsToEventTypes) {
-      // Attach `jsaction` attribute to elements that have registered listeners,
-      // thus potentially having a need to do an event replay.
-      setJSActionAttribute(tNode, lView[i], nativeElementsToEventTypes);
+    // Attach `jsaction` attribute to elements that have registered listeners,
+    // thus potentially having a need to do an event replay.
+    if (nativeElementsToEventTypes && tNode.type & TNodeType.Element) {
+      const nativeElement = unwrapRNode(lView[i]) as Element;
+      if (nativeElementsToEventTypes.has(nativeElement)) {
+        setJSActionAttribute(nativeElement, nativeElementsToEventTypes.get(nativeElement)!);
+      }
     }
 
     if (Array.isArray(tNode.projection)) {
