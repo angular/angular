@@ -4,6 +4,16 @@
 
 ```ts
 
+// @public (undocumented)
+export const Attribute: {
+    JSACTION: string;
+    OI: string;
+    VED: string;
+    VET: string;
+    JSINSTANCE: string;
+    JSTRACK: string;
+};
+
 // @public
 export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
 
@@ -110,7 +120,25 @@ export const isCaptureEvent: (eventType: string) => boolean;
 export const isSupportedEvent: (eventType: string) => boolean;
 
 // @public
+export const JSACTION = "jsaction";
+
+// @public
+export const JSINSTANCE = "jsinstance";
+
+// @public
+export const JSTRACK = "jstrack";
+
+// @public
+export const OI = "oi";
+
+// @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: EventDispatcher): void;
+
+// @public
+export const VED = "ved";
+
+// @public
+export const VET = "vet";
 
 // (No @packageDocumentation comment for this package)
 

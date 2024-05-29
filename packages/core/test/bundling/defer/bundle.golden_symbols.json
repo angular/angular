@@ -1407,6 +1407,9 @@
     "name": "init_event_contract_defines"
   },
   {
+    "name": "init_event_delegation_utils"
+  },
+  {
     "name": "init_event_dispatch"
   },
   {

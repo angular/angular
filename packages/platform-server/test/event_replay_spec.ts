@@ -209,7 +209,7 @@ describe('event replay', () => {
     expect(clickSpy).not.toHaveBeenCalled();
     expect(focusSpy).not.toHaveBeenCalled();
     resetTViewsFor(SimpleComponent);
-    const appRef = await hydrate(doc, SimpleComponent, {
+    await hydrate(doc, SimpleComponent, {
       hydrationFeatures: [withEventReplay()],
     });
     expect(clickSpy).toHaveBeenCalled();
