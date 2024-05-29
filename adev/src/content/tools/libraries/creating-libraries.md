@@ -40,8 +40,9 @@ When you generate a new library, the workspace configuration file, `angular.json
 
 <docs-code language="json">
 
-"projects": {
-  …
+{
+  "projects": {
+  ...
   "my-lib": {
     "root": "projects/my-lib",
     "sourceRoot": "projects/my-lib/src",
@@ -50,7 +51,7 @@ When you generate a new library, the workspace configuration file, `angular.json
     "architect": {
       "build": {
         "builder": "@angular-devkit/build-angular:ng-packagr",
-        …
+        ...
 
 </docs-code>
 
