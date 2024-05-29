@@ -20,6 +20,10 @@
           "builder": "@angular/build:application",
           "options": {
             "externalDependencies": ["path"],
+            "define": {
+              // Until this is merged https://github.com/xtermjs/xterm.js/issues/5030
+              "self": "this"
+            },
             "outputPath": "dist/angular-dev",
             "index": "src/index.html",
             "browser": "src/main.ts",
