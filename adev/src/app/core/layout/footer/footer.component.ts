@@ -10,7 +10,7 @@ import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ExternalLink} from '@angular/docs';
 import {RouterLink} from '@angular/router';
-import {GITHUB, X, MEDIUM, YOUTUBE} from './../../constants/links';
+import {GITHUB, X, MEDIUM, YOUTUBE, DISCORD} from './../../constants/links';
 
 @Component({
   selector: 'footer[adev-footer]',
@@ -25,4 +25,5 @@ export class Footer {
   readonly X = X;
   readonly YOUTUBE = YOUTUBE;
   readonly MEDIUM = MEDIUM;
+  readonly DISCORD = DISCORD;
 }
