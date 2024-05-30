@@ -1342,9 +1342,6 @@ groups:
         - dylhunn # Dylan Hunn
         - AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
-    reviews:
-      required: 1
-      reviewed_for: optional
     labels:
       pending: 'requires: TGP'
       approved: 'requires: TGP'
@@ -1373,9 +1370,6 @@ groups:
         - iteriani # Thomas Nguyen
         - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
-    reviews:
-      required: 1
-      reviewed_for: optional
     labels:
       pending: 'requires: TGP'
       approved: 'requires: TGP'
