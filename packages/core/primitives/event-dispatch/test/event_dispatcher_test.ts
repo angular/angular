@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventDispatcher, EventPhase} from '../src/event_dispatcher';
+import {EventDispatcher, EventPhase, SyntheticEvent} from '../src/event_dispatcher';
 import {createEventInfo, EventInfoWrapper} from '../src/event_info';
 import {safeElement, testonlyHtml} from './html';
 
@@ -65,98 +65,114 @@ function createTestEventInfoWrapper({
   );
 }
 
+function createSpies({
+  dispatchDelegate,
+}: {
+  dispatchDelegate?: (event: Event, actionName: string) => void;
+} = {}) {
+  const originalEventSpy = jasmine.createSpy<(originalEvent: Event) => void>('originalEvent');
+  const currentTargetSpy =
+    jasmine.createSpy<(currentTarget: EventTarget | null) => void>('currentTarget');
+  const actionNameSpy = jasmine.createSpy<(actionName: string) => void>('actionName');
+  const dispatchDelegateSpy = jasmine
+    .createSpy<(event: Event, actionName: string) => void>('dispatchDelegate')
+    .and.callFake((event, actionName) => {
+      originalEventSpy((event as SyntheticEvent).originalEvent);
+      currentTargetSpy(event.currentTarget);
+      actionNameSpy(actionName);
+
+      dispatchDelegate?.(event, actionName);
+    });
+
+  return {dispatchDelegateSpy, originalEventSpy, currentTargetSpy, actionNameSpy};
+}
+
 describe('EventDispatcher', () => {
   beforeEach(() => {
     safeElement.setInnerHtml(document.body, testonlyHtml(domContent));
   });
 
   it('dispatches to dispatchDelegate', () => {
-    const dispatchDelegate = jasmine
-      .createSpy<(event: Event, actionName: string) => void>('dispatchDelegate')
-      .and.callFake((event) => {
-        expect(event.currentTarget).toBe(getRequiredElementById('click-action-element'));
-      });
-    const dispatcher = new EventDispatcher(dispatchDelegate);
+    const actionElement = getRequiredElementById('click-action-element');
+
+    const {dispatchDelegateSpy} = createSpies();
+    const dispatcher = new EventDispatcher(dispatchDelegateSpy);
     const eventInfoWrapper = createTestEventInfoWrapper();
 
     dispatcher.dispatch(eventInfoWrapper.eventInfo);
 
-    expect(dispatchDelegate).toHaveBeenCalledWith(eventInfoWrapper.getEvent(), 'handleClick');
+    expect(dispatchDelegateSpy).toHaveBeenCalledTimes(1);
+    const [event, actionName] = dispatchDelegateSpy.calls.mostRecent().args;
+    expect((event as SyntheticEvent).originalEvent).toBe(eventInfoWrapper.getEvent());
+    expect(event.currentTarget).toBe(actionElement);
+    expect(actionName).toEqual('handleClick');
   });
 
-  it('replays to dispatchDelegate', async () => {
-    const dispatchDelegate = jasmine
-      .createSpy<(event: Event, actionName: string) => void>('dispatchDelegate')
-      .and.callFake((event) => {
-        expect(event.currentTarget).toBe(getRequiredElementById('click-action-element'));
-        expect(event.target).toBe(getRequiredElementById('click-target-element'));
-        expect(event.eventPhase).toBe(EventPhase.REPLAY);
-        expect(() => {
-          event.preventDefault();
-        }).toThrow();
-        expect(() => {
-          event.composedPath();
-        }).toThrow();
-      });
-    const dispatcher = new EventDispatcher(dispatchDelegate);
+  it('replays to dispatchDelegate', () => {
+    const actionElement = getRequiredElementById('click-action-element');
+    const targetElement = getRequiredElementById('click-target-element');
+
+    const {dispatchDelegateSpy} = createSpies();
+    const dispatcher = new EventDispatcher(dispatchDelegateSpy);
     const eventInfoWrapper = createTestEventInfoWrapper({isReplay: true});
 
     dispatcher.dispatch(eventInfoWrapper.eventInfo);
 
-    await Promise.resolve();
-
-    expect(dispatchDelegate).toHaveBeenCalledWith(eventInfoWrapper.getEvent(), 'handleClick');
+    expect(dispatchDelegateSpy).toHaveBeenCalledTimes(1);
+    const [event, actionName] = dispatchDelegateSpy.calls.mostRecent().args;
+    expect((event as SyntheticEvent).originalEvent).toBe(eventInfoWrapper.getEvent());
+    expect(event.currentTarget).toBe(actionElement);
+    expect(event.target).toBe(targetElement);
+    expect(event.eventPhase).toBe(EventPhase.REPLAY);
+    expect(() => {
+      event.preventDefault();
+    }).toThrow();
+    expect(() => {
+      event.composedPath();
+    }).toThrow();
+    expect(actionName).toEqual('handleClick');
   });
 
   describe('bubbling', () => {
     it('dispatches to multiple elements', () => {
       const container = getRequiredElementById('bubbling-container');
       const targetElement = getRequiredElementById('bubbling-target-element');
-      const currentTarget = jasmine.createSpy('currentTarget');
-      const dispatchDelegate = jasmine
-        .createSpy<(event: Event, actionName: string) => void>('dispatchDelegate')
-        .and.callFake((event) => {
-          currentTarget(event.currentTarget);
-        });
-      const dispatcher = new EventDispatcher(dispatchDelegate);
+      const firstActionElement = getRequiredElementById('bubbling-first-action-element');
+      const secondActionElement = getRequiredElementById('bubbling-second-action-element');
+      const thirdActionElement = getRequiredElementById('bubbling-third-action-element');
+
+      const {dispatchDelegateSpy, originalEventSpy, currentTargetSpy, actionNameSpy} =
+        createSpies();
+      const dispatcher = new EventDispatcher(dispatchDelegateSpy);
       const eventInfoWrapper = createTestEventInfoWrapper({container, targetElement});
 
       dispatcher.dispatch(eventInfoWrapper.eventInfo);
 
-      expect(dispatchDelegate).toHaveBeenCalledTimes(3);
-      expect(dispatchDelegate).toHaveBeenCalledWith(
-        eventInfoWrapper.getEvent(),
-        'firstHandleClick',
-      );
-      expect(currentTarget).toHaveBeenCalledWith(
-        getRequiredElementById('bubbling-first-action-element'),
-      );
-      expect(dispatchDelegate).toHaveBeenCalledWith(
-        eventInfoWrapper.getEvent(),
-        'secondHandleClick',
-      );
-      expect(currentTarget).toHaveBeenCalledWith(
-        getRequiredElementById('bubbling-second-action-element'),
-      );
-      expect(dispatchDelegate).toHaveBeenCalledWith(
-        eventInfoWrapper.getEvent(),
-        'thirdHandleClick',
-      );
-      expect(currentTarget).toHaveBeenCalledWith(
-        getRequiredElementById('bubbling-third-action-element'),
-      );
+      expect(dispatchDelegateSpy).toHaveBeenCalledTimes(3);
+
+      expect(originalEventSpy).toHaveBeenCalledWith(eventInfoWrapper.getEvent());
+      expect(currentTargetSpy).toHaveBeenCalledWith(firstActionElement);
+      expect(actionNameSpy).toHaveBeenCalledWith('firstHandleClick');
+
+      expect(originalEventSpy).toHaveBeenCalledWith(eventInfoWrapper.getEvent());
+      expect(currentTargetSpy).toHaveBeenCalledWith(secondActionElement);
+      expect(actionNameSpy).toHaveBeenCalledWith('secondHandleClick');
+
+      expect(originalEventSpy).toHaveBeenCalledWith(eventInfoWrapper.getEvent());
+      expect(currentTargetSpy).toHaveBeenCalledWith(thirdActionElement);
+      expect(actionNameSpy).toHaveBeenCalledWith('thirdHandleClick');
     });
 
-    it('dispatches to multiple elements in replay', async () => {
+    it('dispatches to multiple elements in replay', () => {
       const container = getRequiredElementById('bubbling-container');
       const targetElement = getRequiredElementById('bubbling-target-element');
-      const currentTarget = jasmine.createSpy('currentTarget');
-      const dispatchDelegate = jasmine
-        .createSpy<(event: Event, actionName: string) => void>('dispatchDelegate')
-        .and.callFake((event) => {
-          currentTarget(event.currentTarget);
-        });
-      const dispatcher = new EventDispatcher(dispatchDelegate);
+      const firstActionElement = getRequiredElementById('bubbling-first-action-element');
+      const secondActionElement = getRequiredElementById('bubbling-second-action-element');
+      const thirdActionElement = getRequiredElementById('bubbling-third-action-element');
+
+      const {dispatchDelegateSpy, originalEventSpy, currentTargetSpy, actionNameSpy} =
+        createSpies();
+      const dispatcher = new EventDispatcher(dispatchDelegateSpy);
       const eventInfoWrapper = createTestEventInfoWrapper({
         container,
         targetElement,
@@ -165,68 +181,54 @@ describe('EventDispatcher', () => {
 
       dispatcher.dispatch(eventInfoWrapper.eventInfo);
 
-      await Promise.resolve();
+      expect(dispatchDelegateSpy).toHaveBeenCalledTimes(3);
 
-      expect(dispatchDelegate).toHaveBeenCalledTimes(3);
-      expect(dispatchDelegate).toHaveBeenCalledWith(
-        eventInfoWrapper.getEvent(),
-        'firstHandleClick',
-      );
-      expect(currentTarget).toHaveBeenCalledWith(
-        getRequiredElementById('bubbling-first-action-element'),
-      );
-      expect(dispatchDelegate).toHaveBeenCalledWith(
-        eventInfoWrapper.getEvent(),
-        'secondHandleClick',
-      );
-      expect(currentTarget).toHaveBeenCalledWith(
-        getRequiredElementById('bubbling-second-action-element'),
-      );
-      expect(dispatchDelegate).toHaveBeenCalledWith(
-        eventInfoWrapper.getEvent(),
-        'thirdHandleClick',
-      );
-      expect(currentTarget).toHaveBeenCalledWith(
-        getRequiredElementById('bubbling-third-action-element'),
-      );
+      expect(originalEventSpy).toHaveBeenCalledWith(eventInfoWrapper.getEvent());
+      expect(currentTargetSpy).toHaveBeenCalledWith(firstActionElement);
+      expect(actionNameSpy).toHaveBeenCalledWith('firstHandleClick');
+
+      expect(originalEventSpy).toHaveBeenCalledWith(eventInfoWrapper.getEvent());
+      expect(currentTargetSpy).toHaveBeenCalledWith(secondActionElement);
+      expect(actionNameSpy).toHaveBeenCalledWith('secondHandleClick');
+
+      expect(originalEventSpy).toHaveBeenCalledWith(eventInfoWrapper.getEvent());
+      expect(currentTargetSpy).toHaveBeenCalledWith(thirdActionElement);
+      expect(actionNameSpy).toHaveBeenCalledWith('thirdHandleClick');
     });
 
     it('stops dispatch if `stopPropagation` is called', () => {
       const container = getRequiredElementById('bubbling-container');
       const targetElement = getRequiredElementById('bubbling-target-element');
-      const currentTarget = jasmine.createSpy('currentTarget');
-      const dispatchDelegate = jasmine
-        .createSpy<(event: Event, actionName: string) => void>('dispatchDelegate')
-        .and.callFake((event) => {
-          currentTarget(event.currentTarget);
+      const firstActionElement = getRequiredElementById('bubbling-first-action-element');
+
+      const {dispatchDelegateSpy, originalEventSpy, currentTargetSpy, actionNameSpy} = createSpies({
+        dispatchDelegate: (event) => {
           event.stopPropagation();
-        });
-      const dispatcher = new EventDispatcher(dispatchDelegate);
+        },
+      });
+      const dispatcher = new EventDispatcher(dispatchDelegateSpy);
       const eventInfoWrapper = createTestEventInfoWrapper({container, targetElement});
 
       dispatcher.dispatch(eventInfoWrapper.eventInfo);
 
-      expect(dispatchDelegate).toHaveBeenCalledTimes(1);
-      expect(dispatchDelegate).toHaveBeenCalledWith(
-        eventInfoWrapper.getEvent(),
-        'firstHandleClick',
-      );
-      expect(currentTarget).toHaveBeenCalledWith(
-        getRequiredElementById('bubbling-first-action-element'),
-      );
+      expect(dispatchDelegateSpy).toHaveBeenCalledTimes(1);
+
+      expect(originalEventSpy).toHaveBeenCalledWith(eventInfoWrapper.getEvent());
+      expect(currentTargetSpy).toHaveBeenCalledWith(firstActionElement);
+      expect(actionNameSpy).toHaveBeenCalledWith('firstHandleClick');
     });
 
-    it('stops dispatch if `stopPropagation` is called in replay', async () => {
+    it('stops dispatch if `stopPropagation` is called in replay', () => {
       const container = getRequiredElementById('bubbling-container');
       const targetElement = getRequiredElementById('bubbling-target-element');
-      const currentTarget = jasmine.createSpy('currentTarget');
-      const dispatchDelegate = jasmine
-        .createSpy<(event: Event, actionName: string) => void>('dispatchDelegate')
-        .and.callFake((event) => {
-          currentTarget(event.currentTarget);
+      const firstActionElement = getRequiredElementById('bubbling-first-action-element');
+
+      const {dispatchDelegateSpy, originalEventSpy, currentTargetSpy, actionNameSpy} = createSpies({
+        dispatchDelegate: (event) => {
           event.stopPropagation();
-        });
-      const dispatcher = new EventDispatcher(dispatchDelegate);
+        },
+      });
+      const dispatcher = new EventDispatcher(dispatchDelegateSpy);
       const eventInfoWrapper = createTestEventInfoWrapper({
         container,
         targetElement,
@@ -235,41 +237,59 @@ describe('EventDispatcher', () => {
 
       dispatcher.dispatch(eventInfoWrapper.eventInfo);
 
-      await Promise.resolve();
+      expect(dispatchDelegateSpy).toHaveBeenCalledTimes(1);
 
-      expect(dispatchDelegate).toHaveBeenCalledTimes(1);
-      expect(dispatchDelegate).toHaveBeenCalledWith(
-        eventInfoWrapper.getEvent(),
-        'firstHandleClick',
-      );
-      expect(currentTarget).toHaveBeenCalledWith(
-        getRequiredElementById('bubbling-first-action-element'),
-      );
+      expect(originalEventSpy).toHaveBeenCalledWith(eventInfoWrapper.getEvent());
+      expect(currentTargetSpy).toHaveBeenCalledWith(firstActionElement);
+      expect(actionNameSpy).toHaveBeenCalledWith('firstHandleClick');
     });
 
     it('stops dispatch if `stopImmediatePropagation` is called', () => {
       const container = getRequiredElementById('bubbling-container');
       const targetElement = getRequiredElementById('bubbling-target-element');
-      const currentTarget = jasmine.createSpy('currentTarget');
-      const dispatchDelegate = jasmine
-        .createSpy<(event: Event, actionName: string) => void>('dispatchDelegate')
-        .and.callFake((event) => {
-          currentTarget(event.currentTarget);
+      const firstActionElement = getRequiredElementById('bubbling-first-action-element');
+
+      const {dispatchDelegateSpy, originalEventSpy, currentTargetSpy, actionNameSpy} = createSpies({
+        dispatchDelegate: (event) => {
           event.stopImmediatePropagation();
-        });
-      const dispatcher = new EventDispatcher(dispatchDelegate);
+        },
+      });
+      const dispatcher = new EventDispatcher(dispatchDelegateSpy);
       const eventInfoWrapper = createTestEventInfoWrapper({container, targetElement});
 
       dispatcher.dispatch(eventInfoWrapper.eventInfo);
 
-      expect(dispatchDelegate).toHaveBeenCalledTimes(1);
-      expect(dispatchDelegate).toHaveBeenCalledWith(
-        eventInfoWrapper.getEvent(),
-        'firstHandleClick',
-      );
-      expect(currentTarget).toHaveBeenCalledWith(
-        getRequiredElementById('bubbling-first-action-element'),
-      );
+      expect(dispatchDelegateSpy).toHaveBeenCalledTimes(1);
+
+      expect(originalEventSpy).toHaveBeenCalledWith(eventInfoWrapper.getEvent());
+      expect(currentTargetSpy).toHaveBeenCalledWith(firstActionElement);
+      expect(actionNameSpy).toHaveBeenCalledWith('firstHandleClick');
+    });
+
+    it('stops dispatch if `stopImmediatePropagation` is called in replay', () => {
+      const container = getRequiredElementById('bubbling-container');
+      const targetElement = getRequiredElementById('bubbling-target-element');
+      const firstActionElement = getRequiredElementById('bubbling-first-action-element');
+
+      const {dispatchDelegateSpy, originalEventSpy, currentTargetSpy, actionNameSpy} = createSpies({
+        dispatchDelegate: (event) => {
+          event.stopImmediatePropagation();
+        },
+      });
+      const dispatcher = new EventDispatcher(dispatchDelegateSpy);
+      const eventInfoWrapper = createTestEventInfoWrapper({
+        container,
+        targetElement,
+        isReplay: true,
+      });
+
+      dispatcher.dispatch(eventInfoWrapper.eventInfo);
+
+      expect(dispatchDelegateSpy).toHaveBeenCalledTimes(1);
+
+      expect(originalEventSpy).toHaveBeenCalledWith(eventInfoWrapper.getEvent());
+      expect(currentTargetSpy).toHaveBeenCalledWith(firstActionElement);
+      expect(actionNameSpy).toHaveBeenCalledWith('firstHandleClick');
     });
   });
 });
