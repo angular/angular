@@ -8,7 +8,7 @@
   "license": "MIT",
   "//engines-comment": "Keep this in sync with /aio/package.json and /aio/tools/examples/shared/package.json",
   "engines": {
-    "node": "^18.13.0 || ^20.9.0",
+    "node": "^18.19.1 || ^20.11.1",
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
