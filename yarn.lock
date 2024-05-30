@@ -2155,6 +2155,11 @@
   resolved "https://registry.yarnpkg.com/@hutson/parse-repository-url/-/parse-repository-url-5.0.0.tgz#bf344cc75136039bc41bcf5d1ddbcb40405fca3b"
   integrity sha512-e5+YUKENATs1JgYHMzTr2MW/NDcXGfYFAuOQU8gJgF/kEh4EqKgfGrfLI67bMD4tbhZVlkigz/9YYwWcbOFthg==
 
+"@imageengine/imageengine-helpers@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@imageengine/imageengine-helpers/-/imageengine-helpers-0.2.1.tgz#b2a06dea10b4ea7ea934f89461bacec4134cefac"
+  integrity sha512-X4HsZKFfo5zXOFtMU4OR1hHqEhsJBYztwiZ+8rLTRuyJeMmJFfCVLBheH0cOkFOdrR30qotQkRxXrYWG3bIV8Q==
+
 "@inquirer/figures@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@inquirer/figures/-/figures-1.0.1.tgz#d65f0bd0e9511a90b4d3543ee6a3ce7211f29417"
