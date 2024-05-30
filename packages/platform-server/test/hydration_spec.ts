@@ -1964,6 +1964,29 @@ describe('platform-server hydration integration', () => {
           clearTranslations();
         });
 
+        it('should append skip hydration flag if component uses i18n blocks and no `withI18nSupport()` call present', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: '<div i18n>Hi!</div>',
+          })
+          class SimpleComponent {
+            // Having `ViewContainerRef` here is important: it triggers
+            // a code path that serializes top-level `LContainer`s.
+            vcr = inject(ViewContainerRef);
+          }
+
+          const hydrationFeatures = [] as unknown as HydrationFeature<any>[];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+
+          const ssrContents = getAppContents(html);
+
+          // Since `withI18nSupport()` was not included and a component has i18n blocks -
+          // we expect that the `ngSkipHydration` attribute was added during serialization.
+          expect(ssrContents).not.toContain('ngh="');
+          expect(ssrContents).toContain('ngskiphydration="');
+        });
+
         it('should not append skip hydration flag if component uses i18n blocks', async () => {
           @Component({
             standalone: true,
