@@ -2122,6 +2122,146 @@ describe('platform-server hydration integration', () => {
           expect(content.innerHTML).toBe('<span>two</span><div>one</div>');
         });
 
+        it('should support interleaving projected content', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app-content',
+            template: `Start <ng-content select="div" /> Middle <ng-content select="span" /> End`,
+          })
+          class ContentComponent {}
+
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              <app-content i18n>
+                <span>Span</span>
+                Middle Start
+                Middle End
+                <div>Div</div>
+              </app-content>
+            `,
+            imports: [ContentComponent],
+          })
+          class SimpleComponent {}
+
+          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent, ContentComponent);
+
+          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          const content = clientRootNode.querySelector('app-content');
+          expect(content.innerHTML).toBe('Start <div>Div</div> Middle <span>Span</span> End');
+        });
+
+        it('should support disjoint nodes', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app-content',
+            template: `Start <ng-content select=":not(span)" /> Middle <ng-content select="span" /> End`,
+          })
+          class ContentComponent {}
+
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              <app-content i18n>
+                Inner Start
+                <span>Span</span>
+                { count, plural, other { Hello <span>World</span>! }}
+                Inner End
+              </app-content>
+            `,
+            imports: [ContentComponent],
+          })
+          class SimpleComponent {
+            count = 0;
+          }
+
+          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent, ContentComponent);
+
+          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          const content = clientRootNode.querySelector('app-content');
+          expect(content.innerHTML).toBe(
+            'Start  Inner Start  Hello <span>World</span>! <!--ICU 26:0--> Inner End  Middle <span>Span</span> End',
+          );
+        });
+
+        it('should support nested content projection', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app-content-inner',
+            template: `Start <ng-content select=":not(span)" /> Middle <ng-content select="span" /> End`,
+          })
+          class InnerContentComponent {}
+
+          @Component({
+            standalone: true,
+            selector: 'app-content-outer',
+            template: `<app-content-inner><ng-content /></app-content-inner>`,
+            imports: [InnerContentComponent],
+          })
+          class OuterContentComponent {}
+
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              <app-content-outer i18n>
+                Outer Start
+                <span>Span</span>
+                { count, plural, other { Hello <span>World</span>! }}
+                Outer End
+              </app-content-outer>
+            `,
+            imports: [OuterContentComponent],
+          })
+          class SimpleComponent {}
+
+          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent, OuterContentComponent, InnerContentComponent);
+
+          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          const content = clientRootNode.querySelector('app-content-outer');
+          expect(content.innerHTML).toBe(
+            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>! <!--ICU 26:0--> Outer End  Middle  End</app-content-inner>',
+          );
+        });
+
         it('should support hosting projected content', async () => {
           @Component({
             standalone: true,
@@ -2155,6 +2295,88 @@ describe('platform-server hydration integration', () => {
 
           const div = clientRootNode.querySelector('div');
           expect(div.innerHTML).toBe('<app-content><span>Start Middle End</span></app-content>');
+        });
+
+        it('should support projecting multiple elements', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app-content',
+            template: `<ng-content />`,
+          })
+          class ContentComponent {}
+
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              <app-content i18n>
+                Start
+                <span>Middle</span>
+                End
+              </app-content>
+            `,
+            imports: [ContentComponent],
+          })
+          class SimpleComponent {}
+
+          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          const content = clientRootNode.querySelector('app-content');
+          expect(content.innerHTML).toMatch(/ Start <span>Middle<\/span> End /);
+        });
+
+        it('should support disconnecting i18n nodes during projection', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app-content',
+            template: `Start <ng-content select="span" /> End`,
+          })
+          class ContentComponent {}
+
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              <app-content i18n>
+                Middle Start
+                <span>Middle</span>
+                Middle End
+              </app-content>
+            `,
+            imports: [ContentComponent],
+          })
+          class SimpleComponent {}
+
+          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent, ContentComponent);
+
+          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          const content = clientRootNode.querySelector('app-content');
+          expect(content.innerHTML).toBe('Start <span>Middle</span> End');
         });
 
         it('should support using translated views as view container anchors', async () => {

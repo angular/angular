@@ -11,6 +11,7 @@ import {APP_ID} from '../application/application_tokens';
 import {isDetachedByI18n} from '../i18n/utils';
 import {ViewEncapsulation} from '../metadata';
 import {Renderer2} from '../render';
+import {assertTNode} from '../render3/assert';
 import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';
 import {getComponentDef} from '../render3/definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
@@ -362,7 +363,8 @@ function appendSerializedNodePath(
 ) {
   const noOffsetIndex = tNode.index - HEADER_OFFSET;
   ngh[NODES] ??= {};
-  ngh[NODES][noOffsetIndex] = calcPathForNode(tNode, lView, excludedParentNodes);
+  // Ensure we don't calculate the path multiple times.
+  ngh[NODES][noOffsetIndex] ??= calcPathForNode(tNode, lView, excludedParentNodes);
 }
 
 /**
@@ -370,8 +372,11 @@ function appendSerializedNodePath(
  * This info is needed at runtime to avoid DOM lookups for this element
  * and instead, the element would be created from scratch.
  */
-function appendDisconnectedNodeIndex(ngh: SerializedView, tNode: TNode) {
-  const noOffsetIndex = tNode.index - HEADER_OFFSET;
+function appendDisconnectedNodeIndex(ngh: SerializedView, tNodeOrNoOffsetIndex: TNode | number) {
+  const noOffsetIndex =
+    typeof tNodeOrNoOffsetIndex === 'number'
+      ? tNodeOrNoOffsetIndex
+      : tNodeOrNoOffsetIndex.index - HEADER_OFFSET;
   ngh[DISCONNECTED_NODES] ??= [];
   if (!ngh[DISCONNECTED_NODES].includes(noOffsetIndex)) {
     ngh[DISCONNECTED_NODES].push(noOffsetIndex);
@@ -404,7 +409,18 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
     const i18nData = trySerializeI18nBlock(lView, i, context);
     if (i18nData) {
       ngh[I18N_DATA] ??= {};
-      ngh[I18N_DATA][noOffsetIndex] = i18nData;
+      ngh[I18N_DATA][noOffsetIndex] = i18nData.caseQueue;
+
+      for (const nodeNoOffsetIndex of i18nData.disconnectedNodes) {
+        appendDisconnectedNodeIndex(ngh, nodeNoOffsetIndex);
+      }
+
+      for (const nodeNoOffsetIndex of i18nData.disjointNodes) {
+        const tNode = tView.data[nodeNoOffsetIndex + HEADER_OFFSET] as TNode;
+        ngDevMode && assertTNode(tNode);
+        appendSerializedNodePath(ngh, tNode, lView, i18nChildren);
+      }
+
       continue;
     }
 
