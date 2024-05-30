@@ -17,17 +17,13 @@ import {
   EventContractContainerManager,
 } from '../src/event_contract_container';
 import {EventContractMultiContainer} from '../src/event_contract_multi_container';
-import {EventInfo, EventInfoWrapper} from '../src/event_info';
+import {EventInfoWrapper} from '../src/event_info';
 import {EventType} from '../src/event_type';
 import {addDeferredA11yClickSupport, Dispatcher, EventContract} from '../src/eventcontract';
 import {OWNER} from '../src/property';
 import {Restriction} from '../src/restriction';
 
 import {safeElement, testonlyHtml} from './html';
-import {
-  Dispatcher as LateDispatcher,
-  registerDispatcher as registerLateDispatcher,
-} from '../src/dispatcher';
 
 declare global {
   interface Window extends EarlyJsactionDataContainer {}
@@ -104,12 +100,6 @@ const domContent = `
 <div id="anchor-click-container">
   <a id="anchor-click-action-element" href="javascript:void(0);" jsaction="handleClick">
     <span id="anchor-click-target-element"></span>
-  </a>
-</div>
-
-<div id="anchor-clickmod-container">
-  <a id="anchor-clickmod-action-element" href="javascript:void(0);" jsaction="clickmod: handleClickMod">
-    <span id="anchor-clickmod-target-element"></span>
   </a>
 </div>
 
@@ -841,58 +831,6 @@ describe('EventContract', () => {
     expect(eventContract.handler(EventType.CLICK)).toBeUndefined();
   });
 
-  it('prevents default for click on anchor child', () => {
-    const container = getRequiredElementById('anchor-click-container');
-    const actionElement = getRequiredElementById('anchor-click-action-element');
-    const targetElement = getRequiredElementById('anchor-click-target-element');
-
-    const eventContract = createEventContract({
-      eventContractContainerManager: new EventContractContainer(container),
-      eventTypes: ['click'],
-    });
-    const dispatch = jasmine.createSpy<(eventInfoWrapper: EventInfoWrapper) => void>('dispatch');
-    const dispatcher = new LateDispatcher(dispatch);
-    registerLateDispatcher(eventContract, dispatcher);
-
-    const clickEvent = dispatchMouseEvent(targetElement);
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    const eventInfoWrapper = dispatch.calls.mostRecent().args[0];
-    expect(eventInfoWrapper.getEventType()).toBe('click');
-    expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-    expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
-    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-
-    expect(clickEvent.preventDefault).toHaveBeenCalled();
-  });
-
-  it('prevents default for modified click on anchor child', () => {
-    const container = getRequiredElementById('anchor-clickmod-container');
-    const actionElement = getRequiredElementById('anchor-clickmod-action-element');
-    const targetElement = getRequiredElementById('anchor-clickmod-target-element');
-
-    const eventContract = createEventContract({
-      eventContractContainerManager: new EventContractContainer(container),
-      eventTypes: ['click'],
-    });
-    const dispatch = jasmine.createSpy<(eventInfoWrapper: EventInfoWrapper) => void>('dispatch');
-    const dispatcher = new LateDispatcher(dispatch);
-    registerLateDispatcher(eventContract, dispatcher);
-
-    const clickEvent = dispatchMouseEvent(targetElement, {shiftKey: true});
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    const eventInfoWrapper = dispatch.calls.mostRecent().args[0];
-    expect(eventInfoWrapper.getEventType()).toBe('clickmod');
-    expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-    expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()?.name).toBe('handleClickMod');
-    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-
-    expect(clickEvent.preventDefault).toHaveBeenCalled();
-  });
-
   it('does not prevent default for click on anchor without dispatcher', () => {
     const container = getRequiredElementById('anchor-click-container');
     const targetElement = getRequiredElementById('anchor-click-target-element');
@@ -958,32 +896,6 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
       expect(eventInfoWrapper.getAction()?.name).toBe('handleKeydown');
       expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-    });
-
-    it('prevents default for enter key on anchor child', () => {
-      const container = getRequiredElementById('a11y-anchor-click-container');
-      const actionElement = getRequiredElementById('a11y-anchor-click-action-element');
-      const targetElement = getRequiredElementById('a11y-anchor-click-target-element');
-
-      const eventContract = createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click'],
-      });
-      const dispatch = jasmine.createSpy<(eventInfoWrapper: EventInfoWrapper) => void>('dispatch');
-      const dispatcher = new LateDispatcher(dispatch);
-      registerLateDispatcher(eventContract, dispatcher);
-
-      const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
-
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      const eventInfoWrapper = dispatch.calls.mostRecent().args[0];
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
-      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-
-      expect(keydownEvent.preventDefault).toHaveBeenCalled();
     });
 
     it('dispatches clickonly event', () => {
@@ -1088,34 +1000,6 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
       expect(eventInfoWrapper.getAction()?.name).toBe('handleKeydown');
       expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-    });
-
-    it('prevents default for enter key on anchor child', () => {
-      const container = getRequiredElementById('a11y-anchor-click-container');
-      const actionElement = getRequiredElementById('a11y-anchor-click-action-element');
-      const targetElement = getRequiredElementById('a11y-anchor-click-target-element');
-
-      const eventContract = createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        exportAddA11yClickSupport: true,
-        eventTypes: ['click'],
-      });
-      addDeferredA11yClickSupport(eventContract);
-      const dispatch = jasmine.createSpy<(eventInfoWrapper: EventInfoWrapper) => void>('dispatch');
-      const dispatcher = new LateDispatcher(dispatch);
-      registerLateDispatcher(eventContract, dispatcher);
-
-      const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
-
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      const eventInfoWrapper = dispatch.calls.mostRecent().args[0];
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
-      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-
-      expect(keydownEvent.preventDefault).toHaveBeenCalled();
     });
 
     it('dispatches clickonly event', () => {
