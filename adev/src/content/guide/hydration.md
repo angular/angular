@@ -128,7 +128,7 @@ Keep in mind that adding the `ngSkipHydration` attribute to your root applicatio
 
 ## I18N
 
-HELPFUL: Support for internationalization with hydration is currently in [developer preview](/guide/releases#developer-preview). By default, Angular will skip hydration for components that use i18n blocks, effectively re-rendering those components from scratch.
+HELPFUL: Support for internationalization with hydration is currently in [developer preview](/reference/releases#developer-preview). By default, Angular will skip hydration for components that use i18n blocks, effectively re-rendering those components from scratch.
 
 To enable hydration for i18n blocks, you can add [`withI18nSupport`](/api/platform-browser/withI18nSupport) to your `provideClientHydration` call.
 
