@@ -191,4 +191,8 @@ export const svgIconProviders = [
   ],
   bootstrap: [ AppComponent ]
 })
-export class AppModule { }
+export class AppModule { 
+  constructor() {
+    console.log('foobar');
+  }
+}
