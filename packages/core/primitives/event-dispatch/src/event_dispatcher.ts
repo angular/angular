@@ -17,9 +17,6 @@ import {Restriction} from './restriction';
  */
 export type Replayer = (eventInfoWrappers: Event[]) => void;
 
-/** An internal symbol used to indicate whether propagation should be stopped or not. */
-export const PROPAGATION_STOPPED_SYMBOL = Symbol.for('propagationStopped');
-
 /** Extra event phases beyond what the browser provides. */
 export const EventPhase = {
   REPLAY: 101,
@@ -36,10 +33,9 @@ const COMPOSED_PATH_ERROR_MESSAGE_DETAILS =
   '`event.currentTarget` if you need to check elements in the event path.';
 const COMPOSED_PATH_ERROR_MESSAGE = `\`composedPath\` called during event replay.`;
 
-declare global {
-  interface Event {
-    [PROPAGATION_STOPPED_SYMBOL]?: boolean;
-  }
+export interface SyntheticEvent extends Event {
+  propagationStopped?: boolean;
+  originalEvent: Event;
 }
 
 /**
@@ -72,57 +68,75 @@ export class EventDispatcher {
 
   /** Internal method that does basic disaptching. */
   private dispatchToDelegate(eventInfoWrapper: EventInfoWrapper) {
+    const event = eventInfoWrapper.getEvent();
+    // Create a synthetic event that uses the original event as its prototype, via `Object.create`.
+    const syntheticEvent: SyntheticEvent = Object.create(event, {originalEvent: {value: event}});
     if (eventInfoWrapper.getIsReplay()) {
-      prepareEventForReplay(eventInfoWrapper);
+      prepareEventForReplay(syntheticEvent, eventInfoWrapper.getTargetElement());
     }
-    prepareEventForBubbling(eventInfoWrapper);
-    while (eventInfoWrapper.getAction()) {
-      prepareEventForDispatch(eventInfoWrapper);
-      this.dispatchDelegate(eventInfoWrapper.getEvent(), eventInfoWrapper.getAction()!.name);
-      if (propagationStopped(eventInfoWrapper)) {
+    prepareEventForBubbling(syntheticEvent);
+    let action = eventInfoWrapper.getAction();
+    while (action) {
+      prepareEventForDelegation(syntheticEvent, action.element);
+      this.dispatchDelegate(syntheticEvent, action.name);
+      if (propagationStopped(syntheticEvent)) {
         return;
       }
       this.actionResolver.resolveParentAction(eventInfoWrapper.eventInfo);
+      action = eventInfoWrapper.getAction();
     }
   }
 }
 
-function prepareEventForBubbling(eventInfoWrapper: EventInfoWrapper) {
-  const event = eventInfoWrapper.getEvent();
+/**
+ * Prepare the `SyntheticEvent` for bubbling by providing a polyfill implementation of
+ * `stopPropagation` and `stopImmediatePropagation`.
+ */
+function prepareEventForBubbling(syntheticEvent: SyntheticEvent) {
   const stopPropagation = () => {
-    event[PROPAGATION_STOPPED_SYMBOL] = true;
+    syntheticEvent.propagationStopped = true;
   };
-  patchEventInstance(event, 'stopPropagation', stopPropagation);
-  patchEventInstance(event, 'stopImmediatePropagation', stopPropagation);
+  patchSyntheticEvent(syntheticEvent, 'stopPropagation', stopPropagation);
+  patchSyntheticEvent(syntheticEvent, 'stopImmediatePropagation', stopPropagation);
 }
 
-function propagationStopped(eventInfoWrapper: EventInfoWrapper) {
-  const event = eventInfoWrapper.getEvent();
-  return !!event[PROPAGATION_STOPPED_SYMBOL];
+/**
+ * Checks the synthetic `propagationStopped` property. The `SyntheticEvent` must have been pass
+ * to `prepareEventForBubbling` for this property to have been set.
+ */
+function propagationStopped(syntheticEvent: SyntheticEvent) {
+  return !!syntheticEvent.propagationStopped;
 }
 
-function prepareEventForReplay(eventInfoWrapper: EventInfoWrapper) {
-  const event = eventInfoWrapper.getEvent();
-  const target = eventInfoWrapper.getTargetElement();
-  patchEventInstance(event, 'target', target);
-  patchEventInstance(event, 'eventPhase', EventPhase.REPLAY);
-  patchEventInstance(event, 'preventDefault', () => {
+/**
+ * Prepare the `SyntheticEvent` for replay by populating various properties:
+ *   - `target`: Copies the target property, as the underlying `Event` may clear it.
+ *   - `eventPhase`: Set the event phase to `REPLAY`.
+ *   - `preventDefault`: Throw an error indicating that `preventDefault` does nothing during replay.
+ *   - `composedPath`: Throw an error indicating that `composedPath` will be empty during replay.
+ */
+function prepareEventForReplay(syntheticEvent: SyntheticEvent, target: Element) {
+  patchSyntheticEvent(syntheticEvent, 'target', target);
+  patchSyntheticEvent(syntheticEvent, 'eventPhase', EventPhase.REPLAY);
+  patchSyntheticEvent(syntheticEvent, 'preventDefault', () => {
     throw new Error(
       PREVENT_DEFAULT_ERROR_MESSAGE + (ngDevMode ? PREVENT_DEFAULT_ERROR_MESSAGE_DETAILS : ''),
     );
   });
-  patchEventInstance(event, 'composedPath', () => {
+  patchSyntheticEvent(syntheticEvent, 'composedPath', () => {
     throw new Error(
       COMPOSED_PATH_ERROR_MESSAGE + (ngDevMode ? COMPOSED_PATH_ERROR_MESSAGE_DETAILS : ''),
     );
   });
 }
 
-function prepareEventForDispatch(eventInfoWrapper: EventInfoWrapper) {
-  const event = eventInfoWrapper.getEvent();
-  const currentTarget = eventInfoWrapper.getAction()?.element;
+/**
+ * Prepare the `SyntheticEvent` for dispatch by populating the `currentTarget` property, which may
+ * not match the actual `currentTarget` property.
+ */
+function prepareEventForDelegation(syntheticEvent: SyntheticEvent, currentTarget: Element) {
   if (currentTarget) {
-    patchEventInstance(event, 'currentTarget', currentTarget, {
+    patchSyntheticEvent(syntheticEvent, 'currentTarget', currentTarget, {
       // `currentTarget` is going to get reassigned every dispatch.
       configurable: true,
     });
@@ -150,8 +164,8 @@ function prepareEventForDispatch(eventInfoWrapper: EventInfoWrapper) {
  *    either to fill in information that the browser may have removed, or to throw errors in methods
  *    that no longer behave as expected.
  */
-function patchEventInstance<T>(
-  event: Event,
+function patchSyntheticEvent<T>(
+  event: SyntheticEvent,
   property: string,
   value: T,
   {configurable = false}: {configurable?: boolean} = {},
