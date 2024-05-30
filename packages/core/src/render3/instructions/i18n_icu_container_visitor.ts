@@ -15,11 +15,59 @@ import {TIcuContainerNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {LView, TVIEW} from '../interfaces/view';
 
+interface IcuIteratorState {
+  stack: any[];
+  index: number;
+  lView?: LView;
+  removes?: I18nRemoveOpCodes;
+}
+
+type IcuIterator = () => RNode | null;
+
+function enterIcu(state: IcuIteratorState, tIcu: TIcu, lView: LView) {
+  state.index = 0;
+  const currentCase = getCurrentICUCaseIndex(tIcu, lView);
+  if (currentCase !== null) {
+    ngDevMode && assertNumberInRange(currentCase, 0, tIcu.cases.length - 1);
+    state.removes = tIcu.remove[currentCase];
+  } else {
+    state.removes = EMPTY_ARRAY as any;
+  }
+}
+
+function icuContainerIteratorNext(state: IcuIteratorState): RNode | null {
+  if (state.index < state.removes!.length) {
+    const removeOpCode = state.removes![state.index++] as number;
+    ngDevMode && assertNumber(removeOpCode, 'Expecting OpCode number');
+    if (removeOpCode > 0) {
+      const rNode = state.lView![removeOpCode];
+      ngDevMode && assertDomNode(rNode);
+      return rNode;
+    } else {
+      state.stack.push(state.index, state.removes);
+      // ICUs are represented by negative indices
+      const tIcuIndex = ~removeOpCode;
+      const tIcu = state.lView![TVIEW].data[tIcuIndex] as TIcu;
+      ngDevMode && assertTIcu(tIcu);
+      enterIcu(state, tIcu, state.lView!);
+      return icuContainerIteratorNext(state);
+    }
+  } else {
+    if (state.stack.length === 0) {
+      return null;
+    } else {
+      state.removes = state.stack.pop();
+      state.index = state.stack.pop();
+      return icuContainerIteratorNext(state);
+    }
+  }
+}
+
 export function loadIcuContainerVisitor() {
-  const _stack: any[] = [];
-  let _index: number = -1;
-  let _lView: LView;
-  let _removes: I18nRemoveOpCodes;
+  const _state: IcuIteratorState = {
+    stack: [],
+    index: -1,
+  };
 
   /**
    * Retrieves a set of root nodes from `TIcu.remove`. Used by `TNodeType.ICUContainer`
@@ -40,52 +88,24 @@ export function loadIcuContainerVisitor() {
   function icuContainerIteratorStart(
     tIcuContainerNode: TIcuContainerNode,
     lView: LView,
-  ): () => RNode | null {
-    _lView = lView;
-    while (_stack.length) _stack.pop();
+  ): IcuIterator {
+    _state.lView = lView;
+    while (_state.stack.length) _state.stack.pop();
     ngDevMode && assertTNodeForLView(tIcuContainerNode, lView);
-    enterIcu(tIcuContainerNode.value, lView);
-    return icuContainerIteratorNext;
-  }
-
-  function enterIcu(tIcu: TIcu, lView: LView) {
-    _index = 0;
-    const currentCase = getCurrentICUCaseIndex(tIcu, lView);
-    if (currentCase !== null) {
-      ngDevMode && assertNumberInRange(currentCase, 0, tIcu.cases.length - 1);
-      _removes = tIcu.remove[currentCase];
-    } else {
-      _removes = EMPTY_ARRAY as any;
-    }
-  }
-
-  function icuContainerIteratorNext(): RNode | null {
-    if (_index < _removes.length) {
-      const removeOpCode = _removes[_index++] as number;
-      ngDevMode && assertNumber(removeOpCode, 'Expecting OpCode number');
-      if (removeOpCode > 0) {
-        const rNode = _lView[removeOpCode];
-        ngDevMode && assertDomNode(rNode);
-        return rNode;
-      } else {
-        _stack.push(_index, _removes);
-        // ICUs are represented by negative indices
-        const tIcuIndex = ~removeOpCode;
-        const tIcu = _lView[TVIEW].data[tIcuIndex] as TIcu;
-        ngDevMode && assertTIcu(tIcu);
-        enterIcu(tIcu, _lView);
-        return icuContainerIteratorNext();
-      }
-    } else {
-      if (_stack.length === 0) {
-        return null;
-      } else {
-        _removes = _stack.pop();
-        _index = _stack.pop();
-        return icuContainerIteratorNext();
-      }
-    }
+    enterIcu(_state, tIcuContainerNode.value, lView);
+    return icuContainerIteratorNext.bind(null, _state);
   }
 
   return icuContainerIteratorStart;
+}
+
+export function createIcuIterator(tIcu: TIcu, lView: LView): IcuIterator {
+  const state: IcuIteratorState = {
+    stack: [],
+    index: -1,
+    lView,
+  };
+  ngDevMode && assertTIcu(tIcu);
+  enterIcu(state, tIcu, lView);
+  return icuContainerIteratorNext.bind(null, state);
 }
