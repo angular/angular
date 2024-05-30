@@ -182,6 +182,14 @@ function annotateLContainerForHydration(lContainer: LContainer, context: Hydrati
   // Serialize the root component itself.
   const componentLViewNghIndex = annotateComponentLViewForHydration(componentLView, context);
 
+  if (componentLViewNghIndex === null) {
+    // Component was not serialized (for example, if hydration was skipped by adding
+    // the `ngSkipHydration` attribute or this component uses i18n blocks in the template,
+    // but `withI18nSupport()` was not added), avoid annotating host element with the `ngh`
+    // attribute.
+    return;
+  }
+
   const hostElement = unwrapRNode(componentLView[HOST]!) as HTMLElement;
 
   // Serialize all views within this view container.

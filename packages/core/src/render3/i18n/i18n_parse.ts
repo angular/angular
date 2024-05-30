@@ -137,6 +137,7 @@ export function i18nStartFirstCreatePass(
   if (ngDevMode) {
     attachDebugGetter(createOpCodes, i18nCreateOpCodesToString);
     attachDebugGetter(updateOpCodes, i18nUpdateOpCodesToString);
+    ngDevMode.hasI18nBlocks = true;
   }
 
   message = getTranslationForTemplate(message, subTemplateIndex);

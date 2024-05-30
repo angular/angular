@@ -121,6 +121,21 @@ function printHydrationStats(injector: Injector) {
 }
 
 /**
+ * Outputs a warning into a console when an application has components
+ * with i18n blocks, but i18n hydration support was not enabled.
+ */
+function notifyOnDisabledI18nSupport(injector: Injector) {
+  const console = injector.get(Console);
+  const message =
+    'Hydration support for i18n blocks is available (in Developer Preview mode). ' +
+    'To enable it, add `withI18nSupport()` as an argument ' +
+    'to the `provideClientHydration()` call in your application. ' +
+    'Learn more at https://angular.dev/guide/hydration#i18n.';
+  // tslint:disable-next-line:no-console
+  console.log(message);
+}
+
+/**
  * Returns a Promise that is resolved when an application becomes stable.
  */
 function whenStableWithTimeout(appRef: ApplicationRef, injector: Injector): Promise<void> {
@@ -231,6 +246,9 @@ export function withDomHydration(): EnvironmentProviders {
               cleanupDehydratedViews(appRef);
               if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                 printHydrationStats(injector);
+                if (ngDevMode!.hasI18nBlocks && !isI18nHydrationEnabled(injector)) {
+                  notifyOnDisabledI18nSupport(injector);
+                }
               }
             });
           };

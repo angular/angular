@@ -49,6 +49,7 @@ declare global {
     rendererAppendChild: number;
     rendererInsertBefore: number;
     rendererCreateComment: number;
+    hasI18nBlocks: boolean;
     hydratedNodes: number;
     hydratedComponents: number;
     dehydratedViewsRemoved: number;
@@ -83,6 +84,7 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererAppendChild: 0,
     rendererInsertBefore: 0,
     rendererCreateComment: 0,
+    hasI18nBlocks: false,
     hydratedNodes: 0,
     hydratedComponents: 0,
     dehydratedViewsRemoved: 0,

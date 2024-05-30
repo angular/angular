@@ -1964,6 +1964,29 @@ describe('platform-server hydration integration', () => {
           clearTranslations();
         });
 
+        it('should append skip hydration flag if component uses i18n blocks and no `withI18nSupport()` call is present', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: '<div i18n>Hi!</div>',
+          })
+          class SimpleComponent {
+            // Having `ViewContainerRef` here is important: it triggers
+            // a code path that serializes top-level `LContainer`s.
+            vcr = inject(ViewContainerRef);
+          }
+
+          const hydrationFeatures = [] as unknown as HydrationFeature<any>[];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+
+          const ssrContents = getAppContents(html);
+
+          // Since `withI18nSupport()` was not included and a component has i18n blocks -
+          // we expect that the `ngSkipHydration` attribute was added during serialization.
+          expect(ssrContents).not.toContain('ngh="');
+          expect(ssrContents).toContain('ngskiphydration="');
+        });
+
         it('should not append skip hydration flag if component uses i18n blocks', async () => {
           @Component({
             standalone: true,
@@ -2032,6 +2055,39 @@ describe('platform-server hydration integration', () => {
           expect(ssrContents).toContain('<app ngh');
         });
 
+        it('should log a message when a component uses i18n blocks and no `withI18nSupport()` call present', async () => {
+          loadTranslations({
+            [computeMsgId('Hello')]: 'Bonjour',
+          });
+
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `<div i18n>Hello</div>`,
+          })
+          class SimpleComponent {}
+
+          const hydrationFeatures = [] as unknown as HydrationFeature<any>[];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngskiphydration');
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {
+            hydrationFeatures,
+            envProviders: [withDebugConsole()],
+          });
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          verifyHasLog(appRef, 'Hydration support for i18n blocks is available');
+
+          const clientRootNode = compRef.location.nativeElement;
+          const div = clientRootNode.querySelector('div');
+          expect(div.innerHTML).toBe('Bonjour');
+        });
+
         it('should support translations that do not include every placeholder', async () => {
           loadTranslations({
             [computeMsgId('Some {$START_TAG_STRONG}strong{$CLOSE_TAG_STRONG} content')]:
@@ -2052,9 +2108,14 @@ describe('platform-server hydration integration', () => {
 
           resetTViewsFor(SimpleComponent);
 
-          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {
+            hydrationFeatures,
+            envProviders: [withDebugConsole()],
+          });
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
+
+          verifyHasNoLog(appRef, 'Hydration support for i18n blocks is available');
 
           const clientRootNode = compRef.location.nativeElement;
           verifyAllNodesClaimedForHydration(clientRootNode);
@@ -3786,6 +3847,10 @@ describe('platform-server hydration integration', () => {
           appRef,
           'Angular hydrated 1 component(s) and 6 node(s), 1 component(s) were skipped',
         );
+
+        // Make sure there are no i18n-related logs in console for an application
+        // that doesn't use i18n blocks.
+        verifyHasNoLog(appRef, 'Hydration support for i18n blocks is available');
 
         const clientRootNode = compRef.location.nativeElement;
         verifyAllNodesClaimedForHydration(clientRootNode);
