@@ -139,7 +139,7 @@ Each target under `architect` has the following properties:
 |:---             |:---                                                                                                                                                                                                                                                    |
 | `builder`       | The CLI builder used to create this target in the form of `<package-name>:<builder-name>`.                                                                                                                                                             |
 | `options`       | Build target default options.                                                                                                                                                                                                                          |
-| `configurations`| Alternative configurations for executing the target. Each configuration sets the default options for that intended environment, overriding the associated value under `options`. See [Alternate build configurations](#alternate-build-configs) below. |
+| `configurations`| Alternative configurations for executing the target. Each configuration sets the default options for that intended environment, overriding the associated value under `options`. See [Alternate build configurations](#alternate-build-configurations) below. |
 
 For example, to configure a build with optimizations disabled:
 
