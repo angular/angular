@@ -25,7 +25,7 @@
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
     "@angular/router": "file:../../dist/packages-dist/router",
-    "express": "4.16.4",
+    "express": "4.19.2",
     "rxjs": "file:../../node_modules/rxjs",
     "tslib": "file:../../node_modules/tslib",
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
@@ -41,7 +41,7 @@
     "concurrently": "3.1.0",
     "jasmine-core": "3.5.0",
     "jasmine-spec-reporter": "4.2.1",
-    "karma": "4.4.0",
+    "karma": "6.3.16",
     "karma-chrome-launcher": "3.1.0",
     "karma-coverage-istanbul-reporter": "2.1.0",
     "karma-jasmine": "2.0.1",

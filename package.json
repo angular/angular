@@ -215,7 +215,7 @@
     "playwright-core": "^1.41.2",
     "prettier": "^3.0.0",
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.9.1-linux.tar.gz",
-    "semver": "^7.3.5",
+    "semver": "^7.6.1",
     "ts-node": "^10.9.1",
     "tsec": "0.2.8",
     "tslint-eslint-rules": "5.4.0",
