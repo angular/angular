@@ -9,10 +9,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   computed,
   effect,
+  ElementRef,
   inject,
+  model,
   signal,
   viewChild,
 } from '@angular/core';
@@ -61,7 +62,8 @@ export default class ApiReferenceList {
 
   query = signal('');
   includeDeprecated = signal(false);
-  type = signal(ALL_STATUSES_KEY);
+
+  type = model<string | undefined>(ALL_STATUSES_KEY);
 
   featuredGroup = this.apiReferenceManager.featuredGroup;
   filteredGroups = computed((): ApiItemsGroup[] => {
@@ -85,6 +87,6 @@ export default class ApiReferenceList {
   itemTypes = Object.values(ApiItemType);
 
   filterByItemType(itemType: ApiItemType): void {
-    this.type.set(this.type() === itemType ? ALL_STATUSES_KEY : itemType);
+    this.type.update((currentType) => (currentType === itemType ? ALL_STATUSES_KEY : itemType));
   }
 }

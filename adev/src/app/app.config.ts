@@ -32,6 +32,7 @@ import {
   TitleStrategy,
   createUrlTreeFromSnapshot,
   provideRouter,
+  withComponentInputBinding,
   withInMemoryScrolling,
   withViewTransitions,
 } from '@angular/router';
@@ -70,6 +71,7 @@ export const appConfig: ApplicationConfig = {
           }
         },
       }),
+      withComponentInputBinding(),
     ),
     provideExperimentalZonelessChangeDetection(),
     provideClientHydration(),
