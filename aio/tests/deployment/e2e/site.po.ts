@@ -45,26 +45,12 @@ export class SitePage {
     await browser.get(url || this.baseUrl);
     await browser.executeScript('document.body.classList.add(\'no-animations\')');
     await browser.waitForAngular();
-    await this.unregisterSw();
   }
 
   /**
    * Initialize the page object and get it ready for further requests.
    */
   async init() {
-    // Make an initial request to unregister the ServiceWorker.
     await this.goTo('');
-  }
-
-  /**
-   * Unregister the ServiceWorker (if registered).
-   */
-  async unregisterSw() {
-    const unregisterSwFn = (cb: () => void) => navigator.serviceWorker
-        .getRegistrations()
-        .then(regs => Promise.all(regs.map(reg => reg.unregister())))
-        .then(cb);
-
-    await browser.executeAsyncScript(unregisterSwFn);
   }
 }

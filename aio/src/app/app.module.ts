@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ServiceWorkerModule } from '@angular/service-worker';
 
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 
@@ -13,7 +12,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { svg } from 'app/shared/security';
-import { trustedResourceUrl, unwrapResourceUrl } from 'safevalues';
 
 import { AppComponent } from 'app/app.component';
 import { CustomIconRegistry, SVG_ICONS } from 'app/shared/custom-icon-registry';
@@ -45,8 +43,6 @@ import { WindowToken, windowProvider } from 'app/shared/window';
 import { CustomElementsModule } from 'app/custom-elements/custom-elements.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { ThemeToggleComponent } from 'app/shared/theme-picker/theme-toggle.component';
-
-import { environment } from '../environments/environment';
 
 // These are the hardcoded inline svg sources to be used by the `<mat-icon>` component.
 /* eslint-disable max-len */
@@ -150,10 +146,6 @@ export const svgIconProviders = [
     MatSidenavModule,
     MatToolbarModule,
     SharedModule,
-    ServiceWorkerModule.register(
-        // Make sure service worker is loaded with a TrustedScriptURL
-        unwrapResourceUrl(trustedResourceUrl`/ngsw-worker.js`) as string,
-        {enabled: environment.production}),
   ],
   declarations: [
     AppComponent,
