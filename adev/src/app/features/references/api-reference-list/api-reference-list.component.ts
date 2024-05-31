@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, model, signal} from '@angular/core';
 import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {FormsModule} from '@angular/forms';
 import {SlideToggle, TextField} from '@angular/docs';
@@ -43,7 +43,8 @@ export default class ApiReferenceList {
 
   query = signal('');
   includeDeprecated = signal(false);
-  type = signal(ALL_STATUSES_KEY);
+
+  type = model<string | undefined>(ALL_STATUSES_KEY);
 
   featuredGroup = this.apiReferenceManager.featuredGroup;
   filteredGroups = computed((): ApiItemsGroup[] => {
@@ -67,6 +68,6 @@ export default class ApiReferenceList {
   itemTypes = Object.values(ApiItemType);
 
   filterByItemType(itemType: ApiItemType): void {
-    this.type.set(this.type() === itemType ? ALL_STATUSES_KEY : itemType);
+    this.type.update((currentType) => (currentType === itemType ? ALL_STATUSES_KEY : itemType));
   }
 }
