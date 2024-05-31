@@ -241,10 +241,9 @@ function computeDeploymentsInfo(
       projectId: 'angular-io',
       siteId: 'rc-angular-io-site',
       deployedUrl: 'https://rc.angular.io/',
-      preDeployActions: [pre.disableServiceWorker, pre.redirectNonFilesToStable],
+      preDeployActions: [pre.redirectNonFilesToStable],
       postDeployActions: [
         pre.undo.redirectNonFilesToStable,
-        pre.undo.disableServiceWorker,
         post.testNoActiveRcDeployment,
       ],
     },
@@ -256,12 +255,10 @@ function computeDeploymentsInfo(
       siteId: 'stable-angular-io-site',
       deployedUrl: 'https://angular.io/',
       preDeployActions: [
-        pre.disableServiceWorker,
         pre.redirectNonFilesToVersion17,
       ],
       postDeployActions: [
         pre.undo.redirectNonFilesToVersion17,
-        pre.undo.disableServiceWorker,
       ],
       
     }

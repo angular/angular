@@ -84,17 +84,6 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
     });
   });
 
-  describe('disableServiceWorker()', () => {
-    let mvSpy;
-
-    beforeEach(() => mvSpy = spyOn(sh, 'mv'));
-
-    it('should disable the ServiceWorker by renaming the `ngsw.json` manifest', () => {
-      pre.disableServiceWorker();
-      expect(mvSpy).toHaveBeenCalledWith('dist/ngsw.json', 'dist/ngsw.json.bak');
-    });
-  });
-
   Object.entries(u.ORIGINS).forEach(([originLabel, origin]) => {
     [true, false].forEach(allRequests => {
       const redirectToFnName = `redirect${allRequests ? 'All' : 'NonFiles'}To${originLabel}`;
@@ -166,17 +155,6 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
     // This method is a no-op, so there is nothing to test.
     // eslint-disable-next-line jasmine/expect-single-argument
     it('does not need tests', () => expect().nothing());
-  });
-
-  describe('undo.disableServiceWorker()', () => {
-    let mvSpy;
-
-    beforeEach(() => mvSpy = spyOn(sh, 'mv'));
-
-    it('should undo `disableServiceWorker()`', () => {
-      pre.undo.disableServiceWorker();
-      expect(mvSpy).toHaveBeenCalledWith('dist/ngsw.json.bak', 'dist/ngsw.json');
-    });
   });
 
   Object.entries(u.ORIGINS).forEach(([originLabel, origin]) => {
