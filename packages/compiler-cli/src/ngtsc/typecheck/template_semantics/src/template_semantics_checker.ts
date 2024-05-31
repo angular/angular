@@ -15,6 +15,7 @@ import {
   PropertyWrite,
   RecursiveAstVisitor,
   TmplAstBoundEvent,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstRecursiveVisitor,
   TmplAstVariable,
@@ -109,23 +110,35 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
     }
 
     const target = this.templateTypeChecker.getExpressionTarget(ast, this.component);
-    if (!(target instanceof TmplAstVariable)) {
+    const isVariable = target instanceof TmplAstVariable;
+    const isLet = target instanceof TmplAstLetDeclaration;
+
+    if (!isVariable && !isLet) {
       return;
     }
 
     // Two-way bindings to template variables are only allowed if the variables are signals.
     const symbol = this.templateTypeChecker.getSymbolOfNode(target, this.component);
     if (symbol !== null && !isSignalReference(symbol)) {
-      const errorMessage = `Cannot use a non-signal variable '${target.name}' in a two-way binding expression. Template variables are read-only.`;
+      let errorMessage: string;
+
+      if (isVariable) {
+        errorMessage = `Cannot use a non-signal variable '${target.name}' in a two-way binding expression. Template variables are read-only.`;
+      } else {
+        errorMessage = `Cannot use non-signal @let declaration '${target.name}' in a two-way binding expression. @let declarations are read-only.`;
+      }
+
       this.diagnostics.push(this.makeIllegalTemplateVarDiagnostic(target, context, errorMessage));
     }
   }
 
   private makeIllegalTemplateVarDiagnostic(
-    target: TmplAstVariable,
+    target: TmplAstVariable | TmplAstLetDeclaration,
     expressionNode: TmplAstBoundEvent,
     errorMessage: string,
   ): TemplateDiagnostic {
+    const span =
+      target instanceof TmplAstVariable ? target.valueSpan || target.sourceSpan : target.sourceSpan;
     return this.templateTypeChecker.makeTemplateDiagnostic(
       this.component,
       expressionNode.handlerSpan,
@@ -134,9 +147,9 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
       errorMessage,
       [
         {
-          text: `The variable ${target.name} is declared here.`,
-          start: target.valueSpan?.start.offset || target.sourceSpan.start.offset,
-          end: target.valueSpan?.end.offset || target.sourceSpan.end.offset,
+          text: `'${target.name}' is declared here.`,
+          start: span.start.offset,
+          end: span.end.offset,
           sourceFile: this.component.getSourceFile(),
         },
       ],
