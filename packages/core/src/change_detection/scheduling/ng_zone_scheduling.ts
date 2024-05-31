@@ -159,9 +159,7 @@ export function provideZoneChangeDetection(options?: NgZoneOptions): Environment
     ignoreChangesOutsideZone,
   });
   return makeEnvironmentProviders([
-    typeof ngDevMode === 'undefined' || ngDevMode
-      ? [{provide: PROVIDED_NG_ZONE, useValue: true}]
-      : [],
+    {provide: PROVIDED_NG_ZONE, useValue: true},
     {provide: ZONELESS_ENABLED, useValue: false},
     zoneProviders,
   ]);
