@@ -25,7 +25,6 @@
 .adev-reference-list-legend {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  padding-block-end: 0.5rem;
   margin-block-start: 0;
   padding-inline: 0;
   cursor: pointer;
@@ -57,7 +56,10 @@
     border-radius: 0.25rem;
     margin-inline-end: 0.5rem;
     margin-block-end: 0.5rem;
-    transition: color 0.3s ease, background 0.3s ease, border 0.3s ease;
+    transition:
+      color 0.3s ease,
+      background 0.3s ease,
+      border 0.3s ease;
 
     &:hover {
       color: var(--primary-contrast);
@@ -74,8 +76,8 @@
 
 .adev-reference-list-form {
   display: flex;
-  justify-content: flex-start;
-  flex-wrap: wrap-reverse;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 1.5rem;
   padding-block-start: 1.5rem;
   padding-block-end: 2rem;
@@ -86,6 +88,13 @@
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
+}
+
+.adev-reference-list-empty {
+  text-align: center;
+  p {
+    font-size: 1rem;
+  }
 }
 
 .adev-featured-list {
