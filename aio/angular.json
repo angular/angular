@@ -37,7 +37,6 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": ["zone.js"],
-            "ngswConfigPath": "src/generated/ngsw-config.json",
             "tsConfig": "tsconfig.app.json",
             "webWorkerTsConfig": "tsconfig.worker.json",
             "optimization": {
@@ -132,8 +131,7 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.next.ts"
                 }
-              ],
-              "serviceWorker": true
+              ]
             },
             "rc": {
               "fileReplacements": [
@@ -141,8 +139,7 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.rc.ts"
                 }
-              ],
-              "serviceWorker": true
+              ]
             },
             "stable": {
               "fileReplacements": [
@@ -150,8 +147,7 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.stable.ts"
                 }
-              ],
-              "serviceWorker": true
+              ]
             },
             "archive": {
               "fileReplacements": [
@@ -159,8 +155,7 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.archive.ts"
                 }
-              ],
-              "serviceWorker": true
+              ]
             },
             "ci": {
               "progress": false

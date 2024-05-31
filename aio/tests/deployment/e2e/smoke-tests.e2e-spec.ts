@@ -9,7 +9,6 @@ describe(browser.baseUrl, () => {
   beforeEach(() => browser.waitForAngularEnabled(false));
 
   afterEach(async () => {
-    await page.unregisterSw();
     await browser.waitForAngularEnabled(true);
   });
 

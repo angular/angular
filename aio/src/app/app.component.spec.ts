@@ -20,7 +20,6 @@ import { Logger } from 'app/shared/logger.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
-import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { of, Subject, timer } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 import { MockLocationService } from 'testing/location.service';
@@ -850,19 +849,6 @@ describe('AppComponent', () => {
       });
     });
 
-    describe('SW updates', () => {
-      it('should be enabled when the component is initialized',
-        inject([SwUpdatesService], (swUpdates: TestSwUpdatesService) => {
-          swUpdates.disable();
-          expect(swUpdates.isEnabled).toBeFalse();
-
-          const fixture2 = TestBed.createComponent(AppComponent);
-          fixture2.detectChanges();
-          expect(swUpdates.isEnabled).toBeTrue();
-        })
-      );
-    });
-
     describe('archive redirection', () => {
       const redirectionPerMode: {[mode: string]: boolean} = {
         archive: true,
@@ -1348,7 +1334,6 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
       { provide: LocationService, useFactory: () => mockLocationService },
       { provide: Logger, useClass: MockLogger },
       { provide: SearchService, useClass: MockSearchService },
-      { provide: SwUpdatesService, useClass: TestSwUpdatesService },
       { provide: Deployment, useFactory: () => {
         const deployment = new Deployment(mockLocationService as any);
         deployment.mode = mode;
@@ -1447,13 +1432,4 @@ class TestHttpClient {
     // Preserve async nature of `HttpClient`.
     return timer(1).pipe(map(() => data));
   }
-}
-
-type PublicPart<T> = {[K in keyof T]: T[K]};
-class TestSwUpdatesService implements PublicPart<SwUpdatesService> {
-  isEnabled = false;
-
-  disable() { this.isEnabled = false; }
-  enable() { this.isEnabled = true; }
-  ngOnDestroy() { this.disable(); }
 }
