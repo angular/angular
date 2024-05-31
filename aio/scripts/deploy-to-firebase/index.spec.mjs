@@ -299,10 +299,9 @@ describe('deploy-to-firebase:', () => {
         projectId: 'angular-io',
         siteId: 'rc-angular-io-site',
         deployedUrl: 'https://rc.angular.io/',
-        preDeployActions: ['function:disableServiceWorker', 'function:redirectNonFilesToStable'],
+        preDeployActions: ['function:redirectNonFilesToStable'],
         postDeployActions: [
           'function:undoRedirectNonFilesToStable',
-          'function:undoDisableServiceWorker',
           'function:testNoActiveRcDeployment',
         ],
       },
@@ -377,12 +376,10 @@ describe('deploy-to-firebase:', () => {
         siteId: 'stable-angular-io-site',
         deployedUrl: 'https://angular.io/',
         preDeployActions: [
-          'function:disableServiceWorker',
           'function:redirectNonFilesToVersion17',
         ],
         postDeployActions: [
           'function:undoRedirectNonFilesToVersion17',
-          'function:undoDisableServiceWorker',
         ],
       },
     ]);

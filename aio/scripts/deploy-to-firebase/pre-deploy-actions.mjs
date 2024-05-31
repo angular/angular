@@ -7,18 +7,14 @@ import u from './utils.mjs';
 const BAZEL_DIST_DIR = '../dist/bin/aio/build';
 const DIST_DIR = 'dist';
 const FIREBASE_JSON_PATH = 'firebase.json';
-const NGSW_JSON_PATH = `${DIST_DIR}/ngsw.json`;
-const NGSW_JSON_BAK_PATH = `${NGSW_JSON_PATH}.bak`;
 
 // Exports
 const exp = {
   build,
   checkPayloadSize,
-  disableServiceWorker,
   undo: {
     build: undoBuild,
     checkPayloadSize: undoCheckPayloadSize,
-    disableServiceWorker: undoDisableServiceWorker,
   },
 };
 Object.keys(u.ORIGINS).forEach(originLabel => {
@@ -54,14 +50,6 @@ function build({deployedUrl, deployEnv}) {
 function checkPayloadSize() {
   u.logSectionHeader('Check payload size and upload the numbers to Firebase DB.');
   u.yarn('payload-size');
-}
-
-function disableServiceWorker() {
-  u.logSectionHeader('Disable the ServiceWorker.');
-
-  // Rename the SW manifest (`ngsw.json`). This will cause the ServiceWorker to unregister itself.
-  // See https://angular.io/guide/service-worker-devops#fail-safe.
-  sh.mv(NGSW_JSON_PATH, NGSW_JSON_BAK_PATH);
 }
 
 function escapeForRegex(str) {
@@ -120,9 +108,4 @@ function undoBuild() {
 
 function undoCheckPayloadSize() {
   // Nothing to undo.
-}
-
-function undoDisableServiceWorker() {
-  u.logSectionHeader('Re-enable the ServiceWorker.');
-  sh.mv(NGSW_JSON_BAK_PATH, NGSW_JSON_PATH);
 }
