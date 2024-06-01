@@ -11,7 +11,7 @@ import {
   Injectable,
   InjectionToken,
   ɵformatRuntimeError as formatRuntimeError,
-  ɵRuntimeError as RuntimeError,
+  PLATFORM_ID,
 } from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
@@ -20,6 +20,8 @@ import {RuntimeErrorCode} from '../../errors';
 import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';
 import {extractHostname, getUrl} from './url';
+import {isPlatformServer} from '../../platform_id';
+import {PlatformLocation} from '../../location';
 
 // Set of origins that are always excluded from the preconnect checks.
 const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
@@ -56,6 +58,8 @@ export const PRECONNECT_CHECK_BLOCKLIST = new InjectionToken<Array<string | stri
 @Injectable({providedIn: 'root'})
 export class PreconnectLinkChecker {
   private document = inject(DOCUMENT);
+  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
+  private readonly platformLocation = inject(PlatformLocation);
 
   /**
    * Set of <link rel="preconnect"> tags found on this page.
@@ -68,16 +72,10 @@ export class PreconnectLinkChecker {
    */
   private alreadySeen = new Set<string>();
 
-  private window: Window | null = null;
-
   private blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
 
   constructor() {
     assertDevMode('preconnect link checker');
-    const win = this.document.defaultView;
-    if (typeof win !== 'undefined') {
-      this.window = win;
-    }
     const blocklist = inject(PRECONNECT_CHECK_BLOCKLIST, {optional: true});
     if (blocklist) {
       this.populateBlocklist(blocklist);
@@ -102,9 +100,9 @@ export class PreconnectLinkChecker {
    * @param originalNgSrc ngSrc value
    */
   assertPreconnect(rewrittenSrc: string, originalNgSrc: string): void {
-    if (!this.window) return;
+    if (this.isServer) return;
 
-    const imgUrl = getUrl(rewrittenSrc, this.window);
+    const imgUrl = getUrl(rewrittenSrc, this.platformLocation.href);
     if (this.blocklist.has(imgUrl.hostname) || this.alreadySeen.has(imgUrl.origin)) return;
 
     // Register this origin as seen, so we don't check it again later.
@@ -135,7 +133,7 @@ export class PreconnectLinkChecker {
     const selector = 'link[rel=preconnect]';
     const links: HTMLLinkElement[] = Array.from(this.document.querySelectorAll(selector));
     for (let link of links) {
-      const url = getUrl(link.href, this.window!);
+      const url = getUrl(link.href, this.platformLocation.href);
       preconnectUrls.add(url.origin);
     }
     return preconnectUrls;

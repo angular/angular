@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, DOCUMENT, IMAGE_CONFIG, ImageConfig} from '@angular/common';
+import {CommonModule, DOCUMENT, IMAGE_CONFIG, ImageConfig, PlatformLocation} from '@angular/common';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
 import {ChangeDetectionStrategy, Component, PLATFORM_ID, Provider, Type} from '@angular/core';
@@ -32,6 +32,7 @@ import {
   RECOMMENDED_SRCSET_DENSITY_CAP,
 } from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
+import {MockPlatformLocation} from '@angular/common/testing';
 
 describe('Image directive', () => {
   describe('preload <link> element on a server', () => {
@@ -1243,6 +1244,9 @@ describe('Image directive', () => {
     it(
       'should log a warning if there is no preconnect link for a priority image',
       withHead('', () => {
+        // The warning is only logged on the client
+        if (!isBrowser) return;
+
         setupTestingModule({imageLoader});
 
         const consoleWarnSpy = spyOn(console, 'warn');
@@ -1281,6 +1285,9 @@ describe('Image directive', () => {
     it(
       "should log a warning if there is a preconnect, but it doesn't match the priority image",
       withHead('<link rel="preconnect" href="http://angular.io">', () => {
+        // The warning is only logged on the client
+        if (!isBrowser) return;
+
         setupTestingModule({imageLoader});
 
         const consoleWarnSpy = spyOn(console, 'warn');
@@ -1305,6 +1312,9 @@ describe('Image directive', () => {
       withHead(
         '<link rel="preload" href="https://angular.io/assets/images/logos/angular/angular.svg" as="image">',
         () => {
+          // The warning is only logged on the client
+          if (!isBrowser) return;
+
           setupTestingModule({imageLoader});
 
           const consoleWarnSpy = spyOn(console, 'warn');
@@ -2165,6 +2175,14 @@ function setupTestingModule(config?: {
     {provide: DOCUMENT, useValue: window.document},
     ...(config?.noLoader ? [] : [{provide: IMAGE_LOADER, useValue: loader}]),
     ...extraProviders,
+    {
+      provide: PlatformLocation,
+      useFactory: () => {
+        return new MockPlatformLocation({
+          appBaseHref: 'https://angular.io/',
+        });
+      },
+    },
   ];
   if (config?.imageConfig) {
     providers.push({provide: IMAGE_CONFIG, useValue: config.imageConfig});
@@ -2185,7 +2203,17 @@ function setUpModuleNoLoader() {
   TestBed.configureTestingModule({
     declarations: [TestComponent],
     imports: [CommonModule, NgOptimizedImage],
-    providers: [{provide: DOCUMENT, useValue: window.document}],
+    providers: [
+      {provide: DOCUMENT, useValue: window.document},
+      {
+        provide: PlatformLocation,
+        useFactory: () => {
+          return new MockPlatformLocation({
+            appBaseHref: 'https://angular.io/',
+          });
+        },
+      },
+    ],
   });
 }
 

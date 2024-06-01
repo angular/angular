@@ -11,6 +11,7 @@ import {
   Injectable,
   OnDestroy,
   ɵformatRuntimeError as formatRuntimeError,
+  PLATFORM_ID,
 } from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
@@ -19,6 +20,8 @@ import {RuntimeErrorCode} from '../../errors';
 import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';
 import {getUrl} from './url';
+import {PlatformLocation} from '../../location';
+import {isPlatformBrowser} from '../../platform_id';
 
 interface ObservedImageState {
   priority: boolean;
@@ -42,14 +45,13 @@ export class LCPImageObserver implements OnDestroy {
   // Map of full image URLs -> original `ngSrc` values.
   private images = new Map<string, ObservedImageState>();
 
-  private window: Window | null = null;
   private observer: PerformanceObserver | null = null;
+  private platformLocation = inject(PlatformLocation);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor() {
     assertDevMode('LCP checker');
-    const win = inject(DOCUMENT).defaultView;
-    if (typeof win !== 'undefined' && typeof PerformanceObserver !== 'undefined') {
-      this.window = win;
+    if (this.isBrowser && typeof PerformanceObserver !== 'undefined') {
       this.observer = this.initPerformanceObserver();
     }
   }
@@ -98,20 +100,20 @@ export class LCPImageObserver implements OnDestroy {
       alreadyWarnedModified: false,
       alreadyWarnedPriority: false,
     };
-    this.images.set(getUrl(rewrittenSrc, this.window!).href, newObservedImageState);
+    this.images.set(getUrl(rewrittenSrc, this.platformLocation.href).href, newObservedImageState);
   }
 
   unregisterImage(rewrittenSrc: string) {
     if (!this.observer) return;
-    this.images.delete(getUrl(rewrittenSrc, this.window!).href);
+    this.images.delete(getUrl(rewrittenSrc, this.platformLocation.href).href);
   }
 
   updateImage(originalSrc: string, newSrc: string) {
-    const originalUrl = getUrl(originalSrc, this.window!).href;
+    const originalUrl = getUrl(originalSrc, this.platformLocation.href).href;
     const img = this.images.get(originalUrl);
     if (img) {
       img.modified = true;
-      this.images.set(getUrl(newSrc, this.window!).href, img);
+      this.images.set(getUrl(newSrc, this.platformLocation.href).href, img);
       this.images.delete(originalUrl);
     }
   }
