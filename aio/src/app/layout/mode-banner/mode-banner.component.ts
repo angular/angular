@@ -1,6 +1,7 @@
 import {Location} from '@angular/common';
 import {Component, Input} from '@angular/core';
 import {VersionInfo} from 'app/navigation/navigation.service';
+import { rewriteLink } from 'app/shared/angular-dot-dev-redirects';
 
 @Component({
   selector: 'aio-mode-banner',
@@ -21,6 +22,6 @@ export class ModeBannerComponent {
   currentPath: string;
 
   constructor(private location: Location) {
-    this.currentPath = this.location.path();
+    this.currentPath = rewriteLink(this.location.path());
   }
 }
