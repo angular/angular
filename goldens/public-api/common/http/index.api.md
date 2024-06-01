@@ -38,6 +38,10 @@ export const HTTP_TRANSFER_CACHE_ORIGIN_MAP: InjectionToken<Record<string, strin
 export abstract class HttpBackend implements HttpHandler {
     // (undocumented)
     abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HttpBackend, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<HttpBackend>;
 }
 
 // @public
@@ -2562,6 +2566,10 @@ export enum HttpFeatureKind {
 export abstract class HttpHandler {
     // (undocumented)
     abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HttpHandler, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<HttpHandler>;
 }
 
 // @public
@@ -3153,6 +3161,10 @@ export class HttpXhrBackend implements HttpBackend {
 // @public
 export abstract class HttpXsrfTokenExtractor {
     abstract getToken(): string | null;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<HttpXsrfTokenExtractor, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<HttpXsrfTokenExtractor>;
 }
 
 // @public

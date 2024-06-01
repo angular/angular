@@ -15,7 +15,7 @@ import {
 import {from, Observable, Observer, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
-import {HttpBackend} from './backend';
+import type {HttpBackend} from './backend';
 import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
 import {
@@ -119,7 +119,7 @@ function validateXhrCompatibility(req: HttpRequest<any>) {
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class HttpXhrBackend implements HttpBackend {
   constructor(private xhrFactory: XhrFactory) {}
 
