@@ -9,19 +9,15 @@
 import {
   EnvironmentInjector,
   inject,
-  Injectable,
   InjectionToken,
   runInInjectionContext,
-  ɵConsole as Console,
-  ɵformatRuntimeError as formatRuntimeError,
   PendingTasks,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 
-import {HttpBackend, HttpHandler} from './backend';
-import {RuntimeErrorCode} from './errors';
-import {FetchBackend} from './fetch';
+import type {HttpHandler} from './backend';
+
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
@@ -144,12 +140,12 @@ export type HttpInterceptorFn = (
  * `HttpInterceptorFn`, which is a useful abstraction for including different kinds of interceptors
  * (e.g. legacy class-based interceptors) in the same chain.
  */
-type ChainedInterceptorFn<RequestT> = (
+export type ChainedInterceptorFn<RequestT> = (
   req: HttpRequest<RequestT>,
   finalHandlerFn: HttpHandlerFn,
 ) => Observable<HttpEvent<RequestT>>;
 
-function interceptorChainEndFn(
+export function interceptorChainEndFn(
   req: HttpRequest<any>,
   finalHandlerFn: HttpHandlerFn,
 ): Observable<HttpEvent<any>> {
@@ -160,7 +156,7 @@ function interceptorChainEndFn(
  * Constructs a `ChainedInterceptorFn` which adapts a legacy `HttpInterceptor` to the
  * `ChainedInterceptorFn` interface.
  */
-function adaptLegacyInterceptorToChain(
+export function adaptLegacyInterceptorToChain(
   chainTailFn: ChainedInterceptorFn<any>,
   interceptor: HttpInterceptor,
 ): ChainedInterceptorFn<any> {
@@ -174,7 +170,7 @@ function adaptLegacyInterceptorToChain(
  * Constructs a `ChainedInterceptorFn` which wraps and invokes a functional interceptor in the given
  * injector.
  */
-function chainedInterceptorFn(
+export function chainedInterceptorFn(
   chainTailFn: ChainedInterceptorFn<unknown>,
   interceptorFn: HttpInterceptorFn,
   injector: EnvironmentInjector,
@@ -202,6 +198,7 @@ export const HTTP_INTERCEPTORS = new InjectionToken<readonly HttpInterceptor[]>(
  */
 export const HTTP_INTERCEPTOR_FNS = new InjectionToken<readonly HttpInterceptorFn[]>(
   ngDevMode ? 'HTTP_INTERCEPTOR_FNS' : '',
+  {factory: () => []},
 );
 
 /**
@@ -248,90 +245,4 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
       return chain(req, handler);
     }
   };
-}
-
-let fetchBackendWarningDisplayed = false;
-
-/** Internal function to reset the flag in tests */
-export function resetFetchBackendWarningFlag() {
-  fetchBackendWarningDisplayed = false;
-}
-
-@Injectable()
-export class HttpInterceptorHandler extends HttpHandler {
-  private chain: ChainedInterceptorFn<unknown> | null = null;
-  private readonly pendingTasks = inject(PendingTasks);
-  private readonly contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
-
-  constructor(
-    private backend: HttpBackend,
-    private injector: EnvironmentInjector,
-  ) {
-    super();
-
-    // We strongly recommend using fetch backend for HTTP calls when SSR is used
-    // for an application. The logic below checks if that's the case and produces
-    // a warning otherwise.
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !fetchBackendWarningDisplayed) {
-      // This flag is necessary because provideHttpClientTesting() overrides the backend
-      // even if `withFetch()` is used within the test. When the testing HTTP backend is provided,
-      // no HTTP calls are actually performed during the test, so producing a warning would be
-      // misleading.
-      const isTestingBackend = (this.backend as any).isTestingBackend;
-
-      if (
-        typeof ngServerMode !== 'undefined' &&
-        ngServerMode &&
-        !(this.backend instanceof FetchBackend) &&
-        !isTestingBackend
-      ) {
-        fetchBackendWarningDisplayed = true;
-        injector
-          .get(Console)
-          .warn(
-            formatRuntimeError(
-              RuntimeErrorCode.NOT_USING_FETCH_BACKEND_IN_SSR,
-              'Angular detected that `HttpClient` is not configured ' +
-                "to use `fetch` APIs. It's strongly recommended to " +
-                'enable `fetch` for applications that use Server-Side Rendering ' +
-                'for better performance and compatibility. ' +
-                'To enable `fetch`, add the `withFetch()` to the `provideHttpClient()` ' +
-                'call at the root of the application.',
-            ),
-          );
-      }
-    }
-  }
-
-  override handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {
-    if (this.chain === null) {
-      const dedupedInterceptorFns = Array.from(
-        new Set([
-          ...this.injector.get(HTTP_INTERCEPTOR_FNS),
-          ...this.injector.get(HTTP_ROOT_INTERCEPTOR_FNS, []),
-        ]),
-      );
-
-      // Note: interceptors are wrapped right-to-left so that final execution order is
-      // left-to-right. That is, if `dedupedInterceptorFns` is the array `[a, b, c]`, we want to
-      // produce a chain that is conceptually `c(b(a(end)))`, which we build from the inside
-      // out.
-      this.chain = dedupedInterceptorFns.reduceRight(
-        (nextSequencedFn, interceptorFn) =>
-          chainedInterceptorFn(nextSequencedFn, interceptorFn, this.injector),
-        interceptorChainEndFn as ChainedInterceptorFn<unknown>,
-      );
-    }
-
-    if (this.contributeToStability) {
-      const removeTask = this.pendingTasks.add();
-      return this.chain(initialRequest, (downstreamRequest) =>
-        this.backend.handle(downstreamRequest),
-      ).pipe(finalize(removeTask));
-    } else {
-      return this.chain(initialRequest, (downstreamRequest) =>
-        this.backend.handle(downstreamRequest),
-      );
-    }
-  }
 }

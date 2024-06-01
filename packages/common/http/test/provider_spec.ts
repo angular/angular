@@ -35,7 +35,7 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable, from} from 'rxjs';
 
-import {HttpInterceptorFn, resetFetchBackendWarningFlag} from '../src/interceptor';
+import {HttpInterceptorFn} from '../src/interceptor';
 import {
   HttpFeature,
   HttpFeatureKind,
@@ -48,6 +48,7 @@ import {
   withRequestsMadeViaParent,
   withXsrfConfiguration,
 } from '../src/provider';
+import {resetFetchBackendWarningFlag} from '../src/backend';
 
 describe('without provideHttpClientTesting', () => {
   it('should contribute to stability', async () => {
@@ -564,6 +565,45 @@ describe('provideHttpClient', () => {
 
       globalThis['ngServerMode'] = undefined;
     });
+  });
+});
+
+describe('without providers', () => {
+  beforeEach(() => {
+    setCookie('');
+    TestBed.resetTestingModule();
+  });
+
+  afterEach(() => {
+    let controller: HttpTestingController;
+    try {
+      controller = TestBed.inject(HttpTestingController);
+    } catch (err) {
+      // A failure here means that TestBed wasn't successfully configured. Some tests intentionally
+      // test configuration errors and therefore exit without setting up TestBed for HTTP, so just
+      // exit here without performing verification on the `HttpTestingController` in that case.
+      return;
+    }
+    controller.verify();
+  });
+
+  it('should work without providers', () => {
+    const client = TestBed.inject(HttpClient);
+    const backend = TestBed.inject(HttpBackend);
+
+    expect(client).toBeInstanceOf(HttpClient);
+    expect(backend).toBeInstanceOf(HttpXhrBackend);
+  });
+
+  it('should not use legacy interceptors by default', () => {
+    TestBed.configureTestingModule({
+      providers: [provideLegacyInterceptor('legacy'), provideHttpClientTesting()],
+    });
+
+    TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+    const req = TestBed.inject(HttpTestingController).expectOne('/test');
+    expect(req.request.headers.has('X-Tag')).toBeFalse();
+    req.flush('');
   });
 });
 

@@ -17,7 +17,7 @@ import {
 import {Observable, Observer} from 'rxjs';
 import {RuntimeErrorCode} from './errors';
 
-import {HttpBackend} from './backend';
+import type {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
 import {
   ACCEPT_HEADER,
