@@ -582,7 +582,7 @@ browser-sync-ui@^2.29.3:
     socket.io-client "^4.4.1"
     stream-throttle "^0.1.3"
 
-browser-sync@^2.12.3:
+browser-sync@^2.26.13:
   version "2.29.3"
   resolved "https://registry.yarnpkg.com/browser-sync/-/browser-sync-2.29.3.tgz#c2a3ff00c659eb87a13cae9d7a427e1b4b580ee1"
   integrity sha512-NiM38O6XU84+MN+gzspVmXV2fTOoe+jBqIBx3IBdhZrdeURr6ZgznJr/p+hQ+KzkKEiGH/GcC4SQFSL0jV49bg==
@@ -805,12 +805,12 @@ concurrently@3.4.0:
     supports-color "^3.2.3"
     tree-kill "^1.1.0"
 
-connect-history-api-fallback@^1, connect-history-api-fallback@^1.2.0:
+connect-history-api-fallback@^1, connect-history-api-fallback@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/connect-history-api-fallback/-/connect-history-api-fallback-1.6.0.tgz#8b32089359308d111115d81cad3fceab888f97bc"
   integrity sha512-e54B99q/OUoH64zYYRf3HBP5z24G38h5D3qXu23JGRoigpX5Ss4r9ZnDk3g0Z8uQC2x2lPaJ+UlWBc1ZWBWdLg==
 
-connect-logger@0.0.1:
+connect-logger@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/connect-logger/-/connect-logger-0.0.1.tgz#4d999978a1d20bb4608e7cd434d741652255174b"
   integrity sha512-kC5FPWpcfgpW5HtICnXbdOAFa4uNilU4ZPmsH6RlXaDVfXLupyUjgI1otpj3kOcsoPpDxknxmcoM0wk0ApsjYQ==
@@ -1556,16 +1556,16 @@ limiter@^1.0.5:
   resolved "https://registry.yarnpkg.com/limiter/-/limiter-1.1.5.tgz#8f92a25b3b16c6131293a0cc834b4a838a2aa7c2"
   integrity sha512-FWWMIEOxz3GwUI4Ts/IvgVy6LPvoMPgjMdQ185nN6psJyBJ4yOpzqm695/h5umdLJg2vW3GR5iG11MAkR2AzJA==
 
-lite-server@2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/lite-server/-/lite-server-2.2.2.tgz#4644afe6c9146d850cfa0ad9a86a94f87156499e"
-  integrity sha512-7enj18KffG8tVb1en8FU48rw+hPchnGFdEHs1iLL3rNxJx56l6ZZO7K88FnNc7kI2WVztZN+Qdfsf/SnqaPCYw==
+lite-server@2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/lite-server/-/lite-server-2.6.1.tgz#27281022c77c99673d0a820b998bc7e125cdbaa0"
+  integrity sha512-d3oyB/C8AU4EwYQHlLxcu6vTQDnCaLb81v1KKNYABmFS5oeJ11A+YxlqtpbTclID1AFddJfcB5klf0q98vYIMw==
   dependencies:
-    browser-sync "^2.12.3"
-    connect-history-api-fallback "^1.2.0"
-    connect-logger "0.0.1"
-    lodash "^4.11.1"
-    minimist "1.2.0"
+    browser-sync "^2.26.13"
+    connect-history-api-fallback "^1.6.0"
+    connect-logger "^0.0.1"
+    lodash "^4.17.20"
+    minimist "^1.2.5"
 
 localtunnel@^2.0.1:
   version "2.0.2"
@@ -1589,7 +1589,7 @@ lodash.isfinite@^3.3.2:
   resolved "https://registry.yarnpkg.com/lodash.isfinite/-/lodash.isfinite-3.3.2.tgz#fb89b65a9a80281833f0b7478b3a5104f898ebb3"
   integrity sha512-7FGG40uhC8Mm633uKW1r58aElFlBlxCrg9JfSi3P6aYiWmfiWF0PgMd86ZUsxE5GwWPdHoS2+48bwTh2VPkIQA==
 
-lodash@^4.11.1, lodash@^4.17.10, lodash@^4.17.14, lodash@^4.5.1:
+lodash@^4.17.10, lodash@^4.17.14, lodash@^4.17.20, lodash@^4.5.1:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -1640,12 +1640,7 @@ minimatch@^3.0.2, minimatch@^3.1.1:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimist@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
-  integrity sha512-7Wl+Jz+IGWuSdgsQEJ4JunV0si/iMhg42MnQQG6h1R6TNeVenp4U9x5CC5v/gYqz/fENLQITAWXidNtVL0NNbw==
-
-minimist@^1.2.0:
+minimist@^1.2.0, minimist@^1.2.5:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
@@ -2348,9 +2343,9 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "5.4.5"
 
 ua-parser-js@^1.0.33:
-  version "1.0.37"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-1.0.37.tgz#b5dc7b163a5c1f0c510b08446aed4da92c46373f"
-  integrity sha512-bhTyI94tZofjo+Dn8SN6Zv8nBDvyXTymAdM3LDI/0IboIUwTu1rEhW7v2TfiVsoYWgkQ4kOVqnI8APUFbIQIFQ==
+  version "1.0.38"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-1.0.38.tgz#66bb0c4c0e322fe48edfe6d446df6042e62f25e2"
+  integrity sha512-Aq5ppTOfvrCMgAPneW1HfWj66Xi7XL+/mIy996R1/CLS/rcyJQm6QZdsKrUeivDFQ+Oc9Wyuwor8Ze8peEoUoQ==
 
 undici-types@~5.26.4:
   version "5.26.5"

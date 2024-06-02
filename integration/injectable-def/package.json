@@ -19,7 +19,7 @@
   "devDependencies": {
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "concurrently": "3.4.0",
-    "lite-server": "2.2.2",
+    "lite-server": "2.6.1",
     "protractor": "file:../../node_modules/protractor",
     "rollup": "file:../../node_modules/rollup"
   },
