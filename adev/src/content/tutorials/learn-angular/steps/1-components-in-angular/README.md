@@ -1,3 +1,5 @@
+# When the code is run, the preview shows an error "Unable to deserialize cloned data." (I didn't know where to report this, so I sent it here hehe)
+# The error disappears when the "styles" are removed.
 # Components in Angular
 
 Components are the foundational building blocks for any Angular application. Each component has three parts:
