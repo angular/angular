@@ -9,6 +9,7 @@
 export {PlatformState} from './platform_state';
 export {provideServerRendering} from './provide_server';
 export {platformServer, ServerModule} from './server';
+export {SsrPerformanceProfiler as ɵSsrPerformanceProfiler} from './profiler';
 export {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
 export {renderApplication, renderModule} from './utils';
 

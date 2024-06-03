@@ -26,6 +26,7 @@ import {PlatformState} from './platform_state';
 import {platformServer} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 import {createScript} from './transfer_state';
+import {SsrPerformanceProfiler} from './profiler';
 
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
@@ -145,7 +146,9 @@ function insertEventRecordScript(
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
     const replayScriptContents = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
       appId,
-    )}, ${JSON.stringify(Array.from(regular))}${capture.size ? ',' + JSON.stringify(Array.from(capture)) : ''});`;
+    )}, ${JSON.stringify(Array.from(regular))}${
+      capture.size ? ',' + JSON.stringify(Array.from(capture)) : ''
+    });`;
 
     const replayScript = createScript(doc, replayScriptContents, nonce);
 
@@ -273,6 +276,13 @@ export async function renderApplication<T>(
   options: {document?: string | Document; url?: string; platformProviders?: Provider[]},
 ): Promise<string> {
   const platformRef = createServerPlatform(options);
+
+  const profiler = platformRef.injector.get(SsrPerformanceProfiler, null);
+  profiler?.start('renderApplication');
+
   const applicationRef = await bootstrap();
-  return _render(platformRef, applicationRef);
+  return _render(platformRef, applicationRef).then((html) => {
+    profiler?.end('renderApplication');
+    return html;
+  });
 }
