@@ -38,6 +38,15 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return [];
   }
 
+  function getSuggestionDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
+    if (!angularOnly && isTypeScriptFile(fileName)) {
+      return tsLS.getSuggestionDiagnostics(fileName);
+    }
+
+    // Template files do not currently produce separate suggestion diagnostics
+    return [];
+  }
+
   function getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
     if (!angularOnly && isTypeScriptFile(fileName)) {
@@ -311,6 +320,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     ...tsLS,
     getSyntacticDiagnostics,
     getSemanticDiagnostics,
+    getSuggestionDiagnostics,
     getTypeDefinitionAtPosition,
     getQuickInfoAtPosition,
     getDefinitionAtPosition,
