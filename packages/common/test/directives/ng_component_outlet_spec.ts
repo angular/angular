@@ -12,6 +12,7 @@ import {
   Compiler,
   Component,
   ComponentRef,
+  EventEmitter,
   Inject,
   InjectionToken,
   Injector,
@@ -20,6 +21,8 @@ import {
   NgModuleFactory,
   NO_ERRORS_SCHEMA,
   Optional,
+  output,
+  Output,
   QueryList,
   TemplateRef,
   Type,
@@ -378,6 +381,48 @@ describe('inputs', () => {
   });
 });
 
+describe('outputs', () => {
+  it('should be binding the component outputs', () => {
+    const fixture = TestBed.createComponent(TestOutputsComponent);
+    fixture.componentInstance.currentComponent = ComponentWithOutputs;
+    const logs: string[] = [];
+
+    fixture.detectChanges();
+    expect(logs.length).toBe(0);
+
+    const parent = fixture.componentInstance;
+    parent.outputs = {
+      foo: () => {
+        logs.push('foo');
+      },
+    };
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('#foo')!.click();
+    fixture.nativeElement.querySelector('#bar')!.click();
+    expect(logs.length).toBe(1);
+    expect(logs.at(-1)).toBe('foo');
+
+    parent.outputs = {
+      // This one is aliased
+      bar: () => {
+        logs.push('bar');
+      },
+    };
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('#foo')!.click();
+    fixture.nativeElement.querySelector('#bar')!.click();
+
+    // foo has been unsubscribed
+    expect(logs.length).toBe(2);
+    expect(logs.at(-1)).toBe('bar');
+
+    // bar has been unsubscribed
+    parent.outputs = {};
+    fixture.detectChanges();
+    expect(logs.length).toBe(2);
+  });
+});
+
 const TEST_TOKEN = new InjectionToken('TestToken');
 @Component({selector: 'injected-component', template: 'foo'})
 class InjectedComponent {
@@ -480,4 +525,33 @@ class AnotherComponentWithInputs {
 class TestInputsComponent {
   currentComponent: Type<unknown> | null = null;
   inputs?: Record<string, unknown>;
+}
+
+@Component({
+  selector: 'cmp-with-outputs',
+  standalone: true,
+  template: `<button id="foo" (click)="emitFoo()">Click me</button> <button id="bar" (click)="emitBar()">Click me</button>`,
+})
+class ComponentWithOutputs {
+  @Output() foo = new EventEmitter<void>();
+  @Output('bar') aliasedBar = new EventEmitter<void>();
+
+  emitFoo() {
+    this.foo.emit();
+  }
+
+  emitBar() {
+    this.aliasedBar.emit();
+  }
+}
+
+@Component({
+  selector: 'test-cmp',
+  standalone: true,
+  imports: [NgComponentOutlet],
+  template: `<ng-template *ngComponentOutlet="currentComponent; outputs: outputs"></ng-template>`,
+})
+class TestOutputsComponent {
+  currentComponent: Type<unknown> | null = null;
+  outputs?: Record<string, unknown>;
 }
