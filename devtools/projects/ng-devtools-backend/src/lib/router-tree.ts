@@ -83,19 +83,11 @@ function assignChildrenToParent(
     if (child.data) {
       for (const el in child.data) {
         if (child.data.hasOwnProperty(el)) {
-          if (routeConfig.data) {
-            routeConfig.data.push({
-              key: el,
-              value: child.data[el],
-            });
-          } else {
-            routeConfig.data = [
-              {
-                key: el,
-                value: child.data[el],
-              },
-            ];
-          }
+          routeConfig.data ??= [];
+          routeConfig.data.push({
+            key: el,
+            value: child.data[el],
+          });
         }
       }
     }

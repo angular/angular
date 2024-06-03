@@ -424,15 +424,15 @@ const getProviderValue = (
   const injector = idToInjector.get(serializedInjector.id)!;
   const providerRecords = getInjectorProviders(injector);
 
-  let provider, providerValue;
   if (typeof serializedProvider.index === 'number') {
-    provider = providerRecords[serializedProvider.index];
-    providerValue = injector.get(provider.token, null, {optional: true});
+    const provider = providerRecords[serializedProvider.index];
+    return injector.get(provider.token, null, {optional: true});
   } else if (Array.isArray(serializedProvider.index)) {
-    provider = serializedProvider.index.map((index) => providerRecords[index]);
-    providerValue = injector.get(provider[0].token, null, {optional: true});
+    const provider = serializedProvider.index.map((index) => providerRecords[index]);
+    return injector.get(provider[0].token, null, {optional: true});
+  } else {
+    return;
   }
-  return providerValue;
 };
 
 const logProvider = (

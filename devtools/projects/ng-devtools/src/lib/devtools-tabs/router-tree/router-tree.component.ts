@@ -32,7 +32,6 @@ export class RouterTreeComponent implements AfterViewInit {
   }
 
   private _routes: Route[] = [];
-  private searchString: string | undefined;
   private filterRegex = new RegExp('.^');
   private routerTreeVisualizer!: RouterTreeVisualizer;
   private showFullPath = false;
@@ -65,13 +64,10 @@ export class RouterTreeComponent implements AfterViewInit {
     );
   }
 
-  searchRoutes($event: any) {
-    this.searchString = $event.target.value;
-    if (this.searchString) {
-      this.filterRegex = new RegExp(this.searchString.toLowerCase() || '.^');
-    } else {
-      this.filterRegex = new RegExp('.^');
-    }
+  searchRoutes($event: InputEvent) {
+    this.filterRegex = new RegExp(
+      ($event?.target as HTMLInputElement)?.value?.toLowerCase() || '.^',
+    );
     this.renderGraph(false);
   }
 
