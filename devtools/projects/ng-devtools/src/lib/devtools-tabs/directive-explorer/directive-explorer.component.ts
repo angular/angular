@@ -190,11 +190,7 @@ export class DirectiveExplorerComponent implements OnDestroy {
     const selectedEl = this.currentSelectedElement();
     if (!selectedEl) return;
 
-    if (!this.currentSelectedElement) {
-      return;
-    }
-
-    const directiveIndex = this.currentSelectedElement.directives.findIndex(
+    const directiveIndex = selectedEl.directives.findIndex(
       (directive) => directive.name === directiveName,
     );
 

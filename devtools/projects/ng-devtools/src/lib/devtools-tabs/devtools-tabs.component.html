@@ -77,30 +77,48 @@
         [class.hidden]="activeTab() !== 'Components'"
         (toggleInspector)="toggleInspector()"
       />
-      <ng-profiler [class.hidden]="activeTab !== 'Profiler'" />
-      <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'" />
-      <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'" />
+      <ng-profiler [class.hidden]="activeTab() !== 'Profiler'" />
+      <ng-router-tree [routes]="routes()" [class.hidden]="activeTab() !== 'Router Tree'" />
+      <ng-injector-tree [class.hidden]="activeTab() !== 'Injector Tree'" />
     </div>
   }
 </mat-tab-nav-panel>
 
 <mat-menu #menu="matMenu">
-  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); toggleTimingAPI()">
-    <mat-slide-toggle [checked]="timingAPIEnabled"> Enable timing API </mat-slide-toggle>
-  </div>
-  <div
-    mat-menu-item
-    disableRipple
-    (click)="$event.stopPropagation(); themeService.toggleDarkMode(currentTheme === 'light-theme')"
-  >
-    <mat-slide-toggle [checked]="currentTheme === 'dark-theme'"> Dark Mode </mat-slide-toggle>
-  </div>
-  <div
-    mat-menu-item
-    disableRipple
-    (click)="$event.stopPropagation(); showCommentNodes = $event.checked"
-  >
-    <mat-slide-toggle [checked]="showCommentNodes"> Show comment nodes </mat-slide-toggle>
+  <div (click)="$event.stopPropagation()">
+    @if (!profilingNotificationsSupported) {
+      <label mat-menu-item disableRipple>
+        <mat-slide-toggle [checked]="timingAPIEnabled()" (change)="toggleTimingAPI()">
+          Enable timing API
+        </mat-slide-toggle>
+      </label>
+    }
+    <label mat-menu-item disableRipple>
+      @let currentTheme = themeService.currentTheme();
+      <mat-slide-toggle
+        [checked]="currentTheme === 'dark-theme'"
+        (click)="themeService.toggleDarkMode(currentTheme === 'light-theme')"
+      >
+        Dark Mode
+      </mat-slide-toggle>
+    </label>
+    <label mat-menu-item disableRipple>
+      <mat-slide-toggle
+        [checked]="showCommentNodes()"
+        (change)="showCommentNodes.set($event.checked)"
+      >
+        Show comment nodes
+      </mat-slide-toggle>
+    </label>
+
+    <label mat-menu-item disableRipple>
+      <mat-slide-toggle
+        [checked]="routerGraphEnabled()"
+        (change)="toggleRouterGraph($event.checked)"
+      >
+        Enable Router Graph</mat-slide-toggle
+      >
+    </label>
   </div>
 </mat-menu>
 

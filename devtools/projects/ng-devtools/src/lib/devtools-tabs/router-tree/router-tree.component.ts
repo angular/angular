@@ -7,7 +7,15 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  effect,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
 import {Events, MessageBus, Route} from 'protocol';
 import {RouterTreeVisualizer} from './router-tree-visualizer';
@@ -32,20 +40,19 @@ export class RouterTreeComponent implements AfterViewInit {
   }
 
   private _routes: Route[] = [];
-  private searchString: string | undefined;
   private filterRegex = new RegExp('.^');
   private routerTreeVisualizer!: RouterTreeVisualizer;
   private showFullPath = false;
 
   constructor() {
     effect(() => {
-      this.render();
+      // this.render();
     });
   }
 
   ngAfterViewInit(): void {
     this.setUpRouterVisualizer();
-    this._messageBus.emit('getRoutes');
+    // this._messageBus.emit('getRoutes');
   }
 
   togglePathSettings(): void {
@@ -69,13 +76,10 @@ export class RouterTreeComponent implements AfterViewInit {
     );
   }
 
-  searchRoutes($event: any) {
-    this.searchString = $event.target.value;
-    if (this.searchString) {
-      this.filterRegex = new RegExp(this.searchString.toLowerCase() || '.^');
-    } else {
-      this.filterRegex = new RegExp('.^');
-    }
+  searchRoutes($event: InputEvent) {
+    this.filterRegex = new RegExp(
+      ($event?.target as HTMLInputElement)?.value?.toLowerCase() || '.^',
+    );
     this.renderGraph(false);
   }
 

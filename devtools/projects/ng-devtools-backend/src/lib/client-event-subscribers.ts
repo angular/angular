@@ -220,7 +220,7 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
   );
   const rootInjector = (forest[0].resolutionPath ?? []).find((i) => i.name === 'Root');
   if (rootInjector) {
-    getRouterConfigFromRoot(messageBus)(rootInjector);
+    getRouterConfigFromRoot(messageBus, rootInjector);
   }
 };
 
@@ -347,7 +347,7 @@ function getNodeDIResolutionPath(node: ComponentTreeNode): SerializedInjector[] 
   return serializedPath;
 }
 
-const getInjectorProvidersCallbackUtil = (injector: SerializedInjector) => {
+const getSerializedProviderRecords = (injector: SerializedInjector) => {
   if (!idToInjector.has(injector.id)) {
     return;
   }
@@ -395,21 +395,20 @@ const getInjectorProvidersCallbackUtil = (injector: SerializedInjector) => {
   return serializedProviderRecords;
 };
 
-const getRouterConfigFromRoot =
-  (messageBus: MessageBus<Events>) => (injector: SerializedInjector) => {
-    const serializedProviderRecords = getInjectorProvidersCallbackUtil(injector) || [];
-    const routerInstance = serializedProviderRecords.filter(
-      (provider) => provider.token === 'Router', // get the instance of router using token
-    );
-    const routerProvider = getProviderValue(injector, routerInstance[0]);
+const getRouterConfigFromRoot = (messageBus: MessageBus<Events>, injector: SerializedInjector) => {
+  const serializedProviderRecords = getSerializedProviderRecords(injector) ?? [];
+  const routerInstance = serializedProviderRecords.filter(
+    (provider) => provider.token === 'Router', // get the instance of router using token
+  );
+  const routerProvider = getProviderValue(injector, routerInstance[0]);
 
-    const routes: Route[] = [parseRoutes(routerProvider)];
-    messageBus.emit('updateRouterTree', [routes]);
-  };
+  const routes: Route[] = [parseRoutes(routerProvider)];
+  messageBus.emit('updateRouterTree', [routes]);
+};
 
 const getInjectorProvidersCallback =
   (messageBus: MessageBus<Events>) => (injector: SerializedInjector) => {
-    const serializedProviderRecords = getInjectorProvidersCallbackUtil(injector) || [];
+    const serializedProviderRecords = getSerializedProviderRecords(injector) || [];
     messageBus.emit('latestInjectorProviders', [injector, serializedProviderRecords]);
   };
 
@@ -424,15 +423,15 @@ const getProviderValue = (
   const injector = idToInjector.get(serializedInjector.id)!;
   const providerRecords = getInjectorProviders(injector);
 
-  let provider, providerValue;
   if (typeof serializedProvider.index === 'number') {
-    provider = providerRecords[serializedProvider.index];
-    providerValue = injector.get(provider.token, null, {optional: true});
+    const provider = providerRecords[serializedProvider.index];
+    return injector.get(provider.token, null, {optional: true});
   } else if (Array.isArray(serializedProvider.index)) {
-    provider = serializedProvider.index.map((index) => providerRecords[index]);
-    providerValue = injector.get(provider[0].token, null, {optional: true});
+    const provider = serializedProvider.index.map((index) => providerRecords[index]);
+    return injector.get(provider[0].token, null, {optional: true});
+  } else {
+    return;
   }
-  return providerValue;
 };
 
 const logProvider = (

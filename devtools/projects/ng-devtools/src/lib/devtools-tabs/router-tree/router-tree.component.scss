@@ -71,33 +71,6 @@
       padding: 0px !important;
     }
 
-    .routesTable {
-      border-collapse: collapse;
-      width: 100%;
-      font-size: 12px;
-    }
-
-    .routesTable td,
-    .routesTable th {
-      border: 1px solid #ddd;
-      padding: 2px 8px;
-    }
-
-    .routesTable tr:nth-child(even) {
-      // background-color: #f2f2f2;
-    }
-
-    .routesTable tr:hover {
-      background-color: #ddd;
-    }
-
-    .routesTable th {
-      padding-top: 6px;
-      padding-bottom: 6px;
-      text-align: left;
-      background-color: #cfe8fc;
-    }
-
     .text-link {
       text-decoration: underline;
       color: #4da1ff;

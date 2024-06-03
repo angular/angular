@@ -18,7 +18,7 @@ import {Route} from 'protocol';
 let arrowDefId = 0;
 
 export type RouterTreeD3Node = d3.HierarchyPointNode<Route>;
-
+type ClickHandler<U> = (pointerEvent: PointerEvent, node: U) => void;
 export abstract class GraphRenderer<T, U> {
   abstract render(graph: T, filterRegex: RegExp, showFullPath: boolean): void;
   abstract getNodeById(id: string): U | null;
@@ -28,9 +28,9 @@ export abstract class GraphRenderer<T, U> {
   abstract root: U | null;
   abstract get graphElement(): HTMLElement;
 
-  protected nodeClickListeners: ((pointerEvent: PointerEvent, node: U) => void)[] = [];
-  protected nodeMouseoverListeners: ((pointerEvent: PointerEvent, node: U) => void)[] = [];
-  protected nodeMouseoutListeners: ((pointerEvent: PointerEvent, node: U) => void)[] = [];
+  protected nodeClickListeners: Array<ClickHandler<U>> = [];
+  protected nodeMouseoverListeners: Array<ClickHandler<U>> = [];
+  protected nodeMouseoutListeners: Array<ClickHandler<U>> = [];
 
   cleanup(): void {
     this.nodeClickListeners = [];
@@ -59,7 +59,7 @@ interface RouterTreeVisualizerConfig {
 }
 
 export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node> {
-  public config: RouterTreeVisualizerConfig;
+  private readonly config: RouterTreeVisualizerConfig;
 
   constructor(
     private _containerElement: HTMLElement,
@@ -103,7 +103,6 @@ export class RouterTreeVisualizer extends GraphRenderer<Route, RouterTreeD3Node>
 
   override snapToNode(node: RouterTreeD3Node, scale = 1): void {
     const svg = this.d3.select(this._containerElement);
-    // const halfWidth = this._containerElement.clientWidth / 2;
     const halfHeight = this._containerElement.clientHeight / 2;
     const t = d3.zoomIdentity.translate(250, halfHeight - node.x).scale(scale);
     svg.transition().duration(500).call(this.zoomController!.transform, t);

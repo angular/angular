@@ -52,17 +52,23 @@ export class DevToolsTabsComponent {
   readonly isHydrationEnabled = input(false);
   readonly frameSelected = output<Frame>();
 
-  @Output() frameSelected = new EventEmitter<Frame>();
-  @ViewChild(DirectiveExplorerComponent) directiveExplorer!: DirectiveExplorerComponent;
-  @ViewChild('navBar', {static: true}) navbar!: MatTabNav;
+  readonly applicationEnvironment = inject(ApplicationEnvironment);
+  readonly activeTab = signal<Tabs>('Components');
+  readonly inspectorRunning = signal(false);
+  readonly showCommentNodes = signal(false);
+  readonly routerGraphEnabled = signal(false);
+  readonly timingAPIEnabled = signal(false);
 
-  applicationEnvironment = inject(ApplicationEnvironment);
+  readonly routes = signal<Route[]>([]);
+  readonly frameManager = inject(FrameManager);
 
-  activeTab: Tabs = 'Components';
-  inspectorRunning = false;
-  routerTreeEnabled = false;
-  showCommentNodes = false;
-  timingAPIEnabled = false;
+  readonly tabs = computed<Tabs[]>(() => {
+    const alwaysShown: Tabs[] = ['Components', 'Profiler', 'Injector Tree'];
+    return this.routerGraphEnabled() && this.routes().length > 0
+      ? [...alwaysShown, 'Router Tree']
+      : alwaysShown;
+  });
+
   profilingNotificationsSupported = Boolean(
     (window.chrome?.devtools as any)?.performance?.onProfilingStarted,
   );
@@ -129,5 +135,12 @@ export class DevToolsTabsComponent {
     this.timingAPIEnabled()
       ? this._messageBus.emit('enableTimingAPI')
       : this._messageBus.emit('disableTimingAPI');
+  }
+
+  toggleRouterGraph(enabled: boolean): void {
+    this.routerGraphEnabled.set(enabled);
+    if (!enabled) {
+      this.activeTab.set('Components');
+    }
   }
 }

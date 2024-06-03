@@ -47,8 +47,8 @@ import {
  * */
 export const GLOBAL_PUBLISH_EXPANDO_KEY = 'ng';
 
-declare global {
-  interface NgGlobalPublishUtils {}
+interface NgGlobalPublishUtils {
+  getLoadedRoutes(route: any): any;
 }
 
 const globalUtilsFunctions = {

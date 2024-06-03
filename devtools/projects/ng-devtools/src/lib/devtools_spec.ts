@@ -55,7 +55,7 @@ describe('DevtoolsComponent', () => {
     component.angularIsInDevMode = false;
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.devtools').textContent).toContain(
-      'We detected an application built with production configuration. Angular DevTools only supports development builds.',
+      'We detected an application built with production configuration. Angular DevTools only supports development build.',
     );
   });
 
