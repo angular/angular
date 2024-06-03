@@ -9,7 +9,7 @@ import { rewriteLink } from 'app/shared/angular-dot-dev-redirects';
     <div *ngIf="mode === 'archive'" class="mode-banner alert archive-warning">
       <p>
         This is the <strong>archived documentation for Angular v{{ version.major }}.</strong> Please visit
-        <a href="https://angular.dev{{currentPath}}">angular.dev</a>
+        <a [href]="currentPath">angular.dev</a>
          to see this page for the current version of Angular.
       </p>
     </div>
