@@ -9,19 +9,19 @@
 import {CommonModule} from '../../index';
 import {NgComponentOutlet} from '../../src/directives/ng_component_outlet';
 import {
-  Compiler,
   Component,
   ComponentRef,
   createEnvironmentInjector,
   EnvironmentInjector,
+  EventEmitter,
   Inject,
   InjectionToken,
   Injector,
   Input,
   NgModule,
-  NgModuleFactory,
   NO_ERRORS_SCHEMA,
   Optional,
+  Output,
   QueryList,
   TemplateRef,
   Type,
@@ -30,6 +30,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 
 describe('insert/remove', () => {
@@ -349,6 +350,131 @@ describe('inputs', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('[ANOTHER] foo: Foo, bar: Bar, baz: Baz');
+  });
+});
+
+describe('outputs', () => {
+  @Component({
+    selector: 'cmp-with-outputs',
+    template: `
+      <button id="foo" (click)="emitFoo()">Click me</button> 
+      <button id="bar" (click)="emitBar()">Click me</button>`,
+  })
+  class ComponentWithOutputs {
+    @Output() foo = new EventEmitter<void>();
+    @Output('bar') aliasedBar = new EventEmitter<void>();
+    emitted = 0;
+
+    emitFoo() {
+      this.emitted++;
+      this.foo.emit();
+    }
+
+    emitBar() {
+      this.emitted++;
+      this.aliasedBar.emit();
+    }
+  }
+
+  @Component({
+    selector: 'test-cmp',
+    imports: [NgComponentOutlet],
+    template: `<ng-template *ngComponentOutlet="currentComponent; outputs: outputs"></ng-template>`,
+  })
+  class TestOutputsComponent {
+    currentComponent: Type<unknown> | null = null;
+    outputs?: Record<string, unknown>;
+  }
+
+  it('should be binding the component outputs', () => {
+    const fixture = TestBed.createComponent(TestOutputsComponent);
+    fixture.componentInstance.currentComponent = ComponentWithOutputs;
+    const logs: string[] = [];
+
+    fixture.detectChanges();
+    expect(logs.length).toBe(0);
+
+    const parent = fixture.componentInstance;
+    parent.outputs = {foo: () => logs.push('foo')};
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('#foo')!.click();
+    fixture.nativeElement.querySelector('#bar')!.click();
+    expect(logs.length).toBe(1);
+    expect(logs.at(-1)).toBe('foo');
+
+    parent.outputs = {
+      // This one is aliased
+      bar: () => {
+        logs.push('bar');
+      },
+    };
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('#foo')!.click();
+    fixture.nativeElement.querySelector('#bar')!.click();
+
+    // foo has been unsubscribed
+    expect(logs.length).toBe(2);
+    expect(logs.at(-1)).toBe('bar');
+
+    // bar has been unsubscribed
+    parent.outputs = {};
+    fixture.detectChanges();
+    expect(logs.length).toBe(2);
+  });
+
+  it('should recreate the component when the outputs ref changes', () => {
+    const fixture = TestBed.createComponent(TestOutputsComponent);
+    fixture.componentInstance.currentComponent = ComponentWithOutputs;
+    const logs: string[] = [];
+
+    fixture.detectChanges();
+    expect(logs.length).toBe(0);
+
+    const parent = fixture.componentInstance;
+    parent.outputs = {foo: () => logs.push('foo')};
+    fixture.detectChanges();
+    let childCmp = fixture.debugElement.query(By.directive(ComponentWithOutputs))
+      .componentInstance as ComponentWithOutputs;
+    expect(childCmp.emitted).toBe(0);
+    fixture.nativeElement.querySelector('#foo')!.click();
+    expect(childCmp.emitted).toBe(1);
+
+    // New output ref, component is recreated
+    parent.outputs = {bar: () => logs.push('bar')};
+    fixture.detectChanges();
+    childCmp = fixture.debugElement.query(By.directive(ComponentWithOutputs))
+      .componentInstance as ComponentWithOutputs;
+    expect(childCmp.emitted).toBe(0);
+    fixture.nativeElement.querySelector('#foo')!.click();
+    expect(childCmp.emitted).toBe(1);
+  });
+
+  it('should not recreate the component is the outputs are mutated', () => {
+    const fixture = TestBed.createComponent(TestOutputsComponent);
+    fixture.componentInstance.currentComponent = ComponentWithOutputs;
+    const logs: string[] = [];
+    const parent = fixture.componentInstance;
+
+    parent.outputs = {foo: () => logs.push('foo')};
+    fixture.detectChanges();
+    let childCmp = fixture.debugElement.query(By.directive(ComponentWithOutputs))
+      .componentInstance as ComponentWithOutputs;
+    expect(childCmp.emitted).toBe(0);
+    fixture.nativeElement.querySelector('#foo')!.click();
+    expect(childCmp.emitted).toBe(1);
+
+    // Outputs are mutated, component is not recreated
+    const consoleSpy = spyOn(console, 'warn');
+    parent.outputs['bar'] = () => logs.push('bar');
+    expect(Object.keys(parent.outputs!).length).toBe(2);
+    expect(consoleSpy).toHaveBeenCalledTimes(0);
+    fixture.detectChanges();
+    expect(consoleSpy).toHaveBeenCalledTimes(1);
+    childCmp = fixture.debugElement.query(By.directive(ComponentWithOutputs))
+      .componentInstance as ComponentWithOutputs;
+    expect(childCmp.emitted).toBe(1);
+    fixture.nativeElement.querySelector('#foo')!.click();
+    expect(childCmp.emitted).toBe(2);
   });
 });
 

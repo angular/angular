@@ -14,13 +14,14 @@ import {
   EnvironmentInjector,
   Injector,
   Input,
-  NgModuleFactory,
   NgModuleRef,
   OnChanges,
   OnDestroy,
   SimpleChanges,
   Type,
   ViewContainerRef,
+  outputBinding,
+  Binding,
 } from '@angular/core';
 
 /**
@@ -38,6 +39,8 @@ import {
  *
  * * `ngComponentOutletInputs`: Optional component inputs object, which will be bind to the
  * component.
+ * * `ngComponentOutletOutputs`: Optional component inputs object, which will be bind to the
+ * component. Changing the outputs will recreate the component as it uses an underlying `outputBinding`.
  *
  * * `ngComponentOutletInjector`: Optional custom {@link Injector} that will be used as parent for
  * the Component. Defaults to the injector of the current view container.
@@ -51,9 +54,6 @@ import {
  * * `ngComponentOutletNgModule`: Optional NgModule class reference to allow loading another
  * module dynamically, then loading a component from that module.
  *
- * * `ngComponentOutletNgModuleFactory`: Deprecated config option that allows providing optional
- * NgModule factory to allow loading another module dynamically, then loading a component from that
- * module. Use `ngComponentOutletNgModule` instead.
  *
  * ### Syntax
  *
@@ -106,6 +106,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
   @Input() ngComponentOutlet: Type<any> | null = null;
 
   @Input() ngComponentOutletInputs?: Record<string, unknown>;
+  @Input() ngComponentOutletOutputs?: Record<string, (...args: any[]) => unknown>;
   @Input() ngComponentOutletInjector?: Injector;
   @Input() ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
   @Input() ngComponentOutletContent?: any[][];
@@ -121,6 +122,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
    * that are no longer referenced.
    */
   private _inputsUsed = new Map<string, boolean>();
+  private _outputsUsed = new Set<string>();
 
   /**
    * Gets the instance of the currently-rendered component.
@@ -136,10 +138,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     // Note: square brackets property accessor is safe for Closure compiler optimizations (the
     // `changes` argument of the `ngOnChanges` lifecycle hook retains the names of the fields that
     // were changed).
-    return (
-      changes['ngComponentOutletNgModule'] !== undefined ||
-      changes['ngComponentOutletNgModuleFactory'] !== undefined
-    );
+    return changes['ngComponentOutletNgModule'] !== undefined;
   }
 
   private _needToReCreateComponentInstance(changes: SimpleChanges): boolean {
@@ -151,6 +150,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
       changes['ngComponentOutletContent'] !== undefined ||
       changes['ngComponentOutletInjector'] !== undefined ||
       changes['ngComponentOutletEnvironmentInjector'] !== undefined ||
+      changes['ngComponentOutletOutputs'] !== undefined ||
       this._needToReCreateNgModuleInstance(changes)
     );
   }
@@ -160,6 +160,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     if (this._needToReCreateComponentInstance(changes)) {
       this._viewContainerRef.clear();
       this._inputsUsed.clear();
+      this._outputsUsed.clear();
       this._componentRef = undefined;
 
       if (this.ngComponentOutlet) {
@@ -183,6 +184,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
           ngModuleRef: this._moduleRef,
           projectableNodes: this.ngComponentOutletContent,
           environmentInjector: this.ngComponentOutletEnvironmentInjector,
+          bindings: outputsToBindings(this.ngComponentOutletOutputs),
         });
       }
     }
@@ -196,8 +198,18 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
           this._inputsUsed.set(inputName, true);
         }
       }
-
       this._applyInputStateDiff(this._componentRef);
+
+      if (ngDevMode && this.ngComponentOutletOutputs) {
+        if (!areSetsEqual(this._outputsUsed, new Set(Object.keys(this.ngComponentOutletOutputs)))) {
+          // TODO: Create & Log a Runtime warning
+          console.warn('The output object has been mutated, which is not supported.');
+        }
+
+        for (const outputName of Object.keys(this.ngComponentOutletOutputs)) {
+          this._outputsUsed.add(outputName);
+        }
+      }
     }
   }
 
@@ -225,4 +237,21 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
 function getParentInjector(injector: Injector): Injector {
   const parentNgModule = injector.get(NgModuleRef);
   return parentNgModule.injector;
+}
+
+function outputsToBindings<T>(
+  outputs: Record<string, (...args: any[]) => unknown> = {},
+): Binding[] {
+  return Object.entries(outputs).map(([outputName, callback]) =>
+    outputBinding(outputName, callback),
+  );
+}
+
+function areSetsEqual(a: Set<string>, b: Set<string>): boolean {
+  if (a.size !== b.size) return false;
+
+  for (const val of a) {
+    if (!b.has(val)) return false;
+  }
+  return true;
 }
