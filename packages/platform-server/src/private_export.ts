@@ -11,3 +11,7 @@ export {
   SERVER_RENDER_PROVIDERS as ɵSERVER_RENDER_PROVIDERS,
 } from './server';
 export {SERVER_CONTEXT as ɵSERVER_CONTEXT} from './utils';
+export {
+  enableSsrProfiling as ɵenableSsrProfiling,
+  disableSsrProfiling as ɵdisableSsrProfiling,
+} from './profiler';
