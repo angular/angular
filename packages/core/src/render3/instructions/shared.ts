@@ -1956,11 +1956,11 @@ export function storePropertyBindingMetadata(
 
 export function getOrCreateLViewCleanup(view: LView): any[] {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return view[CLEANUP] || (view[CLEANUP] = []);
+  return (view[CLEANUP] ??= []);
 }
 
 export function getOrCreateTViewCleanup(tView: TView): any[] {
-  return tView.cleanup || (tView.cleanup = []);
+  return (tView.cleanup ??= []);
 }
 
 /**
