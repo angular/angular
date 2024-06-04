@@ -101,6 +101,7 @@ export {isStandalone} from './render3/definition';
 export {
   AfterRenderRef,
   AfterRenderOptions,
+  AfterRenderPhase,
   afterRender,
   afterNextRender,
   ɵFirstAvailable,
