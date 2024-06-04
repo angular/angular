@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {MAT_SNACK_BAR_DATA, MatSnackBarAction, MatSnackBarRef} from '@angular/material/snack-bar';
 
 export interface ErrorSnackBarData {
@@ -36,12 +36,10 @@ export interface ErrorSnackBarData {
 export class ErrorSnackBar {
   protected message: string;
   protected actionText?: string;
+  data: ErrorSnackBarData = inject(MAT_SNACK_BAR_DATA);
 
-  constructor(
-    protected snackBarRef: MatSnackBarRef<ErrorSnackBar>,
-    @Inject(MAT_SNACK_BAR_DATA) public data: ErrorSnackBarData,
-  ) {
-    this.message = data.message;
-    this.actionText = data.actionText;
+  constructor(protected snackBarRef: MatSnackBarRef<ErrorSnackBar>) {
+    this.message = this.data.message;
+    this.actionText = this.data.actionText;
   }
 }
