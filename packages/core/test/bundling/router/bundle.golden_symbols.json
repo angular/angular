@@ -186,6 +186,9 @@
     "name": "DomAdapter"
   },
   {
+    "name": "DomEventsPlugin"
+  },
+  {
     "name": "DomRendererFactory2"
   },
   {
@@ -231,6 +234,9 @@
     "name": "ErrorHandler"
   },
   {
+    "name": "EventDelegationPlugin"
+  },
+  {
     "name": "EventEmitter"
   },
   {
@@ -241,6 +247,9 @@
   },
   {
     "name": "EventType2"
+  },
+  {
+    "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
     "name": "GenericBrowserDomAdapter"

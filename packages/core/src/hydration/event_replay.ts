@@ -32,10 +32,11 @@ import {
   IS_GLOBAL_EVENT_DELEGATION_ENABLED,
 } from './tokens';
 import {
-  GlobalEventDelegation,
   sharedStashFunction,
   removeListeners,
   invokeRegisteredListeners,
+  EventContractDetails,
+  JSACTION_EVENT_CONTRACT,
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
@@ -116,8 +117,8 @@ export function withEventReplay(): Provider[] {
             // of the application is completed. This timing is similar to the unclaimed
             // dehydrated views cleanup timing.
             whenStable(appRef).then(() => {
-              const globalEventDelegation = injector.get(GlobalEventDelegation);
-              initEventReplay(globalEventDelegation, injector);
+              const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
+              initEventReplay(eventContractDetails, injector);
               jsactionSet.forEach(removeListeners);
               // After hydration, we shouldn't need to do anymore work related to
               // event replay anymore.
@@ -137,12 +138,12 @@ function getJsactionData(container: EarlyJsactionDataContainer) {
   return container._ejsa;
 }
 
-const initEventReplay = (eventDelegation: GlobalEventDelegation, injector: Injector) => {
+const initEventReplay = (eventDelegation: EventContractDetails, injector: Injector) => {
   const appId = injector.get(APP_ID);
   // This is set in packages/platform-server/src/utils.ts
   const container = globalThis[CONTRACT_PROPERTY]?.[appId];
   const earlyJsactionData = getJsactionData(container)!;
-  const eventContract = (eventDelegation.eventContract = new EventContract(
+  const eventContract = (eventDelegation.instance = new EventContract(
     new EventContractContainer(earlyJsactionData.c),
     /* useActionResolver= */ false,
   ));
