@@ -15,18 +15,22 @@ import {
 } from '@angular/platform-browser/src/dom/events/event_manager';
 
 import {createMouseEvent, el} from '../../../testing/src/browser_util';
+import {TestBed} from '@angular/core/testing';
 
 (function () {
   if (isNode) return;
   let domEventPlugin: DomEventsPlugin;
   let doc: Document;
   let zone: NgZone;
+  const {runInInjectionContext} = TestBed;
 
   describe('EventManager', () => {
     beforeEach(() => {
       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
       zone = new NgZone({});
-      domEventPlugin = new DomEventsPlugin(doc);
+      runInInjectionContext(() => {
+        domEventPlugin = new DomEventsPlugin(doc);
+      });
     });
 
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one', () => {
@@ -328,7 +332,9 @@ import {createMouseEvent, el} from '../../../testing/src/browser_util';
     it('should only trigger one Change detection when bubbling with shouldCoalesceEventChangeDetection = true', (done: DoneFn) => {
       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
       zone = new NgZone({shouldCoalesceEventChangeDetection: true});
-      domEventPlugin = new DomEventsPlugin(doc);
+      runInInjectionContext(() => {
+        domEventPlugin = new DomEventsPlugin(doc);
+      });
       const element = el('<div></div>');
       const child = el('<div></div>');
       element.appendChild(child);
@@ -364,7 +370,9 @@ import {createMouseEvent, el} from '../../../testing/src/browser_util';
     it('should only trigger one Change detection when bubbling with shouldCoalesceRunChangeDetection = true', (done: DoneFn) => {
       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
       zone = new NgZone({shouldCoalesceRunChangeDetection: true});
-      domEventPlugin = new DomEventsPlugin(doc);
+      runInInjectionContext(() => {
+        domEventPlugin = new DomEventsPlugin(doc);
+      });
       const element = el('<div></div>');
       const child = el('<div></div>');
       element.appendChild(child);
@@ -400,7 +408,9 @@ import {createMouseEvent, el} from '../../../testing/src/browser_util';
     it('should not drain micro tasks queue too early with shouldCoalesceEventChangeDetection=true', (done: DoneFn) => {
       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
       zone = new NgZone({shouldCoalesceEventChangeDetection: true});
-      domEventPlugin = new DomEventsPlugin(doc);
+      runInInjectionContext(() => {
+        domEventPlugin = new DomEventsPlugin(doc);
+      });
       const element = el('<div></div>');
       const child = el('<div></div>');
       doc.body.appendChild(element);
@@ -446,7 +456,9 @@ import {createMouseEvent, el} from '../../../testing/src/browser_util';
     it('should not drain micro tasks queue too early with shouldCoalesceRunChangeDetection=true', (done: DoneFn) => {
       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
       zone = new NgZone({shouldCoalesceRunChangeDetection: true});
-      domEventPlugin = new DomEventsPlugin(doc);
+      runInInjectionContext(() => {
+        domEventPlugin = new DomEventsPlugin(doc);
+      });
       const element = el('<div></div>');
       const child = el('<div></div>');
       doc.body.appendChild(element);

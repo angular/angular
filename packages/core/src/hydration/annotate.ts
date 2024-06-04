@@ -40,7 +40,7 @@ import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
 import {collectDomEventsInfo} from './event_replay';
-import {setJSActionAttribute} from '../event_delegation_utils';
+import {setJSActionAttributes} from '../event_delegation_utils';
 import {
   getOrComputeI18nChildren,
   isI18nHydrationEnabled,
@@ -458,7 +458,7 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
     if (nativeElementsToEventTypes && tNode.type & TNodeType.Element) {
       const nativeElement = unwrapRNode(lView[i]) as Element;
       if (nativeElementsToEventTypes.has(nativeElement)) {
-        setJSActionAttribute(nativeElement, nativeElementsToEventTypes.get(nativeElement)!);
+        setJSActionAttributes(nativeElement, nativeElementsToEventTypes.get(nativeElement)!);
       }
     }
 
