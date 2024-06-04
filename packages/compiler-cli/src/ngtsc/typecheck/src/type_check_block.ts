@@ -2021,9 +2021,11 @@ class Scope {
   private varMap = new Map<TmplAstVariable, number | ts.Identifier>();
 
   /**
-   * A map of `TmplAstLetDeclaration`s to the index of their op in the `opQueue`.
+   * A map of the names of `TmplAstLetDeclaration`s to the index of their op in the `opQueue`.
+   *
+   * Assumes that there won't be duplicated `@let` declarations within the same scope.
    */
-  private letDeclOpMap = new Map<TmplAstLetDeclaration, number>();
+  private letDeclOpMap = new Map<string, number>();
 
   /**
    * Statements for this template.
@@ -2132,7 +2134,11 @@ class Scope {
 
       if (node instanceof TmplAstLetDeclaration) {
         const opIndex = scope.opQueue.push(new TcbLetDeclarationOp(tcb, scope, node)) - 1;
-        scope.letDeclOpMap.set(node, opIndex);
+        if (scope.letDeclOpMap.has(node.name)) {
+          tcb.oobRecorder.duplicateLetDeclaration(tcb.id, node);
+        } else {
+          scope.letDeclOpMap.set(node.name, opIndex);
+        }
       }
     }
     return scope;
@@ -2255,7 +2261,7 @@ class Scope {
       return this.varMap.has(node);
     }
     if (node instanceof TmplAstLetDeclaration) {
-      return this.letDeclOpMap.has(node);
+      return this.letDeclOpMap.has(node.name);
     }
     return this.referenceOpMap.has(node);
   }
@@ -2266,8 +2272,8 @@ class Scope {
   ): ts.Expression | null {
     if (ref instanceof TmplAstReference && this.referenceOpMap.has(ref)) {
       return this.resolveOp(this.referenceOpMap.get(ref)!);
-    } else if (ref instanceof TmplAstLetDeclaration && this.letDeclOpMap.has(ref)) {
-      return this.resolveOp(this.letDeclOpMap.get(ref)!);
+    } else if (ref instanceof TmplAstLetDeclaration && this.letDeclOpMap.has(ref.name)) {
+      return this.resolveOp(this.letDeclOpMap.get(ref.name)!);
     } else if (ref instanceof TmplAstVariable && this.varMap.has(ref)) {
       // Resolving a context variable for this template.
       // Execute the `TcbVariableOp` associated with the `TmplAstVariable`.
