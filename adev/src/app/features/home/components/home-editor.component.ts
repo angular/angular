@@ -7,6 +7,7 @@
  */
 
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   EnvironmentInjector,
@@ -20,6 +21,7 @@ import {EmbeddedEditor, EmbeddedTutorialManager} from '../../../editor';
 
 @Component({
   selector: 'adev-code-editor',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [EmbeddedEditor],
   template: `
