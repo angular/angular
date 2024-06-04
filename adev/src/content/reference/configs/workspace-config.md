@@ -220,7 +220,7 @@ For details of those options and their possible values, see the [Angular CLI Ref
 | `scripts`                  | An object containing JavaScript files to add to the application. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in the [Styles and scripts configuration](#styles-and-scripts-configuration) section.       |
 | `budgets`                  | Default size-budget type and thresholds for all or parts of your application. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](tools/cli/build#configure-size-budgets). |
 | `fileReplacements`         | An object containing files and their compile-time replacements. See more in [Configure target-specific file replacements](tools/cli/build#configure-target-specific-file-replacements).                                                                                |
-| `index`                    | A base HTML document which loads the application. See more in [Index configuration](#index-config).                                                                                                                                                                    |
+| `index`                    | A base HTML document which loads the application. See more in [Index configuration](#index-configuration).                                                                                                                                                                    |
 
 ## Complex configuration values
 
