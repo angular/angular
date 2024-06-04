@@ -8,6 +8,7 @@
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   inject,
   NgZone,
@@ -32,8 +33,9 @@ import {ProgressBarComponent} from './core/layout/progress-bar/progress-bar.comp
 import {ESCAPE, SEARCH_TRIGGER_KEY} from './core/constants/keys';
 
 @Component({
-  standalone: true,
   selector: 'adev-root',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
   imports: [
     CookiePopup,
     Navigation,
