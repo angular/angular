@@ -6876,6 +6876,34 @@ suppress
         );
       });
 
+      it('should not allow multiple @let declarations with the same name within a scope', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @if (true) {
+                @let value = 1;
+                @let value = 'one';
+                {{value}}
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot declare @let called 'value' as there is another @let declaration with the same name.`,
+        );
+      });
+
       it('should not allow a let declaration to be referenced before it is defined', () => {
         env.write(
           'test.ts',
