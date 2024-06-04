@@ -1,4 +1,4 @@
-import {Component, HostListener, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, inject} from '@angular/core';
 import {Step, RECOMMENDATIONS} from './recommendations';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {CdkMenuModule} from '@angular/cdk/menu';
@@ -31,6 +31,7 @@ interface Option {
     IconComponent,
   ],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AppComponent {
   protected title = '';
