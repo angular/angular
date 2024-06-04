@@ -1039,4 +1039,5 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
     node: PropertyRead,
     target: TmplAstLetDeclaration,
   ): void {}
+  duplicateLetDeclaration(templateId: TemplateId, current: TmplAstLetDeclaration): void {}
 }
