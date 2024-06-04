@@ -47,8 +47,11 @@ export type ɵFirstAvailable<T extends unknown[]> = T extends [infer H, ...infer
  * so, Angular is better able to minimize the performance degradation associated with
  * manual DOM access, ensuring the best experience for the end users of your application
  * or library.
+ *
+ * @deprecated Specify the phase for your callback to run in by passing a spec-object as the first
+ *   parameter to `afterRender` or `afterNextRender` insetad of a function.
  */
-enum AfterRenderPhase {
+export enum AfterRenderPhase {
   /**
    * Use `AfterRenderPhase.EarlyRead` for callbacks that only need to **read** from the
    * DOM before a subsequent `AfterRenderPhase.Write` callback, for example to perform
@@ -104,6 +107,21 @@ export interface AfterRenderOptions {
    * If this is not provided, the current injection context will be used instead (via `inject`).
    */
   injector?: Injector;
+
+  /**
+   * The phase the callback should be invoked in.
+   *
+   * <div class="alert is-critical">
+   *
+   * Defaults to `AfterRenderPhase.MixedReadWrite`. You should choose a more specific
+   * phase instead. See `AfterRenderPhase` for more information.
+   *
+   * </div>
+   *
+   * @deprecated Specify the phase for your callback to run in by passing a spec-object as the first
+   *   parameter to `afterRender` or `afterNextRender` insetad of a function.
+   */
+  phase?: AfterRenderPhase;
 }
 
 /**
@@ -253,7 +271,7 @@ export function afterRender<E = never, W = never, M = never>(
     mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
     read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
   },
-  opts?: AfterRenderOptions,
+  opts?: Omit<AfterRenderOptions, 'phase'>,
 ): AfterRenderRef;
 
 /**
@@ -336,7 +354,12 @@ export function afterRender(
 
   performanceMarkFeature('NgAfterRender');
 
-  return afterRenderImpl(callbackOrSpec, injector, /* once */ false);
+  return afterRenderImpl(
+    callbackOrSpec,
+    injector,
+    /* once */ false,
+    options?.phase ?? AfterRenderPhase.MixedReadWrite,
+  );
 }
 
 /**
@@ -424,7 +447,7 @@ export function afterNextRender<E = never, W = never, M = never>(
     mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
     read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
   },
-  opts?: AfterRenderOptions,
+  opts?: Omit<AfterRenderOptions, 'phase'>,
 ): AfterRenderRef;
 
 /**
@@ -504,7 +527,38 @@ export function afterNextRender(
 
   performanceMarkFeature('NgAfterNextRender');
 
-  return afterRenderImpl(callbackOrSpec, injector, /* once */ true);
+  return afterRenderImpl(
+    callbackOrSpec,
+    injector,
+    /* once */ true,
+    options?.phase ?? AfterRenderPhase.MixedReadWrite,
+  );
+}
+
+function getSpec(
+  callbackOrSpec:
+    | VoidFunction
+    | {
+        earlyRead?: () => unknown;
+        write?: (r?: unknown) => unknown;
+        mixedReadWrite?: (r?: unknown) => unknown;
+        read?: (r?: unknown) => void;
+      },
+  phase: AfterRenderPhase,
+) {
+  if (callbackOrSpec instanceof Function) {
+    switch (phase) {
+      case AfterRenderPhase.EarlyRead:
+        return {earlyRead: callbackOrSpec};
+      case AfterRenderPhase.Write:
+        return {write: callbackOrSpec};
+      case AfterRenderPhase.MixedReadWrite:
+        return {mixedReadWrite: callbackOrSpec};
+      case AfterRenderPhase.Read:
+        return {read: callbackOrSpec};
+    }
+  }
+  return callbackOrSpec;
 }
 
 /**
@@ -521,14 +575,9 @@ function afterRenderImpl(
       },
   injector: Injector,
   once: boolean,
+  phase: AfterRenderPhase,
 ): AfterRenderRef {
-  const spec: {
-    earlyRead?: () => unknown;
-    write?: (r?: unknown) => unknown;
-    mixedReadWrite?: (r?: unknown) => unknown;
-    read?: (r?: unknown) => void;
-  } = callbackOrSpec instanceof Function ? {mixedReadWrite: callbackOrSpec} : callbackOrSpec;
-
+  const spec = getSpec(callbackOrSpec, phase);
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
