@@ -70,7 +70,7 @@ as `::shadow` or `::part`.
 
 #### `::ng-deep`
 
-Angular's emulated encapsulation mode supports a custom pseudo class, `:ng-deep`. Applying this
+Angular's emulated encapsulation mode supports a custom pseudo class, `::ng-deep`. Applying this
 pseudo class to a CSS rule disables encapsulation for that rule, effectively turning it into a
 global style. **The Angular team strongly discourages new use of `::ng-deep`**. These APIs remain
 exclusively for backwards compatibility.
