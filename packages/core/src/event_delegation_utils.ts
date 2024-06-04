@@ -11,6 +11,7 @@ import {
   EventContract,
   EventContractContainer,
   EventDispatcher,
+  isSupportedEvent,
   registerDispatcher,
 } from '@angular/core/primitives/event-dispatch';
 import * as Attributes from '@angular/core/primitives/event-dispatch';
@@ -34,14 +35,19 @@ export function invokeRegisteredListeners(event: Event) {
   }
 }
 
-export function setJSActionAttribute(nativeElement: Element, eventTypes: string[]) {
+export function setJSActionAttributes(nativeElement: Element, eventTypes: string[]) {
   if (!eventTypes.length) {
     return;
   }
   const parts = eventTypes.reduce((prev, curr) => prev + curr + ':;', '');
   const existingAttr = nativeElement.getAttribute(Attributes.JSACTION);
-  //  This is required to be a module accessor to appease security tests on setAttribute.
   nativeElement.setAttribute(Attributes.JSACTION, `${existingAttr ?? ''}${parts}`);
+}
+
+export function setJSActionAttribute(nativeElement: Element, eventType: string) {
+  const existingAttr = nativeElement.getAttribute(Attributes.JSACTION);
+  //  This is required to be a module accessor to appease security tests on setAttribute.
+  nativeElement.setAttribute(Attributes.JSACTION, `${existingAttr ?? ''}${eventType}:;`);
 }
 
 export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn: () => void) => {
@@ -61,13 +67,36 @@ export const removeListeners = (el: Element) => {
 @Injectable({providedIn: 'root'})
 export class GlobalEventDelegation {
   eventContract!: EventContract;
-  addEvent(el: Element, eventName: string) {
-    if (this.eventContract) {
-      this.eventContract.addEvent(eventName);
-      setJSActionAttribute(el, [eventName]);
-      return true;
-    }
+
+  supports(eventName: string): boolean {
     return false;
+  }
+
+  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+    return () => {};
+  }
+
+  removeEventListener(element: HTMLElement, eventName: string, callback: Function): void {}
+}
+
+export class EnabledGlobalEventDelegation extends GlobalEventDelegation {
+  override supports(eventName: string): boolean {
+    return isSupportedEvent(eventName);
+  }
+
+  override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+    this.eventContract.addEvent(eventName);
+    setJSActionAttribute(element, eventName);
+    return () => this.removeEventListener(element, eventName, handler);
+  }
+
+  override removeEventListener(element: HTMLElement, eventName: string, callback: Function): void {
+    const newJsactionAttribute = element
+      .getAttribute(Attributes.JSACTION)
+      ?.split(';')
+      .filter((s) => s === eventName + ':')
+      .join(';');
+    element.setAttribute(Attributes.JSACTION, newJsactionAttribute ?? '');
   }
 }
 

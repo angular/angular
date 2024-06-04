@@ -71,6 +71,12 @@ export {
   withI18nSupport as ɵwithI18nSupport,
 } from './hydration/api';
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
+export {
+  GlobalEventDelegation as ɵGlobalEventDelegation,
+  EnabledGlobalEventDelegation as ɵEnabledGlobalEventDelegation,
+  setJSActionAttribute as ɵsetJSActionAttribute,
+} from './event_delegation_utils';
+export {provideGlobalEventDelegation as ɵprovideGlobalEventDelegation} from './event_dispatch/event_delegation';
 export {IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED} from './hydration/tokens';
 export {
   HydratedNode as ɵHydratedNode,
