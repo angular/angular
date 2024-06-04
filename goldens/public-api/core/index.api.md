@@ -5,6 +5,7 @@
 ```ts
 
 import { EnvironmentProviders as EnvironmentProviders_2 } from '@angular/core';
+import { EventContract } from '@angular/core/primitives/event-dispatch';
 import { Observable } from 'rxjs';
 import { SIGNAL } from '@angular/core/primitives/signals';
 import { SignalNode } from '@angular/core/primitives/signals';
@@ -740,6 +741,18 @@ export interface GetTestability {
     addToWindow(registry: TestabilityRegistry): void;
     // (undocumented)
     findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean): Testability | null;
+}
+
+// @public (undocumented)
+export class GlobalEventDelegation {
+    // (undocumented)
+    addEvent(el: Element, eventName: string): boolean;
+    // (undocumented)
+    eventContract: EventContract;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<GlobalEventDelegation, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<GlobalEventDelegation>;
 }
 
 // @public

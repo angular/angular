@@ -7,12 +7,13 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {GlobalEventDelegation, Inject, Injectable, inject} from '@angular/core';
 
 import {EventManagerPlugin} from './event_manager';
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
+  private readonly globalEventDelegation = inject(GlobalEventDelegation);
   constructor(@Inject(DOCUMENT) doc: any) {
     super(doc);
   }
@@ -24,7 +25,9 @@ export class DomEventsPlugin extends EventManagerPlugin {
   }
 
   override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    element.addEventListener(eventName, handler as EventListener, false);
+    if (!this.globalEventDelegation.addEvent(element, eventName)) {
+      element.addEventListener(eventName, handler as EventListener, false);
+    }
     return () => this.removeEventListener(element, eventName, handler as EventListener);
   }
 

@@ -1,0 +1,19 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = [
+        "event_dispatch_spec.ts",
+    ],
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

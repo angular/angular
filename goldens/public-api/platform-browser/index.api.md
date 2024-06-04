@@ -18,6 +18,7 @@ import { ModuleWithProviders } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { PlatformRef } from '@angular/core';
 import { Predicate } from '@angular/core';
+import { ɵprovideGlobalEventDelegation as provideGlobalEventDelegation } from '@angular/core';
 import { Provider } from '@angular/core';
 import { Sanitizer } from '@angular/core';
 import { SecurityContext } from '@angular/core';
@@ -197,6 +198,8 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
 
 // @public
 export function provideClientHydration(...features: HydrationFeature<HydrationFeatureKind>[]): EnvironmentProviders;
+
+export { provideGlobalEventDelegation }
 
 // @public
 export function provideProtractorTestingSupport(): Provider[];

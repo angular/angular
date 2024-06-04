@@ -246,6 +246,9 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
+    "name": "GlobalEventDelegation"
+  },
+  {
     "name": "GuardsCheckEnd"
   },
   {

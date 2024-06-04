@@ -14,9 +14,10 @@ import {
   registerDispatcher,
 } from '@angular/core/primitives/event-dispatch';
 import * as Attributes from '@angular/core/primitives/event-dispatch';
-import {Injectable, Injector} from './di';
+import {Injector} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
 import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './hydration/tokens';
+import {GlobalEventDelegation} from './event-dispatch/global_event_delegation';
 
 declare global {
   interface Element {
@@ -58,17 +59,13 @@ export const removeListeners = (el: Element) => {
   el.__jsaction_fns = undefined;
 };
 
-@Injectable({providedIn: 'root'})
-export class GlobalEventDelegation {
-  eventContract!: EventContract;
-  addEvent(el: Element, eventName: string) {
-    if (this.eventContract) {
-      this.eventContract.addEvent(eventName);
-      setJSActionAttribute(el, [eventName]);
-      return true;
-    }
-    return false;
+function addEvent(this: GlobalEventDelegation, el: Element, eventName: string) {
+  if (this.eventContract) {
+    this.eventContract.addEvent(eventName);
+    setJSActionAttribute(el, [eventName]);
+    return true;
   }
+  return false;
 }
 
 export const initGlobalEventDelegation = (
@@ -82,6 +79,7 @@ export const initGlobalEventDelegation = (
     new EventContractContainer(document.body),
     /* useActionResolver= */ false,
   );
+  eventDelegation.addEvent = (el, eventName) => addEvent.call(eventDelegation, el, eventName);
   const dispatcher = new EventDispatcher(invokeRegisteredListeners);
   registerDispatcher(eventDelegation.eventContract, dispatcher);
 };

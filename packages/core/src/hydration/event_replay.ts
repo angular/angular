@@ -25,10 +25,10 @@ import {RElement} from '../render3/interfaces/renderer_dom';
 import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
+import {GlobalEventDelegation} from '../event-dispatch/global_event_delegation';
 
 import {IS_EVENT_REPLAY_ENABLED, IS_GLOBAL_EVENT_DELEGATION_ENABLED} from './tokens';
 import {
-  GlobalEventDelegation,
   sharedStashFunction,
   removeListeners,
   invokeRegisteredListeners,

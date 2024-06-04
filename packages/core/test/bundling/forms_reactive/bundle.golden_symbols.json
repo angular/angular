@@ -261,6 +261,9 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
+    "name": "GlobalEventDelegation"
+  },
+  {
     "name": "INJECTOR"
   },
   {
