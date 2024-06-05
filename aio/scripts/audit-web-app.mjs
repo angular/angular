@@ -32,7 +32,7 @@ import * as printer from 'lighthouse/cli/printer.js';
 import logger from 'lighthouse-logger';
 import puppeteer from 'puppeteer-core';
 import path from 'path';
-import {getAdjustedChromeBinPathForWindows} from '../tools/windows-chromium-path.js';
+import {getAdjustedChromeBinPathForWindows} from '../../adev/tools/windows-chromium-path.js';
 
 // Constants
 const AUDIT_CATEGORIES = ['accessibility', 'best-practices', 'performance', 'pwa', 'seo'];

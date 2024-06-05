@@ -193,7 +193,7 @@ TEST_DEPS = APPLICATION_DEPS + [
     "@npm//karma-coverage",
     "@npm//karma-jasmine",
     "@npm//karma-jasmine-html-reporter",
-    "//aio/tools:windows-chromium-path",
+    "//adev/tools:windows-chromium-path",
 ]
 
 # All sources, specs, and config files required to serve the app
@@ -208,7 +208,7 @@ E2E_DEPS = APPLICATION_DEPS + [
     "@npm//jasmine-spec-reporter",
     "@npm//protractor",
     "@npm//ts-node",
-    "//aio/tools:windows-chromium-path",
+    "//adev/tools:windows-chromium-path",
 ]
 
 # Poll period for architect rules that watch for changes
