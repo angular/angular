@@ -130,6 +130,8 @@ export interface PipeEntry extends ClassEntry {
 export interface FunctionEntry extends DocEntry {
   params: ParameterEntry[];
   returnType: string;
+  returnDescription?: string;
+
   generics: GenericEntry[];
   isNewType: boolean;
 }
