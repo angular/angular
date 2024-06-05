@@ -1952,6 +1952,65 @@ describe('completions', () => {
       expectReplacementText(completions, templateFile.contents, 'mat-');
     });
   });
+
+  describe('let declarations', () => {
+    it('should complete a let declaration', () => {
+      const {templateFile} = setup(
+        `
+        @let message = 'hello';
+        {{mess}}
+      `,
+        '',
+      );
+      templateFile.moveCursorToText('{{mess¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, DisplayInfoKind.LET, ['message']);
+    });
+
+    it('should complete an empty let declaration with a terminating character', () => {
+      const {templateFile} = setup('@let foo = ;', `title!: string; hero!52: number;`);
+      templateFile.moveCursorToText('@let foo = ¦;');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
+    });
+
+    it('should complete a single let declaration without a terminating character', () => {
+      const {templateFile} = setup('@let foo =  ', `title!: string; hero!52: number;`);
+      templateFile.moveCursorToText('@let foo = ¦');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
+    });
+
+    it('should complete a let declaration property in the global scope', () => {
+      const {templateFile} = setup(
+        `
+        @let hobbit = {name: 'Frodo', age: 53};
+        {{hobbit.}}
+      `,
+        '',
+      );
+      templateFile.moveCursorToText('{{hobbit.¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['age', 'name']);
+    });
+
+    it('should complete a shadowed let declaration property', () => {
+      const {templateFile} = setup(
+        `
+        @let hobbit = {name: 'Frodo', age: 53};
+
+        @if (true) {
+          @let hobbit = {hasRing: true, size: 'small'};
+          {{hobbit.}}
+        }
+      `,
+        '',
+      );
+      templateFile.moveCursorToText('{{hobbit.¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['hasRing', 'size']);
+    });
+  });
 });
 
 function expectContainInsertText(
@@ -2061,8 +2120,10 @@ function setup(
   const otherDirectiveClassDecls = Object.values(otherDeclarations).join('\n\n');
 
   const env = LanguageServiceTestEnv.setup();
-  const project = env.addProject('test', {
-    'test.ts': `
+  const project = env.addProject(
+    'test',
+    {
+      'test.ts': `
          import {Component,
           input,
           output,
@@ -2093,8 +2154,14 @@ function setup(
          })
          export class AppModule {}
          `,
-    'test.html': template,
-  });
+      'test.html': template,
+    },
+    // Note: this object is cast to `any`, because for some reason the typing
+    // changes to the `TestableOption` type aren't being picked up in tests.
+    {
+      _enableLetSyntax: true,
+    } as any,
+  );
   return {templateFile: project.openFile('test.html')};
 }
 

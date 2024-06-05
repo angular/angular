@@ -81,6 +81,8 @@ type ElementAnimationCompletionBuilder = CompletionBuilder<
 
 type BlockCompletionBuilder = CompletionBuilder<UnknownBlock>;
 
+type LetCompletionBuilder = CompletionBuilder<TmplAstLetDeclaration>;
+
 export enum CompletionNodeContext {
   None,
   ElementTag,
@@ -154,9 +156,15 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       return this.getLiteralCompletions(options);
     } else if (this.isBlockCompletion()) {
       return this.getBlockCompletions(options);
+    } else if (this.isLetCompletion()) {
+      return this.getGlobalPropertyExpressionCompletion(options);
     } else {
       return undefined;
     }
+  }
+
+  private isLetCompletion(): this is LetCompletionBuilder {
+    return this.node instanceof TmplAstLetDeclaration;
   }
 
   private isBlockCompletion(): this is BlockCompletionBuilder {
@@ -484,7 +492,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
    * Get completions for a property expression in a global context (e.g. `{{y|}}`).
    */
   private getGlobalPropertyExpressionCompletion(
-    this: PropertyExpressionCompletionBuilder,
+    this: PropertyExpressionCompletionBuilder | LetCompletionBuilder,
     options: ts.GetCompletionsAtPositionOptions | undefined,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     const completions = this.templateTypeChecker.getGlobalCompletions(
@@ -544,16 +552,22 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     }
 
     for (const [name, entity] of templateContext) {
+      let displayInfo: DisplayInfoKind;
+
+      if (entity.kind === CompletionKind.Reference) {
+        displayInfo = DisplayInfoKind.REFERENCE;
+      } else if (entity.kind === CompletionKind.LetDeclaration) {
+        displayInfo = DisplayInfoKind.LET;
+      } else {
+        displayInfo = DisplayInfoKind.VARIABLE;
+      }
+
       entries.push({
         name,
         sortText: name,
         replacementSpan,
         kindModifiers: ts.ScriptElementKindModifier.none,
-        kind: unsafeCastDisplayInfoKindToScriptElementKind(
-          entity.kind === CompletionKind.Reference
-            ? DisplayInfoKind.REFERENCE
-            : DisplayInfoKind.VARIABLE,
-        ),
+        kind: unsafeCastDisplayInfoKindToScriptElementKind(displayInfo),
       });
     }
 
@@ -1185,9 +1199,15 @@ function makeReplacementSpanFromAst(
     | BindingPipe
     | EmptyExpr
     | LiteralPrimitive
-    | BoundEvent,
+    | BoundEvent
+    | TmplAstLetDeclaration,
 ): ts.TextSpan | undefined {
-  if (node instanceof EmptyExpr || node instanceof LiteralPrimitive || node instanceof BoundEvent) {
+  if (
+    node instanceof EmptyExpr ||
+    node instanceof LiteralPrimitive ||
+    node instanceof BoundEvent ||
+    node instanceof TmplAstLetDeclaration
+  ) {
     // empty nodes do not replace any existing text
     return undefined;
   }

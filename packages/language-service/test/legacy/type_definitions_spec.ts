@@ -18,7 +18,7 @@ describe('type definitions', () => {
   beforeAll(() => {
     const {project, service: _service, tsLS} = setup();
     service = _service;
-    ngLS = new LanguageService(project, tsLS, {});
+    ngLS = new LanguageService(project, tsLS, {enableLetSyntax: true});
   });
 
   const possibleArrayDefFiles: readonly string[] = [
@@ -228,6 +228,18 @@ describe('type definitions', () => {
 
       expect(definitions[0].textSpan).toEqual('Hero');
       expect(definitions[0].contextSpan).toContain('export interface Hero');
+    });
+  });
+
+  describe('@let declarations', () => {
+    it('should work for a let declaration', () => {
+      const definitions = getTypeDefinitions({
+        templateOverride: `@let address = hero.address; {{addr¦ess}}`,
+      });
+
+      expect(definitions.length).toEqual(1);
+      expect(definitions[0].textSpan).toBe('Address');
+      expect(definitions[0].contextSpan).toContain('export interface Address');
     });
   });
 
