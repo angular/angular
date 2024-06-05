@@ -490,14 +490,14 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   }
   lView[FLAGS] &= ~(LViewFlags.HasChildViewsToRefresh | LViewFlags.RefreshView);
 
-  if (shouldRefreshView) {
-    refreshView(tView, lView, tView.template, lView[CONTEXT]);
-  } else if (flags & LViewFlags.HasChildViewsToRefresh) {
+  if (flags & LViewFlags.HasChildViewsToRefresh) {
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
     const components = tView.components;
     if (components !== null) {
       detectChangesInChildComponents(lView, components, ChangeDetectionMode.Targeted);
     }
+  } else if (shouldRefreshView) {
+    refreshView(tView, lView, tView.template, lView[CONTEXT]);
   }
 }
 
