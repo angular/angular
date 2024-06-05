@@ -243,6 +243,9 @@
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
+    "name": "EffectScheduler"
+  },
+  {
     "name": "ElementInstructionMap"
   },
   {
@@ -616,6 +619,9 @@
   },
   {
     "name": "ZONELESS_SCHEDULER_DISABLED"
+  },
+  {
+    "name": "ZoneAwareEffectScheduler"
   },
   {
     "name": "ZoneStablePendingTask"
@@ -1462,6 +1468,9 @@
   },
   {
     "name": "roundOffset"
+  },
+  {
+    "name": "runEffectsInView"
   },
   {
     "name": "saveNameToExportMap"

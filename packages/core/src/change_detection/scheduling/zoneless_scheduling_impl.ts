@@ -150,6 +150,10 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         // during CD. In practice this is a no-op since the elements code also calls via a
         // `markForRefresh()` API which sends `NotificationSource.MarkAncestorsForTraversal` anyway.
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
+        break;
+      }
+      case NotificationSource.RootEffect: {
+        this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.RootEffects;
         force = true;
         break;
       }

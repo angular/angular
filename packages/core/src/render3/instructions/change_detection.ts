@@ -68,6 +68,7 @@ import {
   processHostBindingOpCodes,
   refreshContentQueries,
 } from './shared';
+import {runEffectsInView} from '../reactivity/effect';
 
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
@@ -101,10 +102,6 @@ export function detectChangesInternal(
   } finally {
     if (!checkNoChangesMode) {
       rendererFactory.end?.();
-
-      // One final flush of the effects queue to catch any effects created in `ngAfterViewInit` or
-      // other post-order hooks.
-      environment.inlineEffectRunner?.flush();
     }
   }
 }
@@ -204,8 +201,6 @@ export function refreshView<T>(
   const isInCheckNoChangesPass = ngDevMode && isInCheckNoChangesMode();
   const isInExhaustiveCheckNoChangesPass = ngDevMode && isExhaustiveCheckNoChanges();
 
-  !isInCheckNoChangesPass && lView[ENVIRONMENT].inlineEffectRunner?.flush();
-
   // Start component reactive context
   // - We might already be in a reactive context if this is an embedded view of the host.
   // - We might be descending into a view that needs a consumer.
@@ -269,6 +264,7 @@ export function refreshView<T>(
       // `LView` but its declaration appears after the insertion component.
       markTransplantedViewsForRefresh(lView);
     }
+    runEffectsInView(lView);
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Global);
 
     // Content query results must be refreshed before content hooks are called.
@@ -496,6 +492,7 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   if (shouldRefreshView) {
     refreshView(tView, lView, tView.template, lView[CONTEXT]);
   } else if (flags & LViewFlags.HasChildViewsToRefresh) {
+    runEffectsInView(lView);
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
     const components = tView.components;
     if (components !== null) {
