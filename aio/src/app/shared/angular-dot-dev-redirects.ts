@@ -84,6 +84,7 @@ const linksMap = new Map<string, string>([
   ['guide/http-optimize-server-interaction', 'guide/http/interceptors'],
   ['guide/http-security-xsrf-protection', 'guide/http/security'],
   ['guide/http-test-requests', 'guide/http/security'],
+  ['guide/security', 'best-practices/security'],
   ['guide/image-directive', 'guide/image-optimization'],
   ['guide/testing-code-coverage', 'guide/testing/code-coverage'],
   ['guide/testing-services', 'guide/testing/services'],
