@@ -56,8 +56,8 @@ export abstract class DestroyRef {
   static __NG_ENV_ID__: (injector: EnvironmentInjector) => DestroyRef = (injector) => injector;
 }
 
-class NodeInjectorDestroyRef extends DestroyRef {
-  constructor(private _lView: LView) {
+export class NodeInjectorDestroyRef extends DestroyRef {
+  constructor(readonly _lView: LView) {
     super();
   }
 

@@ -447,7 +447,9 @@ export interface CreateComputedOptions<T> {
 
 // @public
 export interface CreateEffectOptions {
+    // @deprecated (undocumented)
     allowSignalWrites?: boolean;
+    forceRoot?: true;
     injector?: Injector;
     manualCleanup?: boolean;
 }

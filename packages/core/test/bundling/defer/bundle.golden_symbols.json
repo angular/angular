@@ -183,6 +183,9 @@
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
+    "name": "EffectScheduler"
+  },
+  {
     "name": "ElementRef"
   },
   {
@@ -511,6 +514,9 @@
   },
   {
     "name": "ZONELESS_SCHEDULER_DISABLED"
+  },
+  {
+    "name": "ZoneAwareEffectScheduler"
   },
   {
     "name": "ZoneStablePendingTask"
@@ -1722,6 +1728,9 @@
     "name": "init_metadata_attr"
   },
   {
+    "name": "init_microtask_effect"
+  },
+  {
     "name": "init_misc_utils"
   },
   {
@@ -1825,6 +1834,9 @@
   },
   {
     "name": "init_partial"
+  },
+  {
+    "name": "init_patch"
   },
   {
     "name": "init_pending_tasks"
@@ -1936,6 +1948,9 @@
   },
   {
     "name": "init_restriction"
+  },
+  {
+    "name": "init_root_effect_scheduler"
   },
   {
     "name": "init_sanitization"
@@ -2095,6 +2110,12 @@
   },
   {
     "name": "init_view_container_ref"
+  },
+  {
+    "name": "init_view_context"
+  },
+  {
+    "name": "init_view_effect_runner"
   },
   {
     "name": "init_view_engine_compatibility_prebound"
@@ -2416,6 +2437,9 @@
   },
   {
     "name": "retrieveHydrationInfo"
+  },
+  {
+    "name": "runEffectsInView"
   },
   {
     "name": "saveNameToExportMap"

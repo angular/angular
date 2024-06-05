@@ -16,9 +16,16 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
 import {TestBed} from '@angular/core/testing';
 
 describe('signal inputs', () => {
+  let prev: boolean;
+  beforeEach(() => {
+    prev = setUseMicrotaskEffectsByDefault(false);
+  });
+  afterEach(() => setUseMicrotaskEffectsByDefault(prev));
+
   beforeEach(() =>
     TestBed.configureTestingModule({
       errorOnUnknownProperties: true,

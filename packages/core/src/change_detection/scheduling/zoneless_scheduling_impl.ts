@@ -153,6 +153,10 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         force = true;
         break;
       }
+      case NotificationSource.RootEffect: {
+        this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.RootEffects;
+        break;
+      }
       case NotificationSource.PendingTaskRemoved: {
         // Removing a pending task via the public API forces a scheduled tick, ensuring that
         // stability is async and delayed until there was at least an opportunity to run

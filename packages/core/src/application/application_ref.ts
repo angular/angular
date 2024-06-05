@@ -44,6 +44,7 @@ import {isPromise} from '../util/lang';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
+import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 
 /**
  * A DI token that provides a set of callbacks to
@@ -310,6 +311,7 @@ export class ApplicationRef {
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly afterRenderManager = inject(AfterRenderManager);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
+  private readonly rootEffectScheduler = inject(EffectScheduler);
 
   /**
    * Current dirty state of the application across a number of dimensions (views, afterRender hooks,
@@ -647,6 +649,12 @@ export class ApplicationRef {
     this.dirtyFlags |= this.deferredDirtyFlags;
     this.deferredDirtyFlags = ApplicationRefDirtyFlags.None;
 
+    // First, process any dirty root effects.
+    if (this.dirtyFlags & ApplicationRefDirtyFlags.RootEffects) {
+      this.dirtyFlags &= ~ApplicationRefDirtyFlags.RootEffects;
+      this.rootEffectScheduler.flush();
+    }
+
     // First check dirty views, if there are any.
     if (this.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeAny) {
       // Change detection on views starts in targeted mode (only check components if they're
@@ -677,8 +685,12 @@ export class ApplicationRef {
 
       // Check if any views are still dirty after checking and we need to loop back.
       this.syncDirtyFlagsWithViews();
-      if (this.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeAny) {
-        // If any views are still dirty after checking, loop back before running render hooks.
+      if (
+        this.dirtyFlags &
+        (ApplicationRefDirtyFlags.ViewTreeAny | ApplicationRefDirtyFlags.RootEffects)
+      ) {
+        // If any views or effects are still dirty after checking, loop back before running render
+        // hooks.
         return;
       }
     } else {
@@ -873,6 +885,11 @@ export const enum ApplicationRefDirtyFlags {
    * After render hooks need to run.
    */
   AfterRender = 0b00001000,
+
+  /**
+   * Effects at the `ApplicationRef` level.
+   */
+  RootEffects = 0b00010000,
 }
 
 let whenStableStore: WeakMap<ApplicationRef, Promise<void>> | undefined;

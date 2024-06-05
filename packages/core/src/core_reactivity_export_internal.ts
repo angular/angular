@@ -21,7 +21,11 @@ export {
   EffectRef,
   EffectCleanupFn,
   EffectCleanupRegisterFn,
-  EffectScheduler as ɵEffectScheduler,
 } from './render3/reactivity/effect';
+export {
+  MicrotaskEffectScheduler as ɵMicrotaskEffectScheduler,
+  microtaskEffect as ɵmicrotaskEffect,
+} from './render3/reactivity/microtask_effect';
+export {EffectScheduler as ɵEffectScheduler} from './render3/reactivity/root_effect_scheduler';
 export {afterRenderEffect, ɵFirstAvailableSignal} from './render3/reactivity/after_render_effect';
 export {assertNotInReactiveContext} from './render3/reactivity/asserts';

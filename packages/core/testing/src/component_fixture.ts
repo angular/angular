@@ -20,11 +20,12 @@ import {
   RendererFactory2,
   ViewRef,
   ɵDeferBlockDetails as DeferBlockDetails,
-  ɵEffectScheduler as EffectScheduler,
   ɵgetDeferBlocks as getDeferBlocks,
   ɵNoopNgZone as NoopNgZone,
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵPendingTasks as PendingTasks,
+  ɵEffectScheduler as EffectScheduler,
+  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 
@@ -74,8 +75,6 @@ export class ComponentFixture<T> {
   protected readonly _noZoneOptionIsSet = inject(ComponentFixtureNoNgZone, {optional: true});
   /** @internal */
   protected _ngZone: NgZone = this._noZoneOptionIsSet ? new NoopNgZone() : inject(NgZone);
-  /** @internal */
-  protected _effectRunner = inject(EffectScheduler);
   // Inject ApplicationRef to ensure NgZone stableness causes after render hooks to run
   // This will likely happen as a result of fixture.detectChanges because it calls ngZone.run
   // This is a crazy way of doing things but hey, it's the world we live in.
@@ -89,6 +88,8 @@ export class ComponentFixture<T> {
   private readonly appErrorHandler = inject(TestBedApplicationErrorHandler);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly scheduler = inject(ɵChangeDetectionScheduler);
+  private readonly rootEffectScheduler = inject(EffectScheduler);
+  private readonly microtaskEffectScheduler = inject(MicrotaskEffectScheduler);
   private readonly autoDetectDefault = this.zonelessEnabled ? true : false;
   private autoDetect =
     inject(ComponentFixtureAutoDetect, {optional: true}) ?? this.autoDetectDefault;
@@ -132,7 +133,7 @@ export class ComponentFixture<T> {
    * Trigger a change detection cycle for the component.
    */
   detectChanges(checkNoChanges = true): void {
-    this._effectRunner.flush();
+    this.microtaskEffectScheduler.flush();
     const originalCheckNoChanges = this.componentRef.changeDetectorRef.checkNoChanges;
     try {
       if (!checkNoChanges) {
@@ -151,9 +152,9 @@ export class ComponentFixture<T> {
       } else {
         // Run the change detection inside the NgZone so that any async tasks as part of the change
         // detection are captured by the zone and can be waited for in isStable.
-        // Run any effects that were created/dirtied during change detection. Such effects might become
-        // dirty in response to input signals changing.
         this._ngZone.run(() => {
+          // Flush root effects before `detectChanges()`, to emulate the sequencing of `tick()`.
+          this.rootEffectScheduler.flush();
           this.changeDetectorRef.detectChanges();
           this.checkNoChanges();
         });
@@ -161,7 +162,7 @@ export class ComponentFixture<T> {
     } finally {
       this.componentRef.changeDetectorRef.checkNoChanges = originalCheckNoChanges;
     }
-    this._effectRunner.flush();
+    this.microtaskEffectScheduler.flush();
   }
 
   /**

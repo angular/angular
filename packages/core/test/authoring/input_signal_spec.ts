@@ -8,9 +8,16 @@
 
 import {Component, computed, effect, input} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
+import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
 import {TestBed} from '@angular/core/testing';
 
 describe('input signal', () => {
+  let prev: boolean;
+  beforeEach(() => {
+    prev = setUseMicrotaskEffectsByDefault(false);
+  });
+  afterEach(() => setUseMicrotaskEffectsByDefault(prev));
+
   it('should properly notify live consumers (effect)', () => {
     @Component({template: ''})
     class TestCmp {
