@@ -642,6 +642,10 @@ function parseNgCompilerOptions(
   if (config['enableBlockSyntax'] === false) {
     options['_enableBlockSyntax'] = false;
   }
+  // TODO(crisbeto): only allow `false` when the syntax is enabled by default.
+  if (config['enableLetSyntax'] != null) {
+    options['_enableLetSyntax'] = config['enableLetSyntax'];
+  }
 
   options['_angularCoreVersion'] = config['angularCoreVersion'];
 

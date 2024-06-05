@@ -7,6 +7,7 @@
  */
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import ts from 'typescript';
 
 import {
   assertFileNames,
@@ -379,6 +380,36 @@ describe('definitions', () => {
     const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
     expect(definitions![0].name).toEqual('"prop"');
     assertFileNames(Array.from(definitions!), ['app.html']);
+  });
+
+  it('gets definition for a let declaration', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({templateUrl: '/app.html'})
+         export class AppCmp {}
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      // Note: this object is cast to `any`, because for some reason the typing
+      // changes to the `TestableOption` type aren't being picked up in tests.
+      _enableLetSyntax: true,
+    } as any);
+    const template = project.openFile('app.html');
+    template.contents = '@let foo = {value: 123}; {{foo.value}}';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('{{fo¦o.value}}');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('foo');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.variableElement);
+    expect(definitions[0].textSpan).toBe('@let foo = {value: 123}');
+    assertFileNames(Array.from(definitions), ['app.html']);
   });
 
   function getDefinitionsAndAssertBoundSpan(env: LanguageServiceTestEnv, file: OpenBuffer) {
