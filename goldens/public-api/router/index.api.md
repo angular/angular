@@ -810,7 +810,7 @@ class RouterLink implements OnChanges, OnDestroy {
     // (undocumented)
     static ngAcceptInputType_skipLocationChange: unknown;
     // (undocumented)
-    ngOnChanges(changes: SimpleChanges): void;
+    ngOnChanges(): void;
     // (undocumented)
     ngOnDestroy(): any;
     // (undocumented)
@@ -820,7 +820,7 @@ class RouterLink implements OnChanges, OnDestroy {
     queryParamsHandling?: QueryParamsHandling | null;
     relativeTo?: ActivatedRoute | null;
     replaceUrl: boolean;
-    set routerLink(commands: any[] | string | null | undefined);
+    set routerLink(commandsOrUrlTree: any[] | string | UrlTree | null | undefined);
     skipLocationChange: boolean;
     state?: {
         [k: string]: any;
