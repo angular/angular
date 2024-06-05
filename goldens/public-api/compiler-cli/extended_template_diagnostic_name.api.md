@@ -25,7 +25,9 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     SUFFIX_NOT_SUPPORTED = "suffixNotSupported",
     // (undocumented)
-    TEXT_ATTRIBUTE_NOT_BINDING = "textAttributeNotBinding"
+    TEXT_ATTRIBUTE_NOT_BINDING = "textAttributeNotBinding",
+    // (undocumented)
+    UNINVOKED_FUNCTION_IN_EVENT_BINDING = "uninvokedFunctionInEventBinding"
 }
 
 // (No @packageDocumentation comment for this package)
