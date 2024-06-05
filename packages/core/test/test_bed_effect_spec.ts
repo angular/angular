@@ -9,7 +9,7 @@
 import {Component, effect, inject, Injector, NgZone, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-describe('effects in TestBed', () => {
+fdescribe('effects in TestBed', () => {
   it('created in the constructor should run with detectChanges()', () => {
     const log: string[] = [];
     @Component({

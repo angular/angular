@@ -31,7 +31,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import {toObservable} from '@angular/core/rxjs-interop';
+import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
@@ -72,34 +72,19 @@ describe('effects', () => {
 
   it('should contribute to application stableness when an effect is pending', async () => {
     const someSignal = signal('initial');
-
-    @Component({
-      standalone: true,
-      template: '',
-    })
-    class App {
-      unused = effect(() => someSignal());
-    }
-
     const appRef = TestBed.inject(ApplicationRef);
-    const componentRef = createComponent(App, {
-      environmentInjector: TestBed.inject(EnvironmentInjector),
-    });
-    // Effect is not scheduled until change detection runs for the component
-    await expectAsync(firstValueFrom(appRef.isStable)).toBeResolvedTo(true);
 
-    componentRef.changeDetectorRef.detectChanges();
-    const stableEmits: boolean[] = [];
-    const p = firstValueFrom(
-      appRef.isStable.pipe(
-        map((stable) => {
-          stableEmits.push(stable);
-          return stableEmits;
-        }),
-        filter((emits) => emits.length === 2),
-      ),
-    );
-    await expectAsync(p).toBeResolvedTo([false, true]);
+    const isStable: boolean[] = [];
+    const sub = appRef.isStable.subscribe((stable) => isStable.push(stable));
+    expect(isStable).toEqual([true]);
+
+    TestBed.runInInjectionContext(() => effect(() => someSignal()));
+    expect(isStable).toEqual([true, false]);
+
+    // Why doesn't this clear the pending task?
+    TestBed.flushEffects();
+
+    expect(isStable).toEqual([true, false, true]);
   });
 
   it('should propagate errors to the ErrorHandler', () => {
@@ -232,31 +217,10 @@ describe('effects', () => {
     expect(didRun).toBeTrue();
   });
 
-  it(
-    'should disallow writing to signals within effects by default',
-    withBody('<test-cmp></test-cmp>', async () => {
-      @Component({
-        selector: 'test-cmp',
-        standalone: true,
-        template: '',
-      })
-      class Cmp {
-        counter = signal(0);
-        constructor() {
-          effect(() => {
-            expect(() => this.counter.set(1)).toThrow();
-          });
-        }
-      }
-
-      await bootstrapApplication(Cmp);
-    }),
-  );
-
-  it('should allow writing to signals within effects when option set', () => {
+  it('should allow writing to signals within effects', () => {
     const counter = signal(0);
 
-    effect(() => counter.set(1), {allowSignalWrites: true, injector: TestBed.inject(Injector)});
+    effect(() => counter.set(1), {injector: TestBed.inject(Injector)});
     TestBed.flushEffects();
     expect(counter()).toBe(1);
   });

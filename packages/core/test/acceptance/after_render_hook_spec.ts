@@ -1297,7 +1297,7 @@ describe('after render hooks', () => {
       expect(fixture.nativeElement.innerText).toBe('1');
     });
 
-    it('allows updating state and calling markForCheck in afterRender, outside of change detection', async () => {
+    fit('allows updating state and calling markForCheck in afterRender, outside of change detection', async () => {
       const counter = signal(0);
       @Component({
         selector: 'test-component',
@@ -1327,6 +1327,7 @@ describe('after render hooks', () => {
       appRef.attachView(fixture.componentRef.hostView);
       await new Promise<void>((resolve) => {
         TestBed.runInInjectionContext(() => {
+          // this effect never resolves. why?
           effect(() => {
             if (counter() === 1) {
               resolve();
