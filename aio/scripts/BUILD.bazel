@@ -39,7 +39,7 @@ nodejs_binary(
     name = "audit-web-app",
     testonly = True,
     data = [
-        "//aio/tools:windows-chromium-path",
+        "//adev/tools:windows-chromium-path",
         "@npm//@angular/build-tooling/bazel/browsers/chromium",
         "@npm//lighthouse",
         "@npm//lighthouse-logger",

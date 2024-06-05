@@ -208,7 +208,7 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}, f
                 YARN_LABEL,
                 "@npm//@angular/build-tooling/bazel/browsers/chromium",
                 "//aio/tools/examples:run-example-e2e",
-                "//aio/tools:windows-chromium-path",
+                "//adev/tools:windows-chromium-path",
                 # We install the whole node modules for runtime deps of e2e tests
                 "@{workspace}//:node_modules_files".format(workspace = EXAMPLE_DEPS_WORKSPACE_NAME),
             ] + select({
