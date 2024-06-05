@@ -62,6 +62,11 @@
       "description": "Host to listen on."
     },
     {
+      "name": "inspect",
+      "type": "string",
+      "description": "Activate debugging inspector. This option only has an effect when 'SSR' or 'SSG' are enabled."
+    },
+    {
       "name": "live-reload",
       "type": "boolean",
       "default": true,
