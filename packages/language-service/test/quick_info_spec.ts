@@ -110,7 +110,11 @@ describe('quick info', () => {
     beforeEach(() => {
       initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
-      project = env.addProject('test', quickInfoSkeleton());
+      project = env.addProject('test', quickInfoSkeleton(), {
+        // Note: this object is cast to `any`, because for some reason the typing
+        // changes to the `TestableOption` type aren't being picked up in tests.
+        _enableLetSyntax: true,
+      } as any);
     });
 
     describe('elements', () => {
@@ -701,6 +705,16 @@ describe('quick info', () => {
           templateOverride: `@if (constNames; as al¦iasName) {}`,
           expectedSpanText: 'aliasName',
           expectedDisplayString: '(variable) aliasName: [{ readonly name: "name"; }]',
+        });
+      });
+    });
+
+    describe('let declarations', () => {
+      it('should get quick info for a let declaration', () => {
+        expectQuickInfo({
+          templateOverride: `@let na¦me = 'Frodo';`,
+          expectedSpanText: `@let name = 'Frodo'`,
+          expectedDisplayString: `(let) name: "Frodo"`,
         });
       });
     });
