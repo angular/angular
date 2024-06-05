@@ -6,10 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, effect, inject, Injector, NgZone, signal} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  Injector,
+  Input,
+  NgZone,
+  provideZoneChangeDetection,
+  signal,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {setUseMicrotaskEffectsByDefault} from '../src/render3/reactivity/effect';
 
 describe('effects in TestBed', () => {
+  let prev: boolean;
+  beforeEach(() => {
+    prev = setUseMicrotaskEffectsByDefault(false);
+  });
+  afterEach(() => setUseMicrotaskEffectsByDefault(prev));
+
   it('created in the constructor should run with detectChanges()', () => {
     const log: string[] = [];
     @Component({
@@ -113,5 +131,65 @@ describe('effects in TestBed', () => {
     expect(observed).toBe('initial');
     await fixture.whenStable();
     expect(observed).toBe('new');
+  });
+
+  it('will run an effect with an input signal on the first CD', () => {
+    let observed: string | null = null;
+
+    @Component({
+      standalone: true,
+      template: '',
+    })
+    class Cmp {
+      @Input() input!: string;
+      constructor() {
+        effect(() => {
+          observed = this.input;
+        });
+      }
+    }
+
+    const fix = TestBed.createComponent(Cmp);
+    fix.componentRef.setInput('input', 'hello');
+    fix.detectChanges();
+
+    expect(observed as string | null).toBe('hello');
+  });
+
+  it('should run root effects before detectChanges() when in zone mode', async () => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+    const log: string[] = [];
+
+    @Component({
+      standalone: true,
+      template: `{{ sentinel }}`,
+    })
+    class TestCmp {
+      get sentinel(): string {
+        log.push('CD');
+        return '';
+      }
+    }
+
+    // Instantiate the component and CD it once.
+    const fix = TestBed.createComponent(TestCmp);
+    fix.detectChanges();
+
+    // Instantiate a root effect and run it once.
+    const counter = signal(0);
+    const appRef = TestBed.inject(ApplicationRef);
+    effect(() => log.push(`effect: ${counter()}`), {injector: appRef.injector});
+    await appRef.whenStable();
+
+    log.length = 0;
+
+    // Trigger the effect and call `detectChanges()` on the fixture.
+    counter.set(1);
+    fix.detectChanges(false);
+
+    // The effect should run before the component CD.
+    expect(log).toEqual(['effect: 1', 'CD']);
   });
 });

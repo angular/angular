@@ -63,6 +63,7 @@ import {
   DECLARATION_COMPONENT_VIEW,
   DECLARATION_LCONTAINER,
   DestroyHookData,
+  EFFECTS,
   ENVIRONMENT,
   FLAGS,
   HookData,
@@ -91,6 +92,7 @@ import {
   unwrapRNode,
   updateAncestorTraversalFlagsOnAttach,
 } from './util/view_utils';
+import {EMPTY_ARRAY} from '../util/empty';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -551,6 +553,15 @@ function processCleanups(tView: TView, lView: LView): void {
       const destroyHooksFn = destroyHooks[i];
       ngDevMode && assertFunction(destroyHooksFn, 'Expecting destroy hook to be a function.');
       destroyHooksFn();
+    }
+  }
+
+  // Destroy effects registered to the view. Many of these will have been processed above.
+  const effects = lView[EFFECTS];
+  if (effects !== null) {
+    lView[EFFECTS] = null;
+    for (const effect of effects) {
+      effect.destroy();
     }
   }
 }

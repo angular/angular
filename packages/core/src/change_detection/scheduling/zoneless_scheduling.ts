@@ -50,6 +50,8 @@ export const enum NotificationSource {
   // The scheduler is notified when a pending task is removed via the public API.
   // This allows us to make stability async, delayed until the next application tick.
   PendingTaskRemoved,
+  // An `effect()` outside of the view tree became dirty and might need to run.
+  RootEffect,
 }
 
 /**

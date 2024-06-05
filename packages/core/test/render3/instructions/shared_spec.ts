@@ -72,7 +72,6 @@ export function enterViewWithOneDiv() {
     {
       rendererFactory,
       sanitizer: null,
-      inlineEffectRunner: null,
       changeDetectionScheduler: null,
     },
     renderer,

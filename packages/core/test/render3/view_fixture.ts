@@ -114,7 +114,6 @@ export class ViewFixture {
       {
         rendererFactory,
         sanitizer: sanitizer || null,
-        inlineEffectRunner: null,
         changeDetectionScheduler: null,
       },
       hostRenderer,
