@@ -176,7 +176,7 @@ architect_test(
     ],
     chdir = package_name(),
     data = ensure_local_package_deps(TEST_DEPS) + TEST_FILES + APPLICATION_ASSETS + [
-        "//aio/tools:windows-chromium-path",
+        "//adev/tools:windows-chromium-path",
         "@npm//@angular/build-tooling/bazel/browsers/chromium",
     ],
     env = {
