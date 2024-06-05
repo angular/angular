@@ -48,7 +48,7 @@
     "@angular-devkit/build-angular": "18.0.2",
     "@angular/cli": "18.0.2",
     "@angular/compiler-cli": "18.0.1",
-    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-commonjs": "^26.0.0",
     "@rollup/plugin-node-resolve": "^13.2.0",
     "@types/angular": "^1.8.4",
     "@types/angular-animate": "^1.5.11",
