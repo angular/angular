@@ -1,3 +1,23 @@
+<a name="18.1.0-next.1"></a>
+# 18.1.0-next.1 (2024-06-05)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9e21582456](https://github.com/angular/angular/commit/9e215824565f0d30da7edb20087c4460069a6660) | fix | Show template syntax errors in local compilation modified ([#55855](https://github.com/angular/angular/pull/55855)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8d75627ddd](https://github.com/angular/angular/commit/8d75627dddb82380dc8b3455a13f128e88309aa6) | fix | Do not migrate `HttpClientModule` imports on components. ([#56067](https://github.com/angular/angular/pull/56067)) |
+| [1081c8d623](https://github.com/angular/angular/commit/1081c8d6233ba1ff09187b95a09b0644e130cdf8) | fix | don't coerce all producers to consumers on liveness change ([#56140](https://github.com/angular/angular/pull/56140)) |
+| [b6fb53cdc7](https://github.com/angular/angular/commit/b6fb53cdc7c9f9dad5a113a68e72a2b723626bef) | fix | Fix shouldPreventDefaultBeforeDispatching bug ([#56188](https://github.com/angular/angular/pull/56188)) |
+| [31f3975e4b](https://github.com/angular/angular/commit/31f3975e4b1f418c1a6b2516618f44093ba20175) | fix | handle missing `withI18nSupport()` call for components that use i18n blocks ([#56175](https://github.com/angular/angular/pull/56175)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [75e811c18b](https://github.com/angular/angular/commit/75e811c18b16f42c6f72ac32e44c4bc4d37fc3b1) | fix | do not generate aliased variables with the same name ([#56154](https://github.com/angular/angular/pull/56154)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.2"></a>
 # 18.0.2 (2024-06-05)
 ### core
