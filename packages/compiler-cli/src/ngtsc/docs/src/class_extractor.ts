@@ -132,7 +132,7 @@ class ClassExtractor {
       this.typeChecker,
     );
     return {
-      ...functionExtractor.extract(),
+      ...functionExtractor.extract().implementation!,
       memberType: MemberType.Method,
       memberTags: this.getMemberTags(methodDeclaration),
     };
@@ -149,7 +149,7 @@ class ClassExtractor {
       this.typeChecker,
     );
     return {
-      ...functionExtractor.extract(),
+      ...functionExtractor.extract().implementation!,
       memberType: MemberType.Method,
       memberTags: [],
     };

@@ -130,24 +130,6 @@ export class DocsExtractor {
       ([exportName, declaration]) => [exportName, declaration.node] as const,
     );
 
-    // Cache the declaration count since we're going to be appending more declarations as
-    // we iterate.
-    const declarationCount = exportedDeclarations.length;
-
-    // The exported declaration map only includes one function declaration in situations
-    // where a function has overloads, so we add the overloads here.
-    for (let i = 0; i < declarationCount; i++) {
-      const [exportName, declaration] = exportedDeclarations[i];
-      if (ts.isFunctionDeclaration(declaration)) {
-        const extractor = new FunctionExtractor(exportName, declaration, this.typeChecker);
-        const overloads = extractor
-          .getOverloads()
-          .map((overload) => [exportName, overload] as const);
-
-        exportedDeclarations.push(...overloads);
-      }
-    }
-
     // Sort the declaration nodes into declaration position because their order is lost in
     // reading from the export map. This is primarily useful for testing and debugging.
     return exportedDeclarations.sort(

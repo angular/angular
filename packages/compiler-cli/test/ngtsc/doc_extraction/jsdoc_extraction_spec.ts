@@ -9,7 +9,7 @@
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
 import {
   ClassEntry,
-  FunctionEntry,
+  FunctionMetadata,
   MethodEntry,
 } from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
@@ -280,7 +280,7 @@ runInEachFileSystem(() => {
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
-      const functionEntry = docs[0] as FunctionEntry;
+      const functionEntry = docs[0] as FunctionMetadata;
       expect(functionEntry.description).toBe('Save some data.');
 
       const [dataEntry, timingEntry] = functionEntry.params;
