@@ -696,9 +696,7 @@ export interface ExistingSansProvider {
 export class ExperimentalPendingTasks {
     add(): () => void;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<ExperimentalPendingTasks, never>;
-    // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<ExperimentalPendingTasks>;
+    static ɵprov: unknown;
 }
 
 // @public
