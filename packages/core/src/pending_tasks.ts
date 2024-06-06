@@ -8,16 +8,13 @@
 
 import {BehaviorSubject} from 'rxjs';
 
-import {inject} from './di';
-import {Injectable} from './di/injectable';
+import {inject} from './di/injector_compatibility';
+import {ɵɵdefineInjectable} from './di/interface/defs';
 import {OnDestroy} from './interface/lifecycle_hooks';
 
 /**
  * Internal implementation of the pending tasks service.
  */
-@Injectable({
-  providedIn: 'root',
-})
 export class PendingTasks implements OnDestroy {
   private taskId = 0;
   private pendingTasks = new Set<number>();
@@ -48,6 +45,13 @@ export class PendingTasks implements OnDestroy {
       this.hasPendingTasks.next(false);
     }
   }
+
+  /** @nocollapse */
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+    token: PendingTasks,
+    providedIn: 'root',
+    factory: () => new PendingTasks(),
+  });
 }
 
 /**
@@ -76,9 +80,6 @@ export class PendingTasks implements OnDestroy {
  * @publicApi
  * @experimental
  */
-@Injectable({
-  providedIn: 'root',
-})
 export class ExperimentalPendingTasks {
   private internalPendingTasks = inject(PendingTasks);
   /**
@@ -89,4 +90,11 @@ export class ExperimentalPendingTasks {
     const taskId = this.internalPendingTasks.add();
     return () => this.internalPendingTasks.remove(taskId);
   }
+
+  /** @nocollapse */
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+    token: ExperimentalPendingTasks,
+    providedIn: 'root',
+    factory: () => new ExperimentalPendingTasks(),
+  });
 }

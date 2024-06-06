@@ -717,9 +717,6 @@
     "name": "_wasLastNodeCreated"
   },
   {
-    "name": "_wrapInTimeout"
-  },
-  {
     "name": "activeConsumer"
   },
   {

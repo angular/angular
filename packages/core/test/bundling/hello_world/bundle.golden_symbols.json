@@ -390,9 +390,6 @@
     "name": "_retrieveHydrationInfoImpl"
   },
   {
-    "name": "_wrapInTimeout"
-  },
-  {
     "name": "activeConsumer"
   },
   {
