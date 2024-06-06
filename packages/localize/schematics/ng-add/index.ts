@@ -39,21 +39,21 @@ function addPolyfillToConfig(projectName: string): Rule {
       throw new SchematicsException(`Invalid project name '${projectName}'.`);
     }
 
+    const isLocalizePolyfill = (path: string) => path.startsWith('@angular/localize');
+
     for (const target of project.targets.values()) {
       switch (target.builder) {
         case Builders.Karma:
         case Builders.Server:
         case Builders.Browser:
+        case Builders.BrowserEsbuild:
         case Builders.Application:
           target.options ??= {};
           const value = target.options['polyfills'];
-          if (typeof value === 'string') {
+          if (typeof value === 'string' && !isLocalizePolyfill(value)) {
             target.options['polyfills'] = [value, localizePolyfill];
           } else if (Array.isArray(value)) {
-            const hasLocalizePolyfill = (value as string[]).some((path) =>
-              path.startsWith('@angular/localize'),
-            );
-            if (!hasLocalizePolyfill) {
+            if (!(value as string[]).some(isLocalizePolyfill)) {
               value.push(localizePolyfill);
             }
           } else {
@@ -80,6 +80,7 @@ function addTypeScriptConfigTypes(projectName: string): Rule {
       switch (target.builder) {
         case Builders.Karma:
         case Builders.Server:
+        case Builders.BrowserEsbuild:
         case Builders.Browser:
         case Builders.Application:
           const value = target.options?.['tsConfig'];
@@ -90,7 +91,7 @@ function addTypeScriptConfigTypes(projectName: string): Rule {
           break;
       }
 
-      if (target.builder === Builders.Browser) {
+      if (target.builder === Builders.Browser || target.builder === Builders.BrowserEsbuild) {
         const value = target.options?.['main'];
         if (typeof value === 'string') {
           addTripleSlashType(host, value);
