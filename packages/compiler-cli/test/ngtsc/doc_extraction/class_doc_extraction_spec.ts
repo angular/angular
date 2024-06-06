@@ -573,5 +573,33 @@ runInEachFileSystem(() => {
       expect(ageSetterEntry.type).toBe('number');
       expect(ageSetterEntry.memberTags).toContain(MemberTags.Inherited);
     });
+
+    it('should extract public constructor parameters', () => {
+      env.write(
+        'index.ts',
+        `
+        export class MyClass {
+          myProp: string;
+
+          constructor(public foo: string, private: bar: string, protected: baz: string) {}
+        }`,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(2);
+
+      const [myPropEntry, fooEntry] = classEntry.members as PropertyEntry[];
+
+      expect(myPropEntry.name).toBe('myProp');
+      expect(myPropEntry.memberType).toBe(MemberType.Property);
+      expect((myPropEntry as PropertyEntry).type).toBe('string');
+
+      expect(fooEntry.name).toBe('foo');
+      expect(fooEntry.memberType).toBe(MemberType.Property);
+      expect((fooEntry as PropertyEntry).type).toBe('string');
+    });
   });
 });
