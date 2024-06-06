@@ -50,8 +50,10 @@ function addPolyfillToConfig(projectName: string): Rule {
         case Builders.Application:
           target.options ??= {};
           const value = target.options['polyfills'];
-          if (typeof value === 'string' && !isLocalizePolyfill(value)) {
-            target.options['polyfills'] = [value, localizePolyfill];
+          if (typeof value === 'string') {
+            if (!isLocalizePolyfill(value)) {
+              target.options['polyfills'] = [value, localizePolyfill];
+            }
           } else if (Array.isArray(value)) {
             if (!(value as string[]).some(isLocalizePolyfill)) {
               value.push(localizePolyfill);
