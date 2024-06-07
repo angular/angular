@@ -25,7 +25,7 @@ Angular also supports workspaces with [multiple projects](#multiple-projects).
 This type of development environment is suitable for advanced users who are developing shareable libraries,
 and for enterprises that use a "monorepo" development style, with a single repository and global configuration for all Angular projects.
 
-To set up a monorepo workspace, you should skip the creating the root application.
+To set up a monorepo workspace, you should skip creating the root application.
 See [Setting up for a multi-project workspace](#multiple-projects) below.
 
 ## Workspace configuration files

@@ -1,6 +1,6 @@
 # Usage of Angular libraries published to npm
 
-When you build your Angular application, take advantage of sophisticated first-party libraries, as well as rich ecosystem of third-party libraries.
+When you build your Angular application, take advantage of sophisticated first-party libraries, as well as a rich ecosystem of third-party libraries.
 [Angular Material][AngularMaterialMain] is an example of a sophisticated first-party library.
 
 ## Install libraries
