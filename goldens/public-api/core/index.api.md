@@ -335,9 +335,11 @@ export abstract class ComponentRef<C> {
     abstract get hostView(): ViewRef;
     abstract get injector(): Injector;
     abstract get instance(): C;
+    abstract listenToOutput<OutputType extends keyof C>(propertyName: OutputType, listenerFn: (eventArg: ExtractOutputType<C[OutputType]>) => unknown): () => void;
     abstract get location(): ElementRef;
     abstract onDestroy(callback: Function): void;
     abstract setInput(name: string, value: unknown): void;
+    abstract unsafeListenToOutput(outputName: string, listenerFn: (eventArg: unknown) => unknown): () => void;
 }
 
 // @public

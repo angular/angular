@@ -22,6 +22,7 @@ import {Type} from '../interface/type';
 import {
   ComponentFactory as AbstractComponentFactory,
   ComponentRef as AbstractComponentRef,
+  ExtractOutputType,
 } from '../linker/component_factory';
 import {ComponentFactoryResolver as AbstractComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {createElementRef, ElementRef} from '../linker/element_ref';
@@ -53,7 +54,12 @@ import {
   markAsComponentHost,
   setInputsForProperty,
 } from './instructions/shared';
-import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/definition';
+import {
+  ComponentDef,
+  ComponentType,
+  DirectiveDef,
+  HostDirectiveDefs,
+} from './interfaces/definition';
 import {InputFlags} from './interfaces/input_flags';
 import {
   NodeInputBindings,
@@ -91,6 +97,7 @@ import {ChainedInjector} from './chained_injector';
 import {unregisterLView} from './interfaces/lview_tracking';
 import {profiler} from './profiler';
 import {ProfilerEvent} from './profiler_types';
+import {listenToOutput} from './instructions/listener';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -477,6 +484,30 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
         reportUnknownPropertyError(message);
       }
     }
+  }
+
+  override listenToOutput<OutputType extends keyof T>(
+    propertyName: OutputType,
+    listenerFn: (eventArg: any) => unknown,
+  ): () => void {
+    return this.unsafeListenToOutput(propertyName as string, listenerFn);
+  }
+
+  override unsafeListenToOutput(
+    outputName: string,
+    listenerFn: (eventArg: unknown) => unknown,
+  ): () => void {
+    const subscription = listenToOutput(this._tNode, this._rootLView, outputName, listenerFn);
+    if (!subscription) {
+      // TODO: create a runtime error
+      throw new Error(
+        ngDevMode
+          ? `${outputName} is not an output of the component ${this.componentType.name}`
+          : '',
+      );
+    }
+
+    return subscription!;
   }
 
   override get injector(): Injector {

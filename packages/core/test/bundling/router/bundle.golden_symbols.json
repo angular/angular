@@ -570,6 +570,7 @@
   "leaveDI",
   "leaveView",
   "leaveViewLight",
+  "listenToOutput",
   "locateDirectiveOrProvider",
   "lookupTokenUsingModuleInjector",
   "lookupTokenUsingNodeInjector",

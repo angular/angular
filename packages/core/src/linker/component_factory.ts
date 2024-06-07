@@ -9,11 +9,16 @@
 import type {ChangeDetectorRef} from '../change_detection/change_detection';
 import type {Injector} from '../di/injector';
 import type {EnvironmentInjector} from '../di/r3_injector';
+import type {OutputEmitterRef} from '../authoring';
+import type {EventEmitter} from '../event_emitter';
 import {Type} from '../interface/type';
 
 import type {ElementRef} from './element_ref';
 import type {NgModuleRef} from './ng_module_factory';
 import type {ViewRef} from './view_ref';
+
+export type ExtractOutputType<T> =
+  T extends OutputEmitterRef<infer U> ? U : T extends EventEmitter<infer U> ? U : never;
 
 /**
  * Represents a component created by a `ComponentFactory`.
@@ -32,6 +37,34 @@ export abstract class ComponentRef<C> {
    * @param value The new value of an input.
    */
   abstract setInput(name: string, value: unknown): void;
+
+  /**
+   * Listen to a given output on the component.
+   *
+   * @param propertyName the output property to listen to
+   * @param listenerFn the callback invoked everytime the output fires the event
+   *
+   * @returns a function to manually clean up the output listening
+   */
+
+  abstract listenToOutput<OutputType extends keyof C>(
+    propertyName: OutputType,
+    listenerFn: (eventArg: ExtractOutputType<C[OutputType]>) => unknown,
+  ): () => void;
+
+  /**
+   * Listen to a given output on the component.
+   * This method does not ensure type safety of the output name nor of the event type.
+   *
+   * @param outputName the output to listen to
+   * @param listenerFn the callback invoked everytime the output fires the event
+   *
+   * @returns a function to manually clean up the output listening
+   */
+  abstract unsafeListenToOutput(
+    outputName: string,
+    listenerFn: (eventArg: unknown) => unknown,
+  ): () => void;
 
   /**
    * The host or anchor element for this component instance.

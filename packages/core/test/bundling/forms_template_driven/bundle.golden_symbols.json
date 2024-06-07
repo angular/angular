@@ -481,6 +481,7 @@
   "leaveDI",
   "leaveView",
   "leaveViewLight",
+  "listenToOutput",
   "listenerInternal",
   "lookupTokenUsingModuleInjector",
   "lookupTokenUsingNodeInjector",

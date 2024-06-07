@@ -402,6 +402,7 @@
   "leaveDI",
   "leaveView",
   "leaveViewLight",
+  "listenToOutput",
   "lookupTokenUsingModuleInjector",
   "lookupTokenUsingNodeInjector",
   "makeParamDecorator",
