@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentRef} from '@angular/core';
+import {ComponentRef, inject} from '@angular/core';
 import {ComponentFactoryResolver} from '@angular/core/src/render3/component_ref';
 import {Renderer} from '@angular/core/src/render3/interfaces/renderer';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
@@ -15,6 +15,8 @@ import {TestBed} from '@angular/core/testing';
 import {
   ChangeDetectionStrategy,
   Component,
+  Directive,
+  EventEmitter,
   Injector,
   Input,
   NgModuleRef,
@@ -463,6 +465,86 @@ describe('ComponentFactory', () => {
       fixture.componentInstance.setInput('2');
       fixture.detectChanges();
       expect(fixture.nativeElement.innerText).toBe('2');
+    });
+  });
+
+  describe('listen', () => {
+    it('should allow listening to on the ComponentRef', () => {
+      const logs: string[] = [];
+
+      @Directive({standalone: true})
+      class MyDirective {
+        @Output() onDirChange = new EventEmitter<void>();
+        @Output() onChange = new EventEmitter<void>();
+
+        emit() {
+          this.onChange.emit();
+          this.onDirChange.emit();
+        }
+      }
+
+      @Component({
+        template: `{{in}}`,
+        hostDirectives: [{directive: MyDirective, outputs: ['onDirChange', 'onChange']}],
+        standalone: true,
+      })
+      class MyComponent {
+        @Output() onChange = new EventEmitter<void>();
+        @Output('onSomeOtherChange') onOtherChange = new EventEmitter<void>();
+
+        private readonly directive: MyDirective = inject(MyDirective, {self: true});
+
+        emit() {
+          this.onChange.emit();
+          this.onOtherChange.emit();
+          this.directive.emit();
+        }
+      }
+
+      const fixture = TestBed.createComponent(MyComponent);
+      fixture.detectChanges();
+
+      const cleanUp1 = fixture.componentRef.unsafeListenToOutput('onChange', () => {
+        logs.push('onChange');
+      });
+      const cleanUp2 = fixture.componentRef.unsafeListenToOutput('onSomeOtherChange', () => {
+        logs.push('onSomeOtherChange');
+      });
+      const cleanUp3 = fixture.componentRef.unsafeListenToOutput('onDirChange', () => {
+        logs.push('onDirChange');
+      });
+
+      expect(logs.length).toBe(0);
+
+      fixture.componentInstance.emit();
+      expect(logs.length).toBe(4);
+      // Emited by the component
+      expect(logs.at(-4)).toBe('onChange');
+      expect(logs.at(-3)).toBe('onSomeOtherChange');
+
+      // Emited by the HostDirective
+      expect(logs.at(-2)).toBe('onChange');
+      expect(logs.at(-1)).toBe('onDirChange');
+
+      cleanUp1();
+      cleanUp2();
+      cleanUp3();
+      fixture.componentInstance.emit();
+      expect(logs.length).toBe(4);
+    });
+
+    it('should throw when listening a non-existing output', () => {
+      const logs: string[] = [];
+
+      @Component({template: `{{in}}`})
+      class DynamicCmp {
+        notAnInput: any;
+      }
+
+      const fixture = TestBed.createComponent(DynamicCmp);
+      fixture.detectChanges();
+
+      expect(() => fixture.componentRef.unsafeListenToOutput('notAnInput', () => {})).toThrow();
     });
   });
 });
