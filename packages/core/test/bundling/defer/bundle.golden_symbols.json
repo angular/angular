@@ -117,7 +117,19 @@
     "name": "DEFER_BLOCK_CONFIG"
   },
   {
+    "name": "DEFER_BLOCK_CONFIG2"
+  },
+  {
+    "name": "DEFER_BLOCK_ID"
+  },
+  {
     "name": "DEFER_BLOCK_STATE"
+  },
+  {
+    "name": "DEFER_BLOCK_STATE2"
+  },
+  {
+    "name": "DEHYDRATED_VIEWS"
   },
   {
     "name": "DI_DECORATOR_FLAG"
@@ -136,6 +148,9 @@
   },
   {
     "name": "DeferBlockInternalState"
+  },
+  {
+    "name": "DeferBlockRegistry"
   },
   {
     "name": "DeferBlockState"
@@ -381,6 +396,9 @@
     "name": "NullInjector"
   },
   {
+    "name": "ON_COMPLETE_FNS"
+  },
+  {
     "name": "ObjectUnsubscribedError"
   },
   {
@@ -442,6 +460,9 @@
   },
   {
     "name": "SOURCE"
+  },
+  {
+    "name": "SSR_STATE"
   },
   {
     "name": "SVG_NAMESPACE"
@@ -550,9 +571,6 @@
   },
   {
     "name": "_currentInjector"
-  },
-  {
-    "name": "_findMatchingDehydratedViewImpl"
   },
   {
     "name": "_getInsertInFrontOfRNodeWithI18n"
@@ -2548,6 +2566,9 @@
   },
   {
     "name": "ɵɵdefer"
+  },
+  {
+    "name": "ɵɵdeferWhen"
   },
   {
     "name": "ɵɵdefineComponent"

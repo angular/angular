@@ -687,7 +687,7 @@ describe('R3 AST source spans', () => {
       const html =
         '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
         'interaction(button), viewport(container); prefetch on immediate; ' +
-        'prefetch when isDataLoaded()) {<calendar-cmp [date]="current"/>}' +
+        'prefetch when isDataLoaded(); hydrate on interaction(button); hydrate when isVisible()) {<calendar-cmp [date]="current"/>}' +
         '@loading (minimum 1s; after 100ms) {Loading...}' +
         '@placeholder (minimum 500) {Placeholder content!}' +
         '@error {Loading failed :(}';
@@ -695,8 +695,8 @@ describe('R3 AST source spans', () => {
       expectFromHtml(html).toEqual([
         [
           'DeferredBlock',
-          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded()) {<calendar-cmp [date]="current"/>}@loading (minimum 1s; after 100ms) {Loading...}@placeholder (minimum 500) {Placeholder content!}@error {Loading failed :(}',
-          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded()) {',
+          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded(); hydrate on interaction(button); hydrate when isVisible()) {<calendar-cmp [date]="current"/>}@loading (minimum 1s; after 100ms) {Loading...}@placeholder (minimum 500) {Placeholder content!}@error {Loading failed :(}',
+          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded(); hydrate on interaction(button); hydrate when isVisible()) {',
           '}',
         ],
         ['BoundDeferredTrigger', 'when isVisible() && foo'],
@@ -708,6 +708,8 @@ describe('R3 AST source spans', () => {
         ['ViewportDeferredTrigger', 'viewport(container)'],
         ['ImmediateDeferredTrigger', 'prefetch on immediate'],
         ['BoundDeferredTrigger', 'prefetch when isDataLoaded()'],
+        ['InteractionDeferredTrigger', 'hydrate on interaction(button)'],
+        ['BoundDeferredTrigger', 'hydrate when isVisible()'],
         [
           'Element',
           '<calendar-cmp [date]="current"/>',

@@ -29,6 +29,7 @@ import {EventPhase} from '@angular/core/primitives/event-dispatch';
 import {
   getAppContents,
   hydrate,
+  prepareEnvironment,
   prepareEnvironmentAndHydrate,
   insertDomInDocument as renderHtml,
   resetTViewsFor,
@@ -203,9 +204,51 @@ describe('event replay', () => {
     outer.click();
     inner.click();
     const appRef = await hydrate(doc, AppComponent, {
+      envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
       hydrationFeatures: [withEventReplay()],
     });
     expect(outerOnClickSpy).toHaveBeenCalledBefore(innerOnClickSpy);
+  });
+
+  it('should serialize event types to be listened to and jsaction attribute', async () => {
+    const clickSpy = jasmine.createSpy('onClick');
+    const focusSpy = jasmine.createSpy('onFocus');
+    @Component({
+      standalone: true,
+      selector: 'app',
+      template: `
+            <div (click)="onClick()" id="click-element">
+              <div id="focus-container">
+                <div id="focus-action-element" (focus)="onFocus()">
+                  <button id="focus-target-element">Focus Button</button>
+                </div>
+              </div>
+            </div>
+          `,
+    })
+    class SimpleComponent {
+      onClick = clickSpy;
+      onFocus = focusSpy;
+    }
+    const html = await ssr(SimpleComponent);
+    const ssrContents = getAppContents(html);
+
+    prepareEnvironment(doc, ssrContents);
+    const el = doc.getElementById('click-element')!;
+    const button = doc.getElementById('focus-target-element')!;
+    const clickEvent = new CustomEvent('click', {bubbles: true});
+    el.dispatchEvent(clickEvent);
+    const focusEvent = new CustomEvent('focus');
+    button.dispatchEvent(focusEvent);
+    expect(clickSpy).not.toHaveBeenCalled();
+    expect(focusSpy).not.toHaveBeenCalled();
+    resetTViewsFor(SimpleComponent);
+    await hydrate(doc, SimpleComponent, {
+      envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
+      hydrationFeatures: [withEventReplay()],
+    });
+    expect(clickSpy).toHaveBeenCalled();
+    expect(focusSpy).toHaveBeenCalled();
   });
 
   it('should remove jsaction attributes, but continue listening to events.', async () => {
@@ -281,6 +324,7 @@ describe('event replay', () => {
       const bottomEl = doc.getElementById('bottom')!;
       bottomEl.click();
       const appRef = await hydrate(doc, SimpleComponent, {
+        envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
         hydrationFeatures: [withEventReplay()],
       });
       expect(onClickSpy).toHaveBeenCalledTimes(2);
@@ -349,6 +393,7 @@ describe('event replay', () => {
       const bottomEl = doc.getElementById('bottom')!;
       bottomEl.click();
       await hydrate(doc, SimpleComponent, {
+        envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
         hydrationFeatures: [withEventReplay()],
       });
       const replayedEvent = currentEvent;

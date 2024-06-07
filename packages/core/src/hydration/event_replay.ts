@@ -43,12 +43,22 @@ import {
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
-import {hydrateFromBlockName} from './api';
+import {hydrateFromBlockName, findFirstKnownParentDeferBlock} from './api';
 
 /**
  * A map of DOM elements with `jsaction` attributes grouped by action names.
  */
 let jsActionMap = new Map<string, Set<Element>>();
+
+/**
+ * A set of in progress hydrating blocks
+ */
+let hydratingBlocks = new Set<string>();
+
+/**
+ * A list of block events that need to be replayed
+ */
+let blockEventQueue: {event: Event; currentTarget: Element}[] = [];
 
 function isGlobalEventDelegationEnabled(injector: Injector) {
   return injector.get(IS_GLOBAL_EVENT_DELEGATION_ENABLED, false);
@@ -119,10 +129,6 @@ export function withEventReplay(): Provider[] {
               const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
               initEventReplay(eventContractDetails, injector);
               removeListenersFromBlocks(['']);
-              // After hydration, we shouldn't need to do anymore work related to
-              // event replay anymore.
-              // TODO: is this a problem for partial hydration?
-              setStashFn(() => {});
             });
           };
         }
@@ -151,7 +157,7 @@ const initEventReplay = (eventDelegation: EventContractDetails, injector: Inject
   eventContract.replayEarlyEventInfos(eventInfos);
   clearAppScopedEarlyEventContract(appId);
   const dispatcher = new EventDispatcher((event) => {
-    invokeRegisteredReplayListeners(appRef, event);
+    invokeRegisteredReplayListeners(appRef, event, event.currentTarget as Element);
   });
   registerDispatcher(eventContract, dispatcher);
 };
@@ -208,33 +214,67 @@ export function collectDomEventsInfo(
 export function invokeRegisteredReplayListeners(
   appRef: ApplicationRef,
   event: Event,
-  hydratedBlocks?: Set<string>,
+  currentTarget: Element | null,
 ) {
-  const el = (event.currentTarget as Element) || (event.target as Element);
-  const blockName = (el && el.getAttribute(BLOCKNAME_ATTRIBUTE)) ?? '';
-  if (
-    event.eventPhase === EventPhase.REPLAY ||
-    (blockName !== '' && hydratedBlocks && hydratedBlocks.has(blockName))
-  ) {
-    const handlerFns = el?.__jsaction_fns?.get(event.type);
+  const blockName = (currentTarget && currentTarget.getAttribute(BLOCKNAME_ATTRIBUTE)) ?? '';
+  if (/d\d+/.test(blockName)) {
+    hydrateAndInvokeBlockListeners(blockName, appRef, event, currentTarget!);
+  } else if (event.eventPhase === EventPhase.REPLAY) {
+    const handlerFns = currentTarget?.__jsaction_fns?.get(event.type);
     if (!handlerFns) {
       return;
     }
     for (const handler of handlerFns) {
       handler(event);
     }
-    removeListenersFromBlocks(hydratedBlocks ? [...hydratedBlocks] : ['']);
-  } else {
-    if (/d\d+/.test(blockName)) {
-      triggerBlockHydration(appRef, event, blockName);
-    }
   }
 }
 
-async function triggerBlockHydration(appRef: ApplicationRef, event: Event, blockName: string) {
+function hydrateAndInvokeBlockListeners(
+  blockName: string,
+  appRef: ApplicationRef,
+  event: Event,
+  currentTarget: Element,
+) {
+  blockEventQueue.push({event, currentTarget});
+  if (!hydratingBlocks.has(blockName)) {
+    hydratingBlocks.add(blockName);
+    triggerBlockHydration(appRef, blockName);
+  }
+}
+
+async function triggerBlockHydration(appRef: ApplicationRef, blockName: string) {
+  // grab the list of dehydrated blocks and queue them up
+  const {dehydratedBlocks} = findFirstKnownParentDeferBlock(blockName, appRef);
+  for (let block of dehydratedBlocks) {
+    hydratingBlocks.add(block);
+  }
   const hydratedBlocks = await hydrateFromBlockName(appRef, blockName);
   hydratedBlocks.add(blockName);
-  invokeRegisteredReplayListeners(appRef, event, hydratedBlocks);
+  replayQueuedBlockEvents(hydratedBlocks);
+}
+
+function replayQueuedBlockEvents(hydratedBlocks: Set<string>) {
+  // clone the queue
+  const queue = [...blockEventQueue];
+  // empty it
+  blockEventQueue = [];
+  for (let {event, currentTarget} of queue) {
+    const blockName = currentTarget.getAttribute(BLOCKNAME_ATTRIBUTE)!;
+    if (hydratedBlocks.has(blockName)) {
+      const handlerFns = currentTarget?.__jsaction_fns?.get(event.type);
+      if (!handlerFns) {
+        return;
+      }
+      for (const handler of handlerFns) {
+        handler(event);
+      }
+    } else {
+      // requeue events that weren't yet hydrated
+      blockEventQueue.push({event, currentTarget});
+    }
+  }
+  removeListenersFromBlocks([...hydratedBlocks]);
 }
 
 function removeListenersFromBlocks(blockNames: string[]) {

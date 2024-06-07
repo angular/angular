@@ -116,6 +116,24 @@ export function insertDomInDocument(doc: Document, html: string) {
 }
 
 /**
+ * This prepares the environment before hydration begins.
+ *
+ * @param doc the document object
+ * @param html the server side rendered DOM string to be hydrated
+ * @returns a promise with the application ref
+ */
+export function prepareEnvironment(doc: Document, html: string) {
+  insertDomInDocument(doc, html);
+  globalThis.document = doc;
+  const scripts = doc.getElementsByTagName('script');
+  for (const script of Array.from(scripts)) {
+    if (script?.textContent?.startsWith('window.__jsaction_bootstrap')) {
+      eval(script.textContent);
+    }
+  }
+}
+
+/**
  * This bootstraps an application with existing html and enables hydration support
  * causing hydration to be invoked.
  *

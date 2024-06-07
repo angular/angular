@@ -105,6 +105,9 @@
     "name": "DEFAULT_APP_ID"
   },
   {
+    "name": "DEFER_BLOCK_ID"
+  },
+  {
     "name": "DEHYDRATED_VIEWS"
   },
   {
