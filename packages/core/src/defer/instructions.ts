@@ -18,7 +18,6 @@ import {
   DEFER_BLOCK_ID,
   DEFER_BLOCK_STATE as SERIALIZED_DEFER_BLOCK_STATE,
   DehydratedContainerView,
-  TEMPLATE_ID,
 } from '../hydration/interfaces';
 import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref';
 import {PendingTasks} from '../pending_tasks';
@@ -389,7 +388,10 @@ export function ɵɵdeferOnImmediate() {
   // Render placeholder block only if loading template is not present and we're on
   // the client to avoid content flickering, since it would be immediately replaced
   // by the loading block.
-  if (!shouldTriggerDeferBlock(injector) || tDetails.loadingTmplIndex === null) {
+  if (
+    !shouldTriggerWhenOnServer(lView[INJECTOR]!) &&
+    (!shouldTriggerDeferBlock(injector) || tDetails.loadingTmplIndex === null)
+  ) {
     renderPlaceholder(lView, tNode);
   }
   triggerDeferBlock(lView, tNode);
@@ -438,16 +440,22 @@ export function ɵɵdeferOnHover(triggerIndex: number, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
-  renderPlaceholder(lView, tNode);
-  registerDomTrigger(
-    lView,
-    tNode,
-    triggerIndex,
-    walkUpTimes,
-    onHover,
-    () => triggerDeferBlock(lView, tNode),
-    TriggerType.Regular,
-  );
+  // TODO: this should be repeated for all "on" conditions.
+  if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
+    // We are on the server and SSR for defer blocks is enabled.
+    triggerDeferBlock(lView, tNode);
+  } else {
+    renderPlaceholder(lView, tNode);
+    registerDomTrigger(
+      lView,
+      tNode,
+      triggerIndex,
+      walkUpTimes,
+      onHover,
+      () => triggerDeferBlock(lView, tNode),
+      TriggerType.Regular,
+    );
+  }
 }
 
 /**
@@ -538,16 +546,22 @@ export function ɵɵdeferOnViewport(triggerIndex: number, walkUpTimes?: number) 
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
-  renderPlaceholder(lView, tNode);
-  registerDomTrigger(
-    lView,
-    tNode,
-    triggerIndex,
-    walkUpTimes,
-    onViewport,
-    () => triggerDeferBlock(lView, tNode),
-    TriggerType.Regular,
-  );
+  // TODO: this should be repeated for all "on" conditions.
+  if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
+    // We are on the server and SSR for defer blocks is enabled.
+    triggerDeferBlock(lView, tNode);
+  } else {
+    renderPlaceholder(lView, tNode);
+    registerDomTrigger(
+      lView,
+      tNode,
+      triggerIndex,
+      walkUpTimes,
+      onViewport,
+      () => triggerDeferBlock(lView, tNode),
+      TriggerType.Regular,
+    );
+  }
 }
 
 /**
@@ -586,14 +600,19 @@ function scheduleDelayedTrigger(
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
-  renderPlaceholder(lView, tNode);
+  if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
+    // We are on the server and SSR for defer blocks is enabled.
+    triggerDeferBlock(lView, tNode);
+  } else {
+    renderPlaceholder(lView, tNode);
 
-  // Only trigger the scheduled trigger on the browser
-  // since we don't want to delay the server response.
-  if (isPlatformBrowser(lView[INJECTOR]!)) {
-    const cleanupFn = scheduleFn(() => triggerDeferBlock(lView, tNode), lView);
-    const lDetails = getLDeferBlockDetails(lView, tNode);
-    storeTriggerCleanupFn(TriggerType.Regular, lDetails, cleanupFn);
+    // Only trigger the scheduled trigger on the browser
+    // since we don't want to delay the server response.
+    if (isPlatformBrowser(lView[INJECTOR]!)) {
+      const cleanupFn = scheduleFn(() => triggerDeferBlock(lView, tNode), lView);
+      const lDetails = getLDeferBlockDetails(lView, tNode);
+      storeTriggerCleanupFn(TriggerType.Regular, lDetails, cleanupFn);
+    }
   }
 }
 
