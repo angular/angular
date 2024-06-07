@@ -29,6 +29,7 @@ import {EventPhase} from '@angular/core/primitives/event-dispatch';
 import {
   getAppContents,
   hydrate,
+  prepareEnvironment,
   prepareEnvironmentAndHydrate,
   insertDomInDocument as renderHtml,
   resetTViewsFor,
@@ -203,6 +204,7 @@ describe('event replay', () => {
     outer.click();
     inner.click();
     const appRef = await hydrate(doc, AppComponent, {
+      envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
       hydrationFeatures: [withEventReplay()],
     });
     expect(outerOnClickSpy).toHaveBeenCalledBefore(innerOnClickSpy);
@@ -231,7 +233,7 @@ describe('event replay', () => {
     const html = await ssr(SimpleComponent);
     const ssrContents = getAppContents(html);
 
-    render(doc, ssrContents);
+    prepareEnvironment(doc, ssrContents);
     const el = doc.getElementById('click-element')!;
     const button = doc.getElementById('focus-target-element')!;
     const clickEvent = new CustomEvent('click', {bubbles: true});
@@ -242,6 +244,7 @@ describe('event replay', () => {
     expect(focusSpy).not.toHaveBeenCalled();
     resetTViewsFor(SimpleComponent);
     await hydrate(doc, SimpleComponent, {
+      envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
       hydrationFeatures: [withEventReplay()],
     });
     expect(clickSpy).toHaveBeenCalled();
@@ -321,6 +324,7 @@ describe('event replay', () => {
       const bottomEl = doc.getElementById('bottom')!;
       bottomEl.click();
       const appRef = await hydrate(doc, SimpleComponent, {
+        envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
         hydrationFeatures: [withEventReplay()],
       });
       expect(onClickSpy).toHaveBeenCalledTimes(2);
@@ -389,6 +393,7 @@ describe('event replay', () => {
       const bottomEl = doc.getElementById('bottom')!;
       bottomEl.click();
       await hydrate(doc, SimpleComponent, {
+        envProviders: [{provide: PLATFORM_ID, useValue: 'browser'}],
         hydrationFeatures: [withEventReplay()],
       });
       const replayedEvent = currentEvent;

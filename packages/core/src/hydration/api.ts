@@ -275,7 +275,7 @@ export function withI18nSupport(): Provider[] {
  * If there are any dehydrated `@defer` blocks found along the way,
  * they are also stored and returned from the function (as a list of ids).
  */
-function findFirstKnownParentDeferBlock(deferBlockId: string, appRef: ApplicationRef) {
+export function findFirstKnownParentDeferBlock(deferBlockId: string, appRef: ApplicationRef) {
   const deferBlockRegistry = appRef.injector.get(DeferBlockRegistry);
   const transferState = appRef.injector.get(TransferState);
   const deferBlockParents = transferState.get(NGH_DEFER_BLOCKS_KEY, {});

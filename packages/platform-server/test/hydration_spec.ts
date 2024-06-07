@@ -2183,7 +2183,9 @@ describe('platform-server hydration integration', () => {
 
           resetTViewsFor(SimpleComponent, ContentComponent);
 
-          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            hydrationFeatures,
+          });
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
 
@@ -2227,7 +2229,9 @@ describe('platform-server hydration integration', () => {
 
           resetTViewsFor(SimpleComponent, ContentComponent);
 
-          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            hydrationFeatures,
+          });
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
 
@@ -2279,7 +2283,9 @@ describe('platform-server hydration integration', () => {
 
           resetTViewsFor(SimpleComponent, OuterContentComponent, InnerContentComponent);
 
-          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            hydrationFeatures,
+          });
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
 
@@ -2359,7 +2365,9 @@ describe('platform-server hydration integration', () => {
 
           resetTViewsFor(SimpleComponent);
 
-          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            hydrationFeatures,
+          });
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
 
@@ -2400,7 +2408,9 @@ describe('platform-server hydration integration', () => {
 
           resetTViewsFor(SimpleComponent, ContentComponent);
 
-          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            hydrationFeatures,
+          });
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
 
@@ -8071,7 +8081,7 @@ describe('platform-server hydration integration', () => {
 
         ////////////////////////////////
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: providers,
+          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
           hydrationFeatures,
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
@@ -8186,7 +8196,7 @@ describe('platform-server hydration integration', () => {
         ////////////////////////////////
 
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: providers,
+          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
           hydrationFeatures,
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
@@ -8231,7 +8241,7 @@ describe('platform-server hydration integration', () => {
       }, 100_000);
     });
 
-    xit('should annotate inner components with defer block id', async () => {
+    it('should annotate inner components with defer block id', async () => {
       @Component({
         standalone: true,
         selector: 'dep-a',
@@ -8295,7 +8305,7 @@ describe('platform-server hydration integration', () => {
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
       const ssrContents = getAppContents(html);
 
-      expect(ssrContents).toContain('<main jsaction="click:">');
+      expect(ssrContents).toContain('<main jsaction="click:;">');
       // Buttons inside nested components inherit parent defer block namespace.
       expect(ssrContents).toContain('<button jsaction="click:;" ngb="d1">Click A</button>');
       expect(ssrContents).toContain('<button jsaction="click:;" ngb="d1">Click B</button>');
