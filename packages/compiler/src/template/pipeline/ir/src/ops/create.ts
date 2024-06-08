@@ -1080,15 +1080,21 @@ export interface DeclareLetOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   kind: OpKind.DeclareLet;
   xref: XrefId;
   sourceSpan: ParseSourceSpan;
+  declaredName: string;
 }
 
 /**
  * Creates a `DeclareLetOp`.
  */
-export function createDeclareLetOp(xref: XrefId, sourceSpan: ParseSourceSpan): DeclareLetOp {
+export function createDeclareLetOp(
+  xref: XrefId,
+  declaredName: string,
+  sourceSpan: ParseSourceSpan,
+): DeclareLetOp {
   return {
     kind: OpKind.DeclareLet,
     xref,
+    declaredName,
     sourceSpan,
     handle: new SlotHandle(),
     ...TRAIT_CONSUMES_SLOT,

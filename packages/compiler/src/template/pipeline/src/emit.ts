@@ -81,6 +81,7 @@ import {countVariables} from './phases/var_counting';
 import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
 import {transformStoreLetCalls} from './phases/transform_store_let';
+import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
 
 type Phase =
   | {
@@ -127,6 +128,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: deleteAnyCasts},
   {kind: Kind.Both, fn: resolveDollarEvent},
   {kind: Kind.Tmpl, fn: generateTrackVariables},
+  {kind: Kind.Tmpl, fn: removeIllegalLetReferences},
   {kind: Kind.Both, fn: resolveNames},
   {kind: Kind.Tmpl, fn: resolveDeferTargetNames},
   {kind: Kind.Tmpl, fn: transformTwoWayBindingSet},

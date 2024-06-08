@@ -148,7 +148,6 @@ interface LetDeclaration {
  * that view.
  */
 function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope {
-  const slotMap = new Map<ir.XrefId, ir.SlotHandle>();
   const scope: Scope = {
     view: view.xref,
     viewContextVariable: {
@@ -172,10 +171,6 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
   }
 
   for (const op of view.create) {
-    if (ir.hasConsumesSlotTrait(op)) {
-      slotMap.set(op.xref, op.handle);
-    }
-
     switch (op.kind) {
       case ir.OpKind.ElementStart:
       case ir.OpKind.Template:
@@ -198,24 +193,18 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
           });
         }
         break;
-    }
-  }
 
-  for (const op of view.update) {
-    if (op.kind === ir.OpKind.StoreLet) {
-      if (!slotMap.has(op.target)) {
-        throw new Error(`AssertionError: reference to unknown slot for @let ${op.target}`);
-      }
-
-      scope.letDeclarations.push({
-        targetId: op.target,
-        targetSlot: slotMap.get(op.target)!,
-        variable: {
-          kind: ir.SemanticVariableKind.Identifier,
-          name: null,
-          identifier: op.declaredName,
-        },
-      });
+      case ir.OpKind.DeclareLet:
+        scope.letDeclarations.push({
+          targetId: op.xref,
+          targetSlot: op.handle,
+          variable: {
+            kind: ir.SemanticVariableKind.Identifier,
+            name: null,
+            identifier: op.declaredName,
+          },
+        });
+        break;
     }
   }
 

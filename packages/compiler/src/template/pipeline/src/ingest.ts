@@ -929,7 +929,7 @@ function getComputedForLoopVariableExpression(
 function ingestLetDeclaration(unit: ViewCompilationUnit, node: t.LetDeclaration) {
   const target = unit.job.allocateXrefId();
 
-  unit.create.push(ir.createDeclareLetOp(target, node.sourceSpan));
+  unit.create.push(ir.createDeclareLetOp(target, node.name, node.sourceSpan));
   unit.update.push(
     ir.createStoreLetOp(
       target,
