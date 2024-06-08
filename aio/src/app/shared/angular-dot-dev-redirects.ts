@@ -35,6 +35,7 @@ const linksMap = new Map<string, string>([
   ['guide/class-binding', 'guide/templates/class-binding'],
   ['guide/event-binding', 'guide/templates/event-binding'],
   ['guide/two-way-binding', 'guide/templates/two-way-binding'],
+  ['guide/control_flow', 'guide/templates/control-flow'],
   ['guide/pipes-overview', 'guide/pipes'],
   ['guide/pipe-template', 'guide/pipes/template'],
   ['guide/pipes-transform-data', 'guide/pipes/transform-data'],
