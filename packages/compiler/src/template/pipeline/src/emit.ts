@@ -80,6 +80,9 @@ import {generateTrackVariables} from './phases/track_variables';
 import {countVariables} from './phases/var_counting';
 import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
+import {optimizeStoreLet} from './phases/store_let_optimization';
+import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
+import {generateLocalLetReferences} from './phases/generate_local_let_references';
 
 type Phase =
   | {
@@ -121,11 +124,13 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: createVariadicPipes},
   {kind: Kind.Both, fn: generatePureLiteralStructures},
   {kind: Kind.Tmpl, fn: generateProjectionDefs},
+  {kind: Kind.Tmpl, fn: generateLocalLetReferences},
   {kind: Kind.Tmpl, fn: generateVariables},
   {kind: Kind.Tmpl, fn: saveAndRestoreView},
   {kind: Kind.Both, fn: deleteAnyCasts},
   {kind: Kind.Both, fn: resolveDollarEvent},
   {kind: Kind.Tmpl, fn: generateTrackVariables},
+  {kind: Kind.Tmpl, fn: removeIllegalLetReferences},
   {kind: Kind.Both, fn: resolveNames},
   {kind: Kind.Tmpl, fn: resolveDeferTargetNames},
   {kind: Kind.Tmpl, fn: transformTwoWayBindingSet},
@@ -137,6 +142,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: expandSafeReads},
   {kind: Kind.Both, fn: generateTemporaryVariables},
   {kind: Kind.Both, fn: optimizeVariables},
+  {kind: Kind.Both, fn: optimizeStoreLet},
   {kind: Kind.Tmpl, fn: allocateSlots},
   {kind: Kind.Tmpl, fn: resolveI18nElementPlaceholders},
   {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},

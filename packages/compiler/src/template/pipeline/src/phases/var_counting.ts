@@ -134,6 +134,7 @@ function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): n
     case ir.OpKind.I18nExpression:
     case ir.OpKind.Conditional:
     case ir.OpKind.DeferWhen:
+    case ir.OpKind.StoreLet:
       return 1;
     case ir.OpKind.RepeaterCreate:
       // Repeaters may require an extra variable binding slot, if they have an empty view, for the
@@ -154,6 +155,8 @@ export function varsUsedByIrExpression(expr: ir.Expression & ir.ConsumesVarsTrai
       return 1 + expr.args.length;
     case ir.ExpressionKind.PipeBindingVariadic:
       return 1 + expr.numArgs;
+    case ir.ExpressionKind.StoreLet:
+      return 1;
     default:
       throw new Error(
         `AssertionError: unhandled ConsumesVarsTrait expression ${expr.constructor.name}`,

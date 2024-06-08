@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {CompilationJob, CompilationUnit, ViewCompilationUnit} from '../compilation';
+import {CompilationJob, CompilationUnit} from '../compilation';
 
 /**
  * Resolves lexical references in views (`ir.LexicalReadExpr`) to either a target variable or to
