@@ -61,14 +61,12 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | 
       case ir.OpKind.Listener:
       case ir.OpKind.TwoWayListener:
         // Prepend variables to listener handler functions.
-        op.handlerOps.prepend(generateVariablesInScopeForView(view, scope));
+        op.handlerOps.prepend(generateVariablesInScopeForView(view, scope, true));
         break;
     }
   }
 
-  // Prepend the declarations for all available variables in scope to the `update` block.
-  const preambleOps = generateVariablesInScopeForView(view, scope);
-  view.update.prepend(preambleOps);
+  view.update.prepend(generateVariablesInScopeForView(view, scope, false));
 }
 
 /**
@@ -90,6 +88,11 @@ interface Scope {
    * Local references collected from elements within the view.
    */
   references: Reference[];
+
+  /**
+   * `@let` declarations collected from the view.
+   */
+  letDeclarations: LetDeclaration[];
 
   /**
    * `Scope` of the parent view, if any.
@@ -127,6 +130,20 @@ interface Reference {
 }
 
 /**
+ * Information about `@let` declaration collected from a view.
+ */
+interface LetDeclaration {
+  /** `XrefId` of the `@let` declaration that the reference is pointing to. */
+  targetId: ir.XrefId;
+
+  /** Slot in which the declaration is stored. */
+  targetSlot: ir.SlotHandle;
+
+  /** Variable referring to the declaration. */
+  variable: ir.IdentifierVariable;
+}
+
+/**
  * Process a view and generate a `Scope` representing the variables available for reference within
  * that view.
  */
@@ -141,6 +158,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
     contextVariables: new Map<string, ir.SemanticVariable>(),
     aliases: view.aliases,
     references: [],
+    letDeclarations: [],
     parent,
   };
 
@@ -175,6 +193,18 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
           });
         }
         break;
+
+      case ir.OpKind.DeclareLet:
+        scope.letDeclarations.push({
+          targetId: op.xref,
+          targetSlot: op.handle,
+          variable: {
+            kind: ir.SemanticVariableKind.Identifier,
+            name: null,
+            identifier: op.declaredName,
+          },
+        });
+        break;
     }
   }
 
@@ -190,6 +220,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
 function generateVariablesInScopeForView(
   view: ViewCompilationUnit,
   scope: Scope,
+  isListener: boolean,
 ): ir.VariableOp<ir.UpdateOp>[] {
   const newOps: ir.VariableOp<ir.UpdateOp>[] = [];
 
@@ -247,9 +278,22 @@ function generateVariablesInScopeForView(
     );
   }
 
+  if (scope.view !== view.xref || isListener) {
+    for (const decl of scope.letDeclarations) {
+      newOps.push(
+        ir.createVariableOp<ir.UpdateOp>(
+          view.job.allocateXrefId(),
+          decl.variable,
+          new ir.ContextLetReferenceExpr(decl.targetId, decl.targetSlot),
+          ir.VariableFlags.None,
+        ),
+      );
+    }
+  }
+
   if (scope.parent !== null) {
     // Recursively add variables from the parent scope.
-    newOps.push(...generateVariablesInScopeForView(view, scope.parent));
+    newOps.push(...generateVariablesInScopeForView(view, scope.parent, false));
   }
   return newOps;
 }

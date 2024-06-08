@@ -1629,6 +1629,9 @@
     "name": "init_lang"
   },
   {
+    "name": "init_let_declaration"
+  },
+  {
     "name": "init_lift"
   },
   {

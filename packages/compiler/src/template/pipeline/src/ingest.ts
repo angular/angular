@@ -226,7 +226,7 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
     } else if (node instanceof t.ForLoopBlock) {
       ingestForBlock(unit, node);
     } else if (node instanceof t.LetDeclaration) {
-      // TODO(crisbeto): needs further integration
+      ingestLetDeclaration(unit, node);
     } else {
       throw new Error(`Unsupported template node: ${node.constructor.name}`);
     }
@@ -924,6 +924,20 @@ function getComputedForLoopVariableExpression(
     default:
       throw new Error(`AssertionError: unknown @for loop variable ${variable.value}`);
   }
+}
+
+function ingestLetDeclaration(unit: ViewCompilationUnit, node: t.LetDeclaration) {
+  const target = unit.job.allocateXrefId();
+
+  unit.create.push(ir.createDeclareLetOp(target, node.name, node.sourceSpan));
+  unit.update.push(
+    ir.createStoreLetOp(
+      target,
+      node.name,
+      convertAst(node.value, unit.job, node.valueSpan),
+      node.sourceSpan,
+    ),
+  );
 }
 
 /**
