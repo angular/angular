@@ -25,7 +25,7 @@ import {
   windowProvider,
 } from '@angular/docs';
 import {provideClientHydration} from '@angular/platform-browser';
-import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
+import {provideAnimations} from '@angular/platform-browser/animations';
 import {
   RouteReuseStrategy,
   Router,
@@ -72,7 +72,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideClientHydration(),
     provideHttpClient(withFetch()),
-    provideAnimationsAsync(),
+    provideAnimations(),
     {
       provide: CURRENT_MAJOR_VERSION,
       useValue: Number(VERSION.major),
