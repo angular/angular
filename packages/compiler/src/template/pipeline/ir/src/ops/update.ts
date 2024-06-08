@@ -51,7 +51,8 @@ export type UpdateOp =
   | I18nExpressionOp
   | I18nApplyOp
   | RepeaterOp
-  | DeferWhenOp;
+  | DeferWhenOp
+  | StoreLetOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -946,6 +947,55 @@ export function createI18nApplyOp(
     owner,
     handle,
     sourceSpan,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Op to store the current value of a `@let` declaration.
+ */
+export interface StoreLetOp extends Op<UpdateOp>, ConsumesVarsTrait {
+  kind: OpKind.StoreLet;
+  sourceSpan: ParseSourceSpan;
+
+  /** Name that the user set when declaring the `@let`. */
+  declaredName: string;
+
+  /** XrefId of the slot in which the call may write its value. */
+  target: XrefId;
+
+  /** Value of the `@let` declaration. */
+  value: o.Expression;
+
+  /** Computed name under which the `@let` is available within the template function. */
+  name: string | null;
+
+  /**
+   * Flag indicating that the `@let` is used both in its declaration view and inside
+   * child views. This is used during refication to adjust the output appropriately.
+   */
+  isUsedAcrossViewBoundaries: boolean;
+}
+
+/**
+ * Creates a `StoreLetOp`.
+ */
+export function createStoreLetOp(
+  target: XrefId,
+  declaredName: string,
+  value: o.Expression,
+  sourceSpan: ParseSourceSpan,
+): StoreLetOp {
+  return {
+    kind: OpKind.StoreLet,
+    target,
+    declaredName,
+    value,
+    sourceSpan,
+    name: null,
+    isUsedAcrossViewBoundaries: false,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
   };
 }

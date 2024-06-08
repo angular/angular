@@ -104,6 +104,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
     // Enable the new block syntax if compiled with v17 and
     // above, or when using the local placeholder version.
     const enableBlockSyntax = semver.major(version) >= 17 || version === PLACEHOLDER_VERSION;
+    const enableLetSyntax = version === PLACEHOLDER_VERSION;
 
     const template = parseTemplate(templateInfo.code, templateInfo.sourceUrl, {
       escapedString: templateInfo.isEscaped,
@@ -116,6 +117,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       // We normalize line endings if the template is was inline.
       i18nNormalizeLineEndingsInICUs: isInline,
       enableBlockSyntax,
+      enableLetSyntax,
     });
     if (template.errors !== null) {
       const errors = template.errors.map((err) => err.toString()).join('\n');

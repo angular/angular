@@ -184,6 +184,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.Pipe:
         ir.OpList.replace(op, ng.pipe(op.handle.slot!, op.name));
         break;
+      case ir.OpKind.DeclareLet:
+        ir.OpList.replace(op, ng.declareLet(op.handle.slot!, op.sourceSpan));
+        break;
       case ir.OpKind.Listener:
         const listenerFn = reifyListenerHandler(
           unit,
@@ -537,6 +540,20 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
       case ir.OpKind.DeferWhen:
         ir.OpList.replace(op, ng.deferWhen(op.prefetch, op.expr, op.sourceSpan));
         break;
+      case ir.OpKind.StoreLet:
+        if (op.name === null) {
+          throw new Error(`AssertionError: @let declaration ${op.declaredName} has not been named`);
+        }
+        const storeCall = ng.storeLet(op.value, op.sourceSpan);
+        ir.OpList.replace<ir.UpdateOp>(
+          op,
+          ir.createStatementOp(
+            op.isUsedAcrossViewBoundaries
+              ? new o.DeclareVarStmt(op.name, storeCall, undefined, o.StmtModifier.Final)
+              : new o.ExpressionStatement(storeCall),
+          ),
+        );
+        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;
@@ -599,6 +616,8 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.pipeBindV(expr.targetSlot.slot!, expr.varOffset!, expr.args);
     case ir.ExpressionKind.SlotLiteralExpr:
       return o.literal(expr.slot.slot!);
+    case ir.ExpressionKind.ContextLetReference:
+      return ng.readContextLet(expr.targetSlot.slot!);
     default:
       throw new Error(
         `AssertionError: Unsupported reification of ir.Expression kind: ${

@@ -187,6 +187,9 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵregisterNgModuleType': registerNgModuleType,
   'ɵɵgetComponentDepsFactory': r3.ɵɵgetComponentDepsFactory,
   'ɵsetClassDebugInfo': r3.ɵsetClassDebugInfo,
+  'ɵɵdeclareLet': r3.ɵɵdeclareLet,
+  'ɵɵstoreLet': r3.ɵɵstoreLet,
+  'ɵɵreadContextLet': r3.ɵɵreadContextLet,
 
   'ɵɵsanitizeHtml': sanitization.ɵɵsanitizeHtml,
   'ɵɵsanitizeStyle': sanitization.ɵɵsanitizeStyle,
