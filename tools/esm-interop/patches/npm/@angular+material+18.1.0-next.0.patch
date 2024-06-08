@@ -1,0 +1,13 @@
+diff --git a/node_modules/@angular/material/fesm2022/tabs.mjs b/node_modules/@angular/material/fesm2022/tabs.mjs
+index 05e8e85..1d95093 100755
+--- a/node_modules/@angular/material/fesm2022/tabs.mjs
++++ b/node_modules/@angular/material/fesm2022/tabs.mjs
+@@ -958,7 +958,7 @@ const matTabsAnimations = {
+     /** Animation translates a tab along the X axis. */
+     translateTab: trigger('translateTab', [
+         // Transitions to `none` instead of 0, because some browsers might blur the content.
+-        state('center, void, left-origin-center, right-origin-center', style({ transform: 'none' })),
++        state('center, void, left-origin-center, right-origin-center', style({ transform: 'none', visibility: 'visible' })),
+         // If the tab is either on the left or right, we additionally add a `min-height` of 1px
+         // in order to ensure that the element has a height before its state changes. This is
+         // necessary because Chrome does seem to skip the transition in RTL mode if the element does

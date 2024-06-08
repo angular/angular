@@ -46,6 +46,11 @@
           },
           "configurations": {
             "production": {
+              "optimization": false,
+              "sourceMap": {
+                "scripts": true,
+                "vendor": true
+              },
               "outputHashing": "all"
             },
             "development": {
