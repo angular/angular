@@ -1260,6 +1260,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG0912',
       },
       {
+        label: 'NG0913: Runtime Performance Warnings',
+        path: 'errors/NG0913',
+        contentPath: 'reference/errors/NG0913',
+      },
+      {
         label: 'NG0950: Required input is accessed before a value is set.',
         path: 'errors/NG0950',
         contentPath: 'reference/errors/NG0950',
