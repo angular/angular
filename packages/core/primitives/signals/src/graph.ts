@@ -416,12 +416,6 @@ function producerAddLiveConsumer(node: ReactiveNode, consumer: ReactiveNode) {
 function producerRemoveLiveConsumer(node: ReactiveNode, consumer: ReactiveNode): void {
   assertProducerNode(node);
 
-  if (typeof ngDevMode !== 'undefined' && ngDevMode && idx >= node.liveConsumerNode.length) {
-    throw new Error(
-      `Assertion error: active consumer index ${idx} is out of bounds of ${node.liveConsumerNode.length} consumers)`,
-    );
-  }
-
   if (node.liveConsumerNode.length === 1 && isConsumerNode(node)) {
     // When removing the last live consumer, we will no longer be live. We need to remove
     // ourselves from our producers' tracking (which may cause consumer-producers to lose
