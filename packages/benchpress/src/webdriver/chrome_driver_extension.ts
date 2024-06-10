@@ -216,7 +216,11 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 
   override supports(capabilities: {[key: string]: any}): boolean {
-    return this._majorChromeVersion >= 44 && capabilities['browserName'].toLowerCase() === 'chrome';
+    const browserName = capabilities['browserName'].toLowerCase();
+    return (
+      this._majorChromeVersion >= 44 &&
+      (browserName === 'chrome' || browserName === 'chrome-headless-shell')
+    );
   }
 }
 
