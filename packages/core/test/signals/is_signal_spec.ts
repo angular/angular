@@ -43,21 +43,38 @@ describe('isSignal', () => {
 });
 
 describe('set', () => {
+  it('addToLiteSet', () => {
+    const set = createLiteSet();
+    const obj1 = {};
+    const obj2 = {};
+    addToLiteSet(set, obj1);
+    addToLiteSet(set, obj2);
+    expect(set.length).toBe(2);
+    // must spread since jasmine doesn't like the extra properties we use for indexing
+    expect([...set]).toEqual([obj1, obj2]);
+  });
+
+  it('addToLiteSet ignores duplicate adds', () => {
+    const set = createLiteSet();
+    const obj1 = {};
+    const obj2 = {};
+    addToLiteSet(set, obj1);
+    addToLiteSet(set, obj2);
+    addToLiteSet(set, obj1);
+    expect(set.length).toBe(2);
+    expect([...set]).toEqual([obj1, obj2]);
+  });
+
   it('add remove', () => {
     const set = createLiteSet();
     const obj1 = {};
     const obj2 = {};
-    console.error('@@@1', Object.keys(set));
     addToLiteSet(set, obj1);
-    console.error('@@@2', Object.keys(set));
     addToLiteSet(set, obj2);
-    console.error('@@@3', Object.keys(set));
     expect(set.length).toBe(2);
     removeFromLiteSet(set, obj1);
-    console.error('@@@4', Object.keys(set));
     removeFromLiteSet(set, obj2);
-    console.error('@@@5', Object.keys(set));
-    console.error(Object.keys(set));
     expect(set.length).toBe(0);
+    expect([...set]).toEqual([]);
   });
 });

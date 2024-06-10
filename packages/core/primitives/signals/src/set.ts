@@ -17,7 +17,7 @@ export interface LiteSet<T extends Object> extends Array<T> {
    * Key where we store the index the item is at. Sort of makes a reverse map from item to index.
    */
   idxMap: {[id: number]: number; length: number};
-  [index: `__idx_for_item_${number}`]: number | undefined;
+  // [index: `__idx_for_item_${number}`]: number | undefined;
 }
 
 interface LiteSetItem {
@@ -78,7 +78,6 @@ export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): v
  * Empty the set. This will leave some stale index tracking props on the objects
  */
 export function clearLiteSet<T extends Object>(set: LiteSet<T>): void {
-  // o_o will this really work with sparse arrays?
   set.length = 0;
   set.idxMap.length = 0;
 }
