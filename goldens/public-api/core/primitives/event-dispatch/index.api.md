@@ -25,7 +25,7 @@ export interface EarlyJsactionDataContainer {
 
 // @public
 export class EventContract implements UnrenamedEventContract {
-    constructor(containerManager: EventContractContainerManager, useActionResolver?: boolean);
+    constructor(containerManager: EventContractContainerManager, useActionResolver: false);
     // (undocumented)
     static A11Y_CLICK_SUPPORT: boolean;
     addA11yClickSupport(): void;
