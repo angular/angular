@@ -30,7 +30,8 @@ The CLI automatically appends `Component`, so if you were to write `first-compon
 
 <docs-callout title="`base href`">
 
-This guide works with a CLI-generated Angular application.
+This guide works with a CLI-generated Angular application. If you are working manually, make sure that you have `<base href="/">` in the `<head>` of your index.html file.
+This assumes that the `app` folder is the application root, and uses `"/"`.
 
 </docs-callout>
 
