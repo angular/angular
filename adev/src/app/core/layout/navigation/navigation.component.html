@@ -165,14 +165,14 @@
             <ul class="adev-mini-menu adev-version-picker" cdkMenu>
               @for (item of versions(); track item) {
               <li>
-                <button
+                <a
                   type="button"
                   cdkMenuItem
-                  (click)="redirectToDocsVersion(item.url)"
+                  [href]="item.url"
                   [attr.aria-label]="item.displayName"
                 >
                   <span>{{ item.displayName }}</span>
-                </button>
+              </a>
               </li>
               }
             </ul>
