@@ -810,7 +810,7 @@ class RouterLink implements OnChanges, OnDestroy {
     // (undocumented)
     static ngAcceptInputType_skipLocationChange: unknown;
     // (undocumented)
-    ngOnChanges(): void;
+    ngOnChanges(changes?: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): any;
     // (undocumented)

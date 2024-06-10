@@ -19,6 +19,7 @@ import {
   OnDestroy,
   Renderer2,
   ɵRuntimeError as RuntimeError,
+  SimpleChanges,
   ɵɵsanitizeUrlOrResourceUrl,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
@@ -260,7 +261,8 @@ export class RouterLink implements OnChanges, OnDestroy {
   }
 
   /** @nodoc */
-  ngOnChanges() {
+  // TODO(atscott): Remove changes parameter in major version as a breaking change.
+  ngOnChanges(changes?: SimpleChanges) {
     if (
       ngDevMode &&
       isUrlTree(this.routerLinkInput) &&
