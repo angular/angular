@@ -23,7 +23,7 @@
     "@angular/platform-server": "18.0.1",
     "@angular/router": "18.0.1",
     "@angular/ssr": "18.0.2",
-    "angular-in-memory-web-api": "~0.17.0",
+    "angular-in-memory-web-api": "~0.18.0",
     "express": "^4.18.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
