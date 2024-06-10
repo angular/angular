@@ -127,7 +127,7 @@ export class EventContract implements UnrenamedEventContract {
 
   constructor(
     containerManager: EventContractContainerManager,
-    private readonly useActionResolver = true,
+    private readonly useActionResolver: false,
   ) {
     this.containerManager = containerManager;
     if (this.useActionResolver) {
