@@ -11,6 +11,7 @@ import {
   isSignal,
   signal,
   createLiteSet,
+  clearLiteSet,
   addToLiteSet,
   removeFromLiteSet,
 } from '@angular/core';
@@ -76,5 +77,20 @@ describe('set', () => {
     removeFromLiteSet(set, obj2);
     expect(set.length).toBe(0);
     expect([...set]).toEqual([]);
+  });
+
+  it('clear and add again', () => {
+    const set = createLiteSet();
+    const obj1 = {};
+    const obj2 = {};
+    addToLiteSet(set, obj1);
+    addToLiteSet(set, obj2);
+    expect(set.length).toBe(2);
+    expect([...set]).toEqual([obj1, obj2]);
+    clearLiteSet(set);
+    addToLiteSet(set, obj1);
+    addToLiteSet(set, obj2);
+    expect(set.length).toBe(2);
+    expect([...set]).toEqual([obj1, obj2]);
   });
 });

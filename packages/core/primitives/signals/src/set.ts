@@ -75,6 +75,7 @@ export function removeFromLiteSet<T extends Object>(set: LiteSet<T>, item: T): v
  */
 export function clearLiteSet<T extends Object>(set: LiteSet<T>): void {
   set.length = 0;
+  set[SET_ID] = nextSetId++;
   // TODO: potential memory leak on the items themselves...
 }
 
