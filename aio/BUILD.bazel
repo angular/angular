@@ -98,30 +98,6 @@ npm_package_bin(
     visibility = ["//aio/tests/deployment:__subpackages__"],
 )
 
-# Copy stackblitz live examples to expected assets location
-copy_to_directory(
-    name = "stackblitz",
-    srcs = ["//aio/content/examples:all-stackblitz"],
-    replace_prefixes = {
-        "examples": "generated/live-examples",
-    },
-    root_paths = [
-        "aio/content",
-    ],
-)
-
-# Copy example zips to expected assets location
-copy_to_directory(
-    name = "example-zips",
-    srcs = ["//aio/content/examples:all-example-zips"],
-    replace_prefixes = {
-        "examples": "generated/zips",
-    },
-    root_paths = [
-        "aio/content",
-    ],
-)
-
 # All source and configuration files required to build the docs app
 APPLICATION_FILES = [
     "angular.json",
@@ -145,8 +121,6 @@ APPLICATION_FILES = [
 # Dependencies required to build the docs app.
 APPLICATION_DEPS = [
     ":dgeni",
-    ":stackblitz",
-    ":example-zips",
     "//aio/src/generated:ngsw-config",
     "@npm//@angular-devkit/build-angular",
     "@npm//@angular-eslint/builder",
