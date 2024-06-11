@@ -102,13 +102,13 @@
 
       <h3>Other dependencies</h3>
       @for (option of optionList; track $index) {
-        <p>
+        <div>
           <mat-checkbox
             (change)="options[option.id] = $event.checked; showUpdatePath()"
             [checked]="options[option.id]"
             >I use {{option.name}} {{option.description}}</mat-checkbox
           >
-        </p>
+        </div>
       }
 
       @if (from.number < 600) {
