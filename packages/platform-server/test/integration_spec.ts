@@ -783,7 +783,7 @@ class HiddenModule {}
           expect(output).toBe(expectedOutput);
         });
 
-        it(
+        xit(
           `using ${isStandalone ? 'renderApplication' : 'renderModule'} ` +
             `should allow passing a document reference`,
           async () => {

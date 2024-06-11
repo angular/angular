@@ -186,7 +186,7 @@ export function invokeRegisteredReplayListeners(
   event: Event,
   hydratedBlocks?: Set<string>,
 ) {
-  const el = (event.currentTarget as Element) || (event.target as Element);
+  const el = event.currentTarget as Element;
   const blockName = (el && el.getAttribute(BLOCKNAME_ATTRIBUTE)) ?? '';
   if (
     event.eventPhase === EventPhase.REPLAY ||
