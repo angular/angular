@@ -93,6 +93,8 @@ function publishRepo {
     git tag "${BUILD_VER}" --force && \
     git push origin "${BRANCH}" --tags --force
   )
+
+  rm -rf $REPO_DIR/*
 }
 
 # Publish all individual packages from packages-dist.
