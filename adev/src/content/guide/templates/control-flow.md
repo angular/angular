@@ -39,7 +39,7 @@ patterns:
 ## `@for` block - repeaters
 
 The `@for` repeatedly renders content of a block for each item in a collection. The collection can be represented as any
-JavaScript [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) but there
+JavaScript [iterable](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Iteration_protocols) but there
 are performance advantages of using a regular `Array`. A basic `@for` loop looks like:
 
 ```html

@@ -59,10 +59,10 @@ global styles defined outside of a component may still affect elements inside a 
 emulated encapsulation.
 
 In emulated mode, Angular supports
-the [`:host`](https://developer.mozilla.org/en-US/docs/Web/CSS/:host)
-and [`:host-context()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:host-context) pseudo
+the [`:host`](https://developer.mozilla.org/docs/Web/CSS/:host)
+and [`:host-context()`](https://developer.mozilla.org/docs/Web/CSS/:host-context) pseudo
 classes without
-using [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM).
+using [Shadow DOM](https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM).
 During compilation, the framework transforms these pseudo classes into attributes so it doesn't 
 comply with these native pseudo classes' rules at runtime (e.g. browser compatibility, specificity). Angular's
 emulated encapsulation mode does not support any other pseudo classes related to Shadow DOM, such
@@ -78,7 +78,7 @@ exclusively for backwards compatibility.
 ### ViewEncapsulation.ShadowDom
 
 This mode scopes styles within a component by
-using [the web standard Shadow DOM API](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM).
+using [the web standard Shadow DOM API](https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM).
 When enabling this mode, Angular attaches a shadow root to the component's host element and renders
 the component's template and styles into the corresponding shadow tree.
 
@@ -88,7 +88,7 @@ shadow tree cannot affect elements outside of that shadow tree.
 
 Enabling `ShadowDom` encapsulation, however, impacts more than style scoping. Rendering the
 component in a shadow tree affects event propagation, interaction
-with [the `<slot>` API](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots),
+with [the `<slot>` API](https://developer.mozilla.org/docs/Web/Web_Components/Using_templates_and_slots),
 and how browser developer tools show elements. Always understand the full implications of using
 Shadow DOM in your application before enabling this option.
 
@@ -107,8 +107,8 @@ Angular does not support bindings inside of style elements.
 ## Referencing external style files
 
 Component templates can
-use [the `<link>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link) to
+use [the `<link>` element](https://developer.mozilla.org/docs/Web/HTML/Element/link) to
 reference CSS files. Additionally, your CSS may
-use [the `@import`at-rule](https://developer.mozilla.org/en-US/docs/Web/CSS/@import) to reference
+use [the `@import`at-rule](https://developer.mozilla.org/docs/Web/CSS/@import) to reference
 CSS files. Angular treats these references as _external_ styles. External styles are not affected by
 emulated view encapsulation.

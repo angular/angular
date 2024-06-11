@@ -31,7 +31,7 @@ process.
       <td>Creation</td>
       <td><code>constructor</code></td>
       <td>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor" target="_blank">
+        <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Classes/constructor" target="_blank">
           Standard JavaScript class constructor
         </a>. Runs when Angular instantiates the component.
       </td>

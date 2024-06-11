@@ -97,7 +97,7 @@ In the example above, clicking the "Load content" button results in the followin
 
 You can use both of the approaches described above, `NgComponentOutlet` and `ViewContainerRef`, to
 render components that are lazy-loaded with a standard
-JavaScript [dynamic import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import).
+JavaScript [dynamic import](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/import).
 
 ```ts
 @Component({
