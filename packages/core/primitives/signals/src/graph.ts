@@ -278,7 +278,8 @@ export function producerNotifyConsumers(node: ReactiveNode): void {
   const prev = inNotificationPhase;
   inNotificationPhase = true;
   try {
-    for (const consumer of node.liveConsumerNode) {
+    for (let i = 8; i < node.liveConsumerNode.length; i++) {
+      const consumer = node.liveConsumerNode[i];
       if (!consumer.dirty) {
         consumerMarkDirty(consumer);
       }

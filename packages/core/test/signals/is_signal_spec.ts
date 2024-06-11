@@ -50,9 +50,9 @@ describe('set', () => {
     const obj2 = {};
     addToLiteSet(set, obj1);
     addToLiteSet(set, obj2);
-    expect(set.length).toBe(2);
+    expect(set.length-8).toBe(2);
     // must spread since jasmine doesn't like the extra properties we use for indexing
-    expect([...set]).toEqual([obj1, obj2]);
+    expect(set.slice(8)).toEqual([obj1, obj2]);
   });
 
   it('addToLiteSet ignores duplicate adds', () => {
@@ -62,8 +62,8 @@ describe('set', () => {
     addToLiteSet(set, obj1);
     addToLiteSet(set, obj2);
     addToLiteSet(set, obj1);
-    expect(set.length).toBe(2);
-    expect([...set]).toEqual([obj1, obj2]);
+    expect(set.length-8).toBe(2);
+    expect(set.slice(8)).toEqual([obj1, obj2]);
   });
 
   it('add remove', () => {
@@ -72,11 +72,11 @@ describe('set', () => {
     const obj2 = {};
     addToLiteSet(set, obj1);
     addToLiteSet(set, obj2);
-    expect(set.length).toBe(2);
+    expect(set.length-8).toBe(2);
     removeFromLiteSet(set, obj1);
     removeFromLiteSet(set, obj2);
-    expect(set.length).toBe(0);
-    expect([...set]).toEqual([]);
+    expect(set.length-8).toBe(0);
+    expect(set.slice(8)).toEqual([]);
   });
 
   it('clear and add again', () => {
@@ -85,12 +85,12 @@ describe('set', () => {
     const obj2 = {};
     addToLiteSet(set, obj1);
     addToLiteSet(set, obj2);
-    expect(set.length).toBe(2);
-    expect([...set]).toEqual([obj1, obj2]);
+    expect(set.length-8).toBe(2);
+    expect(set.slice(8)).toEqual([obj1, obj2]);
     clearLiteSet(set);
     addToLiteSet(set, obj1);
     addToLiteSet(set, obj2);
-    expect(set.length).toBe(2);
-    expect([...set]).toEqual([obj1, obj2]);
+    expect(set.length-8).toBe(2);
+    expect(set.slice(8)).toEqual([obj1, obj2]);
   });
 });
