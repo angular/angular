@@ -1,21 +1,21 @@
 // #docregion
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {UserService} from '../model/user.service';
 
 @Component({
   standalone: true,
   selector: 'app-welcome',
-  template: '<h3 class="welcome"><i>{{welcome}}</i></h3>',
+  template: '<h3 class="welcome"><i>{{welcome()}}</i></h3>',
 })
 // #docregion class
 export class WelcomeComponent implements OnInit {
-  welcome = '';
+  welcome = signal('');
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.welcome = this.userService.isLoggedIn
-      ? 'Welcome, ' + this.userService.user.name
-      : 'Please log in.';
+    this.welcome.set(
+      this.userService.isLoggedIn() ? 'Welcome, ' + this.userService.user().name : 'Please log in.',
+    );
   }
 }
 // #enddocregion class

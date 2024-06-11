@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class UserService {
-  isLoggedIn = true;
-  user = {name: 'Sam Spade'};
+  isLoggedIn = signal(true);
+  user = signal({name: 'Sam Spade'});
 }
