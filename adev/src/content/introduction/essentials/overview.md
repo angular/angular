@@ -7,7 +7,7 @@ Like most modern frameworks, Angular expects you to be familiar with HTML, CSS a
 
 In addition, you should be familiar with the following concepts:
 
-- [JavaScript Classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+- [JavaScript Classes](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Classes)
 - [TypeScript fundamentals](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html)
 - [TypeScript Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
 

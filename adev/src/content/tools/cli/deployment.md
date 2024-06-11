@@ -81,7 +81,7 @@ For "real" 404 pages such as `http://my-app.test/does-not-exist`, the server doe
 
 ### Requesting data from a different server (CORS)
 
-Web developers may encounter a [*cross-origin resource sharing*](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS "Cross-origin resource sharing") error when making a network request to a server other than the application's own host server.
+Web developers may encounter a [*cross-origin resource sharing*](https://developer.mozilla.org/docs/Web/HTTP/CORS "Cross-origin resource sharing") error when making a network request to a server other than the application's own host server.
 Browsers forbid such requests unless the server explicitly permits them.
 
 There isn't anything Angular or the client application can do about these errors.

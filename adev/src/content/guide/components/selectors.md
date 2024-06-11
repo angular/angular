@@ -3,7 +3,7 @@
 Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Every component defines
-a [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors) that determines how
+a [CSS selector](https://developer.mozilla.org/docs/Web/CSS/CSS_selectors) that determines how
 the component is used:
 
 <docs-code language="ts" highlight="[2]">
@@ -37,7 +37,7 @@ single element, Angular reports an error.
 ## Types of selectors
 
 Angular supports a limited subset
-of [basic CSS selector types](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) in
+of [basic CSS selector types](https://developer.mozilla.org/docs/Web/CSS/CSS_Selectors) in
 component selectors:
 
 | **Selector type**  | **Description**                                                                                                 | **Examples**                  |
@@ -50,15 +50,15 @@ For attribute values, Angular supports matching an exact attribute value with th
 operator. Angular does not support other attribute value operators.
 
 Angular component selectors do not support combinators, including
-the [descendant combinator](https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_combinator)
-or [child combinator](https://developer.mozilla.org/en-US/docs/Web/CSS/Child_combinator).
+the [descendant combinator](https://developer.mozilla.org/docs/Web/CSS/Descendant_combinator)
+or [child combinator](https://developer.mozilla.org/docs/Web/CSS/Child_combinator).
 
 Angular component selectors do not support
-specifying [namespaces](https://developer.mozilla.org/en-US/docs/Web/SVG/Namespaces_Crash_Course).
+specifying [namespaces](https://developer.mozilla.org/docs/Web/SVG/Namespaces_Crash_Course).
 
 ### The `:not` pseudo-class
 
-Angular supports [the `:not` pseudo-class](https://developer.mozilla.org/en-US/docs/Web/CSS/:not).
+Angular supports [the `:not` pseudo-class](https://developer.mozilla.org/docs/Web/CSS/:not).
 You can append this pseudo-class to any other selector to narrow which elements a component's
 selector matches. For example, you could define a `[dropzone]` attribute selector and prevent
 matching `textarea` elements:
@@ -107,7 +107,7 @@ By default, Angular reports an error if it encounters a custom tag name that doe
 available components, preventing bugs due to mistyped component names.
 
 See [Advanced component configuration](guide/components/advanced-configuration) for details on
-using [native custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components) in
+using [native custom elements](https://developer.mozilla.org/docs/Web/Web_Components) in
 Angular templates.
 
 ### Selector prefixes

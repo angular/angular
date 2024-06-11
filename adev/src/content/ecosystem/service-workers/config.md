@@ -59,7 +59,7 @@ Usually this is `/index.html`.
 They can include resources loaded from the page's origin as well as third-party resources loaded from CDNs and other external URLs.
 As not all such external URLs might be known at build time, URL patterns can be matched.
 
-HELPFUL: For the service worker to handle resources that are loaded from different origins, make sure that [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is correctly configured on each origin's server.
+HELPFUL: For the service worker to handle resources that are loaded from different origins, make sure that [CORS](https://developer.mozilla.org/docs/Web/HTTP/CORS) is correctly configured on each origin's server.
 
 This field contains an array of asset groups, each of which defines a set of asset resources and the policy by which they are cached.
 

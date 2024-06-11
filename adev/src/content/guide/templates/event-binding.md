@@ -47,7 +47,7 @@ Depending on the operating system, some key combinations might create special ch
 
 The `code` field is more specific than the `key` field. The `key` field always reports `shift`, whereas the `code` field will specify `leftshift` or `rightshift`. When using the `code` field, you might need to add separate bindings to catch all the behaviors you want. Using the `code` field avoids the need to handle OS specific behaviors such as the `shift + option` behavior on macOS.
 
-For more information, visit the full reference for [key](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values) and [code](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values) to help build out your event strings.
+For more information, visit the full reference for [key](https://developer.mozilla.org/docs/Web/API/UI_Events/Keyboard_event_key_values) and [code](https://developer.mozilla.org/docs/Web/API/UI_Events/Keyboard_event_code_values) to help build out your event strings.
 
 ## Binding to passive events
 

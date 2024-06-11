@@ -23,7 +23,7 @@ Every component has the following core properties:
 
 1. A `@Component`[decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) that contains some configuration
 2. An HTML template that controls what renders into the DOM
-3. A [CSS selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML
+3. A [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML
 4. A TypeScript class with behaviors such as managing state, handling user input, or fetching data from a server.
 
 Here is a simplified example of a TodoListItem component.
