@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {setOutput} from '@actions/core';
@@ -36,19 +36,19 @@ await yargs(process.argv.slice(2))
           demandOption: true,
         })
         .positional('bazel-target', {description: 'Bazel target', type: 'string'}),
-    (args) => runCompare(args.bazelTarget, args.compareRef)
+    (args) => runCompare(args.bazelTarget, args.compareRef),
   )
   .command(
     'run [bazel-target]',
     'Runs a benchmark',
     (argv) => argv.positional('bazel-target', {description: 'Bazel target', type: 'string'}),
-    (args) => runBenchmarkCmd(args.bazelTarget)
+    (args) => runBenchmarkCmd(args.bazelTarget),
   )
   .command(
     'prepare-for-github-action <comment-body>',
     false, // Do not show in help.
     (argv) => argv.positional('comment-body', {demandOption: true, type: 'string'}),
-    (args) => prepareForGitHubAction(args.commentBody)
+    (args) => prepareForGitHubAction(args.commentBody),
   )
   .demandCommand()
   .scriptName('$0')

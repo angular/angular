@@ -5,7 +5,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import esbuild from 'esbuild';
@@ -151,8 +151,9 @@ async function createResolveEsbuildPlugin() {
     name: 'ng-resolve-esbuild',
     setup: (build) => {
       build.onResolve({filter: /(@angular\/|angular-in-memory-web-api|zone.js)/}, async (args) => {
-        const matchedPattern =
-            Array.from(resolveMappings.keys()).find((pattern) => args.path.match(pattern));
+        const matchedPattern = Array.from(resolveMappings.keys()).find((pattern) =>
+          args.path.match(pattern),
+        );
 
         if (matchedPattern === undefined) {
           return undefined;
@@ -225,11 +226,13 @@ async function compileProjectWithTsc() {
   ];
 
   if (diagnostics.length) {
-    console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics, {
-      getCanonicalFileName: (fileName) => fileName,
-      getCurrentDirectory: () => program.getCurrentDirectory(),
-      getNewLine: () => '\n',
-    }));
+    console.error(
+      ts.formatDiagnosticsWithColorAndContext(diagnostics, {
+        getCanonicalFileName: (fileName) => fileName,
+        getCurrentDirectory: () => program.getCurrentDirectory(),
+        getNewLine: () => '\n',
+      }),
+    );
 
     throw new Error('Compilation failed. See errors above.');
   }

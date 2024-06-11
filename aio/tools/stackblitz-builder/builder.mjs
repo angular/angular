@@ -1,7 +1,7 @@
 // Canonical path provides a consistent path (i.e. always forward slashes) across different OSes
 import path from 'canonical-path';
 import fs from 'fs-extra';
-import { globbySync } from 'globby';
+import {globbySync} from 'globby';
 import jsdom from 'jsdom';
 
 import regionExtractor from '../transforms/examples-package/services/region-parser.js';
@@ -18,7 +18,9 @@ export class StackblitzBuilder {
     this._checkForOutdatedConfig();
     const fileNames = this._getConfigFileNames();
     if (fileNames.length == 0) {
-      throw new Error(`Missing stackblitz configuration file(s) from example directory ${this.examplePath}. Did you forget to include a stackblitz.json?`);
+      throw new Error(
+        `Missing stackblitz configuration file(s) from example directory ${this.examplePath}. Did you forget to include a stackblitz.json?`,
+      );
     }
 
     let failed = false;
@@ -39,8 +41,8 @@ export class StackblitzBuilder {
   _getConfigFileNames() {
     const stackblitzPaths = path.join(this.examplePath, '*stackblitz.json');
     const fileNames = globbySync(stackblitzPaths, {
-      dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
-                // Needed to include the bazel .cache folder on Linux.
+      dot: true, // Include subpaths that begin with '.' when using a wildcard inclusion.
+      // Needed to include the bazel .cache folder on Linux.
     });
     return fileNames;
   }
@@ -57,17 +59,18 @@ export class StackblitzBuilder {
     if (!this._boilerplatePackageJsons.hasOwnProperty(exampleType)) {
       const pkgJsonPath = `${__dirname}/../examples/shared/boilerplate/${exampleType}/package.json`;
       this._boilerplatePackageJsons[exampleType] = fs.existsSync(pkgJsonPath)
-          ? JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'))
-          : null;
+        ? JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'))
+        : null;
     }
 
     return this._boilerplatePackageJsons[exampleType];
   }
 
   _buildCopyrightStrings() {
-    const copyright = 'Copyright Google LLC. All Rights Reserved.\n' +
-        'Use of this source code is governed by an MIT-style license that\n' +
-        'can be found in the LICENSE file at https://angular.io/license';
+    const copyright =
+      'Copyright Google LLC. All Rights Reserved.\n' +
+      'Use of this source code is governed by an MIT-style license that\n' +
+      'can be found in the LICENSE file at https://angular.dev/license';
     const pad = '\n\n';
 
     return {
@@ -101,19 +104,20 @@ export class StackblitzBuilder {
   _checkForOutdatedConfig() {
     // Ensure that nobody is trying to use the old config filenames (i.e. `plnkr.json`).
     const plunkerPaths = path.join(this.examplePath, '**/*plnkr.json');
-    const fileNames = globbySync(plunkerPaths, { ignore: ['**/node_modules/**'],
-      dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
-                // Needed to include the bazel .cache folder on Linux.
+    const fileNames = globbySync(plunkerPaths, {
+      ignore: ['**/node_modules/**'],
+      dot: true, // Include subpaths that begin with '.' when using a wildcard inclusion.
+      // Needed to include the bazel .cache folder on Linux.
     });
 
     if (fileNames.length) {
       const readmePath = path.join(__dirname, 'README.md');
       const errorMessage =
-          'One or more examples are still trying to use \'plnkr.json\' files for configuring ' +
-          'live examples. This is not supported any more. \'stackblitz.json\' should be used ' +
-          'instead.\n' +
-          `(Slight modifications may be required. See '${readmePath}' for more info.\n\n` +
-          fileNames.map(name => `- ${name}`).join('\n');
+        "One or more examples are still trying to use 'plnkr.json' files for configuring " +
+        "live examples. This is not supported any more. 'stackblitz.json' should be used " +
+        'instead.\n' +
+        `(Slight modifications may be required. See '${readmePath}' for more info.\n\n` +
+        fileNames.map((name) => `- ${name}`).join('\n');
 
       throw Error(errorMessage);
     }
@@ -122,15 +126,25 @@ export class StackblitzBuilder {
   _getPrimaryFile(config) {
     if (config.file) {
       if (!fs.existsSync(path.join(config.basePath, config.file))) {
-        throw new Error(`The specified primary file (${config.file}) does not exist in '${config.basePath}'.`);
+        throw new Error(
+          `The specified primary file (${config.file}) does not exist in '${config.basePath}'.`,
+        );
       }
       return config.file;
     } else {
-      const defaultPrimaryFiles = ['src/app/app.component.html', 'src/app/app.component.ts', 'src/app/main.ts'];
-      const primaryFile = defaultPrimaryFiles.find(fileName =>  fs.existsSync(path.join(config.basePath, fileName)));
+      const defaultPrimaryFiles = [
+        'src/app/app.component.html',
+        'src/app/app.component.ts',
+        'src/app/main.ts',
+      ];
+      const primaryFile = defaultPrimaryFiles.find((fileName) =>
+        fs.existsSync(path.join(config.basePath, fileName)),
+      );
 
       if (!primaryFile) {
-        throw new Error(`None of the default primary files (${defaultPrimaryFiles.join(', ')}) exists in '${config.basePath}'.`);
+        throw new Error(
+          `None of the default primary files (${defaultPrimaryFiles.join(', ')}) exists in '${config.basePath}'.`,
+        );
       }
 
       return primaryFile;
@@ -140,7 +154,7 @@ export class StackblitzBuilder {
   _addStackblitzrc(postData) {
     postData['project[files][.stackblitzrc]'] = JSON.stringify({
       installDependencies: false,
-      startCommand: 'npm install --legacy-peer-deps && npm start'
+      startCommand: 'npm install --legacy-peer-deps && npm start',
     });
   }
 
@@ -173,7 +187,9 @@ export class StackblitzBuilder {
 
     // If `config.main` is specified, ensure that it points to an existing file.
     if (config.main && !fs.existsSync(path.join(config.basePath, config.main))) {
-      throw Error(`The main file ('${config.main}') specified in '${configFileName}' does not exist.`);
+      throw Error(
+        `The main file ('${config.main}') specified in '${configFileName}' does not exist.`,
+      );
     }
 
     config.fileNames.forEach((fileName) => {
@@ -215,8 +231,8 @@ export class StackblitzBuilder {
       postData[`project[files][${relativeFileName}]`] = content;
     });
 
-    const tags = ['angular', 'example', ...config.tags || []];
-    tags.forEach((tag, ix) => postData[`project[tags][${ix}]`] = tag);
+    const tags = ['angular', 'example', ...(config.tags || [])];
+    tags.forEach((tag, ix) => (postData[`project[tags][${ix}]`] = tag));
 
     postData['project[description]'] = `Angular Example - ${config.description}`;
     postData['project[template]'] = 'node';
@@ -229,7 +245,7 @@ export class StackblitzBuilder {
     const doc = new jsdom.JSDOM(baseHtml).window.document;
     const form = doc.querySelector('form');
 
-    for(const [key, value] of Object.entries(postData)) {
+    for (const [key, value] of Object.entries(postData)) {
       const ele = this._htmlToElement(doc, `<input type="hidden" name="${key}">`);
       ele.setAttribute('value', value);
       form.appendChild(ele);
@@ -240,7 +256,7 @@ export class StackblitzBuilder {
 
   _encodeBase64(file) {
     // read binary data
-    return fs.readFileSync(file, { encoding: 'base64' });
+    return fs.readFileSync(file, {encoding: 'base64'});
   }
 
   _htmlToElement(document, html) {
@@ -253,7 +269,15 @@ export class StackblitzBuilder {
     const config = this._parseConfig(configFileName);
 
     // Should only include non-binary files since Stackblitz doesn't support uploading binary files
-    const defaultIncludes = ['**/*.ts', '**/*.js', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.svg'];
+    const defaultIncludes = [
+      '**/*.ts',
+      '**/*.js',
+      '**/*.css',
+      '**/*.html',
+      '**/*.md',
+      '**/*.json',
+      '**/*.svg',
+    ];
     const boilerplateIncludes = ['src/environments/*.*', 'src/polyfills.ts', '*.json'];
     if (config.files) {
       if (config.files.length > 0) {
@@ -282,30 +306,34 @@ export class StackblitzBuilder {
       '!**/example-config.json',
       '!**/.editorconfig',
       '!**/wallaby.js',
-      '!**/*stackblitz.*'
+      '!**/*stackblitz.*',
     ];
 
     // exclude all specs if no spec is mentioned in `files[]`
     if (!includeSpec) {
-      defaultExcludes.push('!**/*.spec.*','!**/spec.js');
+      defaultExcludes.push('!**/*.spec.*', '!**/spec.js');
     }
 
     gpaths.push(...defaultExcludes);
 
     config.fileNames = globbySync(gpaths, {
       ignore: ['**/node_modules/**'],
-      dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
-                // Needed to include the bazel .cache folder on Linux.
+      dot: true, // Include subpaths that begin with '.' when using a wildcard inclusion.
+      // Needed to include the bazel .cache folder on Linux.
     });
 
-    // We want to throw an Error if there are binary images 
-    const binaryImagePaths = ['**/*.jpg', '**/*.png','**/*.gif'].map(fileName => path.join(config.basePath, fileName));
+    // We want to throw an Error if there are binary images
+    const binaryImagePaths = ['**/*.jpg', '**/*.png', '**/*.gif'].map((fileName) =>
+      path.join(config.basePath, fileName),
+    );
     const binaryImageFilenames = globbySync(binaryImagePaths, {
       ignore: ['**/node_modules/**'],
-    }).map(filePath => path.basename(filePath));
+    }).map((filePath) => path.basename(filePath));
 
-    if(binaryImageFilenames.length > 0) {
-      throw new Error(`${config.description} contains binary images :\n ${binaryImageFilenames.join(',\n')}`)
+    if (binaryImageFilenames.length > 0) {
+      throw new Error(
+        `${config.description} contains binary images :\n ${binaryImageFilenames.join(',\n')}`,
+      );
     }
 
     return config;
@@ -314,7 +342,7 @@ export class StackblitzBuilder {
   _parseConfig(configFileName) {
     try {
       const configSrc = fs.readFileSync(configFileName, 'utf-8');
-      const config = (configSrc && configSrc.trim().length) ? JSON.parse(configSrc) : {};
+      const config = configSrc && configSrc.trim().length ? JSON.parse(configSrc) : {};
       config.basePath = path.dirname(configFileName); // assumes 'stackblitz.json' is at `/src` level.
       return config;
     } catch (e) {

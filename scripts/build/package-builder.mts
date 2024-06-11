@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {execSync} from 'child_process';
@@ -56,7 +56,7 @@ export function performDefaultSnapshotBuild(): BuiltPackage[] {
 function buildReleasePackages(
   distPath: string,
   isSnapshotBuild: boolean,
-  additionalTargets: string[] = []
+  additionalTargets: string[] = [],
 ): BuiltPackage[] {
   console.info('######################################');
   console.info('  Building release packages...');
@@ -120,7 +120,7 @@ function getPackageNamesOfTargets(targets: string[]): string[] {
     if (matches === null) {
       throw Error(
         `Found Bazel target with "${releaseTargetTag}" tag, but could not ` +
-          `determine release output name: ${targetName}`
+          `determine release output name: ${targetName}`,
       );
     }
     return matches[1];

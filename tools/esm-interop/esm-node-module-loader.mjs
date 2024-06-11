@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import fs from 'fs';
@@ -110,12 +110,12 @@ function parsePackageImport(specifier) {
 /** Resolves an import to a module by respecting the `package.json` `exports`. */
 function resolvePackageWithExportsSupport(pathToNodeModule, packageImport) {
   const packageJson = JSON.parse(
-    fs.readFileSync(path.join(pathToNodeModule, 'package.json'), 'utf8')
+    fs.readFileSync(path.join(pathToNodeModule, 'package.json'), 'utf8'),
   );
   const localResolvedPackagePath = resolvePackageLocalFilepath(
     pathToNodeModule,
     packageImport,
-    packageJson
+    packageJson,
   );
 
   if (fs.existsSync(localResolvedPackagePath)) {

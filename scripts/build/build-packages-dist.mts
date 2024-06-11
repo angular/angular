@@ -5,13 +5,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {buildAngularInMemoryWebApiPackage} from './angular-in-memory-web-api.mjs';
 import {performDefaultSnapshotBuild} from './package-builder.mjs';
 import {buildZoneJsPackage} from './zone-js-builder.mjs';
-
 
 // Build the legacy (view engine) npm packages into `dist/packages-dist/`.
 performDefaultSnapshotBuild();
