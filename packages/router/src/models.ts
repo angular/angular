@@ -803,10 +803,6 @@ export interface LoadedRouterConfig {
  * ```
  *
  * @publicApi
- * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
- * function: `canActivate: [() => inject(myGuard).canActivate()]`.
- * @see {@link CanActivateFn}
  */
 export interface CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult>;
@@ -926,10 +922,6 @@ export type CanActivateFn = (
  * ```
  *
  * @publicApi
- * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
- * function: `canActivateChild: [() => inject(myGuard).canActivateChild()]`.
- * @see {@link CanActivateChildFn}
  */
 export interface CanActivateChild {
   canActivateChild(
@@ -1013,10 +1005,6 @@ export type CanActivateChildFn = (
  * ```
  *
  * @publicApi
- * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
- * function: `canDeactivate: [() => inject(myGuard).canDeactivate()]`.
- * @see {@link CanDeactivateFn}
  */
 export interface CanDeactivate<T> {
   canDeactivate(
@@ -1109,10 +1097,6 @@ export type CanDeactivateFn<T> = (
  * could not be used for a URL match but the catch-all `**` `Route` did instead.
  *
  * @publicApi
- * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
- * function: `canMatch: [() => inject(myGuard).canMatch()]`.
- * @see {@link CanMatchFn}
  */
 export interface CanMatch {
   canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
@@ -1226,10 +1210,6 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * The order of execution is: BaseGuard, ChildGuard, BaseDataResolver, ChildDataResolver.
  *
  * @publicApi
- * @deprecated Class-based `Route` resolvers are deprecated in favor of functional resolvers. An
- * injectable class can be used as a functional guard using the [`inject`](api/core/inject)
- function: `resolve:
- * {'user': () => inject(UserResolver).resolve()}`.
  * @see {@link ResolveFn}
  */
 export interface Resolve<T> {
@@ -1395,7 +1375,7 @@ export type ResolveFn<T> = (
  * ```
  *
  * @publicApi
- * @deprecated Use {@link CanMatchFn} instead
+ * @deprecated Use {@link CanMatch} instead
  */
 export interface CanLoad {
   canLoad(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
@@ -1407,7 +1387,7 @@ export interface CanLoad {
  * @publicApi
  * @see {@link CanLoad}
  * @see {@link Route}
- * @see {@link CanMatchFn}
+ * @see {@link CanMatch}
  * @deprecated Use `Route.canMatch` and `CanMatchFn` instead
  */
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
