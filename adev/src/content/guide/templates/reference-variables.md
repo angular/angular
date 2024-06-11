@@ -8,7 +8,7 @@ A template variable can refer to the following:
 * a DOM element within a template
 * a directive or component
 * a [TemplateRef](api/core/TemplateRef) from an [ng-template](api/core/ng-template)
-* a <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>
+* a <a href="https://developer.mozilla.org/docs/Web/Web_Components" title="MDN: Web Components">web component</a>
 
 ## Syntax
 
@@ -48,7 +48,7 @@ In the following example, the template variable, `itemForm`, appears three times
 <docs-code path="adev/src/content/examples/template-reference-variables/src/app/app.component.html" visibleRegion="ngForm" header="src/app/hero-form.component.html"/>
 
 Without the `ngForm` attribute value, the reference value of `itemForm` would be
-the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement), `<form>`.
+the [HTMLFormElement](https://developer.mozilla.org/docs/Web/API/HTMLFormElement), `<form>`.
 If an element is an Angular Component, a reference with no attribute value will automatically reference the component instance. Otherwise, a reference with no value will reference the DOM element, even if the element has one or more directives applied to it.
 <!-- What is the train of thought from talking about a form element to the difference between a component and a directive? Why is the component directive conversation relevant here?  -kw I agree -alex -->
 

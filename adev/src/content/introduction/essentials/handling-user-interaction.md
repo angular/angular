@@ -43,7 +43,7 @@ Other common examples of event listeners include:
 
 ### $event
 
-If you need to access the [event](https://developer.mozilla.org/en-US/docs/Web/API/Event) object, Angular provides an implicit `$event` variable that you can pass to a function:
+If you need to access the [event](https://developer.mozilla.org/docs/Web/API/Event) object, Angular provides an implicit `$event` variable that you can pass to a function:
 
 ```html
 <button (click)="createUser($event)">Submit</button>

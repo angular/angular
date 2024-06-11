@@ -24,7 +24,7 @@ export class CustomCard {/* ... */}
 ```
 
 Tip: `<ng-content>` works similarly
-to [the native `<slot>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot),
+to [the native `<slot>` element](https://developer.mozilla.org/docs/Web/HTML/Element/slot),
 but with some Angular-specific functionality.
 
 When you use a component with `<ng-content>`, any children of the component host element are
