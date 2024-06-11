@@ -58,6 +58,12 @@ export {
   UrlMatcher,
   UrlMatchResult,
   RedirectCommand,
+  CanActivate,
+  CanActivateChild,
+  CanDeactivate,
+  CanLoad,
+  CanMatch,
+  Resolve,
 } from './models';
 export {ViewTransitionInfo, ViewTransitionsFeatureOptions} from './utils/view_transition';
 

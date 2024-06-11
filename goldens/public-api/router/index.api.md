@@ -112,13 +112,13 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
     store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void;
 }
 
-// @public @deprecated
+// @public
 export interface CanActivate {
     // (undocumented)
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult>;
 }
 
-// @public @deprecated
+// @public
 export interface CanActivateChild {
     // (undocumented)
     canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult>;
@@ -130,7 +130,7 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
 // @public
 export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => MaybeAsync<GuardResult>;
 
-// @public @deprecated
+// @public
 export interface CanDeactivate<T> {
     // (undocumented)
     canDeactivate(component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): MaybeAsync<GuardResult>;
@@ -148,7 +148,7 @@ export interface CanLoad {
 // @public @deprecated
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
 
-// @public @deprecated
+// @public
 export interface CanMatch {
     // (undocumented)
     canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
@@ -376,29 +376,19 @@ export type LoadChildren = LoadChildrenCallback;
 export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Routes | Observable<Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>> | Promise<NgModuleFactory<any> | Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>>;
 
 // @public
-export function mapToCanActivate(providers: Array<Type<{
-    canActivate: CanActivateFn;
-}>>): CanActivateFn[];
+export function mapToCanActivate(providers: Array<Type<CanActivate>>): CanActivateFn[];
 
 // @public
-export function mapToCanActivateChild(providers: Array<Type<{
-    canActivateChild: CanActivateChildFn;
-}>>): CanActivateChildFn[];
+export function mapToCanActivateChild(providers: Array<Type<CanActivateChild>>): CanActivateChildFn[];
 
 // @public
-export function mapToCanDeactivate<T = unknown>(providers: Array<Type<{
-    canDeactivate: CanDeactivateFn<T>;
-}>>): CanDeactivateFn<T>[];
+export function mapToCanDeactivate<T = unknown>(providers: Array<Type<CanDeactivate<T>>>): CanDeactivateFn<T>[];
 
 // @public
-export function mapToCanMatch(providers: Array<Type<{
-    canMatch: CanMatchFn;
-}>>): CanMatchFn[];
+export function mapToCanMatch(providers: Array<Type<CanMatch>>): CanMatchFn[];
 
 // @public
-export function mapToResolve<T>(provider: Type<{
-    resolve: ResolveFn<T>;
-}>): ResolveFn<T>;
+export function mapToResolve<T>(provider: Type<Resolve<T>>): ResolveFn<T>;
 
 // @public
 export type MaybeAsync<T> = T | Observable<T> | Promise<T>;
@@ -609,7 +599,7 @@ export class RedirectCommand {
 // @public
 export type RedirectFunction = (redirectData: Pick<ActivatedRouteSnapshot, 'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'>) => string | UrlTree;
 
-// @public @deprecated
+// @public
 export interface Resolve<T> {
     // (undocumented)
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T>;
