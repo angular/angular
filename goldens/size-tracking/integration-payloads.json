@@ -1,7 +1,7 @@
 {
   "cli-hello-world": {
     "uncompressed": {
-      "main": 127322,
+      "main": 132425,
       "polyfills": 33792
     }
   },
@@ -41,7 +41,7 @@
   },
   "standalone-bootstrap": {
     "uncompressed": {
-      "main": 85055,
+      "main": 89354,
       "polyfills": 33802
     }
   },
