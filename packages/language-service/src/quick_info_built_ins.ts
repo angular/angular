@@ -137,80 +137,82 @@ const BUILT_IN_NAMES_TO_DOC_MAP: {
 } = {
   '@defer': {
     docString: `A type of block that can be used to defer load the JavaScript for components, directives and pipes used inside a component template.`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#defer)'],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
   '@placeholder': {
     docString: `A block for content shown prior to defer loading (Optional)`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#placeholder)'],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
   '@error': {
     docString: `A block for content shown when defer loading errors occur (Optional)`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#error)'],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
   '@loading': {
     docString: `A block for content shown during defer loading (Optional)`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#loading)'],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
   '@empty': {
     docString: `A block to display when the for loop variable is empty.`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/for)'],
+    links: ['[Reference](https://angular.dev/guide/templates/control-flow#for-block---repeaters)'],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
   'track': {
     docString: `Keyword to control how the for loop compares items in the list to compute updates.`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/for)'],
+    links: [
+      '[Reference](https://angular.dev/guide/templates/control-flow#track-for-calculating-difference-of-two-collections)',
+    ],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'idle': {
     docString: triggerDescriptionPreamble + `the browser reports idle state (default).`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#on-idle)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'immediate': {
     docString: triggerDescriptionPreamble + `the page finishes rendering.`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#on-immediate)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'hover': {
     docString: triggerDescriptionPreamble + `the element has been hovered.`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#on-hover)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'timer': {
     docString: triggerDescriptionPreamble + `a specific timeout.`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#on-timer)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'interaction': {
     docString: triggerDescriptionPreamble + `the element is clicked, touched, or focused.`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#on-interaction)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'viewport': {
     docString: triggerDescriptionPreamble + `the element enters the viewport.`,
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#on-viewport)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'prefetch': {
     docString:
       'Keyword that indicates that the trigger configures when prefetching the defer block contents should start. You can use `on` and `when` conditions as prefetch triggers.',
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#prefetching)'],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'when': {
     docString:
       'Keyword that starts the expression-based trigger section. Should be followed by an expression that returns a boolean.',
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#triggers)'],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'on': {
     docString:
       'Keyword that starts the event-based trigger section. Should be followed by one of the built-in triggers.',
-    links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
+    links: ['[Reference](https://angular.dev/guide/defer#triggers)'],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
 };
