@@ -1,3 +1,36 @@
+<a name="18.1.0-next.2"></a>
+# 18.1.0-next.2 (2024-06-12)
+### benchpress
+| Commit | Type | Description |
+| -- | -- | -- |
+| [31d9fa40bdb](https://github.com/angular/angular/commit/31d9fa40bdbd1b815a819527312994b6ab1b532f) | fix | adjust supported browser names for headless chrome ([#56360](https://github.com/angular/angular/pull/56360)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ea3c8020565](https://github.com/angular/angular/commit/ea3c80205653af109c688a4d4808143b34591d54) | feat | Add a schematic to migrate afterRender phase flag ([#55648](https://github.com/angular/angular/pull/55648)) |
+| [a655e464479](https://github.com/angular/angular/commit/a655e46447962bf56bf0184e3104328b9f7c1531) | feat | Redesign the `afterRender` & `afterNextRender` phases API ([#55648](https://github.com/angular/angular/pull/55648)) |
+| [38effcc63ee](https://github.com/angular/angular/commit/38effcc63eea360e948dc22860add72d3aa02288) | fix | Add back phase flag option as a deprecated API ([#55648](https://github.com/angular/angular/pull/55648)) |
+| [d5c6ee432fc](https://github.com/angular/angular/commit/d5c6ee432fcd467c09b4d5d5366e731f5c91e8d4) | fix | async EventEmitter should contribute to app stability ([#56308](https://github.com/angular/angular/pull/56308)) |
+| [4c7d5d8acd8](https://github.com/angular/angular/commit/4c7d5d8acd8a714fe89366f76dc69f91356f0a06) | fix | signals should be tracked when embeddedViewRef.detectChanges is called ([#55719](https://github.com/angular/angular/pull/55719)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b400e2e4d4c](https://github.com/angular/angular/commit/b400e2e4d4c27a9c8d8e91b52852ef7b64f7591a) | feat | autocompletion for the component not imported ([#55595](https://github.com/angular/angular/pull/55595)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [81486c2f477](https://github.com/angular/angular/commit/81486c2f4770361b4aecdc891107f70446e43bc3) | fix | add `@angular/localize/init` as polyfill in `angular.json` ([#56300](https://github.com/angular/angular/pull/56300)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [96aa5c8a2c9](https://github.com/angular/angular/commit/96aa5c8a2c9dd607dbcffa5d7923df4c21636510) | fix | resolve error in standalone migration ([#56302](https://github.com/angular/angular/pull/56302)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a13f5da7730](https://github.com/angular/angular/commit/a13f5da77303f4ab2f1543df1de1f416216b5a9c) | feat | Allow `UrlTree` as an input to `routerLink` ([#56265](https://github.com/angular/angular/pull/56265)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.3"></a>
 # 18.0.3 (2024-06-12)
 ### benchpress
