@@ -536,6 +536,32 @@ describe('import manager', () => {
     );
   });
 
+  it('should avoid an import specifier alias if similar import is generated in different', () => {
+    const {testFile, emit} = createTestProgram(``);
+    const manager = new ImportManager();
+
+    manager.addImport({
+      exportModuleSpecifier: '@angular/core',
+      exportSymbolName: 'input',
+      requestedFile: ts.createSourceFile('other_file', '', ts.ScriptTarget.Latest),
+    });
+
+    const inputRef = manager.addImport({
+      exportModuleSpecifier: '@angular/core',
+      exportSymbolName: 'input',
+      requestedFile: testFile,
+    });
+
+    const res = emit(manager, [ts.factory.createExpressionStatement(inputRef)]);
+
+    expect(res).toBe(
+      omitLeadingWhitespace(`
+        import { input } from "@angular/core";
+        input;
+    `),
+    );
+  });
+
   it('should avoid an import alias specifier if identifier is free to use', () => {
     const {testFile, emit} = createTestProgram(``);
     const manager = new ImportManager();
