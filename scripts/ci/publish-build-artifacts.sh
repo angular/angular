@@ -52,7 +52,7 @@ function publishRepo {
   (
     if [[ $(git ls-remote --heads ${REPO_URL} ${BRANCH}) ]]; then
       echo "Branch ${BRANCH} already exists. Cloning that branch."
-      git clone ${REPO_URL} ${REPO_DIR} --branch ${BRANCH}
+      git clone ${REPO_URL} ${REPO_DIR} --depth 100 --branch ${BRANCH}
 
       cd ${REPO_DIR}
       echo "Cloned repository and switched into the repository directory (${REPO_DIR})."
@@ -60,7 +60,7 @@ function publishRepo {
       echo "Branch ${BRANCH} does not exist on ${BUILD_REPO} yet."
       echo "Cloning default branch and creating branch '${BRANCH}' on top of it."
 
-      git clone ${REPO_URL} ${REPO_DIR}
+       git clone ${REPO_URL} ${REPO_DIR} --depth 100
       cd ${REPO_DIR}
 
       echo "Cloned repository and switched into directory. Creating new branch now.."
@@ -93,8 +93,6 @@ function publishRepo {
     git tag "${BUILD_VER}" --force && \
     git push origin "${BRANCH}" --tags --force
   )
-
-  rm -rf $REPO_DIR/*
 }
 
 # Publish all individual packages from packages-dist.
