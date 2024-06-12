@@ -1,3 +1,25 @@
+<a name="18.0.3"></a>
+# 18.0.3 (2024-06-12)
+### benchpress
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ebf00aa0659](https://github.com/angular/angular/commit/ebf00aa06592a966b72c81ff4ca09c6ef1344a20) | fix | adjust supported browser names for headless chrome ([#56360](https://github.com/angular/angular/pull/56360)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dbd0fa00f8c](https://github.com/angular/angular/commit/dbd0fa00f8c742a9b804ce2a96a0add552a179dd) | fix | async EventEmitter should contribute to app stability ([#56308](https://github.com/angular/angular/pull/56308)) |
+| [625ca3e2b3f](https://github.com/angular/angular/commit/625ca3e2b3f04fb770ecbef03a9a4151c54e201b) | fix | signals should be tracked when embeddedViewRef.detectChanges is called ([#55719](https://github.com/angular/angular/pull/55719)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d6dd3dbdb09](https://github.com/angular/angular/commit/d6dd3dbdb09da956a7c7c95187ae29347568b2e9) | fix | add `@angular/localize/init` as polyfill in `angular.json` ([#56300](https://github.com/angular/angular/pull/56300)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c07e1b33569](https://github.com/angular/angular/commit/c07e1b335695ce8e5402e7d7ad7810ccd472b224) | fix | resolve error in standalone migration ([#56302](https://github.com/angular/angular/pull/56302)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.1.0-next.1"></a>
 # 18.1.0-next.1 (2024-06-05)
 ### compiler-cli
