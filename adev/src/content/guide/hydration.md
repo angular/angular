@@ -69,7 +69,7 @@ It is best to refactor your component to avoid this sort of DOM manipulation. Tr
 
 ### Valid HTML structure
 
-There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration. This mismatch happens because browsers will edit invalid HTML in an attempt to make it usable, for example, by adding in new element end tags when non-nestable elements are found. This introduces changes between an SSR generated page and the HTML in the elements tab on Chrome Dev Tools.
+There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration. This mismatch happens because browsers when parsing invalid HTML, will produce a valid DOM by making some change on the way. For example, by adding end tags when non-nestable elements are found. This introduces changes between an SSR generated HTML and the final DOM representation..
 
 As an example, here are some of the most common cases of this issue.
 
