@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {type Injector} from '../../di/injector';
 import {assertGreaterThan, assertNotEqual, assertNumber} from '../../util/assert';
+import {ChainedInjector} from '../chained_injector';
 import {
   NO_PARENT_INJECTOR,
   RelativeInjectorLocation,
@@ -59,4 +61,15 @@ export function getParentInjectorView(location: RelativeInjectorLocation, startV
     viewOffset--;
   }
   return parentView;
+}
+
+/**
+ * Detects whether an injector is an instance of a `ChainedInjector`,
+ * created based on the `OutletInjector`.
+ */
+export function isRouterOutletInjector(currentInjector: Injector): boolean {
+  return (
+    currentInjector instanceof ChainedInjector &&
+    typeof (currentInjector.injector as any).__ngOutletInjector === 'function'
+  );
 }
