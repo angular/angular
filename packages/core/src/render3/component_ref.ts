@@ -134,8 +134,9 @@ function toRefArray<
       continue;
     }
 
-    const propName: string = Array.isArray(value) ? value[0] : value;
-    const flags: InputFlags = Array.isArray(value) ? value[1] : InputFlags.None;
+    const isArray = Array.isArray(value);
+    const propName: string = isArray ? value[0] : value;
+    const flags: InputFlags = isArray ? value[1] : InputFlags.None;
 
     if (isInputMap) {
       (array as ComponentFactory<T>['inputs']).push({
