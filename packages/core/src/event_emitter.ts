@@ -118,11 +118,11 @@ class EventEmitter_ extends Subject<any> implements OutputRef<any> {
     super();
     this.__isAsync = isAsync;
 
-    // Attempt to retrieve a `DestroyRef` optionally.
-    // For backwards compatibility reasons, this cannot be required
+    // Attempt to retrieve a `DestroyRef` and `PendingTasks` optionally.
+    // For backwards compatibility reasons, this cannot be required.
     if (isInInjectionContext()) {
       this.destroyRef = inject(DestroyRef, {optional: true}) ?? undefined;
-      this.pendingTasks = inject(PendingTasks);
+      this.pendingTasks = inject(PendingTasks, {optional: true}) ?? undefined;
     }
   }
 
