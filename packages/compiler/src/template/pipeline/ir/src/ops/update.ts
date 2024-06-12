@@ -966,15 +966,6 @@ export interface StoreLetOp extends Op<UpdateOp>, ConsumesVarsTrait {
 
   /** Value of the `@let` declaration. */
   value: o.Expression;
-
-  /** Computed name under which the `@let` is available within the template function. */
-  name: string | null;
-
-  /**
-   * Flag indicating that the `@let` is used both in its declaration view and inside
-   * child views. This is used during refication to adjust the output appropriately.
-   */
-  isUsedAcrossViewBoundaries: boolean;
 }
 
 /**
@@ -992,8 +983,6 @@ export function createStoreLetOp(
     declaredName,
     value,
     sourceSpan,
-    name: null,
-    isUsedAcrossViewBoundaries: false,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,

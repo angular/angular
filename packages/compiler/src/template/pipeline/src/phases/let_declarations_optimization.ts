@@ -1,4 +1,4 @@
-/**
+/*!
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -10,8 +10,8 @@ import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
 /**
- * Transforms the generated code for `StoreLetOp` based on its usage. Depending on how a `@let`
- * declaration is used, its the expressions can take the following forms:
+ * Transforms the generated code for let declarations based on their usage. Depending on how a
+ * `@let` declaration is used, its the expressions can take the following forms:
  * 1. Declarations that aren't used anywhere can be dropped completely.
  * 2. Declarations used *only* in the declaration view can be inlined, e.g. `storeLet(foo + bar)`
  *    becomes `const name = foo + bar`.
@@ -28,7 +28,7 @@ import {CompilationJob} from '../compilation';
  *    in the instruction set, however that adds more mental overhead and could lead to subtle
  *    bugs in the future.
  */
-export function transformStoreLetCalls(job: CompilationJob): void {
+export function optimizeLetDeclarations(job: CompilationJob): void {
   const localVarUsages = new Map<ir.XrefId, number>();
   const letUsedExternally = new Set<ir.XrefId>();
 
@@ -37,8 +37,11 @@ export function transformStoreLetCalls(job: CompilationJob): void {
   // to look through all the ops to find the references.
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      if (op.kind === ir.OpKind.StoreLet) {
-        localVarUsages.set(op.target, 0);
+      if (
+        op.kind === ir.OpKind.DeclareLet ||
+        (op.kind === ir.OpKind.Variable && op.initializer instanceof ir.StoreLetExpr)
+      ) {
+        localVarUsages.set(op.xref, 0);
       }
 
       ir.visitExpressionsInOp(op, (expr) => {
@@ -51,23 +54,32 @@ export function transformStoreLetCalls(job: CompilationJob): void {
     }
   }
 
+  // Iterate the update the instructions in reverse since references
+  // happen after the definition so they should be removed first.
   for (const unit of job.units) {
-    // Iterate the update the instructions in reverse since references
-    // happen after the definition so they should be removed first.
     for (const op of unit.update.reversed()) {
-      if (op.kind !== ir.OpKind.StoreLet) {
+      if (op.kind !== ir.OpKind.Variable || !(op.initializer instanceof ir.StoreLetExpr)) {
         continue;
       }
 
-      const isUsedLocally = localVarUsages.has(op.target) && localVarUsages.get(op.target)! > 0;
-      const isUsedExternally = letUsedExternally.has(op.target);
-
-      // @let is only used outside of the declaration view. Leave it as is.
-      if (!isUsedLocally && isUsedExternally) {
-        continue;
+      if (op.variable.kind !== ir.SemanticVariableKind.Identifier) {
+        throw new Error('Assertion error: expected storeLet to be inside an identifier variable');
       }
 
-      if (!isUsedLocally && !isUsedExternally) {
+      const {target, value, sourceSpan} = op.initializer;
+      const isUsedLocally = localVarUsages.has(op.xref) && localVarUsages.get(op.xref)! > 0;
+      const isUsedExternally = letUsedExternally.has(target);
+
+      if (isUsedLocally && !isUsedExternally) {
+        // Only used locally, the `storeLet` call isn't necessary.
+        op.initializer = value;
+      } else if (!isUsedLocally && isUsedExternally) {
+        // Only used externally, replace the variable with a `storeLet` call.
+        ir.OpList.replace<ir.UpdateOp>(
+          op,
+          ir.createStoreLetOp(target, op.variable.identifier, value, sourceSpan),
+        );
+      } else if (!isUsedLocally && !isUsedExternally) {
         // @let isn't used anywhere, we can drop it completely. Decrease the variable
         // usage count so that we can remove any variables it might've depended on.
         ir.visitExpressionsInOp(op, (expr) => {
@@ -76,25 +88,6 @@ export function transformStoreLetCalls(job: CompilationJob): void {
           }
         });
         ir.OpList.remove<ir.UpdateOp>(op);
-      } else if (isUsedLocally && isUsedExternally) {
-        // @let is used both in the declaration view and in a child view. Flip a flag on it
-        // that indicates that it should produce a variable during reification. Note that
-        // we don't transform it into a variable here, because we need the `advance` calls to
-        // be generated first and normally variable ops don't need `advance` calls.
-        op.isUsedAcrossViewBoundaries = true;
-      } else if (isUsedLocally && !isUsedExternally) {
-        // @let is used only in the current view. It can be replaced with an inline variable.
-        const replacement = ir.createVariableOp<ir.UpdateOp>(
-          op.target,
-          {
-            kind: ir.SemanticVariableKind.Identifier,
-            name: null,
-            identifier: op.declaredName,
-          },
-          op.value,
-          ir.VariableFlags.None,
-        );
-        ir.OpList.replace<ir.UpdateOp>(op, replacement);
       }
     }
   }

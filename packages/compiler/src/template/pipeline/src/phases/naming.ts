@@ -91,10 +91,6 @@ function addNamesToView(
       case ir.OpKind.Variable:
         varNames.set(op.xref, getVariableName(unit, op.variable, state));
         break;
-      case ir.OpKind.StoreLet:
-        op.name = `${op.declaredName}_${state.index++}`;
-        varNames.set(op.target, op.name);
-        break;
       case ir.OpKind.RepeaterCreate:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);

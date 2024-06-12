@@ -301,6 +301,11 @@ export enum ExpressionKind {
   Reference,
 
   /**
+   * A call storing the value of a `@let` declaration.
+   */
+  StoreLet,
+
+  /**
    * A reference to a `@let` declaration read from the context view.
    */
   ContextLetReference,

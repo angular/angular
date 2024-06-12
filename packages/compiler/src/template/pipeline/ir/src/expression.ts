@@ -15,7 +15,13 @@ import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
 import {Interpolation, type UpdateOp} from './ops/update';
-import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
+import {
+  ConsumesVarsTrait,
+  DependsOnSlotContext,
+  DependsOnSlotContextOpTrait,
+  UsesVarOffset,
+  UsesVarOffsetTrait,
+} from './traits';
 
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
@@ -43,7 +49,8 @@ export type Expression =
   | ConditionalCaseExpr
   | ConstCollectedExpr
   | TwoWayBindingSetExpr
-  | ContextLetReferenceExpr;
+  | ContextLetReferenceExpr
+  | StoreLetExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -136,6 +143,46 @@ export class ReferenceExpr extends ExpressionBase {
 
   override clone(): ReferenceExpr {
     return new ReferenceExpr(this.target, this.targetSlot, this.offset);
+  }
+}
+
+export class StoreLetExpr
+  extends ExpressionBase
+  implements ConsumesVarsTrait, DependsOnSlotContextOpTrait
+{
+  override readonly kind = ExpressionKind.StoreLet;
+  readonly [ConsumesVarsTrait] = true;
+  readonly [DependsOnSlotContext] = true;
+
+  constructor(
+    readonly target: XrefId,
+    public value: o.Expression,
+    override sourceSpan: ParseSourceSpan,
+  ) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(e: o.Expression): boolean {
+    return (
+      e instanceof StoreLetExpr && e.target === this.target && e.value.isEquivalent(this.value)
+    );
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
+    this.value = transformExpressionsInExpression(this.value, transform, flags);
+  }
+
+  override clone(): StoreLetExpr {
+    return new StoreLetExpr(this.target, this.value, this.sourceSpan);
   }
 }
 

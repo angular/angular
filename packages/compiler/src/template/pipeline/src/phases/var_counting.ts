@@ -155,6 +155,8 @@ export function varsUsedByIrExpression(expr: ir.Expression & ir.ConsumesVarsTrai
       return 1 + expr.args.length;
     case ir.ExpressionKind.PipeBindingVariadic:
       return 1 + expr.numArgs;
+    case ir.ExpressionKind.StoreLet:
+      return 1;
     default:
       throw new Error(
         `AssertionError: unhandled ConsumesVarsTrait expression ${expr.constructor.name}`,

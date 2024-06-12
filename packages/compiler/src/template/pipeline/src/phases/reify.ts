@@ -541,17 +541,9 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.deferWhen(op.prefetch, op.expr, op.sourceSpan));
         break;
       case ir.OpKind.StoreLet:
-        if (op.name === null) {
-          throw new Error(`AssertionError: @let declaration ${op.declaredName} has not been named`);
-        }
-        const storeCall = ng.storeLet(op.value, op.sourceSpan);
         ir.OpList.replace<ir.UpdateOp>(
           op,
-          ir.createStatementOp(
-            op.isUsedAcrossViewBoundaries
-              ? new o.DeclareVarStmt(op.name, storeCall, undefined, o.StmtModifier.Final)
-              : new o.ExpressionStatement(storeCall),
-          ),
+          ir.createStatementOp(new o.ExpressionStatement(ng.storeLet(op.value, op.sourceSpan))),
         );
         break;
       case ir.OpKind.Statement:
@@ -618,6 +610,8 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return o.literal(expr.slot.slot!);
     case ir.ExpressionKind.ContextLetReference:
       return ng.readContextLet(expr.targetSlot.slot!);
+    case ir.ExpressionKind.StoreLet:
+      return ng.storeLet(expr.value, expr.sourceSpan);
     default:
       throw new Error(
         `AssertionError: Unsupported reification of ir.Expression kind: ${
