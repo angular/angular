@@ -48,3 +48,4 @@ export {
 
 export * from './private_export';
 export {VERSION} from './version';
+export {EventDispatchDirective} from './event-dispatch';

@@ -7,16 +7,14 @@
  */
 
 import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
-import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
-import {setStashFn} from '../render3/instructions/listener';
-import {initGlobalEventDelegation, sharedStashFunction} from '../event_delegation_utils';
-import {GlobalEventDelegation} from './global_event_delegation';
+import {initGlobalEventDelegation} from '../event_delegation_utils';
 
 import {IS_GLOBAL_EVENT_DELEGATION_ENABLED} from '../hydration/tokens';
 
 /**
  * Returns a set of providers required to setup support for event delegation.
+ * @experimental
  */
 export function provideGlobalEventDelegation(): Provider[] {
   return [
@@ -26,12 +24,7 @@ export function provideGlobalEventDelegation(): Provider[] {
     },
     {
       provide: ENVIRONMENT_INITIALIZER,
-      useValue: () => {
-        const injector = inject(Injector);
-        const globalEventDelegation = injector.get(GlobalEventDelegation);
-        initGlobalEventDelegation(globalEventDelegation, injector);
-        setStashFn(sharedStashFunction);
-      },
+      useValue: initGlobalEventDelegation,
       multi: true,
     },
   ];

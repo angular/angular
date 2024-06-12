@@ -73,7 +73,14 @@ export {
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
 export {GlobalEventDelegation} from './event-dispatch/global_event_delegation';
 export {provideGlobalEventDelegation as ɵprovideGlobalEventDelegation} from './event-dispatch/event_delegation';
-export {IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED} from './hydration/tokens';
+export {
+  initGlobalEventDelegation as ɵinitGlobalEventDelegation,
+  cleanupGlobalEventDelegation,
+} from './event_delegation_utils';
+export {
+  IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED,
+  IS_GLOBAL_EVENT_DELEGATION_ENABLED,
+} from './hydration/tokens';
 export {
   HydratedNode as ɵHydratedNode,
   HydrationInfo as ɵHydrationInfo,

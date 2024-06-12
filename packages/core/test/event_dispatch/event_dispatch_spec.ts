@@ -8,6 +8,7 @@
 
 import {Component, GlobalEventDelegation, ɵprovideGlobalEventDelegation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {EventDispatchDirective} from '@angular/platform-browser';
 
 function configureTestingModule(components: unknown[]) {
   TestBed.configureTestingModule({
@@ -184,5 +185,50 @@ describe('event dispatch', () => {
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
     });
+  });
+});
+
+describe('event dispatch directive', () => {
+  it('should delegate only to a specific subsection of the DOM', () => {
+    const addEventListener = spyOn(
+      HTMLButtonElement.prototype,
+      'addEventListener',
+    ).and.callThrough();
+    const onClickSpy = jasmine.createSpy();
+    @Component({
+      standalone: true,
+      selector: 'cmp',
+      template: `
+          <button id="btm-btn" (click)="onClick($event)"></button>
+        `,
+    })
+    class SimpleComponent {
+      onClick = onClickSpy;
+    }
+    @Component({
+      standalone: true,
+      selector: 'cmp-dlg',
+      hostDirectives: [EventDispatchDirective],
+      template: `
+        <button id="top-btn" (click)="onClick($event)"></button>
+        `,
+    })
+    class SimpleComponentWithEventDelegation {
+      onClick = onClickSpy;
+    }
+
+    TestBed.configureTestingModule({
+      imports: [SimpleComponent, SimpleComponentWithEventDelegation],
+    });
+    const eventDelegationElement = TestBed.createComponent(SimpleComponentWithEventDelegation);
+    expect(addEventListener).toHaveBeenCalledTimes(0);
+    const dir = eventDelegationElement.debugElement.injector.get(EventDispatchDirective);
+    dir.ngAfterContentInit();
+    const normalElement = TestBed.createComponent(SimpleComponent);
+    expect(addEventListener).toHaveBeenCalledTimes(1);
+    eventDelegationElement.nativeElement.querySelector('#top-btn')!.click();
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
+    normalElement.nativeElement.querySelector('#btm-btn')!.click();
+    expect(onClickSpy).toHaveBeenCalledTimes(2);
   });
 });

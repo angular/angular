@@ -14,10 +14,11 @@ import {
   registerDispatcher,
 } from '@angular/core/primitives/event-dispatch';
 import * as Attributes from '@angular/core/primitives/event-dispatch';
-import {Injector} from './di';
+import {Injector, inject} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
 import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './hydration/tokens';
 import {GlobalEventDelegation} from './event-dispatch/global_event_delegation';
+import {setStashFn} from './render3/instructions/listener';
 
 declare global {
   interface Element {
@@ -68,10 +69,9 @@ function addEvent(this: GlobalEventDelegation, el: Element, eventName: string) {
   return false;
 }
 
-export const initGlobalEventDelegation = (
-  eventDelegation: GlobalEventDelegation,
-  injector: Injector,
-) => {
+export const initGlobalEventDelegation = (container: HTMLElement = document.body) => {
+  const injector = inject(Injector);
+  const eventDelegation = injector.get(GlobalEventDelegation);
   if (injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT)) {
     return;
   }
@@ -82,4 +82,11 @@ export const initGlobalEventDelegation = (
   eventDelegation.addEvent = (el, eventName) => addEvent.call(eventDelegation, el, eventName);
   const dispatcher = new EventDispatcher(invokeRegisteredListeners);
   registerDispatcher(eventDelegation.eventContract, dispatcher);
+  setStashFn(sharedStashFunction);
+};
+
+export const cleanupGlobalEventDelegation = (eventDelegation: GlobalEventDelegation) => {
+  eventDelegation.addEvent = (el, eventName) => false;
+  // @ts-ignore
+  eventDelegation.eventContract = null;
 };
