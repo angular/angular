@@ -117,6 +117,7 @@ export interface ComponentMirror<C> {
     readonly propName: string;
     readonly templateName: string;
     readonly transform?: (value: any) => any;
+    readonly isSignal: boolean;
   }>;
   /**
    * The outputs of the component.
@@ -193,6 +194,7 @@ export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> 
       propName: string;
       templateName: string;
       transform?: (value: any) => any;
+      isSignal: boolean;
     }> {
       return factory.inputs;
     },
