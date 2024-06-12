@@ -1047,6 +1047,10 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'cli/generate/config',
           },
           {
+            label: 'directive',
+            path: 'cli/generate/directive',
+          },
+          {
             label: 'enum',
             path: 'cli/generate/enum',
           },
