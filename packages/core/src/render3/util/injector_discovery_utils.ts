@@ -10,7 +10,7 @@ import {ENVIRONMENT_INITIALIZER} from '../../di/initializer_token';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {getInjectorDef, InjectorType} from '../../di/interface/defs';
-import {InjectFlags, InternalInjectFlags} from '../../di/interface/injector';
+import {InternalInjectFlags} from '../../di/interface/injector';
 import {ValueProvider} from '../../di/interface/provider';
 import {INJECTOR_DEF_TYPES} from '../../di/internal_tokens';
 import {NullInjector} from '../../di/null_injector';
@@ -19,9 +19,9 @@ import {EnvironmentInjector, R3Injector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../../linker/ng_module_factory';
 import {deepForEach} from '../../util/array_utils';
-import {assertDefined, throwError} from '../../util/assert';
+import {throwError} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
-import {ChainedInjector} from '../component_ref';
+import {ChainedInjector} from '../chained_injector';
 import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
 import {InjectedService, ProviderRecord} from '../debug/injector_profiler';
 import {getComponentDef} from '../definition';
@@ -36,7 +36,12 @@ import {TContainerNode, TElementContainerNode, TElementNode, TNode} from '../int
 import {RElement} from '../interfaces/renderer_dom';
 import {INJECTOR, LView, TVIEW} from '../interfaces/view';
 
-import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './injector_utils';
+import {
+  getParentInjectorIndex,
+  getParentInjectorView,
+  hasParentInjector,
+  isRouterOutletInjector,
+} from './injector_utils';
 import {getNativeByTNode} from './view_utils';
 
 /**
@@ -596,7 +601,16 @@ function getInjectorResolutionPathHelper(
  */
 function getInjectorParent(injector: Injector): Injector | null {
   if (injector instanceof R3Injector) {
-    return injector.parent;
+    const parent = injector.parent;
+    if (isRouterOutletInjector(parent)) {
+      // This is a special case for a `ChainedInjector` instance, which represents
+      // a combination of a Router's `OutletInjector` and an EnvironmentInjector,
+      // which represents a `@defer` block. Since the `OutletInjector` doesn't store
+      // any tokens itself, we point to the parent injector instead. See the
+      // `OutletInjector.__ngOutletInjector` field for additional information.
+      return (parent as ChainedInjector).parentInjector;
+    }
+    return parent;
   }
 
   let tNode: TElementNode | TContainerNode | TElementContainerNode | null;
@@ -610,7 +624,7 @@ function getInjectorParent(injector: Injector): Injector | null {
     return injector.parentInjector;
   } else {
     throwError(
-      'getInjectorParent only support injectors of type R3Injector, NodeInjector, NullInjector, ChainedInjector',
+      'getInjectorParent only support injectors of type R3Injector, NodeInjector, NullInjector',
     );
   }
 

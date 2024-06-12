@@ -13,13 +13,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ComponentRef,
   createComponent,
-  DebugElement,
   Directive,
   EnvironmentInjector,
   ErrorHandler,
-  getDebugNode,
   inject,
   Injectable,
   InjectionToken,
@@ -35,10 +32,7 @@ import {
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
 } from '@angular/core';
-import {isRouterOutletInjector} from '@angular/core/src/defer/instructions';
 import {getComponentDef} from '@angular/core/src/render3/definition';
-import {NodeInjector} from '@angular/core/src/render3/di';
-import {getInjectorResolutionPath} from '@angular/core/src/render3/util/injector_discovery_utils';
 import {
   ComponentFixture,
   DeferBlockBehavior,
@@ -47,7 +41,9 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import {getInjectorResolutionPath} from '@angular/core/src/render3/util/injector_discovery_utils';
 import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
+import {ChainedInjector} from '@angular/core/src/render3/chained_injector';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -4131,7 +4127,7 @@ describe('@defer', () => {
 
   describe('Router', () => {
     it('should inject correct `ActivatedRoutes` in components within defer blocks', async () => {
-      let routeCmpNodeInjector;
+      let deferCmpEnvInjector: EnvironmentInjector;
 
       const TokenA = new InjectionToken<string>('TokenA');
 
@@ -4157,7 +4153,7 @@ describe('@defer', () => {
         route = inject(ActivatedRoute);
         tokenA = inject(TokenA);
         constructor() {
-          routeCmpNodeInjector = inject(Injector);
+          deferCmpEnvInjector = inject(EnvironmentInjector);
         }
       }
 
@@ -4214,6 +4210,15 @@ describe('@defer', () => {
 
       await allPendingDynamicImports();
       app.detectChanges();
+
+      // Make sure that the `getInjectorResolutionPath` debugging utility
+      // (used by DevTools) doesn't expose Router's `OutletInjector` in
+      // the resolution path. `OutletInjector` is a special case, because it
+      // doesn't store any tokens itself, we point to the parent injector instead.
+      const resolutionPath = getInjectorResolutionPath(deferCmpEnvInjector!);
+      for (const inj of resolutionPath) {
+        expect(inj).not.toBeInstanceOf(ChainedInjector);
+      }
 
       // Expect that `ActivatedRoute` information get updated inside
       // of a component used in a `@defer` block.
