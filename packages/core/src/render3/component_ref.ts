@@ -107,10 +107,23 @@ export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   }
 }
 
-function toRefArray<T>(map: {
-  [P in keyof T]?: string | [minifiedName: string, flags: InputFlags];
-}): {propName: string; templateName: string}[] {
-  const array: {propName: string; templateName: string}[] = [];
+function toRefArray<T>(
+  map: DirectiveDef<T>['inputs'],
+  isInputMap: true,
+): ComponentFactory<T>['inputs'];
+function toRefArray<T>(
+  map: DirectiveDef<T>['outputs'],
+  isInput: false,
+): ComponentFactory<T>['outputs'];
+
+function toRefArray<
+  T,
+  IsInputMap extends boolean,
+  Return extends IsInputMap extends true
+    ? ComponentFactory<T>['inputs']
+    : ComponentFactory<T>['outputs'],
+>(map: DirectiveDef<T>['inputs'] | DirectiveDef<T>['outputs'], isInputMap: IsInputMap): Return {
+  const array: Return = [] as unknown as Return;
   for (const publicName in map) {
     if (!map.hasOwnProperty(publicName)) {
       continue;
@@ -121,10 +134,21 @@ function toRefArray<T>(map: {
       continue;
     }
 
-    array.push({
-      propName: Array.isArray(value) ? value[0] : value,
-      templateName: publicName,
-    });
+    const propName: string = Array.isArray(value) ? value[0] : value;
+    const flags: InputFlags = Array.isArray(value) ? value[1] : InputFlags.None;
+
+    if (isInputMap) {
+      (array as ComponentFactory<T>['inputs']).push({
+        propName: propName,
+        templateName: publicName,
+        isSignal: (flags & InputFlags.SignalBased) !== 0,
+      });
+    } else {
+      (array as ComponentFactory<T>['outputs']).push({
+        propName: propName,
+        templateName: publicName,
+      });
+    }
   }
   return array;
 }
@@ -180,15 +204,12 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
   override get inputs(): {
     propName: string;
     templateName: string;
+    isSignal: boolean;
     transform?: (value: any) => any;
   }[] {
     const componentDef = this.componentDef;
     const inputTransforms = componentDef.inputTransforms;
-    const refArray = toRefArray(componentDef.inputs) as {
-      propName: string;
-      templateName: string;
-      transform?: (value: any) => any;
-    }[];
+    const refArray = toRefArray(componentDef.inputs, true);
 
     if (inputTransforms !== null) {
       for (const input of refArray) {
@@ -202,7 +223,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
   }
 
   override get outputs(): {propName: string; templateName: string}[] {
-    return toRefArray(this.componentDef.outputs);
+    return toRefArray(this.componentDef.outputs, false);
   }
 
   /**

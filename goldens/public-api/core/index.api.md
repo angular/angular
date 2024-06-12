@@ -276,6 +276,7 @@ export abstract class ComponentFactory<C> {
         propName: string;
         templateName: string;
         transform?: (value: any) => any;
+        isSignal: boolean;
     }[];
     abstract get ngContentSelectors(): string[];
     abstract get outputs(): {
@@ -298,6 +299,7 @@ export interface ComponentMirror<C> {
         readonly propName: string;
         readonly templateName: string;
         readonly transform?: (value: any) => any;
+        readonly isSignal: boolean;
     }>;
     get isStandalone(): boolean;
     get ngContentSelectors(): ReadonlyArray<string>;
