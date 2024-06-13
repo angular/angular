@@ -5,7 +5,7 @@ set -ex
 # so that it can be consumed by the Angular extension for local development.
 # Usage: ./build.sh /path/to/vscode-ng-language-service
 
-readonly bazel_bin=$(yarn run -s bazel info bazel-bin)
+readonly bazel_bin=$(yarn run bazel info bazel-bin)
 readonly extension_repo="$1"
 
 if [[ -z "${extension_repo}" ]]; then

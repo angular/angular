@@ -13,5 +13,5 @@ runs:
         key: v1-angular-main-deps-${{hashFiles('WORKSPACE')}}-${{hashFiles('yarn.lock')}}
         restore-keys: v1-angular-main-deps-
 
-    - run: yarn install --frozen-lockfile --non-interactive
+    - run: yarn install --immutable
       shell: bash

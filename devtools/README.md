@@ -33,7 +33,7 @@ npm install -g yarn@1
 Third, install NPM dependencies:
 
 ```shell
-yarn --frozen-lockfile
+yarn --immutable
 ```
 
 Now you should be ready to build the DevTools extension.

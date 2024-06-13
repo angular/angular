@@ -61,6 +61,15 @@ baseline.json
 # Ignore cache created with the Angular CLI.
 .angular/
 
-# Ignore AIO files, useful when changing branches 
+# Ignore AIO files, useful when changing branches
 aio/node_modules
 aio/out-tsc
+
+# Yarn
+**/.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+

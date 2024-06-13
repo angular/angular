@@ -15,6 +15,7 @@
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
+  "packageManager": "yarn@4.3.0",
   "scripts": {
     "/": "",
     "// 1": "Many of our checks/scripts/tools have moved to our ng-dev tool",
@@ -28,14 +29,14 @@
     "test": "bazelisk test",
     "test:ci": "bazelisk test -- //... -//adev/... -//devtools/...",
     "test-tsec": "bazelisk test //... --build_tag_filters=tsec --test_tag_filters=tsec",
-    "lint": "yarn -s tslint && yarn -s ng-dev format changed --check",
+    "lint": "yarn tslint && yarn ng-dev format changed --check",
     "tslint": "tslint -c tslint.json --project tsconfig-tslint.json",
     "public-api:check": "node goldens/public-api/manage.js test",
     "public-api:update": "node goldens/public-api/manage.js accept",
     "symbol-extractor:check": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js test",
     "symbol-extractor:update": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js accept",
-    "ts-circular-deps:check": "yarn -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.js",
-    "ts-circular-deps:approve": "yarn -s ng-dev ts-circular-deps approve --config ./packages/circular-deps-test.conf.js",
+    "ts-circular-deps:check": "yarn ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.js",
+    "ts-circular-deps:approve": "yarn ng-dev ts-circular-deps approve --config ./packages/circular-deps-test.conf.js",
     "check-tooling-setup": "yarn tsc --project .ng-dev/tsconfig.json && yarn tsc --project scripts/tsconfig.json",
     "devtools:devserver": "ibazel run //devtools/src:devserver",
     "devtools:devserver:demo-standalone": "ibazel run //devtools/projects/demo-standalone/src:devserver",
@@ -48,10 +49,10 @@
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
-    "@angular/build": "18.1.0-next.1",
     "@angular-devkit/build-angular": "18.1.0-next.1",
     "@angular-devkit/core": "18.1.0-next.1",
     "@angular-devkit/schematics": "18.1.0-next.1",
+    "@angular/build": "18.1.0-next.1",
     "@angular/cdk": "18.1.0-next.1",
     "@angular/cli": "18.1.0-next.1",
     "@angular/material": "18.1.0-next.1",
@@ -91,8 +92,8 @@
     "@types/shelljs": "^0.8.6",
     "@types/systemjs": "6.13.5",
     "@types/yargs": "^17.0.3",
-    "@xterm/xterm": "^5.5.0",
     "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
     "algoliasearch": "^4.23.3",
     "angular-1.5": "npm:angular@1.5",
     "angular-1.6": "npm:angular@1.6",
@@ -220,9 +221,5 @@
     "vrsource-tslint-rules": "6.0.0"
   },
   "// 3": "Ensure that transitive dependencies on `https-proxy-agent` are at minimum v5 as older versions patch NodeJS directly, breaking tools like webdriver which is used by the karma-sauce-launcher as an example.",
-  "// 4": "Ensure that a single instance of the `saucelabs` package is used. Protractor and the Karma sauce launcher pull this package as dependency. A single instance allows for e.g. easier patching in the Karma config.",
-  "resolutions": {
-    "**/https-proxy-agent": "7.0.4",
-    "**/saucelabs": "7.5.0"
-  }
+  "// 4": "Ensure that a single instance of the `saucelabs` package is used. Protractor and the Karma sauce launcher pull this package as dependency. A single instance allows for e.g. easier patching in the Karma config."
 }

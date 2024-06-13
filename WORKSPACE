@@ -72,7 +72,7 @@ yarn_install(
     # when the postinstall patches are modified.
     data = [
         YARN_LABEL,
-        "//:.yarnrc",
+        "//:.yarnrc.yml",
         "//:tools/npm-patches/@bazel+jasmine+5.8.1.patch",
         "//tools:postinstall-patches.js",
         "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-239d56b71911f9fa1eeefb6e4505dbe7b0cd81a7.patch",

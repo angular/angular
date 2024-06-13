@@ -18,15 +18,11 @@ const containingDir = path.dirname(url.fileURLToPath(import.meta.url));
 const testDirs = glob.sync('*/BUILD.bazel', {cwd: containingDir})
                      .map((d) => path.join(containingDir, path.dirname(d)));
 
-const yarnTestTmpDir = path.join(containingDir, '.tmp-yarn-cache');
-
 for (const testDir of testDirs) {
   fs.rmSync(path.join(testDir, 'yarn.lock'));
-  childProcess.spawnSync('yarn', ['install', '--cache-folder', yarnTestTmpDir], {
+  childProcess.spawnSync('yarn', ['install'], {
     cwd: testDir,
     shell: true,
     stdio: 'inherit',
   });
 }
-
-fs.rmSync(yarnTestTmpDir, {recursive: true});

@@ -30,7 +30,7 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     # By default run `yarn install` followed by `yarn test` using the tools linked
     # into the integration tests (using the `tool_mappings` attribute).
     commands = kwargs.pop("commands", [
-        "yarn install --cache-folder ./.yarn_local_cache",
+        "yarn install",
         "yarn test",
     ])
 
@@ -106,7 +106,6 @@ def ng_integration_test(name, **kwargs):
             include = ["**/*"],
             exclude = [
                 "node_modules/**",
-                ".yarn_local_cache/**",
             ],
         ),
     )

@@ -25,17 +25,17 @@ jobs:
         with:
           cache-node-modules: true
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: Check code lint
-        run: yarn -s tslint
+        run: yarn tslint
       - name: Check for circular dependencies
-        run: yarn -s ts-circular-deps:check
+        run: yarn ts-circular-deps:check
       - name: Validate pull approve configuration
-        run: yarn -s ng-dev pullapprove verify
+        run: yarn ng-dev pullapprove verify
       - name: Validate angular robot configuration
-        run: yarn -s ng-dev ngbot verify
+        run: yarn ng-dev ngbot verify
       - name: Confirm code builds with typescript as expected
-        run: yarn -s check-tooling-setup
+        run: yarn check-tooling-setup
 
   devtools:
     runs-on: ubuntu-latest
@@ -49,7 +49,7 @@ jobs:
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@03b8a7dffd1205e061f0bee949024ebefc2a6592
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: Run unit tests
         run: yarn devtools:test
       - name: Test build
@@ -67,7 +67,7 @@ jobs:
       - name: Setup Bazel Remote Caching
         uses: angular/dev-infra/github-actions/bazel/configure-remote@03b8a7dffd1205e061f0bee949024ebefc2a6592
       - name: Install node modules
-        run: yarn install --frozen-lockfile --network-timeout 100000
+        run: yarn install --immutable --network-timeout 100000
       - name: Run CI tests for framework
         run: yarn test:ci
 
@@ -82,7 +82,7 @@ jobs:
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@03b8a7dffd1205e061f0bee949024ebefc2a6592
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: Build adev in fast mode to ensure it continues to work
         run: yarn bazel build //adev:build --fast_adev --config=release
       - name: Run tests
@@ -101,7 +101,7 @@ jobs:
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@03b8a7dffd1205e061f0bee949024ebefc2a6592
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - run: echo "https://${{secrets.SNAPSHOT_BUILDS_GITHUB_TOKEN}}:@github.com" > ${HOME}/.git_credentials
       - run: yarn build
       - run: ./scripts/ci/publish-build-artifacts.sh
@@ -123,7 +123,7 @@ jobs:
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@03b8a7dffd1205e061f0bee949024ebefc2a6592
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - run: |
           yarn bazel build \
           //packages/zone.js/bundles:zone.umd.js \
@@ -143,13 +143,13 @@ jobs:
           cp dist/bin/packages/zone.js/test/closure/zone.closure.mjs ./packages/zone.js/build/test/zone.closure.mjs
 
         # Install
-      - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
+      - run: yarn --cwd packages/zone.js install --immutable
         # Run zone.js tools tests
       - run: yarn --cwd packages/zone.js promisefinallytest
       - run: yarn --cwd packages/zone.js jest:test
       - run: yarn --cwd packages/zone.js jest:nodetest
       - run: yarn --cwd packages/zone.js electrontest
-      - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
+      - run: yarn --cwd packages/zone.js/test/typings install --immutable
       - run: yarn --cwd packages/zone.js/test/typings test
 
   bazel-saucelabs:
@@ -162,7 +162,7 @@ jobs:
         with:
           cache-node-modules: true
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@03b8a7dffd1205e061f0bee949024ebefc2a6592
       - name: Setup Bazel Remote Caching
@@ -190,7 +190,7 @@ jobs:
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@03b8a7dffd1205e061f0bee949024ebefc2a6592
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - name: Build adev to ensure it continues to work
         run: yarn bazel build //adev:build --config=release
       - name: Deploy to firebase

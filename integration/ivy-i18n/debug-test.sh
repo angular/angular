@@ -14,17 +14,7 @@ cd "$(dirname "$0")"
 # Go to the project directory and build the release packages.
 (cd $(pwd)/../../ && yarn build)
 
-# Workaround https://github.com/yarnpkg/yarn/issues/2165
-# Yarn will cache file://dist URIs and not update Angular code
-readonly cache=../.yarn_local_cache
-function rm_cache {
-  rm -rf $cache
-}
-rm_cache
-mkdir $cache
-trap rm_cache EXIT
-
 rm -rf dist
 rm -rf node_modules
-yarn install --cache-folder $cache
+yarn install
 yarn test

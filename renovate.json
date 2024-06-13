@@ -45,7 +45,8 @@
     "unist-util-visit",
     "unist-util-visit-parents",
     "rules_pkg",
-    "aspect_bazel_lib"
+    "aspect_bazel_lib",
+    "yarn"
   ],
   "packageRules": [
     {
