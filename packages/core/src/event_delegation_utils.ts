@@ -78,10 +78,7 @@ export const initGlobalEventDelegation = (
   if (injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT)) {
     return;
   }
-  eventDelegation.eventContract = new EventContract(
-    new EventContractContainer(document.body),
-    /* useActionResolver= */ false,
-  );
+  eventDelegation.eventContract = new EventContract(new EventContractContainer(document.body));
   const dispatcher = new EventDispatcher(invokeRegisteredListeners);
   registerDispatcher(eventDelegation.eventContract, dispatcher);
 };
