@@ -20,8 +20,6 @@ import {
 
 import {RuntimeErrorCode} from '../errors';
 
-import {NG_SWITCH_USE_STRICT_EQUALS} from './ng_switch_equality';
-
 export class SwitchView {
   private _created = false;
 
@@ -147,23 +145,7 @@ export class NgSwitch {
 
   /** @internal */
   _matchCase(value: any): boolean {
-    const matched = NG_SWITCH_USE_STRICT_EQUALS
-      ? value === this._ngSwitch
-      : value == this._ngSwitch;
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && matched !== (value == this._ngSwitch)) {
-      console.warn(
-        formatRuntimeError(
-          RuntimeErrorCode.EQUALITY_NG_SWITCH_DIFFERENCE,
-          'As of Angular v17 the NgSwitch directive uses strict equality comparison === instead of == to match different cases. ' +
-            `Previously the case value "${stringifyValue(
-              value,
-            )}" matched switch expression value "${stringifyValue(
-              this._ngSwitch,
-            )}", but this is no longer the case with the stricter equality check. ` +
-            'Your comparison results return different results using === vs. == and you should adjust your ngSwitch expression and / or values to conform with the strict equality requirements.',
-        ),
-      );
-    }
+    const matched = value === this._ngSwitch;
     this._lastCasesMatched ||= matched;
     this._lastCaseCheckIndex++;
     if (this._lastCaseCheckIndex === this._caseCount) {
