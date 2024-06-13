@@ -118,7 +118,6 @@ const initEventReplay = (eventDelegation: GlobalEventDelegation, injector: Injec
   const earlyJsactionData = getJsactionData(container)!;
   const eventContract = (eventDelegation.eventContract = new EventContract(
     new EventContractContainer(earlyJsactionData.c),
-    /* useActionResolver= */ false,
   ));
   for (const et of earlyJsactionData.et) {
     eventContract.addEvent(et);
