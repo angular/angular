@@ -215,12 +215,17 @@ describe('TS util', () => {
 
     it('updateImport', () => {
       let imp = generateImport('Foo', null, './foo');
-      let namedImp = updateImport(imp.importClause!.namedBindings! as ts.NamedImports, 'Bar', null);
-      expect(print(namedImp)).toEqual(`{ Foo, Bar }`);
-      namedImp = updateImport(imp.importClause!.namedBindings! as ts.NamedImports, 'Foo_2', 'Foo');
-      expect(print(namedImp)).toEqual(`{ Foo, Foo as Foo_2 }`);
-      namedImp = updateImport(imp.importClause!.namedBindings! as ts.NamedImports, 'Bar', 'Bar');
-      expect(print(namedImp)).toEqual(`{ Foo, Bar }`);
+      let namedImp = updateImport(imp, 'Bar', null);
+      expect(print(namedImp!)).toEqual(`{ Foo, Bar }`);
+      namedImp = updateImport(imp, 'Foo_2', 'Foo');
+      expect(print(namedImp!)).toEqual(`{ Foo, Foo as Foo_2 }`);
+      namedImp = updateImport(imp, 'Bar', 'Bar');
+      expect(print(namedImp!)).toEqual(`{ Foo, Bar }`);
+      namedImp = updateImport(imp, 'default', 'Baz');
+      expect(print(namedImp!)).toEqual(`Baz, { Foo }`);
+      imp = generateImport('default', 'Foo', './foo');
+      namedImp = updateImport(imp, 'Bar', null);
+      expect(print(namedImp!)).toEqual(`Foo, { Bar }`);
     });
 
     it('nonCollidingImportName', () => {
