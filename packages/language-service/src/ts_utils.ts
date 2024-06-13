@@ -266,6 +266,10 @@ function nameInExportScope(importSpecifier: ts.ImportSpecifier): string {
  * `propertyName`, and if so, the name it can be referred to with in the local scope.
  */
 function importHas(importDecl: ts.ImportDeclaration, propName: string): string | null {
+  const importClauseName = importDecl.importClause?.name?.getText();
+  if (propName === 'default' && importClauseName !== undefined) {
+    return importClauseName;
+  }
   const bindings = importDecl.importClause?.namedBindings;
   if (bindings === undefined) {
     return null;
@@ -350,11 +354,15 @@ export function standaloneTraitOrNgModule(
 /**
  * Updates the imports on a TypeScript file, by ensuring the provided import is present.
  * Returns the text changes, as well as the name with which the imported symbol can be referred to.
+ *
+ * When the component is exported by default, the `symbolName` is `default`, and the `declarationName`
+ * should be used as the import name.
  */
 export function updateImportsForTypescriptFile(
   tsChecker: ts.TypeChecker,
   file: ts.SourceFile,
   symbolName: string,
+  declarationName: string,
   moduleSpecifier: string,
   tsFileToImport: ts.SourceFile,
 ): [ts.TextChange[], string] {
@@ -375,19 +383,22 @@ export function updateImportsForTypescriptFile(
   const existingImportDeclaration = allImports.find((decl) =>
     moduleSpecifierPointsToFile(tsChecker, decl.moduleSpecifier, tsFileToImport),
   );
-  const importName = nonCollidingImportName(allImports, symbolName);
+  const importName = nonCollidingImportName(
+    allImports,
+    symbolName === 'default' ? declarationName : symbolName,
+  );
 
   if (existingImportDeclaration !== undefined) {
     // Update an existing import declaration.
-    const bindings = existingImportDeclaration.importClause?.namedBindings;
-    if (bindings === undefined || ts.isNamespaceImport(bindings)) {
-      // This should be impossible. If a namespace import is present, the symbol was already
-      // considered imported above.
-      console.error(`Unexpected namespace import ${existingImportDeclaration.getText()}`);
+    const importClause = existingImportDeclaration.importClause;
+    if (importClause === undefined) {
       return [[], ''];
     }
-    let span = {start: bindings.getStart(), length: bindings.getWidth()};
-    const updatedBindings = updateImport(bindings, symbolName, importName);
+    let span = {start: importClause.getStart(), length: importClause.getWidth()};
+    const updatedBindings = updateImport(existingImportDeclaration, symbolName, importName);
+    if (updatedBindings === undefined) {
+      return [[], ''];
+    }
     const importString = printNode(updatedBindings, file);
     return [[{span, newText: importString}], importName];
   }
@@ -561,6 +572,12 @@ export function isStandaloneDecorator(decorator: ts.Decorator): boolean | null {
  * import {exportedSpecifierName as localName} from 'rawModuleSpecifier';
  * ```
  *
+ * If the component is exported by default, follows the format:
+ *
+ * ```
+ * import exportedSpecifierName from 'rawModuleSpecifier';
+ * ```
+ *
  * If `exportedSpecifierName` is null, or is equal to `name`, then the qualified import alias will
  * be omitted.
  */
@@ -575,13 +592,19 @@ export function generateImport(
   }
   const name = ts.factory.createIdentifier(localName);
   const moduleSpec = ts.factory.createStringLiteral(rawModuleSpecifier);
+  let importClauseName: ts.Identifier | undefined;
+  let importBindings: ts.NamedImportBindings | undefined;
+
+  if (localName === 'default' && exportedSpecifierName !== null) {
+    importClauseName = ts.factory.createIdentifier(exportedSpecifierName);
+  } else {
+    importBindings = ts.factory.createNamedImports([
+      ts.factory.createImportSpecifier(false, propName, name),
+    ]);
+  }
   return ts.factory.createImportDeclaration(
     undefined,
-    ts.factory.createImportClause(
-      false,
-      undefined,
-      ts.factory.createNamedImports([ts.factory.createImportSpecifier(false, propName, name)]),
-    ),
+    ts.factory.createImportClause(false, importClauseName, importBindings),
     moduleSpec,
     undefined,
   );
@@ -591,19 +614,47 @@ export function generateImport(
  * Update an existing named import with a new member.
  * If `exportedSpecifierName` is null, or is equal to `name`, then the qualified import alias will
  * be omitted.
+ * If the `localName` is `default` and `exportedSpecifierName` is not null, the `exportedSpecifierName`
+ * is used as the default import name.
  */
 export function updateImport(
-  imp: ts.NamedImports,
+  importDeclaration: ts.ImportDeclaration,
   localName: string,
   exportedSpecifierName: string | null,
-): ts.NamedImports {
+): ts.ImportClause | undefined {
+  const importClause = importDeclaration.importClause;
+  if (importClause === undefined) {
+    return undefined;
+  }
+  const bindings = importClause.namedBindings;
+  if (bindings !== undefined && ts.isNamespaceImport(bindings)) {
+    // This should be impossible. If a namespace import is present, the symbol was already
+    // considered imported above.
+    console.error(`Unexpected namespace import ${importDeclaration.getText()}`);
+    return undefined;
+  }
+  if (localName === 'default' && exportedSpecifierName !== null) {
+    const importClauseName = ts.factory.createIdentifier(exportedSpecifierName);
+    return ts.factory.updateImportClause(
+      importClause,
+      false,
+      importClauseName,
+      importClause.namedBindings,
+    );
+  }
   let propertyName: ts.Identifier | undefined;
   if (exportedSpecifierName !== null && exportedSpecifierName !== localName) {
     propertyName = ts.factory.createIdentifier(exportedSpecifierName);
   }
   const name = ts.factory.createIdentifier(localName);
   const newImport = ts.factory.createImportSpecifier(false, propertyName, name);
-  return ts.factory.updateNamedImports(imp, [...imp.elements, newImport]);
+  let namedImport: ts.NamedImports;
+  if (bindings === undefined) {
+    namedImport = ts.factory.createNamedImports([newImport]);
+  } else {
+    namedImport = ts.factory.updateNamedImports(bindings, [...bindings.elements, newImport]);
+  }
+  return ts.factory.updateImportClause(importClause, false, importClause.name, namedImport);
 }
 
 let printer: ts.Printer | null = null;
@@ -639,6 +690,8 @@ export function getCodeActionToImportTheDirectiveDeclaration(
   const potentialImports = compiler
     .getTemplateTypeChecker()
     .getPotentialImportsFor(directive.ref, importOn, PotentialImportMode.Normal);
+  const declarationName = directive.ref.node.name.getText();
+
   for (const potentialImport of potentialImports) {
     const fileImportChanges: ts.TextChange[] = [];
     let importName: string;
@@ -649,6 +702,7 @@ export function getCodeActionToImportTheDirectiveDeclaration(
         compiler.getCurrentProgram().getTypeChecker(),
         importOn.getSourceFile(),
         potentialImport.symbolName,
+        declarationName,
         potentialImport.moduleSpecifier,
         currMatchSymbol.getSourceFile(),
       );
@@ -662,6 +716,7 @@ export function getCodeActionToImportTheDirectiveDeclaration(
           compiler.getCurrentProgram().getTypeChecker(),
           importOn.getSourceFile(),
           'forwardRef',
+          declarationName,
           '@angular/core',
           importOn.getSourceFile(),
         );
