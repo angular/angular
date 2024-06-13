@@ -36,6 +36,10 @@ You can read more by following the links associated with the package names below
 | [GitHub pages](https://pages.github.com)                          | [`ng add angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages)               |
 | [Amazon Cloud S3](https://aws.amazon.com/s3/?nc2=h_ql_prod_st_s3) | [`ng add @jefiozie/ngx-aws-deploy`](https://www.npmjs.com/package/@jefiozie/ngx-aws-deploy) |
 
+### Alternative pre-baked GitHub Pages Action
+[Bitovi](https://bitovi.com), a GitHub Verified Creator organization, has developed [a GitHub Action to deploy Angular to GitHub Pages with minimal setup](https://github.com/marketplace/actions/deploy-angular-to-github-pages).
+
+### Build-your-own and Manual options
 If you're deploying to a self-managed server or there's no builder for your favorite cloud platform, you can either [create a builder](tools/cli/cli-builder) that allows you to use the `ng deploy` command, or read through this guide to learn how to manually deploy your application.
 
 ## Manual deployment to a remote server
