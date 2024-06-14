@@ -1142,11 +1142,7 @@ export interface ModelOptions {
 }
 
 // @public
-export interface ModelSignal<T> extends WritableSignal<T>, OutputRef<T> {
-    // (undocumented)
-    [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
-    // (undocumented)
-    [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
+export interface ModelSignal<T> extends WritableSignal<T>, InputSignal<T>, OutputRef<T> {
     // (undocumented)
     [SIGNAL]: InputSignalNode<T, T>;
 }
