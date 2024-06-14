@@ -7,16 +7,21 @@
  */
 
 import {
+  afterNextRender,
+  ChangeDetectorRef,
   Directive,
   ElementRef,
+  EnvironmentInjector,
   forwardRef,
   Host,
+  inject,
   Input,
   OnDestroy,
   Optional,
   Provider,
   Renderer2,
   ɵRuntimeError as RuntimeError,
+  SimpleChanges,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -118,6 +123,9 @@ export class SelectControlValueAccessor
   /** @internal */
   _idCounter: number = 0;
 
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly injector = inject(EnvironmentInjector);
+
   /**
    * @description
    * Tracks the option comparison algorithm for tracking identities when
@@ -135,6 +143,8 @@ export class SelectControlValueAccessor
   }
 
   private _compareWith: (o1: any, o2: any) => boolean = Object.is;
+  /** @internal */
+  _selectedId: string | null = null;
 
   /**
    * Sets the "value" property on the select element.
@@ -143,8 +153,36 @@ export class SelectControlValueAccessor
   writeValue(value: any): void {
     this.value = value;
     const id: string | null = this._getOptionId(value);
+    this._selectedId = id;
     const valueString = _buildValueString(id, value);
     this.setProperty('value', valueString);
+  }
+
+  private queuedRewrite = false;
+  /**
+   * @internal
+   */
+  rewriteValueAfterRender(): void {
+    if (this.queuedRewrite || (this.injector as unknown as {destroyed: boolean}).destroyed) return;
+
+    this.queuedRewrite = true;
+    afterNextRender(
+      {
+        write: () => {
+          this.queuedRewrite = false;
+
+          const selectedIdBeforeWrite = this._selectedId;
+          this.writeValue(this.value);
+          if (this._selectedId !== selectedIdBeforeWrite) {
+            // If writing the value resulted in a new item being selected,
+            // made a real change to the selection. There might be other
+            // things that depend on this change and need to be refreshed as a result.
+            this.changeDetectorRef.markForCheck();
+          }
+        },
+      },
+      {injector: this.injector},
+    );
   }
 
   /**
@@ -194,13 +232,12 @@ export class NgSelectOption implements OnDestroy {
    * @description
    * ID of the option element
    */
-  // TODO(issue/24571): remove '!'.
-  id!: string;
+  id = '';
 
   constructor(
     private _element: ElementRef,
     private _renderer: Renderer2,
-    @Optional() @Host() private _select: SelectControlValueAccessor,
+    @Optional() @Host() private _select: SelectControlValueAccessor | null,
   ) {
     if (this._select) this.id = this._select._registerOption();
   }
@@ -212,10 +249,8 @@ export class NgSelectOption implements OnDestroy {
    */
   @Input('ngValue')
   set ngValue(value: any) {
-    if (this._select == null) return;
-    this._select._optionMap.set(this.id, value);
+    this._select?._optionMap.set(this.id, value);
     this._setElementValue(_buildValueString(this.id, value));
-    this._select.writeValue(this._select.value);
   }
 
   /**
@@ -226,7 +261,16 @@ export class NgSelectOption implements OnDestroy {
   @Input('value')
   set value(value: any) {
     this._setElementValue(value);
-    if (this._select) this._select.writeValue(this._select.value);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['value'] || changes['ngValue']) {
+      if (this._select?._selectedId === null) {
+        this._select.rewriteValueAfterRender();
+      } else {
+        this.rewriteValueIfItemIsSelected();
+      }
+    }
   }
 
   /** @internal */
@@ -236,9 +280,14 @@ export class NgSelectOption implements OnDestroy {
 
   /** @nodoc */
   ngOnDestroy(): void {
-    if (this._select) {
-      this._select._optionMap.delete(this.id);
+    this._select?._optionMap.delete(this.id);
+    this.rewriteValueIfItemIsSelected();
+  }
+
+  private rewriteValueIfItemIsSelected() {
+    if (this._select && this._select._selectedId === this.id) {
       this._select.writeValue(this._select.value);
+      this._select.rewriteValueAfterRender();
     }
   }
 }

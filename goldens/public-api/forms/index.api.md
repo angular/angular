@@ -752,8 +752,10 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
 
 // @public
 export class NgSelectOption implements OnDestroy {
-    constructor(_element: ElementRef, _renderer: Renderer2, _select: SelectControlValueAccessor);
+    constructor(_element: ElementRef, _renderer: Renderer2, _select: SelectControlValueAccessor | null);
     id: string;
+    // (undocumented)
+    ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): void;
     set ngValue(value: any);

@@ -14,11 +14,13 @@ ts_library(
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
+        "//packages/animations/browser",
         "//packages/common",
         "//packages/core",
         "//packages/core/testing",
         "//packages/forms",
         "//packages/platform-browser",
+        "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
         "@npm//rxjs",
