@@ -382,6 +382,21 @@ describe('ComponentFactory', () => {
       expect(console.error).toHaveBeenCalledWith(msgL1 + msgL2);
     });
 
+    it('should return success result', () => {
+      @Component({template: ``})
+      class InputsCmp {
+        @Input() in1: string | undefined;
+        @Input('publicName') in2: string | undefined;
+      }
+
+      const fixture = TestBed.createComponent(InputsCmp);
+
+      expect(fixture.componentRef.setInput('in1', '')).toBeTrue();
+      expect(fixture.componentRef.setInput('in2', '')).toBeFalse();
+      expect(fixture.componentRef.setInput('publicName', '')).toBeTrue();
+      expect(fixture.componentRef.setInput('doesNotExist', '')).toBeFalse();
+    });
+
     it('should mark components for check when setting an input on a ComponentRef', () => {
       @Component({
         template: `{{in}}`,

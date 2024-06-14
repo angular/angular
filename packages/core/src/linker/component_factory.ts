@@ -30,8 +30,10 @@ export abstract class ComponentRef<C> {
    *
    * @param name The name of an input.
    * @param value The new value of an input.
+   *
+   * @returns a boolean indicating whether the input was set correctly.
    */
-  abstract setInput(name: string, value: unknown): void;
+  abstract setInput(name: string, value: unknown): boolean;
 
   /**
    * The host or anchor element for this component instance.

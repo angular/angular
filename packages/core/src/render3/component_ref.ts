@@ -476,7 +476,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     this.componentType = componentType;
   }
 
-  override setInput(name: string, value: unknown): void {
+  override setInput(name: string, value: unknown): boolean {
     const inputData = this._tNode.inputs;
     let dataValue: NodeInputBindings[typeof name] | undefined;
     if (inputData !== null && (dataValue = inputData[name])) {
@@ -487,7 +487,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
         this.previousInputValues.has(name) &&
         Object.is(this.previousInputValues.get(name), value)
       ) {
-        return;
+        return true;
       }
 
       const lView = this._rootLView;
@@ -495,6 +495,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
       this.previousInputValues.set(name, value);
       const childComponentLView = getComponentLViewByIndex(this._tNode.index, lView);
       markViewDirty(childComponentLView, NotificationSource.SetInput);
+      return true;
     } else {
       if (ngDevMode) {
         const cmpNameForError = stringifyForError(this.componentType);
@@ -502,6 +503,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
         message += `Make sure that the '${name}' property is annotated with @Input() or a mapped @Input('${name}') exists.`;
         reportUnknownPropertyError(message);
       }
+      return false;
     }
   }
 
