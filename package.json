@@ -214,7 +214,6 @@
     "patch-package": "^7.0.0",
     "playwright-core": "^1.41.2",
     "prettier": "^3.0.0",
-    "sauce-connect": "https://saucelabs.com/downloads/sc-4.9.1-linux.tar.gz",
     "semver": "^7.3.5",
     "tmp": "^0.2.3",
     "ts-node": "^10.9.1",
