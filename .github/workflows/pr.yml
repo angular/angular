@@ -38,6 +38,8 @@ jobs:
         run: yarn ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
       - name: Check code format
         run: yarn ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
+      - name: Check Package Licenses
+        uses: angular/dev-infra/github-actions/linting/licenses@515b575bd6650a12353b6039b618cdb808280ad7
 
   devtools:
     runs-on: ubuntu-latest
