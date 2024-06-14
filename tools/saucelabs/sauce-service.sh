@@ -93,38 +93,50 @@ service-setup-command() {
     @fail "SAUCE_TUNNEL_IDENTIFIER environment variable required"
   fi
 
-  local unameOut="$(uname -s)"
-  case "${unameOut}" in
-      Linux*)     local machine=linux ;;
-      Darwin*)    local machine=darwin ;;
-      CYGWIN*)    local machine=windows ;;
-      MINGW*)     local machine=windows ;;
-      MSYS_NT*)   local machine=windows ;;
-      *)          local machine=linux
-                  printf "\nUnrecongized uname '${unameOut}'; defaulting to use node for linux.\n" >&2
-                  printf "Please file an issue to https://github.com/bazelbuild/rules_nodejs/issues if \n" >&2
-                  printf "you would like to add your platform to the supported rules_nodejs node platforms.\n\n" >&2
-                  ;;
-  esac
+  if [[ -z "${SAUCE_CONNECT:-}" ]]; then
+    local unameOut="$(uname -s)"
+    case "${unameOut}" in
+        Linux*)     local machine=linux ;;
+        Darwin*)    local machine=darwin ;;
+        CYGWIN*)    local machine=windows ;;
+        MINGW*)     local machine=windows ;;
+        MSYS_NT*)   local machine=windows ;;
+        *)          local machine=linux
+                    printf "\nUnrecongized uname '${unameOut}'; defaulting to use node for linux.\n" >&2
+                    printf "Please file an issue to https://github.com/bazelbuild/rules_nodejs/issues if \n" >&2
+                    printf "you would like to add your platform to the supported rules_nodejs node platforms.\n\n" >&2
+                    ;;
+    esac
 
-  case "${machine}" in
-    # Path to sauce connect executable
-    linux)
-      if [[ -z "${BUILD_WORKSPACE_DIRECTORY:-}" ]]; then
-        # Started manually
-        SAUCE_CONNECT="${SCRIPT_DIR}/../../node_modules/sauce-connect/bin/sc"
-      else
-        # Started via `bazel run`
-        SAUCE_CONNECT="${BUILD_WORKSPACE_DIRECTORY}/node_modules/sauce-connect/bin/sc"
-      fi
-      ;;
-    *)
-      if [[ -z "${SAUCE_CONNECT:-}" ]]; then
-        @fail "SAUCE_CONNECT environment variable is required on non-linux environments"
-        exit 1
-      fi
-      ;;
-  esac
+    case "${machine}" in
+      # Path to sauce connect executable
+      linux)
+        if [[ -z "${BUILD_WORKSPACE_DIRECTORY:-}" ]]; then
+          # Started manually
+
+          readonly connectVersion="sc-4.9.2-linux"
+          readonly connectHash="2f8a3f87e1da4dc9a41bc45ec7c3a2ecdba4c72d72b7d0193f04ad66c5809104"
+
+          echo "Downloading Sauce Connect"
+
+          curl https://saucelabs.com/downloads/${connectVersion}.tar.gz -o ${SCRIPT_DIR}/${connectVersion}.tar.gz
+          echo "${connectHash}  ${SCRIPT_DIR}/${connectVersion}.tar.gz" | shasum -a 256 -c
+          tar -xzf ${SCRIPT_DIR}/${connectVersion}.tar.gz -C ${SCRIPT_DIR}
+
+          SAUCE_CONNECT="${SCRIPT_DIR}/${connectVersion}/bin/sc"
+        else
+          # Started via `bazel run`
+          SAUCE_CONNECT="${BUILD_WORKSPACE_DIRECTORY}/node_modules/sauce-connect/bin/sc"
+        fi
+        ;;
+      *)
+        if [[ -z "${SAUCE_CONNECT:-}" ]]; then
+          @fail "SAUCE_CONNECT environment variable is required on non-linux environments"
+          exit 1
+        fi
+        ;;
+    esac
+  fi
 
   if [[ ! -f ${SAUCE_CONNECT} ]]; then
     @fail "sc binary not found at ${SAUCE_CONNECT}"
