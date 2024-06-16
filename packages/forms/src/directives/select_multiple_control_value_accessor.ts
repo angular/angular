@@ -95,6 +95,7 @@ abstract class HTMLCollection {
 @Directive({
   selector:
     'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]',
+  standalone: true,
   host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR],
 })
