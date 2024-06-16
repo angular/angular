@@ -195,7 +195,7 @@ data.set(['test']);
 
 Equality functions can be provided to both writable and computed signals.
 
-HELPFUL: By default, signals use referential equality (`===` comparison).
+HELPFUL: By default, signals use referential equality ([`Object.is()`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/is) comparison).
 
 ### Reading without tracking dependencies
 
