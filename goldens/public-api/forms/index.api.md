@@ -174,7 +174,7 @@ export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor im
 // @public
 export class CheckboxRequiredValidator extends RequiredValidator {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<CheckboxRequiredValidator, "input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CheckboxRequiredValidator, "input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]", never, {}, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CheckboxRequiredValidator, never>;
 }
@@ -225,7 +225,7 @@ export class EmailValidator extends AbstractValidatorDirective {
     // (undocumented)
     enabled(input: boolean): boolean;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<EmailValidator, "[email][formControlName],[email][formControl],[email][ngModel]", never, { "email": { "alias": "email"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<EmailValidator, "[email][formControlName],[email][formControl],[email][ngModel]", never, { "email": { "alias": "email"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<EmailValidator, never>;
 }
@@ -608,7 +608,7 @@ export const isFormRecord: (control: unknown) => control is FormRecord;
 export class MaxLengthValidator extends AbstractValidatorDirective {
     maxlength: string | number | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MaxLengthValidator, "[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]", never, { "maxlength": { "alias": "maxlength"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MaxLengthValidator, "[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]", never, { "maxlength": { "alias": "maxlength"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MaxLengthValidator, never>;
 }
@@ -617,7 +617,7 @@ export class MaxLengthValidator extends AbstractValidatorDirective {
 export class MaxValidator extends AbstractValidatorDirective {
     max: string | number | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MaxValidator, "input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]", never, { "max": { "alias": "max"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MaxValidator, "input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]", never, { "max": { "alias": "max"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MaxValidator, never>;
 }
@@ -626,7 +626,7 @@ export class MaxValidator extends AbstractValidatorDirective {
 export class MinLengthValidator extends AbstractValidatorDirective {
     minlength: string | number | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MinLengthValidator, "[minlength][formControlName],[minlength][formControl],[minlength][ngModel]", never, { "minlength": { "alias": "minlength"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MinLengthValidator, "[minlength][formControlName],[minlength][formControl],[minlength][ngModel]", never, { "minlength": { "alias": "minlength"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MinLengthValidator, never>;
 }
@@ -635,7 +635,7 @@ export class MinLengthValidator extends AbstractValidatorDirective {
 export class MinValidator extends AbstractValidatorDirective {
     min: string | number | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MinValidator, "input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]", never, { "min": { "alias": "min"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MinValidator, "input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]", never, { "min": { "alias": "min"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MinValidator, never>;
 }
@@ -794,7 +794,7 @@ export class NumberValueAccessor extends BuiltInControlValueAccessor implements 
 export class PatternValidator extends AbstractValidatorDirective {
     pattern: string | RegExp;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<PatternValidator, "[pattern][formControlName],[pattern][formControl],[pattern][ngModel]", never, { "pattern": { "alias": "pattern"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<PatternValidator, "[pattern][formControlName],[pattern][formControl],[pattern][ngModel]", never, { "pattern": { "alias": "pattern"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PatternValidator, never>;
 }
@@ -860,7 +860,7 @@ export class RequiredValidator extends AbstractValidatorDirective {
     enabled(input: boolean): boolean;
     required: boolean | string;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RequiredValidator, ":not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]", never, { "required": { "alias": "required"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RequiredValidator, ":not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]", never, { "required": { "alias": "required"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RequiredValidator, never>;
 }

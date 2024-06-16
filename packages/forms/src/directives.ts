@@ -78,14 +78,8 @@ export const STANDALONE_FORM_DIRECTIVES = [
   SelectMultipleControlValueAccessor,
   RadioControlValueAccessor,
   DefaultValueAccessor,
-];
 
-export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
-  NgNoValidate,
-  NgSelectOption,
-  NgSelectMultipleOption,
-  NgControlStatus,
-  NgControlStatusGroup,
+  // Validators
   RequiredValidator,
   MinLengthValidator,
   MaxLengthValidator,
@@ -94,6 +88,14 @@ export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
   EmailValidator,
   MinValidator,
   MaxValidator,
+];
+
+export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
+  NgNoValidate,
+  NgSelectOption,
+  NgSelectMultipleOption,
+  NgControlStatus,
+  NgControlStatusGroup,
 ];
 
 export const TEMPLATE_DRIVEN_DIRECTIVES: Type<any>[] = [NgModel, NgModelGroup, NgForm];
