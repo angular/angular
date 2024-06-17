@@ -128,7 +128,7 @@ export class Xliff2 extends Serializer {
   }
 
   override digest(message: i18n.Message): string {
-    return decimalDigest(message);
+    return decimalDigest(message, /* preservePlaceholders */ true);
   }
 }
 

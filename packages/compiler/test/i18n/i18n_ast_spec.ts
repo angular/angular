@@ -15,6 +15,7 @@ describe('Message', () => {
   const messageFactory = createI18nMessageFactory(
     DEFAULT_INTERPOLATION_CONFIG,
     DEFAULT_CONTAINER_BLOCKS,
+    /* retainEmptyTokens */ false,
   );
   describe('messageText()', () => {
     it('should serialize simple text', () => {

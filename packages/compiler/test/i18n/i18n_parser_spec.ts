@@ -374,5 +374,6 @@ export function _extractMessages(
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
     implicitAttrs,
+    /* preserveSignificantWhitespace */ true,
   ).messages;
 }

@@ -79,7 +79,7 @@ function createSerializer(format?: string): Serializer {
 
   switch (format) {
     case 'xmb':
-      return new Xmb();
+      return new Xmb(/* preservePlaceholders */ true);
     case 'xtb':
       return new Xtb();
     case 'xliff2':

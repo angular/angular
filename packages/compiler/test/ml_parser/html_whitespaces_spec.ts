@@ -16,7 +16,12 @@ import {humanizeDom} from './ast_spec_utils';
 
 describe('removeWhitespaces', () => {
   function parseAndRemoveWS(template: string, options?: TokenizeOptions): any[] {
-    return humanizeDom(removeWhitespaces(new HtmlParser().parse(template, 'TestComp', options)));
+    return humanizeDom(
+      removeWhitespaces(
+        new HtmlParser().parse(template, 'TestComp', options),
+        true /* preserveSignificantWhitespace */,
+      ),
+    );
   }
 
   it('should remove blank text nodes', () => {
