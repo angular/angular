@@ -525,6 +525,7 @@ describe('Merger', () => {
         DEFAULT_INTERPOLATION_CONFIG,
         [],
         {},
+        /* preserveSignificantWhitespace */ true,
       ).messages;
 
       expect(messages.length).toEqual(1);
@@ -601,6 +602,7 @@ describe('Merger', () => {
         DEFAULT_INTERPOLATION_CONFIG,
         [],
         {},
+        /* preserveSignificantWhitespace */ true,
       ).messages;
 
       expect(messages.length).toEqual(1);
@@ -668,6 +670,7 @@ function fakeTranslate(
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
     implicitAttrs,
+    /* preserveSignificantWhitespace */ true,
   ).messages;
 
   const i18nMsgMap: {[id: string]: i18n.Node[]} = {};
@@ -727,6 +730,7 @@ function extract(
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
     implicitAttrs,
+    /* preserveSignificantWhitespace */ true,
   );
 
   if (result.errors.length > 0) {
@@ -751,6 +755,7 @@ function extractErrors(
     DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
     implicitAttrs,
+    /* preserveSignificantWhitespace */ true,
   ).errors;
 
   return errors.map((e): [string, string] => [e.msg, e.span.toString()]);

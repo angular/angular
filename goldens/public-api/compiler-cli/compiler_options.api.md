@@ -38,6 +38,7 @@ export interface I18nOptions {
     i18nOutFile?: string;
     i18nOutFormat?: string;
     i18nOutLocale?: string;
+    i18nPreserveWhitespaceForLegacyExtraction?: boolean;
     i18nUseExternalIds?: boolean;
 }
 

@@ -147,6 +147,7 @@ function setup(
     /* enableLetSyntax */ true,
     /* localCompilationExtraImportsTracker */ null,
     jitDeclarationRegistry,
+    /* i18nPreserveSignificantWhitespace */ true,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }
