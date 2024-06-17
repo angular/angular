@@ -82,6 +82,7 @@ import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
 import {optimizeLetDeclarations} from './phases/let_declarations_optimization';
 import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
+import {generateLocalLetReferences} from './phases/generate_local_let_references';
 
 type Phase =
   | {
@@ -123,6 +124,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: createVariadicPipes},
   {kind: Kind.Both, fn: generatePureLiteralStructures},
   {kind: Kind.Tmpl, fn: generateProjectionDefs},
+  {kind: Kind.Tmpl, fn: generateLocalLetReferences},
   {kind: Kind.Tmpl, fn: generateVariables},
   {kind: Kind.Tmpl, fn: saveAndRestoreView},
   {kind: Kind.Both, fn: deleteAnyCasts},

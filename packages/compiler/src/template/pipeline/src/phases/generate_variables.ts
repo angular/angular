@@ -66,26 +66,6 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | 
     }
   }
 
-  for (const op of view.update) {
-    if (op.kind === ir.OpKind.StoreLet) {
-      const variable: ir.IdentifierVariable = {
-        kind: ir.SemanticVariableKind.Identifier,
-        name: null,
-        identifier: op.declaredName,
-      };
-
-      ir.OpList.replace<ir.UpdateOp>(
-        op,
-        ir.createVariableOp<ir.UpdateOp>(
-          view.job.allocateXrefId(),
-          variable,
-          new ir.StoreLetExpr(op.target, op.value, op.sourceSpan),
-          ir.VariableFlags.None,
-        ),
-      );
-    }
-  }
-
   view.update.prepend(generateVariablesInScopeForView(view, scope, false));
 }
 
