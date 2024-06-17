@@ -70,7 +70,7 @@ lines</msg>
 
   it('should throw when trying to load an xmb file', () => {
     expect(() => {
-      const serializer = new Xmb();
+      const serializer = new Xmb(/* preservePlaceholders */ true);
       serializer.load(XMB, 'url');
     }).toThrowError(/Unsupported/);
   });
@@ -78,7 +78,7 @@ lines</msg>
 
 function toXmb(html: string, url: string, locale: string | null = null): string {
   const catalog = new MessageBundle(new HtmlParser(), [], {}, locale);
-  const serializer = new Xmb();
+  const serializer = new Xmb(/* preservePlaceholders */ true);
 
   catalog.updateFromTemplate(html, url, DEFAULT_INTERPOLATION_CONFIG);
 

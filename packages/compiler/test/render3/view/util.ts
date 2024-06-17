@@ -164,7 +164,10 @@ export function parseR3(
   let htmlNodes = processI18nMeta(parseResult).rootNodes;
 
   if (!options.preserveWhitespaces) {
-    htmlNodes = html.visitAll(new WhitespaceVisitor(), htmlNodes);
+    htmlNodes = html.visitAll(
+      new WhitespaceVisitor(true /* preserveSignificantWhitespace */),
+      htmlNodes,
+    );
   }
 
   const expressionParser = new Parser(new Lexer());

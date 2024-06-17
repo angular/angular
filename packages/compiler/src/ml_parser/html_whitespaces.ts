@@ -9,7 +9,7 @@
 import * as html from './ast';
 import {NGSP_UNICODE} from './entities';
 import {ParseTreeResult} from './parser';
-import {TextToken, TokenType} from './tokens';
+import {InterpolatedTextToken, TextToken, TokenType} from './tokens';
 
 export const PRESERVE_WS_ATTR_NAME = 'ngPreserveWhitespaces';
 
@@ -48,13 +48,28 @@ export function replaceNgsp(value: string): string {
  * this visitor is not activated by default in Angular 5 and people need to explicitly opt-in for
  * whitespace removal. The default option for whitespace removal will be revisited in Angular 6
  * and might be changed to "on" by default.
+ *
+ * If `originalNodeMap` is provided, the transformed nodes will be mapped back to their original
+ * inputs. Any output nodes not in the map were not transformed. This supports correlating and
+ * porting information between the trimmed nodes and original nodes (such as `i18n` properties)
+ * such that trimming whitespace does not does not drop required information from the node.
  */
 export class WhitespaceVisitor implements html.Visitor {
+  // How many ICU expansions which are currently being visited. ICUs can be nested, so this
+  // tracks the current depth of nesting. If this depth is greater than 0, then this visitor is
+  // currently processing content inside an ICU expansion.
+  private icuExpansionDepth = 0;
+
+  constructor(
+    private readonly preserveSignificantWhitespace: boolean,
+    private readonly originalNodeMap?: Map<html.Node, html.Node>,
+  ) {}
+
   visitElement(element: html.Element, context: any): any {
     if (SKIP_WS_TRIM_TAGS.has(element.name) || hasPreserveWhitespacesAttr(element.attrs)) {
       // don't descent into elements where we need to preserve whitespaces
       // but still visit all attributes to eliminate one used as a market to preserve WS
-      return new html.Element(
+      const newElement = new html.Element(
         element.name,
         html.visitAll(this, element.attrs),
         element.children,
@@ -63,9 +78,11 @@ export class WhitespaceVisitor implements html.Visitor {
         element.endSourceSpan,
         element.i18n,
       );
+      this.originalNodeMap?.set(newElement, element);
+      return newElement;
     }
 
-    return new html.Element(
+    const newElement = new html.Element(
       element.name,
       element.attrs,
       visitAllWithSiblings(this, element.children),
@@ -74,6 +91,8 @@ export class WhitespaceVisitor implements html.Visitor {
       element.endSourceSpan,
       element.i18n,
     );
+    this.originalNodeMap?.set(newElement, element);
+    return newElement;
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
@@ -85,14 +104,41 @@ export class WhitespaceVisitor implements html.Visitor {
     const hasExpansionSibling =
       context && (context.prev instanceof html.Expansion || context.next instanceof html.Expansion);
 
+    // Do not trim whitespace within ICU expansions when preserving significant whitespace.
+    // Historically, ICU whitespace was never trimmed and this is really a bug. However fixing it
+    // would change message IDs which we can't easily do. Instead we only trim ICU whitespace within
+    // ICU expansions when not preserving significant whitespace, which is the new behavior where it
+    // most matters.
+    const inIcuExpansion = this.icuExpansionDepth > 0;
+    if (inIcuExpansion && this.preserveSignificantWhitespace) return text;
+
     if (isNotBlank || hasExpansionSibling) {
       // Process the whitespace in the tokens of this Text node
       const tokens = text.tokens.map((token) =>
         token.type === TokenType.TEXT ? createWhitespaceProcessedTextToken(token) : token,
       );
-      // Process the whitespace of the value of this Text node
-      const value = processWhitespace(text.value);
-      return new html.Text(value, text.sourceSpan, tokens, text.i18n);
+
+      // Fully trim message when significant whitespace is not preserved.
+      if (!this.preserveSignificantWhitespace && tokens.length > 0) {
+        // The first token should only call `.trimStart()` and the last token
+        // should only call `.trimEnd()`, but there might be only one token which
+        // needs to call both.
+        const firstToken = tokens[0]!;
+        tokens.splice(0, 1, trimLeadingWhitespace(firstToken, context));
+
+        const lastToken = tokens[tokens.length - 1]; // Could be the same as the first token.
+        tokens.splice(tokens.length - 1, 1, trimTrailingWhitespace(lastToken, context));
+      }
+
+      // Process the whitespace of the value of this Text node. Also trim the leading/trailing
+      // whitespace when we don't need to preserve significant whitespace.
+      const processed = processWhitespace(text.value);
+      const value = this.preserveSignificantWhitespace
+        ? processed
+        : trimLeadingAndTrailingWhitespace(processed, context);
+      const result = new html.Text(value, text.sourceSpan, tokens, text.i18n);
+      this.originalNodeMap?.set(result, text);
+      return result;
     }
 
     return null;
@@ -103,15 +149,40 @@ export class WhitespaceVisitor implements html.Visitor {
   }
 
   visitExpansion(expansion: html.Expansion, context: any): any {
-    return expansion;
+    this.icuExpansionDepth++;
+    let newExpansion: html.Expansion;
+    try {
+      newExpansion = new html.Expansion(
+        expansion.switchValue,
+        expansion.type,
+        visitAllWithSiblings(this, expansion.cases),
+        expansion.sourceSpan,
+        expansion.switchValueSourceSpan,
+        expansion.i18n,
+      );
+    } finally {
+      this.icuExpansionDepth--;
+    }
+
+    this.originalNodeMap?.set(newExpansion, expansion);
+
+    return newExpansion;
   }
 
   visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
-    return expansionCase;
+    const newExpansionCase = new html.ExpansionCase(
+      expansionCase.value,
+      visitAllWithSiblings(this, expansionCase.expression),
+      expansionCase.sourceSpan,
+      expansionCase.valueSourceSpan,
+      expansionCase.expSourceSpan,
+    );
+    this.originalNodeMap?.set(newExpansionCase, expansionCase);
+    return newExpansionCase;
   }
 
   visitBlock(block: html.Block, context: any): any {
-    return new html.Block(
+    const newBlock = new html.Block(
       block.name,
       block.parameters,
       visitAllWithSiblings(this, block.children),
@@ -120,6 +191,8 @@ export class WhitespaceVisitor implements html.Visitor {
       block.startSourceSpan,
       block.endSourceSpan,
     );
+    this.originalNodeMap?.set(newBlock, block);
+    return newBlock;
   }
 
   visitBlockParameter(parameter: html.BlockParameter, context: any) {
@@ -131,17 +204,67 @@ export class WhitespaceVisitor implements html.Visitor {
   }
 }
 
+function trimLeadingWhitespace(
+  token: InterpolatedTextToken,
+  context: SiblingVisitorContext | null,
+): InterpolatedTextToken {
+  if (token.type !== TokenType.TEXT) return token;
+
+  const isFirstTokenInTag = !context?.prev;
+  if (!isFirstTokenInTag) return token;
+
+  return transformTextToken(token, (text) => text.trimStart());
+}
+
+function trimTrailingWhitespace(
+  token: InterpolatedTextToken,
+  context: SiblingVisitorContext | null,
+): InterpolatedTextToken {
+  if (token.type !== TokenType.TEXT) return token;
+
+  const isLastTokenInTag = !context?.next;
+  if (!isLastTokenInTag) return token;
+
+  return transformTextToken(token, (text) => text.trimEnd());
+}
+
+function trimLeadingAndTrailingWhitespace(
+  text: string,
+  context: SiblingVisitorContext | null,
+): string {
+  const isFirstTokenInTag = !context?.prev;
+  const isLastTokenInTag = !context?.next;
+
+  const maybeTrimmedStart = isFirstTokenInTag ? text.trimStart() : text;
+  const maybeTrimmed = isLastTokenInTag ? maybeTrimmedStart.trimEnd() : maybeTrimmedStart;
+  return maybeTrimmed;
+}
+
 function createWhitespaceProcessedTextToken({type, parts, sourceSpan}: TextToken): TextToken {
   return {type, parts: [processWhitespace(parts[0])], sourceSpan};
+}
+
+function transformTextToken(
+  {type, parts, sourceSpan}: TextToken,
+  transform: (parts: string) => string,
+): TextToken {
+  // `TextToken` only ever has one part as defined in its type, so we just transform the first element.
+  return {type, parts: [transform(parts[0])], sourceSpan};
 }
 
 function processWhitespace(text: string): string {
   return replaceNgsp(text).replace(WS_REPLACE_REGEXP, ' ');
 }
 
-export function removeWhitespaces(htmlAstWithErrors: ParseTreeResult): ParseTreeResult {
+export function removeWhitespaces(
+  htmlAstWithErrors: ParseTreeResult,
+  preserveSignificantWhitespace: boolean,
+): ParseTreeResult {
   return new ParseTreeResult(
-    html.visitAll(new WhitespaceVisitor(), htmlAstWithErrors.rootNodes),
+    html.visitAll(
+      new WhitespaceVisitor(preserveSignificantWhitespace),
+      htmlAstWithErrors.rootNodes,
+    ),
     htmlAstWithErrors.errors,
   );
 }

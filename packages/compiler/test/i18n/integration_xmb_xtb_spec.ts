@@ -24,7 +24,7 @@ xdescribe('i18n XMB/XTB integration spec', () => {
     beforeEach(waitForAsync(() => configureCompiler(XTB + LF_LINE_ENDING_XTB, 'xtb')));
 
     it('should extract from templates', () => {
-      const serializer = new Xmb();
+      const serializer = new Xmb(/* preservePlaceholders */ true);
       const serializedXmb = serializeTranslations(HTML, serializer);
 
       XMB.forEach((x) => {
@@ -43,7 +43,7 @@ xdescribe('i18n XMB/XTB integration spec', () => {
     beforeEach(waitForAsync(() => configureCompiler(XTB + CRLF_LINE_ENDING_XTB, 'xtb')));
 
     it('should extract from templates (with CRLF line endings)', () => {
-      const serializer = new Xmb();
+      const serializer = new Xmb(/* preservePlaceholders */ true);
       const serializedXmb = serializeTranslations(HTML.replace(/\n/g, '\r\n'), serializer);
 
       XMB.forEach((x) => {
