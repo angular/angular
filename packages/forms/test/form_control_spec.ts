@@ -169,7 +169,7 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
       it('should rerun the validator when the value changes', () => {
         const c = new FormControl('value', Validators.required);
-        c.setValue(null);
+        c.setValue('value');
         expect(c.valid).toEqual(false);
       });
 
@@ -887,15 +887,15 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
         const c3 = new FormControl('foo', {nonNullable: false});
         expect(c3.value).toBe('foo');
-        expect(c3.defaultValue).toBe(null);
+        expect(c3.defaultValue).toBe('foo');
 
         c3.setValue('bar');
         expect(c3.value).toBe('bar');
-        expect(c3.defaultValue).toBe(null);
+        expect(c3.defaultValue).toBe('foo');
 
         c3.reset();
-        expect(c3.value).toBe(null);
-        expect(c3.defaultValue).toBe(null);
+        expect(c3.value).toBe('foo');
+        expect(c3.defaultValue).toBe('foo');
       });
 
       it('should look inside FormState objects for a default value', () => {

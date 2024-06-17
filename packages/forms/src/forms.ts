@@ -102,7 +102,6 @@ export {
   FormControlState,
   isFormControl,
   UntypedFormControl,
-  ɵFormControlCtor,
 } from './model/form_control';
 export {
   FormGroup,

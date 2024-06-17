@@ -20,6 +20,7 @@ import {
 } from './abstract_model';
 
 /**
+ * @description
  * FormControlState is a boxed form value. It is an object with a `value` key and a `disabled` key.
  *
  * @publicApi
@@ -53,150 +54,13 @@ export interface FormControlOptions extends AbstractControlOptions {
   initialValueIsDefault?: boolean;
 }
 
-/**
- * Tracks the value and validation status of an individual form control.
- *
- * This is one of the four fundamental building blocks of Angular forms, along with
- * `FormGroup`, `FormArray` and `FormRecord`. It extends the `AbstractControl` class that
- * implements most of the base functionality for accessing the value, validation status,
- * user interactions and events.
- *
- * `FormControl` takes a single generic argument, which describes the type of its value. This
- * argument always implicitly includes `null` because the control can be reset. To change this
- * behavior, set `nonNullable` or see the usage notes below.
- *
- * See [usage examples below](#usage-notes).
- *
- * @see {@link AbstractControl}
- * @see [Reactive Forms Guide](guide/forms/reactive-forms)
- * @see [Usage Notes](#usage-notes)
- *
- * @publicApi
- *
- * @overriddenImplementation ɵFormControlCtor
- *
- * @usageNotes
- *
- * ### Initializing Form Controls
- *
- * Instantiate a `FormControl`, with an initial value.
- *
- * ```ts
- * const control = new FormControl('some value');
- * console.log(control.value);     // 'some value'
- * ```
- *
- * The following example initializes the control with a form state object. The `value`
- * and `disabled` keys are required in this case.
- *
- * ```ts
- * const control = new FormControl({ value: 'n/a', disabled: true });
- * console.log(control.value);     // 'n/a'
- * console.log(control.status);    // 'DISABLED'
- * ```
- *
- * The following example initializes the control with a synchronous validator.
- *
- * ```ts
- * const control = new FormControl('', Validators.required);
- * console.log(control.value);      // ''
- * console.log(control.status);     // 'INVALID'
- * ```
- *
- * The following example initializes the control using an options object.
- *
- * ```ts
- * const control = new FormControl('', {
- *    validators: Validators.required,
- *    asyncValidators: myAsyncValidator
- * });
- * ```
- *
- * ### The single type argument
- *
- * `FormControl` accepts a generic argument, which describes the type of its value.
- * In most cases, this argument will be inferred.
- *
- * If you are initializing the control to `null`, or you otherwise wish to provide a
- * wider type, you may specify the argument explicitly:
- *
- * ```
- * let fc = new FormControl<string|null>(null);
- * fc.setValue('foo');
- * ```
- *
- * You might notice that `null` is always added to the type of the control.
- * This is because the control will become `null` if you call `reset`. You can change
- * this behavior by setting `{nonNullable: true}`.
- *
- * ### Configure the control to update on a blur event
- *
- * Set the `updateOn` option to `'blur'` to update on the blur `event`.
- *
- * ```ts
- * const control = new FormControl('', { updateOn: 'blur' });
- * ```
- *
- * ### Configure the control to update on a submit event
- *
- * Set the `updateOn` option to `'submit'` to update on a submit `event`.
- *
- * ```ts
- * const control = new FormControl('', { updateOn: 'submit' });
- * ```
- *
- * ### Reset the control back to a specific value
- *
- * You reset to a specific form state by passing through a standalone
- * value or a form state object that contains both a value and a disabled state
- * (these are the only two properties that cannot be calculated).
- *
- * ```ts
- * const control = new FormControl('Nancy');
- *
- * console.log(control.value); // 'Nancy'
- *
- * control.reset('Drew');
- *
- * console.log(control.value); // 'Drew'
- * ```
- *
- * ### Reset the control to its initial value
- *
- * If you wish to always reset the control to its initial value (instead of null),
- * you can pass the `nonNullable` option:
- *
- * ```
- * const control = new FormControl('Nancy', {nonNullable: true});
- *
- * console.log(control.value); // 'Nancy'
- *
- * control.reset();
- *
- * console.log(control.value); // 'Nancy'
- * ```
- *
- * ### Reset the control back to an initial value and disabled
- *
- * ```
- * const control = new FormControl('Nancy');
- *
- * console.log(control.value); // 'Nancy'
- * console.log(control.status); // 'VALID'
- *
- * control.reset({ value: 'Drew', disabled: true });
- *
- * console.log(control.value); // 'Drew'
- * console.log(control.status); // 'DISABLED'
- * ```
- */
 export interface FormControl<TValue = any> extends AbstractControl<TValue> {
   /**
    * The default value of this FormControl, used whenever the control is reset without an explicit
    * value. See {@link FormControlOptions#nonNullable} for more information on configuring
    * a default value.
    */
-  readonly defaultValue: TValue;
+  defaultValue: TValue;
 
   /** @internal */
   _onChange: Function[];
@@ -370,60 +234,6 @@ type FormControlInterface<TValue = any> = FormControl<TValue>;
  * ```
  * This symbol is prefixed with ɵ to make plain that it is an internal symbol.
  */
-export interface ɵFormControlCtor {
-  /**
-   * Construct a FormControl with no initial value or validators.
-   */
-  new (): FormControl<any>;
-
-  /**
-   * Creates a new `FormControl` instance.
-   *
-   * @param formState Initializes the control with an initial value,
-   * or an object that defines the initial value and disabled state.
-   *
-   * @param validatorOrOpts A synchronous validator function, or an array of
-   * such functions, or a `FormControlOptions` object that contains validation functions
-   * and a validation trigger.
-   *
-   * @param asyncValidator A single async validator or array of async validator functions
-   */
-  new <T = any>(
-    value: FormControlState<T> | T,
-    opts: FormControlOptions & {nonNullable: true},
-  ): FormControl<T>;
-
-  /**
-   * @deprecated Use `nonNullable` instead.
-   */
-  new <T = any>(
-    value: FormControlState<T> | T,
-    opts: FormControlOptions & {
-      initialValueIsDefault: true;
-    },
-  ): FormControl<T>;
-
-  /**
-   * @deprecated When passing an `options` argument, the `asyncValidator` argument has no effect.
-   */
-  new <T = any>(
-    value: FormControlState<T> | T,
-    opts: FormControlOptions,
-    asyncValidator: AsyncValidatorFn | AsyncValidatorFn[],
-  ): FormControl<T | null>;
-
-  new <T = any>(
-    value: FormControlState<T> | T,
-    validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null,
-    asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null,
-  ): FormControl<T | null>;
-
-  /**
-   * The presence of an explicit `prototype` property provides backwards-compatibility for apps that
-   * manually inspect the prototype chain.
-   */
-  prototype: FormControl<any>;
-}
 
 function isFormControlState(formState: unknown): formState is FormControlState<unknown> {
   return (
@@ -435,12 +245,148 @@ function isFormControlState(formState: unknown): formState is FormControlState<u
   );
 }
 
-export const FormControl: ɵFormControlCtor = class FormControl<TValue = any>
+/**
+ * @description
+ * Tracks the value and validation status of an individual form control.
+ *
+ * This is one of the four fundamental building blocks of Angular forms, along with
+ * `FormGroup`, `FormArray` and `FormRecord`. It extends the `AbstractControl` class that
+ * implements most of the base functionality for accessing the value, validation status,
+ * user interactions and events.
+ *
+ * `FormControl` takes a single generic argument, which describes the type of its value. This
+ * argument always implicitly includes `null` because the control can be reset. To change this
+ * behavior, set `nonNullable` or see the usage notes below.
+ *
+ * See [usage examples below](#usage-notes).
+ *
+ * @see {@link AbstractControl}
+ * @see [Reactive Forms Guide](guide/forms/reactive-forms)
+ * @see [Usage Notes](#usage-notes)
+ *
+ * @publicApi
+ *
+ * @usageNotes
+ *
+ * ### Initializing Form Controls
+ *
+ * Instantiate a `FormControl`, with an initial value.
+ *
+ * ```ts
+ * const control = new FormControl('some value');
+ * console.log(control.value);     // 'some value'
+ * ```
+ *
+ * The following example initializes the control with a form state object. The `value`
+ * and `disabled` keys are required in this case.
+ *
+ * ```ts
+ * const control = new FormControl({ value: 'n/a', disabled: true });
+ * console.log(control.value);     // 'n/a'
+ * console.log(control.status);    // 'DISABLED'
+ * ```
+ *
+ * The following example initializes the control with a synchronous validator.
+ *
+ * ```ts
+ * const control = new FormControl('', Validators.required);
+ * console.log(control.value);      // ''
+ * console.log(control.status);     // 'INVALID'
+ * ```
+ *
+ * The following example initializes the control using an options object.
+ *
+ * ```ts
+ * const control = new FormControl('', {
+ *    validators: Validators.required,
+ *    asyncValidators: myAsyncValidator
+ * });
+ * ```
+ *
+ * ### The single type argument
+ *
+ * `FormControl` accepts a generic argument, which describes the type of its value.
+ * In most cases, this argument will be inferred.
+ *
+ * If you are initializing the control to `null`, or you otherwise wish to provide a
+ * wider type, you may specify the argument explicitly:
+ *
+ * ```
+ * let fc = new FormControl<string|null>(null);
+ * fc.setValue('foo');
+ * ```
+ *
+ * You might notice that `null` is always added to the type of the control.
+ * This is because the control will become `null` if you call `reset`. You can change
+ * this behavior by setting `{nonNullable: true}`.
+ *
+ * ### Configure the control to update on a blur event
+ *
+ * Set the `updateOn` option to `'blur'` to update on the blur `event`.
+ *
+ * ```ts
+ * const control = new FormControl('', { updateOn: 'blur' });
+ * ```
+ *
+ * ### Configure the control to update on a submit event
+ *
+ * Set the `updateOn` option to `'submit'` to update on a submit `event`.
+ *
+ * ```ts
+ * const control = new FormControl('', { updateOn: 'submit' });
+ * ```
+ *
+ * ### Reset the control back to a specific value
+ *
+ * You reset to a specific form state by passing through a standalone
+ * value or a form state object that contains both a value and a disabled state
+ * (these are the only two properties that cannot be calculated).
+ *
+ * ```ts
+ * const control = new FormControl('Nancy');
+ *
+ * console.log(control.value); // 'Nancy'
+ *
+ * control.reset('Drew');
+ *
+ * console.log(control.value); // 'Drew'
+ * ```
+ *
+ * ### Reset the control to its initial value
+ *
+ * If you wish to always reset the control to its initial value (instead of null),
+ * you can pass the `nonNullable` option:
+ *
+ * ```
+ * const control = new FormControl('Nancy', {nonNullable: true});
+ *
+ * console.log(control.value); // 'Nancy'
+ *
+ * control.reset();
+ *
+ * console.log(control.value); // 'Nancy'
+ * ```
+ *
+ * ### Reset the control back to an initial value and disabled
+ *
+ * ```
+ * const control = new FormControl('Nancy');
+ *
+ * console.log(control.value); // 'Nancy'
+ * console.log(control.status); // 'VALID'
+ *
+ * control.reset({ value: 'Drew', disabled: true });
+ *
+ * console.log(control.value); // 'Drew'
+ * console.log(control.status); // 'DISABLED'
+ * ```
+ */
+export class FormControl<TValue = any>
   extends AbstractControl<TValue>
   implements FormControlInterface<TValue>
 {
   /** @publicApi */
-  public readonly defaultValue: TValue = null as unknown as TValue;
+  public defaultValue: TValue = null as TValue;
 
   /** @internal */
   _onChange: Array<Function> = [];
