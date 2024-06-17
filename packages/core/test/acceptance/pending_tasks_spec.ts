@@ -8,8 +8,8 @@
 
 import {ApplicationRef, ExperimentalPendingTasks} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {EMPTY, of} from 'rxjs';
-import {map, take, withLatestFrom} from 'rxjs/operators';
+import {EMPTY, firstValueFrom, of} from 'rxjs';
+import {filter, map, take, withLatestFrom} from 'rxjs/operators';
 
 import {PendingTasks} from '../../src/pending_tasks';
 
@@ -80,10 +80,57 @@ describe('public ExperimentalPendingTasks', () => {
     TestBed.inject(ApplicationRef).tick();
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
   });
+
+  it('should allow blocking stability with run', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const pendingTasks = TestBed.inject(ExperimentalPendingTasks);
+
+    let resolveFn: () => void;
+    pendingTasks.run(() => {
+      return new Promise<void>((r) => {
+        resolveFn = r;
+      });
+    });
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
+    resolveFn!();
+    await expectAsync(TestBed.inject(ApplicationRef).whenStable()).toBeResolved();
+  });
+
+  it('should return the result of the run function', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const pendingTasks = TestBed.inject(ExperimentalPendingTasks);
+
+    const result = await pendingTasks.run(async () => {
+      await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
+      return 1;
+    });
+
+    expect(result).toBe(1);
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
+    await expectAsync(TestBed.inject(ApplicationRef).whenStable()).toBeResolved();
+  });
+
+  xit('should stop blocking stability if run promise rejects', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const pendingTasks = TestBed.inject(ExperimentalPendingTasks);
+
+    let rejectFn: () => void;
+    const task = pendingTasks.run(() => {
+      return new Promise<void>((_, reject) => {
+        rejectFn = reject;
+      });
+    });
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
+    try {
+      rejectFn!();
+      await task;
+    } catch {}
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
+  });
 });
 
 function applicationRefIsStable(applicationRef: ApplicationRef) {
-  return applicationRef.isStable.pipe(take(1)).toPromise();
+  return firstValueFrom(applicationRef.isStable);
 }
 
 function hasPendingTasks(pendingTasks: PendingTasks): Promise<boolean> {
