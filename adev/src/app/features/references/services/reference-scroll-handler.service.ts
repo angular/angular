@@ -27,6 +27,7 @@ import {
 } from '../constants/api-reference-prerender.constants';
 import {WINDOW} from '@angular/docs';
 import {Router, Scroll} from '@angular/router';
+import {AppScroller} from '../../../app-scroller';
 
 export const SCROLL_EVENT_DELAY = 20;
 export const SCROLL_THRESHOLD = 20;
@@ -43,6 +44,7 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
   private readonly injector = inject(EnvironmentInjector);
   private readonly window = inject(WINDOW);
   private readonly router = inject(Router);
+  private readonly appScroller = inject(AppScroller);
 
   private readonly cardOffsetTop = new Map<string, number>();
   private resizeObserver: ResizeObserver | null = null;
@@ -65,7 +67,10 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
     this.router.routerState.root.fragment
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((fragment) => {
-        if (!fragment) {
+        // If there is no fragment or the scroll event has a position (traversing through history),
+        // allow the scroller to handler scrolling instead of going to the fragment
+        if (!fragment || this.appScroller.lastScrollEvent?.position) {
+          this.appScroller.scroll();
           return;
         }
 
