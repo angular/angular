@@ -24,7 +24,6 @@ For more available options, see `ng add` in [Angular CLI][CliMain].
 ## What's next
 
 <docs-pill-row>
-  <docs-pill href="api/localize" title="@angular/localize API"/>
   <docs-pill href="guide/i18n/locale-id" title="Refer to locales by ID"/>
 </docs-pill-row>
 
