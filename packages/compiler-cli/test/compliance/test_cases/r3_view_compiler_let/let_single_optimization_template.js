@@ -10,6 +10,7 @@ $r3$.ɵɵdefineComponent({
     }
     if (rf & 2) {
       $r3$.ɵɵtextInterpolate1(" ", ctx.value, " ");
+      ctx.value * 2;
       $r3$.ɵɵadvance(2);
       $r3$.ɵɵtextInterpolate1(" ", ctx.value, " ");
     }

@@ -27,7 +27,8 @@ $r3$.ɵɵdefineComponent({
       const $one_1$ = ctx.value + 1;
       const $two_2$ = $one_1$ + 1;
       $r3$.ɵɵadvance(3);
-      $r3$.ɵɵstoreLet($two_2$ + 1);
+      const $three_3$ = i0.ɵɵstoreLet($two_2$ + 1);
+      $three_3$ + 1;
       $r3$.ɵɵadvance(2);
       $r3$.ɵɵtextInterpolate1(" ", ctx.value, " ");
       $r3$.ɵɵadvance();

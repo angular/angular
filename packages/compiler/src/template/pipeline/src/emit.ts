@@ -80,7 +80,7 @@ import {generateTrackVariables} from './phases/track_variables';
 import {countVariables} from './phases/var_counting';
 import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
-import {optimizeLetDeclarations} from './phases/let_declarations_optimization';
+import {optimizeStoreLet} from './phases/store_let_optimization';
 import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
 import {generateLocalLetReferences} from './phases/generate_local_let_references';
 
@@ -142,7 +142,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: expandSafeReads},
   {kind: Kind.Both, fn: generateTemporaryVariables},
   {kind: Kind.Both, fn: optimizeVariables},
-  {kind: Kind.Both, fn: optimizeLetDeclarations},
+  {kind: Kind.Both, fn: optimizeStoreLet},
   {kind: Kind.Tmpl, fn: allocateSlots},
   {kind: Kind.Tmpl, fn: resolveI18nElementPlaceholders},
   {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
