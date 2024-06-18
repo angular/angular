@@ -298,7 +298,7 @@ export function provideExperimentalZonelessChangeDetection(): EnvironmentProvide
   if ((typeof ngDevMode === 'undefined' || ngDevMode) && typeof Zone !== 'undefined' && Zone) {
     const message = formatRuntimeError(
       RuntimeErrorCode.UNEXPECTED_ZONEJS_PRESENT_IN_ZONELESS_MODE,
-      `The application is using zoneless change detection, but is still loading Zone.js.` +
+      `The application is using zoneless change detection, but is still loading Zone.js. ` +
         `Consider removing Zone.js to get the full benefits of zoneless. ` +
         `In applications using the Angular CLI, Zone.js is typically included in the "polyfills" section of the angular.json file.`,
     );
