@@ -134,7 +134,7 @@ export class NgControlStatus extends AbstractControlStatus {
  */
 @Directive({
   selector:
-    '[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]',
+    '[formGroupName],[formArrayName],[ngModelGroup],[formGroup],[formArray],form:not([ngNoForm]),[ngForm]',
   host: ngGroupStatusHost,
   standalone: false,
 })

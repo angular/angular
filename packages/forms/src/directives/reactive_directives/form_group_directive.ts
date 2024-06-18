@@ -15,7 +15,6 @@ import type {FormControlName} from './form_control_name';
 import type {FormArrayName, FormGroupName} from './form_group_name';
 import {FormResetEvent, FormSubmittedEvent} from '../../model/abstract_model';
 import {AbstractFormDirective} from './abstract_form.directive';
-import {AbstractControl} from '../../forms';
 
 const formDirectiveProvider: Provider = {
   provide: ControlContainer,
