@@ -40,7 +40,7 @@ import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../valid
 
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
 import {FormArrayName, FormGroupName} from './form_group_name';
-import { AbstractFormDirective } from './abstract_form.directive';
+import {AbstractFormDirective} from './abstract_form.directive';
 
 const controlNameBinding: Provider = {
   provide: NgControl,

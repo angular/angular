@@ -167,7 +167,10 @@ export abstract class AbstractFormDirective extends ControlContainer implements 
     removeControl(dir: FormControlName): void;
     removeFormArray(dir: FormArrayName): void;
     removeFormGroup(dir: FormGroupName): void;
-    resetForm(value?: any): void;
+    resetForm(value?: any, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
     get submitted(): boolean;
     updateModel(dir: FormControlName, value: any): void;
     // (undocumented)
@@ -313,6 +316,17 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
+}
+
+// @public
+export class FormArrayDirective extends AbstractFormDirective {
+    get control(): FormArray;
+    form: FormArray;
+    ngSubmit: EventEmitter<any>;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormArrayDirective, "[formArray]", ["ngForm"], { "form": { "alias": "formArray"; "required": false; }; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormArrayDirective, never>;
 }
 
 // @public
@@ -678,7 +692,7 @@ export class NgControlStatus extends AbstractControlStatus {
 export class NgControlStatusGroup extends AbstractControlStatus {
     constructor(cd: ControlContainer);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgControlStatusGroup, "[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgControlStatusGroup, "[formGroupName],[formArrayName],[ngModelGroup],[formGroup],[formArray],form:not([ngNoForm]),[ngForm]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgControlStatusGroup, [{ optional: true; self: true; }]>;
 }
@@ -713,7 +727,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     get submitted(): boolean;
     updateModel(dir: NgControl, value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForm, "form:not([ngNoForm]):not([formGroup]),ng-form,[ngForm]", ["ngForm"], { "options": { "alias": "ngFormOptions"; "required": false; }; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForm, "form:not([ngNoForm]):not([formGroup]):not([formArray]),ng-form,[ngForm]", ["ngForm"], { "options": { "alias": "ngFormOptions"; "required": false; }; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgForm, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
@@ -850,7 +864,7 @@ export class ReactiveFormsModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<ReactiveFormsModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<ReactiveFormsModule, [typeof FormControlDirective, typeof FormGroupDirective, typeof FormControlName, typeof FormGroupName, typeof FormArrayName], never, [typeof ɵInternalFormsSharedModule, typeof FormControlDirective, typeof FormGroupDirective, typeof FormControlName, typeof FormGroupName, typeof FormArrayName]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ReactiveFormsModule, [typeof FormControlDirective, typeof FormGroupDirective, typeof FormArrayDirective, typeof FormControlName, typeof FormGroupName, typeof FormArrayName], never, [typeof ɵInternalFormsSharedModule, typeof FormControlDirective, typeof FormGroupDirective, typeof FormArrayDirective, typeof FormControlName, typeof FormGroupName, typeof FormArrayName]>;
 }
 
 // @public

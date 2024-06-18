@@ -1005,7 +1005,6 @@
       "syncPendingControls",
       "syncViewWithBlueprint",
       "templateCreate",
-      "throwCyclicDependencyError",
       "throwError",
       "throwInvalidWriteToSignalError",
       "throwInvalidWriteToSignalErrorFn",
