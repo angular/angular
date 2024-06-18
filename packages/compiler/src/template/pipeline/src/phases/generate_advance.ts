@@ -7,6 +7,7 @@
  */
 
 import * as ir from '../../ir';
+import * as o from '../../../../output/output_ast';
 import type {CompilationJob} from '../compilation';
 
 /**
@@ -45,6 +46,12 @@ export function generateAdvance(job: CompilationJob): void {
         ir.hasDependsOnSlotContextTrait(op.initializer)
       ) {
         consumer = op.initializer;
+      } else if (
+        op.kind === ir.OpKind.Statement &&
+        op.statement instanceof o.ExpressionStatement &&
+        ir.hasDependsOnSlotContextTrait(op.statement.expr)
+      ) {
+        consumer = op.statement.expr;
       } else {
         // `op` doesn't depend on the slot counter, so it can be skipped.
         continue;

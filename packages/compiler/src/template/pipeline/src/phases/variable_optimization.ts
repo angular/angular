@@ -178,12 +178,6 @@ function optimizeVariablesInOpList(
     const opInfo = opMap.get(op)!;
 
     if (op.kind === ir.OpKind.Variable && varUsages.get(op.xref)! === 0) {
-      // `storeLet` variables are optimized in a separate pass once
-      // their references have been optimized. Skip them here.
-      if (op.initializer instanceof ir.StoreLetExpr) {
-        continue;
-      }
-
       // This variable is unused and can be removed. We might need to keep the initializer around,
       // though, if something depends on it running.
       if (
@@ -326,6 +320,8 @@ function fencesForIrExpression(expr: ir.Expression): Fence {
       return Fence.ViewContextRead | Fence.ViewContextWrite;
     case ir.ExpressionKind.RestoreView:
       return Fence.ViewContextRead | Fence.ViewContextWrite | Fence.SideEffectful;
+    case ir.ExpressionKind.StoreLet:
+      return Fence.SideEffectful | Fence.ViewContextWrite;
     case ir.ExpressionKind.Reference:
     case ir.ExpressionKind.ContextLetReference:
       return Fence.ViewContextRead;
