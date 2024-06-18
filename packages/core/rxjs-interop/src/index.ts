@@ -15,4 +15,5 @@ export {
   toObservableMicrotask as ɵtoObservableMicrotask,
 } from './to_observable';
 export {toSignal, ToSignalOptions} from './to_signal';
+export {pendingUntilEvent} from './pending_until_event';
 export {RxResourceOptions, rxResource} from './rx_resource';
