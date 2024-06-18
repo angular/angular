@@ -139,6 +139,9 @@ export function createViewTransition(
  */
 function createRenderPromise(injector: Injector) {
   return new Promise<void>((resolve) => {
-    afterNextRender(resolve, {injector});
+    // Wait for the microtask queue to empty after the next render happens (by waiting a macrotask).
+    // This ensures any follow-up renders in the microtask queue are completed before the
+    // view transition starts animating.
+    afterNextRender({read: () => setTimeout(resolve)}, {injector});
   });
 }
