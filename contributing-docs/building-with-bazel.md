@@ -49,7 +49,6 @@ keeps the outputs up-to-date as you save sources.
 - Test package in node: `yarn test packages/core/test:test`
 - Test package in karma: `yarn test packages/core/test:test_web`
 - Test all packages: `yarn test packages/...`
-- Test angular.io app locally: `yarn test //aio/... --config=aio_local_deps`
 
 The ellipsis in the examples above are not meant to be substituted by a package name, but
 are used by Bazel as a wildcard to execute all tests in the specified path. To execute all the tests for a

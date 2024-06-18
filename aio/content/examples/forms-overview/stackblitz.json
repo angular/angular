@@ -1,8 +1,0 @@
-{
-  "description": "Forms Overview",
-  "files":[
-    "!**/*.d.ts",
-    "!**/*.js"
-  ],
-  "file": "src/app/app.component.ts"
-}

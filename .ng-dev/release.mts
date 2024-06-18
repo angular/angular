@@ -28,7 +28,7 @@ export const release: ReleaseConfig = {
     return performNpmReleaseBuild();
   },
   releaseNotes: {
-    hiddenScopes: ['aio', 'bazel', 'dev-infra', 'docs-infra', 'zone.js', 'devtools'],
+    hiddenScopes: ['bazel', 'dev-infra', 'docs-infra', 'zone.js', 'devtools'],
   },
   releasePrLabels: ['area: build & ci', 'action: merge', 'PullApprove: disable'],
 };
