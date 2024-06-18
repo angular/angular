@@ -1,7 +1,8 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
 package(default_visibility = ["//visibility:public"])
 
-docs_example(
-    name = "security",
-)
+exports_files([
+    "src/app/bypass-security.component.html",
+    "src/app/bypass-security.component.ts",
+    "src/app/inner-html-binding.component.html",
+    "src/app/inner-html-binding.component.ts",
+])
