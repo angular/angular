@@ -131,12 +131,12 @@ export const formArrayNameProvider: any = {
  *
  * Syncs a nested `FormArray` to a DOM element.
  *
- * This directive is designed to be used with a parent `FormGroupDirective` (selector:
- * `[formGroup]`).
+ * This directive is designed to be used with a parent `FormGroupDirective`/`FormGroupArray` (selector:
+ * `[formGroup]`/`[formArray]`).
  *
  * It accepts the string name of the nested `FormArray` you want to link, and
  * will look for a `FormArray` registered with that name in the parent
- * `FormGroup` instance you passed into `FormGroupDirective`.
+ * `FormGroup`/`FormArray` instance you passed into `FormGroupDirective`/`FormGroupArray`.
  *
  * @see [Reactive Forms Guide](guide/forms/reactive-forms)
  * @see {@link AbstractControl}
