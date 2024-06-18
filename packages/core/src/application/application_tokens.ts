@@ -119,6 +119,20 @@ export const CSP_NONCE = new InjectionToken<string | null>(ngDevMode ? 'CSP nonc
   },
 });
 
+export interface DeferBlockConfig {
+  enableOnServer: boolean;
+}
+
+// NOTE: this is a temporary token (for experiments only), we should have
+// a different mechanism to enable defer blocks on the server globally
+// (likely via a flag in `angularCompilerOptions`).
+export const DEFER_BLOCK_CONFIG = new InjectionToken<DeferBlockConfig>('', {
+  providedIn: 'root',
+  factory: () => ({
+    enableOnServer: false,
+  }),
+});
+
 /**
  * A configuration object for the image-related options. Contains:
  * - breakpoints: An array of integer breakpoints used to generate
