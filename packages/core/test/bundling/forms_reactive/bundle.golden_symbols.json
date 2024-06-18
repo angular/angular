@@ -21,6 +21,9 @@
     "name": "AbstractControlStatus"
   },
   {
+    "name": "AbstractFormDirective"
+  },
+  {
     "name": "AbstractFormGroupDirective"
   },
   {

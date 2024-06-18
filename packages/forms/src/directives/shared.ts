@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {InjectionToken, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 import {AbstractControl} from '../model/abstract_model';
@@ -368,7 +368,7 @@ export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean 
 }
 
 export function syncPendingControls(
-  form: FormGroup,
+  form: AbstractControl,
   directives: Set<NgControl> | NgControl[],
 ): void {
   form._syncPendingControls();
