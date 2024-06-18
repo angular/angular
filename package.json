@@ -6,7 +6,6 @@
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
-  "//engines-comment": "Keep this in sync with /aio/package.json and /aio/tools/examples/shared/package.json",
   "engines": {
     "node": "^18.19.1 || ^20.11.1",
     "yarn": ">=1.22.4 <2",
@@ -27,7 +26,7 @@
     "ng-dev": "tsx --tsconfig .ng-dev/tsconfig.json node_modules/@angular/ng-dev/bundles/cli.mjs",
     "build": "tsx --tsconfig scripts/tsconfig.json scripts/build/build-packages-dist.mts",
     "test": "bazelisk test",
-    "test:ci": "bazelisk test -- //... -//adev/... -//devtools/... -//aio/...",
+    "test:ci": "bazelisk test -- //... -//adev/... -//devtools/...",
     "test-tsec": "bazelisk test //... --build_tag_filters=tsec --test_tag_filters=tsec",
     "lint": "yarn -s tslint && yarn -s ng-dev format changed --check",
     "tslint": "tslint -c tslint.json --project tsconfig-tslint.json",

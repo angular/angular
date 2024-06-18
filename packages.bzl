@@ -42,11 +42,7 @@ ALL_PACKAGES = [
 # Packages used by integration tests
 INTEGRATION_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "angular-in-memory-web-api")
 
-# Packages used by example e2e tests
-AIO_EXAMPLE_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "@angular/benchpress")
-
 # Package names under //packages that have `files_for_docgen` targets
-# including files needed for AIO doc generation.
 DOCS_ENTRYPOINTS = [
     "animations",
     "animations/browser",

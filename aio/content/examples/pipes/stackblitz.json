@@ -1,7 +1,0 @@
-{
-  "description": "Pipes",
-  "files":[
-    "!**/*.d.ts",
-    "!**/*.js"],
-  "tags": ["pipe"]
-}

@@ -27,10 +27,6 @@ const semver = require('semver');
 const ignoreCommitPatterns = [
   'release:',
   'docs: release notes',
-  // These commits are created to update cli command docs sources with the most recent sha (stored
-  // in `aio/package.json`). Separate commits are generated for main and patch branches and since
-  // it's purely an infrastructure-related change, we ignore these commits while comparing main
-  // and patch diffs to look for delta.
   'build(docs-infra): upgrade cli command docs sources',
 ];
 
