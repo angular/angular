@@ -125,6 +125,29 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should not produce diagnostics for nullish coalescing in a chain', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `{{ var1 !== '' && (items?.length ?? 0) > 0 }}`,
+          },
+          source: 'export class TestCmp { var1 = "text"; items: string[] | undefined = [] }',
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [nullishCoalescingNotNullableFactory],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
+
     it('should not produce nullish coalescing warning for the any type', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup([
