@@ -111,8 +111,6 @@
   "linterOptions": {
     "exclude": [
       "**/node_modules/**/*",
-      // Ignore AIO and integration tests.
-      "./aio/**/*",
       "./integration/**/*",
       // Ignore output directories
       "./built/**/*",

@@ -26,8 +26,6 @@ jobs:
           cache-node-modules: true
       - name: Install node modules
         run: yarn install --frozen-lockfile
-      - name: Install node modules in aio
-        run: yarn install --frozen-lockfile --cwd aio
       - name: Check code lint
         run: yarn -s tslint
       - name: Check for circular dependencies

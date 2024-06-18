@@ -121,19 +121,6 @@ groups:
         contains_any_globs(files, [
           'packages/animations/**/{*,.*}',
           'packages/platform-browser/animations/**/{*,.*}',
-          'aio/content/guide/animations.md',
-          'aio/content/guide/add-an-animation.md',
-          'aio/content/guide/animate-state-style.md',
-          'aio/content/guide/animation-api-summary.md',
-          'aio/content/guide/understanding-angular-animation.md',
-          'aio/content/examples/animations/**/{*,.*}',
-          'aio/content/images/guide/animations/**/{*,.*}',
-          'aio/content/guide/complex-animation-sequences.md',
-          'aio/content/guide/reusable-animations.md',
-          'aio/content/guide/route-animations.md',
-          'aio/content/guide/transition-and-triggers.md',
-          'aio/content/guide/animations-attach-to-html-template.md',
-          'aio/content/guide/animation-transition-timing.md'
           ])
     reviewers:
       users:
@@ -152,13 +139,7 @@ groups:
         contains_any_globs(files, [
           'packages/compiler/**/{*,.*}',
           'packages/examples/compiler/**/{*,.*}',
-          'aio/content/examples/angular-compiler-options/**/{*,.*}',
           'packages/compiler-cli/**/{*,.*}',
-          'aio/content/guide/angular-compiler-options.md',
-          'aio/content/guide/aot-compiler.md',
-          'aio/content/guide/aot-metadata-errors.md',
-          'aio/content/guide/template-typecheck.md',
-          'aio/content/extended-diagnostics/*.md'
           ])
     reviewers:
       users:
@@ -200,155 +181,6 @@ groups:
           'packages/examples/platform-browser/**/{*,.*}',
           'packages/platform-browser-dynamic/**/{*,.*}',
           'packages/docs/**/{*,.*}',
-          'aio/content/guide/accessibility.md',
-          'aio/content/examples/accessibility/**/{*,.*}',
-          'aio/content/guide/architecture-components.md',
-          'aio/content/guide/architecture-modules.md',
-          'aio/content/guide/architecture-next-steps.md',
-          'aio/content/guide/architecture-services.md',
-          'aio/content/guide/architecture.md',
-          'aio/content/examples/architecture/**/{*,.*}',
-          'aio/content/guide/rxjs-interop.md',
-          'aio/content/images/guide/architecture/**/{*,.*}',
-          'aio/content/guide/attribute-directives.md',
-          'aio/content/examples/attribute-directives/**/{*,.*}',
-          'aio/content/images/guide/attribute-directives/**/{*,.*}',
-          'aio/content/guide/bootstrapping.md',
-          'aio/content/examples/bootstrapping/**/{*,.*}',
-          'aio/content/guide/change-detection.md',
-          'aio/content/guide/change-detection-zone-pollution.md',
-          'aio/content/guide/change-detection-slow-computations.md',
-          'aio/content/guide/change-detection-skipping-subtrees.md',
-          'aio/content/images/guide/change-detection/**/{*,.*}',
-          'aio/content/guide/class-binding.md',
-          'aio/content/guide/cheatsheet.md',
-          'aio/content/guide/component-interaction.md',
-          'aio/content/examples/component-interaction/**/{*,.*}',
-          'aio/content/images/guide/component-interaction/**/{*,.*}',
-          'aio/content/guide/component-overview.md',
-          'aio/content/errors/*.md',
-          'aio/content/examples/errors/**/{*,.*}',
-          'aio/content/examples/component-overview/**/{*,.*}',
-          'aio/content/guide/component-styles.md',
-          'aio/content/guide/developer-guide-overview.md',
-          'aio/content/guide/view-encapsulation.md',
-          'aio/content/examples/component-styles/**/{*,.*}',
-          'aio/content/examples/content-projection/**/{*,.*}',
-          'aio/content/guide/content-projection.md',
-          'aio/content/guide/creating-injectable-service.md',
-          'aio/content/guide/dependency-injection-overview.md',
-          'aio/content/guide/dependency-injection.md',
-          'aio/content/examples/dependency-injection/**/{*,.*}',
-          'aio/content/images/guide/dependency-injection/**/{*,.*}',
-          'aio/content/guide/dependency-injection-in-action.md',
-          'aio/content/examples/dependency-injection-in-action/**/{*,.*}',
-          'aio/content/images/guide/dependency-injection-in-action/**/{*,.*}',
-          'aio/content/guide/dependency-injection-navtree.md',
-          'aio/content/guide/dependency-injection-providers.md',
-          'aio/content/guide/dependency-injection-context.md',
-          'aio/content/guide/lightweight-injection-tokens.md',
-          'aio/content/guide/displaying-data.md',
-          'aio/content/examples/displaying-data/**/{*,.*}',
-          'aio/content/images/guide/displaying-data/**/{*,.*}',
-          'aio/content/guide/dynamic-component-loader.md',
-          'aio/content/examples/dynamic-component-loader/**/{*,.*}',
-          'aio/content/images/guide/dynamic-component-loader/**/{*,.*}',
-          'aio/content/guide/example-apps-list.md',
-          'aio/content/guide/feature-modules.md',
-          'aio/content/examples/feature-modules/**/{*,.*}',
-          'aio/content/images/guide/feature-modules/**/{*,.*}',
-          'aio/content/guide/frequent-ngmodules.md',
-          'aio/content/images/guide/frequent-ngmodules/**/{*,.*}',
-          'aio/content/guide/hierarchical-dependency-injection.md',
-          'aio/content/examples/hierarchical-dependency-injection/**/{*,.*}',
-          'aio/content/guide/image-directive.md',
-          'aio/content/guide/image-directive-setup.md',
-          'aio/content/examples/providers-viewproviders/**/{*,.*}',
-          'aio/content/examples/resolution-modifiers/**/{*,.*}',
-          'aio/content/guide/lazy-loading-ngmodules.md',
-          'aio/content/examples/lazy-loading-ngmodules/**/{*,.*}',
-          'aio/content/images/guide/lazy-loading-ngmodules/**/{*,.*}',
-          'aio/content/guide/lifecycle-hooks.md',
-          'aio/content/examples/lifecycle-hooks/**/{*,.*}',
-          'aio/content/images/guide/lifecycle-hooks/**/{*,.*}',
-          'aio/content/examples/ngcontainer/**/{*,.*}',
-          'aio/content/guide/ngmodules.md',
-          'aio/content/examples/ngmodules/**/{*,.*}',
-          'aio/content/guide/ngmodule-api.md',
-          'aio/content/guide/ngmodule-faq.md',
-          'aio/content/guide/ngmodule-vs-jsmodule.md',
-          'aio/content/guide/module-types.md',
-          'aio/content/guide/template-overview.md',
-          'aio/content/guide/template-syntax.md',
-          'aio/content/guide/built-in-template-functions.md',
-          'aio/content/examples/built-in-template-functions/**/{*,.*}',
-          'aio/content/guide/event-binding.md',
-          'aio/content/guide/event-binding-concepts.md',
-          'aio/content/examples/event-binding/**/{*,.*}',
-          'aio/content/guide/interpolation.md',
-          'aio/content/examples/interpolation/**/{*,.*}',
-          'aio/content/examples/template-syntax/**/{*,.*}',
-          'aio/content/images/guide/template-syntax/**/{*,.*}',
-          'aio/content/guide/binding-overview.md',
-          'aio/content/guide/binding-syntax.md',
-          'aio/content/examples/binding-syntax/**/{*,.*}',
-          'aio/content/guide/property-binding.md',
-          'aio/content/examples/property-binding/**/{*,.*}',
-          'aio/content/guide/property-binding-best-practices.md',
-          'aio/content/guide/attribute-binding.md',
-          'aio/content/examples/attribute-binding/**/{*,.*}',
-          'aio/content/guide/two-way-binding.md',
-          'aio/content/examples/two-way-binding/**/{*,.*}',
-          'aio/content/guide/built-in-directives.md',
-          'aio/content/guide/directive-composition-api.md',
-          'aio/content/examples/built-in-directives/**/{*,.*}',
-          'aio/content/images/guide/built-in-directives/**/{*,.*}',
-          'aio/content/guide/template-reference-variables.md',
-          'aio/content/examples/template-reference-variables/**/{*,.*}',
-          'aio/content/guide/inputs-outputs.md',
-          'aio/content/examples/inputs-outputs/**/{*,.*}',
-          'aio/content/images/guide/inputs-outputs/**/{*,.*}',
-          'aio/content/guide/understanding-template-expr-overview.md',
-          'aio/content/guide/template-expression-operators.md',
-          'aio/content/examples/template-expression-operators/**/{*,.*}',
-          'aio/content/guide/pipes.md',
-          'aio/content/guide/pipes-custom-data-trans.md',
-          'aio/content/guide/pipes-overview.md',
-          'aio/content/guide/pipe-precedence.md',
-          'aio/content/guide/pipes-transform-data.md',
-          'aio/content/guide/pipe-template.md',
-          'aio/content/examples/pipes/**/{*,.*}',
-          'aio/content/images/guide/pipes/**/{*,.*}',
-          'aio/content/guide/providers.md',
-          'aio/content/examples/providers/**/{*,.*}',
-          'aio/content/images/guide/providers/**/{*,.*}',
-          'aio/content/guide/signal-queries.md',
-          'aio/content/guide/singleton-services.md',
-          'aio/content/guide/signal-inputs.md',
-          'aio/content/guide/sharing-ngmodules.md',
-          'aio/content/guide/standalone-components.md',
-          'aio/content/guide/standalone-migration.md',
-          'aio/content/guide/structural-directives.md',
-          'aio/content/examples/structural-directives/**/{*,.*}',
-          'aio/content/guide/svg-in-templates.md',
-          'aio/content/guide/style-precedence.md',
-          'aio/content/images/guide/structural-directives/**/{*,.*}',
-          'aio/content/guide/template-statements.md',
-          'aio/content/guide/understanding-angular-overview.md',
-          'aio/content/guide/user-input.md',
-          'aio/content/examples/user-input/**/{*,.*}',
-          'aio/content/images/guide/user-input/**/{*,.*}',
-          'aio/content/guide/view-encapsulation.md',
-          'aio/content/examples/view-encapsulation/**/{*,.*}',
-          'aio/content/images/guide/view-encapsulation/**/{*,.*}',
-          'aio/content/special-elements/**/{*,.*}',
-          'aio/content/blocks/**/{*,.*}',
-          'aio/content/guide/hydration.md',
-          'aio/content/guide/defer.md',
-          'aio/content/guide/signals.md',
-          'aio/content/guide/control_flow.md',
-          'aio/content/guide/model-inputs.md',
-          'aio/content/examples/injection-token/**/{*,.*}',
           ])
     reviewers:
       users:
@@ -391,23 +223,6 @@ groups:
         contains_any_globs(files, [
           'packages/common/http/**/{*,.*}',
           'packages/examples/http/**/{*,.*}',
-          'aio/content/guide/understanding-communicating-with-http.md',
-          'aio/content/guide/http-configure-http-url-parameters.md',
-          'aio/content/guide/http-handle-request-errors.md',
-          'aio/content/guide/http-intercept-requests-and-responses.md',
-          'aio/content/guide/http-interceptor-use-cases.md',
-          'aio/content/guide/http-make-jsonp-request.md',
-          'aio/content/guide/http-optimize-server-interaction.md',
-          'aio/content/guide/http-pass-metadata-to-interceptors.md',
-          'aio/content/guide/http-request-data-from-server.md',
-          'aio/content/guide/http-security-xsrf-protection.md',
-          'aio/content/guide/http-send-data-to-server.md',
-          'aio/content/guide/http-server-communication.md',
-          'aio/content/guide/http-setup-server-communication.md',
-          'aio/content/guide/http-test-requests.md',
-          'aio/content/guide/http-track-show-request-progress.md',
-          'aio/content/examples/http/**/{*,.*}',
-          'aio/content/images/guide/http/**/{*,.*}'
           ])
     reviewers:
       users:
@@ -427,9 +242,6 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/elements/**/{*,.*}',
-          'aio/content/examples/elements/**/{*,.*}',
-          'aio/content/images/guide/elements/**/{*,.*}',
-          'aio/content/guide/elements.md'
           ])
     reviewers:
       users:
@@ -451,22 +263,6 @@ groups:
         contains_any_globs(files, [
           'packages/forms/**/{*,.*}',
           'packages/examples/forms/**/{*,.*}',
-          'aio/content/guide/forms.md',
-          'aio/content/examples/forms/**/{*,.*}',
-          'aio/content/images/guide/forms/**/{*,.*}',
-          'aio/content/guide/forms-overview.md',
-          'aio/content/examples/forms-overview/**/{*,.*}',
-          'aio/content/images/guide/forms-overview/**/{*,.*}',
-          'aio/content/guide/form-validation.md',
-          'aio/content/guide/typed-forms.md',
-          'aio/content/examples/form-validation/**/{*,.*}',
-          'aio/content/images/guide/form-validation/**/{*,.*}',
-          'aio/content/guide/dynamic-form.md',
-          'aio/content/examples/dynamic-form/**/{*,.*}',
-          'aio/content/images/guide/dynamic-form/**/{*,.*}',
-          'aio/content/guide/reactive-forms.md',
-          'aio/content/examples/reactive-forms/**/{*,.*}',
-          'aio/content/images/guide/reactive-forms/**/{*,.*}'
           ])
     reviewers:
       users:
@@ -495,21 +291,6 @@ groups:
           'packages/compiler/src/render3/view/i18n/**/{*,.*}',
           'packages/compiler-cli/src/extract_i18n.ts',
           'packages/localize/**/{*,.*}',
-          'aio/content/guide/i18n-overview.md',
-          'aio/content/guide/i18n-common-overview.md',
-          'aio/content/guide/i18n-common-add-package.md',
-          'aio/content/guide/i18n-common-locale-id.md',
-          'aio/content/guide/i18n-common-format-data-locale.md',
-          'aio/content/guide/i18n-common-prepare.md',
-          'aio/content/guide/i18n-common-translation-files.md',
-          'aio/content/guide/i18n-common-merge.md',
-          'aio/content/guide/i18n-common-deploy.md',
-          'aio/content/guide/i18n-example.md',
-          'aio/content/guide/i18n-optional-overview.md',
-          'aio/content/guide/i18n-optional-manual-runtime-locale.md',
-          'aio/content/guide/i18n-optional-import-global-variants.md',
-          'aio/content/guide/i18n-optional-manage-marked-text.md',
-          'aio/content/examples/i18n/**/{*,.*}'
           ])
     reviewers:
       users:
@@ -525,9 +306,6 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/platform-server/**/{*,.*}',
-          'aio/content/guide/prerendering.md',
-          'aio/content/guide/ssr.md',
-          'aio/content/examples/ssr/**/{*,.*}',
           ])
     reviewers:
       users:
@@ -549,16 +327,6 @@ groups:
         contains_any_globs(files, [
           'packages/router/**/{*,.*}',
           'packages/examples/router/**/{*,.*}',
-          'aio/content/guide/router.md',
-          'aio/content/guide/router-tutorial.md',
-          'aio/content/guide/router-tutorial-toh.md',
-          'aio/content/guide/routing-overview.md',
-          'aio/content/guide/router-reference.md',
-          'aio/content/examples/router-tutorial/**/{*,.*}',
-          'aio/content/examples/router/**/{*,.*}',
-          'aio/content/images/guide/router/**/{*,.*}',
-          'aio/content/guide/routing-with-urlmatcher.md',
-          'aio/content/examples/routing-with-urlmatcher/**/{*,.*}'
           ])
     reviewers:
       users:
@@ -575,15 +343,6 @@ groups:
         contains_any_globs(files, [
           'packages/service-worker/**/{*,.*}',
           'packages/examples/service-worker/**/{*,.*}',
-          'aio/content/guide/service-worker-getting-started.md',
-          'aio/content/examples/service-worker-getting-started/**/{*,.*}',
-          'aio/content/guide/app-shell.md',
-          'aio/content/guide/service-worker-communications.md',
-          'aio/content/guide/service-worker-config.md',
-          'aio/content/guide/service-worker-devops.md',
-          'aio/content/guide/service-worker-intro.md',
-          'aio/content/guide/service-worker-notifications.md',
-          'aio/content/images/guide/service-worker/**/{*,.*}'
           ])
     reviewers:
       users:
@@ -600,17 +359,6 @@ groups:
           'packages/upgrade/**/{*,.*}',
           'packages/common/upgrade/**/{*,.*}',
           'packages/examples/upgrade/**/{*,.*}',
-          'aio/content/guide/upgrade.md',
-          'aio/content/examples/upgrade-lazy-load-ajs/**/{*,.*}',
-          'aio/content/examples/upgrade-module/**/{*,.*}',
-          'aio/content/images/guide/upgrade/**/{*,.*}',
-          'aio/content/examples/upgrade-phonecat-1-typescript/**/{*,.*}',
-          'aio/content/examples/upgrade-phonecat-2-hybrid/**/{*,.*}',
-          'aio/content/examples/upgrade-phonecat-3-final/**/{*,.*}',
-          'aio/content/guide/upgrade-performance.md',
-          'aio/content/guide/upgrade-setup.md',
-          'aio/content/guide/ajs-quick-reference.md',
-          'aio/content/examples/ajs-quick-reference/**/{*,.*}'
           ])
     reviewers:
       users:
@@ -626,17 +374,6 @@ groups:
       - >
         contains_any_globs(files.exclude('packages/compiler-cli/*').exclude('packages/language-service/*').exclude('packages/service-worker/*'), [
           'packages/**/testing/**/{*,.*}',
-          'aio/content/guide/testing.md',
-          'aio/content/guide/test-debugging.md',
-          'aio/content/guide/testing-attribute-directives.md',
-          'aio/content/guide/testing-code-coverage.md',
-          'aio/content/guide/testing-components-basics.md',
-          'aio/content/guide/testing-components-scenarios.md',
-          'aio/content/guide/testing-pipes.md',
-          'aio/content/guide/testing-services.md',
-          'aio/content/guide/testing-utility-apis.md',
-          'aio/content/examples/testing/**/{*,.*}',
-          'aio/content/images/guide/testing/**/{*,.*}'
           ])
     reviewers:
       users:
@@ -700,9 +437,6 @@ groups:
           'packages/tsconfig-tsec-base.json',
           'packages/tsec-exemption.json',
           'tools/tsec.bzl',
-          'aio/content/guide/security.md',
-          'aio/content/examples/security/**/{*,.*}',
-          'aio/content/images/guide/security/**/{*,.*}',
           ])
     reviewers:
       users:
@@ -739,8 +473,6 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/language-service/**/{*,.*}',
-          'aio/content/guide/language-service.md',
-          'aio/content/images/guide/language-service/**/{*,.*}'
           ])
     reviewers:
       users:
@@ -757,7 +489,6 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/zone.js/**/{*,.*}',
-          'aio/content/guide/zone.md'
           ])
     reviewers:
       users:
@@ -816,106 +547,6 @@ groups:
         - dylhunn
         - thePunderWoman
         - josephperrott
-        - pkozlowski-opensource
-
-  # =========================================================
-  #  Docs: Contributors
-  # =========================================================
-  docs-contributors:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'aio/content/marketing/contributors.json',
-          'aio/content/images/bios/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - MarkTechson
-        - mgechev
-        - twerske
-
-  # =========================================================
-  #  Docs: Gettings Started & Tutorial
-  # =========================================================
-  docs-getting-started-and-tutorial:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'aio/content/guide/setup-local.md',
-          'aio/content/images/guide/setup-local/**/{*,.*}',
-          'aio/content/tutorial/**/{*,.*}',
-          'aio/content/images/guide/toh/**/{*,.*}',
-          'aio/content/demos/first-app/**/{*,.*}',
-          'aio/content/examples/first-app-*/**/{*,.*}',
-          'aio/content/images/guide/faa/**/{*,.*}',
-          'aio/content/examples/toh-pt0/**/{*,.*}',
-          'aio/content/examples/toh-pt1/**/{*,.*}',
-          'aio/content/examples/toh-pt2/**/{*,.*}',
-          'aio/content/examples/toh-pt3/**/{*,.*}',
-          'aio/content/examples/toh-pt4/**/{*,.*}',
-          'aio/content/examples/toh-pt5/**/{*,.*}',
-          'aio/content/examples/toh-pt6/**/{*,.*}',
-          'aio/content/examples/getting-started-v0/**/{*,.*}',
-          'aio/content/examples/getting-started/**/{*,.*}',
-          'aio/content/start/**/{*,.*}',
-          'aio/content/guide/quick-start.md',
-          'aio/content/images/guide/start/**/{*,.*}',
-          'aio/content/examples/what-is-angular/**/{*,.*}',
-          'aio/content/guide/what-is-angular.md'
-          ])
-    reviewers:
-      users:
-        - AndrewKushnir
-        - thePunderWoman
-
-  # =========================================================
-  #  Docs: Marketing
-  # =========================================================
-  docs-marketing:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files.exclude("aio/content/marketing/contributors.json"), [
-          'aio/content/examples/marketing-first-app/**/{*,.*}',
-          'aio/content/guide/roadmap.md',
-          'aio/content/marketing/**/{*,.*}',
-          'aio/content/images/marketing/**/{*,.*}',
-          'aio/content/file-not-found.md',
-          'aio/content/license.md',
-          'aio/content/navigation.json'
-          ])
-    reviewers:
-      users:
-        - MarkTechson
-        - mgechev
-        - twerske
-
-  # =========================================================
-  #  Docs: Observables
-  # =========================================================
-  docs-observables:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'aio/content/guide/observables.md',
-          'aio/content/examples/observables/**/{*,.*}',
-          'aio/content/guide/comparing-observables.md',
-          'aio/content/examples/comparing-observables/**/{*,.*}',
-          'aio/content/guide/observables-in-angular.md',
-          'aio/content/examples/observables-in-angular/**/{*,.*}',
-          'aio/content/guide/practical-observable-usage.md',
-          'aio/content/examples/practical-observable-usage/**/{*,.*}',
-          'aio/content/guide/rx-library.md',
-          'aio/content/examples/rx-library/**/{*,.*}'
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - atscott
-        - dylhunn
 
   # =========================================================
   #  Docs: Packaging, Tooling, Releasing
@@ -926,20 +557,6 @@ groups:
       - >
         contains_any_globs(files, [
           'contributing-docs/public-api-surface.md',
-          'aio/content/guide/npm-packages.md',
-          'aio/content/guide/browser-support.md',
-          'aio/content/guide/releases.md',
-          'aio/content/guide/updating.md',
-          'aio/content/guide/deprecations.md',
-          'aio/content/examples/deprecation-guide/**/{*,.*}',
-          'aio/content/guide/migration-module-with-providers.md',
-          'aio/content/guide/static-query-migration.md',
-          'aio/content/guide/update-to-latest-version.md',
-          'aio/content/guide/versions.md',
-          'aio/content/guide/update-to-version-14.md',
-          'aio/content/guide/update-to-version-15.md',
-          'aio/content/guide/update-to-version-16.md',
-          'aio/content/guide/update-to-version-17.md',
           ])
     reviewers:
       users:
@@ -948,23 +565,6 @@ groups:
         - atscott
         - thePunderWoman
         - jelbourn
-
-  # =========================================================
-  #  Docs: Angular DevTools
-  # =========================================================
-  docs-devtools:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'aio/content/guide/devtools.md',
-          'aio/content/images/guide/devtools/**/{*,.*}'
-          ])
-    reviewers:
-      users:
-        - MarkTechson
-        - mgechev
-        - twerske
 
   # =========================================================
   #  Tooling: Compiler API shared with Angular CLI
@@ -990,80 +590,6 @@ groups:
       reviewed_for: required
 
   # =========================================================
-  #  Docs: CLI
-  # =========================================================
-  docs-cli:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'aio/content/cli/**/{*,.*}',
-          'aio/content/guide/typescript-configuration.md',
-          'aio/content/examples/setup/**/{*,.*}',
-          'aio/content/guide/build.md',
-          'aio/content/images/guide/build/**/{*,.*}',
-          'aio/content/images/guide/cli/**/{*,.*}',
-          'aio/content/guide/cli-builder.md',
-          'aio/content/examples/cli-builder/**/{*,.*}',
-          'aio/content/guide/deployment.md',
-          'aio/content/images/guide/deployment/**/{*,.*}',
-          'aio/content/guide/file-structure.md',
-          'aio/content/guide/ivy.md',
-          'aio/content/guide/strict-mode.md',
-          'aio/content/guide/web-worker.md',
-          'aio/content/guide/workspace-config.md',
-          'aio/content/guide/migration-solution-style-tsconfig.md',
-          'aio/content/guide/migration-update-libraries-tslib.md',
-          'aio/content/guide/esbuild.md',
-          ])
-    reviewers:
-      users:
-        - alan-agius4
-        - clydin
-        - dgp1130
-        - mgechev
-
-  # =========================================================
-  #  Docs: CLI Libraries
-  # =========================================================
-  docs-libraries:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'aio/content/examples/angular-linker-plugin/webpack.config.mjs',
-          'aio/content/guide/creating-libraries.md',
-          'aio/content/guide/libraries.md',
-          'aio/content/guide/using-libraries.md',
-          'aio/content/guide/angular-package-format.md'
-          ])
-    reviewers:
-      users:
-        - alan-agius4
-        - alxhub
-        - mgechev
-
-  # =========================================================
-  #  Docs: Schematics
-  # =========================================================
-  docs-schematics:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'aio/content/guide/schematics.md',
-          'aio/content/guide/schematics-authoring.md',
-          'aio/content/guide/schematics-for-libraries.md',
-          'aio/content/images/guide/schematics/**/{*,.*}',
-          'aio/content/examples/schematics-for-libraries/**/{*,.*}'
-          ])
-    reviewers:
-      users:
-        - alan-agius4
-        - dylhunn
-        - mgechev
-
-  # =========================================================
   #  Docs: Angular Dev Site
   # =========================================================
   angular-dev:
@@ -1087,65 +613,6 @@ groups:
         - atscott
         - pkozlowski-opensource
         - ~JeanMeche
-
-  # =========================================================
-  #  Docs-infra
-  # =========================================================
-  docs-infra:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'aio/{*,.*}',
-          'aio/aio-builds-setup/**/{*,.*}',
-          'aio/content/cli-src/**/{*,.*}',
-          'aio/content/examples/{*,.*}',
-          'aio/scripts/**/{*,.*}',
-          'aio/src/**/{*,.*}',
-          'aio/tests/**/{*,.*}',
-          'aio/tools/**/{*,.*}',
-          'aio/tools/examples/shared/boilerplate/cli/.vscode/**/{*,.*}',
-          'aio/content/BUILD.bazel',
-          'aio/content/images/guide/contributors-guide/**/{*,.*}',
-          'aio/content/guide/contributors-guide-overview.md',
-          'aio/content/guide/docs-style-guide.md',
-          'aio/content/examples/docs-style-guide/**/{*,.*}',
-          'aio/content/images/guide/docs-style-guide/**/{*,.*}',
-          'aio/content/guide/docs-lint-errors.md',
-          'aio/content/images/guide/docs-lint-errors/**/{*,.*}',
-          'aio/content/guide/localized-documentation.md',
-          'aio/content/guide/localizing-angular.md',
-          'aio/content/guide/reviewing-content.md',
-          'aio/content/guide/updating-content-github-ui.md',
-          'aio/content/guide/updating-search-keywords.md',
-          'aio/content/guide/doc-build-test.md',
-          'aio/content/guide/doc-edit-finish.md',
-          'aio/content/guide/doc-editing.md',
-          'aio/content/guide/doc-github-tasks.md',
-          'aio/content/guide/doc-pr-open.md',
-          'aio/content/guide/doc-pr-prep.md',
-          'aio/content/guide/doc-pr-update.md',
-          'aio/content/guide/doc-prepare-to-edit.md',
-          'aio/content/guide/doc-select-issue.md',
-          'aio/content/guide/doc-tasks.md',
-          'aio/content/guide/doc-update-overview.md',
-          'aio/content/guide/doc-update-start.md',
-          'aio/content/guide/docs-lint-errors.md',
-          'aio/content/images/guide/preparing-to-edit-docs/**/{*,.*}',
-          'aio/content/images/guide/github-for-docs/**/{*,.*}',
-          'aio/content/images/guide/doc-update-start/**/{*,.*}',
-          'aio/content/images/guide/doc-update-overview/**/{*,.*}',
-          'aio/content/images/guide/doc-pr-update/**/{*,.*}',
-          'aio/content/images/guide/doc-pr-prep/**/{*,.*}',
-          'aio/content/images/guide/doc-pr-open/**/{*,.*}',
-          'aio/content/images/guide/doc-github-tasks/**/{*,.*}',
-          'aio/content/images/guide/doc-prepare-to-edit/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - AndrewKushnir
-        - thePunderWoman
-        - josephperrott
 
   # =========================================================
   #  Angular DevTools
@@ -1229,11 +696,6 @@ groups:
       - >
         contains_any_globs(files.exclude("goldens/public-api/manage.js"), [
           'goldens/public-api/**/{*,.*}',
-          'aio/content/guide/angular-package-format.md',
-          'aio/content/guide/glossary.md',
-          'aio/content/guide/styleguide.md',
-          'aio/content/examples/styleguide/**/{*,.*}',
-          'aio/content/images/guide/styleguide/{*,.*}'
           ])
     reviewers:
       users:

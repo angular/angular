@@ -1,4 +1,4 @@
-name: Update AIO Angular CLI help
+name: Update ADEV Angular CLI help
 
 on:
   workflow_dispatch:

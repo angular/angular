@@ -1,8 +1,0 @@
-<button type="button" (click)="toggle()">Toggle Open/Close</button>
-
-<div [@openClose]="isOpen ? 'open' : 'closed'"
-  (@openClose.start)="onAnimationEvent($event)"
-  (@openClose.done)="onAnimationEvent($event)"
-  class="open-close-container">
-  <p>The box is now {{ isOpen ? 'Open' : 'Closed' }}!</p>
-</div>

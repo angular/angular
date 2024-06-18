@@ -1,5 +1,0 @@
-{
-  "description": "Template Syntax Collection",
-  "files":["!**/*.d.ts",  "!**/*.js"],
-  "tags": ["template"]
-}

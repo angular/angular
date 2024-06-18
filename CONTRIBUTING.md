@@ -302,7 +302,7 @@ There are currently a few exceptions to the "use package name" rule:
 
 * `dev-infra`: used for dev-infra related changes within the directories /scripts and /tools
 
-* `docs-infra`: used for docs-app (angular.io) related changes within the /aio directory of the repo
+* `docs-infra`: used for docs-app (angular.dev) related changes within the /adev directory of the repo
 
 * `migrations`: used for changes to the `ng update` migrations.
 

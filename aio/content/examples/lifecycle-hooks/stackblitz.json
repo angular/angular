@@ -1,8 +1,0 @@
-{
-  "description": "Lifecycle Hooks",
-  "files":["!**/*.d.ts",  "!**/*.js"],
-  "tags": ["lifecycle", "hooks",
-           "OnInit", "OnDestroy", "OnChange", "DoCheck",
-           "AfterContentInit", "AfterContentChecked",
-           "AfterViewInit", "AfterViewChecked"]
-}

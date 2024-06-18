@@ -22,8 +22,6 @@ export const format: FormatConfig = {
       '!packages/common/src/i18n/currencies.ts',
       // Test cases contain non valid code.
       '!packages/compiler-cli/test/compliance/test_cases/**/*.{js,ts}',
-      // Ignore AIO as its pending removal.
-      '!aio/**/*.{js,ts}',
 
       // Ignore generated javascript file(s)
       '!.github/actions/deploy-docs-site/main.js',
