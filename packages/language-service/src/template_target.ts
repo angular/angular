@@ -228,7 +228,12 @@ export function getTargetAtPosition(
     return null;
   }
 
-  const candidate = path[path.length - 1];
+  const lastNode = path[path.length - 1];
+  const beforeLastNode = path[path.length - 2];
+
+  // if last node is PropertyRead and before last node is Call or SafeCall, we should treat it as a CallExpressionInArgContext
+  const candidate = lastNode instanceof PropertyRead && (beforeLastNode instanceof Call || beforeLastNode instanceof SafeCall) ? beforeLastNode : lastNode;
+
   // Walk up the result nodes to find the nearest `TmplAstTemplate` which contains the targeted
   // node.
   let context: TmplAstTemplate | null = null;
@@ -242,14 +247,23 @@ export function getTargetAtPosition(
 
   // Given the candidate node, determine the full targeted context.
   let nodeInContext: TargetContext;
-  if (
-    (candidate instanceof Call || candidate instanceof SafeCall) &&
-    isWithin(position, candidate.argumentSpan)
-  ) {
-    nodeInContext = {
-      kind: TargetNodeKind.CallExpressionInArgContext,
-      node: candidate,
-    };
+  if (candidate instanceof Call || candidate instanceof SafeCall) {
+    if (isWithin(position, candidate.sourceSpan)) {
+      const parents = path.filter((value: AST | TmplAstNode): value is AST => value instanceof AST);
+      // Remove the current node from the parents list.
+      parents.pop();
+
+      nodeInContext = {
+        kind: TargetNodeKind.RawExpression,
+        node: candidate,
+        parents
+      };
+    } else {
+      nodeInContext = {
+        kind: TargetNodeKind.CallExpressionInArgContext,
+        node: candidate,
+      };
+    }
   } else if (candidate instanceof AST) {
     const parents = path.filter((value: AST | TmplAstNode): value is AST => value instanceof AST);
     // Remove the current node from the parents list.

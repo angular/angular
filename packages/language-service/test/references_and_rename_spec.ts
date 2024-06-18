@@ -170,6 +170,43 @@ describe('find references and rename locations', () => {
     });
   });
 
+  describe('when cursor in on argument to a nested function call in an external template', () => {
+    let appFile: OpenBuffer;
+
+    beforeEach(() => {
+      const files = {
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({template: '<div (click)="nested.setTitle(title)"></div>'})
+          export class AppCmp {
+            title = '';
+            nested = {
+              setTitle(s: string) {}
+            }
+          }`,
+      };
+      env = LanguageServiceTestEnv.setup();
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      appFile = project.openFile('app.ts');
+      appFile.moveCursorToText('(ti¦tle)');
+    });
+
+    it('gets member reference in ts file', () => {
+      const refs = getReferencesAtPosition(appFile)!;
+      expect(refs.length).toBe(2);
+
+      assertTextSpans(refs, ['title']);
+    });
+
+    it('finds rename location in ts file', () => {
+      const refs = getRenameLocationsAtPosition(appFile)!;
+      expect(refs.length).toBe(2);
+
+      assertTextSpans(refs, ['title']);
+    });
+  });
+
   describe('when cursor is on $event in method call arguments', () => {
     let file: OpenBuffer;
 
