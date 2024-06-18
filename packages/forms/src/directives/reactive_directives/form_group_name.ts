@@ -28,7 +28,7 @@ import {arrayParentException, groupParentException} from '../reactive_errors';
 import {controlPath} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
-import {FormGroupDirective} from './form_group_directive';
+import {AbstractFormDirective} from './abstract_form.directive';
 
 const formGroupNameProvider: Provider = {
   provide: ControlContainer,
@@ -216,8 +216,8 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  override get formDirective(): FormGroupDirective | null {
-    return this._parent ? <FormGroupDirective>this._parent.formDirective : null;
+  override get formDirective(): AbstractFormDirective | null {
+    return this._parent ? <AbstractFormDirective>this._parent.formDirective : null;
   }
 
   /**
@@ -233,7 +233,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 function hasInvalidParent(parent: ControlContainer): boolean {
   return (
     !(parent instanceof FormGroupName) &&
-    !(parent instanceof FormGroupDirective) &&
+    !(parent instanceof AbstractFormDirective) &&
     !(parent instanceof FormArrayName)
   );
 }
