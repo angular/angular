@@ -6,6 +6,7 @@
   "AbstractControl",
   "AbstractControlDirective",
   "AbstractControlStatus",
+  "AbstractFormDirective",
   "AbstractFormGroupDirective",
   "AfterRenderManager",
   "AnonymousSubject",
