@@ -36,6 +36,7 @@ export {RadioControlValueAccessor} from './directives/radio_control_value_access
 export {RangeValueAccessor} from './directives/range_value_accessor';
 export {FormControlDirective} from './directives/reactive_directives/form_control_directive';
 export {FormControlName} from './directives/reactive_directives/form_control_name';
+export {AbstractFormDirective} from './directives/reactive_directives/abstract_form.directive';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
 export {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';
 export {

@@ -39,8 +39,8 @@ import {_ngModelWarning, controlPath, isPropertyUpdated, selectValueAccessor} fr
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
-import {FormGroupDirective} from './form_group_directive';
 import {FormArrayName, FormGroupName} from './form_group_name';
+import { AbstractFormDirective } from './abstract_form.directive';
 
 const controlNameBinding: Provider = {
   provide: NgControl,
@@ -226,7 +226,7 @@ function checkParentType(parent: ControlContainer | null, name: string | number 
     throw ngModelGroupException();
   } else if (
     !(parent instanceof FormGroupName) &&
-    !(parent instanceof FormGroupDirective) &&
+    !(parent instanceof AbstractFormDirective) &&
     !(parent instanceof FormArrayName)
   ) {
     throw controlParentException(name);
