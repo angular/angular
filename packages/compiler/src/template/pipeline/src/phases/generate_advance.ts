@@ -7,7 +7,6 @@
  */
 
 import * as ir from '../../ir';
-import * as o from '../../../../output/output_ast';
 import type {CompilationJob} from '../compilation';
 
 /**
@@ -37,23 +36,19 @@ export function generateAdvance(job: CompilationJob): void {
     // To do that, we track what the runtime's slot counter will be through the update operations.
     let slotContext = 0;
     for (const op of unit.update) {
-      let consumer: ir.DependsOnSlotContextOpTrait;
+      let consumer: ir.DependsOnSlotContextOpTrait | null = null;
 
       if (ir.hasDependsOnSlotContextTrait(op)) {
         consumer = op;
-      } else if (
-        op.kind === ir.OpKind.Variable &&
-        ir.hasDependsOnSlotContextTrait(op.initializer)
-      ) {
-        consumer = op.initializer;
-      } else if (
-        op.kind === ir.OpKind.Statement &&
-        op.statement instanceof o.ExpressionStatement &&
-        ir.hasDependsOnSlotContextTrait(op.statement.expr)
-      ) {
-        consumer = op.statement.expr;
       } else {
-        // `op` doesn't depend on the slot counter, so it can be skipped.
+        ir.visitExpressionsInOp(op, (expr) => {
+          if (consumer === null && ir.hasDependsOnSlotContextTrait(expr)) {
+            consumer = expr;
+          }
+        });
+      }
+
+      if (consumer === null) {
         continue;
       }
 

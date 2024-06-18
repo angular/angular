@@ -17,23 +17,25 @@ import type {ComponentCompilationJob} from '../compilation';
 export function generateLocalLetReferences(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
-      if (op.kind === ir.OpKind.StoreLet) {
-        const variable: ir.IdentifierVariable = {
-          kind: ir.SemanticVariableKind.Identifier,
-          name: null,
-          identifier: op.declaredName,
-        };
-
-        ir.OpList.replace<ir.UpdateOp>(
-          op,
-          ir.createVariableOp<ir.UpdateOp>(
-            job.allocateXrefId(),
-            variable,
-            new ir.StoreLetExpr(op.target, op.value, op.sourceSpan),
-            ir.VariableFlags.None,
-          ),
-        );
+      if (op.kind !== ir.OpKind.StoreLet) {
+        continue;
       }
+
+      const variable: ir.IdentifierVariable = {
+        kind: ir.SemanticVariableKind.Identifier,
+        name: null,
+        identifier: op.declaredName,
+      };
+
+      ir.OpList.replace<ir.UpdateOp>(
+        op,
+        ir.createVariableOp<ir.UpdateOp>(
+          job.allocateXrefId(),
+          variable,
+          new ir.StoreLetExpr(op.target, op.value, op.sourceSpan),
+          ir.VariableFlags.None,
+        ),
+      );
     }
   }
 }

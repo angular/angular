@@ -321,7 +321,7 @@ function fencesForIrExpression(expr: ir.Expression): Fence {
     case ir.ExpressionKind.RestoreView:
       return Fence.ViewContextRead | Fence.ViewContextWrite | Fence.SideEffectful;
     case ir.ExpressionKind.StoreLet:
-      return Fence.SideEffectful | Fence.ViewContextWrite;
+      return Fence.SideEffectful;
     case ir.ExpressionKind.Reference:
     case ir.ExpressionKind.ContextLetReference:
       return Fence.ViewContextRead;

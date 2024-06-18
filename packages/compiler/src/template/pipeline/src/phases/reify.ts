@@ -541,11 +541,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.deferWhen(op.prefetch, op.expr, op.sourceSpan));
         break;
       case ir.OpKind.StoreLet:
-        ir.OpList.replace<ir.UpdateOp>(
-          op,
-          ir.createStatementOp(new o.ExpressionStatement(ng.storeLet(op.value, op.sourceSpan))),
-        );
-        break;
+        throw new Error(`AssertionError: unexpected storeLet ${op.declaredName}`);
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;

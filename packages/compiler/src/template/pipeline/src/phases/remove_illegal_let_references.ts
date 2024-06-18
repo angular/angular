@@ -23,23 +23,23 @@ export function removeIllegalLetReferences(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
       if (
-        op.kind === ir.OpKind.Variable &&
-        op.variable.kind === ir.SemanticVariableKind.Identifier &&
-        op.initializer instanceof ir.StoreLetExpr
+        op.kind !== ir.OpKind.Variable ||
+        op.variable.kind !== ir.SemanticVariableKind.Identifier ||
+        !(op.initializer instanceof ir.StoreLetExpr)
       ) {
-        const name = op.variable.identifier;
-        let current: ir.UpdateOp | null = op;
-        while (current && current.kind !== ir.OpKind.ListEnd) {
-          ir.transformExpressionsInOp(
-            current,
-            (expr) =>
-              expr instanceof ir.LexicalReadExpr && expr.name === name
-                ? o.literal(undefined)
-                : expr,
-            ir.VisitorContextFlag.None,
-          );
-          current = current.prev;
-        }
+        continue;
+      }
+
+      const name = op.variable.identifier;
+      let current: ir.UpdateOp | null = op;
+      while (current && current.kind !== ir.OpKind.ListEnd) {
+        ir.transformExpressionsInOp(
+          current,
+          (expr) =>
+            expr instanceof ir.LexicalReadExpr && expr.name === name ? o.literal(undefined) : expr,
+          ir.VisitorContextFlag.None,
+        );
+        current = current.prev;
       }
     }
   }

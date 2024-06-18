@@ -32,19 +32,14 @@ export function optimizeStoreLet(job: CompilationJob): void {
   // TODO(crisbeto): potentially remove the unused calls completely, pending discussion.
   for (const unit of job.units) {
     for (const op of unit.update) {
-      if (op.kind === ir.OpKind.StoreLet && !letUsedExternally.has(op.target)) {
-        const statement = new o.ExpressionStatement(op.value, op.value.sourceSpan);
-        ir.OpList.replace<ir.UpdateOp>(op, ir.createStatementOp(statement));
-      } else {
-        ir.transformExpressionsInOp(
-          op,
-          (expression) =>
-            expression instanceof ir.StoreLetExpr && !letUsedExternally.has(expression.target)
-              ? expression.value
-              : expression,
-          ir.VisitorContextFlag.None,
-        );
-      }
+      ir.transformExpressionsInOp(
+        op,
+        (expression) =>
+          expression instanceof ir.StoreLetExpr && !letUsedExternally.has(expression.target)
+            ? expression.value
+            : expression,
+        ir.VisitorContextFlag.None,
+      );
     }
   }
 }
