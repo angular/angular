@@ -7,7 +7,7 @@
  */
 
 import {browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../../../../../../packages/examples/test-utils/index';
 
 // Declare the global "window" and "document" constant since we don't want to add the "dom"
 // TypeScript lib for the e2e specs that execute code in the browser and reference such
