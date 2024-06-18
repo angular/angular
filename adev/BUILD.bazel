@@ -89,7 +89,6 @@ TEST_DEPS = APPLICATION_DEPS + [
     "@npm//@angular/platform-browser-dynamic",
     "@npm//@types/jasmine",
     "@npm//@types/node",
-    "@npm//assert",
     "@npm//jasmine",
     "@npm//jasmine-core",
     "@npm//karma-chrome-launcher",
