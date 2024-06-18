@@ -128,7 +128,7 @@ IMPORTANT: Instances of `HttpHeaders` are _immutable_ and cannot be directly cha
 const baseHeaders = new HttpHeaders().set('X-Debug-Level', 'minimal');
 
 http.get<Config>('/api/config', {
-  params: baseParams.set('X-Debug-Level', 'verbose'),
+  headers: baseHeaders.set('X-Debug-Level', 'verbose'),
 }).subscribe(config => {
   // ...
 });
