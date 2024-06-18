@@ -140,6 +140,43 @@ export interface AbstractControlOptions {
 }
 
 // @public
+export abstract class AbstractFormDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
+    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], callSetDisabledState?: SetDisabledStateOption | undefined);
+    addControl(dir: FormControlName): FormControl;
+    addFormArray(dir: FormArrayName): void;
+    addFormGroup(dir: FormGroupName): void;
+    abstract get control(): AbstractControl;
+    directives: FormControlName[];
+    abstract form: AbstractControl;
+    get formDirective(): Form;
+    getControl(dir: FormControlName): FormControl;
+    getFormArray(dir: FormArrayName): FormArray;
+    getFormGroup(dir: FormGroupName): FormGroup;
+    // (undocumented)
+    ngOnChanges(changes: SimpleChanges): void;
+    // (undocumented)
+    ngOnDestroy(): void;
+    abstract ngSubmit: EventEmitter<any>;
+    // (undocumented)
+    protected onChanges(changes: SimpleChanges): void;
+    // (undocumented)
+    protected onDestroy(): void;
+    onReset(): void;
+    onSubmit($event: Event): boolean;
+    get path(): string[];
+    removeControl(dir: FormControlName): void;
+    removeFormArray(dir: FormArrayName): void;
+    removeFormGroup(dir: FormGroupName): void;
+    resetForm(value?: any): void;
+    get submitted(): boolean;
+    updateModel(dir: FormControlName, value: any): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractFormDirective, never, never, {}, {}, never, never, true, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<AbstractFormDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
+}
+
+// @public
 export class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
     get control(): FormGroup;
     get formDirective(): Form | null;
@@ -282,7 +319,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
 export class FormArrayName extends ControlContainer implements OnInit, OnDestroy {
     constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
     get control(): FormArray;
-    get formDirective(): FormGroupDirective | null;
+    get formDirective(): AbstractFormDirective | null;
     name: string | number | null;
     ngOnDestroy(): void;
     ngOnInit(): void;
@@ -475,37 +512,14 @@ export class FormGroup<TControl extends {
 }
 
 // @public
-export class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
-    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], callSetDisabledState?: SetDisabledStateOption | undefined);
-    addControl(dir: FormControlName): FormControl;
-    addFormArray(dir: FormArrayName): void;
-    addFormGroup(dir: FormGroupName): void;
+export class FormGroupDirective extends AbstractFormDirective {
     get control(): FormGroup;
-    directives: FormControlName[];
     form: FormGroup;
-    get formDirective(): Form;
-    getControl(dir: FormControlName): FormControl;
-    getFormArray(dir: FormArrayName): FormArray;
-    getFormGroup(dir: FormGroupName): FormGroup;
-    ngOnChanges(changes: SimpleChanges): void;
-    ngOnDestroy(): void;
     ngSubmit: EventEmitter<any>;
-    onReset(): void;
-    onSubmit($event: Event): boolean;
-    get path(): string[];
-    removeControl(dir: FormControlName): void;
-    removeFormArray(dir: FormArrayName): void;
-    removeFormGroup(dir: FormGroupName): void;
-    resetForm(value?: any, options?: {
-        onlySelf?: boolean;
-        emitEvent?: boolean;
-    }): void;
-    get submitted(): boolean;
-    updateModel(dir: FormControlName, value: any): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": { "alias": "formGroup"; "required": false; }; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupDirective, never>;
 }
 
 // @public
