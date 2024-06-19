@@ -869,6 +869,42 @@ Use those signatures to flag spelling and syntax mistakes.
 <docs-code header="app/heroes/shared/hero-button/hero-button.component.ts" path="adev/src/content/examples/styleguide/src/09-01/app/heroes/shared/hero-button/hero-button.component.avoid.ts" visibleRegion="example"/>
 
 <docs-code header="app/heroes/shared/hero-button/hero-button.component.ts" path="adev/src/content/examples/styleguide/src/09-01/app/heroes/shared/hero-button/hero-button.component.ts" visibleRegion="example"/>
+
+## Sorting class members
+
+Specify class fields and variables in a specific order
+
+### Sort class members
+#### Style 10-01
+**Do** sort class members and add fields and functions in a specific order
+
+**Why**? <br />
+This increases code readability and allows other developers to read and modify your code faster
+
+Use the following order of groups to organize Angular components:
+1. Private properties.
+1. Data binding properties.
+1. View and content properties.
+1. UI properties.
+1. Component API properties.
+1. Constructor.
+1. Lifecycle hooks.
+1. Event handlers.
+1. Component API methods.
+1. Private methods.
+
+| Group | Description |
+| ----- | ----------- |
+| Component API methods | Public methods intended to be used by other components, directives, or services. |
+| Component API properties | Public properties intended to be used by other components, directives, or services. |
+| Data binding properties | Properties decorated by `Input` or `Output`. |
+| Event handlers. | Methods used by the component template. |
+| Lifecycle hooks | Methods implementing the `AfterContentChecked`, `AfterContentInit`, `AfterViewChecked`, `AfterViewInit`, `DoCheck` `OnChanges`, `OnDestroy`, or `OnInit` interfaces. |
+| Private properties | Properties marked by `private` or `#`. |
+| UI properties | Public properties used by the component template. |
+| View and content properties | Properties decorated by `ContentChild`, `ContentChildren`, `ViewChild`, or `ViewChildren`. |
+
+
 ## Appendix
 
 Useful tools and tips for Angular.
