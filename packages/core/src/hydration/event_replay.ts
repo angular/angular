@@ -38,6 +38,7 @@ import {
   invokeRegisteredListeners,
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
+import {performanceMarkFeature} from '../util/performance';
 
 declare global {
   var ngContracts: {[key: string]: EarlyJsactionDataContainer};
@@ -80,6 +81,9 @@ export function withEventReplay(): Provider[] {
           // we don't activate this feature, since there are no events to replay.
           const appId = inject(APP_ID);
           isEnabled = !!globalThis[CONTRACT_PROPERTY]?.[appId];
+        }
+        if (isEnabled) {
+          performanceMarkFeature('NgEventReplay');
         }
         return isEnabled;
       },
