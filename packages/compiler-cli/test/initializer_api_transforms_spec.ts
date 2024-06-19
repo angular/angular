@@ -36,7 +36,11 @@ describe('initializer API metadata transform', () => {
     host = new MockCompilerHost(context);
   });
 
-  function transform(contents: string, postDownlevelDecoratorsTransform = false) {
+  function transform(
+    contents: string,
+    postDownlevelDecoratorsTransform = false,
+    customPreTransform?: ts.TransformerFactory<ts.SourceFile>,
+  ) {
     context.writeFile(TEST_FILE_INPUT, contents);
 
     const program = ts.createProgram(
@@ -59,7 +63,10 @@ describe('initializer API metadata transform', () => {
     const reflectionHost = new TypeScriptReflectionHost(typeChecker);
     const importTracker = new ImportedSymbolsTracker();
     const transformers: ts.CustomTransformers = {
-      before: [getInitializerApiJitTransform(reflectionHost, importTracker, /* isCore */ false)],
+      before: [
+        ...(customPreTransform ? [customPreTransform] : []),
+        getInitializerApiJitTransform(reflectionHost, importTracker, /* isCore */ false),
+      ],
     };
 
     if (postDownlevelDecoratorsTransform) {
@@ -266,6 +273,48 @@ describe('initializer API metadata transform', () => {
         static propDecorators = {
           someInput: [{ type: i0.Input, args: [{ isSignal: true, alias: "someInput", required: false, transform: undefined },] }]
         };
+      `),
+      );
+    });
+
+    it('should migrate if the class decorator is downleveled in advance', () => {
+      const fakeDownlevelPreTransform = (ctx: ts.TransformationContext) => {
+        return (sf: ts.SourceFile) => {
+          const visitor = (node: ts.Node) => {
+            if (ts.isClassDeclaration(node)) {
+              return ctx.factory.updateClassDeclaration(
+                node,
+                [],
+                node.name,
+                node.typeParameters,
+                node.heritageClauses,
+                node.members,
+              );
+            }
+            return node;
+          };
+          return ts.visitEachChild(sf, visitor, ctx);
+        };
+      };
+
+      const result = transform(
+        `
+        import {input, Directive} from '@angular/core';
+
+        @Directive({})
+        class MyDir {
+          someInput = input(0);
+        }
+      `,
+        false,
+        fakeDownlevelPreTransform,
+      );
+
+      expect(result).toContain(
+        omitLeadingWhitespace(`
+        __decorate([
+          i0.Input({ isSignal: true, alias: "someInput", required: false, transform: undefined })
+          ], MyDir.prototype, "someInput", void 0);
       `),
       );
     });
