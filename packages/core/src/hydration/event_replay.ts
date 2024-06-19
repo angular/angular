@@ -26,7 +26,11 @@ import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
 
-import {IS_EVENT_REPLAY_ENABLED, IS_GLOBAL_EVENT_DELEGATION_ENABLED} from './tokens';
+import {
+  EVENT_REPLAY_ENABLED_DEFAULT,
+  IS_EVENT_REPLAY_ENABLED,
+  IS_GLOBAL_EVENT_DELEGATION_ENABLED,
+} from './tokens';
 import {
   GlobalEventDelegation,
   sharedStashFunction,
@@ -51,6 +55,16 @@ function isGlobalEventDelegationEnabled(injector: Injector) {
 }
 
 /**
+ * Determines whether Event Replay feature should be activated on the client.
+ */
+function shouldEnableEventReplay(injector: Injector) {
+  return (
+    injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT) &&
+    !isGlobalEventDelegationEnabled(injector)
+  );
+}
+
+/**
  * Returns a set of providers required to setup support for event replay.
  * Requires hydration to be enabled separately.
  */
@@ -58,19 +72,28 @@ export function withEventReplay(): Provider[] {
   return [
     {
       provide: IS_EVENT_REPLAY_ENABLED,
-      useValue: true,
+      useFactory: () => {
+        let isEnabled = true;
+        if (isPlatformBrowser()) {
+          // Note: globalThis[CONTRACT_PROPERTY] may be undefined in case Event Replay feature
+          // is enabled, but there are no events configured in this application, in which case
+          // we don't activate this feature, since there are no events to replay.
+          const appId = inject(APP_ID);
+          isEnabled = !!globalThis[CONTRACT_PROPERTY]?.[appId];
+        }
+        return isEnabled;
+      },
     },
     {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
         const injector = inject(Injector);
-        if (isGlobalEventDelegationEnabled(injector)) {
-          return;
+        if (isPlatformBrowser(injector) && shouldEnableEventReplay(injector)) {
+          setStashFn((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
+            sharedStashFunction(rEl, eventName, listenerFn);
+            jsactionSet.add(rEl as unknown as Element);
+          });
         }
-        setStashFn((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
-          sharedStashFunction(rEl, eventName, listenerFn);
-          jsactionSet.add(rEl as unknown as Element);
-        });
       },
       multi: true,
     },
@@ -81,13 +104,14 @@ export function withEventReplay(): Provider[] {
           const injector = inject(Injector);
           const appRef = inject(ApplicationRef);
           return () => {
+            if (!shouldEnableEventReplay(injector)) {
+              return;
+            }
+
             // Kick off event replay logic once hydration for the initial part
             // of the application is completed. This timing is similar to the unclaimed
             // dehydrated views cleanup timing.
             whenStable(appRef).then(() => {
-              if (isGlobalEventDelegationEnabled(injector)) {
-                return;
-              }
               const globalEventDelegation = injector.get(GlobalEventDelegation);
               initEventReplay(globalEventDelegation, injector);
               jsactionSet.forEach(removeListeners);
@@ -112,8 +136,6 @@ function getJsactionData(container: EarlyJsactionDataContainer) {
 const initEventReplay = (eventDelegation: GlobalEventDelegation, injector: Injector) => {
   const appId = injector.get(APP_ID);
   // This is set in packages/platform-server/src/utils.ts
-  // Note: globalThis[CONTRACT_PROPERTY] may be undefined in case Event Replay feature
-  // is enabled, but there are no events configured in an application.
   const container = globalThis[CONTRACT_PROPERTY]?.[appId];
   const earlyJsactionData = getJsactionData(container)!;
   const eventContract = (eventDelegation.eventContract = new EventContract(
