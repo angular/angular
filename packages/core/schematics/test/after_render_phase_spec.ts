@@ -81,6 +81,7 @@ describe('afterRender phase migration', () => {
 
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
     expect(content).not.toContain('AfterRenderPhase');
+    expect(content).toContain("import { Directive, afterRender } from '@angular/core';");
     expect(content).toContain(`afterRender({ read: () => { console.log('read'); } }, );`);
   });
 
@@ -106,6 +107,7 @@ describe('afterRender phase migration', () => {
 
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
     expect(content).not.toContain('AfterRenderPhase');
+    expect(content).toContain("import { Directive, afterNextRender } from '@angular/core';");
     expect(content).toContain(
       `afterNextRender({ earlyRead: () => { console.log('earlyRead'); } }, );`,
     );
@@ -148,7 +150,7 @@ describe('afterRender phase migration', () => {
     writeFile(
       '/index.ts',
       `
-          import { AfterRenderPhase, Directive, Injector, afterRender, inject } from '@angular/core';
+          import { Directive, Injector, afterRender, AfterRenderPhase, inject } from '@angular/core';
 
           @Directive({
             selector: '[someDirective]'
@@ -169,6 +171,10 @@ describe('afterRender phase migration', () => {
 
     await runMigration();
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
+    expect(content).not.toContain('AfterRenderPhase');
+    expect(content).toContain(
+      "import { Directive, Injector, afterRender, inject } from '@angular/core';",
+    );
     expect(content).toContain(
       `afterRender({ earlyRead: () => { console.log('earlyRead'); } }, { injector: this.injector });`,
     );
