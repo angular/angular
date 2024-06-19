@@ -197,6 +197,7 @@ export function internalAfterNextRender(
  * </div>
  *
  * @param callback A callback function to register
+ * @param options Options to control the behavior of the callback
  *
  * @usageNotes
  *
@@ -278,6 +279,7 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
  * </div>
  *
  * @param callback A callback function to register
+ * @param options Options to control the behavior of the callback
  *
  * @usageNotes
  *
