@@ -49,7 +49,7 @@ export type ɵFirstAvailable<T extends unknown[]> = T extends [infer H, ...infer
  * or library.
  *
  * @deprecated Specify the phase for your callback to run in by passing a spec-object as the first
- *   parameter to `afterRender` or `afterNextRender` insetad of a function.
+ *   parameter to `afterRender` or `afterNextRender` instead of a function.
  */
 export enum AfterRenderPhase {
   /**
@@ -119,7 +119,7 @@ export interface AfterRenderOptions {
    * </div>
    *
    * @deprecated Specify the phase for your callback to run in by passing a spec-object as the first
-   *   parameter to `afterRender` or `afterNextRender` insetad of a function.
+   *   parameter to `afterRender` or `afterNextRender` instead of a function.
    */
   phase?: AfterRenderPhase;
 }
@@ -238,6 +238,7 @@ export function internalAfterNextRender(
  * </div>
  *
  * @param spec The callback functions to register
+ * @param options Options to control the behavior of the callback
  *
  * @usageNotes
  *
@@ -271,7 +272,7 @@ export function afterRender<E = never, W = never, M = never>(
     mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
     read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
   },
-  opts?: Omit<AfterRenderOptions, 'phase'>,
+  options?: Omit<AfterRenderOptions, 'phase'>,
 ): AfterRenderRef;
 
 /**
@@ -299,6 +300,7 @@ export function afterRender<E = never, W = never, M = never>(
  * </div>
  *
  * @param callback A callback function to register
+ * @param options Options to control the behavior of the callback
  *
  * @usageNotes
  *
@@ -412,6 +414,7 @@ export function afterRender(
  * </div>
  *
  * @param spec The callback functions to register
+ * @param options Options to control the behavior of the callback
  *
  * @usageNotes
  *
@@ -447,7 +450,7 @@ export function afterNextRender<E = never, W = never, M = never>(
     mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
     read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
   },
-  opts?: Omit<AfterRenderOptions, 'phase'>,
+  options?: Omit<AfterRenderOptions, 'phase'>,
 ): AfterRenderRef;
 
 /**
@@ -474,6 +477,7 @@ export function afterNextRender<E = never, W = never, M = never>(
  * </div>
  *
  * @param callback A callback function to register
+ * @param options Options to control the behavior of the callback
  *
  * @usageNotes
  *
