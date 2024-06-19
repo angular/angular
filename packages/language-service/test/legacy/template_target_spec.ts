@@ -156,6 +156,15 @@ describe('getTargetAtPosition for template AST', () => {
     expect(node).toBeInstanceOf(e.PropertyRead);
   });
 
+  it('should locate bound event nested value', () => {
+    const {errors, nodes, position} = parse(`<test-cmp (foo)="nested.b¦ar()"></test-cmp>`);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.PropertyRead);
+  });
+
   it('should locate element children', () => {
     const {errors, nodes, position} = parse(`<div><sp¦an></span></div>`);
     expect(errors).toBe(null);
