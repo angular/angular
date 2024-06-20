@@ -1,3 +1,20 @@
+<a name="18.0.4"></a>
+# 18.0.4 (2024-06-20)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ec0d1bf6f3](https://github.com/angular/angular/commit/ec0d1bf6f337fc4f2c29cacaa6ca5b915eb4e561) | fix | insert constant statements after the first group of imports ([#56431](https://github.com/angular/angular/pull/56431)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [83ffa94783](https://github.com/angular/angular/commit/83ffa9478372db3e5dd2d256d266a5612008da0a) | fix | do not activate event replay when no events are registered ([#56509](https://github.com/angular/angular/pull/56509)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5578681da2](https://github.com/angular/angular/commit/5578681da27345b0c8260eb5d73e702d19581abd) | fix | Delay the view transition to ensure renders in microtasks complete ([#56494](https://github.com/angular/angular/pull/56494)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.3"></a>
 # 18.0.3 (2024-06-12)
 ### benchpress
