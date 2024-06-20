@@ -22,6 +22,7 @@ import { TocService } from 'app/shared/toc.service';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 import { rewriteLink } from './shared/angular-dot-dev-redirects';
+import { HeaderService } from './shared/header.service';
 
 const sideNavView = 'SideNav';
 export const showTopMenuWidth = 1150;
@@ -127,7 +128,8 @@ export class AppComponent implements OnInit {
     private navigationService: NavigationService,
     private scrollService: ScrollService,
     private searchService: SearchService,
-    private tocService: TocService
+    private tocService: TocService,
+    private headerService: HeaderService,
   ) { }
 
   ngOnInit() {
@@ -153,6 +155,7 @@ export class AppComponent implements OnInit {
 
         // Change the link in the banner to redirect to the moest relevent page on Angular.dev
         this.redirectUrl = rewriteLink(this.currentPath);
+        this.headerService.setCanonical(this.redirectUrl);
 
         // Start progress bar if doc not rendered within brief time
         clearTimeout(this.isFetchingTimeout);
