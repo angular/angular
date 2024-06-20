@@ -10,7 +10,7 @@ In this activity, you'll learn how to get the value from your form input.
 
 <docs-step title="Show the value of the input field in the template">
 
-To display the input value in a template, you can the use interpolation syntax `{{}}` just like any other class property of the component:
+To display the input value in a template, you can use the interpolation syntax `{{}}` just like any other class property of the component:
 
 <docs-code language="ts" highlight="[5]">
 @Component({
