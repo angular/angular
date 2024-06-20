@@ -11,6 +11,7 @@
 import {DOCUMENT} from '@angular/common';
 import {
   afterNextRender,
+  AfterRenderPhase,
   InjectionToken,
   Injector,
   NgZone,
@@ -142,6 +143,6 @@ function createRenderPromise(injector: Injector) {
     // Wait for the microtask queue to empty after the next render happens (by waiting a macrotask).
     // This ensures any follow-up renders in the microtask queue are completed before the
     // view transition starts animating.
-    afterNextRender({read: () => setTimeout(resolve)}, {injector});
+    afterNextRender(() => setTimeout(resolve), {injector, phase: AfterRenderPhase.Read});
   });
 }
