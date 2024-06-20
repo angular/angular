@@ -12,6 +12,7 @@ import {
   ApplicationRef,
   afterNextRender,
   EnvironmentInjector,
+  AfterRenderPhase,
 } from '@angular/core';
 import {Scroll, Router} from '@angular/router';
 import {filter, firstValueFrom, map, switchMap, tap} from 'rxjs';
@@ -65,18 +66,16 @@ export class AppScroller {
 
     // Don't scroll during rendering
     this.cancelScroll = afterNextRender(
-      {
-        write: () => {
-          if (position) {
-            this.viewportScroller.scrollToPosition(position);
-          } else if (anchor) {
-            this.viewportScroller.scrollToAnchor(anchor);
-          } else {
-            this.viewportScroller.scrollToPosition([0, 0]);
-          }
-        },
+      () => {
+        if (position) {
+          this.viewportScroller.scrollToPosition(position);
+        } else if (anchor) {
+          this.viewportScroller.scrollToAnchor(anchor);
+        } else {
+          this.viewportScroller.scrollToPosition([0, 0]);
+        }
       },
-      {injector: this.injector},
+      {injector: this.injector, phase: AfterRenderPhase.Write},
     ).destroy;
   }
 }
