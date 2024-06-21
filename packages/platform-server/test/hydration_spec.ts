@@ -23,6 +23,7 @@ import {computeMsgId} from '@angular/compiler';
 import {
   afterRender,
   ApplicationRef,
+  ChangeDetectorRef,
   Component,
   ComponentRef,
   ContentChildren,
@@ -37,13 +38,14 @@ import {
   Injectable,
   Input,
   NgZone,
+  Pipe,
+  PipeTransform,
   PLATFORM_ID,
   Provider,
   QueryList,
   TemplateRef,
   Type,
   ViewChild,
-  viewChild,
   ViewContainerRef,
   ViewEncapsulation,
   ɵwhenStable as whenStable,
@@ -70,6 +72,7 @@ import {provideServerRendering} from '../public_api';
 import {renderApplication} from '../src/utils';
 
 import {getAppContents, renderAndHydrate, resetTViewsFor, stripUtilAttributes} from './dom_utils';
+import {ɵsetEnableLetSyntax} from '@angular/compiler/src/jit_compiler_facade';
 
 /**
  * The name of the attribute that contains a slot index
@@ -7204,6 +7207,223 @@ describe('platform-server hydration integration', () => {
 
         const divsAfterSwap = root.querySelectorAll('div');
         expect(divsAfterSwap.length).toBe(3);
+      });
+    });
+
+    describe('@let', () => {
+      beforeEach(() => ɵsetEnableLetSyntax(true));
+      afterEach(() => ɵsetEnableLetSyntax(false));
+
+      it('should handle a let declaration', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            @let greeting = name + '!!!';
+            Hello, {{greeting}}
+          `,
+        })
+        class SimpleComponent {
+          name = 'Frodo';
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('Hello, Frodo!!!');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('Hello, Frodo!!!');
+
+        compRef.instance.name = 'Bilbo';
+        compRef.changeDetectorRef.detectChanges();
+        expect(clientRootNode.textContent).toContain('Hello, Bilbo!!!');
+      });
+
+      it('should handle multiple let declarations that depend on each other', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            @let plusOne = value + 1;
+            @let plusTwo = plusOne + 1;
+            @let result = plusTwo + 1;
+            Result: {{result}}
+          `,
+        })
+        class SimpleComponent {
+          value = 1;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('Result: 4');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('Result: 4');
+
+        compRef.instance.value = 2;
+        compRef.changeDetectorRef.detectChanges();
+
+        expect(clientRootNode.textContent).toContain('Result: 5');
+      });
+
+      it('should handle a let declaration using a pipe that injects ChangeDetectorRef', async () => {
+        @Pipe({
+          name: 'double',
+          standalone: true,
+        })
+        class DoublePipe implements PipeTransform {
+          changeDetectorRef = inject(ChangeDetectorRef);
+
+          transform(value: number) {
+            return value * 2;
+          }
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [DoublePipe],
+          template: `
+            @let result = value | double;
+            Result: {{result}}
+          `,
+        })
+        class SimpleComponent {
+          value = 1;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('Result: 2');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('Result: 2');
+
+        compRef.instance.value = 2;
+        compRef.changeDetectorRef.detectChanges();
+        expect(clientRootNode.textContent).toContain('Result: 4');
+      });
+
+      it('should handle let declarations referenced through multiple levels of views', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            @if (true) {
+              @if (true) {
+                @let three = two + 1;
+                The result is {{three}}
+              }
+              @let two = one + 1;
+            }
+
+            @let one = value + 1;
+          `,
+        })
+        class SimpleComponent {
+          value = 0;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('The result is 3');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('The result is 3');
+
+        compRef.instance.value = 2;
+        compRef.changeDetectorRef.detectChanges();
+        expect(clientRootNode.textContent).toContain('The result is 5');
+      });
+
+      it('should handle non-projected let declarations', async () => {
+        @Component({
+          selector: 'inner',
+          template: `
+            <ng-content select="header">Fallback header</ng-content>
+            <ng-content>Fallback content</ng-content>
+            <ng-content select="footer">Fallback footer</ng-content>
+          `,
+          standalone: true,
+        })
+        class InnerComponent {}
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            <inner>
+              @let one = 1;
+              <footer>|Footer value {{one}}</footer>
+              @let two = one + 1;
+              <header>Header value {{two}}|</header>
+            </inner>
+          `,
+          imports: [InnerComponent],
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+        const expectedContent =
+          '<!--container--><header>Header value 2|</header>' +
+          'Fallback content<!--container--><!--container-->' +
+          '<footer>|Footer value 1</footer>';
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain(`<inner ngh="0">${expectedContent}</inner>`);
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.innerHTML).toContain(`<inner>${expectedContent}</inner>`);
       });
     });
 

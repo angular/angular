@@ -55,7 +55,7 @@ function getNoOffsetIndex(tNode: TNode): number {
  */
 export function isDisconnectedNode(tNode: TNode, lView: LView) {
   return (
-    !(tNode.type & TNodeType.Projection) &&
+    !(tNode.type & (TNodeType.Projection | TNodeType.LetDeclaration)) &&
     !!lView[tNode.index] &&
     !(unwrapRNode(lView[tNode.index]) as Node)?.isConnected
   );
