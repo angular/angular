@@ -410,7 +410,7 @@ Helps reduce the application from becoming cluttered through organizing the cont
 **Why**? <br />
 When there are a lot of files, for example 10+, locating them is easier with a consistent folder structure and more difficult in a flat structure.
 
-For more information, refer to [this folder and file structure example](#file-tree).
+For more information, refer to [this folder and file structure example](#overall-structural-guidelines).
 
 ### App *root module*
 
