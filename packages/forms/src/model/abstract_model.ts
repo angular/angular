@@ -12,7 +12,6 @@ import {
   ɵRuntimeError as RuntimeError,
   ɵWritable as Writable,
   untracked,
-  computed,
 } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 
@@ -592,11 +591,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * both valid AND invalid or invalid AND disabled.
    */
   get status(): FormControlStatus {
-    return untracked(this.statusReactive)!;
+    return untracked(this._statusReactive)!;
   }
   /** @internal */
-  readonly _status = computed(() => this.statusReactive());
-  private readonly statusReactive = signal<FormControlStatus | undefined>(undefined);
+  readonly _statusReactive = signal<FormControlStatus | undefined>(undefined);
 
   /**
    * A control is `valid` when its `status` is `VALID`.
@@ -676,11 +674,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * Programmatic changes to a control's value do not mark it dirty.
    */
   get pristine(): boolean {
-    return untracked(this.pristineReactive);
+    return untracked(this._pristineReactive);
   }
   /** @internal */
-  readonly _pristine = computed(() => this.pristineReactive());
-  private readonly pristineReactive = signal(true);
+  readonly _pristineReactive = signal(true);
 
   /**
    * A control is `dirty` if the user has changed the value
@@ -700,11 +697,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * a `blur` event on it.
    */
   get touched(): boolean {
-    return untracked(this.touchedReactive);
+    return untracked(this._touchedReactive);
   }
   /** @internal */
-  readonly _touched = computed(() => this.touchedReactive());
-  private readonly touchedReactive = signal(false);
+  readonly _touchedReactive = signal(false);
 
   /**
    * True if the control has not been marked as touched
@@ -970,7 +966,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     opts: {onlySelf?: boolean; emitEvent?: boolean; sourceControl?: AbstractControl} = {},
   ): void {
     const changed = this.touched === false;
-    untracked(() => this.touchedReactive.set(true));
+    untracked(() => this._touchedReactive.set(true));
 
     const sourceControl = opts.sourceControl ?? this;
     if (this._parent && !opts.onlySelf) {
@@ -1030,7 +1026,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     opts: {onlySelf?: boolean; emitEvent?: boolean; sourceControl?: AbstractControl} = {},
   ): void {
     const changed = this.touched === true;
-    untracked(() => this.touchedReactive.set(false));
+    untracked(() => this._touchedReactive.set(false));
     this._pendingTouched = false;
 
     const sourceControl = opts.sourceControl ?? this;
@@ -1076,7 +1072,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     opts: {onlySelf?: boolean; emitEvent?: boolean; sourceControl?: AbstractControl} = {},
   ): void {
     const changed = this.pristine === true;
-    untracked(() => this.pristineReactive.set(false));
+    untracked(() => this._pristineReactive.set(false));
 
     const sourceControl = opts.sourceControl ?? this;
     if (this._parent && !opts.onlySelf) {
@@ -1120,7 +1116,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     opts: {onlySelf?: boolean; emitEvent?: boolean; sourceControl?: AbstractControl} = {},
   ): void {
     const changed = this.pristine === false;
-    untracked(() => this.pristineReactive.set(true));
+    untracked(() => this._pristineReactive.set(true));
     this._pendingDirty = false;
 
     const sourceControl = opts.sourceControl ?? this;
@@ -1167,7 +1163,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   markAsPending(
     opts: {onlySelf?: boolean; emitEvent?: boolean; sourceControl?: AbstractControl} = {},
   ): void {
-    untracked(() => this.statusReactive.set(PENDING));
+    untracked(() => this._statusReactive.set(PENDING));
 
     const sourceControl = opts.sourceControl ?? this;
     if (opts.emitEvent !== false) {
@@ -1209,7 +1205,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     // parent's dirtiness based on the children.
     const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
 
-    untracked(() => this.statusReactive.set(DISABLED));
+    untracked(() => this._statusReactive.set(DISABLED));
     (this as Writable<this>).errors = null;
     this._forEachChild((control: AbstractControl) => {
       /** We don't propagate the source control downwards */
@@ -1252,7 +1248,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     // parent's dirtiness based on the children.
     const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
 
-    untracked(() => this.statusReactive.set(VALID));
+    untracked(() => this._statusReactive.set(VALID));
     this._forEachChild((control: AbstractControl) => {
       control.enable({...opts, onlySelf: true});
     });
@@ -1340,7 +1336,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
       const shouldHaveEmitted = this._cancelExistingSubscription();
 
       (this as Writable<this>).errors = this._runValidator();
-      untracked(() => this.statusReactive.set(this._calculateStatus()));
+      untracked(() => this._statusReactive.set(this._calculateStatus()));
 
       if (this.status === VALID || this.status === PENDING) {
         // If the canceled subscription should have emitted
@@ -1369,7 +1365,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   }
 
   private _setInitialStatus() {
-    untracked(() => this.statusReactive.set(this._allControlsDisabled() ? DISABLED : VALID));
+    untracked(() => this._statusReactive.set(this._allControlsDisabled() ? DISABLED : VALID));
   }
 
   private _runValidator(): ValidationErrors | null {
@@ -1378,7 +1374,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   private _runAsyncValidator(shouldHaveEmitted: boolean, emitEvent?: boolean): void {
     if (this.asyncValidator) {
-      untracked(() => this.statusReactive.set(PENDING));
+      untracked(() => this._statusReactive.set(PENDING));
       this._hasOwnPendingAsyncValidator = {emitEvent: emitEvent !== false};
       const obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription = obs.subscribe((errors: ValidationErrors | null) => {
@@ -1594,7 +1590,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     changedControl: AbstractControl,
     shouldHaveEmitted?: boolean,
   ): void {
-    untracked(() => this.statusReactive.set(this._calculateStatus()));
+    untracked(() => this._statusReactive.set(this._calculateStatus()));
 
     if (emitEvent) {
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
@@ -1660,7 +1656,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   _updatePristine(opts: {onlySelf?: boolean}, changedControl: AbstractControl): void {
     const newPristine = !this._anyControlsDirty();
     const changed = this.pristine !== newPristine;
-    untracked(() => this.pristineReactive.set(newPristine));
+    untracked(() => this._pristineReactive.set(newPristine));
 
     if (this._parent && !opts.onlySelf) {
       this._parent._updatePristine(opts, changedControl);
@@ -1673,7 +1669,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   /** @internal */
   _updateTouched(opts: {onlySelf?: boolean} = {}, changedControl: AbstractControl): void {
-    untracked(() => this.touchedReactive.set(this._anyControlsTouched()));
+    untracked(() => this._touchedReactive.set(this._anyControlsTouched()));
     this._events.next(new TouchedChangeEvent(this.touched, changedControl));
 
     if (this._parent && !opts.onlySelf) {

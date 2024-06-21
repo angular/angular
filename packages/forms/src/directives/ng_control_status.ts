@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Optional, Self, ɵWritable as Writable} from '@angular/core';
+import {Directive, Optional, Self, ɵWritable as Writable, computed} from '@angular/core';
 
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
@@ -20,6 +20,12 @@ import {type FormGroupDirective} from './reactive_directives/form_group_directiv
 // can work correctly.
 export class AbstractControlStatus {
   private _cd: AbstractControlDirective | null;
+  private readonly touched = computed(() => this._cd?.control?._touchedReactive());
+  private readonly status = computed(() => this._cd?.control?._statusReactive());
+  private readonly pristine = computed(() => this._cd?.control?._pristineReactive());
+  private readonly submitted = computed(() =>
+    (this._cd as Writable<NgForm | FormGroupDirective> | null)?._submittedReactive(),
+  );
 
   constructor(cd: AbstractControlDirective | null) {
     this._cd = cd;
@@ -27,7 +33,7 @@ export class AbstractControlStatus {
 
   protected get isTouched() {
     // track the touched signal
-    this._cd?.control?._touched?.();
+    this.touched();
     return !!this._cd?.control?.touched;
   }
 
@@ -37,7 +43,7 @@ export class AbstractControlStatus {
 
   protected get isPristine() {
     // track the pristine signal
-    this._cd?.control?._pristine?.();
+    this.pristine();
     return !!this._cd?.control?.pristine;
   }
 
@@ -48,7 +54,7 @@ export class AbstractControlStatus {
 
   protected get isValid() {
     // track the status signal
-    this._cd?.control?._status?.();
+    this.status();
     return !!this._cd?.control?.valid;
   }
 
@@ -64,7 +70,7 @@ export class AbstractControlStatus {
 
   protected get isSubmitted() {
     // track the submitted signal
-    (this._cd as Writable<NgForm | FormGroupDirective> | null)?._submitted?.();
+    this.submitted();
     // We check for the `submitted` field from `NgForm` and `FormGroupDirective` classes, but
     // we avoid instanceof checks to prevent non-tree-shakable references to those types.
     return !!(this._cd as Writable<NgForm | FormGroupDirective> | null)?.submitted;
