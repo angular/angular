@@ -48,9 +48,9 @@ graph TD;
     style details fill:#E4BE74,color:#000
 
     style app fill:#C1D5B0,color:#000
-    style header fill:#C1D5B0,color:#000
-    style button fill:#C1D5B0,color:#000
-    style search fill:#C1D5B0,color:#000
+    style header fill:#E4BE74,color:#000
+    style button fill:#E4BE74,color:#000
+    style search fill:#E4BE74,color:#000
 ```
 
 ## An event is handled by a component with OnPush
@@ -99,8 +99,8 @@ graph TD;
     style header fill:#C1D5B0,color:#000
     style button fill:#C1D5B0,color:#000
     style search fill:#C1D5B0,color:#000
-    style login fill:#C1D5B0,color:#000
-    style main fill:#C1D5B0,color:#000
+    style login fill:#E4BE74,color:#000
+    style main fill:#E4BE74,color:#000
     style details fill:#C1D5B0,color:#000
 ```
 
@@ -120,14 +120,14 @@ graph TD;
     main --- details[DetailsComponent];
     event>Parent passes new input to MainComponent]
 
-    style login fill:#C1D5B0,color:#000
+    style login fill:#E4BE74,color:#000
 
     linkStyle 1 stroke:green
     style app fill:#C1D5B0,color:#000
     style header fill:#C1D5B0,color:#000
     style button fill:#C1D5B0,color:#000
     style search fill:#C1D5B0,color:#000
-    style main fill:#C1D5B0,color:#000
+    style main fill:#E4BE74,color:#000
     style details fill:#C1D5B0,color:#000
 ```
 
