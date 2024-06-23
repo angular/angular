@@ -2451,9 +2451,6 @@
     "name": "stringifyCSSSelector"
   },
   {
-    "name": "throwError"
-  },
-  {
     "name": "throwProviderNotFoundError"
   },
   {
@@ -2503,9 +2500,6 @@
   },
   {
     "name": "ɵɵdefer"
-  },
-  {
-    "name": "ɵɵdeferWhen"
   },
   {
     "name": "ɵɵdefineComponent"
