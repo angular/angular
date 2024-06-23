@@ -20,7 +20,6 @@ import {
   inject,
   Injectable,
   InjectionToken,
-  Injector,
   Input,
   NgModule,
   NgZone,
@@ -31,6 +30,7 @@ import {
   Type,
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {
@@ -44,6 +44,7 @@ import {
 import {getInjectorResolutionPath} from '@angular/core/src/render3/util/injector_discovery_utils';
 import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
 import {ChainedInjector} from '@angular/core/src/render3/chained_injector';
+import {global} from '../../src/util/global';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -1029,6 +1030,92 @@ describe('@defer', () => {
       // Expect that the `@loading` UI is removed, but the `@error` is *not* rendered,
       // because it was a component initialization error, not resource loading issue.
       expect(fixture.nativeElement.textContent).toBe('');
+    });
+
+    describe('with ngDevMode', () => {
+      const _global: {ngDevMode: any} = global;
+      let saveNgDevMode!: typeof ngDevMode;
+      beforeEach(() => (saveNgDevMode = ngDevMode));
+      afterEach(() => (_global.ngDevMode = saveNgDevMode));
+
+      [true, false].forEach((devMode) => {
+        it(`should log an error in the handler when there is no error block with devMode:${devMode}`, async () => {
+          @Component({
+            selector: 'nested-cmp',
+            standalone: true,
+            template: 'Rendering {{ block }} block.',
+          })
+          class NestedCmp {
+            @Input() block!: string;
+          }
+
+          @Component({
+            standalone: true,
+            selector: 'simple-app',
+            imports: [NestedCmp],
+            template: `
+          @defer (when isVisible) {
+            <nested-cmp [block]="'primary'" />
+          } @loading {
+            Loading...
+          } @placeholder {
+            Placeholder!
+          }
+          `,
+          })
+          class MyCmp {
+            isVisible = false;
+            @ViewChildren(NestedCmp) cmps!: QueryList<NestedCmp>;
+          }
+
+          const deferDepsInterceptor = {
+            intercept() {
+              return () => [failedDynamicImport()];
+            },
+          };
+
+          const errorLogs: Error[] = [];
+          @Injectable()
+          class CustomErrorHandler {
+            handleError(error: Error): void {
+              errorLogs.push(error);
+            }
+          }
+
+          TestBed.configureTestingModule({
+            providers: [
+              {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+              {
+                provide: ErrorHandler,
+                useClass: CustomErrorHandler,
+              },
+            ],
+          });
+
+          const fixture = TestBed.createComponent(MyCmp);
+          fixture.detectChanges();
+
+          expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+          fixture.componentInstance.isVisible = true;
+          fixture.detectChanges();
+
+          expect(fixture.nativeElement.outerHTML).toContain('Loading');
+
+          // ngDevMode should not be set earlier than here
+          // as it would prevent the DEFER_BLOCK_DEPENDENCY_INTERCEPTOR from being set
+          _global.ngDevMode = devMode;
+
+          // Wait for dependencies to load.
+          await allPendingDynamicImports();
+          fixture.detectChanges();
+
+          expect(errorLogs.length).toBe(1);
+          const error = errorLogs[0];
+          expect(error).toBeInstanceOf(RuntimeError);
+          expect(error.message).toMatch(/NG0750/);
+        });
+      });
     });
   });
 
