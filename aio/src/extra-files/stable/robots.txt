@@ -1,4 +1,4 @@
 # Allow all URLs (see https://www.robotstxt.org/robotstxt.html)
 User-agent: *
-Disallow: /
+Disallow: 
 Sitemap: https://angular.io/generated/sitemap.xml
