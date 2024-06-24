@@ -20,7 +20,7 @@ export class BrowserTestingModule {
 }
 
 // @public
-export const platformBrowserTesting: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 // (No @packageDocumentation comment for this package)
 

@@ -254,12 +254,9 @@ runInEachFileSystem(() => {
 
       expect(docs[0].description).toBe('Future version.');
       expect(docs[0].jsdocTags.length).toBe(1);
-
-      // It's not clear why TypeScript's JsDoc handling puts a space after
-      // "Component" here, but we'll accept this as-is.
       expect(docs[0].jsdocTags[0]).toEqual({
         name: 'see',
-        comment: '{@link Component }',
+        comment: '{@link Component}',
       });
     });
 

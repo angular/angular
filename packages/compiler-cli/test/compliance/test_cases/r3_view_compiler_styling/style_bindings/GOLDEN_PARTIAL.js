@@ -372,7 +372,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     standalone: true,
                     template: `
     <div style="width: 1px; width: 10px;" class="cls1 cls1"></div>
-  `
+  `,
                 }]
         }] });
 

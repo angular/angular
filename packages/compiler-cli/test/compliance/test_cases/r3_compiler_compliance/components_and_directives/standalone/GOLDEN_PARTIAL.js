@@ -12,7 +12,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     standalone: true,
                     selector: 'other-cmp',
-                    template: ''
+                    template: '',
                 }]
         }] });
 export class StandaloneCmp {
@@ -24,7 +24,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     standalone: true,
                     template: '<other-cmp></other-cmp>',
-                    imports: [OtherCmp]
+                    imports: [OtherCmp],
                 }]
         }] });
 
@@ -53,7 +53,7 @@ StandaloneDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version:
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneDir, decorators: [{
             type: Directive,
             args: [{
-                    standalone: true
+                    standalone: true,
                 }]
         }] });
 
@@ -80,7 +80,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Pipe,
             args: [{
                     standalone: true,
-                    name: 'stpipe'
+                    name: 'stpipe',
                 }]
         }] });
 
@@ -125,7 +125,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: NgModule,
             args: [{
                     declarations: [NotStandaloneDir, NotStandalonePipe],
-                    exports: [NotStandaloneDir, NotStandalonePipe]
+                    exports: [NotStandaloneDir, NotStandalonePipe],
                 }]
         }] });
 export class IndirectDir {
@@ -136,7 +136,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     standalone: true,
-                    selector: '[indirect]'
+                    selector: '[indirect]',
                 }]
         }] });
 export class IndirectPipe {
@@ -148,7 +148,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Pipe,
             args: [{
                     standalone: true,
-                    name: 'indirectpipe'
+                    name: 'indirectpipe',
                 }]
         }] });
 export class SomeModule {
@@ -160,7 +160,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: NgModule,
             args: [{
                     imports: [IndirectDir, IndirectPipe],
-                    exports: [NotStandaloneStuffModule, IndirectDir, IndirectPipe]
+                    exports: [NotStandaloneStuffModule, IndirectDir, IndirectPipe],
                 }]
         }] });
 export class DirectDir {
@@ -171,7 +171,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     standalone: true,
-                    selector: '[direct]'
+                    selector: '[direct]',
                 }]
         }] });
 export class DirectPipe {
@@ -183,7 +183,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Pipe,
             args: [{
                     standalone: true,
-                    name: 'directpipe'
+                    name: 'directpipe',
                 }]
         }] });
 export class TestCmp {
@@ -207,7 +207,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <p>Reference some indirect standalone things:<span indirect>{{data | indirectpipe}}</span></p>
     <p>Reference some standalone things directly:<span direct>{{data | directpipe}}</span></p>
   `,
-                    imports: [SomeModule, DirectDir, DirectPipe]
+                    imports: [SomeModule, DirectDir, DirectPipe],
                 }]
         }] });
 
@@ -273,7 +273,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     standalone: true,
                     selector: 'recursive-cmp',
                     // Simple recursion. Note: no `imports`.
-                    template: '<recursive-cmp></recursive-cmp>'
+                    template: '<recursive-cmp></recursive-cmp>',
                 }]
         }] });
 
@@ -300,7 +300,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     standalone: true,
                     selector: 'standalone-cmp',
-                    template: ''
+                    template: '',
                 }]
         }] });
 export class StandaloneDir {
@@ -319,7 +319,7 @@ Module.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module, decorators: [{
             type: NgModule,
             args: [{
-                    imports: [StandaloneCmp, StandaloneDir]
+                    imports: [StandaloneCmp, StandaloneDir],
                 }]
         }] });
 
@@ -356,7 +356,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'test',
                     standalone: true,
                     imports: [forwardRef(() => StandaloneComponent)],
-                    template: '<other-standalone></other-standalone>'
+                    template: '<other-standalone></other-standalone>',
                 }]
         }] });
 export class StandaloneComponent {
@@ -368,7 +368,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'other-standalone',
                     standalone: true,
-                    template: ''
+                    template: '',
                 }]
         }] });
 
