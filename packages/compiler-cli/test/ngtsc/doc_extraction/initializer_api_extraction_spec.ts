@@ -18,11 +18,13 @@ import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 import {NgtscTestEnvironment} from '../env';
 
 const inputFixture = `
+  export interface InputSignal<T> {}
+
   export interface InputFunction {
     /** No explicit initial value */
-    <T>(): void;
+    <T>(): InputSignal<T|undefined>;
     /** With explicit initial value */
-    <T>(initialValue: T): void;
+    <T>(initialValue: T): InputSignal<T>;
 
     required: {
       /** Required, no options */
@@ -90,6 +92,13 @@ runInEachFileSystem(() => {
       it('should extract container description', () => {
         expect(test(inputFixture)?.description.replace(/\n/g, ' ')).toBe(
           'This describes the overall initializer API function.',
+        );
+      });
+
+      fit('should extract individual return types', () => {
+        expect(test(inputFixture)?.callFunction.signatures[0].returnType).toBe('InputSignal<T>');
+        expect(test(inputFixture)?.callFunction.signatures[1].returnType).toBe(
+          'InputSignal<T | undefined>',
         );
       });
 
