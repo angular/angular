@@ -18,11 +18,13 @@ import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 import {NgtscTestEnvironment} from '../env';
 
 const inputFixture = `
+  export interface InputSignal<T> {}
+
   export interface InputFunction {
     /** No explicit initial value */
-    <T>(): void;
+    <T>(): InputSignal<T|undefined>;
     /** With explicit initial value */
-    <T>(initialValue: T): void;
+    <T>(initialValue: T): InputSignal<T>;
 
     required: {
       /** Required, no options */
@@ -93,6 +95,13 @@ runInEachFileSystem(() => {
         );
       });
 
+      it('should extract individual return types', () => {
+        expect(test(inputFixture)?.callFunction.signatures[0].returnType).toBe(
+          'InputSignal<T | undefined>',
+        );
+        expect(test(inputFixture)?.callFunction.signatures[1].returnType).toBe('InputSignal<T>');
+      });
+
       it('should extract container tags', () => {
         expect(test(inputFixture)?.jsdocTags).toEqual([
           jasmine.objectContaining({name: 'initializerApiFunction'}),
@@ -106,12 +115,12 @@ runInEachFileSystem(() => {
           signatures: [
             jasmine.objectContaining<FunctionEntry>({
               generics: [{name: 'T', constraint: undefined, default: undefined}],
-              returnType: 'void',
+              returnType: 'InputSignal<T | undefined>',
             }),
             jasmine.objectContaining<FunctionEntry>({
               generics: [{name: 'T', constraint: undefined, default: undefined}],
               params: [jasmine.objectContaining<ParameterEntry>({name: 'initialValue', type: 'T'})],
-              returnType: 'void',
+              returnType: 'InputSignal<T>',
             }),
           ],
         });

@@ -187,11 +187,14 @@ function getContainerVariableStatement(node: ts.VariableDeclaration): ts.Variabl
 
 /** Filters the list signatures to valid initializer API signatures. */
 function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
-  const result: Array<ts.FunctionDeclaration | ts.CallSignatureDeclaration> = [];
+  const result: Array<{
+    signature: ts.Signature;
+    decl: ts.FunctionDeclaration | ts.CallSignatureDeclaration;
+  }> = [];
   for (const signature of signatures) {
     const decl = signature.getDeclaration();
     if (ts.isFunctionDeclaration(decl) || ts.isCallSignatureDeclaration(decl)) {
-      result.push(decl);
+      result.push({signature, decl});
     }
   }
   return result;
@@ -213,17 +216,20 @@ function extractFunctionWithOverloads(
 ): FunctionWithOverloads {
   return {
     name,
-    signatures: filterSignatureDeclarations(signatures).map((s) => ({
+    signatures: filterSignatureDeclarations(signatures).map(({decl, signature}) => ({
       name,
       entryType: EntryType.Function,
-      description: extractJsDocDescription(s),
-      generics: extractGenerics(s),
+      description: extractJsDocDescription(decl),
+      generics: extractGenerics(decl),
       isNewType: false,
-      jsdocTags: extractJsDocTags(s),
-      params: extractAllParams(s.parameters, typeChecker),
-      rawComment: extractRawJsDoc(s),
+      jsdocTags: extractJsDocTags(decl),
+      params: extractAllParams(decl.parameters, typeChecker),
+      rawComment: extractRawJsDoc(decl),
       returnType: typeChecker.typeToString(
-        typeChecker.getReturnTypeOfSignature(typeChecker.getSignatureFromDeclaration(s)!),
+        typeChecker.getReturnTypeOfSignature(signature),
+        undefined,
+        // This ensures that e.g. `T | undefined` is not reduced to `T`.
+        ts.TypeFormatFlags.NoTypeReduction | ts.TypeFormatFlags.NoTruncation,
       ),
     })),
     // Implementation may be populated later.
