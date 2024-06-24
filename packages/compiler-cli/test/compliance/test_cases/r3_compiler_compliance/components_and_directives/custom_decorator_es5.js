@@ -2,6 +2,6 @@
   type: Component,
   args: [{
     template: '',
-    providers: [{provide: token, useExisting: Comp}]
+    providers: [{provide: token, useExisting: Comp}],
   }]
 }], null, null); })();

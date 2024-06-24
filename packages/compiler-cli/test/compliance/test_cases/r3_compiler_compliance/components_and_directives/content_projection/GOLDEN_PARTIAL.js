@@ -86,7 +86,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <ng-content></ng-content>
     <ng-content select="[spacer]"></ng-content>
     <ng-content></ng-content>
-  `
+  `,
                 }]
         }] });
 class Module {
@@ -136,7 +136,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <ng-template>
       '*' selector: <ng-content></ng-content>
     </ng-template>
-  `
+  `,
                 }]
         }] });
 class Module {
@@ -190,7 +190,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       '*' selector in a template: <ng-content></ng-content>
     </ng-template>
     <ng-content select="[id=toMainAfter]"></ng-content>
-  `
+  `,
                 }]
         }] });
 class Module {

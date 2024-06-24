@@ -91,6 +91,7 @@ import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {TypeCheckShimGenerator} from '../src/shim';
 import {TcbGenericContextBehavior} from '../src/type_check_block';
 import {TypeCheckFile} from '../src/type_check_file';
+import {sfExtensionData} from '../../shims';
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -502,6 +503,7 @@ export function setup(
 } {
   const files = [typescriptLibDts(), ...angularCoreDtsFiles(), angularAnimationsDts()];
   const fakeMetadataRegistry = new Map();
+  const shims = new Map<AbsoluteFsPath, AbsoluteFsPath>();
 
   for (const target of targets) {
     let contents: string;
@@ -520,8 +522,10 @@ export function setup(
     });
 
     if (!target.fileName.endsWith('.d.ts')) {
+      const shimName = TypeCheckShimGenerator.shimFor(target.fileName);
+      shims.set(target.fileName, shimName);
       files.push({
-        name: TypeCheckShimGenerator.shimFor(target.fileName),
+        name: shimName,
         contents: 'export const MODULE = true;',
       });
     }
@@ -575,6 +579,15 @@ export function setup(
   for (const target of targets) {
     const sf = getSourceFileOrError(program, target.fileName);
     const scope = makeScope(program, sf, target.declarations ?? []);
+
+    if (shims.has(target.fileName)) {
+      const shimFileName = shims.get(target.fileName)!;
+      const shimSf = getSourceFileOrError(program, shimFileName);
+      sfExtensionData(shimSf).fileShim = {
+        extension: 'ngtypecheck',
+        generatedFrom: target.fileName,
+      };
+    }
 
     for (const className of Object.keys(target.templates)) {
       const classDecl = getClass(sf, className);

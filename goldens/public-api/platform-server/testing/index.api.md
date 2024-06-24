@@ -11,7 +11,7 @@ import { PlatformRef } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 
 // @public
-export const platformServerTesting: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export const platformServerTesting: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 // @public
 export class ServerTestingModule {

@@ -441,7 +441,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     template: '',
-                    providers: [{ provide: token, useExisting: Comp }]
+                    providers: [{ provide: token, useExisting: Comp }],
                 }]
         }] });
 
@@ -587,7 +587,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     <lib-dir></lib-dir>
-  `
+  `,
                 }]
         }] });
 export class TestModule {
@@ -599,7 +599,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: NgModule,
             args: [{
                     declarations: [TestComponent],
-                    imports: [LibModule]
+                    imports: [LibModule],
                 }]
         }] });
 
@@ -630,7 +630,7 @@ Main.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-P
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Main, decorators: [{
             type: Component,
             args: [{
-                    template: 'Hello Angular!'
+                    template: 'Hello Angular!',
                 }]
         }] });
 export class MainStandalone {
@@ -641,7 +641,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     standalone: true,
-                    template: 'Hello Angular!'
+                    template: 'Hello Angular!',
                 }]
         }] });
 

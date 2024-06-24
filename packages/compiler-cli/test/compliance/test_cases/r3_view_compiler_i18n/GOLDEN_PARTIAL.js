@@ -17,7 +17,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div i18n>Hello, {{ placeholder }}! You are a very good {{ placeholder }}.</div>
     <div i18n>Hello, {{ placeholder // i18n(ph = "ph") }}! Hello again {{ placeholder // i18n(ph = "ph") }}.</div>
-  `
+  `,
                 }]
         }] });
 export class MyModule {
@@ -64,7 +64,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <div i18n>{{ valueA | pipeA }} and {{ valueB | pipeB }}</div>
   <div i18n><span>{{ valueA | pipeA }}</span> and {{ valueB | pipeB }} <span>and {{ valueC | pipeC }}</span></div>
-`
+`,
                 }]
         }] });
 export class PipeA {
@@ -169,7 +169,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         {{diskView.name}} has {diskView.length, plural, =1 {VM} other {VMs}}
       </div>
     </div>
-  `
+  `,
                 }]
         }] });
 
