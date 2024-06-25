@@ -7,7 +7,6 @@
  */
 
 import {
-  computed,
   Directive,
   EventEmitter,
   forwardRef,
@@ -98,8 +97,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     this._submittedReactive.set(value);
   }
   /** @internal */
-  readonly _submitted = computed(() => this._submittedReactive());
-  private readonly _submittedReactive = signal(false);
+  readonly _submittedReactive = signal(false);
 
   /**
    * Reference to an old form group input value, which is needed to cleanup
