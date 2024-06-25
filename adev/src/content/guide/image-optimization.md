@@ -17,6 +17,8 @@ In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enfor
 * Warning if `width` or `height` have been set incorrectly
 * Warning if the image will be visually distorted when rendered
 
+If you're using a background image in CSS, [start here](#how-to-migrate-your-background-image).
+
 **Note: Although the `NgOptimizedImage` directive was made a stable feature in Angular version 15, it has been backported and is available as a stable feature in versions 13.4.0 and 14.3.0 as well.**
 
 ## Getting Started
@@ -111,6 +113,19 @@ See visual examples of the above at the [MDN object-fit documentation.](https://
 You can also style your image with the [object-position property](https://developer.mozilla.org/docs/Web/CSS/object-position) to adjust its position within its containing element.
 
 IMPORTANT: For the "fill" image to render properly, its parent element **must** be styled with `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
+
+## How to migrate your background image
+
+Here's a simple step-by-step process for migrating from `background-image` to `NgOptimizedImage`. For these steps, we'll refer to the element that has an image background as the "containing element":
+
+1) Remove the `background-image` style from the containing element.
+2) Ensure that the containing element has `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
+3) Create a new image element as a child of the containing element, using `ngSrc` to enable the `NgOptimizedImage` directive.
+4) Give that element the `fill` attribute. Do not include a `height` and `width`.
+5) If you believe this image might be your [LCP element](https://web.dev/lcp/), add the `priority` attribute to the image element.
+
+You can adjust how the background image fills the container as described in the [Using fill mode](#using-fill-mode) section.
+
 
 ## Using placeholders
 
@@ -385,15 +400,7 @@ Note that in the above example, we've invented the 'roundedCorners' property nam
 
 The NgOptimizedImage does not directly support the `background-image` css property, but it is designed to easily accommodate the use case of having an image as the background of another element.
 
-Here's a simple step-by-step process for migrating from `background-image` to `NgOptimizedImage`. For these steps, we'll refer to the element that has an image background as the "containing element":
-
-1) Remove the `background-image` style from the containing element.
-2) Ensure that the containing element has `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
-3) Create a new image element as a child of the containing element, using `ngSrc` to enable the `NgOptimizedImage` directive.
-4) Give that element the `fill` attribute. Do not include a `height` and `width`.
-5) If you believe this image might be your [LCP element](https://web.dev/lcp/), add the `priority` attribute to the image element.
-
-You can adjust how the background image fills the container as described in the [Using fill mode](#using-fill-mode) section.
+For a step-by-step process for migration from `background-image` to `NgOptimizedImage`, see the [How to migrate your background image](#how-to-migrate-your-background-image) section above. 
 
 ### Why can't I use `src` with `NgOptimizedImage`?
 
