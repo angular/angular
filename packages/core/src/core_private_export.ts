@@ -104,6 +104,7 @@ export {
   restoreComponentResolutionQueue as ɵrestoreComponentResolutionQueue,
 } from './metadata/resource_loading';
 export {PendingTasks as ɵPendingTasks} from './pending_tasks';
+export {ApplicationStability as ɵApplicationStability} from './application/application_stability';
 export {ALLOW_MULTIPLE_PLATFORMS as ɵALLOW_MULTIPLE_PLATFORMS} from './platform/platform';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {AnimationRendererType as ɵAnimationRendererType} from './render/api';

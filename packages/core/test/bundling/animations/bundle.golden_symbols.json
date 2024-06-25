@@ -84,6 +84,9 @@
     "name": "ApplicationRef"
   },
   {
+    "name": "ApplicationStability"
+  },
+  {
     "name": "BLOOM_BUCKET_BITS"
   },
   {
@@ -448,9 +451,6 @@
   },
   {
     "name": "Observable"
-  },
-  {
-    "name": "OperatorSubscriber"
   },
   {
     "name": "PARAM_REGEX"
@@ -1285,9 +1285,6 @@
   },
   {
     "name": "makeTimingAst"
-  },
-  {
-    "name": "map"
   },
   {
     "name": "markAncestorsForTraversal"

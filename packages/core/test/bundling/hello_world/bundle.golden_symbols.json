@@ -21,6 +21,9 @@
     "name": "ApplicationRef"
   },
   {
+    "name": "ApplicationStability"
+  },
+  {
     "name": "BLOOM_BUCKET_BITS"
   },
   {
@@ -250,9 +253,6 @@
   },
   {
     "name": "Observable"
-  },
-  {
-    "name": "OperatorSubscriber"
   },
   {
     "name": "PLATFORM_DESTROY_LISTENERS"
@@ -808,9 +808,6 @@
   },
   {
     "name": "makeRecord"
-  },
-  {
-    "name": "map"
   },
   {
     "name": "markAncestorsForTraversal"

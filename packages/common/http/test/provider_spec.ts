@@ -68,7 +68,7 @@ describe('without provideHttpClientTesting', () => {
     expect(stable).toBe(true);
     TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
     expect(stable).toBe(false);
-    await Promise.resolve();
+    await new Promise((resolve) => setTimeout(resolve));
     expect(stable).toBe(true);
   });
 });

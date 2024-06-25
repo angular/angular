@@ -36,6 +36,9 @@
     "name": "ApplicationRef"
   },
   {
+    "name": "ApplicationStability"
+  },
+  {
     "name": "BLOOM_BUCKET_BITS"
   },
   {
@@ -382,9 +385,6 @@
   },
   {
     "name": "Observable"
-  },
-  {
-    "name": "OperatorSubscriber"
   },
   {
     "name": "PLATFORM_DESTROY_LISTENERS"
@@ -1032,9 +1032,6 @@
     "name": "init_Observable"
   },
   {
-    "name": "init_OperatorSubscriber"
-  },
-  {
     "name": "init_Subject"
   },
   {
@@ -1087,6 +1084,9 @@
   },
   {
     "name": "init_application_ref"
+  },
+  {
+    "name": "init_application_stability"
   },
   {
     "name": "init_application_tokens"
@@ -1644,9 +1644,6 @@
     "name": "init_let_declaration"
   },
   {
-    "name": "init_lift"
-  },
-  {
     "name": "init_linker"
   },
   {
@@ -1669,9 +1666,6 @@
   },
   {
     "name": "init_lview_tracking"
-  },
-  {
-    "name": "init_map"
   },
   {
     "name": "init_mark_view_dirty"
@@ -1780,9 +1774,6 @@
   },
   {
     "name": "init_observable"
-  },
-  {
-    "name": "init_operators"
   },
   {
     "name": "init_output"
@@ -2248,9 +2239,6 @@
   },
   {
     "name": "makeRecord"
-  },
-  {
-    "name": "map"
   },
   {
     "name": "markAncestorsForTraversal"

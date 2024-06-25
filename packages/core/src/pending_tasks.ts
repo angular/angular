@@ -21,7 +21,7 @@ export class PendingTasks implements OnDestroy {
   private get _hasPendingTasks() {
     return this.hasPendingTasks.value;
   }
-  hasPendingTasks = new BehaviorSubject<boolean>(false);
+  hasPendingTasks = new BehaviorSubject(false);
 
   add(): number {
     if (!this._hasPendingTasks) {

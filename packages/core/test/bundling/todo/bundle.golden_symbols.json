@@ -27,6 +27,9 @@
     "name": "ApplicationRef"
   },
   {
+    "name": "ApplicationStability"
+  },
+  {
     "name": "BLOOM_BUCKET_BITS"
   },
   {
@@ -355,9 +358,6 @@
   },
   {
     "name": "Observable"
-  },
-  {
-    "name": "OperatorSubscriber"
   },
   {
     "name": "Optional"
@@ -1234,9 +1234,6 @@
   },
   {
     "name": "makeRecord"
-  },
-  {
-    "name": "map"
   },
   {
     "name": "markAncestorsForTraversal"

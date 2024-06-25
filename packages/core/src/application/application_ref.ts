@@ -13,7 +13,7 @@ import {
   setThrowInvalidWriteToSignalError,
 } from '@angular/core/primitives/signals';
 import {Observable, Subject} from 'rxjs';
-import {first, map} from 'rxjs/operators';
+import {first} from 'rxjs/operators';
 
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
 import {Console} from '../console';
@@ -29,13 +29,12 @@ import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
-import {PendingTasks} from '../pending_tasks';
 import {RendererFactory2} from '../render/api';
 import {AfterRenderEventManager} from '../render3/after_render_hooks';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
 import {ChangeDetectionMode, detectChangesInternal} from '../render3/instructions/change_detection';
-import {FLAGS, LView, LViewFlags} from '../render3/interfaces/view';
+import {LView} from '../render3/interfaces/view';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
 import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
@@ -44,6 +43,7 @@ import {isPromise} from '../util/lang';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
+import {ApplicationStability} from './application_stability';
 
 /**
  * A DI token that provides a set of callbacks to
@@ -343,9 +343,7 @@ export class ApplicationRef {
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable: Observable<boolean> = inject(PendingTasks).hasPendingTasks.pipe(
-    map((pending) => !pending),
-  );
+  public readonly isStable: Observable<boolean> = inject(ApplicationStability).isStable;
 
   private readonly _injector = inject(EnvironmentInjector);
   /**
