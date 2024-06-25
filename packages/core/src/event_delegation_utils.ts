@@ -14,7 +14,7 @@ import {
   isSupportedEvent,
   registerDispatcher,
 } from '@angular/core/primitives/event-dispatch';
-import * as Attributes from '@angular/core/primitives/event-dispatch';
+import {Attribute} from '@angular/core/primitives/event-dispatch';
 import {Injectable, InjectionToken, Injector, inject} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
 import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './hydration/tokens';
@@ -40,14 +40,14 @@ export function setJSActionAttributes(nativeElement: Element, eventTypes: string
     return;
   }
   const parts = eventTypes.reduce((prev, curr) => prev + curr + ':;', '');
-  const existingAttr = nativeElement.getAttribute(Attributes.JSACTION);
-  nativeElement.setAttribute(Attributes.JSACTION, `${existingAttr ?? ''}${parts}`);
+  const existingAttr = nativeElement.getAttribute(Attribute.JSACTION);
+  nativeElement.setAttribute(Attribute.JSACTION, `${existingAttr ?? ''}${parts}`);
 }
 
 export function setJSActionAttribute(nativeElement: Element, eventType: string) {
-  const existingAttr = nativeElement.getAttribute(Attributes.JSACTION);
+  const existingAttr = nativeElement.getAttribute(Attribute.JSACTION);
   //  This is required to be a module accessor to appease security tests on setAttribute.
-  nativeElement.setAttribute(Attributes.JSACTION, `${existingAttr ?? ''}${eventType}:;`);
+  nativeElement.setAttribute(Attribute.JSACTION, `${existingAttr ?? ''}${eventType}:;`);
 }
 
 export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn: () => void) => {
@@ -60,7 +60,7 @@ export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn
 };
 
 export const removeListeners = (el: Element) => {
-  el.removeAttribute(Attributes.JSACTION);
+  el.removeAttribute(Attribute.JSACTION);
   el.__jsaction_fns = undefined;
 };
 
@@ -101,11 +101,11 @@ export class GlobalEventDelegation {
 
   removeEventListener(element: HTMLElement, eventName: string, callback: Function): void {
     const newJsactionAttribute = element
-      .getAttribute(Attributes.JSACTION)
+      .getAttribute(Attribute.JSACTION)
       ?.split(';')
       .filter((s) => s === eventName + ':')
       .join(';');
-    element.setAttribute(Attributes.JSACTION, newJsactionAttribute ?? '');
+    element.setAttribute(Attribute.JSACTION, newJsactionAttribute ?? '');
   }
 }
 
