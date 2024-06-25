@@ -28,7 +28,7 @@ yarn docs
 
 Want to report a bug, contribute some code, or improve the documentation? Excellent!
 
-Read through our [contributing guidelines](CONTRIBUTING.md) to learn about our submission process, coding rules, and more.
+Read through our [contributing guidelines](/CONTRIBUTING.md) to learn about our submission process, coding rules, and more.
 
 And if you're new, check out one of our issues labeled as <kbd>[help wanted](https://github.com/angular/angular/labels/help%20wanted)</kbd> or <kbd>[good first issue](https://github.com/angular/angular/labels/good%20first%20issue)</kbd>.
 
