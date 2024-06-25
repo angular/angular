@@ -870,6 +870,51 @@ describe('Image directive', () => {
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('fetchpriority')).toBe('auto');
     });
+
+    it('should log a warning if the priority attribute is used too often', async () => {
+      withHead('', () => {
+        const imageLoader = () => {
+          // We need something different from the `localhost` (as we don't want to produce
+          // a preconnect warning for local environments).
+          return 'https://angular.io/assets/images/logos/angular/angular.svg';
+        };
+
+        setupTestingModule({imageLoader});
+
+        // 11 priority attributes, threshold is 10
+        const template = `
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      <img ngSrc="path/img.png" width="150" height="50" priority>
+      `;
+        const consoleWarnSpy = spyOn(console, 'warn');
+
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        // We manually fire the event that is listened by the directive
+        // as it won't fire in the context of our unit test
+        document.dispatchEvent(new Event('DOMContentLoaded'));
+
+        if (isBrowser) {
+          expect(consoleWarnSpy.calls.count()).toBe(1);
+          expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
+            new RegExp(`NG0${RuntimeErrorCode.TOO_MANY_PRIORITY_ATTRIBUTES}`),
+          );
+        } else {
+          // The warning is only logged on browsers
+          expect(consoleWarnSpy.calls.count()).toBe(0);
+        }
+      });
+    });
   });
 
   describe('meta data', () => {
