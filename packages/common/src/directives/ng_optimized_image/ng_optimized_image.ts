@@ -138,6 +138,18 @@ export const BUILT_IN_LOADERS = [
 ];
 
 /**
+ * Threshold for the PRIORITY_TRUE_COUNT
+ */
+const PRIORITY_COUNT_THRESHOLD = 10;
+
+/**
+ * This count is used to log a devMode warning
+ * when the count of directive instances with priority=true
+ * exceeds the threshold PRIORITY_COUNT_THRESHOLD
+ */
+let IMGS_WITH_PRIORITY_ATTR_COUNT = 0;
+
+/**
  * Config options used in rendering placeholder images.
  *
  * @see {@link NgOptimizedImage}
@@ -430,6 +442,14 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
+
+        // This leaves the Angular zone to avoid triggering unnecessary change detection cycles when
+        // document.addEventListener is invoked
+        if (!this.isServer) {
+          ngZone.runOutsideAngular(() => {
+            assetPriorityCountBelowThreshold();
+          });
+        }
       }
     }
     if (this.placeholder) {
@@ -1243,6 +1263,27 @@ function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: I
       ),
     );
   }
+}
+
+/**
+ * Warns if the priority attribute is used too often on page load
+ */
+function assetPriorityCountBelowThreshold() {
+  if (IMGS_WITH_PRIORITY_ATTR_COUNT === 0) {
+    document.addEventListener('DOMContentLoaded', (event) => {
+      if (IMGS_WITH_PRIORITY_ATTR_COUNT > PRIORITY_COUNT_THRESHOLD) {
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.TOO_MANY_PRIORITY_ATTRIBUTES,
+            `NgOptimizedImage: The "priority" attribute is set to true more than ${PRIORITY_COUNT_THRESHOLD} times (${IMGS_WITH_PRIORITY_ATTR_COUNT} times). ` +
+              `Marking too many images as "high" priority can hurt your application's LCP (https://web.dev/lcp).` +
+              `"Priority" should only be set on the image expected to be the page's LCP element.`,
+          ),
+        );
+      }
+    });
+  }
+  IMGS_WITH_PRIORITY_ATTR_COUNT++;
 }
 
 function round(input: number): number | string {
