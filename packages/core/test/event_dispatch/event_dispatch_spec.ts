@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ɵGlobalEventDelegation} from '@angular/core';
+import {Component, ɵGlobalEventDelegation, ɵprovideGlobalEventDelegation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ɵprovideGlobalEventDelegation} from '@angular/platform-browser';
 
 function configureTestingModule(components: unknown[]) {
   TestBed.configureTestingModule({

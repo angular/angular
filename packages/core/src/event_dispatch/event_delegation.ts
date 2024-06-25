@@ -11,6 +11,7 @@ import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
 import {setStashFn} from '../render3/instructions/listener';
 import {
+  EnabledGlobalEventDelegation,
   GlobalEventDelegation,
   initGlobalEventDelegation,
   sharedStashFunction,
@@ -36,6 +37,10 @@ export function provideGlobalEventDelegation(): Provider[] {
         setStashFn(sharedStashFunction);
       },
       multi: true,
+    },
+    {
+      provide: GlobalEventDelegation,
+      useClass: EnabledGlobalEventDelegation,
     },
   ];
 }
