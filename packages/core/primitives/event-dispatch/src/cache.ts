@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {JSACTION} from './property';
+import {Property} from './property';
 
 /**
  * Map from jsaction annotation to a parsed map from event name to action name.
@@ -21,7 +21,7 @@ const parseCache: {[key: string]: {[key: string]: string}} = {};
  */
 export function get(element: Element): {[key: string]: string} {
   // @ts-ignore
-  return element[JSACTION];
+  return element[Property.JSACTION];
 }
 
 /**
@@ -33,7 +33,7 @@ export function get(element: Element): {[key: string]: string} {
  */
 export function set(element: Element, actionMap: {[key: string]: string}) {
   // @ts-ignore
-  element[JSACTION] = actionMap;
+  element[Property.JSACTION] = actionMap;
 }
 
 /**
@@ -62,7 +62,7 @@ export function setParsed(text: string, parsed: {[key: string]: string}) {
  * @param element .
  */
 export function clear(element: Element) {
-  if (JSACTION in element) {
-    delete element[JSACTION];
+  if (Property.JSACTION in element) {
+    delete element[Property.JSACTION];
   }
 }

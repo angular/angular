@@ -18,7 +18,7 @@ import {
   preventDefaultForA11yClick,
   updateEventInfoForA11yClick,
 } from '../src/a11y_click';
-import {OWNER} from '../src/property';
+import {Property} from '../src/property';
 
 const domContent = `
 <div id="click-container">
@@ -419,7 +419,7 @@ describe('Dispatcher', () => {
     const container = getRequiredElementById('owner-click-container');
     const actionElement = getRequiredElementById('owner-click-action-element');
     const targetElement = getRequiredElementById('owner-click-target-element');
-    targetElement[OWNER] = actionElement;
+    targetElement[Property.OWNER] = actionElement;
 
     const eventContract = createEventContract({
       container,
