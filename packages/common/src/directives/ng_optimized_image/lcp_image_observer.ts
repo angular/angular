@@ -14,7 +14,6 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 
-import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
 import {assertDevMode} from './asserts';
@@ -46,12 +45,13 @@ export class LCPImageObserver implements OnDestroy {
   private images = new Map<string, ObservedImageState>();
 
   private observer: PerformanceObserver | null = null;
-  private platformLocation = inject(PlatformLocation);
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly baseUrl = inject(PlatformLocation).href;
 
   constructor() {
+    const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
     assertDevMode('LCP checker');
-    if (this.isBrowser && typeof PerformanceObserver !== 'undefined') {
+    if (isBrowser && typeof PerformanceObserver !== 'undefined') {
       this.observer = this.initPerformanceObserver();
     }
   }
@@ -100,20 +100,20 @@ export class LCPImageObserver implements OnDestroy {
       alreadyWarnedModified: false,
       alreadyWarnedPriority: false,
     };
-    this.images.set(getUrl(rewrittenSrc, this.platformLocation.href).href, newObservedImageState);
+    this.images.set(getUrl(rewrittenSrc, this.baseUrl).href, newObservedImageState);
   }
 
   unregisterImage(rewrittenSrc: string) {
     if (!this.observer) return;
-    this.images.delete(getUrl(rewrittenSrc, this.platformLocation.href).href);
+    this.images.delete(getUrl(rewrittenSrc, this.baseUrl).href);
   }
 
   updateImage(originalSrc: string, newSrc: string) {
-    const originalUrl = getUrl(originalSrc, this.platformLocation.href).href;
+    const originalUrl = getUrl(originalSrc, this.baseUrl).href;
     const img = this.images.get(originalUrl);
     if (img) {
       img.modified = true;
-      this.images.set(getUrl(newSrc, this.platformLocation.href).href, img);
+      this.images.set(getUrl(newSrc, this.baseUrl).href, img);
       this.images.delete(originalUrl);
     }
   }
