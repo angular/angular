@@ -427,3 +427,9 @@ To do this, we recommend writing a [custom image loader](#custom-loaders) which 
 ### Can you add a new built-in loader for my preferred CDN?
 
 For maintenance reasons, we don't currently plan to support additional built-in loaders in the Angular repository. Instead, we encourage developers to publish any additional image loaders as third-party packages.
+
+### Can I use this with the `<picture>` tag
+
+No, but this is on our roadmap, so stay tuned. 
+
+If you're waiting on this feature, please upvote the Github issue [here](https://github.com/angular/angular/issues/56594).
