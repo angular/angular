@@ -26,6 +26,9 @@ export const enum NotificationSource {
   // above.
   Listener,
 
+  // Custom elements do sometimes require checking directly.
+  CustomElement,
+
   // The following notifications do not require views to be refreshed
   // but we should execute render hooks:
   // Render hooks are guaranteed to execute with the schedulers timing.

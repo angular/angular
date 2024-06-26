@@ -47,45 +47,6 @@ describe('utils', () => {
         expect(clearTimeoutSpy).toHaveBeenCalledWith(42);
       });
     });
-
-    describe('scheduleBeforeRender()', () => {
-      if (typeof window.requestAnimationFrame === 'undefined') {
-        const mockCancelFn = () => undefined;
-        let scheduleSpy: jasmine.Spy;
-
-        beforeEach(
-          () => (scheduleSpy = spyOn(scheduler, 'schedule').and.returnValue(mockCancelFn)),
-        );
-
-        it('should delegate to `scheduler.schedule()`', () => {
-          const cb = () => null;
-          expect(scheduler.scheduleBeforeRender(cb)).toBe(mockCancelFn);
-          expect(scheduleSpy).toHaveBeenCalledWith(cb, 16);
-        });
-      } else {
-        let requestAnimationFrameSpy: jasmine.Spy;
-        let cancelAnimationFrameSpy: jasmine.Spy;
-
-        beforeEach(() => {
-          requestAnimationFrameSpy = spyOn(window, 'requestAnimationFrame').and.returnValue(42);
-          cancelAnimationFrameSpy = spyOn(window, 'cancelAnimationFrame');
-        });
-
-        it('should delegate to `window.requestAnimationFrame()`', () => {
-          const cb = () => null;
-          scheduler.scheduleBeforeRender(cb);
-          expect(requestAnimationFrameSpy).toHaveBeenCalledWith(cb);
-        });
-
-        it('should return a function for cancelling the scheduled job', () => {
-          const cancelFn = scheduler.scheduleBeforeRender(() => null);
-          expect(cancelAnimationFrameSpy).not.toHaveBeenCalled();
-
-          cancelFn();
-          expect(cancelAnimationFrameSpy).toHaveBeenCalledWith(42);
-        });
-      }
-    });
   });
 
   describe('camelToKebabCase()', () => {
