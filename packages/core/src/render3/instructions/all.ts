@@ -49,6 +49,7 @@ export * from './i18n';
 export * from './listener';
 export * from './namespace';
 export * from './next_context';
+export * from './optimized_image';
 export * from './projection';
 export * from './property';
 export * from './property_interpolation';

@@ -36,6 +36,12 @@ export function extractAttributes(job: CompilationJob): void {
               bindingKind = ir.BindingKind.Property;
             }
 
+            // We determine if this attribute binding is for the OptimizedImage directive
+            // by checking if the ElementStart was marked as such
+            const element = lookupElement(elements, op.target);
+            const isOptimizedImage =
+              element.kind === ir.OpKind.ElementStart && element.optimizedImage;
+
             ir.OpList.insertBefore<ir.CreateOp>(
               // Deliberately null i18nMessage value
               ir.createExtractedAttributeOp(
@@ -47,8 +53,9 @@ export function extractAttributes(job: CompilationJob): void {
                 /* i18nContext */ null,
                 /* i18nMessage */ null,
                 op.securityContext,
+                /* isOptimizedImage */ isOptimizedImage,
               ),
-              lookupElement(elements, op.target),
+              element,
             );
           }
           break;
@@ -63,6 +70,7 @@ export function extractAttributes(job: CompilationJob): void {
               /* i18nContext */ null,
               /* i18nMessage */ null,
               op.securityContext,
+              /* isOptimizedImage */ false,
             ),
             lookupElement(elements, op.target),
           );
@@ -88,6 +96,7 @@ export function extractAttributes(job: CompilationJob): void {
                 /* i18nContext */ null,
                 /* i18nMessage */ null,
                 SecurityContext.STYLE,
+                /* isOptimizedImage */ false,
               ),
               lookupElement(elements, op.target),
             );
@@ -104,6 +113,7 @@ export function extractAttributes(job: CompilationJob): void {
               /* i18nContext */ null,
               /* i18nMessage */ null,
               SecurityContext.NONE,
+              /* isOptimizedImage */ false,
             );
             if (job.kind === CompilationJobKind.Host) {
               if (job.compatibility) {
@@ -134,6 +144,7 @@ export function extractAttributes(job: CompilationJob): void {
               /* i18nContext */ null,
               /* i18nMessage */ null,
               SecurityContext.NONE,
+              /* isOptimizedImage */ false,
             );
             ir.OpList.insertBefore<ir.CreateOp>(
               extractedAttributeOp,
@@ -189,6 +200,7 @@ function extractAttributeOp(
       op.i18nContext,
       op.i18nMessage,
       op.securityContext,
+      /* isOptimizedImage */ false,
     );
     if (unit.job.kind === CompilationJobKind.Host) {
       // This attribute will apply to the enclosing host binding compilation unit, so order doesn't
@@ -196,6 +208,12 @@ function extractAttributeOp(
       unit.create.push(extractedAttributeOp);
     } else {
       const ownerOp = lookupElement(elements, op.target);
+
+      // We determine if this attribute is from the OptimizedImage directive
+      // by checking if the ElementStart was marked as such
+      const isOptimizedImage = ownerOp.kind === ir.OpKind.ElementStart && ownerOp.optimizedImage;
+      extractedAttributeOp.isOptimizedImage = isOptimizedImage;
+
       ir.OpList.insertBefore<ir.CreateOp>(extractedAttributeOp, ownerOp);
     }
     ir.OpList.remove<ir.UpdateOp>(op);

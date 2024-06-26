@@ -1773,6 +1773,9 @@
     "name": "init_operators"
   },
   {
+    "name": "init_optimized_image"
+  },
+  {
     "name": "init_output"
   },
   {
