@@ -173,7 +173,6 @@ function dispatchMouseEvent(
 describe('EventContract', () => {
   beforeEach(() => {
     safeElement.setInnerHtml(document.body, testonlyHtml(domContent));
-    EventContract.A11Y_CLICK_SUPPORT = false;
     EventContract.MOUSE_SPECIAL_SUPPORT = false;
 
     // Normalize timestamp.

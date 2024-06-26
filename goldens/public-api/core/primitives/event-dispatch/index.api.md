@@ -20,14 +20,12 @@ export interface EarlyJsactionDataContainer {
 
 // @public
 export class EventContract implements UnrenamedEventContract {
-    constructor(containerManager: EventContractContainerManager, useActionResolver: false);
+    constructor(containerManager: EventContractContainerManager, useActionResolver?: false | undefined);
     // (undocumented)
     static A11Y_CLICK_SUPPORT: boolean;
     addA11yClickSupport(): void;
     addEvent(eventType: string, prefixedEventType?: string): void;
     cleanUp(): void;
-    // (undocumented)
-    ecaacs?: (updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick, preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick, populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction) => void;
     ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
     exportAddA11yClickSupport(): void;
     handler(eventType: string): EventHandler | undefined;
