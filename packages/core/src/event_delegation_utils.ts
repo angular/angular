@@ -87,11 +87,7 @@ export const GLOBAL_EVENT_DELEGATION = new InjectionToken<GlobalEventDelegation>
  */
 @Injectable()
 export class GlobalEventDelegation {
-  eventContractDetails = inject(JSACTION_EVENT_CONTRACT);
-
-  cleanUpContract() {
-    this.eventContractDetails.instance?.cleanUp();
-  }
+  private eventContractDetails = inject(JSACTION_EVENT_CONTRACT);
 
   supports(eventName: string): boolean {
     return isSupportedEvent(eventName);

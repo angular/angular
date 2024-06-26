@@ -12,7 +12,7 @@ import {DOCUMENT} from '@angular/common';
 
 @Injectable()
 export class EventDelegationPlugin extends EventManagerPlugin {
-  delegate = inject(ɵGLOBAL_EVENT_DELEGATION, {optional: true});
+  private delegate = inject(ɵGLOBAL_EVENT_DELEGATION, {optional: true});
   constructor(@Inject(DOCUMENT) doc: any) {
     super(doc);
   }

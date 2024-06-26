@@ -73,6 +73,7 @@ export {
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
 export {
   GLOBAL_EVENT_DELEGATION as ɵGLOBAL_EVENT_DELEGATION,
+  JSACTION_EVENT_CONTRACT,
   setJSActionAttribute as ɵsetJSActionAttribute,
 } from './event_delegation_utils';
 export {provideGlobalEventDelegation as ɵprovideGlobalEventDelegation} from './event_dispatch/event_delegation';
