@@ -13,6 +13,7 @@ import {setStashFn} from '../render3/instructions/listener';
 import {
   EnabledGlobalEventDelegation,
   GlobalEventDelegation,
+  JSACTION_EVENT_CONTRACT,
   initGlobalEventDelegation,
   sharedStashFunction,
 } from '../event_delegation_utils';
@@ -32,8 +33,8 @@ export function provideGlobalEventDelegation(): Provider[] {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
         const injector = inject(Injector);
-        const globalEventDelegation = injector.get(GlobalEventDelegation);
-        initGlobalEventDelegation(globalEventDelegation, injector);
+        const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
+        initGlobalEventDelegation(eventContractDetails, injector);
         setStashFn(sharedStashFunction);
       },
       multi: true,

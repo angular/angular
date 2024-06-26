@@ -15,7 +15,7 @@ import {
   registerDispatcher,
 } from '@angular/core/primitives/event-dispatch';
 import * as Attributes from '@angular/core/primitives/event-dispatch';
-import {Injectable, Injector} from './di';
+import {Injectable, InjectionToken, Injector, inject} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
 import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './hydration/tokens';
 
@@ -64,13 +64,27 @@ export const removeListeners = (el: Element) => {
   el.__jsaction_fns = undefined;
 };
 
-@Injectable({providedIn: 'root'})
+export interface EventContractDetails {
+  instance?: EventContract;
+}
+
+export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
+  ngDevMode ? 'EVENT_CONTRACT_DETAILS' : '',
+  {
+    providedIn: 'root',
+    factory: () => ({}),
+  },
+);
+
+@Injectable()
 export class GlobalEventDelegation {
-  eventContract!: EventContract;
+  eventContractDetails = inject(JSACTION_EVENT_CONTRACT);
 
   supports(eventName: string): boolean {
     return false;
   }
+
+  cleanUpContract() {}
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     return () => {};
@@ -80,12 +94,16 @@ export class GlobalEventDelegation {
 }
 
 export class EnabledGlobalEventDelegation extends GlobalEventDelegation {
+  override cleanUpContract() {
+    this.eventContractDetails.instance?.cleanUp();
+  }
+
   override supports(eventName: string): boolean {
     return isSupportedEvent(eventName);
   }
 
   override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    this.eventContract.addEvent(eventName);
+    this.eventContractDetails.instance!.addEvent(eventName);
     setJSActionAttribute(element, eventName);
     return () => this.removeEventListener(element, eventName, handler);
   }
@@ -101,16 +119,16 @@ export class EnabledGlobalEventDelegation extends GlobalEventDelegation {
 }
 
 export const initGlobalEventDelegation = (
-  eventDelegation: GlobalEventDelegation,
+  eventContractDetails: EventContractDetails,
   injector: Injector,
 ) => {
   if (injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT)) {
     return;
   }
-  eventDelegation.eventContract = new EventContract(
+  const eventContract = eventContractDetails.instance = new EventContract(
     new EventContractContainer(document.body),
     /* useActionResolver= */ false,
   );
   const dispatcher = new EventDispatcher(invokeRegisteredListeners);
-  registerDispatcher(eventDelegation.eventContract, dispatcher);
+  registerDispatcher(eventContract, dispatcher);
 };
