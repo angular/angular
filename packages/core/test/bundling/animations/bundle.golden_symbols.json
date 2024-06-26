@@ -270,10 +270,10 @@
     "name": "FALSE_BOOLEAN_VALUES"
   },
   {
-    "name": "GenericBrowserDomAdapter"
+    "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
-    "name": "GlobalEventDelegation"
+    "name": "GenericBrowserDomAdapter"
   },
   {
     "name": "INJECTOR"

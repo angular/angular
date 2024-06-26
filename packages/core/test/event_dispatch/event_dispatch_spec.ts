@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ɵGlobalEventDelegation, ɵprovideGlobalEventDelegation} from '@angular/core';
+import {Component, ɵGLOBAL_EVENT_DELEGATION, ɵprovideGlobalEventDelegation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 function configureTestingModule(components: unknown[]) {
@@ -18,7 +18,7 @@ function configureTestingModule(components: unknown[]) {
 
 describe('event dispatch', () => {
   let fixture: ComponentFixture<unknown>;
-  afterEach(() => fixture.debugElement.injector.get(ɵGlobalEventDelegation).cleanUpContract());
+  afterEach(() => fixture.debugElement.injector.get(ɵGLOBAL_EVENT_DELEGATION).cleanUpContract());
 
   it(`executes an onclick handler`, async () => {
     const onClickSpy = jasmine.createSpy();

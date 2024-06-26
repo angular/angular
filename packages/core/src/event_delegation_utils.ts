@@ -76,6 +76,10 @@ export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
   },
 );
 
+export const GLOBAL_EVENT_DELEGATION = new InjectionToken<GlobalEventDelegation>(
+  ngDevMode ? 'GLOBAL_EVENT_DELEGATION' : '',
+);
+
 /**
  * This class is the delegate for `EventDelegationPlugin`. It represents the
  * noop version of this class, with the enabled version set when
@@ -85,35 +89,21 @@ export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
 export class GlobalEventDelegation {
   eventContractDetails = inject(JSACTION_EVENT_CONTRACT);
 
-  supports(eventName: string): boolean {
-    return false;
-  }
-
-  cleanUpContract() {}
-
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    return () => {};
-  }
-
-  removeEventListener(element: HTMLElement, eventName: string, callback: Function): void {}
-}
-
-export class EnabledGlobalEventDelegation extends GlobalEventDelegation {
-  override cleanUpContract() {
+  cleanUpContract() {
     this.eventContractDetails.instance?.cleanUp();
   }
 
-  override supports(eventName: string): boolean {
+  supports(eventName: string): boolean {
     return isSupportedEvent(eventName);
   }
 
-  override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     this.eventContractDetails.instance!.addEvent(eventName);
     setJSActionAttribute(element, eventName);
     return () => this.removeEventListener(element, eventName, handler);
   }
 
-  override removeEventListener(element: HTMLElement, eventName: string, callback: Function): void {
+  removeEventListener(element: HTMLElement, eventName: string, callback: Function): void {
     const newJsactionAttribute = element
       .getAttribute(Attributes.JSACTION)
       ?.split(';')

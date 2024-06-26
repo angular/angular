@@ -11,7 +11,7 @@ import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
 import {setStashFn} from '../render3/instructions/listener';
 import {
-  EnabledGlobalEventDelegation,
+  GLOBAL_EVENT_DELEGATION,
   GlobalEventDelegation,
   JSACTION_EVENT_CONTRACT,
   initGlobalEventDelegation,
@@ -40,8 +40,8 @@ export function provideGlobalEventDelegation(): Provider[] {
       multi: true,
     },
     {
-      provide: GlobalEventDelegation,
-      useClass: EnabledGlobalEventDelegation,
+      provide: GLOBAL_EVENT_DELEGATION,
+      useClass: GlobalEventDelegation,
     },
   ];
 }

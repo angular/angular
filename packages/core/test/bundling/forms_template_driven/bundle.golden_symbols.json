@@ -249,10 +249,10 @@
     "name": "FormsModule"
   },
   {
-    "name": "GenericBrowserDomAdapter"
+    "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
-    "name": "GlobalEventDelegation"
+    "name": "GenericBrowserDomAdapter"
   },
   {
     "name": "INJECTOR"

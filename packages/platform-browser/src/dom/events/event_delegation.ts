@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, Optional, inject, ɵGlobalEventDelegation} from '@angular/core';
+import {Inject, Injectable, inject, ɵGLOBAL_EVENT_DELEGATION} from '@angular/core';
 import {EventManagerPlugin} from './event_manager';
 import {DOCUMENT} from '@angular/common';
 
 @Injectable()
 export class EventDelegationPlugin extends EventManagerPlugin {
-  delegate = inject(ɵGlobalEventDelegation, {optional: true});
+  delegate = inject(ɵGLOBAL_EVENT_DELEGATION, {optional: true});
   constructor(@Inject(DOCUMENT) doc: any) {
     super(doc);
   }
