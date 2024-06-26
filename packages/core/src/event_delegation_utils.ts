@@ -76,6 +76,11 @@ export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
   },
 );
 
+/**
+ * This class is the delegate for `EventDelegationPlugin`. It represents the
+ * noop version of this class, with the enabled version set when
+ * `provideGlobalEventDelegation` is called.
+ */
 @Injectable()
 export class GlobalEventDelegation {
   eventContractDetails = inject(JSACTION_EVENT_CONTRACT);
@@ -125,10 +130,10 @@ export const initGlobalEventDelegation = (
   if (injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT)) {
     return;
   }
-  const eventContract = eventContractDetails.instance = new EventContract(
+  const eventContract = (eventContractDetails.instance = new EventContract(
     new EventContractContainer(document.body),
     /* useActionResolver= */ false,
-  );
+  ));
   const dispatcher = new EventDispatcher(invokeRegisteredListeners);
   registerDispatcher(eventContract, dispatcher);
 };
