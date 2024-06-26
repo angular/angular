@@ -205,6 +205,13 @@ export interface AstFactory<TStatement, TExpression> {
   createReturnStatement(expression: TExpression | null): TStatement;
 
   /**
+   * Create a spreaded express (e.g. `...myIterable`)
+   *
+   * @param expression the expression to spread
+   */
+  createSpreadedExpression(expression: TExpression): TExpression;
+
+  /**
    * Create a tagged template literal string. E.g.
    *
    * ```
