@@ -122,6 +122,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       // to make listener callbacks work correctly with `OnPush` components.
       return;
     }
+
+    let force = false;
+
     switch (source) {
       case NotificationSource.MarkAncestorsForTraversal: {
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
@@ -142,6 +145,14 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         this.appRef.deferredDirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
         break;
       }
+      case NotificationSource.CustomElement: {
+        // We use `ViewTreeTraversal` to ensure we refresh the element even if this is triggered
+        // during CD. In practice this is a no-op since the elements code also calls via a
+        // `markForRefresh()` API which sends `NotificationSource.MarkAncestorsForTraversal` anyway.
+        this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
+        force = true;
+        break;
+      }
       case NotificationSource.ViewDetachedFromDOM:
       case NotificationSource.ViewAttached:
       case NotificationSource.RenderHook:
@@ -154,7 +165,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       }
     }
 
-    if (!this.shouldScheduleTick()) {
+    if (!this.shouldScheduleTick(force)) {
       return;
     }
 
@@ -180,8 +191,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
   }
 
-  private shouldScheduleTick(): boolean {
-    if (this.disableScheduling) {
+  private shouldScheduleTick(force: boolean): boolean {
+    if (this.disableScheduling && !force) {
       return false;
     }
     // already scheduled or running

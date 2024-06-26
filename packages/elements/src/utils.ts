@@ -20,29 +20,6 @@ export const scheduler = {
     const id = setTimeout(taskFn, delay);
     return () => clearTimeout(id);
   },
-
-  /**
-   * Schedule a callback to be called before the next render.
-   * (If `window.requestAnimationFrame()` is not available, use `scheduler.schedule()` instead.)
-   *
-   * Returns a function that when executed will cancel the scheduled function.
-   */
-  scheduleBeforeRender(taskFn: () => void): () => void {
-    // TODO(gkalpak): Implement a better way of accessing `requestAnimationFrame()`
-    //                (e.g. accounting for vendor prefix, SSR-compatibility, etc).
-    if (typeof window === 'undefined') {
-      // For SSR just schedule immediately.
-      return scheduler.schedule(taskFn, 0);
-    }
-
-    if (typeof window.requestAnimationFrame === 'undefined') {
-      const frameMs = 16;
-      return scheduler.schedule(taskFn, frameMs);
-    }
-
-    const id = window.requestAnimationFrame(taskFn);
-    return () => window.cancelAnimationFrame(id);
-  },
 };
 
 /**
@@ -126,6 +103,7 @@ export function getComponentInputs(
   propName: string;
   templateName: string;
   transform?: (value: any) => any;
+  isSignal: boolean;
 }[] {
   const componentFactoryResolver = injector.get(ComponentFactoryResolver);
   const componentFactory = componentFactoryResolver.resolveComponentFactory(component);
