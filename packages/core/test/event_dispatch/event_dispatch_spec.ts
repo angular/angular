@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, JSACTION_EVENT_CONTRACT, ɵprovideGlobalEventDelegation} from '@angular/core';
+import {Component, ɵJSACTION_EVENT_CONTRACT, ɵprovideGlobalEventDelegation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 function configureTestingModule(components: unknown[]) {
