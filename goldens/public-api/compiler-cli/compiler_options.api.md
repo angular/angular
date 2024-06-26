@@ -56,6 +56,7 @@ export interface LegacyNgcOptions {
 // @public
 export interface MiscOptions {
     compileNonExportedClasses?: boolean;
+    disableImageImports?: boolean;
     disableTypeScriptVersionCheck?: boolean;
     forbidOrphanComponents?: boolean;
 }

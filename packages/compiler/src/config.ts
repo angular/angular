@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ViewEncapsulation} from './core';
+import {ViewEncapsulation} from './core';
 import {noUndefined} from './util';
 
 export class CompilerConfig {

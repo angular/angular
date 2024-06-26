@@ -120,6 +120,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       i18nNormalizeLineEndingsInICUs: isInline,
       enableBlockSyntax,
       enableLetSyntax,
+      disableImageImports: false /* TODO **/,
     });
     if (template.errors !== null) {
       const errors = template.errors.map((err) => err.toString()).join('\n');
@@ -239,6 +240,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       relativeContextFilePath: this.sourceUrl,
       i18nUseExternalIds: false,
       declarations,
+      disableImageImports: false /** TODO */,
     };
   }
 

@@ -289,6 +289,11 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency>
    * not be set. If component has empty array imports then this field is not set.
    */
   rawImports?: o.Expression;
+
+  /**
+   * Disable the generation of import statements for images
+   */
+  disableImageImports: boolean;
 }
 
 /**

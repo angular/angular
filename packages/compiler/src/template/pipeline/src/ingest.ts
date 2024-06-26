@@ -58,6 +58,7 @@ export function ingestComponent(
   i18nUseExternalIds: boolean,
   deferMeta: R3ComponentDeferMetadata,
   allDeferrableDepsFn: o.ReadVarExpr | null,
+  disableImageImports: boolean,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
@@ -67,6 +68,7 @@ export function ingestComponent(
     i18nUseExternalIds,
     deferMeta,
     allDeferrableDepsFn,
+    disableImageImports,
   );
   ingestNodes(job.root, template);
   return job;
@@ -255,6 +257,7 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
     element.i18n instanceof i18n.TagPlaceholder ? element.i18n : undefined,
     element.startSourceSpan,
     element.sourceSpan,
+    element.attributes,
   );
   unit.create.push(startOp);
 
@@ -1439,6 +1442,7 @@ function ingestTemplateBindings(
           null,
           null,
           securityContext,
+          /* isOptimizedImage */ false,
         ),
       );
     }
@@ -1515,6 +1519,7 @@ function createTemplateBinding(
             null,
             i18nMessage,
             securityContext,
+            /* isOptimizedImage */ false,
           );
         case e.BindingType.TwoWay:
           return ir.createExtractedAttributeOp(
@@ -1526,6 +1531,7 @@ function createTemplateBinding(
             null,
             i18nMessage,
             securityContext,
+            /* isOptimizedImage */ false,
           );
       }
     }
@@ -1767,6 +1773,7 @@ function ingestControlFlowInsertionPoint(
             null,
             null,
             securityContext,
+            /* isOptimizedImage */ false,
           ),
         );
       }

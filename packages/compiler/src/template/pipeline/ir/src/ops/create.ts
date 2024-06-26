@@ -9,6 +9,7 @@
 import {SecurityContext} from '../../../../../core';
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
+import * as t from '../../../../../render3/r3_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {
   BindingKind,
@@ -160,6 +161,11 @@ export interface ElementOrContainerOpBase extends Op<CreateOp>, ConsumesSlotOpTr
    * The whole source span of the element, including children.
    */
   wholeSourceSpan: ParseSourceSpan;
+
+  /**
+   *
+   */
+  optimizedImage: boolean;
 }
 
 export interface ElementOpBase extends ElementOrContainerOpBase {
@@ -198,7 +204,13 @@ export function createElementStartOp(
   i18nPlaceholder: i18n.TagPlaceholder | undefined,
   startSourceSpan: ParseSourceSpan,
   wholeSourceSpan: ParseSourceSpan,
+  attributes: t.TextAttribute[],
 ): ElementStartOp {
+  // The absence of the ngSrc attribute or a absolute url for it opts out of the compiler supports
+  const hasNgSrcAttribute = attributes.some(
+    (attr) => attr.name === 'ngSrc' && !/^https?:\/\//.test(attr.value),
+  );
+
   return {
     kind: OpKind.ElementStart,
     xref,
@@ -211,6 +223,7 @@ export function createElementStartOp(
     i18nPlaceholder,
     startSourceSpan,
     wholeSourceSpan,
+    optimizedImage: hasNgSrcAttribute,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
@@ -288,6 +301,7 @@ export function createTemplateOp(
     i18nPlaceholder,
     startSourceSpan,
     wholeSourceSpan,
+    optimizedImage: false,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
@@ -405,6 +419,7 @@ export function createRepeaterCreateOp(
     emptyI18nPlaceholder,
     startSourceSpan,
     wholeSourceSpan,
+    optimizedImage: false,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
     ...TRAIT_CONSUMES_VARS,
@@ -854,6 +869,11 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
   trustedValueFn: o.Expression | null;
 
   i18nMessage: i18n.Message | null;
+
+  /**
+   * This attribute is used in the context of the OptimizedImage directive
+   */
+  isOptimizedImage: boolean;
 }
 
 /**
@@ -868,6 +888,7 @@ export function createExtractedAttributeOp(
   i18nContext: XrefId | null,
   i18nMessage: i18n.Message | null,
   securityContext: SecurityContext | SecurityContext[],
+  isOptimizedImage: boolean,
 ): ExtractedAttributeOp {
   return {
     kind: OpKind.ExtractedAttribute,
@@ -880,6 +901,7 @@ export function createExtractedAttributeOp(
     i18nMessage,
     securityContext,
     trustedValueFn: null,
+    isOptimizedImage,
     ...NEW_OP,
   };
 }

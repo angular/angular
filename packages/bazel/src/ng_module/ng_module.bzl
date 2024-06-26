@@ -165,6 +165,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "fullTemplateTypeCheck": ctx.attr.type_check,
         "strictTemplates": ctx.attr.strict_templates,
         "compilationMode": compilation_mode,
+        "disableImageImports": ctx.attr.disable_impage_imports,
         # In Google3 we still want to use the symbol factory re-exports in order to
         # not break existing apps inside Google. Unlike Bazel, Google3 does not only
         # enforce strict dependencies of source files, but also for generated files
@@ -461,6 +462,7 @@ NG_MODULE_ATTRIBUTES = {
     "type_check": attr.bool(default = True),
     "strict_templates": attr.bool(default = False),
     "inline_resources": attr.bool(default = True),
+    "disable_impage_imports": attr.bool(default = True),
     "no_i18n": attr.bool(default = False),
     "compiler": attr.label(
         doc = """Sets a different ngc compiler binary to use for this library.

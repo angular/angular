@@ -232,6 +232,7 @@ export function compileComponentFromMetadata(
     meta.i18nUseExternalIds,
     meta.defer,
     allDeferrableDepsFn,
+    meta.disableImageImports,
   );
 
   // Then the IR is transformed to prepare it for cod egeneration.

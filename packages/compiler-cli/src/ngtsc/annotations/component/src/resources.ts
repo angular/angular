@@ -133,6 +133,7 @@ export interface ExtractTemplateOptions {
   i18nNormalizeLineEndingsInICUs: boolean;
   enableBlockSyntax: boolean;
   enableLetSyntax: boolean;
+  disableImageImports: boolean;
 }
 
 export function extractTemplate(
@@ -270,6 +271,7 @@ function parseExtractedTemplate(
     escapedString,
     enableBlockSyntax: options.enableBlockSyntax,
     enableLetSyntax: options.enableLetSyntax,
+    disableImageImports: options.disableImageImports,
   };
 
   const parsedTemplate = parseTemplate(sourceStr, sourceMapUrl ?? '', {

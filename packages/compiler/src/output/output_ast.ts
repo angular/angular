@@ -909,6 +909,7 @@ export class ExternalReference {
     public moduleName: string | null,
     public name: string | null,
     public runtime?: any | null,
+    public attributes?: Record<string, string> | null,
   ) {}
   // Note: no isEquivalent method here as we use this as an interface too.
 }

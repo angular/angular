@@ -499,6 +499,9 @@ export class Identifiers {
   static storeLet: o.ExternalReference = {name: 'ɵɵstoreLet', moduleName: CORE};
   static readContextLet: o.ExternalReference = {name: 'ɵɵreadContextLet', moduleName: CORE};
 
+  // Optimized Image
+  static optimizedImage: o.ExternalReference = {name: 'ɵɵoptimizedImage', moduleName: CORE};
+
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵɵNgOnChangesFeature', moduleName: CORE};
 
   static InheritDefinitionFeature: o.ExternalReference = {

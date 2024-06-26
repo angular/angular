@@ -9,6 +9,7 @@
 import * as core from '../../../../core';
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
+import * as ng from '../instruction';
 
 import {
   ComponentCompilationJob,
@@ -24,13 +25,23 @@ import {literalOrArrayLiteral} from '../conversion';
 export function collectElementConsts(job: CompilationJob): void {
   // Collect all extracted attributes.
   const allElementAttributes = new Map<ir.XrefId, ElementAttributes>();
+  const generateImageImports = job instanceof ComponentCompilationJob && !job.disableImageImports;
+
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.ExtractedAttribute) {
         const attributes =
           allElementAttributes.get(op.target) || new ElementAttributes(job.compatibility);
         allElementAttributes.set(op.target, attributes);
-        attributes.add(op.bindingKind, op.name, op.expression, op.namespace, op.trustedValueFn);
+        attributes.add(
+          op.bindingKind,
+          op.name,
+          op.expression,
+          op.namespace,
+          op.trustedValueFn,
+          op.isOptimizedImage && generateImageImports,
+        );
+
         ir.OpList.remove<ir.CreateOp>(op);
       }
     }
@@ -113,6 +124,11 @@ class ElementAttributes {
   private propertyBindings: o.Expression[] | null = null;
 
   projectAs: string | null = null;
+  optimizedImage: {
+    ngSrc: string;
+    width: string | undefined | null; // null means width is a property binding
+    height: string | undefined | null; // null means height is a property binding
+  } | null = null;
 
   get attributes(): ReadonlyArray<o.Expression> {
     return this.byKind.get(ir.BindingKind.Attribute) ?? FLYWEIGHT_ARRAY;
@@ -156,6 +172,7 @@ class ElementAttributes {
     value: o.Expression | null,
     namespace: string | null,
     trustedValueFn: o.Expression | null,
+    isOptimizedImage: boolean,
   ): void {
     // TemplateDefinitionBuilder puts duplicate attribute, class, and style values into the consts
     // array. This seems inefficient, we can probably keep just the first one or the last value
@@ -184,6 +201,34 @@ class ElementAttributes {
       // attribute. Is this sane?
     }
 
+    if (isOptimizedImage) {
+      this.optimizedImage ??= {ngSrc: '', width: undefined, height: undefined};
+
+      if (name === 'ngSrc' || name === 'width' || name === 'height') {
+        // width / height can be property bindings
+        if (name !== 'ngSrc' && kind === ir.BindingKind.Property) {
+          this.optimizedImage[name] = null; // null means property binding
+
+          // no return, the binded attribute will not be handled by the instruction
+        } else {
+          if (
+            value === null ||
+            !(value instanceof o.LiteralExpr) ||
+            value.value == null ||
+            typeof value.value?.toString() !== 'string'
+          ) {
+            throw Error(
+              `optimizedImage attributes must have a string literal values. + ${name} : ${kind}`,
+            );
+          }
+
+          this.optimizedImage[name] = value.value.toString();
+
+          // This return ensures that we're droping the 3 attributes that are now handeled by the instruction
+          return;
+        }
+      }
+    }
     const array = this.arrayFor(kind);
     array.push(...getAttributeNameLiterals(namespace, name));
     if (kind === ir.BindingKind.Attribute || kind === ir.BindingKind.StyleProperty) {
@@ -243,6 +288,7 @@ function serializeAttributes({
   classes,
   i18n,
   projectAs,
+  optimizedImage,
   styles,
   template,
 }: ElementAttributes): o.LiteralArrayExpr {
@@ -257,6 +303,29 @@ function serializeAttributes({
       literalOrArrayLiteral(parsedR3Selector),
     );
   }
+
+  if (optimizedImage !== null) {
+    let expr: o.Expression;
+
+    // This loader is specifically supported in the CLI by the esbuild toolchain
+    const importAttribute = {loader: 'image-file'};
+
+    expr = ng.optimizedImage(
+      o.importExpr(new o.ExternalReference(optimizedImage.ngSrc, 'default', null, importAttribute)),
+      optimizedImage.width !== undefined
+        ? o.literal(optimizedImage.width) // null is a special value hinting the instruction that width is a prop binding
+        : o.importExpr(
+            new o.ExternalReference(optimizedImage.ngSrc, 'width', null, importAttribute),
+          ),
+      optimizedImage.height !== undefined
+        ? o.literal(optimizedImage.height) // null is a special value hinting the instruction that height is a prop binding
+        : o.importExpr(
+            new o.ExternalReference(optimizedImage.ngSrc, 'height', null, importAttribute),
+          ),
+    );
+    attrArray.push(o.spreaded(expr));
+  }
+
   if (classes.length > 0) {
     attrArray.push(o.literal(core.AttributeMarker.Classes), ...classes);
   }

@@ -217,6 +217,7 @@ export {
   ɵɵdeferPrefetchOnInteraction,
   ɵɵdeferPrefetchOnViewport,
   ɵɵdeferEnableTimerScheduling,
+  ɵɵoptimizedImage,
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵtextInterpolate1,
