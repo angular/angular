@@ -773,13 +773,6 @@ describe('Dispatcher', () => {
   });
 
   describe('a11y click', () => {
-    beforeEach(() => {
-      EventContract.A11Y_CLICK_SUPPORT = true;
-    });
-    afterEach(() => {
-      EventContract.A11Y_CLICK_SUPPORT = true;
-    });
-
     it('dispatches keydown as click event', () => {
       const container = getRequiredElementById('a11y-click-container');
       const actionElement = getRequiredElementById('a11y-click-action-element');
@@ -787,7 +780,7 @@ describe('Dispatcher', () => {
 
       const eventContract = createEventContract({
         container,
-        eventTypes: ['click'],
+        eventTypes: ['click', 'keydown'],
       });
       const dispatchDelegate = createDispatchDelegateSpy();
       createDispatcher({dispatchDelegate, eventContract, a11yClickSupport: true});
@@ -833,7 +826,7 @@ describe('Dispatcher', () => {
 
       const eventContract = createEventContract({
         container,
-        eventTypes: ['click'],
+        eventTypes: ['click', 'keydown'],
       });
       const dispatchDelegate = createDispatchDelegateSpy();
       createDispatcher({dispatchDelegate, eventContract, a11yClickSupport: true});
@@ -856,7 +849,7 @@ describe('Dispatcher', () => {
 
       const eventContract = createEventContract({
         container,
-        eventTypes: ['click'],
+        eventTypes: ['click', 'keydown'],
       });
       const dispatchDelegate = createDispatchDelegateSpy();
       createDispatcher({dispatchDelegate, eventContract, a11yClickSupport: true});
@@ -879,7 +872,7 @@ describe('Dispatcher', () => {
 
       const eventContract = createEventContract({
         container,
-        eventTypes: ['click'],
+        eventTypes: ['click', 'keydown'],
       });
       const dispatchDelegate = createDispatchDelegateSpy();
       createDispatcher({dispatchDelegate, eventContract, a11yClickSupport: true});
@@ -904,7 +897,7 @@ describe('Dispatcher', () => {
 
       const eventContract = createEventContract({
         container,
-        eventTypes: ['click'],
+        eventTypes: ['click', 'keydown'],
       });
       const dispatchDelegate = createDispatchDelegateSpy();
       createDispatcher({dispatchDelegate, eventContract, a11yClickSupport: true});
