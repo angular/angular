@@ -110,11 +110,7 @@ describe('quick info', () => {
     beforeEach(() => {
       initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
-      project = env.addProject('test', quickInfoSkeleton(), {
-        // Note: this object is cast to `any`, because for some reason the typing
-        // changes to the `TestableOption` type aren't being picked up in tests.
-        _enableLetSyntax: true,
-      } as any);
+      project = env.addProject('test', quickInfoSkeleton());
     });
 
     describe('elements', () => {

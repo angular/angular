@@ -106,13 +106,6 @@ import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 import {SelectorMatcher} from './selector';
 
-let enableLetSyntax = false;
-
-/** Temporary utility that enables `@let` declarations in JIT compilations. */
-export function ɵsetEnableLetSyntax(value: boolean): void {
-  enableLetSyntax = value;
-}
-
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget;
   ResourceLoader = ResourceLoader;
@@ -726,7 +719,6 @@ function parseJitTemplate(
   const parsed = parseTemplate(template, sourceMapUrl, {
     preserveWhitespaces,
     interpolationConfig,
-    enableLetSyntax,
   });
   if (parsed.errors !== null) {
     const errors = parsed.errors.map((err) => err.toString()).join(', ');

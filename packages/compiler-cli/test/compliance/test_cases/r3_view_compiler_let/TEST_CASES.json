@@ -3,9 +3,6 @@
   "cases": [
     {
       "description": "should create a simple @let declaration",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "simple_let.ts"
       ],
@@ -23,9 +20,6 @@
     },
     {
       "description": "should create multiple @let declarations that depend on each other",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "multiple_let.ts"
       ],
@@ -43,9 +37,6 @@
     },
     {
       "description": "should create a let using a pipe",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_with_pipe.ts"
       ],
@@ -63,9 +54,6 @@
     },
     {
       "description": "should be able to use let declarations in event listeners",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_in_listener.ts"
       ],
@@ -83,9 +71,6 @@
     },
     {
       "description": "should be able to use let declarations in child views",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_in_child_view.ts"
       ],
@@ -103,9 +88,6 @@
     },
     {
       "description": "should share let declarations between parent and child views",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_shared_with_child_view.ts"
       ],
@@ -123,9 +105,6 @@
     },
     {
       "description": "should be able to use let declarations in event listeners inside child views",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_in_child_view_listener.ts"
       ],
@@ -143,9 +122,6 @@
     },
     {
       "description": "should be able to use local references in let declarations",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_local_refs.ts"
       ],
@@ -163,9 +139,6 @@
     },
     {
       "description": "should be able to use forward references defined after the let declaration",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_local_forward_refs.ts"
       ],
@@ -183,9 +156,6 @@
     },
     {
       "description": "should be able to use for loop variables in let declarations",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_for_loop.ts"
       ],
@@ -204,7 +174,6 @@
     {
       "description": "should transform an invalid let reference to undefined",
       "angularCompilerOptions": {
-        "_enableLetSyntax": true,
         "checkTemplateBodies": false
       },
       "inputFiles": [
@@ -224,9 +193,6 @@
     },
     {
       "description": "should remove a single unused let declaration",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_single_optimization.ts"
       ],
@@ -244,9 +210,6 @@
     },
     {
       "description": "should remove a chain of unused let declarations",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_multiple_optimization.ts"
       ],
@@ -264,9 +227,6 @@
     },
     {
       "description": "should remove only the unused let declarations from the middle of a chain of declarations",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_partial_optimization.ts"
       ],
@@ -284,9 +244,6 @@
     },
     {
       "description": "should not remove let declarations that are only used in an event listener",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_optimization_listener.ts"
       ],
@@ -304,9 +261,6 @@
     },
     {
       "description": "should not remove let declarations that are only used in a child view",
-      "angularCompilerOptions": {
-        "_enableLetSyntax": true
-      },
       "inputFiles": [
         "let_optimization_child_view.ts"
       ],

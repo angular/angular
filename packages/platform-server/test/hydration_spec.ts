@@ -72,7 +72,6 @@ import {provideServerRendering} from '../public_api';
 import {renderApplication} from '../src/utils';
 
 import {getAppContents, renderAndHydrate, resetTViewsFor, stripUtilAttributes} from './dom_utils';
-import {ɵsetEnableLetSyntax} from '@angular/compiler/src/jit_compiler_facade';
 
 /**
  * The name of the attribute that contains a slot index
@@ -7433,9 +7432,6 @@ describe('platform-server hydration integration', () => {
     });
 
     describe('@let', () => {
-      beforeEach(() => ɵsetEnableLetSyntax(true));
-      afterEach(() => ɵsetEnableLetSyntax(false));
-
       it('should handle a let declaration', async () => {
         @Component({
           standalone: true,

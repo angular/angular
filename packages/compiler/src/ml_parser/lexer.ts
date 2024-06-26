@@ -192,8 +192,7 @@ class _Tokenizer {
     this._preserveLineEndings = options.preserveLineEndings || false;
     this._i18nNormalizeLineEndingsInICUs = options.i18nNormalizeLineEndingsInICUs || false;
     this._tokenizeBlocks = options.tokenizeBlocks ?? true;
-    // TODO(crisbeto): eventually set this to true.
-    this._tokenizeLet = options.tokenizeLet || false;
+    this._tokenizeLet = options.tokenizeLet ?? true;
     try {
       this._cursor.init();
     } catch (e) {

@@ -37,11 +37,10 @@ export interface PluginConfig {
    */
   angularCoreVersion?: string;
 
-  // TODO(crisbeto): type this as `false` when the syntax is enabled by default.
   /**
    * If false, disables parsing of `@let` declarations in the compiler.
    */
-  enableLetSyntax?: boolean;
+  enableLetSyntax?: false;
 }
 
 export type GetTcbResponse = {

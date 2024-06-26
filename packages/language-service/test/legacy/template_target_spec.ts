@@ -41,7 +41,6 @@ function parse(template: string): ParseResult {
       leadingTriviaChars: [],
       preserveWhitespaces: true,
       alwaysAttemptHtmlToR3AstConversion: true,
-      enableLetSyntax: true,
     }),
     position,
   };

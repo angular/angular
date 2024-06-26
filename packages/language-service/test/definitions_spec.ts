@@ -395,11 +395,7 @@ describe('definitions', () => {
     };
     const env = LanguageServiceTestEnv.setup();
 
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      // Note: this object is cast to `any`, because for some reason the typing
-      // changes to the `TestableOption` type aren't being picked up in tests.
-      _enableLetSyntax: true,
-    } as any);
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const template = project.openFile('app.html');
     template.contents = '@let foo = {value: 123}; {{foo.value}}';
     project.expectNoSourceDiagnostics();

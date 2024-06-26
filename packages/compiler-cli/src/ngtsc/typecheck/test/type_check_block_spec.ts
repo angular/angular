@@ -1971,12 +1971,8 @@ describe('type check blocks', () => {
   });
 
   describe('let declarations', () => {
-    function letTcb(template: string) {
-      return tcb(template, undefined, undefined, undefined, {enableLetSyntax: true});
-    }
-
     it('should generate let declarations as constants', () => {
-      const result = letTcb(`
+      const result = tcb(`
         @let one = 1;
         @let two = 2;
         @let sum = one + two;
@@ -1990,7 +1986,7 @@ describe('type check blocks', () => {
     });
 
     it('should rewrite references to let declarations inside event listeners', () => {
-      const result = letTcb(`
+      const result = tcb(`
         @let value = 1;
         <button (click)="doStuff(value)"></button>
       `);
