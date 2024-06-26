@@ -300,6 +300,14 @@ describe('BabelAstFactory', () => {
     });
   });
 
+  describe('createSpreadedExpression()', () => {
+    it('should create a spreaded expression of an array', () => {
+      const expr = expression.ast`[3,4,5]`;
+      const returnStmt = factory.createSpreadedExpression(expr);
+      expect(generate(returnStmt).code).toEqual('...[3, 4, 5]');
+    });
+  });
+
   describe('createTaggedTemplate()', () => {
     it('should create a tagged template node from the tag, elements and expressions', () => {
       const elements = [

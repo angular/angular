@@ -221,6 +221,10 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
+  visitSpreadedIterableExpr(ast: o.outputAst.SpreadedIterableExpr, context: any) {
+    throw new Error('Method not implemented.');
+  }
+
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, context: Context): ts.TupleTypeNode {
     const values = ast.entries.map((expr) => this.translateExpression(expr, context));
     return ts.factory.createTupleTypeNode(values);

@@ -239,6 +239,10 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     return ts.factory.createReturnStatement(expression ?? undefined);
   }
 
+  createSpreadedExpression(expression: ts.Expression): ts.Expression {
+    return ts.factory.createSpreadElement(expression);
+  }
+
   createTaggedTemplate(
     tag: ts.Expression,
     template: TemplateLiteral<ts.Expression>,

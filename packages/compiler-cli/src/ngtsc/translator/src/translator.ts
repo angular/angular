@@ -402,6 +402,10 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     );
   }
 
+  visitSpreadedIterableExpr(ast: o.outputAst.SpreadedIterableExpr, context: any) {
+    return this.factory.createSpreadedExpression(ast.iterable.visitExpression(this, context));
+  }
+
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, context: Context): TExpression {
     return this.factory.createArrayLiteral(
       ast.entries.map((expr) =>

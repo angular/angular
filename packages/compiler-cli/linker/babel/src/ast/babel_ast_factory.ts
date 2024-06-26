@@ -160,6 +160,10 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
 
   createReturnStatement = t.returnStatement;
 
+  createSpreadedExpression(expression: t.Expression): t.Expression {
+    return t.spreadElement(expression) as any;
+  }
+
   createTaggedTemplate(tag: t.Expression, template: TemplateLiteral<t.Expression>): t.Expression {
     const elements = template.elements.map((element, i) =>
       this.setSourceMapRange(
