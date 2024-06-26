@@ -455,7 +455,7 @@ export class NgCompiler {
       enableTemplateTypeChecker || (options['_enableTemplateTypeChecker'] ?? false);
     // TODO(crisbeto): remove this flag and base `enableBlockSyntax` on the `angularCoreVersion`.
     this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
-    this.enableLetSyntax = options['_enableLetSyntax'] ?? false;
+    this.enableLetSyntax = options['_enableLetSyntax'] ?? true;
     this.angularCoreVersion = options['_angularCoreVersion'] ?? null;
     this.constructionDiagnostics.push(
       ...this.adapter.constructionDiagnostics,

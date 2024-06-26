@@ -220,9 +220,6 @@ describe('t2 binding', () => {
         @let sum = one + two;
       `,
       '',
-      {
-        enableLetSyntax: true,
-      },
     );
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
     const res = binder.bind({template: template.nodes});
@@ -245,9 +242,6 @@ describe('t2 binding', () => {
         }
       `,
       '',
-      {
-        enableLetSyntax: true,
-      },
     );
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
     const res = binder.bind({template: template.nodes});
@@ -271,9 +265,6 @@ describe('t2 binding', () => {
         {{value}}
       `,
       '',
-      {
-        enableLetSyntax: true,
-      },
     );
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
     const res = binder.bind({template: template.nodes});
@@ -292,9 +283,6 @@ describe('t2 binding', () => {
         {{this.value}}
       `,
       '',
-      {
-        enableLetSyntax: true,
-      },
     );
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
     const res = binder.bind({template: template.nodes});
@@ -317,9 +305,6 @@ describe('t2 binding', () => {
         }
       `,
       '',
-      {
-        enableLetSyntax: true,
-      },
     );
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
     const res = binder.bind({template: template.nodes});

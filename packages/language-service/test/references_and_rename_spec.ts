@@ -1263,12 +1263,6 @@ describe('find references and rename locations', () => {
   });
 
   describe('let declarations', () => {
-    // Note: this object is cast to `any`, because for some reason the typing
-    // changes to the `TestableOption` type aren't being picked up in tests.
-    const parseConfig: any = {
-      _enableLetSyntax: true,
-    };
-
     describe('when cursor is on the name of the declaration', () => {
       let file: OpenBuffer;
       beforeEach(() => {
@@ -1287,7 +1281,7 @@ describe('find references and rename locations', () => {
           `,
         };
         env = LanguageServiceTestEnv.setup();
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files, parseConfig);
+        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
         file = project.openFile('template.ng.html');
         file.moveCursorToText('@let hob¦bit =');
       });
@@ -1325,7 +1319,7 @@ describe('find references and rename locations', () => {
           `,
         };
         env = LanguageServiceTestEnv.setup();
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files, parseConfig);
+        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
         file = project.openFile('template.ng.html');
         file.moveCursorToText(`'Hello, ' + hob¦bit`);
       });

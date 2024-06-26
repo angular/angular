@@ -84,18 +84,14 @@ runInEachFileSystem(() => {
       `;
       const {
         completions: {templateContext: outerContext},
-      } = setupCompletions(template, '', null, {
-        enableLetSyntax: true,
-      });
+      } = setupCompletions(template);
       expect(Array.from(outerContext.keys())).toEqual(['one', 'three']);
       expect(outerContext.get('one')?.kind).toBe(CompletionKind.LetDeclaration);
       expect(outerContext.get('three')?.kind).toBe(CompletionKind.LetDeclaration);
 
       const {
         completions: {templateContext: innerContext},
-      } = setupCompletions(template, '', 1, {
-        enableLetSyntax: true,
-      });
+      } = setupCompletions(template, '', 1);
 
       expect(Array.from(innerContext.keys())).toEqual(['one', 'three', 'two']);
       expect(innerContext.get('one')?.kind).toBe(CompletionKind.LetDeclaration);

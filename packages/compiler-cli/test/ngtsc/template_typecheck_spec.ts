@@ -6611,7 +6611,7 @@ suppress
     });
 
     describe('@let declarations', () => {
-      beforeEach(() => env.tsconfig({_enableLetSyntax: true, strictTemplates: true}));
+      beforeEach(() => env.tsconfig({strictTemplates: true}));
 
       it('should infer the type of a let declaration', () => {
         env.write(

@@ -19,12 +19,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ɵsetEnableLetSyntax} from '@angular/compiler/src/jit_compiler_facade';
 
 describe('@let declarations', () => {
-  beforeEach(() => ɵsetEnableLetSyntax(true));
-  afterEach(() => ɵsetEnableLetSyntax(false));
-
   it('should update the value of a @let declaration over time', () => {
     @Component({
       standalone: true,

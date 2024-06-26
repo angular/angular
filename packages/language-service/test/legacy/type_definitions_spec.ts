@@ -18,7 +18,7 @@ describe('type definitions', () => {
   beforeAll(() => {
     const {project, service: _service, tsLS} = setup();
     service = _service;
-    ngLS = new LanguageService(project, tsLS, {enableLetSyntax: true});
+    ngLS = new LanguageService(project, tsLS, {});
   });
 
   const possibleArrayDefFiles: readonly string[] = [

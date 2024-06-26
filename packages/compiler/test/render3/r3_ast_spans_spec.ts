@@ -268,8 +268,8 @@ function humanizeSpan(span: ParseSourceSpan | null | undefined): string {
   return span.toString();
 }
 
-function expectFromHtml(html: string, options?: {tokenizeLet?: boolean}) {
-  return expectFromR3Nodes(parse(html, options).nodes);
+function expectFromHtml(html: string) {
+  return expectFromR3Nodes(parse(html).nodes);
 }
 
 function expectFromR3Nodes(nodes: t.Node[]) {
@@ -829,7 +829,7 @@ describe('R3 AST source spans', () => {
 
   describe('@let declaration', () => {
     it('is correct for a let declaration', () => {
-      expectFromHtml('@let foo = 123;', {tokenizeLet: true}).toEqual([
+      expectFromHtml('@let foo = 123;').toEqual([
         ['LetDeclaration', '@let foo = 123', 'foo', '123'],
       ]);
     });

@@ -1058,18 +1058,16 @@ describe('HtmlParser', () => {
     });
 
     describe('let declaration', () => {
-      function parseLet(input: string) {
-        return parser.parse(input, 'TestComp', {tokenizeLet: true});
-      }
-
       it('should parse a let declaration', () => {
-        expect(humanizeDom(parseLet('@let foo = 123;'))).toEqual([
+        expect(humanizeDom(parser.parse('@let foo = 123;', 'TestCmp'))).toEqual([
           [html.LetDeclaration, 'foo', '123'],
         ]);
       });
 
       it('should parse a let declaration that is nested in a parent', () => {
-        expect(humanizeDom(parseLet('@grandparent {@parent {@let foo = 123;}}'))).toEqual([
+        expect(
+          humanizeDom(parser.parse('@grandparent {@parent {@let foo = 123;}}', 'TestCmp')),
+        ).toEqual([
           [html.Block, 'grandparent', 0],
           [html.Block, 'parent', 1],
           [html.LetDeclaration, 'foo', '123'],
@@ -1077,13 +1075,13 @@ describe('HtmlParser', () => {
       });
 
       it('should store the source location of a @let declaration', () => {
-        expect(humanizeDomSourceSpans(parseLet('@let foo = 123 + 456;'))).toEqual([
+        expect(humanizeDomSourceSpans(parser.parse('@let foo = 123 + 456;', 'TestCmp'))).toEqual([
           [html.LetDeclaration, 'foo', '123 + 456', '@let foo = 123 + 456', 'foo', '123 + 456'],
         ]);
       });
 
       it('should report an error for an incomplete let declaration', () => {
-        expect(humanizeErrors(parseLet('@let foo =').errors)).toEqual([
+        expect(humanizeErrors(parser.parse('@let foo =', 'TestCmp').errors)).toEqual([
           [
             'foo',
             'Incomplete @let declaration "foo". @let declarations must be written as `@let <name> = <value>;`',
@@ -1093,7 +1091,7 @@ describe('HtmlParser', () => {
       });
 
       it('should store the locations of an incomplete let declaration', () => {
-        const parseResult = parseLet('@let foo =');
+        const parseResult = parser.parse('@let foo =', 'TestCmp');
 
         // It's expected that errors will be reported for the incomplete declaration,
         // but we still want to check the spans since they're important even for broken templates.
