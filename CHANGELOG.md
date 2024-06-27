@@ -1,3 +1,14 @@
+<a name="18.0.5"></a>
+# 18.0.5 (2024-06-26)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2f73281dfd](https://github.com/angular/angular/commit/2f73281dfd97fd254179770cbdbda5236f5f37fd) | fix | improve docs on afterRender hooks ([#56525](https://github.com/angular/angular/pull/56525)) |
+| [be9e4892f9](https://github.com/angular/angular/commit/be9e4892f9d2e3dbc772b732a130f97d67cba965) | fix | improve support for i18n hydration of projected content ([#56192](https://github.com/angular/angular/pull/56192)) |
+| [5f9bd5521e](https://github.com/angular/angular/commit/5f9bd5521eaadb4106c43eb2f8e7ac25777e9ea6) | fix | prevent calling devMode only function on `@defer` error. ([#56559](https://github.com/angular/angular/pull/56559)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.1.0-next.4"></a>
 # 18.1.0-next.4 (2024-06-26)
 ### core
