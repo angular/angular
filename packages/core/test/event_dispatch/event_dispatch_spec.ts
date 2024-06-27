@@ -42,7 +42,6 @@ describe('event dispatch', () => {
       .firstElementChild as HTMLButtonElement;
     button.click();
     expect(onClickSpy).toHaveBeenCalledTimes(1);
-    expect(button.hasAttribute('jsaction')).toBeTrue();
     expect(addEventListenerSpy).not.toHaveBeenCalled();
   });
 
@@ -105,7 +104,7 @@ describe('event dispatch', () => {
     inner.click();
     expect(outerOnClickSpy).toHaveBeenCalledBefore(innerOnClickSpy);
   });
-  it('should serialize event types to be listened to and jsaction attribute', async () => {
+  it('should serialize event types to be listened to and jsaction cache entry', async () => {
     const clickSpy = jasmine.createSpy('onClick');
     const focusSpy = jasmine.createSpy('onFocus');
     @Component({

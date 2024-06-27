@@ -115,6 +115,12 @@ export const isSupportedEvent: (eventType: string) => boolean;
 // @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: EventDispatcher): void;
 
+// @public (undocumented)
+export function registerEventType(element: Element, eventType: string, action: string): void;
+
+// @public (undocumented)
+export function unregisterEventType(element: Element, eventType: string): void;
+
 // (No @packageDocumentation comment for this package)
 
 ```

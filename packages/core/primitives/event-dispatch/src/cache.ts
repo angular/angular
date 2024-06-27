@@ -13,6 +13,19 @@ import {Property} from './property';
  */
 const parseCache: {[key: string]: {[key: string]: string}} = {};
 
+export function registerEventType(element: Element, eventType: string, action: string) {
+  const cache = get(element) || {};
+  cache[eventType] = action;
+  set(element, cache);
+}
+
+export function unregisterEventType(element: Element, eventType: string) {
+  const cache = get(element);
+  if (cache) {
+    cache[eventType] = undefined as unknown as string;
+  }
+}
+
 /**
  * Reads the jsaction parser cache from the given DOM Element.
  *
