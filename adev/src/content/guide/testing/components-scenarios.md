@@ -494,7 +494,7 @@ There's no `fakeAsync()`.
 Marble testing uses a test scheduler to simulate the passage of time in a synchronous test.
 
 The beauty of marble testing is in the visual definition of the observable streams.
-This test defines a [*cold* observable](#cold-observable) that waits three [frames](#marble-frame) \(`---`\), emits a value \(`x`\), and completes \(`|`\).
+This test defines a [*cold* observable](#learn-about-marble-testing) that waits three [frames](#learn-about-marble-testing) \(`---`\), emits a value \(`x`\), and completes \(`|`\).
 In the second argument you map the value marker \(`x`\) to the emitted value \(`testQuote`\).
 
 <docs-code path="adev/src/content/examples/testing/src/app/twain/twain.component.marbles.spec.ts" visibleRegion="test-quote-marbles"/>
