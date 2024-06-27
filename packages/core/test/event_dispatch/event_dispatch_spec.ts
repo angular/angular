@@ -8,7 +8,6 @@
 
 import {Component, ɵJSACTION_EVENT_CONTRACT, ɵprovideGlobalEventDelegation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {getCache} from '@angular/core/primitives/event-dispatch';
 
 function configureTestingModule(components: unknown[]) {
   TestBed.configureTestingModule({
@@ -43,7 +42,6 @@ describe('event dispatch', () => {
       .firstElementChild as HTMLButtonElement;
     button.click();
     expect(onClickSpy).toHaveBeenCalledTimes(1);
-    expect(getCache(button)['click']).toBeDefined();
     expect(addEventListenerSpy).not.toHaveBeenCalled();
   });
 
