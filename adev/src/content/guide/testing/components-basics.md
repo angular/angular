@@ -9,69 +9,11 @@ Such tests require creating the component's host element in the browser DOM, as 
 The Angular `TestBed` facilitates this kind of testing as you'll see in the following sections.
 But in many cases, *testing the component class alone*, without DOM involvement, can validate much of the component's behavior in a straightforward, more obvious way.
 
-## Component class testing
-
-Test a component class on its own as you would test a service class.
-
-Component class testing should be kept very clean and simple.
-It should test only a single unit.
-At first glance, you should be able to understand what the test is testing.
-
-Consider this `LightswitchComponent` which toggles a light on and off (represented by an on-screen message) when the user clicks the button.
-
-<docs-code header="app/demo/demo.ts (LightswitchComp)" path="adev/src/content/examples/testing/src/app/demo/demo.ts" visibleRegion="LightswitchComp"/>
-
-You might decide only to test that the `clicked()` method toggles the light's *on/off* state and sets the message appropriately.
-
-This component class has no dependencies.
-To test these types of classes, follow the same steps as you would for a service that has no dependencies:
-
-1. Create a component using the new keyword.
-1. Poke at its API.
-1. Assert expectations on its public state.
-
-<docs-code header="app/demo/demo.spec.ts (Lightswitch tests)" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="Lightswitch"/>
-
-Here is the `DashboardHeroComponent` from the *Tour of Heroes* tutorial.
-
-<docs-code header="app/dashboard/dashboard-hero.component.ts (component)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard-hero.component.ts" visibleRegion="class"/>
-
-It appears within the template of a parent component, which binds a *hero* to the `@Input` property and listens for an event raised through the *selected* `@Output` property.
-
-You can test that the class code works without creating the `DashboardHeroComponent` or its parent component.
-
-<docs-code header="app/dashboard/dashboard-hero.component.spec.ts (class tests)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard-hero.component.spec.ts" visibleRegion="class-only"/>
-
-When a component has dependencies, you might want to use the `TestBed` to both create the component and its dependencies.
-
-The following `WelcomeComponent` depends on the `UserService` to know the name of the user to greet.
-
-IMPORTANT: Remember to either *import* or *provide* each standalone component you want to test.
-
-<docs-code header="app/welcome/welcome.component.ts" path="adev/src/content/examples/testing/src/app/welcome/welcome.component.ts" visibleRegion="class"/>
-
-You might start by creating a mock of the `UserService` that meets the minimum needs of this component.
-
-<docs-code header="app/welcome/welcome.component.spec.ts (MockUserService)" path="adev/src/content/examples/testing/src/app/welcome/welcome.component.spec.ts" visibleRegion="mock-user-service"/>
-
-Then provide and inject *both the* **component** *and the service* in the `TestBed` configuration.
-
-<docs-code header="app/welcome/welcome.component.spec.ts (class-only setup)" path="adev/src/content/examples/testing/src/app/welcome/welcome.component.spec.ts" visibleRegion="class-only-before-each"/>
-
-Then exercise the component class, remembering to call the [lifecycle hook methods](guide/components/lifecycle) as Angular does when running the application.
-
-<docs-code header="app/welcome/welcome.component.spec.ts (class-only tests)" path="adev/src/content/examples/testing/src/app/welcome/welcome.component.spec.ts" visibleRegion="class-only-tests"/>
-
 ## Component DOM testing
 
-Testing the component *class* is as straightforward as [testing a service](guide/testing/services).
-
-But a component is more than just its class.
+A component is more than just its class.
 A component interacts with the DOM and with other components.
-The *class-only* tests can tell you about class behavior.
-They cannot tell you if the component is going to render properly, respond to user input and gestures, or integrate with its parent and child components.
-
-None of the preceding *class-only* tests can answer key questions about how the components actually behave on screen.
+Classes alone cannot tell you if the component is going to render properly, respond to user input and gestures, or integrate with its parent and child components.
 
 * Is `Lightswitch.clicked()` bound to anything such that the user can invoke it?
 * Is the `Lightswitch.message` displayed?
