@@ -13,6 +13,8 @@ import {
   EventDispatcher,
   isSupportedEvent,
   registerDispatcher,
+  getCache,
+  setCache,
 } from '@angular/core/primitives/event-dispatch';
 import {Attribute} from '@angular/core/primitives/event-dispatch';
 import {Injectable, InjectionToken, Injector, inject} from './di';
@@ -45,9 +47,9 @@ export function setJSActionAttributes(nativeElement: Element, eventTypes: string
 }
 
 export function setJSActionAttribute(nativeElement: Element, eventType: string) {
-  const existingAttr = nativeElement.getAttribute(Attribute.JSACTION);
-  //  This is required to be a module accessor to appease security tests on setAttribute.
-  nativeElement.setAttribute(Attribute.JSACTION, `${existingAttr ?? ''}${eventType}:;`);
+  const cache = getCache(nativeElement) || [];
+  cache[eventType] = '';
+  setCache(nativeElement, cache);
 }
 
 export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn: () => void) => {
@@ -100,12 +102,10 @@ export class GlobalEventDelegation {
   }
 
   removeEventListener(element: HTMLElement, eventName: string, callback: Function): void {
-    const newJsactionAttribute = element
-      .getAttribute(Attribute.JSACTION)
-      ?.split(';')
-      .filter((s) => s === eventName + ':')
-      .join(';');
-    element.setAttribute(Attribute.JSACTION, newJsactionAttribute ?? '');
+    const cache = getCache(element);
+    if (cache) {
+      delete cache[eventName];
+    }
   }
 }
 

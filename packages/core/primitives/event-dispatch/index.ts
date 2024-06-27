@@ -16,3 +16,4 @@ export type {EventContractTracker} from './src/register_events';
 export {EventInfoWrapper} from './src/event_info';
 export {isSupportedEvent, isCaptureEvent} from './src/event_type';
 export {Attribute} from './src/attribute';
+export {get as getCache, set as setCache} from './src/cache';
