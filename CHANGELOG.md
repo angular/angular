@@ -1,3 +1,18 @@
+<a name="18.1.0-next.4"></a>
+# 18.1.0-next.4 (2024-06-26)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0a48d584f2](https://github.com/angular/angular/commit/0a48d584f2ffeebb9402032182d4fc13a260c5cf) | feat | add support for let syntax ([#56715](https://github.com/angular/angular/pull/56715)) |
+| [29ca6d10cc](https://github.com/angular/angular/commit/29ca6d10cc3cd75ebdf64658dafcb3ce579af343) | fix | improve support for i18n hydration of projected content ([#56192](https://github.com/angular/angular/pull/56192)) |
+| [5be16d06bd](https://github.com/angular/angular/commit/5be16d06bd504b1a72b7fb6f8d6e0c1b93a8188b) | fix | prevent calling devMode only function on `@defer` error. ([#56559](https://github.com/angular/angular/pull/56559)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cc21989132](https://github.com/angular/angular/commit/cc21989132bc64b981df83cb6ff6e1506b42a1d0) | fix | Make `Content-Type` header case insensitive ([#56541](https://github.com/angular/angular/pull/56541)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.1.0-next.3"></a>
 # 18.1.0-next.3 (2024-06-20)
 ### compiler-cli
