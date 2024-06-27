@@ -706,6 +706,9 @@ groups:
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
+        - ~iteriani
+        - ~tbondwilkinson
+        - ~rahatarmanahmed
     reviews:
       request: 3 # Request reviews from 3 people
       required: 2 # Require that 2 people approve
