@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {FormsModule} from '@angular/forms';
 import {SlideToggle, TextField} from '@angular/docs';
@@ -38,8 +47,17 @@ export const ALL_STATUSES_KEY = 'All';
 })
 export default class ApiReferenceList {
   private readonly apiReferenceManager = inject(ApiReferenceManager);
+  filterInput = viewChild.required(TextField, {read: ElementRef});
 
   private readonly allGroups = this.apiReferenceManager.apiGroups;
+
+  private filterEffect = effect(() => {
+    if (matchMedia('(hover: hover) and (pointer:fine)').matches) {
+      // Lord forgive me for I have sinned
+      // Use the CVA to focus when https://github.com/angular/angular/issues/31133 is implemented
+      this.filterInput().nativeElement.querySelector('input').focus();
+    }
+  });
 
   query = signal('');
   includeDeprecated = signal(false);
