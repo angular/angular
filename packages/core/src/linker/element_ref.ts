@@ -53,8 +53,8 @@ export class ElementRef<T = any> {
    *   <header>Use with caution</header>
    *   <p>
    *    Use this API as the last resort when direct access to DOM is needed. Use templating and
-   *    data-binding provided by Angular instead. Alternatively you can take a look at {@link
-   * Renderer2} which provides an API that can be safely used.
+   *    data-binding provided by Angular instead. If used, it is
+   * recommended in combination with {@link DomSanitizer} for maxiumum security;
    *   </p>
    * </div>
    */

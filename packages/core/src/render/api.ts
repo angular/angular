@@ -54,6 +54,11 @@ export abstract class RendererFactory2 {
  * not statically known, use the `setProperty()` or
  * `setAttribute()` method.
  *
+ * <div class="callout is-important">
+ *  Please be aware that usage of `Renderer2`, in context of accessing DOM elements, provides no
+ * extra security which makes it equivalent to {@link ElementRef}.
+ * </div>
+ *
  * @publicApi
  */
 export abstract class Renderer2 {
