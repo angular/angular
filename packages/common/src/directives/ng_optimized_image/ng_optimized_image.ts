@@ -1270,13 +1270,13 @@ function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: I
  */
 function assetPriorityCountBelowThreshold() {
   if (IMGS_WITH_PRIORITY_ATTR_COUNT === 0) {
-    document.addEventListener('DOMContentLoaded', (event) => {
+    document.addEventListener('DOMContentLoaded', () => {
       if (IMGS_WITH_PRIORITY_ATTR_COUNT > PRIORITY_COUNT_THRESHOLD) {
         console.warn(
           formatRuntimeError(
             RuntimeErrorCode.TOO_MANY_PRIORITY_ATTRIBUTES,
             `NgOptimizedImage: The "priority" attribute is set to true more than ${PRIORITY_COUNT_THRESHOLD} times (${IMGS_WITH_PRIORITY_ATTR_COUNT} times). ` +
-              `Marking too many images as "high" priority can hurt your application's LCP (https://web.dev/lcp).` +
+              `Marking too many images as "high" priority can hurt your application's LCP (https://web.dev/lcp). ` +
               `"Priority" should only be set on the image expected to be the page's LCP element.`,
           ),
         );
