@@ -407,8 +407,13 @@ class _Tokenizer {
     let allowDigit = false;
 
     this._attemptCharCodeUntilFn((code) => {
-      // `@let` names can't start with a digit, but digits are valid anywhere else in the name.
-      if (chars.isAsciiLetter(code) || code === chars.$_ || (allowDigit && chars.isDigit(code))) {
+      if (
+        chars.isAsciiLetter(code) ||
+        code == chars.$$ ||
+        code === chars.$_ ||
+        // `@let` names can't start with a digit, but digits are valid anywhere else in the name.
+        (allowDigit && chars.isDigit(code))
+      ) {
         allowDigit = true;
         return false;
       }
