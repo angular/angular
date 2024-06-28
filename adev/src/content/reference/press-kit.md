@@ -64,4 +64,4 @@ In 2023 , we announced a modernized logo with v17. We advise against using the f
 ### AngularJS
 
 AngularJS is the v1.x predecessor of modern Angular. We advise against using this logo to prevent confusion.
-Read more about the discontinued LTS (Long Term Support) for AngularJS on our [blog](https://blog.angular.io/discontinued-long-term-support-for-angularjs-cc066b82e65a).
+Read more about the discontinued LTS (Long Term Support) for AngularJS on our [blog](https://blog.angular.dev/discontinued-long-term-support-for-angularjs-cc066b82e65a).
