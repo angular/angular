@@ -10,7 +10,7 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {CachedInjectorService} from '../cached_injector_service';
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
-import {EnvironmentInjector, InjectionToken, Injector} from '../di';
+import {EnvironmentInjector, InjectionToken, Injector, Provider} from '../di';
 import {internalImportProvidersFrom} from '../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {findMatchingDehydratedView} from '../hydration/views';
@@ -90,7 +90,6 @@ import {
   setLDeferBlockDetails,
   setTDeferBlockDetails,
 } from './utils';
-import {isRouterOutletInjector} from '../render3/util/injector_utils';
 
 /**
  * **INTERNAL**, avoid referencing it in application code.
@@ -626,20 +625,73 @@ export function renderDeferBlockState(
 }
 
 /**
- * Creates an instance of the `OutletInjector` using a private factory
- * function available on the `OutletInjector` class.
- *
- * @param parentOutletInjector Parent OutletInjector, which should be used
- *                             to produce a new instance.
- * @param parentInjector An Injector, which should be used as a parent one
- *                       for a newly created `OutletInjector` instance.
+ * Checks whether there is a cached injector associated with a given defer block
+ * declaration and returns if it exists. If there is no cached injector present -
+ * creates a new injector and stores in the cache.
  */
-function createRouterOutletInjector(
-  parentOutletInjector: ChainedInjector,
+function getOrCreateEnvironmentInjector(
   parentInjector: Injector,
+  tDetails: TDeferBlockDetails,
+  providers: Provider[],
 ) {
-  const outletInjector = parentOutletInjector.injector as any;
-  return outletInjector.__ngOutletInjector(parentInjector);
+  return parentInjector
+    .get(CachedInjectorService)
+    .getOrCreateInjector(
+      tDetails,
+      parentInjector as EnvironmentInjector,
+      providers,
+      ngDevMode ? 'DeferBlock Injector' : '',
+    );
+}
+
+/**
+ * Creates a new injector, which contains providers collected from dependencies (NgModules) of
+ * defer-loaded components. This function detects different types of parent injectors and creates
+ * a new injector based on that.
+ */
+function createDeferBlockInjector(
+  parentInjector: Injector,
+  tDetails: TDeferBlockDetails,
+  providers: Provider[],
+) {
+  // Check if the parent injector is an instance of a `ChainedInjector`.
+  //
+  // In this case, we retain the shape of the injector and use a newly created
+  // `EnvironmentInjector` as a parent in the `ChainedInjector`. That is needed to
+  // make sure that the primary injector gets consulted first (since it's typically
+  // a NodeInjector) and `EnvironmentInjector` tree is consulted after that.
+  if (parentInjector instanceof ChainedInjector) {
+    const origInjector = parentInjector.injector;
+    // Guaranteed to be an environment injector
+    const parentEnvInjector = parentInjector.parentInjector;
+
+    const envInjector = getOrCreateEnvironmentInjector(parentEnvInjector, tDetails, providers);
+    return new ChainedInjector(origInjector, envInjector);
+  }
+
+  const parentEnvInjector = parentInjector.get(EnvironmentInjector);
+
+  // If the `parentInjector` is *not* an `EnvironmentInjector` - we need to create
+  // a new `ChainedInjector` with the following setup:
+  //
+  //  - the provided `parentInjector` becomes a primary injector
+  //  - an existing (real) `EnvironmentInjector` becomes a parent injector for
+  //    a newly-created one, which contains extra providers
+  //
+  // So the final order in which injectors would be consulted in this case would look like this:
+  //
+  //  1. Provided `parentInjector`
+  //  2. Newly-created `EnvironmentInjector` with extra providers
+  //  3. `EnvironmentInjector` from the `parentInjector`
+  if (parentEnvInjector !== parentInjector) {
+    const envInjector = getOrCreateEnvironmentInjector(parentEnvInjector, tDetails, providers);
+    return new ChainedInjector(parentInjector, envInjector);
+  }
+
+  // The `parentInjector` is an instance of an `EnvironmentInjector`.
+  // No need for special handling, we can use `parentInjector` as a
+  // parent injector directly.
+  return getOrCreateEnvironmentInjector(parentInjector, tDetails, providers);
 }
 
 /**
@@ -672,40 +724,12 @@ function applyDeferBlockState(
       // newly loaded standalone components used within the block, which may
       // import NgModules with providers. In order to make those providers
       // available for components declared in that NgModule, we create an instance
-      // of environment injector to host those providers and pass this injector
+      // of an environment injector to host those providers and pass this injector
       // to the logic that creates a view.
       const tDetails = getTDeferBlockDetails(hostTView, tNode);
       const providers = tDetails.providers;
       if (providers && providers.length > 0) {
-        const parentInjector = hostLView[INJECTOR] as Injector;
-
-        // Note: we have a special case for Router's `OutletInjector`,
-        // since it's not an instance of the `EnvironmentInjector`, so
-        // we can't inject it. Once the `OutletInjector` is replaced
-        // with the `EnvironmentInjector` in Router's code, this special
-        // handling can be removed.
-        const isParentOutletInjector = isRouterOutletInjector(parentInjector);
-        const parentEnvInjector = isParentOutletInjector
-          ? parentInjector
-          : parentInjector.get(EnvironmentInjector);
-
-        injector = parentEnvInjector
-          .get(CachedInjectorService)
-          .getOrCreateInjector(
-            tDetails,
-            parentEnvInjector as EnvironmentInjector,
-            providers,
-            ngDevMode ? 'DeferBlock Injector' : '',
-          );
-
-        // Note: this is a continuation of the special case for Router's `OutletInjector`.
-        // Since the `OutletInjector` handles `ActivatedRoute` and `ChildrenOutletContexts`
-        // dynamically (i.e. their values are not really stored statically in an injector),
-        // we need to "wrap" a defer injector into another `OutletInjector`, so we retain
-        // the dynamic resolution of the mentioned tokens.
-        if (isParentOutletInjector) {
-          injector = createRouterOutletInjector(parentInjector as ChainedInjector, injector);
-        }
+        injector = createDeferBlockInjector(hostLView[INJECTOR]!, tDetails, providers);
       }
     }
     const dehydratedView = findMatchingDehydratedView(lContainer, activeBlockTNode.tView!.ssrId);
