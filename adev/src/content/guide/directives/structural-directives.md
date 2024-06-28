@@ -80,7 +80,7 @@ import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
 
 @Directive({
   standalone: true,
-  selector: 'select',
+  selector: '[select]',
 })
 export class SelectDirective {
   constructor(private templateRef: TemplateRef, private ViewContainerRef: ViewContainerRef) {}
