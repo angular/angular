@@ -90,6 +90,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
   // TODO: vsavkin replace the above selector with the one below it once
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ngModel],[formControl],[formControlName]',
+  standalone: true,
   host: {
     '(input)': '$any(this)._handleInput($event.target.value)',
     '(blur)': 'onTouched()',

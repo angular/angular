@@ -222,6 +222,7 @@ export const MAX_VALIDATOR: Provider = {
 @Directive({
   selector:
     'input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
+  standalone: true,
   providers: [MAX_VALIDATOR],
   host: {'[attr.max]': '_enabled ? max : null'},
 })
@@ -273,6 +274,7 @@ export const MIN_VALIDATOR: Provider = {
 @Directive({
   selector:
     'input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
+  standalone: true,
   providers: [MIN_VALIDATOR],
   host: {'[attr.min]': '_enabled ? min : null'},
 })
@@ -375,6 +377,7 @@ export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
 @Directive({
   selector:
     ':not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]',
+  standalone: true,
   providers: [REQUIRED_VALIDATOR],
   host: {'[attr.required]': '_enabled ? "" : null'},
 })
@@ -424,6 +427,7 @@ export class RequiredValidator extends AbstractValidatorDirective {
 @Directive({
   selector:
     'input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]',
+  standalone: true,
   providers: [CHECKBOX_REQUIRED_VALIDATOR],
   host: {'[attr.required]': '_enabled ? "" : null'},
 })
@@ -471,6 +475,7 @@ export const EMAIL_VALIDATOR: any = {
  */
 @Directive({
   selector: '[email][formControlName],[email][formControl],[email][ngModel]',
+  standalone: true,
   providers: [EMAIL_VALIDATOR],
 })
 export class EmailValidator extends AbstractValidatorDirective {
@@ -552,6 +557,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
  */
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
+  standalone: true,
   providers: [MIN_LENGTH_VALIDATOR],
   host: {'[attr.minlength]': '_enabled ? minlength : null'},
 })
@@ -605,6 +611,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
  */
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
+  standalone: true,
   providers: [MAX_LENGTH_VALIDATOR],
   host: {'[attr.maxlength]': '_enabled ? maxlength : null'},
 })
@@ -660,6 +667,7 @@ export const PATTERN_VALIDATOR: any = {
  */
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',
+  standalone: true,
   providers: [PATTERN_VALIDATOR],
   host: {'[attr.pattern]': '_enabled ? pattern : null'},
 })
