@@ -2025,7 +2025,7 @@ class Scope {
    *
    * Assumes that there won't be duplicated `@let` declarations within the same scope.
    */
-  private letDeclOpMap = new Map<string, number>();
+  private letDeclOpMap = new Map<string, {opIndex: number; node: TmplAstLetDeclaration}>();
 
   /**
    * Statements for this template.
@@ -2131,6 +2131,14 @@ class Scope {
     }
     for (const node of children) {
       scope.appendNode(node);
+    }
+    // Once everything is registered, we need to check if there are `@let`
+    // declarations that conflict with other local symbols defined after them.
+    for (const variable of scope.varMap.keys()) {
+      Scope.checkConflictingLet(scope, variable);
+    }
+    for (const ref of scope.referenceOpMap.keys()) {
+      Scope.checkConflictingLet(scope, ref);
     }
     return scope;
   }
@@ -2264,7 +2272,7 @@ class Scope {
     if (ref instanceof TmplAstReference && this.referenceOpMap.has(ref)) {
       return this.resolveOp(this.referenceOpMap.get(ref)!);
     } else if (ref instanceof TmplAstLetDeclaration && this.letDeclOpMap.has(ref.name)) {
-      return this.resolveOp(this.letDeclOpMap.get(ref.name)!);
+      return this.resolveOp(this.letDeclOpMap.get(ref.name)!.opIndex);
     } else if (ref instanceof TmplAstVariable && this.varMap.has(ref)) {
       // Resolving a context variable for this template.
       // Execute the `TcbVariableOp` associated with the `TmplAstVariable`.
@@ -2376,10 +2384,10 @@ class Scope {
       this.appendChildren(node);
     } else if (node instanceof TmplAstLetDeclaration) {
       const opIndex = this.opQueue.push(new TcbLetDeclarationOp(this.tcb, this, node)) - 1;
-      if (this.letDeclOpMap.has(node.name)) {
-        this.tcb.oobRecorder.duplicateLetDeclaration(this.tcb.id, node);
+      if (this.isLocal(node)) {
+        this.tcb.oobRecorder.conflictingDeclaration(this.tcb.id, node);
       } else {
-        this.letDeclOpMap.set(node.name, opIndex);
+        this.letDeclOpMap.set(node.name, {opIndex, node});
       }
     }
   }
@@ -2623,6 +2631,16 @@ class Scope {
   ): void {
     if (this.tcb.boundTarget.getDeferredTriggerTarget(block, trigger) === null) {
       this.tcb.oobRecorder.inaccessibleDeferredTriggerElement(this.tcb.id, trigger);
+    }
+  }
+
+  /** Reports a diagnostic if there are any `@let` declarations that conflict with a node. */
+  private static checkConflictingLet(scope: Scope, node: TmplAstVariable | TmplAstReference): void {
+    if (scope.letDeclOpMap.has(node.name)) {
+      scope.tcb.oobRecorder.conflictingDeclaration(
+        scope.tcb.id,
+        scope.letDeclOpMap.get(node.name)!.node,
+      );
     }
   }
 }
