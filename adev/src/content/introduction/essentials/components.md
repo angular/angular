@@ -127,7 +127,16 @@ import {TodoListItem} from './todo-list-item.component.ts';
 })
 export class TodoList {}
 ```
+Difference between template and templateUrl in angular:
 
+Template: 
+- It is used to define the view directly within the component's TypeScript file using backticks (`).
+- Suitable for simple views with a few lines of HTML code.
+
+templateUrl:
+- Used to reference an external HTML file containing the view definition.
+- Ideal for complex views with many lines of HTML code or reusable UI elements.
+  
 ## Next Step
 
 Now that you know how components work in Angular, it's time to learn how we add and manage dynamic data in our application.
