@@ -6640,6 +6640,35 @@ suppress
         );
       });
 
+      it('should infer the type of a nested let declaration', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              <div>
+                @let one = 1;
+                <span>{{acceptsString(one)}}</span>
+              </div>
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            acceptsString(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('one');
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
       it('should check the expression of a let declaration', () => {
         env.write(
           'test.ts',

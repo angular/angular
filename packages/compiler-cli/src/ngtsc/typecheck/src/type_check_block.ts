@@ -2131,15 +2131,6 @@ class Scope {
     }
     for (const node of children) {
       scope.appendNode(node);
-
-      if (node instanceof TmplAstLetDeclaration) {
-        const opIndex = scope.opQueue.push(new TcbLetDeclarationOp(tcb, scope, node)) - 1;
-        if (scope.letDeclOpMap.has(node.name)) {
-          tcb.oobRecorder.duplicateLetDeclaration(tcb.id, node);
-        } else {
-          scope.letDeclOpMap.set(node.name, opIndex);
-        }
-      }
     }
     return scope;
   }
@@ -2383,6 +2374,13 @@ class Scope {
       this.appendIcuExpressions(node);
     } else if (node instanceof TmplAstContent) {
       this.appendChildren(node);
+    } else if (node instanceof TmplAstLetDeclaration) {
+      const opIndex = this.opQueue.push(new TcbLetDeclarationOp(this.tcb, this, node)) - 1;
+      if (this.letDeclOpMap.has(node.name)) {
+        this.tcb.oobRecorder.duplicateLetDeclaration(this.tcb.id, node);
+      } else {
+        this.letDeclOpMap.set(node.name, opIndex);
+      }
     }
   }
 
