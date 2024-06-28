@@ -364,8 +364,8 @@ export enum ErrorCode {
   /** An expression is trying to read an `@let` before it has been defined. */
   LET_USED_BEFORE_DEFINITION = 8016,
 
-  /** Multiple `@let` declarations were defined with the same name within a scope. */
-  DUPLICATE_LET_DECLARATION = 8017,
+  /** A `@let` declaration conflicts with another symbol in the same scope. */
+  CONFLICTING_LET_DECLARATION = 8017,
 
   /**
    * A two way binding in a template has an incorrect syntax,

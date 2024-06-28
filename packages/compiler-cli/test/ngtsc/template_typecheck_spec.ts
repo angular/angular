@@ -6929,8 +6929,113 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
-          `Cannot declare @let called 'value' as there is another @let declaration with the same name.`,
+          `Cannot declare @let called 'value' as there is another symbol in the template with the same name.`,
         );
+      });
+
+      it('should not allow @let declaration with the same name as a local reference defined before it', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              <input #value>
+              @let value = 1;
+              {{value}}
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot declare @let called 'value' as there is another symbol in the template with the same name.`,
+        );
+      });
+
+      it('should not allow @let declaration with the same name as a local reference defined after it', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = 1;
+              <input #value>
+              {{value}}
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot declare @let called 'value' as there is another symbol in the template with the same name.`,
+        );
+      });
+
+      it('should not allow @let declaration with the same name as a template variable', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import {CommonModule} from '@angular/common';
+
+            @Component({
+              template: \`
+                <div *ngIf="x as value">
+                  @let value = 1;
+                  {{value}}
+                </div>
+              \`,
+              standalone: true,
+              imports: [CommonModule],
+            })
+            export class Main {
+              x!: unknown;
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot declare @let called 'value' as there is another symbol in the template with the same name.`,
+        );
+      });
+
+      it('should allow @let declaration with the same name as a local reference defined in a parent view', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              <input #value>
+
+              @if (true) {
+                @let value = 1;
+                {{value}}
+              }
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
       });
 
       it('should not allow a let declaration to be referenced before it is defined', () => {
@@ -6946,8 +7051,7 @@ suppress
             \`,
             standalone: true,
           })
-          export class Main {
-          }
+          export class Main {}
         `,
         );
 
