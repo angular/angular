@@ -23,7 +23,7 @@ class MyComponent  {
   private service2: Service2 = inject(Service2); // In context
 
   constructor() {
-    this.service1 = inject(HeroService) // In context
+    this.service1 = inject(Service1) // In context
   }
 }
 </docs-code>
