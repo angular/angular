@@ -185,7 +185,7 @@ For more information, see [Template type checking](tools/cli/template-typecheck 
 
 ### Type narrowing with template guards
 
-A structural directive in a template controls whether that template is rendered at run time. Some structural directives want to perform type narrowing based the type of an input expression.
+A structural directive in a template controls whether that template is rendered at run time. Some structural directives want to perform type narrowing based on the type of input expression.
 
 There are two narrowings which are possible with input guards:
 
