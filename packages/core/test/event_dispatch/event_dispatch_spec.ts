@@ -18,7 +18,6 @@ function configureTestingModule(components: unknown[]) {
 
 describe('event dispatch', () => {
   let fixture: ComponentFixture<unknown>;
-  afterEach(() => fixture.debugElement.injector.get(ɵJSACTION_EVENT_CONTRACT).instance?.cleanUp());
 
   it(`executes an onclick handler`, async () => {
     const onClickSpy = jasmine.createSpy();

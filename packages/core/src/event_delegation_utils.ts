@@ -20,6 +20,7 @@ import {Attribute} from '@angular/core/primitives/event-dispatch';
 import {Injectable, InjectionToken, Injector, inject} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
 import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './hydration/tokens';
+import {OnDestroy} from './interface/lifecycle_hooks';
 
 declare global {
   interface Element {
@@ -82,8 +83,12 @@ export const GLOBAL_EVENT_DELEGATION = new InjectionToken<GlobalEventDelegation>
  * `provideGlobalEventDelegation` is called.
  */
 @Injectable()
-export class GlobalEventDelegation {
+export class GlobalEventDelegation implements OnDestroy {
   private eventContractDetails = inject(JSACTION_EVENT_CONTRACT);
+
+  ngOnDestroy() {
+    this.eventContractDetails.instance?.cleanUp();
+  }
 
   supports(eventName: string): boolean {
     return isSupportedEvent(eventName);
