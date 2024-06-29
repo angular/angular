@@ -251,7 +251,7 @@ describe('toSignal()', () => {
         const counter$ = new Subject<{value: number}>();
         const counter = toSignal(counter$, {
           initialValue: {value: 0},
-          equals: (a, b) => a.value === b.value,
+          equal: (a, b) => a.value === b.value,
         });
 
         let updates = 0;
