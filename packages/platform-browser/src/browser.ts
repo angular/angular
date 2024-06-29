@@ -42,6 +42,7 @@ import {
   ɵsetDocument,
   ɵTESTABILITY as TESTABILITY,
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
+  ɵPendingTasks as PendingTasks,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -222,12 +223,12 @@ const TESTABILITY_PROVIDERS = [
   {
     provide: TESTABILITY,
     useClass: Testability,
-    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER, PendingTasks],
   },
   {
     provide: Testability, // Also provide as `Testability` for backwards-compatibility.
     useClass: Testability,
-    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER, PendingTasks],
   },
 ];
 
