@@ -14,26 +14,8 @@ import {SampleService} from './sample.service';
 @Component({
   selector: 'app-sample-properties',
   providers: [SampleService],
-  template: `
-    Sample Properties:
-    {{ exampleBoolean }}
-    {{ exampleString }}
-    {{ exampleSymbol }}
-    {{ exampleNumber }}
-    {{ exampleUndefined }}
-    {{ exampleNull }}
-    {{ exampleObject }}
-    {{ exampleArray }}
-    {{ exampleSet }}
-    {{ exampleMap }}
-    {{ exampleDate }}
-    {{ exampleFunction }}
-    {{ signalPrimitive }}
-    {{ computedPrimitive }}
-    {{ signalObject }}
-    {{ computedObject }}
-    {{ signalSymbol }}
-  `,
+  template: '',
+  standalone: true,
   styles: [''],
 })
 export class SamplePropertiesComponent {

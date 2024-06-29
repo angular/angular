@@ -43,7 +43,7 @@ export interface SerializedInjector {
   name: string;
   type: string;
   node?: DevToolsNode;
-  providers?: number;
+  providers?: string[];
 }
 
 export interface SerializedProviderRecord {

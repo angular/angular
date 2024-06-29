@@ -4,7 +4,15 @@
   </p>
 }
 <as-split [class.hidden]="!diDebugAPIsAvailable" unit="pixel" direction="vertical" [gutterSize]="9" [disabled]="true">
-  <as-split-area size="50">
+  <as-split-area size="62">
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label>Filter injectors by token</mat-label>
+      <input type="text" matInput
+        (input)="updateTokenFilter($event.target.value)"
+        [value]="tokenFilter"
+      />
+      <mat-icon matSuffix (click)="updateTokenFilter('')">close</mat-icon>
+    </mat-form-field>
     <mat-checkbox
       (change)="toggleHideInjectorsWithNoProviders()"
       >
@@ -15,6 +23,9 @@
       >
       Hide framework injectors
     </mat-checkbox>
+    <button mat-button color="accent"
+      (click)="clearSelectedInjector()"
+    >clear selection</button>
   </as-split-area>
   <as-split-area>
     <as-split unit="percent" direction="horizontal" [gutterSize]="9">

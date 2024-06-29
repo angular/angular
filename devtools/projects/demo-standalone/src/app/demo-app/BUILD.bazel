@@ -24,6 +24,8 @@ ng_module(
     srcs = [
         "demo-app.component.ts",
         "heavy.component.ts",
+        "sample.service.ts",
+        "sample-properties.component.ts",
         "zippy.component.ts",
     ],
     angular_assets = [
