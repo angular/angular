@@ -36,6 +36,9 @@ function processLexicalScope(
   // identifiers from parent templates) only local variables need be considered here.
   const scope = new Map<string, ir.XrefId>();
 
+  // Symbols defined within the current scope. They take precedence over ones defined outside.
+  const localDefinitions = new Map<string, ir.XrefId>();
+
   // First, step through the operations list and:
   // 1) build up the `scope` mapping
   // 2) recurse into any listener functions
@@ -44,6 +47,16 @@ function processLexicalScope(
       case ir.OpKind.Variable:
         switch (op.variable.kind) {
           case ir.SemanticVariableKind.Identifier:
+            if (op.variable.local) {
+              if (localDefinitions.has(op.variable.identifier)) {
+                continue;
+              }
+              localDefinitions.set(op.variable.identifier, op.xref);
+            } else if (scope.has(op.variable.identifier)) {
+              continue;
+            }
+            scope.set(op.variable.identifier, op.xref);
+            break;
           case ir.SemanticVariableKind.Alias:
             // This variable represents some kind of identifier which can be used in the template.
             if (scope.has(op.variable.identifier)) {
@@ -85,7 +98,9 @@ function processLexicalScope(
           // `expr` is a read of a name within the lexical scope of this view.
           // Either that name is defined within the current view, or it represents a property from the
           // main component context.
-          if (scope.has(expr.name)) {
+          if (localDefinitions.has(expr.name)) {
+            return new ir.ReadVariableExpr(localDefinitions.get(expr.name)!);
+          } else if (scope.has(expr.name)) {
             // This was a defined variable in the current scope.
             return new ir.ReadVariableExpr(scope.get(expr.name)!);
           } else {

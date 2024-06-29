@@ -25,6 +25,7 @@ export function generateLocalLetReferences(job: ComponentCompilationJob): void {
         kind: ir.SemanticVariableKind.Identifier,
         name: null,
         identifier: op.declaredName,
+        local: true,
       };
 
       ir.OpList.replace<ir.UpdateOp>(
