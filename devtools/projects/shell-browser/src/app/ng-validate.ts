@@ -8,11 +8,21 @@
 
 /// <reference types="chrome"/>
 
-window.addEventListener('message', (event: MessageEvent) => {
+const eventListener = (event: MessageEvent) => {
   if (event.source === window && event.data) {
-    chrome.runtime.sendMessage(event.data);
+    try {
+      chrome.runtime.sendMessage(event.data);
+    } catch (e) {
+      const {message} = e as Error;
+      if (message === 'Extension context invalidated.') {
+        window.removeEventListener('message', eventListener);
+      }
+      throw e;
+    }
   }
-});
+};
+
+window.addEventListener('message', eventListener);
 
 if (document.contentType === 'text/html') {
   const script = document.createElement('script');
