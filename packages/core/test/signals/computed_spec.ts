@@ -193,4 +193,94 @@ describe('computed', () => {
     const double = computed(() => counter() * 2);
     expect(double + '').toBe('[Computed: 2]');
   });
+
+  describe('with custom equal', () => {
+    it('should cache exceptions thrown by equal', () => {
+      const s = signal(0);
+
+      let computedRunCount = 0;
+      let equalRunCount = 0;
+      const c = computed(
+        () => {
+          computedRunCount++;
+          return s();
+        },
+        {
+          equal: () => {
+            equalRunCount++;
+            throw new Error('equal');
+          },
+        },
+      );
+
+      // equal() isn't run for the initial computation.
+      expect(c()).toBe(0);
+      expect(computedRunCount).toBe(1);
+      expect(equalRunCount).toBe(0);
+
+      s.set(1);
+
+      // Error is thrown by equal().
+      expect(() => c()).toThrowError('equal');
+      expect(computedRunCount).toBe(2);
+      expect(equalRunCount).toBe(1);
+
+      // Error is cached; c throws again without needing to rerun computation or equal().
+      expect(() => c()).toThrowError('equal');
+      expect(computedRunCount).toBe(2);
+      expect(equalRunCount).toBe(1);
+    });
+
+    it('does not leak tracking information', () => {
+      const exact = signal(1);
+      const epsilon = signal(0.1);
+      const counter = signal(0);
+
+      let innerRunCount = 0;
+      let equalRunCount = 0;
+      const inner = computed(
+        () => {
+          innerRunCount++;
+          return exact();
+        },
+        {
+          equal: (a, b) => {
+            equalRunCount++;
+            return Math.abs(a - b) < epsilon();
+          },
+        },
+      );
+
+      let outerRunCount = 0;
+      const outer = computed(() => {
+        outerRunCount++;
+        counter();
+        return inner();
+      });
+
+      // Everything runs the first time.
+      expect(outer()).toBe(1);
+      expect(innerRunCount).toBe(1);
+      expect(outerRunCount).toBe(1);
+
+      exact.set(2);
+      counter.set(2);
+
+      // `outer` reruns because `counter` changed, `inner` reruns when called by `outer`, and
+      // `cutoff` is called for the first time.
+      expect(outer()).toBe(2);
+      expect(innerRunCount).toBe(2);
+      expect(outerRunCount).toBe(2);
+      expect(equalRunCount).toBe(1);
+
+      epsilon.set(0.2);
+
+      // Changing something the custom `equal` depends on makes the `inner` need to rerun, but not
+      // `outer` (since the new and old values are equal).
+      expect(outer()).toBe(2);
+      expect(innerRunCount).toBe(3);
+      expect(outerRunCount).toBe(2);
+      expect(equalRunCount).toBe(2);
+    });
+  });
 });
