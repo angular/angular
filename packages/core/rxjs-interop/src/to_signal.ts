@@ -77,7 +77,7 @@ export interface ToSignalOptions<T> {
    *
    * Equality comparisons are executed against the initial value if one is provided.
    */
-  equals?: ValueEqualityFn<T>;
+  equal?: ValueEqualityFn<T>;
 }
 
 // Base case: no options -> `undefined` in the result type.
@@ -147,7 +147,7 @@ export function toSignal<T, U = undefined>(
     ? options?.injector?.get(DestroyRef) ?? inject(DestroyRef)
     : null;
 
-  const equal = makeToSignalEquals(options?.equals);
+  const equal = makeToSignalEqual(options?.equal);
 
   // Note: T is the Observable value type, and U is the initial value type. They don't have to be
   // the same - the returned signal gives values of type `T`.
@@ -216,7 +216,7 @@ export function toSignal<T, U = undefined>(
   );
 }
 
-function makeToSignalEquals<T>(
+function makeToSignalEqual<T>(
   userEquality: ValueEqualityFn<T> = Object.is,
 ): ValueEqualityFn<State<T>> {
   return (a, b) =>
