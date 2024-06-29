@@ -167,6 +167,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
       kind: ir.SemanticVariableKind.Identifier,
       name: null,
       identifier,
+      local: false,
     });
   }
 
@@ -189,6 +190,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
               kind: ir.SemanticVariableKind.Identifier,
               name: null,
               identifier: op.localRefs[offset].name,
+              local: false,
             },
           });
         }
@@ -202,6 +204,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
             kind: ir.SemanticVariableKind.Identifier,
             name: null,
             identifier: op.declaredName,
+            local: false,
           },
         });
         break;

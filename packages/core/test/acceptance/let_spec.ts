@@ -426,6 +426,25 @@ describe('@let declarations', () => {
     expect(fixture.nativeElement.textContent).toContain('The value comes from @let');
   });
 
+  it('should give precedence to local @let definition over one from a parent view', () => {
+    @Component({
+      standalone: true,
+      template: `
+        @let value = 'parent';
+
+        @if (true) {
+          @let value = 'local';
+          The value comes from {{value}}
+        }
+      `,
+    })
+    class TestComponent {}
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('The value comes from local');
+  });
+
   it('should be able to use @for loop variables in @let declarations', () => {
     @Component({
       standalone: true,

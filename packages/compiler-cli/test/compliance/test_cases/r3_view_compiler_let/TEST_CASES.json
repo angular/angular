@@ -275,6 +275,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should give precedence to local @let definition over one from a parent view",
+      "inputFiles": [
+        "shadowed_let.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "shadowed_let_template.js",
+              "generated": "shadowed_let.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
