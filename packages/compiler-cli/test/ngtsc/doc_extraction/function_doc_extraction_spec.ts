@@ -7,7 +7,11 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {EntryType, FunctionEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {
+  EntryType,
+  FunctionMetadata,
+  FunctionWithOverloadsEntry,
+} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -35,7 +39,7 @@ runInEachFileSystem(() => {
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
-      const functionEntry = docs[0] as FunctionEntry;
+      const functionEntry = docs[0] as FunctionMetadata;
       expect(functionEntry.name).toBe('getInjector');
       expect(functionEntry.entryType).toBe(EntryType.Function);
       expect(functionEntry.params.length).toBe(0);
@@ -55,7 +59,7 @@ runInEachFileSystem(() => {
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
-      const functionEntry = docs[0] as FunctionEntry;
+      const functionEntry = docs[0] as FunctionMetadata;
       expect(functionEntry.entryType).toBe(EntryType.Function);
       expect(functionEntry.returnType).toBe('boolean');
 
@@ -86,7 +90,7 @@ runInEachFileSystem(() => {
       );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
-      const functionEntry = docs[0] as FunctionEntry;
+      const functionEntry = docs[0] as FunctionMetadata;
       const [prefixParamEntry, idsParamEntry] = functionEntry.params;
 
       expect(prefixParamEntry.name).toBe('prefix');
@@ -110,10 +114,10 @@ runInEachFileSystem(() => {
       `,
       );
 
-      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
-      expect(docs.length).toBe(2);
+      const docs = env.driveDocsExtraction('index.ts') as (DocEntry & FunctionWithOverloadsEntry)[];
+      expect(docs[0].overloads?.length).toBe(2);
 
-      const [booleanOverloadEntry, numberOverloadEntry] = docs as FunctionEntry[];
+      const [booleanOverloadEntry, numberOverloadEntry] = docs[0].overloads!;
 
       expect(booleanOverloadEntry.name).toBe('ident');
       expect(booleanOverloadEntry.params.length).toBe(1);
@@ -137,7 +141,7 @@ runInEachFileSystem(() => {
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
-      const [functionEntry] = docs as FunctionEntry[];
+      const [functionEntry] = docs as FunctionMetadata[];
       expect(functionEntry.generics.length).toBe(1);
 
       const [genericEntry] = functionEntry.generics;

@@ -23,68 +23,47 @@ export type FunctionLike =
 export class FunctionExtractor {
   constructor(
     private name: string,
-    private declaration: FunctionLike,
+    private exportDeclaration: FunctionLike,
     private typeChecker: ts.TypeChecker,
   ) {}
 
   extract(): FunctionEntry {
     // TODO: is there any real situation in which the signature would not be available here?
     //     Is void a better type?
-    const signature = this.typeChecker.getSignatureFromDeclaration(this.declaration);
+    const signature = this.typeChecker.getSignatureFromDeclaration(this.exportDeclaration);
     const returnType = signature
       ? this.typeChecker.typeToString(this.typeChecker.getReturnTypeOfSignature(signature))
       : 'unknown';
 
-    const jsdocsTags = extractJsDocTags(this.declaration);
+    const implementation =
+      findImplementationOfFunction(this.exportDeclaration, this.typeChecker) ??
+      this.exportDeclaration;
+
+    const type = this.typeChecker.getTypeAtLocation(this.exportDeclaration);
+    const overloads = extractOverloadSignatures(this.name, this.typeChecker, type);
+    const jsdocTags = extractJsDocTags(implementation);
+    const description = extractJsDocDescription(implementation);
 
     return {
-      params: extractAllParams(this.declaration.parameters, this.typeChecker),
-      name: this.name,
-      isNewType: ts.isConstructSignatureDeclaration(this.declaration),
-      returnType,
-      returnDescription: jsdocsTags.find((tag) => tag.name === 'returns')?.comment,
+      signatures: overloads,
+      implementation: {
+        params: extractAllParams(implementation.parameters, this.typeChecker),
+        isNewType: ts.isConstructSignatureDeclaration(implementation),
+        returnType,
+        returnDescription: jsdocTags.find((tag) => tag.name === 'returns')?.comment,
+        generics: extractGenerics(implementation),
+        name: this.name,
+        description,
+        entryType: EntryType.Function,
+        jsdocTags,
+        rawComment: extractRawJsDoc(implementation),
+      },
+      description,
       entryType: EntryType.Function,
-      generics: extractGenerics(this.declaration),
-      description: extractJsDocDescription(this.declaration),
-      jsdocTags: jsdocsTags,
-      rawComment: extractRawJsDoc(this.declaration),
+      name: this.name,
+      jsdocTags,
+      rawComment: extractRawJsDoc(implementation),
     };
-  }
-
-  /** Gets all overloads for the function (excluding this extractor's FunctionDeclaration). */
-  getOverloads(): ts.FunctionDeclaration[] {
-    const overloads = [];
-
-    // The symbol for this declaration has reference to the other function declarations for
-    // the overloads.
-    const symbol = this.getSymbol();
-
-    const declarationCount = symbol?.declarations?.length ?? 0;
-    if (declarationCount > 1) {
-      // Stop iterating before the final declaration, which is the actual implementation.
-      for (let i = 0; i < declarationCount - 1; i++) {
-        const overloadDeclaration = symbol?.declarations?.[i];
-
-        // Skip the declaration we started with.
-        if (overloadDeclaration?.pos === this.declaration.pos) continue;
-
-        if (
-          overloadDeclaration &&
-          ts.isFunctionDeclaration(overloadDeclaration) &&
-          overloadDeclaration.modifiers?.some((mod) => mod.kind === ts.SyntaxKind.ExportKeyword)
-        ) {
-          overloads.push(overloadDeclaration);
-        }
-      }
-    }
-
-    return overloads;
-  }
-
-  private getSymbol(): ts.Symbol | undefined {
-    return this.typeChecker
-      .getSymbolsInScope(this.declaration, ts.SymbolFlags.Function)
-      .find((s) => s.name === this.declaration.name?.getText());
   }
 }
 
@@ -100,4 +79,53 @@ export function extractAllParams(
     isOptional: !!(param.questionToken || param.initializer),
     isRestParam: !!param.dotDotDotToken,
   }));
+}
+
+/** Filters the list signatures to valid initializer API signatures. */
+export function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
+  const result: Array<ts.FunctionDeclaration | ts.CallSignatureDeclaration> = [];
+  for (const signature of signatures) {
+    const decl = signature.getDeclaration();
+    if (ts.isFunctionDeclaration(decl) || ts.isCallSignatureDeclaration(decl)) {
+      result.push(decl);
+    }
+  }
+  return result;
+}
+
+export function extractOverloadSignatures(
+  name: string,
+  typeChecker: ts.TypeChecker,
+  type: ts.Type,
+) {
+  return filterSignatureDeclarations(type.getCallSignatures()).map((s) => ({
+    name: name,
+    entryType: EntryType.Function,
+    description: extractJsDocDescription(s),
+    generics: extractGenerics(s),
+    isNewType: false,
+    jsdocTags: extractJsDocTags(s),
+    params: extractAllParams(s.parameters, typeChecker),
+    rawComment: extractRawJsDoc(s),
+    returnType: typeChecker.typeToString(
+      typeChecker.getReturnTypeOfSignature(typeChecker.getSignatureFromDeclaration(s)!),
+    ),
+  }));
+}
+
+/** Finds the implementation of the given function declaration overload signature. */
+export function findImplementationOfFunction(
+  node: FunctionLike,
+  typeChecker: ts.TypeChecker,
+): FunctionLike | undefined {
+  if ((node as ts.FunctionDeclaration).body !== undefined || node.name === undefined) {
+    return node;
+  }
+
+  const symbol = typeChecker.getSymbolAtLocation(node.name);
+  const implementation = symbol?.declarations?.find(
+    (s): s is ts.FunctionDeclaration => ts.isFunctionDeclaration(s) && s.body !== undefined,
+  );
+
+  return implementation;
 }
