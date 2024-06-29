@@ -114,10 +114,10 @@ describe('directive declaration jit compilation', () => {
         /contentQuery[^(]*\(dirIndex,_c0,4\)/,
         '(ctx.byRef = _t)',
 
-        // "byToken" should use `viewQuery` with `3` (`QueryFlags.static|QueryFlags.descendants`)
-        // for query flag and `ElementRef` as read token, and bind to the first result in the
-        // query result.
-        /contentQuery[^(]*\([^,]*dirIndex,[^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        // "byToken" should use `viewQuery` with `11`
+        // (`QueryFlags.static|QueryFlags.descendants|QueryFlags.first`) for query flag and
+        // `ElementRef` as read token, and bind to the first result in the query result.
+        /contentQuery[^(]*\([^,]*dirIndex,[^,]*String[^,]*,11,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
       ]),
     });
@@ -171,10 +171,10 @@ describe('directive declaration jit compilation', () => {
         /viewQuery[^(]*\(_c0,4\)/,
         '(ctx.byRef = _t)',
 
-        // "byToken" should use `viewQuery` with `3` (`QueryFlags.static|QueryFlags.descendants`)
-        // for query flag and `ElementRef` as read token, and bind to the first result in the
-        // query result.
-        /viewQuery[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        // "byToken" should use `viewQuery` with `11`
+        // (`QueryFlags.static|QueryFlags.descendants|QueryFlags.first`) for query flag and
+        // `ElementRef` as read token, and bind to the first result in the query result.
+        /viewQuery[^(]*\([^,]*String[^,]*,11,[^)]*ElementRef[^)]*\)/,
         '(ctx.byToken = _t.first)',
       ]),
     });

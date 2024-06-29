@@ -5,8 +5,8 @@ ViewQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   // ...
   viewQuery: function ViewQueryComponent_Query(rf, ctx) {
     if (rf & 1) {
-      $r3$.ɵɵviewQuery($e0_attrs$, 5, TemplateRef);
-      $r3$.ɵɵviewQuery(SomeDirective, 5, ElementRef);
+      $r3$.ɵɵviewQuery($e0_attrs$, 13, TemplateRef);
+      $r3$.ɵɵviewQuery(SomeDirective, 13, ElementRef);
       $r3$.ɵɵviewQuery($e1_attrs$, 5, ElementRef);
       $r3$.ɵɵviewQuery(SomeDirective, 5, TemplateRef);
     }
