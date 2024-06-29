@@ -5,7 +5,7 @@
     "ignore": ["**/.*"],
     "headers": [
       {
-        "source": "assets/tutorials/common/*.jpg",
+        "source": "assets/images/tutorials/common/*.jpg",
         "headers": [
           {
             "key": "Cross-Origin-Resource-Policy",
