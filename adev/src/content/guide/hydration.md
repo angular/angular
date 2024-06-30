@@ -59,6 +59,8 @@ HELPFUL: You will likely need to fix instances of Direct DOM Manipulation before
 
 While running an application in dev mode, you can confirm hydration is enabled by opening the Developer Tools in your browser and viewing the console. You should see a message that includes hydration-related stats, such as the number of components and nodes hydrated. Angular calculates the stats based on all components rendered on a page, including those that come from third-party libraries.
 
+You can also use [Angular DevTools browser extension](tools/devtools) to see hydration status of components on a page. Angular DevTools also allows to enable an overlay to indicate which parts of the page were hydrated. If there is a hydration mismatch error - DevTools would also highlight a component that caused the error.
+
 ## Capturing and replaying events
 
 When an application is rendered on the server, it is visible in a browser as soon as produced HTML loads. Users may assume that they can interact with the page, but event listeners are not attached until hydration completes. Starting from v18, you can enable the Event Replay feature that allows to capture all events that happen before hydration and replay those events once hydration has completed. You can enable it using the `withEventReplay()` function, for example:
@@ -73,7 +75,7 @@ bootstrapApplication(App, {
 });
 ```
 
-IMPORTANT: the Event Replay feature is currently in [the Developer Preview mode](/reference/releases#developer-preview).
+IMPORTANT: the Event Replay feature is currently in [Developer Preview](/reference/releases#developer-preview).
 
 ## Constraints
 
