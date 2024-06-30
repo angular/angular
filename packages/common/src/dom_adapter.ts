@@ -52,7 +52,4 @@ export abstract class DomAdapter {
 
   // TODO: remove dependency in DefaultValueAccessor
   abstract getUserAgent(): string;
-
-  // Used in the legacy @angular/http package which has some usage in g3.
-  abstract getCookie(name: string): string | null;
 }

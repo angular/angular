@@ -97,8 +97,4 @@ export class DominoAdapter extends BrowserDomAdapter {
   override getUserAgent(): string {
     return 'Fake user agent';
   }
-
-  override getCookie(name: string): string {
-    throw new Error('getCookie has not been implemented');
-  }
 }
