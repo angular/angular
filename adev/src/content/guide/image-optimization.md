@@ -433,3 +433,17 @@ For maintenance reasons, we don't currently plan to support additional built-in 
 No, but this is on our roadmap, so stay tuned. 
 
 If you're waiting on this feature, please upvote the Github issue [here](https://github.com/angular/angular/issues/56594).
+
+### How do I find my LCP image with Chrome DevTools?
+
+1. Using the performance tab of the Chrome DevTools, click on the "start profiling and reload page" button on the top left. It looks like a page refresh icon.
+
+2. This will trigger a profiling snapshot of your Angular application. 
+
+3. Once the profiling result is available, select "LCP" in the timings section.
+
+4. A summary entry should appear in the panel at the bottom. You can find the LCP element in the row for "related node".  Clicking on it will reveal the element in the Elements panel. 
+
+<img alt="LCP in the Chrome DevTools" src="assets/images/guide/image-optimization/devtools-lcp.png">
+
+NOTE: This only identifies the LCP element within the viewport of the page you are testing. It is also recommended to use mobile emulation to identify the LCP element for smaller screens.
