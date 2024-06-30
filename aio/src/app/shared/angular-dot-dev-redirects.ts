@@ -131,7 +131,7 @@ const linksMap = new Map<string, string>([
   ['guide/accessibility', 'best-practices/a11y'],
   ['guide/updating', 'update'],
   ['guide/property-binding-best-practices', 'guide/templates/property-binding-best-practices'],
-  ['guide/lazy-loading', 'guide/ngmodules/lazy-loading'],
+  ['guide/lazy-loading-ngmodules', 'guide/ngmodules/lazy-loading'],
   ['guide/lightweight-injection-tokens', 'guide/di/lightweight-injection-tokens'],
   ['guide/devtools', 'tools/devtools'],
   ['guide/deployment', 'tools/cli/deployment'],
