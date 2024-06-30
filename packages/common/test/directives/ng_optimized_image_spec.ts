@@ -30,6 +30,7 @@ import {
   NgOptimizedImage,
   PLACEHOLDER_BLUR_AMOUNT,
   RECOMMENDED_SRCSET_DENSITY_CAP,
+  resetImagePriorityCount,
 } from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
@@ -871,12 +872,16 @@ describe('Image directive', () => {
       expect(img.getAttribute('fetchpriority')).toBe('auto');
     });
 
-    it('should log a warning if the priority attribute is used too often', async () => {
-      withHead('', () => {
+    it(
+      'should log a warning if the priority attribute is used too often',
+      withHead('<link rel="preconnect" href="https://angular.io/">', async () => {
+        // We need to reset the count as previous test might have incremented it already
+        resetImagePriorityCount();
+
         const imageLoader = () => {
           // We need something different from the `localhost` (as we don't want to produce
           // a preconnect warning for local environments).
-          return 'https://angular.io/assets/images/logos/angular/angular.svg';
+          return 'https://angular.io/assets/images/logos/path/img.png';
         };
 
         setupTestingModule({imageLoader});
@@ -900,9 +905,10 @@ describe('Image directive', () => {
         const fixture = createTestComponent(template);
         fixture.detectChanges();
 
-        // We manually fire the event that is listened by the directive
-        // as it won't fire in the context of our unit test
-        document.dispatchEvent(new Event('DOMContentLoaded'));
+        await fixture.whenStable();
+
+        // trick to wait for the whenStable() to fire in the directive
+        await Promise.resolve();
 
         if (isBrowser) {
           expect(consoleWarnSpy.calls.count()).toBe(1);
@@ -913,8 +919,8 @@ describe('Image directive', () => {
           // The warning is only logged on browsers
           expect(consoleWarnSpy.calls.count()).toBe(0);
         }
-      });
-    });
+      }),
+    );
   });
 
   describe('meta data', () => {
