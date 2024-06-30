@@ -119,7 +119,7 @@ See more details in the [output() API guide](/guide/components/output-fn).
 ### `outputToObservable`
 
 `outputToObservable(...)` converts an Angular output to an observable.
-This allows you use integrate Angular outputs conveniently into RxJS streams.
+This allows you to integrate Angular outputs conveniently into RxJS streams.
 
 ```ts
 outputToObservable(myComp.instance.onNameChange)
