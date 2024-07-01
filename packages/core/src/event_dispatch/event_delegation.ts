@@ -9,13 +9,11 @@
 import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
-import {setStashFn} from '../render3/instructions/listener';
 import {
   GLOBAL_EVENT_DELEGATION,
   GlobalEventDelegation,
   JSACTION_EVENT_CONTRACT,
   initGlobalEventDelegation,
-  sharedStashFunction,
 } from '../event_delegation_utils';
 
 import {IS_GLOBAL_EVENT_DELEGATION_ENABLED} from '../hydration/tokens';
@@ -35,7 +33,6 @@ export function provideGlobalEventDelegation(): Provider[] {
         const injector = inject(Injector);
         const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
         initGlobalEventDelegation(eventContractDetails, injector);
-        setStashFn(sharedStashFunction);
       },
       multi: true,
     },
