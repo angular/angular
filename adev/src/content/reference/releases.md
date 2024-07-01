@@ -74,7 +74,7 @@ HELPFUL: Approximate dates are offered as general guidance and are subject to ch
 
 | Version | Date               |
 |:--------|:-------------------|
-| v18.1   | Week of 2024-07-01 |
+| v18.1   | Week of 2024-07-08 |
 | v18.2   | Week of 2024-08-12 |
 | v19.0   | Week of 2024-11-13 |
 
