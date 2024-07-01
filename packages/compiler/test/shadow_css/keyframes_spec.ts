@@ -122,6 +122,73 @@ describe('ShadowCss, keyframes and animations', () => {
     });
   });
 
+  it('should handle (scope or not) animation definition containing some names which do not have a preceding space', () => {
+    const COMPONENT_VARIABLE = '%COMP%';
+    const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
+    const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+    const css = `.test {
+      animation:my-anim 1s,my-anim2 2s, my-anim3 3s,my-anim4 4s;
+    }
+    
+    @keyframes my-anim {
+      0% {color: red}
+      100% {color: blue}
+    }
+    
+    @keyframes my-anim2 {
+      0% {font-size: 1em}
+      100% {font-size: 1.2em}
+    }
+    `;
+    const result = shim(css, CONTENT_ATTR, HOST_ATTR);
+    const animationLineMatch = result.match(/animation:[^;]+;/);
+    let animationLine = '';
+    if (animationLineMatch) {
+      animationLine = animationLineMatch[0];
+    }
+    ['my-anim', 'my-anim2'].forEach((scoped) =>
+      expect(animationLine).toContain(`_ngcontent-%COMP%_${scoped}`),
+    );
+    ['my-anim3', 'my-anim4'].forEach((nonScoped) => {
+      expect(animationLine).toContain(nonScoped);
+      expect(animationLine).not.toContain(`_ngcontent-%COMP%_${nonScoped}`);
+    });
+  });
+
+  it('should handle (scope or not) animation definitions preceded by an erroneous comma', () => {
+    const COMPONENT_VARIABLE = '%COMP%';
+    const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
+    const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+    const css = `.test {
+      animation:, my-anim 1s,my-anim2 2s, my-anim3 3s,my-anim4 4s;
+    }
+    
+    @keyframes my-anim {
+      0% {color: red}
+      100% {color: blue}
+    }
+    
+    @keyframes my-anim2 {
+      0% {font-size: 1em}
+      100% {font-size: 1.2em}
+    }
+    `;
+    const result = shim(css, CONTENT_ATTR, HOST_ATTR);
+    const animationLineMatch = result.match(/animation:[^;]+;/);
+    let animationLine = '';
+    if (animationLineMatch) {
+      animationLine = animationLineMatch[0];
+    }
+    expect(result).not.toContain('animation:,');
+    ['my-anim', 'my-anim2'].forEach((scoped) =>
+      expect(animationLine).toContain(`_ngcontent-%COMP%_${scoped}`),
+    );
+    ['my-anim3', 'my-anim4'].forEach((nonScoped) => {
+      expect(animationLine).toContain(nonScoped);
+      expect(animationLine).not.toContain(`_ngcontent-%COMP%_${nonScoped}`);
+    });
+  });
+
   it('should handle (scope or not) multiple animation definitions in a single declaration', () => {
     const css = `
         div {
