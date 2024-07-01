@@ -15,7 +15,7 @@ import {JsDocTagEntry} from './entities';
  * decorators in JsDoc blocks so that they're not parsed as JsDoc tags.
  */
 const decoratorExpression =
-  /@(?=(Injectable|Component|Directive|Pipe|NgModule|Input|Output|HostBinding|HostListener|Inject|Optional|Self|Host|SkipSelf))/g;
+  /@(?=(Injectable|Component|Directive|Pipe|NgModule|Input|Output|HostBinding|HostListener|Inject|Optional|Self|Host|SkipSelf|ViewChild|ViewChildren|ContentChild|ContentChildren))/g;
 
 /** Gets the set of JsDoc tags applied to a node. */
 export function extractJsDocTags(node: ts.HasJSDoc): JsDocTagEntry[] {
