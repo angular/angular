@@ -35,8 +35,8 @@ import {
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {NgControl} from './ng_control';
-import {NgModel} from './ng_model';
-import {NgModelGroup} from './ng_model_group';
+import type {NgModel} from './ng_model';
+import type {NgModelGroup} from './ng_model_group';
 import {
   CALL_SET_DISABLED_STATE,
   SetDisabledStateOption,
