@@ -183,7 +183,7 @@ export class ChildActivationStart {
 
 // @public
 export class ChildrenOutletContexts {
-    constructor(parentInjector: EnvironmentInjector);
+    constructor(rootInjector: EnvironmentInjector);
     // (undocumented)
     getContext(childName: string): OutletContext | null;
     // (undocumented)
@@ -531,13 +531,14 @@ export type OnSameUrlNavigation = 'reload' | 'ignore';
 
 // @public
 export class OutletContext {
-    constructor(injector: EnvironmentInjector);
+    constructor(rootInjector: EnvironmentInjector);
     // (undocumented)
     attachRef: ComponentRef<any> | null;
     // (undocumented)
     children: ChildrenOutletContexts;
     // (undocumented)
-    injector: EnvironmentInjector;
+    get injector(): EnvironmentInjector;
+    set injector(_: EnvironmentInjector);
     // (undocumented)
     outlet: RouterOutletContract | null;
     // (undocumented)
