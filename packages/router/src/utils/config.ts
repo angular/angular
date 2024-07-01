@@ -15,7 +15,7 @@ import {
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
-import {EmptyOutletComponent} from '../components/empty_outlet';
+import {EmptyOutletComponent} from '../directives/router_outlet';
 import {RuntimeErrorCode} from '../errors';
 import {Route, Routes} from '../models';
 import {ActivatedRouteSnapshot} from '../router_state';
