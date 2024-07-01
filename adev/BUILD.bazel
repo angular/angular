@@ -56,6 +56,7 @@ APPLICATION_DEPS = [
     "@npm//@angular/platform-browser",
     "@npm//@angular/platform-server",
     "@npm//@angular/router",
+    "@npm//fflate",
     "@npm//gsap",
     "@npm//marked",
     "@npm//ngx-progressbar",
@@ -157,6 +158,7 @@ architect(
         "--poll=1000",
         "--live-reload",
         "--watch",
+        "--verbose",
     ],
     chdir = package_name(),
     data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
