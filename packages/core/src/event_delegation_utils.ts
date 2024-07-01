@@ -47,7 +47,7 @@ export function setJSActionAttributes(nativeElement: Element, eventTypes: string
   nativeElement.setAttribute(Attribute.JSACTION, `${existingAttr ?? ''}${parts}`);
 }
 
-export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn: () => void) => {
+export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn: Function) => {
   const el = rEl as unknown as Element;
   const eventListenerMap = el.__jsaction_fns ?? new Map();
   const eventListeners = eventListenerMap.get(eventType) ?? [];
@@ -96,6 +96,7 @@ export class GlobalEventDelegation implements OnDestroy {
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     this.eventContractDetails.instance!.addEvent(eventName);
+    sharedStashFunction(element, eventName, handler);
     registerEventType(element, eventName, '');
     return () => this.removeEventListener(element, eventName, handler);
   }
