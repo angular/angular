@@ -344,7 +344,7 @@ export class ShadowCss {
    * semicolon or the end of the string
    */
   private _animationDeclarationKeyframesRe =
-    /(^|\s+)(?:(?:(['"])((?:\\\\|\\\2|(?!\2).)+)\2)|(-?[A-Za-z][\w\-]*))(?=[,\s]|$)/g;
+    /(^|\s+|,)(?:(?:(['"])((?:\\\\|\\\2|(?!\2).)+)\2)|(-?[\_A-Za-z][\%\w\-]*))(?=[,\s]|$)/g;
 
   /**
    * Scope an animation rule so that the keyframes mentioned in such rule

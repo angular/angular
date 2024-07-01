@@ -122,6 +122,30 @@ describe('ShadowCss, keyframes and animations', () => {
     });
   });
 
+  it('should handle (scope or not) host and content attributes and component variable as selector', () => {
+    const css = `
+        button {
+            animation-name: foo,
+                            bar,baz,
+                            qux ,
+                            quux ,
+                            grault,
+                            garply, waldo;
+        }
+        @keyframes foo {}
+        @keyframes baz {}
+        @keyframes quux {}
+        @keyframes grault {}`;
+    const result = shim(css, '_ngcontent-%COMP%');
+    ['foo', 'baz', 'quux', 'grault'].forEach((scoped) =>
+      expect(result).toContain(`_ngcontent-%COMP%_${scoped}`),
+    );
+    ['bar', 'qux', 'garply', 'waldo'].forEach((nonScoped) => {
+      expect(result).toContain(nonScoped);
+      expect(result).not.toContain(`_ngcontent-%COMP%_${nonScoped}`);
+    });
+  });
+
   it('should handle (scope or not) multiple animation definitions in a single declaration', () => {
     const css = `
         div {
