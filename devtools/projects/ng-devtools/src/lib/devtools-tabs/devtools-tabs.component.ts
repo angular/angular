@@ -68,6 +68,7 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   @ViewChild('navBar', {static: true}) navbar!: MatTabNav;
 
   applicationEnvironment = inject(ApplicationEnvironment);
+
   activeTab: Tabs = 'Components';
   inspectorRunning = false;
   routerTreeEnabled = false;
