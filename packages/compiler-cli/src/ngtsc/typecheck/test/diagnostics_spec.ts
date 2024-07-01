@@ -1438,4 +1438,151 @@ class TestComponent {
       );
     });
   });
+
+  describe('signals', () => {
+    it('performs narrowing of signals with @if', () => {
+      const messages = diagnose(
+        `@if (person()) {
+            {{ person().name() }}
+          }`,
+        `
+        import {Signal} from '@angular/core';
+
+        interface Person {
+          name: Signal<string | null>,
+        }
+        class TestComponent {
+          person: Signal<Person | null>;
+        }`,
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('continues to report errors in the presence of optional chains', () => {
+      const messages = diagnose(
+        `@if (!person()?.name()) {
+            {{ person().name() }}
+          }`,
+        `
+        import {Signal} from '@angular/core';
+
+        interface Person {
+          name: Signal<string | null>,
+        }
+        class TestComponent {
+          person: Signal<Person | null>;
+        }`,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(2, 13): Object is possibly 'null' or 'undefined'.`,
+      ]);
+    });
+
+    it('performs narrowing of signals with *ngIf', () => {
+      const messages = diagnose(
+        `<ng-container *ngIf="person()">
+            {{ person().name() }}
+          </ng-container>`,
+        `
+        import {Signal} from '@angular/core';
+
+        interface Person {
+          name: Signal<string | null>,
+        }
+        class TestComponent {
+          person: Signal<Person | null>;
+        }`,
+        [ngIfDeclaration()],
+        [ngIfDts()],
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('performs narrowing of signals within event listeners', () => {
+      const messages = diagnose(
+        `@if (person()) {
+            <div (click)="person().name.set(null)"></div>
+          }`,
+        `
+        import {Signal} from '@angular/core';
+
+        interface Person {
+          name: Signal<string | null>,
+        }
+        class TestComponent {
+          person: Signal<Person | null>;
+        }`,
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('reports diagnostics when not narrowed', () => {
+      const messages = diagnose(
+        `@if (!person()) {
+            {{ person().name() }}
+          }`,
+        `
+        import {Signal} from '@angular/core';
+
+        interface Person {
+          name: Signal<string | null>,
+        }
+        class TestComponent {
+          person: Signal<Person | null>;
+        }`,
+      );
+
+      expect(messages).toEqual([`TestComponent.html(2, 13): Object is possibly 'null'.`]);
+    });
+
+    it('accounts for shadowed template variables', () => {
+      const messages = diagnose(
+        `@if (persons[shadowed.person]()) {
+            <!-- This one should be narrowed -->
+            {{ persons[shadowed.person]().name() }}
+          }
+
+          @if (persons[shadowed.person]()) {
+            <div dir #shadowed="dir"></div>
+
+            <!-- This one should error, since the keyed access is actually different from the conditional -->
+            {{ persons[shadowed.person]().name() }}
+
+            @if (persons[shadowed.person]()) {
+              <!-- Guarding it again should allow narrowing -->
+              {{ persons[shadowed.person]().name() }}
+            }
+          }`,
+        `
+          import {Signal} from '@angular/core';
+
+          interface Person {
+            name: Signal<string | null>,
+          }
+          class Dir {
+            person = 'Alex';
+          }
+          class TestComponent {
+            persons: { [name: string]: Signal<Person | null> } = {};
+            shadowed = { person: 'Joost' };
+          }`,
+        [
+          ngIfDeclaration(),
+          {
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            exportAs: ['dir'],
+          },
+        ],
+        [ngIfDts()],
+      );
+
+      expect(messages).toEqual([`TestComponent.html(10, 31): Object is possibly 'null'.`]);
+    });
+  });
 });
