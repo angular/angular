@@ -54,8 +54,9 @@ import {
   UrlSerializer,
   UrlTree,
 } from './url_tree';
-import {standardizeConfig, validateConfig} from './utils/config';
+import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
+import {standardizeConfig} from './components/empty_outlet';
 
 function defaultErrorHandler(error: any): never {
   throw error;
