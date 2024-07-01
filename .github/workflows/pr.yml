@@ -75,6 +75,29 @@ jobs:
       - name: Run CI tests for framework
         run: yarn test:ci
 
+  artifacts:
+    needs: [test]
+    if: needs.test.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@03b8a7dffd1205e061f0bee949024ebefc2a6592
+        with:
+          cache-node-modules: true
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@03b8a7dffd1205e061f0bee949024ebefc2a6592
+      - name: Setup Bazel Remote Caching
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@03b8a7dffd1205e061f0bee949024ebefc2a6592
+      - name: Install node modules
+        run: yarn install --frozen-lockfile --network-timeout 100000
+      - name: Run CI tests for framework
+        run: yarn tsx ./scripts/build/build-packages-dist.mts
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: pr-artifacts-${{ github.event.number }}
+          path: dist/packages-dist/
+
   adev:
     runs-on:
       labels: ubuntu-latest-4core
