@@ -427,6 +427,44 @@ describe('injectors', () => {
     fixture.detectChanges();
     expect(childTokenValue).toEqual(null);
   });
+
+  it('should not get sibling providers', async () => {
+    let childTokenValue: any = null;
+    const TOKEN = new InjectionToken<any>('');
+    @Component({
+      template: '',
+      standalone: true,
+    })
+    class Child {
+      constructor() {
+        childTokenValue = inject(TOKEN, {optional: true});
+      }
+    }
+
+    @Component({
+      template: '<router-outlet/>',
+      imports: [RouterOutlet],
+      standalone: true,
+    })
+    class App {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {path: 'a', providers: [{provide: TOKEN, useValue: 'a value'}], component: Child},
+          {path: 'b', component: Child},
+        ]),
+      ],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    await TestBed.inject(Router).navigateByUrl('/a');
+    fixture.detectChanges();
+    expect(childTokenValue).toEqual('a value');
+    await TestBed.inject(Router).navigateByUrl('/b');
+    fixture.detectChanges();
+    expect(childTokenValue).toEqual(null);
+  });
 });
 
 function advance(fixture: ComponentFixture<unknown>, millis?: number): void {
