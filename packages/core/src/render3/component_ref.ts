@@ -267,7 +267,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         rendererFactory,
         sanitizer,
         // We don't use inline effects (yet).
-        inlineEffectRunner: null,
         afterRenderEventManager,
         changeDetectionScheduler,
       };
