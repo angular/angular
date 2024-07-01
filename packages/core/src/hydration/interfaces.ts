@@ -193,6 +193,18 @@ export interface DehydratedView {
    * removed from the DOM during hydration cleanup.
    */
   dehydratedIcuData?: Map<number, DehydratedIcuData>;
+
+  /**
+   * A mapping from the node (TNode) index to a hydration protected attribute value.
+   *
+   * This information is utilized during the hydration process on the client when the initial render
+   * occurs (creation mode). Its purpose is to avoid overwriting attributes if they are already set
+   * on the element on the server side. For instance, the `iframe` element may already be rendered
+   * with the `src` attribute set. However, during the hydration process, calling `setAttribute`
+   * again could cause the `iframe` to reload the resource, even if the `src` attribute value
+   * remains the same as it was set on the server.
+   */
+  protectedAttributes?: Map<number, string | null>;
 }
 
 /**

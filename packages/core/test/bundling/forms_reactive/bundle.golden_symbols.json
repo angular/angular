@@ -732,6 +732,15 @@
     "name": "_retrieveHydrationInfoImpl"
   },
   {
+    "name": "_setAttributeImpl"
+  },
+  {
+    "name": "_setAttributeWithHydrationSupport"
+  },
+  {
+    "name": "_setPropertyWithHydrationSupport"
+  },
+  {
     "name": "_testabilityGetter"
   },
   {

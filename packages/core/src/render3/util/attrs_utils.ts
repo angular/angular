@@ -5,12 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {DehydratedView} from '../../hydration/interfaces';
 import {CharCode} from '../../util/char_code';
 import {AttributeMarker} from '../interfaces/attribute_marker';
 import {TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
+
+import {_setAttributeImpl} from './attrs_utils_with_hydration_support';
 
 /**
  * Assigns all attribute values to the provided element via the inferred renderer.
@@ -37,9 +40,18 @@ import {RElement} from '../interfaces/renderer_dom';
  * @param renderer The renderer to be used
  * @param native The element that the attributes will be assigned to
  * @param attrs The attribute array of values that will be assigned to the element
+ * @param hydrationInfo The hydration information
+ * @param nodeIndex The node index
  * @returns the index value that was last accessed in the attributes array
  */
-export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAttributes): number {
+export function setUpAttributes(
+  renderer: Renderer,
+  native: RElement,
+  attrs: TAttributes,
+  isFirstPass: boolean,
+  nodeIndex: number,
+  hydrationInfo: DehydratedView | null,
+): number {
   let i = 0;
   while (i < attrs.length) {
     const value = attrs[i];
@@ -68,7 +80,16 @@ export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAt
       if (isAnimationProp(attrName)) {
         renderer.setProperty(native, attrName, attrVal);
       } else {
-        renderer.setAttribute(native, attrName, attrVal as string);
+        _setAttributeImpl(
+          isFirstPass,
+          renderer,
+          nodeIndex,
+          native,
+          attrName,
+          attrVal as string,
+          /* namespace */ undefined,
+          hydrationInfo,
+        );
       }
       i++;
     }
