@@ -1,3 +1,24 @@
+<a name="18.1.0-rc.0"></a>
+# 18.1.0-rc.0 (2024-07-01)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [39e48ce675](https://github.com/angular/angular/commit/39e48ce6757ac2dc4157ab69acade0ff1cd2208e) | fix | Don't run preconnect assertion on the server. ([#56213](https://github.com/angular/angular/pull/56213)) |
+| [f25653e231](https://github.com/angular/angular/commit/f25653e2311152d30b14d25acb0dccb4e2b5ea56) | fix | typo in NgOptimizedImage warning ([#56756](https://github.com/angular/angular/pull/56756)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fd6cd0422d](https://github.com/angular/angular/commit/fd6cd0422d2d761d2c6cc0cd41838fbba8a3f010) | feat | Add extended diagnostic to warn when there are uncalled functions in event bindings ([#56295](https://github.com/angular/angular/pull/56295)) |
+| [341a116d61](https://github.com/angular/angular/commit/341a116d611c095ed414c82612adb529e7be310c) | fix | allow more characters in let declaration name ([#56764](https://github.com/angular/angular/pull/56764)) |
+| [2a1291e942](https://github.com/angular/angular/commit/2a1291e942a3cd645ee635e72e7d83722383d39b) | fix | give precedence to local let declarations over parent ones ([#56752](https://github.com/angular/angular/pull/56752)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4d18c5bfd5](https://github.com/angular/angular/commit/4d18c5bfd54c53655955c8cd90472081ade40b34) | fix | flag all conflicts between let declarations and local symbols ([#56752](https://github.com/angular/angular/pull/56752)) |
+| [5996502921](https://github.com/angular/angular/commit/599650292107f8856c7cd41791bd0856f9d14eb1) | fix | type check let declarations nested inside nodes ([#56752](https://github.com/angular/angular/pull/56752)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.5"></a>
 # 18.0.5 (2024-06-26)
 ### core
