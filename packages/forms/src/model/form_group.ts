@@ -724,7 +724,17 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
  */
 export class FormRecord<TControl extends AbstractControl = AbstractControl> extends FormGroup<{
   [key: string]: TControl;
-}> {}
+}> {
+  /**
+   * Clear all controls from this record.
+   * @param options
+   */
+  clearControls(options: {emitEvent?: boolean} = {}): void {
+    this.controls = {};
+    this.updateValueAndValidity({emitEvent: options.emitEvent});
+    this._onCollectionChange();
+  }
+}
 
 export interface FormRecord<TControl> {
   /**
@@ -747,6 +757,11 @@ export interface FormRecord<TControl> {
    * See `FormGroup#removeControl` for additional information.
    */
   removeControl(name: string, options?: {emitEvent?: boolean}): void;
+
+  /**
+   * Clear all controls from this record.
+   */
+  clearControls(options?: {emitEvent?: boolean}): void;
 
   /**
    * Replace an existing control.
