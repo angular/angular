@@ -31,6 +31,9 @@ jasmine_node_test(
         "//packages/core/schematics/ng-generate/standalone-migration",
         "//packages/core/schematics/ng-generate/standalone-migration:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration:static_files",
+        "//packages/core/schematics/ng-generate/standalone-routes",
+        "//packages/core/schematics/ng-generate/standalone-routes:bundle",
+        "//packages/core/schematics/ng-generate/standalone-routes:static_files",
     ],
     templated_args = ["--nobazel_run_linker"],
     deps = [

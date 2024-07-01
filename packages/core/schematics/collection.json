@@ -15,6 +15,14 @@
       "aliases": [
         "control-flow"
       ]
+    },
+    "standalone-routes-lady-load-migration": {
+      "description": "Converts the entire application to lazy load standalone components",
+      "factory": "./ng-generate/standalone-routes/bundle",
+      "schema": "./ng-generate/standalone-routes/schema.json",
+      "aliases": [
+        "standalone-routes"
+      ]
     }
   }
 }

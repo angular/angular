@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AngularStandaloneRoutesMigration",
+  "title": "Angular Standalone Routes Migration Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path relative to the project root which should be migrated",
+      "x-prompt": "Which path in your project should be migrated?",
+      "default": "./"
+    }
+  }
+}
