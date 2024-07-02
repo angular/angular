@@ -10,14 +10,7 @@
  * @suppress {globalThis}
  */
 
-import {
-  isBrowser,
-  isIE,
-  isMix,
-  isNode,
-  ObjectGetPrototypeOf,
-  patchOnProperties,
-} from '../common/utils';
+import {isBrowser, isMix, isNode, ObjectGetPrototypeOf, patchOnProperties} from '../common/utils';
 
 export interface IgnoreProperty {
   target: any;
@@ -93,15 +86,11 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
       'HTMLMarqueeElement',
       'Worker',
     ]);
-    const ignoreErrorProperties = isIE()
-      ? [{target: internalWindow, ignoreProperties: ['error']}]
-      : [];
-    // in IE/Edge, onProp not exist in window object, but in WindowPrototype
-    // so we need to pass WindowPrototype to check onProp exist or not
+
     patchFilteredProperties(
       internalWindow,
       getOnEventNames(internalWindow),
-      ignoreProperties ? ignoreProperties.concat(ignoreErrorProperties) : ignoreProperties,
+      ignoreProperties,
       ObjectGetPrototypeOf(internalWindow),
     );
   }

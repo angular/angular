@@ -46,18 +46,6 @@ module.exports = function (config, ignoredLaunchers) {
     // 'SL_IOS9': {base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.10', version:
     // '9.3'},
     'SL_IOS10': {base: 'SauceLabs', browserName: 'iphone', platform: 'OS X 10.10', version: '10.3'},
-    'SL_MSEDGE': {
-      base: 'SauceLabs',
-      browserName: 'MicrosoftEdge',
-      platform: 'Windows 10',
-      version: '14.14393',
-    },
-    'SL_MSEDGE15': {
-      base: 'SauceLabs',
-      browserName: 'MicrosoftEdge',
-      platform: 'Windows 10',
-      version: '15.15063',
-    },
     /*
      fix issue #584, Android 4.1~4.3 are not supported
     'SL_ANDROID4.1': {
