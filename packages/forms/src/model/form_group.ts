@@ -21,6 +21,7 @@ import {
   ɵTypedOrUntyped,
   ɵValue,
 } from './abstract_model';
+import {FormControlState} from './form_control';
 
 /**
  * FormGroupValue extracts the type of `.value` from a FormGroup's inner object type. The untyped
@@ -30,6 +31,14 @@ import {
  *
  * For internal use only.
  */
+
+export type ɵFormGroupArgumentValue<T extends {[K in keyof T]?: AbstractControl<any>}> =
+  ɵTypedOrUntyped<
+    T,
+    Partial<{[K in keyof T]: ɵValue<T[K]> | FormControlState<ɵValue<T[K]>>}>,
+    {[key: string]: any}
+  >;
+
 export type ɵFormGroupValue<T extends {[K in keyof T]?: AbstractControl<any>}> = ɵTypedOrUntyped<
   T,
   Partial<{[K in keyof T]: ɵValue<T[K]>}>,
@@ -176,7 +185,8 @@ export class FormGroup<
   TControl extends {[K in keyof TControl]: AbstractControl<any>} = any,
 > extends AbstractControl<
   ɵTypedOrUntyped<TControl, ɵFormGroupValue<TControl>, any>,
-  ɵTypedOrUntyped<TControl, ɵFormGroupRawValue<TControl>, any>
+  ɵTypedOrUntyped<TControl, ɵFormGroupRawValue<TControl>, any>,
+  ɵTypedOrUntyped<TControl, ɵFormGroupArgumentValue<TControl>, any>
 > {
   /**
    * Creates a new `FormGroup` instance.
@@ -544,11 +554,7 @@ export class FormGroup<
    * ```
    */
   override reset(
-    value: ɵTypedOrUntyped<
-      TControl,
-      ɵFormGroupValue<TControl>,
-      any
-    > = {} as unknown as ɵFormGroupValue<TControl>,
+    value: ɵTypedOrUntyped<TControl, ɵFormGroupArgumentValue<TControl>, any> = {},
     options: {onlySelf?: boolean; emitEvent?: boolean} = {},
   ): void {
     this._forEachChild((control: AbstractControl, name) => {
@@ -798,7 +804,7 @@ export interface FormRecord<TControl> {
    * See `FormGroup#reset` for additional information.
    */
   reset(
-    value?: {[key: string]: ɵValue<TControl>},
+    value?: {[key: string]: ɵValue<TControl> | FormControlState<ɵValue<TControl>>},
     options?: {
       onlySelf?: boolean;
       emitEvent?: boolean;
