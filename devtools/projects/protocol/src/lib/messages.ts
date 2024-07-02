@@ -276,7 +276,12 @@ export interface Events {
   removeComponentHighlight: () => void;
 
   enableTimingAPI: () => void;
-  disableTimingAPI: () => void;
+  // forBrowserProfiler is used to determine if the event is dispatched
+  // because the Chrome profiler (Performance panel) stopped recording
+  // In this case, we need to ensure we keep the value of the
+  // timings API flag as the user had set it in Angular DevTools before
+  // the recording started.
+  disableTimingAPI: (forBrowserProfiler: boolean) => void;
 
   // todo: type properly
   getInjectorProviders: (injector: SerializedInjector) => void;

@@ -34,7 +34,22 @@ const endMark = (nodeName: string, method: Method) => {
     if (performance.getEntriesByName(start).length > 0) {
       // tslint:disable-next-line:ban
       performance.mark(end);
-      performance.measure(name, start, end);
+
+      const measureOptions = {
+        start,
+        end,
+        detail: {
+          devtools: {
+            metadata: {
+              dataType: 'track-entry',
+              extensionName: 'Angular',
+            },
+            color: 'primary',
+            track: '🅰️ Angular DevTools',
+          },
+        },
+      };
+      performance.measure(name, measureOptions);
     }
     performance.clearMarks(start);
     performance.clearMarks(end);
@@ -43,9 +58,17 @@ const endMark = (nodeName: string, method: Method) => {
 };
 
 let timingAPIFlag = false;
+let lastTimingAPIFlagStatus = false;
 
-export const enableTimingAPI = () => (timingAPIFlag = true);
-export const disableTimingAPI = () => (timingAPIFlag = false);
+export const enableTimingAPI = () => {
+  lastTimingAPIFlagStatus = timingAPIFlag;
+  timingAPIFlag = true;
+};
+// If the recording was stopped from Chrome profiler (Performance panel)
+// restore keep the value of the timings API flag as the user had set it
+// in Angular DevTools before the recording started.
+export const disableTimingAPI = (forBrowserProfiler: boolean = false) =>
+  (timingAPIFlag = forBrowserProfiler && lastTimingAPIFlagStatus);
 
 const timingAPIEnabled = () => timingAPIFlag;
 
