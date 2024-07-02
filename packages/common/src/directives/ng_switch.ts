@@ -14,7 +14,6 @@ import {
   Optional,
   TemplateRef,
   ViewContainerRef,
-  ɵformatRuntimeError as formatRuntimeError,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
