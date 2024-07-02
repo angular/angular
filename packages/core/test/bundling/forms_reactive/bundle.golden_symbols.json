@@ -39,6 +39,9 @@
     "name": "ApplicationRef"
   },
   {
+    "name": "ApplicationStability"
+  },
+  {
     "name": "BLOOM_BUCKET_BITS"
   },
   {

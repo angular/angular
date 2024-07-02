@@ -21,7 +21,7 @@ export class PendingTasks implements OnDestroy {
   private get _hasPendingTasks() {
     return this.hasPendingTasks.value;
   }
-  hasPendingTasks = new BehaviorSubject<boolean>(false);
+  hasPendingTasks = new BehaviorSubject(false);
 
   add(): number {
     if (!this._hasPendingTasks) {
@@ -89,6 +89,27 @@ export class ExperimentalPendingTasks {
   add(): () => void {
     const taskId = this.internalPendingTasks.add();
     return () => this.internalPendingTasks.remove(taskId);
+  }
+
+  /**
+   * Runs an asynchronous function and blocks the application's stability until the function completes.
+   *
+   * ```
+   * pendingTasks.run(async () => {
+   *   const userData = await fetch('/api/user');
+   *   this.userData.set(userData);
+   * });
+   * ```
+   *
+   * @param fn The asynchronous function to execute
+   */
+  async run<T>(fn: () => Promise<T>): Promise<T> {
+    const task = this.internalPendingTasks.add();
+    try {
+      return await fn();
+    } finally {
+      this.internalPendingTasks.remove(task);
+    }
   }
 
   /** @nocollapse */

@@ -192,7 +192,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
    * @param shouldRefreshViews Passed directly to `ApplicationRef._tick` and skips straight to
    *     render hooks when `false`.
    */
-  private tick(shouldRefreshViews: boolean): void {
+  private async tick(shouldRefreshViews: boolean) {
     // When ngZone.run below exits, onMicrotaskEmpty may emit if the zone is
     // stable. We want to prevent double ticking so we track whether the tick is
     // already running and skip it if so.
@@ -200,7 +200,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       return;
     }
 
-    const task = this.taskService.add();
     try {
       this.ngZone.run(
         () => {
@@ -210,9 +209,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         undefined,
         this.schedulerTickApplyArgs,
       );
-    } catch (e: unknown) {
-      this.taskService.remove(task);
-      throw e;
     } finally {
       this.cleanup();
     }
@@ -222,10 +218,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     // ExpressionChanged...Error to still be reflected in a single browser
     // paint, even if that spans multiple rounds of change detection.
     this.useMicrotaskScheduler = true;
-    scheduleCallbackWithMicrotask(() => {
-      this.useMicrotaskScheduler = false;
-      this.taskService.remove(task);
-    });
+    await Promise.resolve();
+    this.useMicrotaskScheduler = false;
   }
 
   ngOnDestroy() {
@@ -238,17 +232,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     this.runningTick = false;
     this.cancelScheduledCallback?.();
     this.cancelScheduledCallback = null;
-    // If this is the last task, the service will synchronously emit a stable
-    // notification. If there is a subscriber that then acts in a way that
-    // tries to notify the scheduler again, we need to be able to respond to
-    // schedule a new change detection. Therefore, we should clear the task ID
-    // before removing it from the pending tasks (or the tasks service should
-    // not synchronously emit stable, similar to how Zone stableness only
-    // happens if it's still stable after a microtask).
     if (this.pendingRenderTaskId !== null) {
-      const taskId = this.pendingRenderTaskId;
+      this.taskService.remove(this.pendingRenderTaskId);
       this.pendingRenderTaskId = null;
-      this.taskService.remove(taskId);
     }
   }
 }

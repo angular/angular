@@ -22,7 +22,7 @@ import {
   ɵEffectScheduler as EffectScheduler,
   ɵgetDeferBlocks as getDeferBlocks,
   ɵNoopNgZone as NoopNgZone,
-  ɵPendingTasks as PendingTasks,
+  ɵApplicationStability as ApplicationStability,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 import {first} from 'rxjs/operators';
@@ -79,7 +79,7 @@ export abstract class ComponentFixture<T> {
   protected readonly _appRef = inject(ApplicationRef);
   /** @internal */
   protected readonly _testAppRef = this._appRef as unknown as TestAppRef;
-  private readonly pendingTasks = inject(PendingTasks);
+  private readonly stability = inject(ApplicationStability);
 
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
@@ -118,7 +118,7 @@ export abstract class ComponentFixture<T> {
    * yet.
    */
   isStable(): boolean {
-    return !this.pendingTasks.hasPendingTasks.value;
+    return this.stability.isStable.value;
   }
 
   /**
