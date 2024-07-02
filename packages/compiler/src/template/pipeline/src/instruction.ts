@@ -179,6 +179,23 @@ export function twoWayListener(
 ): ir.CreateOp {
   return call(Identifiers.twoWayListener, [o.literal(name), handlerFn], sourceSpan);
 }
+export function optimizedImage(
+  path: o.Expression,
+  width: o.Expression,
+  height: o.Expression,
+): o.Expression;
+export function optimizedImage(path: o.Expression): o.Expression;
+export function optimizedImage(
+  path: o.Expression,
+  width?: o.Expression,
+  height?: o.Expression,
+): o.Expression {
+  if (width === undefined && height === undefined) {
+    return o.importExpr(Identifiers.optimizedImage).callFn([path]);
+  }
+
+  return o.importExpr(Identifiers.optimizedImage).callFn([path, width!, height!]);
+}
 
 export function pipe(slot: number, name: string): ir.CreateOp {
   return call(Identifiers.pipe, [o.literal(slot), o.literal(name)], null);

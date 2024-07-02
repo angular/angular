@@ -158,6 +158,7 @@ export function parseExtractedStyles(job: CompilationJob) {
                 null,
                 null,
                 SecurityContext.STYLE,
+                /* isOptimizedImage */ false,
               ),
               op,
             );
@@ -176,6 +177,7 @@ export function parseExtractedStyles(job: CompilationJob) {
                 null,
                 null,
                 SecurityContext.NONE,
+                /* isOptimizedImage */ false,
               ),
               op,
             );

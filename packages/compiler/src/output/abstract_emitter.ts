@@ -484,6 +484,11 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(ast, `]`);
     return null;
   }
+  visitSpreadedIterableExpr(ast: o.SpreadedIterableExpr, ctx: EmitterVisitorContext): any {
+    ctx.print(ast, `...`);
+    ast.iterable.visitExpression(this, ctx);
+    return null;
+  }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, `{`);
     this.visitAllObjects(
