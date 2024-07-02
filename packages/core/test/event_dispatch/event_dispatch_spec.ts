@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ɵJSACTION_EVENT_CONTRACT, ɵprovideGlobalEventDelegation} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Renderer2,
+  ViewChild,
+  inject,
+  ɵprovideGlobalEventDelegation,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 function configureTestingModule(components: unknown[]) {
@@ -179,6 +186,38 @@ describe('event dispatch', () => {
       fixture = TestBed.createComponent(SimpleComponent);
       const nativeElement = fixture.debugElement.nativeElement;
       const bottomEl = nativeElement.querySelector('#bottom')!;
+      bottomEl.click();
+      expect(onClickSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('manual listening', () => {
+    it('should trigger events when manually registered', async () => {
+      const onClickSpy = jasmine.createSpy();
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `
+            <div id="top">
+                <div id="bottom"></div>
+            </div>
+          `,
+      })
+      class SimpleComponent {
+        renderer = inject(Renderer2);
+        destroy!: Function;
+        listen(el: Element) {
+          this.destroy = this.renderer.listen(el, 'click', onClickSpy);
+        }
+      }
+      configureTestingModule([SimpleComponent]);
+      fixture = TestBed.createComponent(SimpleComponent);
+      const nativeElement = fixture.debugElement.nativeElement;
+      (fixture.componentInstance as SimpleComponent).listen(nativeElement);
+      const bottomEl = nativeElement.querySelector('#bottom')!;
+      bottomEl.click();
+      expect(onClickSpy).toHaveBeenCalledTimes(1);
+      (fixture.componentInstance as SimpleComponent).destroy();
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
     });
