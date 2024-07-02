@@ -60,7 +60,7 @@ export function toSignal<T, const U extends T>(source: Observable<T> | Subscriba
 
 // @public
 export interface ToSignalOptions<T> {
-    equals?: ValueEqualityFn<T>;
+    equal?: ValueEqualityFn<T>;
     initialValue?: unknown;
     injector?: Injector;
     manualCleanup?: boolean;
