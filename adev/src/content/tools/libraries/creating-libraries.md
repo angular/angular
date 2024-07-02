@@ -39,9 +39,10 @@ See [Setting up for a multi-project workspace](reference/configs/file-structure#
 When you generate a new library, the workspace configuration file, `angular.json`, is updated with a project of type `library`.
 
 <docs-code language="json">
-
-"projects": {
-  …
+  
+{
+  "projects": {
+  ...
   "my-lib": {
     "root": "projects/my-lib",
     "sourceRoot": "projects/my-lib/src",
@@ -50,7 +51,7 @@ When you generate a new library, the workspace configuration file, `angular.json
     "architect": {
       "build": {
         "builder": "@angular-devkit/build-angular:ng-packagr",
-        …
+        ...
 
 </docs-code>
 
