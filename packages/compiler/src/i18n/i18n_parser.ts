@@ -37,8 +37,14 @@ export interface I18nMessageFactory {
 export function createI18nMessageFactory(
   interpolationConfig: InterpolationConfig,
   containerBlocks: Set<string>,
+  preserveSignificantWhitespace?: boolean,
 ): I18nMessageFactory {
-  const visitor = new _I18nVisitor(_expParser, interpolationConfig, containerBlocks);
+  const visitor = new _I18nVisitor(
+    _expParser,
+    interpolationConfig,
+    containerBlocks,
+    preserveSignificantWhitespace,
+  );
   return (nodes, meaning, description, customId, visitNodeFn) =>
     visitor.toI18nMessage(nodes, meaning, description, customId, visitNodeFn);
 }
@@ -61,6 +67,7 @@ class _I18nVisitor implements html.Visitor {
     private _expressionParser: ExpressionParser,
     private _interpolationConfig: InterpolationConfig,
     private _containerBlocks: Set<string>,
+    private readonly _preserveSignificantWhitespace = true,
   ) {}
 
   public toI18nMessage(
@@ -291,6 +298,13 @@ class _I18nVisitor implements html.Visitor {
                 previous.sourceSpan.details,
               );
             } else {
+              nodes.push(new i18n.Text(token.parts[0], token.sourceSpan));
+            }
+          } else {
+            // Retain empty tokens when preserving significant whitespace to avoid
+            // breaking source spans and maintain backwards compatibility with existing
+            // message IDs.
+            if (!this._preserveSignificantWhitespace) {
               nodes.push(new i18n.Text(token.parts[0], token.sourceSpan));
             }
           }

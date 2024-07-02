@@ -48,6 +48,10 @@ const _DOCTYPE = `<!ELEMENT messagebundle (msg)*>
 <!ELEMENT ex (#PCDATA)>`;
 
 export class Xmb extends Serializer {
+  constructor(private readonly preservePlaceholders?: boolean) {
+    super();
+  }
+
   override write(messages: i18n.Message[], locale: string | null): string {
     const exampleVisitor = new ExampleVisitor();
     const visitor = new _Visitor();
@@ -104,7 +108,7 @@ export class Xmb extends Serializer {
   }
 
   override digest(message: i18n.Message): string {
-    return digest(message);
+    return digest(message, this.preservePlaceholders);
   }
 
   override createNameMapper(message: i18n.Message): PlaceholderMapper {
@@ -202,8 +206,8 @@ class _Visitor implements i18n.Visitor {
   }
 }
 
-export function digest(message: i18n.Message): string {
-  return decimalDigest(message);
+export function digest(message: i18n.Message, preservePlaceholders?: boolean): string {
+  return decimalDigest(message, preservePlaceholders);
 }
 
 // TC requires at least one non-empty example on placeholders

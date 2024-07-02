@@ -57,7 +57,9 @@ export function i18nSerialize(
 
   switch (format) {
     case 'xmb':
-      serializer = new Xmb();
+      serializer = new Xmb(
+        options.i18nPreserveWhitespaceForLegacyExtraction /* preservePlaceholders */,
+      );
       break;
     case 'xliff2':
     case 'xlf2':

@@ -50,6 +50,8 @@ export function replaceNgsp(value: string): string {
  * and might be changed to "on" by default.
  */
 export class WhitespaceVisitor implements html.Visitor {
+  constructor(private readonly preserveSignificantWhitespace = true) {}
+
   visitElement(element: html.Element, context: any): any {
     if (SKIP_WS_TRIM_TAGS.has(element.name) || hasPreserveWhitespacesAttr(element.attrs)) {
       // don't descent into elements where we need to preserve whitespaces
@@ -90,8 +92,30 @@ export class WhitespaceVisitor implements html.Visitor {
       const tokens = text.tokens.map((token) =>
         token.type === TokenType.TEXT ? createWhitespaceProcessedTextToken(token) : token,
       );
+
+      // Fully trim message when significant whitespace is not preserved.
+      if (!this.preserveSignificantWhitespace && tokens.length) {
+        // The first token should only call `.trimStart()` and the last token
+        // should only call `.trimEnd()`, but there might be only one token which
+        // needs to call both.
+        const firstToken = tokens[0]!;
+        const trimmedFirstToken =
+          firstToken.type === TokenType.TEXT
+            ? transformTextToken(firstToken, (text) => text.trimStart())
+            : firstToken;
+        tokens.splice(0, 1, trimmedFirstToken);
+
+        const lastToken = tokens[tokens.length - 1]; // Could be the same as the first token.
+        const trimmedLastToken =
+          lastToken.type === TokenType.TEXT
+            ? transformTextToken(lastToken, (text) => text.trimEnd())
+            : lastToken;
+        tokens.splice(tokens.length - 1, 1, trimmedLastToken);
+      }
+
       // Process the whitespace of the value of this Text node
-      const value = processWhitespace(text.value);
+      const processed = processWhitespace(text.value);
+      const value = this.preserveSignificantWhitespace ? processed : processed.trim();
       return new html.Text(value, text.sourceSpan, tokens, text.i18n);
     }
 
@@ -133,6 +157,13 @@ export class WhitespaceVisitor implements html.Visitor {
 
 function createWhitespaceProcessedTextToken({type, parts, sourceSpan}: TextToken): TextToken {
   return {type, parts: [processWhitespace(parts[0])], sourceSpan};
+}
+
+function transformTextToken(
+  {type, parts, sourceSpan}: TextToken,
+  transform: (parts: string) => string,
+): TextToken {
+  return {type, parts: [transform(parts[0])], sourceSpan};
 }
 
 function processWhitespace(text: string): string {
