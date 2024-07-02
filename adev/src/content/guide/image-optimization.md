@@ -433,3 +433,16 @@ For maintenance reasons, we don't currently plan to support additional built-in 
 No, but this is on our roadmap, so stay tuned. 
 
 If you're waiting on this feature, please upvote the Github issue [here](https://github.com/angular/angular/issues/56594).
+
+
+### How do I find my LCP image with Chrome Dev Tools
+
+Using the performance tab of the Chrome DevTools, click on the "start profiling an reload page" button. 
+
+This will trigger a profiling snapshot of your Angular application. 
+
+Once the profiling result is available, select "LCP" in the timings section.
+
+The summary of the Largest Contentful Paint will highlight the related node. 
+
+<img alt="LCP in the Chrome DevTools" src="assets/images/guide/image-optimization/devtools-lcp.png">
