@@ -24,6 +24,8 @@ yarn
 yarn docs
 ```
 
+If you are having issues with the docs building, see the [FAQs](#faqs) section.
+
 ## Contributing
 
 Want to report a bug, contribute some code, or improve the documentation? Excellent!
@@ -35,3 +37,17 @@ And if you're new, check out one of our issues labeled as <kbd>[help wanted](htt
 ### Code of Conduct
 
 Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## FAQs
+
+### The build is failing and I'm seeing `bazel:bazel failed: missing input file` messages.
+
+This is most likely due to a bazel dependency / caching issue. To resolve this, run the following command:
+
+```
+# Try this first
+yarn bazel clean
+
+# If that doesn't work, try it with the expunge flag
+yarn bazel clean --expunge
+```
