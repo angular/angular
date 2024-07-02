@@ -483,19 +483,6 @@ export enum ErrorCode {
   UNSUPPORTED_INITIALIZER_API_USAGE = 8110,
 
   /**
-   * A function in an event binding is not called.
-   *
-   * For example:
-   * ```
-   * <button (click)="myFunc"></button>
-   * ```
-   *
-   * This will not call `myFunc` when the button is clicked. Instead, it should be
-   * `<button (click)="myFunc()"></button>`.
-   */
-  UNINVOKED_FUNCTION_IN_EVENT_BINDING = 8111,
-
-  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
