@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, Type} from '@angular/core';
+import {Injector, Type, InputSignal} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {ComponentNgElementStrategyFactory} from './component-factory-strategy';
@@ -155,9 +155,10 @@ export function createCustomElement<P>(
 
         // Re-apply pre-existing input values (set as properties on the element) through the
         // strategy.
-        inputs.forEach(({propName, transform}) => {
-          if (!this.hasOwnProperty(propName)) {
-            // No pre-existing value for `propName`.
+        // TODO(alxhub): why are we doing this? this makes no sense.
+        inputs.forEach(({propName, transform, isSignal}) => {
+          if (!this.hasOwnProperty(propName) || isSignal) {
+            // No pre-existing value for `propName`, or a signal input.
             return;
           }
 
