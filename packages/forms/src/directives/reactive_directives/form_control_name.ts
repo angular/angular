@@ -39,8 +39,8 @@ import {_ngModelWarning, controlPath, isPropertyUpdated, selectValueAccessor} fr
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
-import {FormGroupDirective} from './form_group_directive';
 import {FormArrayName, FormGroupName} from './form_group_name';
+import {AbstractFormDirective} from './abstract_form.directive';
 
 const controlNameBinding: Provider = {
   provide: NgControl,
@@ -218,7 +218,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
         throw ngModelGroupException();
       } else if (
         !(this._parent instanceof FormGroupName) &&
-        !(this._parent instanceof FormGroupDirective) &&
+        !(this._parent instanceof AbstractFormDirective) &&
         !(this._parent instanceof FormArrayName)
       ) {
         throw controlParentException(this.name);
