@@ -143,6 +143,8 @@ When `counter` is set to `1`, this invalidates both `evenOrOdd` and the logging 
 
 In this situation, the logging effect's observation of the inconsistent state "1 is even" is known as a _glitch_. A major goal of reactive system design is to prevent such intermediate states from ever being observed, and ensure _glitch-free execution_.
 
+![What is a glitch?](./images/what_is_a_glitch.svg)
+
 ### Push/Pull Algorithm
 
 Angular Signals guarantees glitch-free execution by separating updates to the `ReactiveNode` graph into two phases. The first phase is performed eagerly when a producer value is changed. This change notification is propagated through the graph, notifying live consumers which depend on the producer of the potential update. Some of these consumers may be derived values and thus also producers, which invalidate their cached values and then continue the propagation of the change notification to their own live consumers, and so on. Ultimately this notification reaches effects, which schedule themselves for re-execution.
@@ -152,6 +154,8 @@ Crucially, during this first phase, no side effects are run, and no recomputatio
 Once this change propagation has completed (synchronously), the second phase can begin. In this second phase, signal values may be read by the application or framework, triggering recomputation of any needed derived values which were previously invalidated.
 
 We refer to this as the "push/pull" algorithm: "dirtiness" is eagerly _pushed_ through the graph when a source signal is changed, but recalculation is performed lazily, only when values are _pulled_ by reading their signals.
+
+![Push/pull algorithm](./images/push_pull_algo.svg)
 
 ## Dynamic Dependency Tracking
 
@@ -166,6 +170,8 @@ reads either `dataA` or `dataB` depending on the value of the `useA` signal. At 
 The potential dependencies of a reactive context are unbounded. Signals may be stored in variables or other data structures and swapped out with other signals from time to time. Thus, the signals implementation must deal with potential changes in the set of dependencies of a consumer on each execution.
 
 Dependencies of a computation are tracked in an array. When the computation is rerun, a pointer into that array is initialized to the index `0`, and each dependency read is compared against the dependency from the previous run at the pointer's current location. If there's a mismatch, then the dependencies have changed since the last run, and the old dependency can be dropped and replaced with the new one. At the end of the run, any remaining unmatched dependencies can be dropped.
+
+![Dynamic dep tracking](./images/dynamic_dep_tracking.svg)
 
 ## Equality Semantics
 
