@@ -229,6 +229,7 @@ export function getTargetAtPosition(
   }
 
   const candidate = path[path.length - 1];
+
   // Walk up the result nodes to find the nearest `TmplAstTemplate` which contains the targeted
   // node.
   let context: TmplAstTemplate | null = null;
@@ -242,14 +243,11 @@ export function getTargetAtPosition(
 
   // Given the candidate node, determine the full targeted context.
   let nodeInContext: TargetContext;
-  if (
-    (candidate instanceof Call || candidate instanceof SafeCall) &&
-    isWithin(position, candidate.argumentSpan)
-  ) {
+  if ((candidate instanceof Call || candidate instanceof SafeCall) && isWithin(position, candidate.argumentSpan)) {
     nodeInContext = {
       kind: TargetNodeKind.CallExpressionInArgContext,
       node: candidate,
-    };
+    }
   } else if (candidate instanceof AST) {
     const parents = path.filter((value: AST | TmplAstNode): value is AST => value instanceof AST);
     // Remove the current node from the parents list.
@@ -426,7 +424,8 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   }
 
   // Position must be absolute in the source file.
-  private constructor(private readonly position: number) {}
+  private constructor(private readonly position: number) {
+  }
 
   visit(node: TmplAstNode) {
     const {start, end} = getSpanIncludingEndTag(node);
@@ -609,7 +608,8 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     this.visitAll(block.children);
   }
 
-  visitUnknownBlock(block: TmplAstUnknownBlock) {}
+  visitUnknownBlock(block: TmplAstUnknownBlock) {
+  }
 
   visitLetDeclaration(decl: TmplAstLetDeclaration) {
     this.visitBinding(decl.value);
