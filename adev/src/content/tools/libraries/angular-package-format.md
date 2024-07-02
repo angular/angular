@@ -12,7 +12,7 @@ You can find the versions of the specification prior to v13 in this [google doc]
 
 ## Why specify a package format?
 
-In today's JavaScript landscape, developers consume packages in many different ways, using many different toolchains \(Webpack, rollup, esbuild, etc.\).
+In today's JavaScript landscape, developers consume packages in many different ways, using many different toolchains \(webpack, Rollup, esbuild, etc.\).
 These tools may understand and require different inputs - some tools may be able to process the latest ES language version, while others may benefit from directly consuming an older ES version.
 
 The Angular distribution format supports all of the commonly used development tools and workflows, and adds emphasis on optimizations that result either in smaller application payload size or faster development iteration cycle \(build time\).
@@ -26,21 +26,21 @@ The following example shows a simplified version of the `@angular/core` package'
 
 ```markdown
 node_modules/@angular/core
-├── README.md  
-├── package.json  
-├── index.d.ts  
-├── esm2022  
+├── README.md
+├── package.json
+├── index.d.ts
+├── esm2022
 │   ├── core.mjs
 │   ├── index.mjs
 │   ├── public_api.mjs
-│   └── testing  
-├── fesm2022  
+│   └── testing
+├── fesm2022
 │   ├── core.mjs
 │   ├── core.mjs.map
 │   ├── testing.mjs
 │   └── testing.mjs.map
-└── testing  
-    └── index.d.ts  
+└── testing
+    └── index.d.ts
 ```
 
 This table describes the file layout under `node_modules/@angular/core` annotated to describe the purpose of files and directories:
@@ -277,7 +277,7 @@ By default, EcmaScript Modules are side-effectful: importing from a module ensur
 This is often undesirable, as most side-effectful code in typical modules is not truly side-effectful, but instead only affects specific symbols.
 If those symbols are not imported and used, it's often desirable to remove them in an optimization process known as tree-shaking, and the side-effectful code can prevent this.
 
-Build tools such as Webpack support a flag which allows packages to declare that they do not depend on side-effectful code at the top level of their modules, giving the tools more freedom to tree-shake code from the package.
+Build tools such as webpack support a flag which allows packages to declare that they do not depend on side-effectful code at the top level of their modules, giving the tools more freedom to tree-shake code from the package.
 The end result of these optimizations should be smaller bundle size and better code distribution in bundle chunks after code-splitting.
 This optimization can break your code if it contains non-local side-effects - this is however not common in Angular applications and it's usually a sign of bad design.
 The recommendation is for all packages to claim the side-effect free status by setting the `sideEffects` property to `false`, and that developers follow the [Angular Style Guide](/style-guide) which naturally results in code without non-local side-effects.
@@ -360,7 +360,7 @@ Because of this, the Angular team often uses the language level specifier as a s
 
 ### Bundle
 
-An artifact in the form of a single JS file, produced by a build tool \(for example, [Webpack](https://webpack.js.org) or [Rollup](https://rollupjs.org)\) that contains symbols originating in one or more modules.
+An artifact in the form of a single JS file, produced by a build tool \(for example, [webpack](https://webpack.js.org) or [Rollup](https://rollupjs.org)\) that contains symbols originating in one or more modules.
 Bundles are a browser-specific workaround that reduce network strain that would be caused if browsers were to start downloading hundreds if not tens of thousands of files.
 Node.js typically doesn't use bundles.
 Common bundle formats are UMD and System.register.

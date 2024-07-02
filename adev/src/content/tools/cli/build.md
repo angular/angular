@@ -8,7 +8,7 @@ Angular CLI includes four builders typically used as `build` targets:
 
 | Builder                                         | Purpose                                                                                                                                                                           |
 | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@angular-devkit/build-angular:browser`         | Bundles a client-side application for use in a browser with [Webpack](https://webpack.js.org/).                                                                                   |
+| `@angular-devkit/build-angular:browser`         | Bundles a client-side application for use in a browser with [webpack](https://webpack.js.org/).                                                                                   |
 | `@angular-devkit/build-angular:browser-esbuild` | Bundles a client-side application for use in a browser with [esbuild](https://esbuild.github.io/). See [`browser-esbuild` documentation](tools/cli/build-system-migration#manual-migration-to-the-compatibility-builder) for more information. |
 | `@angular-devkit/build-angular:application`     | Builds an application with a client-side bundle, a Node server, and build-time prerendered routes with [esbuild](https://esbuild.github.io/).                                     |
 | `@angular-devkit/build-angular:ng-packagr`      | Builds an Angular library adhering to [Angular Package Format](tools/libraries/angular-package-format).                                                                           |

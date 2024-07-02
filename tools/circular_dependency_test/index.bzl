@@ -27,7 +27,7 @@ def circular_dependency_test(name, deps, entry_point, **kwargs):
             # TODO: revisit once https://github.com/bazelbuild/rules_nodejs/issues/1563 is solved.
             "$$(rlocation %s)" % entry_point,
             # Madge supports custom module resolution, but expects a configuration file
-            # similar to a Webpack configuration file setting the `resolve` option.
+            # similar to a webpack configuration file setting the `resolve` option.
             "--webpack-config",
             "$$(rlocation $(rootpath %s))" % MADGE_CONFIG_LABEL,
         ],

@@ -49,7 +49,7 @@ interface EmitResolver {
  * results in a slow-down due to the type checker being involved multiple times. The CLI worked
  * around this import preserving issue by having another complex post-process step that detects and
  * elides unused imports. Note that these unused imports could cause unused chunks being generated
- * by Webpack if the application or library is not marked as side-effect free.
+ * by webpack if the application or library is not marked as side-effect free.
  *
  * This is not ideal though, as we basically re-implement the complex import usage resolution
  * from TypeScript. We can do better by letting TypeScript do the import eliding, but providing

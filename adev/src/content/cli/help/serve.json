@@ -95,7 +95,7 @@
     {
       "name": "prebundle",
       "type": "boolean",
-      "description": "Enable and control the Vite-based development server's prebundling capabilities. To enable prebundling, the Angular CLI cache must also be enabled. This option has no effect when using the 'browser' or other Webpack-based builders."
+      "description": "Enable and control the Vite-based development server's prebundling capabilities. To enable prebundling, the Angular CLI cache must also be enabled. This option has no effect when using the 'browser' or other webpack-based builders."
     },
     {
       "name": "project",

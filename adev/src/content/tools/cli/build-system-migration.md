@@ -11,7 +11,7 @@ This new build system is stable and fully supported for use with Angular applica
 You can migrate to the new build system with applications that use the `browser` builder.
 If using a custom builder, please refer to the documentation for that builder on possible migration options.
 
-IMPORTANT: The existing Webpack-based build system is still considered stable and fully supported.
+IMPORTANT: The existing webpack-based build system is still considered stable and fully supported.
 Applications can continue to use the `browser` builder and will not be automatically migrated when updating.
 
 ## For new applications
@@ -27,7 +27,7 @@ HELPFUL: Remember to remove any CommonJS assumptions in the application server c
 
 ### Automated migration (Recommended)
 
-The automated migration will adjust both the application configuration within `angular.json` as well as code and stylesheets to remove previous Webpack-specific feature usage.
+The automated migration will adjust both the application configuration within `angular.json` as well as code and stylesheets to remove previous webpack-specific feature usage.
 While many changes can be automated and most applications will not require any further changes, each application is unique and there may be some manual changes required.
 After the migration, please attempt a build of the application as there could be new errors that will require adjustments within the code.
 The errors will attempt to provide solutions to the problem when possible and the later sections of this guide describe some of the more common situations that you may encounter.
@@ -47,7 +47,7 @@ The migration does the following:
 * Updates configuration accordingly.
 * Merges `tsconfig.server.json` with `tsconfig.app.json` and adds the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
 * Updates application server code to use new bootstrapping and output directory structure.
-* Removes any Webpack-specific builder stylesheet usage such as the tilde or caret in `@import`/`url()` and updates the configuration to provide equivalent behavior
+* Removes any webpack-specific builder stylesheet usage such as the tilde or caret in `@import`/`url()` and updates the configuration to provide equivalent behavior
 * Converts to use the new lower dependency `@angular/build` Node.js package if no other `@angular-devkit/build-angular` usage is found.
 
 ### Manual migration
@@ -131,7 +131,7 @@ The following list discusses all the `browser` builder options that will need to
 - `ngswConfigPath` should be renamed to `serviceWorker`.
 
 If the application is not using SSR currently, this should be the final step to allow `ng build` to function.
-After executing `ng build` for the first time, there may be new warnings or errors based on behavioral differences or application usage of Webpack-specific features.
+After executing `ng build` for the first time, there may be new warnings or errors based on behavioral differences or application usage of webpack-specific features.
 Many of the warnings will provide suggestions on how to remedy that problem.
 If it appears that a warning is incorrect or the solution is not apparent, please open an issue on [GitHub](https://github.com/angular/angular-cli/issues).
 Also, the later sections of this guide provide additional information on several specific cases as well as current known issues.
@@ -234,7 +234,7 @@ console.log(moment().format());
 
 ## Vite as a development server
 
-The usage of Vite in the Angular CLI is currently only within a _development server capacity only_. Even without using the underlying Vite build system, Vite provides a full-featured development server with client side support that has been bundled into a low dependency npm package. This makes it an ideal candidate to provide comprehensive development server functionality. The current development server process uses the new build system to generate a development build of the application in memory and passes the results to Vite to serve the application. The usage of Vite, much like the Webpack-based development server, is encapsulated within the Angular CLI `dev-server` builder and currently cannot be directly configured.
+The usage of Vite in the Angular CLI is currently only within a _development server capacity only_. Even without using the underlying Vite build system, Vite provides a full-featured development server with client side support that has been bundled into a low dependency npm package. This makes it an ideal candidate to provide comprehensive development server functionality. The current development server process uses the new build system to generate a development build of the application in memory and passes the results to Vite to serve the application. The usage of Vite, much like the webpack-based development server, is encapsulated within the Angular CLI `dev-server` builder and currently cannot be directly configured.
 
 ## Known Issues
 
