@@ -18,7 +18,7 @@ import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref'
 import {PendingTasks} from '../pending_tasks';
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
 import {bindingUpdated} from '../render3/bindings';
-import {ChainedInjector} from '../render3/component_ref';
+import {ChainedInjector} from '../render3/chained_injector';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/definition';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {markViewDirty} from '../render3/instructions/mark_view_dirty';
@@ -90,6 +90,7 @@ import {
   setLDeferBlockDetails,
   setTDeferBlockDetails,
 } from './utils';
+import {isRouterOutletInjector} from '../render3/util/injector_utils';
 
 /**
  * **INTERNAL**, avoid referencing it in application code.
@@ -625,17 +626,6 @@ export function renderDeferBlockState(
 }
 
 /**
- * Detects whether an injector is an instance of a `ChainedInjector`,
- * created based on the `OutletInjector`.
- */
-export function isRouterOutletInjector(currentInjector: Injector): boolean {
-  return (
-    currentInjector instanceof ChainedInjector &&
-    typeof (currentInjector.injector as any).__ngOutletInjector === 'function'
-  );
-}
-
-/**
  * Creates an instance of the `OutletInjector` using a private factory
  * function available on the `OutletInjector` class.
  *
@@ -934,7 +924,7 @@ export function triggerResourceLoading(
       tDetails.loadingState = DeferDependenciesLoadingState.FAILED;
 
       if (tDetails.errorTmplIndex === null) {
-        const templateLocation = getTemplateLocationDetails(lView);
+        const templateLocation = ngDevMode ? getTemplateLocationDetails(lView) : '';
         const error = new RuntimeError(
           RuntimeErrorCode.DEFER_LOADING_FAILED,
           ngDevMode &&

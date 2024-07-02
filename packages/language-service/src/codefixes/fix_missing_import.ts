@@ -19,11 +19,7 @@ import {
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
-import {
-  standaloneTraitOrNgModule,
-  updateImportsForAngularTrait,
-  updateImportsForTypescriptFile,
-} from '../ts_utils';
+import {getCodeActionToImportTheDirectiveDeclaration, standaloneTraitOrNgModule} from '../ts_utils';
 import {getDirectiveMatchesForElementTag} from '../utils';
 
 import {CodeActionContext, CodeActionMeta, FixIdForCodeFixesAll} from './utils';
@@ -90,68 +86,17 @@ function getCodeActions({
     return [];
   }
   for (const currMatch of matches.values()) {
-    const currMatchSymbol = currMatch.tsSymbol.valueDeclaration!;
-    const potentialImports = checker.getPotentialImportsFor(
-      currMatch.ref,
-      importOn,
-      PotentialImportMode.Normal,
+    const currentMatchCodeAction =
+      getCodeActionToImportTheDirectiveDeclaration(compiler, importOn, currMatch) ?? [];
+
+    codeActions.push(
+      ...currentMatchCodeAction.map<ts.CodeFixAction>((action) => {
+        return {
+          fixName: FixIdForCodeFixesAll.FIX_MISSING_IMPORT,
+          ...action,
+        };
+      }),
     );
-    for (const potentialImport of potentialImports) {
-      const fileImportChanges: ts.TextChange[] = [];
-      let importName: string;
-      let forwardRefName: string | null = null;
-
-      if (potentialImport.moduleSpecifier) {
-        const [importChanges, generatedImportName] = updateImportsForTypescriptFile(
-          tsChecker,
-          importOn.getSourceFile(),
-          potentialImport.symbolName,
-          potentialImport.moduleSpecifier,
-          currMatchSymbol.getSourceFile(),
-        );
-        importName = generatedImportName;
-        fileImportChanges.push(...importChanges);
-      } else {
-        if (potentialImport.isForwardReference) {
-          // Note that we pass the `importOn` file twice since we know that the potential import
-          // is within the same file, because it doesn't have a `moduleSpecifier`.
-          const [forwardRefImports, generatedForwardRefName] = updateImportsForTypescriptFile(
-            tsChecker,
-            importOn.getSourceFile(),
-            'forwardRef',
-            '@angular/core',
-            importOn.getSourceFile(),
-          );
-          fileImportChanges.push(...forwardRefImports);
-          forwardRefName = generatedForwardRefName;
-        }
-        importName = potentialImport.symbolName;
-      }
-
-      // Always update the trait import, although the TS import might already be present.
-      const traitImportChanges = updateImportsForAngularTrait(
-        checker,
-        importOn,
-        importName,
-        forwardRefName,
-      );
-      if (traitImportChanges.length === 0) continue;
-
-      let description = `Import ${importName}`;
-      if (potentialImport.moduleSpecifier !== undefined) {
-        description += ` from '${potentialImport.moduleSpecifier}' on ${importOn.name!.text}`;
-      }
-      codeActions.push({
-        fixName: FixIdForCodeFixesAll.FIX_MISSING_IMPORT,
-        description,
-        changes: [
-          {
-            fileName: importOn.getSourceFile().fileName,
-            textChanges: [...fileImportChanges, ...traitImportChanges],
-          },
-        ],
-      });
-    }
   }
 
   return codeActions;

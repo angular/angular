@@ -13,6 +13,7 @@ import {
   Call,
   EmptyExpr,
   Interpolation,
+  LiteralMap,
   ParserError,
   PropertyRead,
   TemplateBinding,
@@ -627,6 +628,14 @@ describe('parser', () => {
 
     it('should retain // in string literals', () => {
       checkBinding(`"http://www.google.com"`, `"http://www.google.com"`);
+    });
+
+    it('should expose object shorthand information in AST', () => {
+      const parser = new Parser(new Lexer());
+      const ast = parser.parseBinding('{bla}', '', 0);
+      expect(ast.ast instanceof LiteralMap).toBe(true);
+      expect((ast.ast as LiteralMap).keys.length).toBe(1);
+      expect((ast.ast as LiteralMap).keys[0].isShorthandInitialized).toBe(true);
     });
   });
 

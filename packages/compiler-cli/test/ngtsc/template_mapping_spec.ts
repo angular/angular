@@ -8,6 +8,7 @@
 
 /// <reference types="node" />
 import {inspect} from 'util';
+import ts from 'typescript';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
@@ -23,7 +24,11 @@ runInEachFileSystem((os) => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({sourceMap: true, target: 'es2015', enableI18nLegacyMessageIdFormat: false});
+      env.tsconfig({
+        sourceMap: true,
+        target: ts.ScriptTarget.ES2015,
+        enableI18nLegacyMessageIdFormat: false,
+      });
     });
 
     describe('Inline templates', () => {

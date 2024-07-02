@@ -15,7 +15,11 @@ import {
   WritableSignal,
   ɵWRITABLE_SIGNAL,
 } from '../../render3/reactivity/signal';
-import {ɵINPUT_SIGNAL_BRAND_READ_TYPE, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE} from '../input/input_signal';
+import {
+  InputSignal,
+  ɵINPUT_SIGNAL_BRAND_READ_TYPE,
+  ɵINPUT_SIGNAL_BRAND_WRITE_TYPE,
+} from '../input/input_signal';
 import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from '../input/input_signal_node';
 import {OutputEmitterRef} from '../output/output_emitter_ref';
 import {OutputRef} from '../output/output_ref';
@@ -41,10 +45,8 @@ export interface ModelOptions {
  *
  * @developerPreview
  */
-export interface ModelSignal<T> extends WritableSignal<T>, OutputRef<T> {
+export interface ModelSignal<T> extends WritableSignal<T>, InputSignal<T>, OutputRef<T> {
   [SIGNAL]: InputSignalNode<T, T>;
-  [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
-  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
 }
 
 /**

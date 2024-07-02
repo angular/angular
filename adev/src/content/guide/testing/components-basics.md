@@ -133,7 +133,7 @@ After configuring `TestBed`, you call its `createComponent()` method.
 
 <docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="createComponent"/>
 
-`TestBed.createComponent()` creates an instance of the `BannerComponent`, adds a corresponding element to the test-runner DOM, and returns a [`ComponentFixture`](#component-fixture).
+`TestBed.createComponent()` creates an instance of the `BannerComponent`, adds a corresponding element to the test-runner DOM, and returns a [`ComponentFixture`](#componentfixture).
 
 IMPORTANT: Do not re-configure `TestBed` after calling `createComponent`.
 

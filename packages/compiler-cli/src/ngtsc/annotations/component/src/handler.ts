@@ -114,7 +114,7 @@ import {
   HandlerPrecedence,
   ResolveResult,
 } from '../../../transform';
-import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
+import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {TemplateSemanticsChecker} from '../../../typecheck/template_semantics/api/api';
 import {getSourceFile} from '../../../util/src/typescript';
@@ -176,6 +176,7 @@ import {
   collectAnimationNames,
   validateAndFlattenComponentImports,
 } from './util';
+import {getTemplateDiagnostics} from '../../../typecheck';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -246,6 +247,7 @@ export class ComponentDecoratorHandler
     private readonly deferredSymbolTracker: DeferredSymbolTracker,
     private readonly forbidOrphanRendering: boolean,
     private readonly enableBlockSyntax: boolean,
+    private readonly enableLetSyntax: boolean,
     private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
   ) {
     this.extractTemplateOptions = {
@@ -253,6 +255,7 @@ export class ComponentDecoratorHandler
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
       usePoisonedData: this.usePoisonedData,
       enableBlockSyntax: this.enableBlockSyntax,
+      enableLetSyntax: this.enableLetSyntax,
     };
   }
 
@@ -272,6 +275,7 @@ export class ComponentDecoratorHandler
     i18nNormalizeLineEndingsInICUs: boolean;
     usePoisonedData: boolean;
     enableBlockSyntax: boolean;
+    enableLetSyntax: boolean;
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -621,9 +625,29 @@ export class ComponentDecoratorHandler
           i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
           usePoisonedData: this.usePoisonedData,
           enableBlockSyntax: this.enableBlockSyntax,
+          enableLetSyntax: this.enableLetSyntax,
         },
         this.compilationMode,
       );
+
+      if (
+        this.compilationMode === CompilationMode.LOCAL &&
+        template.errors &&
+        template.errors.length > 0
+      ) {
+        // Template errors are handled at the type check phase. But we skip this phase in local compilation mode. As a result we need to handle the errors now and add them to the diagnostics.
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+
+        diagnostics.push(
+          ...getTemplateDiagnostics(
+            template.errors,
+            '' as TemplateId, // Template ID is required as part of the template type check, mainly for mapping the template to its component class. But here we are generating the diagnostic outside of the type check context, and so we skip the template ID.
+            template.sourceMapping,
+          ),
+        );
+      }
     }
     const templateResource = template.declaration.isInline
       ? {path: null, expression: component.get('template')!}
@@ -1578,10 +1602,6 @@ export class ComponentDecoratorHandler
     resolution: Readonly<Partial<ComponentResolutionData>>,
     pool: ConstantPool,
   ): CompileResult[] {
-    if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
-      return [];
-    }
-
     // In the local compilation mode we can only rely on the information available
     // within the `@Component.deferredImports` array, because in this mode compiler
     // doesn't have information on which dependencies belong to which defer blocks.

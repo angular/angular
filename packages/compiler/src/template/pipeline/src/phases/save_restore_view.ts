@@ -41,7 +41,7 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
       if (!needsRestoreView) {
         for (const handlerOp of op.handlerOps) {
           ir.visitExpressionsInOp(handlerOp, (expr) => {
-            if (expr instanceof ir.ReferenceExpr) {
+            if (expr instanceof ir.ReferenceExpr || expr instanceof ir.ContextLetReferenceExpr) {
               // Listeners that reference() a local ref need the save/restore view operation.
               needsRestoreView = true;
             }

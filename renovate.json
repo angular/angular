@@ -14,7 +14,6 @@
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {"enabled": true},
   "labels": ["target: patch", "area: build & ci", "action: merge"],
-  "ignorePaths": ["aio/content/demos/first-app/package.json"],
   "ignoreDeps": [
     "@types/node",
     "@types/selenium-webdriver",
@@ -73,7 +72,6 @@
       "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
       "matchPaths": [
         "packages/**",
-        "aio/tools/examples/shared/**",
         "adev/src/content/tutorials/**"
       ],
       "followTag": null
@@ -98,14 +96,6 @@
       "matchPaths": [".github/workflows/scorecard.yml"],
       "groupName": "scorecard action dependencies",
       "groupSlug": "scorecard-action"
-    },
-
-    {
-      "matchPaths": ["aio/tools/examples/shared/*"],
-      "postUpgradeTasks": {
-        "commands": ["yarn --cwd=aio/tools/examples/shared run sync-deps"],
-        "fileFilters": ["aio/tools/examples/shared/boilerplate/**"]
-      }
     },
 
     {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},

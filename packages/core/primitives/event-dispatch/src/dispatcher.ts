@@ -133,8 +133,9 @@ function shouldPreventDefaultBeforeDispatching(
   // a child of an anchor that has a jsaction attached. For that reason, we
   // need to check the actionElement rather than the targetElement.
   return (
-    (actionElement.tagName === 'A' && eventInfoWrapper.getEventType() === EventType.CLICK) ||
-    eventInfoWrapper.getEventType() === EventType.CLICKMOD
+    actionElement.tagName === 'A' &&
+    (eventInfoWrapper.getEventType() === EventType.CLICK ||
+      eventInfoWrapper.getEventType() === EventType.CLICKMOD)
   );
 }
 

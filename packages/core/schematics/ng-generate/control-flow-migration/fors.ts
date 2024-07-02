@@ -137,23 +137,31 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
     if (part.match(aliasWithEqualRegexp)) {
       // 'let myIndex = index' -> ['let myIndex', 'index']
       const aliasParts = part.split('=');
-      // -> 'let myIndex = $index'
-      aliases.push(` ${aliasParts[0].trim()} = $${aliasParts[1].trim()}`);
+      const aliasedName = aliasParts[0].replace('let', '').trim();
+      const originalName = aliasParts[1].trim();
+      if (aliasedName !== '$' + originalName) {
+        // -> 'let myIndex = $index'
+        aliases.push(` let ${aliasedName} = $${originalName}`);
+      }
       // if the aliased variable is the index, then we store it
-      if (aliasParts[1].trim() === 'index') {
+      if (originalName === 'index') {
         // 'let myIndex' -> 'myIndex'
-        aliasedIndex = aliasParts[0].replace('let', '').trim();
+        aliasedIndex = aliasedName;
       }
     }
     // declared with `index as myIndex`
     if (part.match(aliasWithAsRegexp)) {
       // 'index    as   myIndex' -> ['index', 'myIndex']
       const aliasParts = part.split(/\s+as\s+/);
-      // -> 'let myIndex = $index'
-      aliases.push(` let ${aliasParts[1].trim()} = $${aliasParts[0].trim()}`);
+      const originalName = aliasParts[0].trim();
+      const aliasedName = aliasParts[1].trim();
+      if (aliasedName !== '$' + originalName) {
+        // -> 'let myIndex = $index'
+        aliases.push(` let ${aliasedName} = $${originalName}`);
+      }
       // if the aliased variable is the index, then we store it
-      if (aliasParts[0].trim() === 'index') {
-        aliasedIndex = aliasParts[1].trim();
+      if (originalName === 'index') {
+        aliasedIndex = aliasedName;
       }
     }
   }

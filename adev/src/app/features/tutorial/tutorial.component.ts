@@ -143,7 +143,7 @@ export default class Tutorial implements AfterViewInit {
 
     await Promise.all(
       Object.entries(this.embeddedTutorialManager.answerFiles()).map(([path, contents]) =>
-        nodeRuntimeSandbox.writeFile(path, contents),
+        nodeRuntimeSandbox.writeFile(path, contents as string | Buffer),
       ),
     );
 
@@ -161,7 +161,7 @@ export default class Tutorial implements AfterViewInit {
 
     await Promise.all(
       Object.entries(this.embeddedTutorialManager.tutorialFiles()).map(([path, contents]) =>
-        nodeRuntimeSandbox.writeFile(path, contents),
+        nodeRuntimeSandbox.writeFile(path, contents as string | Buffer),
       ),
     );
 

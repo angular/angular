@@ -187,6 +187,10 @@ export class I18nMetaVisitor implements html.Visitor {
     return parameter;
   }
 
+  visitLetDeclaration(decl: html.LetDeclaration, context: any) {
+    return decl;
+  }
+
   /**
    * Parse the general form `meta` passed into extract the explicit metadata needed to create a
    * `Message`.

@@ -1071,7 +1071,8 @@ class _ParseAST {
         const keyStart = this.inputIndex;
         const quoted = this.next.isString();
         const key = this.expectIdentifierOrKeywordOrString();
-        keys.push({key, quoted});
+        const literalMapKey: LiteralMapKey = {key, quoted};
+        keys.push(literalMapKey);
 
         // Properties with quoted keys can't use the shorthand syntax.
         if (quoted) {
@@ -1080,6 +1081,8 @@ class _ParseAST {
         } else if (this.consumeOptionalCharacter(chars.$COLON)) {
           values.push(this.parsePipe());
         } else {
+          literalMapKey.isShorthandInitialized = true;
+
           const span = this.span(keyStart);
           const sourceSpan = this.sourceSpan(keyStart);
           values.push(

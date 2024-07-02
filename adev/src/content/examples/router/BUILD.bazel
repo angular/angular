@@ -1,7 +1,6 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
 package(default_visibility = ["//visibility:public"])
 
-docs_example(
-    name = "router",
-)
+exports_files([
+    "src/app/app.component.1.html",
+    "src/index.html",
+])

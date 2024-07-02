@@ -39,7 +39,7 @@ exports_files([
     "examples",
 ])
 
-# All docgen targets for AIO. Add package entrypoints to DOCS_ENTRYPOINTS in `packages.bzl`.
+# All docgen targets for our doc site. Add package entrypoints to DOCS_ENTRYPOINTS in `packages.bzl`.
 filegroup(
     name = "files_for_docgen",
     srcs = ["//packages/%s:files_for_docgen" % entrypoint for entrypoint in DOCS_ENTRYPOINTS],

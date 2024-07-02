@@ -20,7 +20,7 @@ export class BrowserDynamicTestingModule {
 }
 
 // @public (undocumented)
-export const platformBrowserDynamicTesting: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export const platformBrowserDynamicTesting: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 // (No @packageDocumentation comment for this package)
 

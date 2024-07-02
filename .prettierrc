@@ -1,10 +1,10 @@
 {
   "printWidth": 100,
   "tabWidth": 2,
-  "tabs": false,
+  "useTabs": false,
   "embeddedLanguageFormatting": "off",
   "singleQuote": true,
-  "semicolon": true,
+  "semi": true,
   "quoteProps": "preserve",
   "bracketSpacing": false
 }

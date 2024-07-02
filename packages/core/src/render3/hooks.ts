@@ -34,7 +34,8 @@ import {
   PreOrderHookFlags,
   TView,
 } from './interfaces/view';
-import {profiler, ProfilerEvent} from './profiler';
+import {profiler} from './profiler';
+import {ProfilerEvent} from './profiler_types';
 import {isInCheckNoChangesMode} from './state';
 
 /**

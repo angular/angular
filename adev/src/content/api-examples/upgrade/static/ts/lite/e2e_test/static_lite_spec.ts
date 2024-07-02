@@ -8,7 +8,7 @@
 
 import {browser, by, element, ElementArrayFinder, ElementFinder} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../../../../../../packages/examples/test-utils/index';
 
 import {addCustomMatchers} from './e2e_util';
 

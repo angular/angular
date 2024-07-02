@@ -8,7 +8,7 @@
 
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {DOCUMENT} from '@angular/common';
-import {DestroyRef, ElementRef, Injectable, NgZone, inject, signal} from '@angular/core';
+import {DestroyRef, ElementRef, Injectable, inject, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {fromEvent, combineLatest} from 'rxjs';
 import {map, filter} from 'rxjs/operators';
@@ -33,7 +33,6 @@ export class SplitResizerHandler {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly focusMonitor = inject(FocusMonitor);
-  private readonly ngZone = inject(NgZone);
 
   private container!: ElementRef<any>;
   private content!: ElementRef<HTMLDivElement>;
@@ -151,13 +150,11 @@ export class SplitResizerHandler {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(([_, keyEvent]) => {
-        this.ngZone.run(() => {
-          const shift = keyEvent.key === 'ArrowLeft' ? -1 : 1;
+        const shift = keyEvent.key === 'ArrowLeft' ? -1 : 1;
 
-          const contentWidth = this.getCurrentContainerWidth(this.content.nativeElement);
-          const editorWidth = this.getCurrentContainerWidth(this.editor!.nativeElement);
-          this.setWidthOfTheContainers(contentWidth + shift, editorWidth - shift);
-        });
+        const contentWidth = this.getCurrentContainerWidth(this.content.nativeElement);
+        const editorWidth = this.getCurrentContainerWidth(this.editor!.nativeElement);
+        this.setWidthOfTheContainers(contentWidth + shift, editorWidth - shift);
       });
   }
 

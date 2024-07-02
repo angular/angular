@@ -41,6 +41,8 @@ function getFriendlyStringFromTNodeType(tNodeType: TNodeType): string {
       return 'projection';
     case TNodeType.Text:
       return 'text';
+    case TNodeType.LetDeclaration:
+      return '@let';
     default:
       // This should not happen as we cover all possible TNode types above.
       return '<unknown>';

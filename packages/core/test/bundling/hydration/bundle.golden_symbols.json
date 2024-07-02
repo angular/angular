@@ -123,6 +123,9 @@
     "name": "DomAdapter"
   },
   {
+    "name": "DomEventsPlugin"
+  },
+  {
     "name": "DomRendererFactory2"
   },
   {
@@ -165,6 +168,9 @@
     "name": "ErrorHandler"
   },
   {
+    "name": "EventDelegationPlugin"
+  },
+  {
     "name": "EventEmitter"
   },
   {
@@ -172,6 +178,9 @@
   },
   {
     "name": "EventManagerPlugin"
+  },
+  {
+    "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
     "name": "GenericBrowserDomAdapter"
@@ -393,6 +402,9 @@
     "name": "REACTIVE_LVIEW_CONSUMER_NODE"
   },
   {
+    "name": "REACTIVE_NODE"
+  },
+  {
     "name": "REFERENCE_NODE_BODY"
   },
   {
@@ -463,6 +475,9 @@
   },
   {
     "name": "Subscription"
+  },
+  {
+    "name": "TEMPORARY_CONSUMER_NODE"
   },
   {
     "name": "TESTABILITY"
@@ -564,9 +579,6 @@
     "name": "_wasLastNodeCreated"
   },
   {
-    "name": "_wrapInTimeout"
-  },
-  {
     "name": "activeConsumer"
   },
   {
@@ -664,6 +676,12 @@
   },
   {
     "name": "configureViewWithDirective"
+  },
+  {
+    "name": "consumerBeforeComputation"
+  },
+  {
+    "name": "consumerDestroy"
   },
   {
     "name": "consumerIsLive"
@@ -1366,6 +1384,9 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "viewShouldHaveReactiveConsumer"
   },
   {
     "name": "walkProviderTree"

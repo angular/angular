@@ -87,6 +87,12 @@
     "name": "COMPOSITION_BUFFER_MODE"
   },
   {
+    "name": "COMPUTED_NODE"
+  },
+  {
+    "name": "COMPUTING"
+  },
+  {
     "name": "CONTAINER_HEADER_OFFSET"
   },
   {
@@ -198,6 +204,9 @@
     "name": "ENVIRONMENT_INITIALIZER"
   },
   {
+    "name": "ERRORED"
+  },
+  {
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
@@ -211,6 +220,9 @@
   },
   {
     "name": "ErrorHandler"
+  },
+  {
+    "name": "EventDelegationPlugin"
   },
   {
     "name": "EventEmitter"
@@ -256,6 +268,9 @@
   },
   {
     "name": "FormsExampleModule"
+  },
+  {
+    "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
     "name": "GenericBrowserDomAdapter"
@@ -492,6 +507,9 @@
     "name": "REACTIVE_LVIEW_CONSUMER_NODE"
   },
   {
+    "name": "REACTIVE_NODE"
+  },
+  {
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
@@ -520,6 +538,9 @@
   },
   {
     "name": "SIGNAL"
+  },
+  {
+    "name": "SIGNAL_NODE"
   },
   {
     "name": "SIMPLE_CHANGES_STORE"
@@ -558,6 +579,9 @@
     "name": "Subscription"
   },
   {
+    "name": "TEMPORARY_CONSUMER_NODE"
+  },
+  {
     "name": "TESTABILITY"
   },
   {
@@ -586,6 +610,9 @@
   },
   {
     "name": "TouchedChangeEvent"
+  },
+  {
+    "name": "UNSET"
   },
   {
     "name": "USE_VALUE"
@@ -711,9 +738,6 @@
     "name": "_wasLastNodeCreated"
   },
   {
-    "name": "_wrapInTimeout"
-  },
-  {
     "name": "activeConsumer"
   },
   {
@@ -766,6 +790,9 @@
   },
   {
     "name": "assertControlPresent"
+  },
+  {
+    "name": "assertProducerNode"
   },
   {
     "name": "attachInjectFlag"
@@ -840,6 +867,9 @@
     "name": "computeStaticStyling"
   },
   {
+    "name": "computed"
+  },
+  {
     "name": "concatStringsWithSpace"
   },
   {
@@ -849,7 +879,19 @@
     "name": "configureViewWithDirective"
   },
   {
+    "name": "consumerAfterComputation"
+  },
+  {
+    "name": "consumerBeforeComputation"
+  },
+  {
+    "name": "consumerDestroy"
+  },
+  {
     "name": "consumerIsLive"
+  },
+  {
+    "name": "consumerMarkDirty"
   },
   {
     "name": "consumerPollProducersForChange"
@@ -909,6 +951,9 @@
     "name": "createOperatorSubscriber"
   },
   {
+    "name": "createPlatform"
+  },
+  {
     "name": "createPlatformFactory"
   },
   {
@@ -919,6 +964,9 @@
   },
   {
     "name": "deepForEachProvider"
+  },
+  {
+    "name": "defaultEquals"
   },
   {
     "name": "defaultIterableDiffersFactory"
@@ -1236,6 +1284,9 @@
     "name": "importProvidersFrom"
   },
   {
+    "name": "inNotificationPhase"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
@@ -1321,6 +1372,9 @@
   },
   {
     "name": "isComponentHost"
+  },
+  {
+    "name": "isConsumerNode"
   },
   {
     "name": "isContentQueryHost"
@@ -1476,6 +1530,9 @@
     "name": "markViewForRefresh"
   },
   {
+    "name": "markedFeatures"
+  },
+  {
     "name": "maybeUnwrapEmpty"
   },
   {
@@ -1569,6 +1626,9 @@
     "name": "parseAndConvertBindingsForDefinition"
   },
   {
+    "name": "performanceMarkFeature"
+  },
+  {
     "name": "pickAsyncValidators"
   },
   {
@@ -1581,13 +1641,28 @@
     "name": "platformCore"
   },
   {
+    "name": "postSignalSetFn"
+  },
+  {
     "name": "processInjectorTypesWithProviders"
+  },
+  {
+    "name": "producerAccessed"
+  },
+  {
+    "name": "producerAddLiveConsumer"
+  },
+  {
+    "name": "producerNotifyConsumers"
   },
   {
     "name": "producerRemoveLiveConsumerAtIndex"
   },
   {
     "name": "producerUpdateValueVersion"
+  },
+  {
+    "name": "producerUpdatesAllowed"
   },
   {
     "name": "profiler"
@@ -1746,6 +1821,15 @@
     "name": "shouldSearchParent"
   },
   {
+    "name": "signal"
+  },
+  {
+    "name": "signalAsReadonlyFn"
+  },
+  {
+    "name": "signalSetFn"
+  },
+  {
     "name": "storeLViewOnDestroy"
   },
   {
@@ -1753,6 +1837,12 @@
   },
   {
     "name": "stringifyCSSSelector"
+  },
+  {
+    "name": "throwInvalidWriteToSignalError"
+  },
+  {
+    "name": "throwInvalidWriteToSignalErrorFn"
   },
   {
     "name": "throwProviderNotFoundError"
@@ -1779,6 +1869,9 @@
     "name": "uniqueIdCounter"
   },
   {
+    "name": "untracked"
+  },
+  {
     "name": "unwrapRNode"
   },
   {
@@ -1792,6 +1885,9 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "viewShouldHaveReactiveConsumer"
   },
   {
     "name": "walkProviderTree"

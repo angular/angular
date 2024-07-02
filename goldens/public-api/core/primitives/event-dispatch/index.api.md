@@ -4,6 +4,11 @@
 
 ```ts
 
+// @public (undocumented)
+export const Attribute: {
+    JSACTION: "jsaction";
+};
+
 // @public
 export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
 
@@ -15,14 +20,12 @@ export interface EarlyJsactionDataContainer {
 
 // @public
 export class EventContract implements UnrenamedEventContract {
-    constructor(containerManager: EventContractContainerManager, useActionResolver?: boolean);
+    constructor(containerManager: EventContractContainerManager, useActionResolver?: false | undefined);
     // (undocumented)
     static A11Y_CLICK_SUPPORT: boolean;
     addA11yClickSupport(): void;
     addEvent(eventType: string, prefixedEventType?: string): void;
     cleanUp(): void;
-    // (undocumented)
-    ecaacs?: (updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick, preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick, populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction) => void;
     ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
     exportAddA11yClickSupport(): void;
     handler(eventType: string): EventHandler | undefined;
@@ -111,6 +114,12 @@ export const isSupportedEvent: (eventType: string) => boolean;
 
 // @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: EventDispatcher): void;
+
+// @public (undocumented)
+export function registerEventType(element: Element, eventType: string, action: string): void;
+
+// @public (undocumented)
+export function unregisterEventType(element: Element, eventType: string): void;
 
 // (No @packageDocumentation comment for this package)
 

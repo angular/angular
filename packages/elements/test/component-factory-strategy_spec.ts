@@ -472,15 +472,15 @@ export class FakeComponentFactory<T extends Type<any>> extends ComponentFactory<
   override get ngContentSelectors(): string[] {
     return ['content-1', 'content-2'];
   }
-  override get inputs(): {propName: string; templateName: string}[] {
+  override get inputs(): {propName: string; templateName: string; isSignal: boolean}[] {
     return [
-      {propName: 'fooFoo', templateName: 'fooFoo'},
-      {propName: 'barBar', templateName: 'my-bar-bar'},
-      {propName: 'falsyUndefined', templateName: 'falsyUndefined'},
-      {propName: 'falsyNull', templateName: 'falsyNull'},
-      {propName: 'falsyEmpty', templateName: 'falsyEmpty'},
-      {propName: 'falsyFalse', templateName: 'falsyFalse'},
-      {propName: 'falsyZero', templateName: 'falsyZero'},
+      {propName: 'fooFoo', templateName: 'fooFoo', isSignal: false},
+      {propName: 'barBar', templateName: 'my-bar-bar', isSignal: false},
+      {propName: 'falsyUndefined', templateName: 'falsyUndefined', isSignal: false},
+      {propName: 'falsyNull', templateName: 'falsyNull', isSignal: false},
+      {propName: 'falsyEmpty', templateName: 'falsyEmpty', isSignal: false},
+      {propName: 'falsyFalse', templateName: 'falsyFalse', isSignal: false},
+      {propName: 'falsyZero', templateName: 'falsyZero', isSignal: false},
     ];
   }
   override get outputs(): {propName: string; templateName: string}[] {

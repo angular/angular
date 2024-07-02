@@ -53,6 +53,9 @@ export function isReactive(value: unknown): value is Reactive;
 export function producerAccessed(node: ReactiveNode): void;
 
 // @public
+export function producerIncrementEpoch(): void;
+
+// @public
 export function producerNotifyConsumers(node: ReactiveNode): void;
 
 // @public
@@ -91,6 +94,9 @@ export interface ReactiveNode {
     producerRecomputeValue(node: unknown): void;
     version: Version;
 }
+
+// @public (undocumented)
+export function runPostSignalSetFn(): void;
 
 // @public (undocumented)
 export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null;

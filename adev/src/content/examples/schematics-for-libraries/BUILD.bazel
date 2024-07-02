@@ -1,8 +1,13 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
 package(default_visibility = ["//visibility:public"])
 
-docs_example(
-    name = "schematics-for-libraries",
-    test = False,
-)
+exports_files([
+    "projects/my-lib/package.json",
+    "projects/my-lib/schematics/collection.1.json",
+    "projects/my-lib/schematics/collection.json",
+    "projects/my-lib/schematics/my-service/index.1.ts",
+    "projects/my-lib/schematics/my-service/index.ts",
+    "projects/my-lib/schematics/my-service/schema.json",
+    "projects/my-lib/schematics/my-service/schema.ts",
+    "projects/my-lib/schematics/ng-add/index.ts",
+    "projects/my-lib/tsconfig.schematics.json",
+])

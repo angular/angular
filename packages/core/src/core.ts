@@ -104,6 +104,7 @@ export {
   AfterRenderPhase,
   afterRender,
   afterNextRender,
+  ɵFirstAvailable,
 } from './render3/after_render_hooks';
 export {ApplicationConfig, mergeApplicationConfig} from './application/application_config';
 export {makeStateKey, StateKey, TransferState} from './transfer_state';

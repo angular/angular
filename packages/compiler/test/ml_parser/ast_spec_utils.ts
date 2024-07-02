@@ -114,6 +114,17 @@ class _Humanizer implements html.Visitor {
     this.result.push(this._appendContext(parameter, [html.BlockParameter, parameter.expression]));
   }
 
+  visitLetDeclaration(decl: html.LetDeclaration, context: any) {
+    const res = this._appendContext(decl, [html.LetDeclaration, decl.name, decl.value]);
+
+    if (this.includeSourceSpan) {
+      res.push(decl.nameSpan?.toString() ?? null);
+      res.push(decl.valueSpan?.toString() ?? null);
+    }
+
+    this.result.push(res);
+  }
+
   private _appendContext(ast: html.Node, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
     input.push(ast.sourceSpan.toString());

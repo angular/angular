@@ -94,7 +94,9 @@ function migrateNgSwitchCase(etm: ElementToMigrate, tmpl: string, offset: number
   // includes the mandatory semicolon before as
   const lbString = etm.hasLineBreaks ? '\n' : '';
   const leadingSpace = etm.hasLineBreaks ? '' : ' ';
-  const condition = etm.attr.value;
+  // ngSwitchCases with no values results into `case ()` which isn't valid, based off empty
+  // value we add quotes instead of generating empty case
+  const condition = etm.attr.value.length === 0 ? `''` : etm.attr.value;
 
   const originals = getOriginals(etm, tmpl, offset);
 

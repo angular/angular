@@ -53,7 +53,7 @@ export const appConfig: ApplicationConfig = {
 };
 </docs-code>
 
-By default, `HttpClient` uses the [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) API to make requests. The `withFetch` feature switches the client to use the [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) API instead.
+By default, `HttpClient` uses the [`XMLHttpRequest`](https://developer.mozilla.org/docs/Web/API/XMLHttpRequest) API to make requests. The `withFetch` feature switches the client to use the [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API) API instead.
 
 `fetch` is a more modern API and is available in a few environments where `XMLHttpRequest` is not supported. It does have a few limitations, such as not producing upload progress events.
 
@@ -79,7 +79,7 @@ CRITICAL: You must configure an instance of `HttpClient` above the current injec
 
 Including `withJsonpSupport` enables the `.jsonp()` method on `HttpClient`, which makes a GET request via the [JSONP convention](https://en.wikipedia.org/wiki/JSONP) for cross-domain loading of data.
 
-HELPFUL: Prefer using [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) to make cross-domain requests instead of JSONP when possible.
+HELPFUL: Prefer using [CORS](https://developer.mozilla.org/docs/Web/HTTP/CORS) to make cross-domain requests instead of JSONP when possible.
 
 ### `withXsrfConfiguration(...)`
 

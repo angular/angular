@@ -2623,5 +2623,67 @@ runInEachFileSystem(() => {
         );
       });
     });
+
+    describe('template diagnostics', () => {
+      it('should show correct error message for syntatic template errors - case of inline template', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+  
+          @Component({
+            template: '<span Hello! </span>',
+          })
+          export class Main {
+          }
+          `,
+        );
+
+        const errors = env.driveDiagnostics();
+
+        expect(errors.length).toBeGreaterThanOrEqual(1);
+
+        const {code, messageText} = errors[0];
+
+        expect(code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+
+        const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+        expect(text).toContain('Opening tag "span" not terminated');
+      });
+
+      it('should show correct error message for syntatic template errors - case of external template', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+  
+          @Component({
+            templateUrl: 'test.ng.html',
+          })
+          export class Main {
+          }
+          `,
+        );
+        env.write(
+          'test.ng.html',
+          `
+          <span Hello! </span>
+          `,
+        );
+
+        const errors = env.driveDiagnostics();
+
+        expect(errors.length).toBeGreaterThanOrEqual(1);
+
+        const {code, messageText} = errors[0];
+
+        expect(code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+
+        const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+        expect(text).toContain('Opening tag "span" not terminated');
+      });
+    });
   });
 });

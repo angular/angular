@@ -40,6 +40,7 @@ const CHAINABLE = new Set([
   R3.templateCreate,
   R3.twoWayProperty,
   R3.twoWayListener,
+  R3.declareLet,
 ]);
 
 /**

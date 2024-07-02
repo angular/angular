@@ -94,30 +94,6 @@ yarn_install(
     yarn_lock = "//:yarn.lock",
 )
 
-yarn_install(
-    name = "aio_example_deps",
-    # Rename the default js_library target from "node_modules" as this obscures the
-    # the source directory stamped as a filegroup in the manual BUILD contents below.
-    all_node_modules_target_name = "node_modules_all",
-    data = [
-        YARN_LABEL,
-        "//:.yarnrc",
-    ],
-    # Disabled because, when False, yarn_install preserves the node_modules folder
-    # with bin symlinks in the external repository. This is needed to link the shared
-    # set of deps for example e2es.
-    exports_directories_only = False,
-    manual_build_file_contents = """\
-filegroup(
-    name = "node_modules_files",
-    srcs = ["node_modules"],
-)
-""",
-    package_json = "//aio/tools/examples/shared:package.json",
-    yarn = YARN_LABEL,
-    yarn_lock = "//aio/tools/examples/shared:yarn.lock",
-)
-
 load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
 aspect_bazel_lib_dependencies()
@@ -167,10 +143,10 @@ cldr_xml_data_repository(
 # sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "a64c8b72698f8ae2d2d8a8626604d168e08a7befa59ce57c0bc033e89723b593",
-    strip_prefix = "rules_sass-2907a4570759103d700206240a2cd208d50751c7",
+    sha256 = "47c50aa960ddf875a2a2dd7efd1c839e5f8598725c00014680122b0e48d0ec7f",
+    strip_prefix = "rules_sass-b222c61b3d3879ec45b66062b2c706a72f3d80bb",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/2907a4570759103d700206240a2cd208d50751c7.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/b222c61b3d3879ec45b66062b2c706a72f3d80bb.zip",
     ],
 )
 

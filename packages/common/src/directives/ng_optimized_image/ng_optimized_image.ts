@@ -118,6 +118,12 @@ const FIXED_SRCSET_HEIGHT_LIMIT = 1080;
 export const PLACEHOLDER_BLUR_AMOUNT = 15;
 
 /**
+ * Placeholder dimension (height or width) limit in pixels. Angular produces a warning
+ * when this limit is crossed.
+ */
+const PLACEHOLDER_DIMENSION_LIMIT = 1000;
+
+/**
  * Used to warn or error when the user provides an overly large dataURL for the placeholder
  * attribute.
  * Character count of Base64 images is 1 character per byte, and base64 encoding is approximately
@@ -136,6 +142,18 @@ export const BUILT_IN_LOADERS = [
   cloudinaryLoaderInfo,
   netlifyLoaderInfo,
 ];
+
+/**
+ * Threshold for the PRIORITY_TRUE_COUNT
+ */
+const PRIORITY_COUNT_THRESHOLD = 10;
+
+/**
+ * This count is used to log a devMode warning
+ * when the count of directive instances with priority=true
+ * exceeds the threshold PRIORITY_COUNT_THRESHOLD
+ */
+let IMGS_WITH_PRIORITY_ATTR_COUNT = 0;
 
 /**
  * Config options used in rendering placeholder images.
@@ -352,7 +370,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /**
    * A URL or data URL for an image to be used as a placeholder while this image loads.
    */
-  @Input({transform: booleanOrDataUrlAttribute}) placeholder?: string | boolean;
+  @Input({transform: booleanOrUrlAttribute}) placeholder?: string | boolean;
 
   /**
    * Configuration object for placeholder settings. Options:
@@ -430,6 +448,14 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
+
+        // This leaves the Angular zone to avoid triggering unnecessary change detection cycles when
+        // document.addEventListener is invoked
+        if (!this.isServer) {
+          ngZone.runOutsideAngular(() => {
+            assetPriorityCountBelowThreshold();
+          });
+        }
       }
     }
     if (this.placeholder) {
@@ -497,6 +523,10 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
           this.lcpObserver?.updateImage(oldSrc, newSrc);
         });
       }
+    }
+
+    if (ngDevMode && changes['placeholder']?.currentValue && !this.isServer) {
+      assertPlaceholderDimensions(this, this.imgElement);
     }
   }
 
@@ -631,7 +661,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         width: placeholderResolution,
         isPlaceholder: true,
       })})`;
-    } else if (typeof placeholderInput === 'string' && placeholderInput.startsWith('data:')) {
+    } else if (typeof placeholderInput === 'string') {
       return `url(${placeholderInput})`;
     }
     return null;
@@ -1245,6 +1275,49 @@ function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: I
   }
 }
 
+/**
+ * Warns if the priority attribute is used too often on page load
+ */
+function assetPriorityCountBelowThreshold() {
+  if (IMGS_WITH_PRIORITY_ATTR_COUNT === 0) {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (IMGS_WITH_PRIORITY_ATTR_COUNT > PRIORITY_COUNT_THRESHOLD) {
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.TOO_MANY_PRIORITY_ATTRIBUTES,
+            `NgOptimizedImage: The "priority" attribute is set to true more than ${PRIORITY_COUNT_THRESHOLD} times (${IMGS_WITH_PRIORITY_ATTR_COUNT} times). ` +
+              `Marking too many images as "high" priority can hurt your application's LCP (https://web.dev/lcp). ` +
+              `"Priority" should only be set on the image expected to be the page's LCP element.`,
+          ),
+        );
+      }
+    });
+  }
+  IMGS_WITH_PRIORITY_ATTR_COUNT++;
+}
+
+/**
+ * Warns if placeholder's dimension are over a threshold.
+ *
+ * This assert function is meant to only run on the browser.
+ */
+function assertPlaceholderDimensions(dir: NgOptimizedImage, imgElement: HTMLImageElement) {
+  const computedStyle = window.getComputedStyle(imgElement);
+  let renderedWidth = parseFloat(computedStyle.getPropertyValue('width'));
+  let renderedHeight = parseFloat(computedStyle.getPropertyValue('height'));
+
+  if (renderedWidth > PLACEHOLDER_DIMENSION_LIMIT || renderedHeight > PLACEHOLDER_DIMENSION_LIMIT) {
+    console.warn(
+      formatRuntimeError(
+        RuntimeErrorCode.PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED,
+        `${imgDirectiveDetails(dir.ngSrc)} it uses a placeholder image, but at least one of ` +
+          `of the dimensions attribute (height or width) exceeds the limit of ${PLACEHOLDER_DIMENSION_LIMIT}px. ` +
+          `To fix this, use a smaller image as a placeholder.`,
+      ),
+    );
+  }
+}
+
 function round(input: number): number | string {
   return Number.isInteger(input) ? input : input.toFixed(2);
 }
@@ -1260,8 +1333,8 @@ function unwrapSafeUrl(value: string | SafeValue): string {
 
 // Transform function to handle inputs which may be booleans, strings, or string representations
 // of boolean values. Used for the placeholder attribute.
-export function booleanOrDataUrlAttribute(value: boolean | string): boolean | string {
-  if (typeof value === 'string' && value.startsWith(`data:`)) {
+export function booleanOrUrlAttribute(value: boolean | string): boolean | string {
+  if (typeof value === 'string' && value !== 'true' && value !== 'false' && value !== '') {
     return value;
   }
   return booleanAttribute(value);

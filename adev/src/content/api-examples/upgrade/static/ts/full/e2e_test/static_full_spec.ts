@@ -7,7 +7,7 @@
  */
 
 import {browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../../../../../../packages/examples/test-utils/index';
 
 function loadPage() {
   browser.rootEl = 'example-app';

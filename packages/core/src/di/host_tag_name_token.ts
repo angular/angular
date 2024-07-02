@@ -70,6 +70,8 @@ function getDevModeNodeName(tNode: TNode) {
     return 'an <ng-container>';
   } else if (tNode.type & TNodeType.Container) {
     return 'an <ng-template>';
+  } else if (tNode.type & TNodeType.LetDeclaration) {
+    return 'an @let declaration';
   } else {
     return 'a node';
   }

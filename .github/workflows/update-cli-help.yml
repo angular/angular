@@ -1,4 +1,4 @@
-name: Update AIO Angular CLI help
+name: Update ADEV Angular CLI help
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           # Setting `persist-credentials: false` prevents the github-action account from being the
           # account that is attempted to be used for authentication, instead the remote is set to
@@ -32,7 +32,7 @@ jobs:
         env:
           ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN }}
       - name: Create a PR (if necessary)
-        uses: angular/dev-infra/github-actions/create-pr-for-changes@89624a6442b75b5cda33c5e9b5c8c4f87ca4f13d
+        uses: angular/dev-infra/github-actions/create-pr-for-changes@03b8a7dffd1205e061f0bee949024ebefc2a6592
         with:
           branch-prefix: update-cli-help
           pr-title: 'docs: update Angular CLI help [${{github.ref_name}}]'

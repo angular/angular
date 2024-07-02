@@ -8,7 +8,7 @@
 
 import {browser, by, element, ElementArrayFinder} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../../../../../packages/examples/test-utils/index';
 
 describe('simpleForm example', () => {
   afterEach(verifyNoBrowserErrors);

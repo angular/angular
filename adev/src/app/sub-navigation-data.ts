@@ -1047,6 +1047,10 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'cli/generate/config',
           },
           {
+            label: 'directive',
+            path: 'cli/generate/directive',
+          },
+          {
             label: 'enum',
             path: 'cli/generate/enum',
           },
@@ -1258,6 +1262,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'NG0912: Component ID generation collision',
         path: 'errors/NG0912',
         contentPath: 'reference/errors/NG0912',
+      },
+      {
+        label: 'NG0913: Runtime Performance Warnings',
+        path: 'errors/NG0913',
+        contentPath: 'reference/errors/NG0913',
       },
       {
         label: 'NG0950: Required input is accessed before a value is set.',

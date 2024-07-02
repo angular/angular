@@ -1,8 +1,0 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
-package(default_visibility = ["//visibility:public"])
-
-docs_example(
-    name = "upgrade-lazy-load-ajs",
-    test_tags = ["broken"],  # This is currently broken with the Application builder. Looks like it's caused by AngularJS bundle.
-)

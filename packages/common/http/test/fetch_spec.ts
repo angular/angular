@@ -151,6 +151,15 @@ describe('FetchBackend', async () => {
     expect(fetchMock.request.headers).toEqual(setHeaders);
   });
 
+  it('should be case insensitive for Content-Type & Accept', () => {
+    const setHeaders = {
+      'accept': 'text/html',
+      'content-type': 'text/css',
+    };
+    callFetchAndFlush(TEST_POST.clone({setHeaders}));
+    expect(fetchMock.request.headers).toEqual(setHeaders);
+  });
+
   it('passes withCredentials through', () => {
     callFetchAndFlush(TEST_POST.clone({withCredentials: true}));
     expect(fetchMock.request.credentials).toBe('include');

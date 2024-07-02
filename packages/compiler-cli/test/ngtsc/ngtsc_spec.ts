@@ -3375,7 +3375,7 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
         });
 
         it('should not give a compile-time error if an invalid @Injectable is used with useFactory', () => {
@@ -3397,7 +3397,7 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
         });
 
         it('should not give a compile-time error if an invalid @Injectable is used with useExisting', () => {
@@ -3421,7 +3421,7 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
         });
 
         it('should not give a compile-time error if an invalid @Injectable is used with useClass', () => {
@@ -3445,7 +3445,7 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
         });
 
         it('should not give a compile-time error if an invalid @Injectable without providedIn is an abstract class', () => {
@@ -3464,7 +3464,7 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
         });
 
         it('should not give a compile-time error if an invalid @Injectable with providedIn is an abstract class', () => {
@@ -3485,7 +3485,7 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/ms);
+          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
         });
 
         it('should give a compile-time error when a derived Directive inherits an invalid constructor', () => {

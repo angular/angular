@@ -7,7 +7,7 @@ Every component must have:
 
 * A TypeScript class with _behaviors_ such as handling user input and fetching data from a server
 * An HTML template that controls what renders into the DOM
-* A [CSS selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML
+* A [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML
 
 You provide Angular-specific information for a component by adding a `@Component` [decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) on top of the TypeScript class:
 
@@ -53,7 +53,7 @@ Both `templateUrl` and `styleUrl` are relative to the directory in which the com
 
 ## Using components
 
-Every component defines a [CSS selector](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors):
+Every component defines a [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors):
 
 <docs-code language="ts" highlight="[2]">
 @Component({

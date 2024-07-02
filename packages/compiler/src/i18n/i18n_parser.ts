@@ -239,6 +239,10 @@ class _I18nVisitor implements html.Visitor {
     throw new Error('Unreachable code');
   }
 
+  visitLetDeclaration(decl: html.LetDeclaration, context: any) {
+    return null;
+  }
+
   /**
    * Convert, text and interpolated tokens up into text and placeholder pieces.
    *

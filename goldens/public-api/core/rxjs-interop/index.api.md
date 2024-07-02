@@ -12,6 +12,7 @@ import { OutputOptions } from '@angular/core';
 import { OutputRef } from '@angular/core';
 import { Signal } from '@angular/core';
 import { Subscribable } from 'rxjs';
+import { ValueEqualityFn } from '@angular/core/primitives/signals';
 
 // @public
 export function outputFromObservable<T>(observable: Observable<T>, opts?: OutputOptions): OutputRef<T>;
@@ -34,31 +35,32 @@ export interface ToObservableOptions {
 export function toSignal<T>(source: Observable<T> | Subscribable<T>): Signal<T | undefined>;
 
 // @public (undocumented)
-export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions & {
+export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: NoInfer<ToSignalOptions<T | undefined>> & {
     initialValue?: undefined;
     requireSync?: false;
 }): Signal<T | undefined>;
 
 // @public (undocumented)
-export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions & {
+export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: NoInfer<ToSignalOptions<T | null>> & {
     initialValue?: null;
     requireSync?: false;
 }): Signal<T | null>;
 
 // @public (undocumented)
-export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions & {
+export function toSignal<T>(source: Observable<T> | Subscribable<T>, options: NoInfer<ToSignalOptions<T>> & {
     initialValue?: undefined;
     requireSync: true;
 }): Signal<T>;
 
 // @public (undocumented)
-export function toSignal<T, const U extends T>(source: Observable<T> | Subscribable<T>, options: ToSignalOptions & {
+export function toSignal<T, const U extends T>(source: Observable<T> | Subscribable<T>, options: NoInfer<ToSignalOptions<T | U>> & {
     initialValue: U;
     requireSync?: false;
 }): Signal<T | U>;
 
 // @public
-export interface ToSignalOptions {
+export interface ToSignalOptions<T> {
+    equals?: ValueEqualityFn<T>;
     initialValue?: unknown;
     injector?: Injector;
     manualCleanup?: boolean;

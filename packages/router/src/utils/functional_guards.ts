@@ -8,7 +8,18 @@
 
 import {inject, Type} from '@angular/core';
 
-import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanMatchFn, ResolveFn} from '../models';
+import {
+  CanActivate,
+  CanActivateChild,
+  CanActivateChildFn,
+  CanActivateFn,
+  CanDeactivate,
+  CanDeactivateFn,
+  CanMatch,
+  CanMatchFn,
+  Resolve,
+  ResolveFn,
+} from '../models';
 
 /**
  * Maps an array of injectable classes with canMatch functions to an array of equivalent
@@ -19,7 +30,7 @@ import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanMatchFn, ResolveF
  * @publicApi
  * @see {@link Route}
  */
-export function mapToCanMatch(providers: Array<Type<{canMatch: CanMatchFn}>>): CanMatchFn[] {
+export function mapToCanMatch(providers: Array<Type<CanMatch>>): CanMatchFn[] {
   return providers.map(
     (provider) =>
       (...params) =>
@@ -36,9 +47,7 @@ export function mapToCanMatch(providers: Array<Type<{canMatch: CanMatchFn}>>): C
  * @publicApi
  * @see {@link Route}
  */
-export function mapToCanActivate(
-  providers: Array<Type<{canActivate: CanActivateFn}>>,
-): CanActivateFn[] {
+export function mapToCanActivate(providers: Array<Type<CanActivate>>): CanActivateFn[] {
   return providers.map(
     (provider) =>
       (...params) =>
@@ -55,7 +64,7 @@ export function mapToCanActivate(
  * @see {@link Route}
  */
 export function mapToCanActivateChild(
-  providers: Array<Type<{canActivateChild: CanActivateChildFn}>>,
+  providers: Array<Type<CanActivateChild>>,
 ): CanActivateChildFn[] {
   return providers.map(
     (provider) =>
@@ -73,7 +82,7 @@ export function mapToCanActivateChild(
  * @see {@link Route}
  */
 export function mapToCanDeactivate<T = unknown>(
-  providers: Array<Type<{canDeactivate: CanDeactivateFn<T>}>>,
+  providers: Array<Type<CanDeactivate<T>>>,
 ): CanDeactivateFn<T>[] {
   return providers.map(
     (provider) =>
@@ -90,6 +99,6 @@ export function mapToCanDeactivate<T = unknown>(
  * @publicApi
  * @see {@link Route}
  */
-export function mapToResolve<T>(provider: Type<{resolve: ResolveFn<T>}>): ResolveFn<T> {
+export function mapToResolve<T>(provider: Type<Resolve<T>>): ResolveFn<T> {
   return (...params) => inject(provider).resolve(...params);
 }

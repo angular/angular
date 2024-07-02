@@ -333,6 +333,15 @@ describe('getTargetAtPosition for template AST', () => {
     expect(node).toBeInstanceOf(t.Variable);
   });
 
+  it('should locate a @let name', () => {
+    const {errors, nodes, position} = parse(`@let va¦lue = 1337;`);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(t.LetDeclaration);
+  });
+
   it('should locate template children', () => {
     const {errors, nodes, position} = parse(`<ng-template><d¦iv></div></ng-template>`);
     expect(errors).toBe(null);
@@ -659,6 +668,16 @@ describe('getTargetAtPosition for expression AST', () => {
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(e.Conditional);
+  });
+
+  it('should locate a @let value', () => {
+    const {errors, nodes, position} = parse(`@let value = 13¦37;`);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.LiteralPrimitive);
+    expect((node as e.LiteralPrimitive).value).toBe(1337);
   });
 
   describe('object literal shorthand', () => {

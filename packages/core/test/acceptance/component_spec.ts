@@ -22,6 +22,7 @@ import {
   Injectable,
   InjectionToken,
   Injector,
+  input,
   Input,
   NgModule,
   OnDestroy,
@@ -968,6 +969,7 @@ describe('component', () => {
       })
       class StandaloneComponent {
         @Input({alias: 'input-alias-c', transform: transformFn}) inputC: unknown;
+        @Input({isSignal: true} as Input) inputD = input(false);
       }
 
       const mirror = reflectComponentType(StandaloneComponent)!;
@@ -976,9 +978,15 @@ describe('component', () => {
       expect(mirror.type).toBe(StandaloneComponent);
       expect(mirror.isStandalone).toEqual(true);
       expect(mirror.inputs).toEqual([
-        {propName: 'input-a', templateName: 'input-a'},
-        {propName: 'input-b', templateName: 'input-alias-b'},
-        {propName: 'inputC', templateName: 'input-alias-c', transform: transformFn},
+        {propName: 'input-a', templateName: 'input-a', isSignal: false},
+        {propName: 'input-b', templateName: 'input-alias-b', isSignal: false},
+        {
+          propName: 'inputC',
+          templateName: 'input-alias-c',
+          transform: transformFn,
+          isSignal: false,
+        },
+        {propName: 'inputD', templateName: 'inputD', isSignal: true},
       ]);
       expect(mirror.outputs).toEqual([
         {propName: 'output-a', templateName: 'output-a'},
@@ -1016,9 +1024,14 @@ describe('component', () => {
       expect(mirror.type).toBe(NonStandaloneComponent);
       expect(mirror.isStandalone).toEqual(false);
       expect(mirror.inputs).toEqual([
-        {propName: 'input-a', templateName: 'input-a'},
-        {propName: 'input-b', templateName: 'input-alias-b'},
-        {propName: 'inputC', templateName: 'input-alias-c', transform: transformFn},
+        {propName: 'input-a', templateName: 'input-a', isSignal: false},
+        {propName: 'input-b', templateName: 'input-alias-b', isSignal: false},
+        {
+          propName: 'inputC',
+          templateName: 'input-alias-c',
+          transform: transformFn,
+          isSignal: false,
+        },
       ]);
       expect(mirror.outputs).toEqual([
         {propName: 'output-a', templateName: 'output-a'},

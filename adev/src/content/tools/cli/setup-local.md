@@ -46,7 +46,7 @@ npm install -g @angular/cli
 ### Powershell execution policy
 
 On Windows client computers, the execution of PowerShell scripts is disabled by default, so the above command may fail with an error.
-To allow the execution of PowerShell scripts, which is needed for npm global binaries, you must set the following <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies">execution policy</a>:
+To allow the execution of PowerShell scripts, which is needed for npm global binaries, you must set the following <a href="https://docs.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies">execution policy</a>:
 
 <docs-code language="sh">
 

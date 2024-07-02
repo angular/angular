@@ -23,13 +23,50 @@ import {
   removePackageJsonDependency,
 } from '@schematics/angular/utility/dependencies';
 import {JSONFile, JSONPath} from '@schematics/angular/utility/json-file';
-import {getWorkspace} from '@schematics/angular/utility/workspace';
+import {getWorkspace, updateWorkspace} from '@schematics/angular/utility/workspace';
 import {Builders} from '@schematics/angular/utility/workspace-models';
 
 import {Schema} from './schema';
 
 const localizeType = `@angular/localize`;
+const localizePolyfill = '@angular/localize/init';
 const localizeTripleSlashType = `/// <reference types="@angular/localize" />`;
+
+function addPolyfillToConfig(projectName: string): Rule {
+  return updateWorkspace((workspace) => {
+    const project = workspace.projects.get(projectName);
+    if (!project) {
+      throw new SchematicsException(`Invalid project name '${projectName}'.`);
+    }
+
+    const isLocalizePolyfill = (path: string) => path.startsWith('@angular/localize');
+
+    for (const target of project.targets.values()) {
+      switch (target.builder) {
+        case Builders.Karma:
+        case Builders.Server:
+        case Builders.Browser:
+        case Builders.BrowserEsbuild:
+        case Builders.Application:
+          target.options ??= {};
+          const value = target.options['polyfills'];
+          if (typeof value === 'string') {
+            if (!isLocalizePolyfill(value)) {
+              target.options['polyfills'] = [value, localizePolyfill];
+            }
+          } else if (Array.isArray(value)) {
+            if (!(value as string[]).some(isLocalizePolyfill)) {
+              value.push(localizePolyfill);
+            }
+          } else {
+            target.options['polyfills'] = [localizePolyfill];
+          }
+
+          break;
+      }
+    }
+  });
+}
 
 function addTypeScriptConfigTypes(projectName: string): Rule {
   return async (host: Tree) => {
@@ -45,6 +82,7 @@ function addTypeScriptConfigTypes(projectName: string): Rule {
       switch (target.builder) {
         case Builders.Karma:
         case Builders.Server:
+        case Builders.BrowserEsbuild:
         case Builders.Browser:
         case Builders.Application:
           const value = target.options?.['tsConfig'];
@@ -55,7 +93,7 @@ function addTypeScriptConfigTypes(projectName: string): Rule {
           break;
       }
 
-      if (target.builder === Builders.Browser) {
+      if (target.builder === Builders.Browser || target.builder === Builders.BrowserEsbuild) {
         const value = target.options?.['main'];
         if (typeof value === 'string') {
           addTripleSlashType(host, value);
@@ -132,6 +170,7 @@ export default function (options: Schema): Rule {
 
     return chain([
       addTypeScriptConfigTypes(projectName),
+      addPolyfillToConfig(projectName),
       // If `$localize` will be used at runtime then must install `@angular/localize`
       // into `dependencies`, rather than the default of `devDependencies`.
       options.useAtRuntime ? moveToDependencies : noop(),

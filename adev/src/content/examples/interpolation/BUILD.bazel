@@ -1,7 +1,7 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
 package(default_visibility = ["//visibility:public"])
 
-docs_example(
-    name = "interpolation",
-)
+exports_files([
+    "src/app/app.component.1.ts",
+    "src/app/app.component.html",
+    "src/app/app.component.ts",
+])

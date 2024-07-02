@@ -33,6 +33,7 @@ import {
   TmplAstIcu,
   TmplAstIfBlock,
   TmplAstIfBlockBranch,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
   TmplAstSwitchBlock,
@@ -609,6 +610,10 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   }
 
   visitUnknownBlock(block: TmplAstUnknownBlock) {}
+
+  visitLetDeclaration(decl: TmplAstLetDeclaration) {
+    this.visitBinding(decl.value);
+  }
 
   visitAll(nodes: TmplAstNode[]) {
     for (const node of nodes) {

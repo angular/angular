@@ -344,9 +344,9 @@ describe('quick info', () => {
           templateOverride: `<div (cl¦ick)="myClick($event)"></div>`,
           expectedSpanText: 'click',
           expectedDisplayString:
-            '(event) HTMLDivElement.addEventListener<"click">(type: "click", ' +
-            'listener: (this: HTMLDivElement, ev: MouseEvent) => any, ' +
-            'options?: boolean | AddEventListenerOptions | undefined): void (+1 overload)',
+            '(event) HTMLDivElement.addEventListener<"click">(type: "click", listener: ' +
+            '(this: HTMLDivElement, ev: MouseEvent) => any, options?: boolean | ' +
+            'AddEventListenerOptions): void (+1 overload)',
         });
       });
     });
@@ -399,8 +399,8 @@ describe('quick info', () => {
           templateOverride,
           expectedSpanText: 'date',
           expectedDisplayString:
-            '(pipe) DatePipe.transform(value: string | number | Date, format?: string | undefined, timezone?: ' +
-            'string | undefined, locale?: string | undefined): string | null (+2 overloads)',
+            '(pipe) DatePipe.transform(value: Date | string | number, format?: string, ' +
+            'timezone?: string, locale?: string): string | null (+2 overloads)',
         });
       });
     });
@@ -705,6 +705,16 @@ describe('quick info', () => {
       });
     });
 
+    describe('let declarations', () => {
+      it('should get quick info for a let declaration', () => {
+        expectQuickInfo({
+          templateOverride: `@let na¦me = 'Frodo';`,
+          expectedSpanText: `@let name = 'Frodo'`,
+          expectedDisplayString: `(let) name: "Frodo"`,
+        });
+      });
+    });
+
     it('should work for object literal with shorthand property declarations', () => {
       initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
@@ -823,8 +833,8 @@ describe('quick info', () => {
         templateOverride,
         expectedSpanText: 'date',
         expectedDisplayString:
-          '(pipe) DatePipe.transform(value: string | number | Date, format?: string | undefined, timezone?: ' +
-          'string | undefined, locale?: string | undefined): string | null (+2 overloads)',
+          '(pipe) DatePipe.transform(value: Date | string | number, format?: string, ' +
+          'timezone?: string, locale?: string): string | null (+2 overloads)',
       });
     });
 

@@ -187,6 +187,32 @@ describe('control flow migration', () => {
       );
     });
 
+    it('should migrate an empty case', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {ngSwitch, ngSwitchCase} from '@angular/common';
+        @Component({
+          template: \`<div [ngSwitch]="testOpts">` +
+          `<p *ngSwitchCase="">Option 1</p>` +
+          `<p *ngSwitchCase="2">Option 2</p>` +
+          `</div>\`
+        })
+        class Comp {
+          testOpts = "1";
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+        `template: \`<div>@switch (testOpts) { @case ('') { <p>Option 1</p> } @case (2) { <p>Option 2</p> }}</div>`,
+      );
+    });
+
     it('should migrate multiple inline templates in the same file', async () => {
       writeFile(
         '/comp.ts',
@@ -2160,6 +2186,64 @@ describe('control flow migration', () => {
 
       expect(content).toContain(
         'template: `<ul>@for (itm of items; track itm; let myIndex = $index) {<li>{{itm.text}}</li>}</ul>`',
+      );
+    });
+
+    it('should not generate aliased variables declared via the `as` syntax with the same name as the original', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor],
+          template: \`<div *ngFor="let item of items; index as $index;">{{$index}}</div>\`
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'}, {id: 2, text: 'stuff'}];
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+        'template: `@for (item of items; track item) {<div>{{$index}}</div>}`',
+      );
+    });
+
+    it('should not generate aliased variables declared via the `let` syntax with the same name as the original', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgFor} from '@angular/common';
+        interface Item {
+          id: number;
+          text: string;
+        }
+
+        @Component({
+          imports: [NgFor],
+          template: \`<div *ngFor="let item of items; let $index = index">{{$index}}</div>\`
+        })
+        class Comp {
+          items: Item[] = [{id: 1, text: 'blah'}, {id: 2, text: 'stuff'}];
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content).toContain(
+        'template: `@for (item of items; track item) {<div>{{$index}}</div>}`',
       );
     });
 

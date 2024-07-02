@@ -1,7 +1,16 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
 package(default_visibility = ["//visibility:public"])
 
-docs_example(
-    name = "i18n",
-)
+exports_files([
+    "angular.json",
+    "doc-files/apache2.conf",
+    "doc-files/app.component.html",
+    "doc-files/commands.sh",
+    "doc-files/locale_plural_function.ts",
+    "doc-files/main.1.ts",
+    "doc-files/messages.fr.xlf.html",
+    "doc-files/nginx.conf",
+    "doc-files/rendered-output.html",
+    "src/app/app.component.html",
+    "src/app/app.component.ts",
+    "src/main.ts",
+])

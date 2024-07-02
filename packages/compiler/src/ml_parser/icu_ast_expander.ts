@@ -113,6 +113,10 @@ class _Expander implements html.Visitor {
   visitBlockParameter(parameter: html.BlockParameter, context: any) {
     return parameter;
   }
+
+  visitLetDeclaration(decl: html.LetDeclaration, context: any) {
+    return decl;
+  }
 }
 
 // Plural forms are expanded to `NgPlural` and `NgPluralCase`s

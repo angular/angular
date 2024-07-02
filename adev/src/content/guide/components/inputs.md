@@ -106,7 +106,7 @@ export class CustomSlider {
 </docs-code>
 
 `booleanAttribute` imitates the behavior of standard
-HTML [boolean attributes](https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML), where the _presence_ of the attribute indicates a "true" value. However, Angular's `booleanAttribute` treats the literal string `"false"` as the boolean `false`.
+HTML [boolean attributes](https://developer.mozilla.org/docs/Glossary/Boolean/HTML), where the _presence_ of the attribute indicates a "true" value. However, Angular's `booleanAttribute` treats the literal string `"false"` as the boolean `false`.
 
 `numberAttribute` attempts to parse the given value to a number, producing `NaN` if parsing fails.
 

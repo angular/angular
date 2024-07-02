@@ -25,7 +25,7 @@ Angular also supports workspaces with [multiple projects](#multiple-projects).
 This type of development environment is suitable for advanced users who are developing shareable libraries,
 and for enterprises that use a "monorepo" development style, with a single repository and global configuration for all Angular projects.
 
-To set up a monorepo workspace, you should skip the creating the root application.
+To set up a monorepo workspace, you should skip creating the root application.
 See [Setting up for a multi-project workspace](#multiple-projects) below.
 
 ## Workspace configuration files
@@ -64,7 +64,7 @@ Subfolders contain the application source and application-specific configuration
 | Application support files | Purpose                                                                                                                                                                                                                           |
 |:---                       |:---                                                                                                                                                                                                                               |
 | `app/`                    | Contains the component files in which your application logic and data are defined. See details [below](#app-src).                                                                                                                 |
-| `assets/`                 | Contains image and other asset files to be served as static files by the dev server and copied as-is when you build your application.                                                                                             |
+| `public/`                 | Contains image and other asset files to be served as static files by the dev server and copied as-is when you build your application.                                                                                             |
 | `favicon.ico`             | An icon to use for this application in the bookmark bar.                                                                                                                                                                          |
 | `index.html`              | The main HTML page that is served when someone visits your site. The CLI automatically adds all JavaScript and CSS files when building your app, so you typically don't need to add any `<script>` or`<link>` tags here manually. |
 | `main.ts`                 | The main entry point for your application.                                                                                                                                                                                        |

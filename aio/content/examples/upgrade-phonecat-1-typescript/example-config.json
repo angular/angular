@@ -1,5 +1,0 @@
-{
-  "build": "build:upgrade",
-  "run": "serve:upgrade",
-  "projectType": "systemjs"
-}

@@ -28,6 +28,7 @@ import {
   TmplAstForLoopBlockEmpty,
   TmplAstIfBlock,
   TmplAstIfBlockBranch,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstRecursiveVisitor,
   TmplAstReference,
@@ -44,6 +45,7 @@ import {
   AttributeIdentifier,
   ElementIdentifier,
   IdentifierKind,
+  LetDeclarationIdentifier,
   MethodIdentifier,
   PropertyIdentifier,
   ReferenceIdentifier,
@@ -63,8 +65,8 @@ interface HTMLNode extends TmplAstNode {
 }
 
 type ExpressionIdentifier = PropertyIdentifier | MethodIdentifier;
-type TmplTarget = TmplAstReference | TmplAstVariable;
-type TargetIdentifier = ReferenceIdentifier | VariableIdentifier;
+type TmplTarget = TmplAstReference | TmplAstVariable | TmplAstLetDeclaration;
+type TargetIdentifier = ReferenceIdentifier | VariableIdentifier | LetDeclarationIdentifier;
 type TargetIdentifierMap = Map<TmplTarget, TargetIdentifier>;
 
 /**
@@ -351,6 +353,16 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(block.children);
   }
 
+  override visitLetDeclaration(decl: TmplAstLetDeclaration): void {
+    const identifier = this.targetToIdentifier(decl);
+
+    if (identifier !== null) {
+      this.identifiers.add(identifier);
+    }
+
+    this.visitExpression(decl.value);
+  }
+
   /** Creates an identifier for a template element or template node. */
   private elementOrTemplateToIdentifier(
     node: TmplAstElement | TmplAstTemplate,
@@ -418,7 +430,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   }
 
   /** Creates an identifier for a template reference or template variable target. */
-  private targetToIdentifier(node: TmplAstReference | TmplAstVariable): TargetIdentifier | null {
+  private targetToIdentifier(node: TmplTarget): TargetIdentifier | null {
     // If this node has already been seen, return the cached result.
     if (this.targetIdentifierCache.has(node)) {
       return this.targetIdentifierCache.get(node)!;
@@ -431,7 +443,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     }
 
     const span = new AbsoluteSourceSpan(start, start + name.length);
-    let identifier: ReferenceIdentifier | VariableIdentifier;
+    let identifier: ReferenceIdentifier | VariableIdentifier | LetDeclarationIdentifier;
     if (node instanceof TmplAstReference) {
       // If the node is a reference, we care about its target. The target can be an element, a
       // template, a directive applied on a template or element (in which case the directive field
@@ -463,11 +475,17 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
         kind: IdentifierKind.Reference,
         target,
       };
-    } else {
+    } else if (node instanceof TmplAstVariable) {
       identifier = {
         name,
         span,
         kind: IdentifierKind.Variable,
+      };
+    } else {
+      identifier = {
+        name,
+        span,
+        kind: IdentifierKind.LetDeclaration,
       };
     }
 

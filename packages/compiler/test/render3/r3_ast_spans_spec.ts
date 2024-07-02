@@ -247,6 +247,15 @@ class R3AstSourceSpans implements t.Visitor<void> {
     this.result.push(['UnknownBlock', humanizeSpan(block.sourceSpan)]);
   }
 
+  visitLetDeclaration(decl: t.LetDeclaration): void {
+    this.result.push([
+      'LetDeclaration',
+      humanizeSpan(decl.sourceSpan),
+      humanizeSpan(decl.nameSpan),
+      humanizeSpan(decl.valueSpan),
+    ]);
+  }
+
   private visitAll(nodes: t.Node[][]) {
     nodes.forEach((node) => t.visitAll(this, node));
   }
@@ -814,6 +823,14 @@ describe('R3 AST source spans', () => {
         ['Text', 'Extra case was true!'],
         ['IfBlockBranch', '@else {False case!}', '@else {'],
         ['Text', 'False case!'],
+      ]);
+    });
+  });
+
+  describe('@let declaration', () => {
+    it('is correct for a let declaration', () => {
+      expectFromHtml('@let foo = 123;').toEqual([
+        ['LetDeclaration', '@let foo = 123', 'foo', '123'],
       ]);
     });
   });

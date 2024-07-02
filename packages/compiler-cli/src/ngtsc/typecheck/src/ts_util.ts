@@ -129,6 +129,7 @@ export function tsCreateTypeQueryForCoercedInput(
 export function tsCreateVariable(
   id: ts.Identifier,
   initializer: ts.Expression,
+  flags: ts.NodeFlags | null = null,
 ): ts.VariableStatement {
   const decl = ts.factory.createVariableDeclaration(
     /* name */ id,
@@ -138,7 +139,9 @@ export function tsCreateVariable(
   );
   return ts.factory.createVariableStatement(
     /* modifiers */ undefined,
-    /* declarationList */ [decl],
+    /* declarationList */ flags === null
+      ? [decl]
+      : ts.factory.createVariableDeclarationList([decl], flags),
   );
 }
 

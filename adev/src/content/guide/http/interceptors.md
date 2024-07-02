@@ -172,7 +172,7 @@ A DI-based interceptor is an injectable class which implements the `HttpIntercep
 
 <docs-code language="ts">
 @Injectable()
-public class LoggingInterceptor implements HttpInterceptor {
+export class LoggingInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, handler: HttpHandler): Observable<HttpEvent<any>> {
     console.log('Request URL: ' + req.url);
     return handler.handle(req);

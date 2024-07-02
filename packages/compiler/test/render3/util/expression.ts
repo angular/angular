@@ -203,6 +203,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     block.expressionAlias?.visit(this);
     t.visitAll(this, block.children);
   }
+
+  visitLetDeclaration(decl: t.LetDeclaration) {
+    decl.value.visit(this);
+  }
 }
 
 /**

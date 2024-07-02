@@ -41,7 +41,7 @@ Your application relies on Angular [dependency injection (DI)](guide/di) to crea
 When a service has a dependent service, DI finds or creates that dependent service.
 And if that dependent service has its own dependencies, DI finds-or-creates them as well.
 
-As service *consumer*, you don't worry about any of this.
+As a service *consumer*, you don't worry about any of this.
 You don't worry about the order of constructor arguments or how they're created.
 
 As a service *tester*, you must at least think about the first level of service dependencies but you *can* let Angular DI do the service creation and deal with constructor argument order when you use the `TestBed` testing utility to provide and create services.

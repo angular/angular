@@ -8,6 +8,7 @@
 
 import type {ParseSourceSpan} from '../../../../parse_util';
 import type {Expression} from './expression';
+import * as o from '../../../../output/output_ast';
 import type {Op, XrefId} from './operations';
 import {SlotHandle} from './handle';
 
@@ -135,10 +136,14 @@ export function hasConsumesSlotTrait<OpT extends Op<OpT>>(
 /**
  * Test whether an operation implements `DependsOnSlotContextOpTrait`.
  */
+export function hasDependsOnSlotContextTrait<ExprT extends o.Expression>(
+  expr: ExprT,
+): expr is ExprT & DependsOnSlotContextOpTrait;
 export function hasDependsOnSlotContextTrait<OpT extends Op<OpT>>(
   op: OpT,
-): op is OpT & DependsOnSlotContextOpTrait {
-  return (op as Partial<DependsOnSlotContextOpTrait>)[DependsOnSlotContext] === true;
+): op is OpT & DependsOnSlotContextOpTrait;
+export function hasDependsOnSlotContextTrait(value: any): boolean {
+  return (value as Partial<DependsOnSlotContextOpTrait>)[DependsOnSlotContext] === true;
 }
 
 /**

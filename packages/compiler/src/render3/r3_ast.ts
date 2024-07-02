@@ -508,6 +508,20 @@ export class UnknownBlock implements Node {
   }
 }
 
+export class LetDeclaration implements Node {
+  constructor(
+    public name: string,
+    public value: AST,
+    public sourceSpan: ParseSourceSpan,
+    public nameSpan: ParseSourceSpan,
+    public valueSpan: ParseSourceSpan,
+  ) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitLetDeclaration(this);
+  }
+}
+
 export class Template implements Node {
   constructor(
     // tagName is the name of the container element, if applicable.
@@ -613,6 +627,7 @@ export interface Visitor<Result = any> {
   visitIfBlock(block: IfBlock): Result;
   visitIfBlockBranch(block: IfBlockBranch): Result;
   visitUnknownBlock(block: UnknownBlock): Result;
+  visitLetDeclaration(decl: LetDeclaration): Result;
 }
 
 export class RecursiveVisitor implements Visitor<void> {
@@ -678,6 +693,7 @@ export class RecursiveVisitor implements Visitor<void> {
   visitIcu(icu: Icu): void {}
   visitDeferredTrigger(trigger: DeferredTrigger): void {}
   visitUnknownBlock(block: UnknownBlock): void {}
+  visitLetDeclaration(decl: LetDeclaration): void {}
 }
 
 export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Result[] {

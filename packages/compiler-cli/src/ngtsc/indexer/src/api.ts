@@ -21,6 +21,7 @@ export enum IdentifierKind {
   Attribute,
   Reference,
   Variable,
+  LetDeclaration,
 }
 
 /**
@@ -39,7 +40,7 @@ interface ExpressionIdentifier extends TemplateIdentifier {
    * ReferenceIdentifier or VariableIdentifier in the template that this identifier targets, if
    * any. If the target is `null`, it points to a declaration on the component class.
    * */
-  target: ReferenceIdentifier | VariableIdentifier | null;
+  target: ReferenceIdentifier | VariableIdentifier | LetDeclarationIdentifier | null;
 }
 
 /** Describes a property accessed in a template. */
@@ -109,6 +110,11 @@ export interface VariableIdentifier extends TemplateIdentifier {
   kind: IdentifierKind.Variable;
 }
 
+/** Describes a `@let` declaration in a template. */
+export interface LetDeclarationIdentifier extends TemplateIdentifier {
+  kind: IdentifierKind.LetDeclaration;
+}
+
 /**
  * Identifiers recorded at the top level of the template, without any context about the HTML nodes
  * they were discovered in.
@@ -119,7 +125,8 @@ export type TopLevelIdentifier =
   | TemplateNodeIdentifier
   | ReferenceIdentifier
   | VariableIdentifier
-  | MethodIdentifier;
+  | MethodIdentifier
+  | LetDeclarationIdentifier;
 
 /**
  * Describes the absolute byte offsets of a text anchor in a source code.

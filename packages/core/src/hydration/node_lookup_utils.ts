@@ -48,17 +48,24 @@ function getNoOffsetIndex(tNode: TNode): number {
 
 /**
  * Check whether a given node exists, but is disconnected from the DOM.
+ */
+export function isDisconnectedNode(tNode: TNode, lView: LView) {
+  return (
+    !(tNode.type & (TNodeType.Projection | TNodeType.LetDeclaration)) &&
+    !!lView[tNode.index] &&
+    isDisconnectedRNode(unwrapRNode(lView[tNode.index]))
+  );
+}
+
+/**
+ * Check whether the given node exists, but is disconnected from the DOM.
  *
  * Note: we leverage the fact that we have this information available in the DOM emulation
  * layer (in Domino) for now. Longer-term solution should not rely on the DOM emulation and
  * only use internal data structures and state to compute this information.
  */
-export function isDisconnectedNode(tNode: TNode, lView: LView) {
-  return (
-    !(tNode.type & TNodeType.Projection) &&
-    !!lView[tNode.index] &&
-    !(unwrapRNode(lView[tNode.index]) as Node)?.isConnected
-  );
+export function isDisconnectedRNode(rNode: RNode | null) {
+  return !!rNode && !(rNode as Node).isConnected;
 }
 
 /**
@@ -352,7 +359,7 @@ export function calcPathForNode(
     referenceNodeName = renderStringify(parentIndex - HEADER_OFFSET);
   }
   let rNode = unwrapRNode(lView[tNode.index]);
-  if (tNode.type & TNodeType.AnyContainer) {
+  if (tNode.type & (TNodeType.AnyContainer | TNodeType.Icu)) {
     // For <ng-container> nodes, instead of serializing a reference
     // to the anchor comment node, serialize a location of the first
     // DOM element. Paired with the container size (serialized as a part

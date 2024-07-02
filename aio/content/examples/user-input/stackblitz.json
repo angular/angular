@@ -1,8 +1,0 @@
-{
-  "description": "User Input",
-  "files": [
-    "!**/*.d.ts",
-    "!**/*.js"
-  ],
-  "tags": ["input"]
-}

@@ -9,7 +9,7 @@
 import {Attribute} from './attribute';
 import {Char} from './char';
 import {EventType} from './event_type';
-import {OWNER} from './property';
+import {Property} from './property';
 import * as a11yClick from './a11y_click';
 import * as cache from './cache';
 import * as eventInfoLib from './event_info';
@@ -200,7 +200,7 @@ export class ActionResolver {
    * shadow root if needed.
    */
   private getParentNode(element: Element): Element | null {
-    const owner = element[OWNER];
+    const owner = element[Property.OWNER];
     if (owner) {
       return owner as Element;
     }

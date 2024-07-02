@@ -16,7 +16,7 @@ export class ProfilePhoto {
 ```
 
 The `nativeElement` property references the
-host [Element](https://developer.mozilla.org/en-US/docs/Web/API/Element) instance.
+host [Element](https://developer.mozilla.org/docs/Web/API/Element) instance.
 
 You can use Angular's `afterRender` and `afterNextRender` functions to register a **render
 callback** that runs when Angular has finished rendering the page.
@@ -72,12 +72,12 @@ common use cases include:
 - Measuring element geometry, such as with `getBoundingClientRect`
 - Reading an element's text content
 - Setting up native observers such
-  as [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver),
-  [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver), or
-  [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
+  as [`MutationObserver`](https://developer.mozilla.org/docs/Web/API/MutationObserver),
+  [`ResizeObserver`](https://developer.mozilla.org/docs/Web/API/ResizeObserver), or
+  [`IntersectionObserver`](https://developer.mozilla.org/docs/Web/API/Intersection_Observer_API).
 
 Avoid inserting, removing, and modifying DOM elements. In particular, **never directly set an
 element's `innerHTML` property**, which can make your application vulnerable
-to [cross-site scripting (XSS) exploits](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting).
+to [cross-site scripting (XSS) exploits](https://developer.mozilla.org/docs/Glossary/Cross-site_scripting).
 Angular's template bindings, including bindings for `innerHTML`, include safeguards that help
 protect against XSS attacks. See the [Security guide](best-practices/security) for details.

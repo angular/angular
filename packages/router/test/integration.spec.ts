@@ -4029,6 +4029,69 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           }));
         });
 
+        it('can redirect to 404 without changing the URL', async () => {
+          TestBed.configureTestingModule({
+            providers: [
+              provideRouter([
+                {
+                  path: 'one',
+                  component: RouteCmp,
+                  canActivate: [
+                    () => {
+                      const router = coreInject(Router);
+                      router.navigateByUrl('/404', {
+                        browserUrl: router.getCurrentNavigation()?.finalUrl,
+                      });
+                      return false;
+                    },
+                  ],
+                },
+                {path: '404', component: SimpleCmp},
+              ]),
+            ],
+          });
+          const location = TestBed.inject(Location);
+          await RouterTestingHarness.create('/one');
+
+          expect(location.path()).toEqual('/one');
+          expect(TestBed.inject(Router).url.toString()).toEqual('/404');
+        });
+
+        it('can navigate to same internal route with different browser url', async () => {
+          TestBed.configureTestingModule({
+            providers: [provideRouter([{path: 'one', component: RouteCmp}])],
+          });
+          const location = TestBed.inject(Location);
+          const router = TestBed.inject(Router);
+          await RouterTestingHarness.create('/one');
+          await router.navigateByUrl('/one', {browserUrl: '/two'});
+
+          expect(location.path()).toEqual('/two');
+          expect(router.url.toString()).toEqual('/one');
+        });
+
+        it('retains browserUrl through UrlTree redirects', async () => {
+          TestBed.configureTestingModule({
+            providers: [
+              provideRouter([
+                {
+                  path: 'one',
+                  component: RouteCmp,
+                  canActivate: [() => coreInject(Router).parseUrl('/404')],
+                },
+                {path: '404', component: SimpleCmp},
+              ]),
+            ],
+          });
+          const router = TestBed.inject(Router);
+          const location = TestBed.inject(Location);
+          await RouterTestingHarness.create();
+          await router.navigateByUrl('/one', {browserUrl: router.parseUrl('abc123')});
+
+          expect(location.path()).toEqual('/abc123');
+          expect(TestBed.inject(Router).url.toString()).toEqual('/404');
+        });
+
         describe('runGuardsAndResolvers', () => {
           let guardRunCount = 0;
           let resolverRunCount = 0;

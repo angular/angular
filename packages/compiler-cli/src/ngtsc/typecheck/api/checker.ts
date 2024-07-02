@@ -12,12 +12,11 @@ import {
   ParseSourceSpan,
   PropertyRead,
   SafePropertyRead,
+  TemplateEntity,
   TmplAstElement,
   TmplAstNode,
-  TmplAstReference,
   TmplAstTemplate,
   TmplAstTextAttribute,
-  TmplAstVariable,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -235,10 +234,7 @@ export interface TemplateTypeChecker {
    * Gets the target of a template expression, if possible.
    * See `BoundTarget.getExpressionTarget` for more information.
    */
-  getExpressionTarget(
-    expression: AST,
-    clazz: ts.ClassDeclaration,
-  ): TmplAstReference | TmplAstVariable | null;
+  getExpressionTarget(expression: AST, clazz: ts.ClassDeclaration): TemplateEntity | null;
 
   /**
    * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.

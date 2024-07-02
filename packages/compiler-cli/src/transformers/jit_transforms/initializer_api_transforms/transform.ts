@@ -70,8 +70,12 @@ function createTransformVisitor(
 ): ts.Visitor<ts.Node, ts.Node> {
   const visitor: ts.Visitor<ts.Node, ts.Node> = (node: ts.Node): ts.Node => {
     if (ts.isClassDeclaration(node) && node.name !== undefined) {
+      const originalNode = ts.getOriginalNode(node, ts.isClassDeclaration);
+      // Note: Attempt to detect the `angularDecorator` on the original node of the class.
+      // That is because e.g. Tsickle or other transforms might have transformed the node
+      // already to transform decorators.
       const angularDecorator = host
-        .getDecoratorsOfDeclaration(node)
+        .getDecoratorsOfDeclaration(originalNode)
         ?.find((d) => decoratorsWithInputs.some((name) => isAngularDecorator(d, name, isCore)));
 
       if (angularDecorator !== undefined) {

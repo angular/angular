@@ -8,37 +8,37 @@
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
 import {
-  afterNextRender,
-  afterRender,
-  AfterRenderPhase,
   AfterRenderRef,
   ApplicationRef,
   ChangeDetectorRef,
   Component,
-  computed,
-  createComponent,
-  effect,
   ErrorHandler,
-  inject,
   Injector,
   NgZone,
   PLATFORM_ID,
-  signal,
   Type,
-  untracked,
   ViewContainerRef,
+  afterNextRender,
+  afterRender,
+  computed,
+  createComponent,
+  effect,
+  inject,
   ɵinternalAfterNextRender as internalAfterNextRender,
   ɵqueueStateUpdate as queueStateUpdate,
+  signal,
+  untracked,
 } from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
-import {destroyPlatform} from '../../src/core';
-import {EnvironmentInjector} from '../../src/di';
+import {AfterRenderPhase} from '@angular/core/src/render3/after_render_hooks';
 import {firstValueFrom} from 'rxjs';
 import {filter} from 'rxjs/operators';
+import {destroyPlatform} from '../../src/core';
+import {EnvironmentInjector} from '../../src/di';
 
 function createAndAttachComponent<T>(component: Type<T>) {
   const componentRef = createComponent(component, {
@@ -62,12 +62,11 @@ describe('after render hooks', () => {
         class Comp {
           constructor() {
             // Helper to register into each phase
-            function forEachPhase(fn: (phase: AfterRenderPhase) => void) {
-              for (const phase in AfterRenderPhase) {
-                const val = AfterRenderPhase[phase];
-                if (typeof val === 'number') {
-                  fn(val);
-                }
+            function forEachPhase(
+              fn: (phase: 'earlyRead' | 'write' | 'mixedReadWrite' | 'read') => void,
+            ) {
+              for (const phase of ['earlyRead', 'write', 'mixedReadWrite', 'read'] as const) {
+                fn(phase);
               }
             }
 
@@ -76,12 +75,11 @@ describe('after render hooks', () => {
             });
 
             forEachPhase((phase) =>
-              afterRender(
-                () => {
-                  log.push(`afterRender (${AfterRenderPhase[phase]})`);
+              afterRender({
+                [phase]: () => {
+                  log.push(`afterRender (${phase})`);
                 },
-                {phase},
-              ),
+              }),
             );
 
             internalAfterNextRender(() => {
@@ -89,12 +87,11 @@ describe('after render hooks', () => {
             });
 
             forEachPhase((phase) =>
-              afterNextRender(
-                () => {
-                  log.push(`afterNextRender (${AfterRenderPhase[phase]})`);
+              afterNextRender({
+                [phase]: () => {
+                  log.push(`afterNextRender (${phase})`);
                 },
-                {phase},
-              ),
+              }),
             );
 
             internalAfterNextRender(() => {
@@ -118,24 +115,24 @@ describe('after render hooks', () => {
           'internalAfterNextRender #1',
           'internalAfterNextRender #2',
           'internalAfterNextRender #3',
-          'afterRender (EarlyRead)',
-          'afterNextRender (EarlyRead)',
-          'afterRender (Write)',
-          'afterNextRender (Write)',
-          'afterRender (MixedReadWrite)',
-          'afterNextRender (MixedReadWrite)',
-          'afterRender (Read)',
-          'afterNextRender (Read)',
+          'afterRender (earlyRead)',
+          'afterNextRender (earlyRead)',
+          'afterRender (write)',
+          'afterNextRender (write)',
+          'afterRender (mixedReadWrite)',
+          'afterNextRender (mixedReadWrite)',
+          'afterRender (read)',
+          'afterNextRender (read)',
         ]);
 
         // Running change detection again
         log.length = 0;
         TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual([
-          'afterRender (EarlyRead)',
-          'afterRender (Write)',
-          'afterRender (MixedReadWrite)',
-          'afterRender (Read)',
+          'afterRender (earlyRead)',
+          'afterRender (write)',
+          'afterRender (mixedReadWrite)',
+          'afterRender (read)',
         ]);
       });
 
@@ -493,8 +490,10 @@ describe('after render hooks', () => {
         createAndAttachComponent(Comp);
 
         expect(zoneLog).toEqual([]);
-        TestBed.inject(ApplicationRef).tick();
-        expect(zoneLog).toEqual([false]);
+        TestBed.inject(NgZone).run(() => {
+          TestBed.inject(ApplicationRef).tick();
+          expect(zoneLog).toEqual([false]);
+        });
       });
 
       it('should propagate errors to the ErrorHandler', () => {
@@ -542,6 +541,90 @@ describe('after render hooks', () => {
       });
 
       it('should run callbacks in the correct phase and order', () => {
+        const log: string[] = [];
+
+        @Component({selector: 'root', template: `<comp-a></comp-a><comp-b></comp-b>`})
+        class Root {}
+
+        @Component({selector: 'comp-a'})
+        class CompA {
+          constructor() {
+            afterRender({
+              earlyRead: () => {
+                log.push('early-read-1');
+              },
+            });
+
+            afterRender({
+              write: () => {
+                log.push('write-1');
+              },
+            });
+
+            afterRender({
+              mixedReadWrite: () => {
+                log.push('mixed-read-write-1');
+              },
+            });
+
+            afterRender({
+              read: () => {
+                log.push('read-1');
+              },
+            });
+          }
+        }
+
+        @Component({selector: 'comp-b'})
+        class CompB {
+          constructor() {
+            afterRender({
+              read: () => {
+                log.push('read-2');
+              },
+            });
+
+            afterRender({
+              mixedReadWrite: () => {
+                log.push('mixed-read-write-2');
+              },
+            });
+
+            afterRender({
+              write: () => {
+                log.push('write-2');
+              },
+            });
+
+            afterRender({
+              earlyRead: () => {
+                log.push('early-read-2');
+              },
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Root, CompA, CompB],
+          ...COMMON_CONFIGURATION,
+        });
+        createAndAttachComponent(Root);
+
+        expect(log).toEqual([]);
+        TestBed.inject(ApplicationRef).tick();
+        expect(log).toEqual([
+          'early-read-1',
+          'early-read-2',
+          'write-1',
+          'write-2',
+          'mixed-read-write-1',
+          'mixed-read-write-2',
+          'read-1',
+          'read-2',
+        ]);
+      });
+
+      it('should run callbacks in the correct phase and order when using deprecated phase flag', () => {
         const log: string[] = [];
 
         @Component({selector: 'root', template: `<comp-a></comp-a><comp-b></comp-b>`})
@@ -630,6 +713,96 @@ describe('after render hooks', () => {
           'mixed-read-write-2',
           'read-1',
           'read-2',
+        ]);
+      });
+
+      it('should schedule callbacks for multiple phases at once', () => {
+        const log: string[] = [];
+
+        @Component({selector: 'comp'})
+        class Comp {
+          constructor() {
+            afterRender({
+              earlyRead: () => {
+                log.push('early-read-1');
+              },
+              write: () => {
+                log.push('write-1');
+              },
+              mixedReadWrite: () => {
+                log.push('mixed-read-write-1');
+              },
+              read: () => {
+                log.push('read-1');
+              },
+            });
+
+            afterRender(() => {
+              log.push('mixed-read-write-2');
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        createAndAttachComponent(Comp);
+
+        expect(log).toEqual([]);
+        TestBed.inject(ApplicationRef).tick();
+        expect(log).toEqual([
+          'early-read-1',
+          'write-1',
+          'mixed-read-write-1',
+          'mixed-read-write-2',
+          'read-1',
+        ]);
+      });
+
+      it('should pass data between phases', () => {
+        const log: string[] = [];
+
+        @Component({selector: 'comp'})
+        class Comp {
+          constructor() {
+            afterRender({
+              earlyRead: () => 'earlyRead result',
+              write: (results) => {
+                log.push(`results for write: ${results}`);
+                return 5;
+              },
+              mixedReadWrite: (results) => {
+                log.push(`results for mixedReadWrite: ${results}`);
+                return undefined;
+              },
+              read: (results) => {
+                log.push(`results for read: ${results}`);
+              },
+            });
+
+            afterRender({
+              earlyRead: () => 'earlyRead 2 result',
+              read: (results) => {
+                log.push(`results for read 2: ${results}`);
+              },
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        createAndAttachComponent(Comp);
+
+        expect(log).toEqual([]);
+        TestBed.inject(ApplicationRef).tick();
+        expect(log).toEqual([
+          'results for write: earlyRead result',
+          'results for mixedReadWrite: 5',
+          'results for read: undefined',
+          'results for read 2: earlyRead 2 result',
         ]);
       });
 
@@ -927,8 +1100,10 @@ describe('after render hooks', () => {
         createAndAttachComponent(Comp);
 
         expect(zoneLog).toEqual([]);
-        TestBed.inject(ApplicationRef).tick();
-        expect(zoneLog).toEqual([false]);
+        TestBed.inject(NgZone).run(() => {
+          TestBed.inject(ApplicationRef).tick();
+          expect(zoneLog).toEqual([false]);
+        });
       });
 
       it('should propagate errors to the ErrorHandler', () => {
@@ -984,66 +1159,58 @@ describe('after render hooks', () => {
         @Component({selector: 'comp-a'})
         class CompA {
           constructor() {
-            afterNextRender(
-              () => {
+            afterNextRender({
+              earlyRead: () => {
                 log.push('early-read-1');
               },
-              {phase: AfterRenderPhase.EarlyRead},
-            );
+            });
 
-            afterNextRender(
-              () => {
+            afterNextRender({
+              write: () => {
                 log.push('write-1');
               },
-              {phase: AfterRenderPhase.Write},
-            );
+            });
 
-            afterNextRender(
-              () => {
+            afterNextRender({
+              mixedReadWrite: () => {
                 log.push('mixed-read-write-1');
               },
-              {phase: AfterRenderPhase.MixedReadWrite},
-            );
+            });
 
-            afterNextRender(
-              () => {
+            afterNextRender({
+              read: () => {
                 log.push('read-1');
               },
-              {phase: AfterRenderPhase.Read},
-            );
+            });
           }
         }
 
         @Component({selector: 'comp-b'})
         class CompB {
           constructor() {
-            afterNextRender(
-              () => {
+            afterNextRender({
+              read: () => {
                 log.push('read-2');
               },
-              {phase: AfterRenderPhase.Read},
-            );
+            });
 
-            afterNextRender(
-              () => {
+            afterNextRender({
+              mixedReadWrite: () => {
                 log.push('mixed-read-write-2');
               },
-              {phase: AfterRenderPhase.MixedReadWrite},
-            );
+            });
 
-            afterNextRender(
-              () => {
+            afterNextRender({
+              write: () => {
                 log.push('write-2');
               },
-              {phase: AfterRenderPhase.Write},
-            );
+            });
 
-            afterNextRender(
-              () => {
+            afterNextRender({
+              earlyRead: () => {
                 log.push('early-read-2');
               },
-              {phase: AfterRenderPhase.EarlyRead},
-            );
+            });
           }
         }
 

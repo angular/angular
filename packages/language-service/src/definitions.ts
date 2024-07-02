@@ -138,14 +138,15 @@ export class DefinitionBuilder {
         const directiveDefs = this.getDirectiveTypeDefsForBindingNode(node, parent, component);
         return [...bindingDefs, ...directiveDefs];
       }
+      case SymbolKind.LetDeclaration:
       case SymbolKind.Variable:
       case SymbolKind.Reference: {
         const definitions: ts.DefinitionInfo[] = [];
         if (symbol.declaration !== node) {
           const tcbLocation =
-            symbol.kind === SymbolKind.Variable
-              ? symbol.localVarLocation
-              : symbol.referenceVarLocation;
+            symbol.kind === SymbolKind.Reference
+              ? symbol.referenceVarLocation
+              : symbol.localVarLocation;
           const mapping = getTemplateLocationFromTcbLocation(
             this.compiler.getTemplateTypeChecker(),
             tcbLocation.tcbPath,
@@ -164,7 +165,7 @@ export class DefinitionBuilder {
             });
           }
         }
-        if (symbol.kind === SymbolKind.Variable) {
+        if (symbol.kind === SymbolKind.Variable || symbol.kind === SymbolKind.LetDeclaration) {
           definitions.push(
             ...this.getDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}),
           );
@@ -268,7 +269,8 @@ export class DefinitionBuilder {
         case SymbolKind.Expression:
           definitions.push(...this.getTypeDefinitionsForSymbols(symbol));
           break;
-        case SymbolKind.Variable: {
+        case SymbolKind.Variable:
+        case SymbolKind.LetDeclaration: {
           definitions.push(
             ...this.getTypeDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}),
           );

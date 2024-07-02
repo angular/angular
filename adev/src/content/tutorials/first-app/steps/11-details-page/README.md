@@ -129,5 +129,5 @@ For more information about the topics covered in this lesson, visit:
   <docs-pill href="guide/routing/common-router-tasks#accessing-query-parameters-and-fragments" title="Route Parameters"/>
   <docs-pill href="guide/routing" title="Routing in Angular Overview"/>
   <docs-pill href="guide/routing/common-router-tasks" title="Common Routing Tasks"/>
-  <docs-pill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining" title="Optional Chaining Operator"/>
+  <docs-pill href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Optional_chaining" title="Optional Chaining Operator"/>
 </docs-pill-row>

@@ -78,6 +78,7 @@ function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
             break;
           case ir.ExpressionKind.GetCurrentView:
           case ir.ExpressionKind.Reference:
+          case ir.ExpressionKind.ContextLetReference:
             // Can't merge past a dependency on the context.
             tryToMerge = false;
             break;

@@ -52,7 +52,7 @@ Setting up a lazy-loaded feature module requires two main steps:
 ### Set up an application
 
 If you don't already have an application, follow the following steps to create one with the Angular CLI.
-If you already have an application, skip to [Configure the routes](#config-routes).
+If you already have an application, skip to [Configure the routes](#imports-and-route-configuration).
 
 Enter the following command where `customer-app` is the name of your app:
 

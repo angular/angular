@@ -26,6 +26,8 @@ export class AbstractControlStatus {
   }
 
   protected get isTouched() {
+    // track the touched signal
+    this._cd?.control?._touched?.();
     return !!this._cd?.control?.touched;
   }
 
@@ -34,26 +36,35 @@ export class AbstractControlStatus {
   }
 
   protected get isPristine() {
+    // track the pristine signal
+    this._cd?.control?._pristine?.();
     return !!this._cd?.control?.pristine;
   }
 
   protected get isDirty() {
+    // pristine signal already tracked above
     return !!this._cd?.control?.dirty;
   }
 
   protected get isValid() {
+    // track the status signal
+    this._cd?.control?._status?.();
     return !!this._cd?.control?.valid;
   }
 
   protected get isInvalid() {
+    // status signal already tracked above
     return !!this._cd?.control?.invalid;
   }
 
   protected get isPending() {
+    // status signal already tracked above
     return !!this._cd?.control?.pending;
   }
 
   protected get isSubmitted() {
+    // track the submitted signal
+    (this._cd as Writable<NgForm | FormGroupDirective> | null)?._submitted?.();
     // We check for the `submitted` field from `NgForm` and `FormGroupDirective` classes, but
     // we avoid instanceof checks to prevent non-tree-shakable references to those types.
     return !!(this._cd as Writable<NgForm | FormGroupDirective> | null)?.submitted;

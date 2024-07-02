@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, VERSION, computed, inject, signal} from '@angular/core';
+import {Injectable, computed, inject, signal} from '@angular/core';
 import {VERSIONS_CONFIG} from '../constants/versions';
 import {WINDOW} from '@angular/docs';
+import {CURRENT_MAJOR_VERSION} from '../providers/current-version';
 
 export interface Version {
   displayName: string;
@@ -26,6 +27,7 @@ export const MODE_PLACEHOLDER = '{{prefix}}';
   providedIn: 'root',
 })
 export class VersionManager {
+  private readonly currentMajorVersion = inject(CURRENT_MAJOR_VERSION);
   private readonly window = inject(WINDOW);
 
   // Note: We can assume that if the URL starts with v{{version}}, it is documentation for previous versions of Angular.
@@ -66,8 +68,8 @@ export class VersionManager {
       //   version: 'rc',
       // },
       {
-        url: this.getAdevDocsUrl(Number(VERSION.major)),
-        displayName: this.getVersion(Number(VERSION.major)),
+        url: this.getAdevDocsUrl(this.currentMajorVersion),
+        displayName: this.getVersion(this.currentMajorVersion),
         version: this.currentVersionMode,
       },
     ];
@@ -76,7 +78,11 @@ export class VersionManager {
   // List of Angular Docs versions hosted on angular.dev domain.
   private getAdevVersions(): Version[] {
     const adevVersions: Version[] = [];
-    for (let version = Number(VERSION.major) - 1; version >= INITIAL_ADEV_DOCS_VERSION; version--) {
+    for (
+      let version = this.currentMajorVersion - 1;
+      version >= INITIAL_ADEV_DOCS_VERSION;
+      version--
+    ) {
       adevVersions.push({
         url: this.getAdevDocsUrl(version),
         displayName: this.getVersion(version),
@@ -102,7 +108,7 @@ export class VersionManager {
 
   private getVersion(versionMode: VersionMode): string {
     if (versionMode === 'stable' || versionMode === 'deprecated') {
-      return `v${VERSION.major}`;
+      return `v${this.currentMajorVersion}`;
     }
     if (Number.isInteger(versionMode)) {
       return `v${versionMode}`;

@@ -1,3 +1,13 @@
+## [0.14.7](https://github.com/angular/angular/compare/zone.js-0.14.6...zone.js-0.14.7) (2024-06-06)
+
+
+### Bug Fixes
+
+* **zone.js:** do not mutate event listener options (may be readonly) ([#55796](https://github.com/angular/angular/issues/55796)) ([85c1719](https://github.com/angular/angular/commit/85c171920ae2b1861896fa6c2d5d7dc8f030a445)), closes [#54142](https://github.com/angular/angular/issues/54142)
+* **zone.js:** store remove abort listener on the scheduled task ([#56160](https://github.com/angular/angular/issues/56160)) ([4a3800a](https://github.com/angular/angular/commit/4a3800a6a0ae9d667dd961c6e4029c01c6819988)), closes [#56148](https://github.com/angular/angular/issues/56148)
+
+
+
 ## [0.14.6](https://github.com/angular/angular/compare/zone.js-0.14.4...zone.js-0.14.6) (2024-05-16)
 
 

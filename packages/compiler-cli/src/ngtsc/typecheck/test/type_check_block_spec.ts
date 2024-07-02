@@ -1970,6 +1970,35 @@ describe('type check blocks', () => {
     });
   });
 
+  describe('let declarations', () => {
+    it('should generate let declarations as constants', () => {
+      const result = tcb(`
+        @let one = 1;
+        @let two = 2;
+        @let sum = one + two;
+        {{sum}}
+      `);
+
+      expect(result).toContain('const _t1 = (1);');
+      expect(result).toContain('const _t2 = (2);');
+      expect(result).toContain('const _t3 = ((_t1) + (_t2));');
+      expect(result).toContain('"" + (_t3);');
+    });
+
+    it('should rewrite references to let declarations inside event listeners', () => {
+      const result = tcb(`
+        @let value = 1;
+        <button (click)="doStuff(value)"></button>
+      `);
+
+      expect(result).toContain('const _t1 = (1);');
+      expect(result).toContain('var _t2 = document.createElement("button");');
+      expect(result).toContain(
+        '_t2.addEventListener("click", ($event): any => { (this).doStuff(_t1); });',
+      );
+    });
+  });
+
   describe('import generation', () => {
     const TEMPLATE = `<div dir [test]="null"></div>`;
     const DIRECTIVE: TestDeclaration = {

@@ -231,6 +231,18 @@ describe('type definitions', () => {
     });
   });
 
+  describe('@let declarations', () => {
+    it('should work for a let declaration', () => {
+      const definitions = getTypeDefinitions({
+        templateOverride: `@let address = hero.address; {{addr¦ess}}`,
+      });
+
+      expect(definitions.length).toEqual(1);
+      expect(definitions[0].textSpan).toBe('Address');
+      expect(definitions[0].contextSpan).toContain('export interface Address');
+    });
+  });
+
   describe('pipes', () => {
     it('should work for pipes', () => {
       const templateOverride = `<p>The hero's birthday is {{birthday | da¦te: "MM/dd/yy"}}</p>`;

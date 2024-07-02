@@ -21,7 +21,10 @@ export {
   defaultIterableDiffers as ɵdefaultIterableDiffers,
   defaultKeyValueDiffers as ɵdefaultKeyValueDiffers,
 } from './change_detection/change_detection';
-export {internalProvideZoneChangeDetection as ɵinternalProvideZoneChangeDetection} from './change_detection/scheduling/ng_zone_scheduling';
+export {
+  internalProvideZoneChangeDetection as ɵinternalProvideZoneChangeDetection,
+  PROVIDED_NG_ZONE as ɵPROVIDED_NG_ZONE,
+} from './change_detection/scheduling/ng_zone_scheduling';
 export {ChangeDetectionSchedulerImpl as ɵChangeDetectionSchedulerImpl} from './change_detection/scheduling/zoneless_scheduling_impl';
 export {
   ChangeDetectionScheduler as ɵChangeDetectionScheduler,
@@ -68,6 +71,11 @@ export {
   withI18nSupport as ɵwithI18nSupport,
 } from './hydration/api';
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
+export {
+  GLOBAL_EVENT_DELEGATION as ɵGLOBAL_EVENT_DELEGATION,
+  JSACTION_EVENT_CONTRACT as ɵJSACTION_EVENT_CONTRACT,
+} from './event_delegation_utils';
+export {provideGlobalEventDelegation as ɵprovideGlobalEventDelegation} from './event_dispatch/event_delegation';
 export {IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED} from './hydration/tokens';
 export {
   HydratedNode as ɵHydratedNode,

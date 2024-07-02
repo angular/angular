@@ -135,11 +135,6 @@ export class Project {
         undefined,
         fileName.endsWith('.html') ? ts.ScriptKind.JSX : ts.ScriptKind.TS,
       );
-      // Mark the project as dirty because the act of opening a file may result in the version
-      // changing since TypeScript will `switchToScriptVersionCache` when a file is opened.
-      // Note that this emulates what we have to do in the server/extension as well.
-      // TODO: remove this once PR #41475 lands
-      this.tsProject.markAsDirty();
 
       scriptInfo = this.tsProject.getScriptInfo(fileName);
       if (scriptInfo === undefined) {

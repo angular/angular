@@ -8,6 +8,7 @@
 
 import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {
+  LetDeclarationSymbol,
   PotentialDirective,
   ReferenceSymbol,
   Symbol,
@@ -42,6 +43,7 @@ export enum DisplayInfoKind {
   METHOD = 'method',
   TEMPLATE = 'template',
   KEYWORD = 'keyword',
+  LET = 'let',
 }
 
 export interface DisplayInfo {
@@ -54,13 +56,15 @@ export interface DisplayInfo {
 export function getSymbolDisplayInfo(
   tsLS: ts.LanguageService,
   typeChecker: ts.TypeChecker,
-  symbol: ReferenceSymbol | VariableSymbol,
+  symbol: ReferenceSymbol | VariableSymbol | LetDeclarationSymbol,
 ): DisplayInfo {
   let kind: DisplayInfoKind;
   if (symbol.kind === SymbolKind.Reference) {
     kind = DisplayInfoKind.REFERENCE;
   } else if (symbol.kind === SymbolKind.Variable) {
     kind = DisplayInfoKind.VARIABLE;
+  } else if (symbol.kind === SymbolKind.LetDeclaration) {
+    kind = DisplayInfoKind.LET;
   } else {
     throw new Error(
       `AssertionError: unexpected symbol kind ${SymbolKind[(symbol as Symbol).kind]}`,

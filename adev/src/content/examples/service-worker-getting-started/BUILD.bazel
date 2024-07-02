@@ -1,8 +1,8 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
 package(default_visibility = ["//visibility:public"])
 
-docs_example(
-    name = "service-worker-getting-started",
-    test = False,
-)
+exports_files([
+    "src/app/check-for-update.service.ts",
+    "src/app/handle-unrecoverable-state.service.ts",
+    "src/app/log-update.service.ts",
+    "src/app/prompt-update.service.ts",
+])

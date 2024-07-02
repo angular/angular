@@ -54,6 +54,6 @@ With these skills, your app can now share data and display dynamic values in the
 For more information about the topics covered in this lesson, visit:
 
 <docs-pill-row>
-  <docs-pill href="guide/templates/interpolation" title="Template syntax"/>
-  <docs-pill href="guide/templates/template-syntax" title="Displaying values with interpolation"/>
+  <docs-pill href="guide/templates" title="Template syntax"/>
+  <docs-pill href="guide/templates/interpolation" title="Displaying values with interpolation"/>
 </docs-pill-row>

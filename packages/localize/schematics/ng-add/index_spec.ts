@@ -60,6 +60,7 @@ describe('ng-add schematic', () => {
                 options: {
                   browser: './main.ts',
                   tsConfig: './tsconfig.application.json',
+                  polyfills: ['zone.js'],
                 },
               },
               build: {
@@ -73,6 +74,7 @@ describe('ng-add schematic', () => {
                 builder: '@angular-devkit/build-angular:karma',
                 options: {
                   tsConfig: './tsconfig.spec.json',
+                  polyfills: 'zone.js',
                 },
               },
               server: {
@@ -155,6 +157,27 @@ describe('ng-add schematic', () => {
     const types = compilerOptions?.types;
     expect(types).toContain('@angular/localize');
     expect(types).toHaveSize(2);
+  });
+
+  it(`should add '@angular/localize/init' in 'polyfills' in application builder`, async () => {
+    host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    const workspace = host.readJson('angular.json') as any;
+    const polyfills = workspace.projects['demo'].architect.application.options.polyfills;
+    expect(polyfills).toEqual(['zone.js', '@angular/localize/init']);
+  });
+
+  it(`should add '@angular/localize/init' in 'polyfills' in karma builder`, async () => {
+    host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    const workspace = host.readJson('angular.json') as any;
+    const polyfills = workspace.projects['demo'].architect.test.options.polyfills;
+    expect(polyfills).toEqual(['zone.js', '@angular/localize/init']);
+  });
+
+  it(`should add '@angular/localize/init' in 'polyfills' in browser builder`, async () => {
+    host = await schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    const workspace = host.readJson('angular.json') as any;
+    const polyfills = workspace.projects['demo'].architect.build.options.polyfills;
+    expect(polyfills).toEqual(['@angular/localize/init']);
   });
 
   it(`should add '@angular/localize' in 'types' tsconfigs referenced in karma builder`, async () => {

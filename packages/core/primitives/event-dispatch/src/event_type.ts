@@ -293,7 +293,7 @@ export const NON_BUBBLING_MOUSE_EVENTS = [
 /**
  * Detects whether a given event type is supported by JSAction.
  */
-export const isSupportedEvent = (eventType: string) => SUPPORTED_EVENTS.includes(eventType);
+export const isSupportedEvent = (eventType: string) => SUPPORTED_EVENTS.indexOf(eventType) >= 0;
 
 const SUPPORTED_EVENTS = [
   EventType.CLICK,

@@ -121,7 +121,6 @@ export class NgTscPlugin implements TscPlugin {
       throw new Error('Lifecycle error: setupCompilation() before wrapHost().');
     }
     this.host.postProgramCreationCleanup();
-    untagAllTsFiles(program);
     const programDriver = new TsCreateProgramDriver(
       program,
       this.host,

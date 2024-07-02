@@ -206,6 +206,16 @@ export enum OpKind {
   TwoWayListener,
 
   /**
+   * A creation-time operation that initializes the slot for a `@let` declaration.
+   */
+  DeclareLet,
+
+  /**
+   * An update-time operation that stores the current value of a `@let` declaration.
+   */
+  StoreLet,
+
+  /**
    * The start of an i18n block.
    */
   I18nStart,
@@ -289,6 +299,16 @@ export enum ExpressionKind {
    * Runtime operation to retrieve the value of a local reference.
    */
   Reference,
+
+  /**
+   * A call storing the value of a `@let` declaration.
+   */
+  StoreLet,
+
+  /**
+   * A reference to a `@let` declaration read from the context view.
+   */
+  ContextLetReference,
 
   /**
    * Runtime operation to snapshot the current view context.

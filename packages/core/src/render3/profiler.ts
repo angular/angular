@@ -6,66 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * Profiler events is an enum used by the profiler to distinguish between different calls of user
- * code invoked throughout the application lifecycle.
- */
-export const enum ProfilerEvent {
-  /**
-   * Corresponds to the point in time before the runtime has called the template function of a
-   * component with `RenderFlags.Create`.
-   */
-  TemplateCreateStart,
-
-  /**
-   * Corresponds to the point in time after the runtime has called the template function of a
-   * component with `RenderFlags.Create`.
-   */
-  TemplateCreateEnd,
-
-  /**
-   * Corresponds to the point in time before the runtime has called the template function of a
-   * component with `RenderFlags.Update`.
-   */
-  TemplateUpdateStart,
-
-  /**
-   * Corresponds to the point in time after the runtime has called the template function of a
-   * component with `RenderFlags.Update`.
-   */
-  TemplateUpdateEnd,
-
-  /**
-   * Corresponds to the point in time before the runtime has called a lifecycle hook of a component
-   * or directive.
-   */
-  LifecycleHookStart,
-
-  /**
-   * Corresponds to the point in time after the runtime has called a lifecycle hook of a component
-   * or directive.
-   */
-  LifecycleHookEnd,
-
-  /**
-   * Corresponds to the point in time before the runtime has evaluated an expression associated with
-   * an event or an output.
-   */
-  OutputStart,
-
-  /**
-   * Corresponds to the point in time after the runtime has evaluated an expression associated with
-   * an event or an output.
-   */
-  OutputEnd,
-}
-
-/**
- * Profiler function which the runtime will invoke before and after user code.
- */
-export interface Profiler {
-  (event: ProfilerEvent, instance: {} | null, hookOrListener?: (e?: any) => any): void;
-}
+import {type Profiler} from './profiler_types';
 
 let profilerCallback: Profiler | null = null;
 
@@ -92,11 +33,7 @@ export const setProfiler = (profiler: Profiler | null) => {
  *  execution context
  * @returns
  */
-export const profiler: Profiler = function (
-  event: ProfilerEvent,
-  instance: {} | null,
-  hookOrListener?: (e?: any) => any,
-) {
+export const profiler: Profiler = function (event, instance, hookOrListener) {
   if (profilerCallback != null /* both `null` and `undefined` */) {
     profilerCallback(event, instance, hookOrListener);
   }

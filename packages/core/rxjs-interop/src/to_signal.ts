@@ -19,6 +19,7 @@ import {
   ɵRuntimeError,
   ɵRuntimeErrorCode,
 } from '@angular/core';
+import {ValueEqualityFn} from '@angular/core/primitives/signals';
 import {Observable, Subscribable} from 'rxjs';
 
 /**
@@ -26,7 +27,7 @@ import {Observable, Subscribable} from 'rxjs';
  *
  * @publicApi
  */
-export interface ToSignalOptions {
+export interface ToSignalOptions<T> {
   /**
    * Initial value for the signal produced by `toSignal`.
    *
@@ -70,6 +71,13 @@ export interface ToSignalOptions {
    * the behavior of the `async` pipe.
    */
   rejectErrors?: boolean;
+
+  /**
+   * A comparison function which defines equality for values emitted by the observable.
+   *
+   * Equality comparisons are executed against the initial value if one is provided.
+   */
+  equals?: ValueEqualityFn<T>;
 }
 
 // Base case: no options -> `undefined` in the result type.
@@ -77,22 +85,25 @@ export function toSignal<T>(source: Observable<T> | Subscribable<T>): Signal<T |
 // Options with `undefined` initial value and no `requiredSync` -> `undefined`.
 export function toSignal<T>(
   source: Observable<T> | Subscribable<T>,
-  options: ToSignalOptions & {initialValue?: undefined; requireSync?: false},
+  options: NoInfer<ToSignalOptions<T | undefined>> & {
+    initialValue?: undefined;
+    requireSync?: false;
+  },
 ): Signal<T | undefined>;
 // Options with `null` initial value -> `null`.
 export function toSignal<T>(
   source: Observable<T> | Subscribable<T>,
-  options: ToSignalOptions & {initialValue?: null; requireSync?: false},
+  options: NoInfer<ToSignalOptions<T | null>> & {initialValue?: null; requireSync?: false},
 ): Signal<T | null>;
 // Options with `undefined` initial value and `requiredSync` -> strict result type.
 export function toSignal<T>(
   source: Observable<T> | Subscribable<T>,
-  options: ToSignalOptions & {initialValue?: undefined; requireSync: true},
+  options: NoInfer<ToSignalOptions<T>> & {initialValue?: undefined; requireSync: true},
 ): Signal<T>;
 // Options with a more specific initial value type.
 export function toSignal<T, const U extends T>(
   source: Observable<T> | Subscribable<T>,
-  options: ToSignalOptions & {initialValue: U; requireSync?: false},
+  options: NoInfer<ToSignalOptions<T | U>> & {initialValue: U; requireSync?: false},
 ): Signal<T | U>;
 
 /**
@@ -121,7 +132,7 @@ export function toSignal<T, const U extends T>(
  */
 export function toSignal<T, U = undefined>(
   source: Observable<T> | Subscribable<T>,
-  options?: ToSignalOptions & {initialValue?: U},
+  options?: ToSignalOptions<T | U> & {initialValue?: U},
 ): Signal<T | U> {
   ngDevMode &&
     assertNotInReactiveContext(
@@ -136,15 +147,20 @@ export function toSignal<T, U = undefined>(
     ? options?.injector?.get(DestroyRef) ?? inject(DestroyRef)
     : null;
 
+  const equal = makeToSignalEquals(options?.equals);
+
   // Note: T is the Observable value type, and U is the initial value type. They don't have to be
   // the same - the returned signal gives values of type `T`.
   let state: WritableSignal<State<T | U>>;
   if (options?.requireSync) {
     // Initially the signal is in a `NoValue` state.
-    state = signal({kind: StateKind.NoValue});
+    state = signal({kind: StateKind.NoValue}, {equal});
   } else {
     // If an initial value was passed, use it. Otherwise, use `undefined` as the initial value.
-    state = signal<State<T | U>>({kind: StateKind.Value, value: options?.initialValue as U});
+    state = signal<State<T | U>>(
+      {kind: StateKind.Value, value: options?.initialValue as U},
+      {equal},
+    );
   }
 
   // Note: This code cannot run inside a reactive context (see assertion above). If we'd support
@@ -195,6 +211,13 @@ export function toSignal<T, U = undefined>(
         );
     }
   });
+}
+
+function makeToSignalEquals<T>(
+  userEquality: ValueEqualityFn<T> = Object.is,
+): ValueEqualityFn<State<T>> {
+  return (a, b) =>
+    a.kind === StateKind.Value && b.kind === StateKind.Value && userEquality(a.value, b.value);
 }
 
 const enum StateKind {

@@ -643,6 +643,10 @@ function parseNgCompilerOptions(
     options['_enableBlockSyntax'] = false;
   }
 
+  if (config['enableLetSyntax'] === false) {
+    options['_enableLetSyntax'] = false;
+  }
+
   options['_angularCoreVersion'] = config['angularCoreVersion'];
 
   return options;

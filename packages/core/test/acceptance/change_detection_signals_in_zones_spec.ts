@@ -7,19 +7,16 @@
  */
 
 import {NgFor, NgIf} from '@angular/common';
-import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
 import {
-  afterNextRender,
   ApplicationRef,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
   Directive,
-  EnvironmentInjector,
+  ElementRef,
   inject,
   Input,
-  PLATFORM_ID,
   signal,
   TemplateRef,
   ViewChild,
@@ -802,6 +799,73 @@ describe('OnPush components with signals', () => {
       fixture.componentInstance.value.set('new');
       fixture.detectChanges();
       expect(trim(fixture.nativeElement.textContent)).toEqual('new');
+    });
+
+    it('tracks signal updates if embedded view is change detected directly', () => {
+      @Component({
+        changeDetection: ChangeDetectionStrategy.OnPush,
+        template: `
+            <ng-template #template>{{value()}}</ng-template>
+          `,
+        standalone: true,
+      })
+      class Test {
+        value = signal('initial');
+        @ViewChild('template', {static: true, read: TemplateRef})
+        template!: TemplateRef<{}>;
+        @ViewChild('template', {static: true, read: ViewContainerRef})
+        vcr!: ViewContainerRef;
+      }
+
+      const fixture = TestBed.createComponent(Test);
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.attachView(fixture.componentRef.hostView);
+      appRef.tick();
+
+      const viewRef = fixture.componentInstance.vcr.createEmbeddedView(
+        fixture.componentInstance.template,
+      );
+      viewRef.detectChanges();
+      expect(fixture.nativeElement.innerText).toContain('initial');
+
+      fixture.componentInstance.value.set('new');
+      appRef.tick();
+      expect(fixture.nativeElement.innerText).toContain('new');
+    });
+
+    it('tracks signal updates if embedded view is change detected directly before attaching', () => {
+      @Component({
+        changeDetection: ChangeDetectionStrategy.OnPush,
+        template: `
+            <ng-template #template>{{value()}}</ng-template>
+          `,
+        standalone: true,
+      })
+      class Test {
+        value = signal('initial');
+        @ViewChild('template', {static: true, read: TemplateRef})
+        template!: TemplateRef<{}>;
+        @ViewChild('template', {static: true, read: ViewContainerRef})
+        vcr!: ViewContainerRef;
+        element = inject(ElementRef);
+      }
+
+      const fixture = TestBed.createComponent(Test);
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.attachView(fixture.componentRef.hostView);
+      appRef.tick();
+
+      const viewRef = fixture.componentInstance.template.createEmbeddedView(
+        fixture.componentInstance.template,
+      );
+      fixture.componentInstance.element.nativeElement.appendChild(viewRef.rootNodes[0]);
+      viewRef.detectChanges();
+      expect(fixture.nativeElement.innerText).toContain('initial');
+      fixture.componentInstance.vcr.insert(viewRef);
+
+      fixture.componentInstance.value.set('new');
+      appRef.tick();
+      expect(fixture.nativeElement.innerText).toContain('new');
     });
   });
 

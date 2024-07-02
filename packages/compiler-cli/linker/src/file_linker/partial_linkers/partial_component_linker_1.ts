@@ -100,10 +100,13 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
     const templateSource = metaObj.getValue('template');
     const isInline = metaObj.has('isInline') ? metaObj.getBoolean('isInline') : false;
     const templateInfo = this.getTemplateInfo(templateSource, isInline);
+    const {major, minor} = new semver.SemVer(version);
 
     // Enable the new block syntax if compiled with v17 and
     // above, or when using the local placeholder version.
-    const enableBlockSyntax = semver.major(version) >= 17 || version === PLACEHOLDER_VERSION;
+    const enableBlockSyntax = major >= 17 || version === PLACEHOLDER_VERSION;
+    const enableLetSyntax =
+      major > 18 || (major === 18 && minor >= 1) || version === PLACEHOLDER_VERSION;
 
     const template = parseTemplate(templateInfo.code, templateInfo.sourceUrl, {
       escapedString: templateInfo.isEscaped,
@@ -116,6 +119,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       // We normalize line endings if the template is was inline.
       i18nNormalizeLineEndingsInICUs: isInline,
       enableBlockSyntax,
+      enableLetSyntax,
     });
     if (template.errors !== null) {
       const errors = template.errors.map((err) => err.toString()).join('\n');

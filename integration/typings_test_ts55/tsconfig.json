@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./dist/out-tsc",
+    "rootDir": ".",
+    "target": "ES2020",
+    "lib": [
+      "es5",
+      "dom",
+      "es2015.collection",
+      "es2015.iterable",
+      "es2015.promise"
+    ],
+    "types": [],
+  },
+  "files": [
+    "include-all.ts",
+    "node_modules/@types/jasmine/index.d.ts"
+  ]
+}

@@ -32,6 +32,14 @@ const Delete1KWorker: Worker = {
   },
 };
 
+const SelectWorker: Worker = {
+  id: 'select',
+  prepare: () => $('#create1KRows').click(),
+  work: () => {
+    $('tbody>tr:nth-of-type(2)>td:nth-of-type(2)>a').click();
+  },
+};
+
 const UpdateWorker: Worker = {
   id: 'update',
   prepare: () => $('#create1KRows').click(),
@@ -59,7 +67,7 @@ const testPackageName = process.env['BAZEL_TARGET']!.split(':')[0].split('/').po
 describe('js-web-frameworks benchmark perf', () => {
   afterEach(verifyNoBrowserErrors);
 
-  [Create1KWorker, Delete1KWorker, UpdateWorker, SwapWorker].forEach((worker) => {
+  [Create1KWorker, Delete1KWorker, UpdateWorker, SelectWorker, SwapWorker].forEach((worker) => {
     describe(worker.id, () => {
       it(`should run benchmark for ${testPackageName}`, async () => {
         await runTableBenchmark({

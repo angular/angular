@@ -11,17 +11,19 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  EnvironmentInjector,
   OnInit,
   ViewChild,
+  afterNextRender,
   inject,
   signal,
 } from '@angular/core';
-import {DOCUMENT, NgFor, NgIf, ViewportScroller} from '@angular/common';
+import {DOCUMENT, NgFor, NgIf} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
-import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
-import {distinctUntilChanged, filter, map, take} from 'rxjs/operators';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {distinctUntilChanged, map} from 'rxjs/operators';
 import {DocContent, DocViewer} from '@angular/docs';
-import {ActivatedRoute, Router, RouterLink, Scroll} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {ApiItemType} from './../interfaces/api-item-type';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {
@@ -34,6 +36,7 @@ import {
   API_REFERENCE_TAB_BODY_CLASS_NAME,
   API_REFERENCE_TAB_URL_ATTRIBUTE,
 } from '../constants/api-reference-prerender.constants';
+import {AppScroller} from '../../../app-scroller';
 
 @Component({
   selector: 'adev-reference-page',
@@ -51,15 +54,7 @@ export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly scrollHandler = inject(ReferenceScrollHandler);
-  private readonly scroller = inject(ViewportScroller);
-  private scrollEvent = toSignal(
-    this.router.events.pipe(
-      filter((e): e is Scroll => e instanceof Scroll),
-      take(1),
-    ),
-    {initialValue: null},
-  );
-  private cardsDisplayedOnInit = false;
+  private readonly appScroller = inject(AppScroller);
 
   ApiItemType = ApiItemType;
 
@@ -70,28 +65,24 @@ export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
   membersMarginTopInPx = this.scrollHandler.membersMarginTopInPx;
   selectedTabIndex = signal(0);
 
+  constructor() {
+    this.appScroller.disableScrolling = true;
+  }
+
   ngOnInit(): void {
     this.setPageContent();
   }
 
+  ngOnDestroy() {
+    this.appScroller.disableScrolling = false;
+  }
+
   ngAfterViewInit(): void {
     this.setActiveTab();
-    if (this.canDisplayCards()) {
-      this.cardsDisplayedOnInit = true;
-    }
     this.listenToTabChange();
   }
 
   membersCardsLoaded(): void {
-    const event = this.scrollEvent();
-    if (this.cardsDisplayedOnInit && event) {
-      // Cards loaded after scroll event happened. We have to handle the scroll event manually
-      if (event.position) {
-        this.scroller.scrollToPosition(event.position);
-      } else if (event.anchor) {
-        this.scroller.scrollToAnchor(event.anchor);
-      }
-    }
     this.scrollHandler.setupListeners(API_TAB_CLASS_NAME);
   }
 

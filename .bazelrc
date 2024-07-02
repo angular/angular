@@ -67,15 +67,6 @@ build:snapshot-build --stamp
 # exceeds the max source file size. To address this, we just *don't* stamp Firefox builds of Angular DevTools.
 build:snapshot-build-firefox --nostamp
 
-##########################################################
-# AIO architect build configuration                      #
-# See aio/angular.json for available configurations.     #
-# To build with a partiular configuration:               #
-#   bazel build //aio:build --aio_build_config=<config>  #
-# Default config is `stable``.                           #
-##########################################################
-build --flag_alias=aio_build_config=//aio:flag_aio_build_config
-
 ###############################
 # Output                      #
 ###############################

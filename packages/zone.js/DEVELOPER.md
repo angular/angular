@@ -1,6 +1,8 @@
 To run tests
 ------------
 
+*Note*: some of these tests no longer run. Be sure to check that CI is green.
+
 Make sure your environment is set up with:
 
 `yarn`
@@ -76,7 +78,7 @@ Releasing `zone.js` is a two step process.
 
 ```
 rm -rf node_modules && yarn install
-export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-0.11.*' | tail -n1`
+export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-0.14.*' | tail -n1`
 export VERSION=`(cd packages/zone.js; npm version patch --no-git-tag-version)`
 export VERSION=${VERSION#v}
 export TAG="zone.js-${VERSION}"

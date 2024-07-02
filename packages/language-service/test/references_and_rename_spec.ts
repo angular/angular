@@ -1262,6 +1262,84 @@ describe('find references and rename locations', () => {
     });
   });
 
+  describe('let declarations', () => {
+    describe('when cursor is on the name of the declaration', () => {
+      let file: OpenBuffer;
+      beforeEach(() => {
+        const files = {
+          'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './template.ng.html'})
+          export class AppCmp {
+          }`,
+          'template.ng.html': `
+            @let hobbit = 'Frodo';
+            @let greeting = 'Hello, ' + hobbit;
+            {{hobbit}}
+            {{greeting}}
+          `,
+        };
+        env = LanguageServiceTestEnv.setup();
+        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        file = project.openFile('template.ng.html');
+        file.moveCursorToText('@let hob¦bit =');
+      });
+
+      it('should find references', () => {
+        const refs = getReferencesAtPosition(file)!;
+        expect(refs.length).toBe(3);
+        assertFileNames(refs, ['template.ng.html']);
+        assertTextSpans(refs, ['hobbit']);
+      });
+
+      it('should find rename locations', () => {
+        const renameLocations = getRenameLocationsAtPosition(file)!;
+        expect(renameLocations.length).toBe(3);
+        assertFileNames(renameLocations, ['template.ng.html']);
+        assertTextSpans(renameLocations, ['hobbit']);
+      });
+    });
+
+    describe('when cursor is on a usage of the declaration name', () => {
+      let file: OpenBuffer;
+      beforeEach(() => {
+        const files = {
+          'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './template.ng.html'})
+          export class AppCmp {
+          }`,
+          'template.ng.html': `
+            @let hobbit = 'Frodo';
+            @let greeting = 'Hello, ' + hobbit;
+            {{hobbit}}
+            {{greeting}}
+          `,
+        };
+        env = LanguageServiceTestEnv.setup();
+        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        file = project.openFile('template.ng.html');
+        file.moveCursorToText(`'Hello, ' + hob¦bit`);
+      });
+
+      it('should find references', () => {
+        const refs = getReferencesAtPosition(file)!;
+        expect(refs.length).toBe(3);
+        assertFileNames(refs, ['template.ng.html']);
+        assertTextSpans(refs, ['hobbit']);
+      });
+
+      it('should find rename locations', () => {
+        const renameLocations = getRenameLocationsAtPosition(file)!;
+        expect(renameLocations.length).toBe(3);
+        assertFileNames(renameLocations, ['template.ng.html']);
+        assertTextSpans(renameLocations, ['hobbit']);
+      });
+    });
+  });
+
   it('should get references to both input and output for two-way binding', () => {
     const files = {
       'dir.ts': `

@@ -222,7 +222,7 @@ export class Router {
               currentTransition.currentRawUrl,
             );
             const extras = {
-              // Persist transient navigation info from the original navigation request.
+              browserUrl: currentTransition.extras.browserUrl,
               info: currentTransition.extras.info,
               skipLocationChange: currentTransition.extras.skipLocationChange,
               // The URL is already updated at this point if we have 'eager' URL

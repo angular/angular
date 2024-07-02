@@ -108,6 +108,7 @@ export abstract class ComponentFactory<C> {
     propName: string;
     templateName: string;
     transform?: (value: any) => any;
+    isSignal: boolean;
   }[];
   /**
    * The outputs of the component.

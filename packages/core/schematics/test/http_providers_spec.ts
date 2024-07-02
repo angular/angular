@@ -264,8 +264,11 @@ describe('Http providers migration', () => {
 
     const content = tree.readContent('/index.ts');
     expect(content).toContain(`@angular/common/http`);
-    expect(content).not.toContain(`HttpClientModule`);
-    expect(content).toContain(`provideHttpClient(withInterceptorsFromDi(), withJsonpSupport())`);
+    expect(content).toContain(`HttpClientModule`);
+    expect(content).not.toContain(
+      `provideHttpClient(withInterceptorsFromDi(), withJsonpSupport())`,
+    );
+    expect(content).toContain('// TODO: `HttpClientModule` should not be imported');
     expect(content).toContain(`template: ''`);
   });
 

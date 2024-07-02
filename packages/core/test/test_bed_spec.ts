@@ -54,6 +54,7 @@ import {
   THROW_ON_UNKNOWN_ELEMENTS_DEFAULT,
   THROW_ON_UNKNOWN_PROPERTIES_DEFAULT,
 } from '../testing/src/test_bed_common';
+import {DOCUMENT} from '@angular/common/src/dom_tokens';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -2268,6 +2269,19 @@ describe('TestBed module teardown', () => {
       teardown: {destroyAfterEach: true},
     });
     TestBed.createComponent(GreetingCmp);
+
+    expect(SimpleService.ngOnDestroyCalls).toBe(0);
+    TestBed.resetTestingModule();
+    expect(SimpleService.ngOnDestroyCalls).toBe(1);
+  });
+
+  it('should not error on mocked and partially-implemented `DOCUMENT`', () => {
+    SimpleService.ngOnDestroyCalls = 0;
+    TestBed.configureTestingModule({
+      providers: [SimpleService, {provide: DOCUMENT, useValue: {}}],
+      teardown: {destroyAfterEach: true},
+    });
+    TestBed.inject(SimpleService);
 
     expect(SimpleService.ngOnDestroyCalls).toBe(0);
     TestBed.resetTestingModule();

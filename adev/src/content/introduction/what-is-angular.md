@@ -99,7 +99,7 @@ more">
   trusted type support, help protect your users from common vulnerabilities like
   cross-site scripting and cross-site request forgery.
   </docs-card>
-  <docs-card title="Keep large teams productive with Vite and esbuild" href="tools/cli/esbuild" link="ESBuild and Vite">
+  <docs-card title="Keep large teams productive with Vite and esbuild" href="tools/cli/build-system-migration" link="ESBuild and Vite">
   Angular CLI includes a fast, modern build pipeline using Vite and ESBuild. Developers report
   building projects with hundreds of thousands of lines of code in less than a minute.
   </docs-card>
