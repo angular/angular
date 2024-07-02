@@ -197,6 +197,30 @@ describe('ShadowCss, :host and :host-context', () => {
     });
   });
 
+  it('should pseudo class function with multiple arguments', () => {
+    expect(shim('host:is(.foo) {}', 'contenta', 'a-host')).toEqualCss('host[contenta]:is(.foo) {}');
+    expect(shim(':is(.dark :host) {}', 'contenta', 'a-host')).toEqualCss(':is(.dark [a-host]) {}');
+
+    // We noticed some unexpected behaviors that were happening either on dev or on prod builds.
+    // It's important to test with and without is a space before child combinator as the optimizer
+    // removes them.
+    expect(shim(':host:is([foo],[foo-2])>div.example-2 {}', 'contenta', 'a-host')).toEqualCss(
+      '[a-host]:is([foo],[foo-2]) > div.example-2[contenta] {}',
+    );
+
+    expect(shim(':host:is([foo], [foo-2]) > div.example-2 {}', 'contenta', 'a-host')).toEqualCss(
+      '[a-host]:is([foo], [foo-2]) > div.example-2[contenta] {}',
+    );
+
+    expect(shim(':host:has([foo],[foo-2])>div.example-2 {}', 'contenta', 'a-host')).toEqualCss(
+      '[a-host]:has([foo],[foo-2]) > div.example-2[contenta] {}',
+    );
+
+    expect(shim(':host:has([foo], [foo-2]) > div.example-2 {}', 'contenta', 'a-host')).toEqualCss(
+      '[a-host]:has([foo], [foo-2]) > div.example-2[contenta] {}',
+    );
+  });
+
   describe(':host-context and :host combination selector', () => {
     it('should handle selectors on the same element', () => {
       expect(shim(':host-context(div):host(.x) > .y {}', 'contenta', 'a-host')).toEqualCss(
