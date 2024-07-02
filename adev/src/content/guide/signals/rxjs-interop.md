@@ -12,6 +12,7 @@ Use the `toSignal` function to create a signal which tracks the value of an Obse
 import { Component } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { interval } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   template: `{{ counter() }}`,
