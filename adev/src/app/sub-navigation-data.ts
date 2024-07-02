@@ -1388,6 +1388,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'extended-diagnostics/NG8109',
         contentPath: 'reference/extended-diagnostics/NG8109',
       },
+      {
+        label: 'NG8111: Functions must be invoked in event bindings',
+        path: 'extended-diagnostics/NG8111',
+        contentPath: 'reference/extended-diagnostics/NG8111',
+      },
     ],
   },
   {
