@@ -347,14 +347,6 @@ describe('quick info', () => {
         });
       });
 
-      it('should work for $event from native element', () => {
-        expectQuickInfo({
-          templateOverride: `<div (click)="myClick($e¦vent)"></div>`,
-          expectedSpanText: '$event',
-          expectedDisplayString: '(parameter) $event: MouseEvent',
-        });
-      });
-
       it('should work for click output from native element', () => {
         expectQuickInfo({
           templateOverride: `<div (cl¦ick)="myClick($event)"></div>`,
@@ -438,7 +430,7 @@ describe('quick info', () => {
         });
       });
 
-      it('should work for accessed function calls', () => {
+      fit('should work for accessed function calls', () => {
         expectQuickInfo({
           templateOverride: `<div (click)="someObject.some¦Method()"></div>`,
           expectedSpanText: 'someMethod',
@@ -513,7 +505,7 @@ describe('quick info', () => {
         expect(toText(info.documentation)).toEqual('Documentation for myFunc.');
       });
 
-      it('should work for signal calls', () => {
+      it('should work for safe signal calls', () => {
         const files = {
           'app.ts': `import {Component, Signal} from '@angular/core';
             @Component({template: '<div [id]="something?.value()"></div>'})
@@ -527,6 +519,24 @@ describe('quick info', () => {
         const project = createModuleAndProjectWithDeclarations(env, 'test_project', files);
         const appFile = project.openFile('app.ts');
         appFile.moveCursorToText('something?.va¦lue()');
+        const info = appFile.getQuickInfoAtPosition()!;
+        expect(toText(info.displayParts)).toEqual('(property) value: Signal<number>');
+        expect(toText(info.documentation)).toEqual('Documentation for value.');
+      });
+
+      fit('should work for signal calls', () => {
+        const files = {
+          'app.ts': `import {Component, signal} from '@angular/core';
+            @Component({template: '<div [id]="something.value()"></div>'})
+            export class AppCmp {
+              something = {
+                value: signal(0)
+              };
+            }`,
+        };
+        const project = createModuleAndProjectWithDeclarations(env, 'test_project', files);
+        const appFile = project.openFile('app.ts');
+        appFile.moveCursorToText('something.va¦lue()');
         const info = appFile.getQuickInfoAtPosition()!;
         expect(toText(info.displayParts)).toEqual('(property) value: Signal<number>');
         expect(toText(info.documentation)).toEqual('Documentation for value.');

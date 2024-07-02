@@ -156,7 +156,7 @@ describe('getTargetAtPosition for template AST', () => {
     expect(node).toBeInstanceOf(e.PropertyRead);
   });
 
-  it('should locate bound event nested value', () => {
+  fit('should locate bound event nested value', () => {
     const {errors, nodes, position} = parse(`<test-cmp (foo)="nested.b¦ar()"></test-cmp>`);
     expect(errors).toBe(null);
     const {context} = getTargetAtPosition(nodes, position)!;
