@@ -382,7 +382,9 @@ export class NodeRuntimeSandbox {
     this.setLoading(LoadingStep.BOOT);
 
     if (!this.webContainerPromise) {
-      this.webContainerPromise = WebContainer.boot();
+      this.webContainerPromise = WebContainer.boot({
+        workdirName: 'angular',
+      });
     }
     return await this.webContainerPromise;
   }
