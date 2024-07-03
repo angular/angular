@@ -1310,7 +1310,7 @@ function assertPlaceholderDimensions(dir: NgOptimizedImage, imgElement: HTMLImag
     console.warn(
       formatRuntimeError(
         RuntimeErrorCode.PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED,
-        `${imgDirectiveDetails(dir.ngSrc)} it uses a placeholder image, but at least one of ` +
+        `${imgDirectiveDetails(dir.ngSrc)} it uses a placeholder image, but at least one ` +
           `of the dimensions attribute (height or width) exceeds the limit of ${PLACEHOLDER_DIMENSION_LIMIT}px. ` +
           `To fix this, use a smaller image as a placeholder.`,
       ),
