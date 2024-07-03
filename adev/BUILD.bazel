@@ -148,6 +148,9 @@ architect(
     data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
         ":application_files_bin",
     ],
+    env = {
+        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+    },
     # Network is required to inline fonts.
     exec_properties = ENABLE_NETWORK,
     output_dir = True,
