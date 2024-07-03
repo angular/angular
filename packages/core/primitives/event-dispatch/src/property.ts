@@ -28,7 +28,7 @@ export const Property = {
 
 declare global {
   interface Node {
-    [Property.JSACTION]?: string;
+    [Property.JSACTION]?: {[key: string]: string | undefined};
     [Property.OWNER]?: ParentNode;
   }
 }

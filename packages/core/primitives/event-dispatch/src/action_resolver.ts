@@ -41,7 +41,7 @@ export class ActionResolver {
   private populateClickOnlyAction?: (
     actionElement: Element,
     eventInfo: eventInfoLib.EventInfo,
-    actionMap: {[key: string]: string},
+    actionMap: {[key: string]: string | undefined},
   ) => void = undefined;
 
   constructor({
@@ -243,8 +243,8 @@ export class ActionResolver {
    * @param actionElement The DOM node to retrieve the jsaction map from.
    * @return Map from event to qualified name of the jsaction bound to it.
    */
-  private parseActions(actionElement: Element): {[key: string]: string} {
-    let actionMap: {[key: string]: string} | undefined = cache.get(actionElement);
+  private parseActions(actionElement: Element): {[key: string]: string | undefined} {
+    let actionMap: {[key: string]: string | undefined} | undefined = cache.get(actionElement);
     if (!actionMap) {
       const jsactionAttribute = actionElement.getAttribute(Attribute.JSACTION);
       if (!jsactionAttribute) {

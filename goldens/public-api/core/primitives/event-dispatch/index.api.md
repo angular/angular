@@ -9,13 +9,14 @@ export const Attribute: {
     JSACTION: "jsaction";
 };
 
-// @public
-export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
-
 // @public (undocumented)
 export interface EarlyJsactionDataContainer {
     // (undocumented)
     _ejsa?: EarlyJsactionData;
+    // (undocumented)
+    _ejsas?: {
+        [appId: string]: EarlyJsactionData | undefined;
+    };
 }
 
 // @public
@@ -30,7 +31,7 @@ export class EventContract implements UnrenamedEventContract {
     // (undocumented)
     static MOUSE_SPECIAL_SUPPORT: boolean;
     registerDispatcher(dispatcher: Dispatcher, restriction: Restriction): void;
-    replayEarlyEvents(earlyJsactionContainer?: EarlyJsactionDataContainer): void;
+    replayEarlyEvents(earlyJsactionData?: EarlyJsactionData | undefined): void;
 }
 
 // @public
@@ -41,13 +42,6 @@ export class EventContractContainer implements EventContractContainerManager {
     // (undocumented)
     readonly element: Element;
 }
-
-// @public (undocumented)
-export type EventContractTracker<T> = {
-    [key: string]: {
-        [appId: string]: T;
-    };
-};
 
 // @public
 export class EventDispatcher {
@@ -105,19 +99,18 @@ export const EventPhase: {
 };
 
 // @public
-export const isCaptureEvent: (eventType: string) => boolean;
+export function getActionCache(element: Element): {
+    [key: string]: string | undefined;
+};
 
 // @public
-export const isSupportedEvent: (eventType: string) => boolean;
+export const isCaptureEventType: (eventType: string) => boolean;
+
+// @public
+export const isEarlyEventType: (eventType: string) => boolean;
 
 // @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: EventDispatcher): void;
-
-// @public (undocumented)
-export function registerEventType(element: Element, eventType: string, action: string): void;
-
-// @public (undocumented)
-export function unregisterEventType(element: Element, eventType: string): void;
 
 // (No @packageDocumentation comment for this package)
 

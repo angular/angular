@@ -11,41 +11,29 @@ import {Property} from './property';
 /**
  * Map from jsaction annotation to a parsed map from event name to action name.
  */
-const parseCache: {[key: string]: {[key: string]: string}} = {};
-
-export function registerEventType(element: Element, eventType: string, action: string) {
-  const cache = get(element) || {};
-  cache[eventType] = action;
-  set(element, cache);
-}
-
-export function unregisterEventType(element: Element, eventType: string) {
-  const cache = get(element);
-  if (cache) {
-    cache[eventType] = undefined as unknown as string;
-  }
-}
+const parseCache: {[key: string]: {[key: string]: string | undefined}} = {};
 
 /**
  * Reads the jsaction parser cache from the given DOM Element.
- *
- * @param element .
- * @return Map from event to qualified name of the jsaction bound to it.
  */
-export function get(element: Element): {[key: string]: string} {
-  // @ts-ignore
+export function get(element: Element): {[key: string]: string | undefined} | undefined {
   return element[Property.JSACTION];
 }
 
 /**
- * Writes the jsaction parser cache to the given DOM Element.
- *
- * @param element .
- * @param actionMap Map from event to qualified name of the jsaction bound to
- *     it.
+ * Reads the jsaction parser cache for the given DOM element. If no cache is yet present,
+ * creates an empty one.
  */
-export function set(element: Element, actionMap: {[key: string]: string}) {
-  // @ts-ignore
+export function getDefaulted(element: Element): {[key: string]: string | undefined} {
+  const cache = get(element) ?? {};
+  set(element, cache);
+  return cache;
+}
+
+/**
+ * Writes the jsaction parser cache to the given DOM Element.
+ */
+export function set(element: Element, actionMap: {[key: string]: string | undefined}) {
   element[Property.JSACTION] = actionMap;
 }
 
@@ -55,7 +43,7 @@ export function set(element: Element, actionMap: {[key: string]: string}) {
  * @param text Unparsed jsaction attribute value.
  * @return Parsed jsaction attribute value, if already present in the cache.
  */
-export function getParsed(text: string): {[key: string]: string} | undefined {
+export function getParsed(text: string): {[key: string]: string | undefined} | undefined {
   return parseCache[text];
 }
 
@@ -65,7 +53,7 @@ export function getParsed(text: string): {[key: string]: string} | undefined {
  * @param text Unparsed jsaction attribute value.
  * @param parsed Attribute value parsed into the action map.
  */
-export function setParsed(text: string, parsed: {[key: string]: string}) {
+export function setParsed(text: string, parsed: {[key: string]: string | undefined}) {
   parseCache[text] = parsed;
 }
 

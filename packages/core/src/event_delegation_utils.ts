@@ -11,10 +11,9 @@ import {
   EventContract,
   EventContractContainer,
   EventDispatcher,
-  isSupportedEvent,
+  isEarlyEventType,
+  getActionCache,
   registerDispatcher,
-  registerEventType,
-  unregisterEventType,
 } from '@angular/core/primitives/event-dispatch';
 import {Attribute} from '@angular/core/primitives/event-dispatch';
 import {Injectable, InjectionToken, Injector, inject} from './di';
@@ -90,18 +89,18 @@ export class GlobalEventDelegation implements OnDestroy {
     this.eventContractDetails.instance?.cleanUp();
   }
 
-  supports(eventName: string): boolean {
-    return isSupportedEvent(eventName);
+  supports(eventType: string): boolean {
+    return isEarlyEventType(eventType);
   }
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    this.eventContractDetails.instance!.addEvent(eventName);
-    registerEventType(element, eventName, '');
-    return () => this.removeEventListener(element, eventName, handler);
+  addEventListener(element: HTMLElement, eventType: string, handler: Function): Function {
+    this.eventContractDetails.instance!.addEvent(eventType);
+    getActionCache(element)[eventType] = '';
+    return () => this.removeEventListener(element, eventType, handler);
   }
 
-  removeEventListener(element: HTMLElement, eventName: string, callback: Function): void {
-    unregisterEventType(element, eventName);
+  removeEventListener(element: HTMLElement, eventType: string, callback: Function): void {
+    getActionCache(element)[eventType] = undefined;
   }
 }
 
