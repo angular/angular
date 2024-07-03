@@ -614,9 +614,8 @@ describe('EventContract', () => {
         dispatcher,
       });
 
-      eventContract.replayEarlyEvents(replaySink);
+      eventContract.replayEarlyEvents(replaySink._ejsa);
 
-      expect(replaySink._ejsa).toBeUndefined();
       expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
       expect(dispatcher).toHaveBeenCalledTimes(1);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);

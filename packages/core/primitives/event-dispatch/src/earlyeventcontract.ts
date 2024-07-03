@@ -10,6 +10,14 @@ import {createEventInfoFromParameters, EventInfo} from './event_info';
 
 export declare interface EarlyJsactionDataContainer {
   _ejsa?: EarlyJsactionData;
+  _ejsas?: {[appId: string]: EarlyJsactionData | undefined};
+}
+
+declare global {
+  interface Window {
+    _ejsa?: EarlyJsactionData;
+    _ejsas?: {[appId: string]: EarlyJsactionData | undefined};
+  }
 }
 
 /**
@@ -19,14 +27,17 @@ export declare interface EarlyJsactionData {
   /** List used to keep track of the early JSAction event types. */
   et: string[];
 
-  /** List used to keep track of capture event types. */
+  /** List used to keep track of the early JSAction capture event types. */
   etc: string[];
 
-  /** List used to keep track of the JSAction events if using earlyeventcontract. */
-  q: EventInfo[];
-
-  /** Early Jsaction handler. */
+  /** Early JSAction handler for all events. */
   h: (event: Event) => void;
+
+  /** Dispatcher handler. Initializes to populating `q`. */
+  d: (eventInfo: EventInfo) => void;
+
+  /** List used to push `EventInfo` objects if the dispatcher is not registered. */
+  q: EventInfo[];
 
   /** Container for listening to events. */
   c: HTMLElement;
@@ -39,37 +50,57 @@ export declare interface EarlyJsactionData {
  */
 export class EarlyEventContract {
   constructor(
-    private readonly replaySink: EarlyJsactionDataContainer = window as EarlyJsactionDataContainer,
-    private readonly container = window.document.documentElement,
+    private readonly dataContainer: EarlyJsactionDataContainer = window,
+    container = window.document.documentElement,
   ) {
-    replaySink._ejsa = {
-      c: container,
-      q: [],
-      et: [],
-      etc: [],
-      h: (event: Event) => {
-        const eventInfo = createEventInfoFromParameters(
-          event.type,
-          event,
-          event.target as Element,
-          container,
-          Date.now(),
-        );
-        replaySink._ejsa!.q.push(eventInfo);
-      },
-    };
+    dataContainer._ejsa = createEarlyJsactionData(container);
   }
 
   /**
    * Installs a list of event types for container .
    */
   addEvents(types: string[], capture?: boolean) {
-    const replaySink = this.replaySink._ejsa!;
-    for (let idx = 0; idx < types.length; idx++) {
-      const eventType = types[idx];
-      const eventTypes = capture ? replaySink.etc : replaySink.et;
-      eventTypes.push(eventType);
-      this.container.addEventListener(eventType, replaySink.h, capture);
-    }
+    addEvents(this.dataContainer._ejsa!, types, capture);
+  }
+}
+
+/** Creates an `EarlyJsactionData` object. */
+export function createEarlyJsactionData(container: HTMLElement) {
+  const q: EventInfo[] = [];
+  const d = (eventInfo: EventInfo) => {
+    q.push(eventInfo);
+  };
+  const h = (event: Event) => {
+    d(
+      createEventInfoFromParameters(
+        event.type,
+        event,
+        event.target as Element,
+        container,
+        Date.now(),
+      ),
+    );
+  };
+  return {
+    c: container,
+    q,
+    et: [],
+    etc: [],
+    d,
+    h,
+  };
+}
+
+/** Add all the events to the container stored in the `EarlyJsactionData`. */
+export function addEvents(
+  earlyJsactionData: EarlyJsactionData,
+  types: string[],
+  capture?: boolean,
+) {
+  for (let i = 0; i < types.length; i++) {
+    const eventType = types[i];
+    const eventTypes = capture ? earlyJsactionData.etc : earlyJsactionData.et;
+    eventTypes.push(eventType);
+    earlyJsactionData.c.addEventListener(eventType, earlyJsactionData.h, capture);
   }
 }

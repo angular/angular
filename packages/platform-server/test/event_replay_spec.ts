@@ -33,7 +33,6 @@ import {
   render as renderHtml,
   resetTViewsFor,
 } from './dom_utils';
-import {CONTRACT_PROPERTY} from '@angular/core/src/hydration/event_replay';
 
 /**
  * Represents the <script> tag added by the build process to inject
@@ -93,7 +92,7 @@ describe('event replay', () => {
 
   afterEach(() => {
     doc.body.outerHTML = '<body></body>';
-    globalThis[CONTRACT_PROPERTY] = {};
+    window._ejsas = {};
   });
 
   /**
@@ -506,7 +505,7 @@ describe('event replay', () => {
       // the inlined script).
       expect(ssrContents).toContain(
         `<script type="text/javascript" id="ng-event-dispatch-contract"></script>` +
-          `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click"]);</script>`,
+          `<script>window.__jsaction_bootstrap(document.body,"ng",["click"],[]);</script>`,
       );
     });
   });

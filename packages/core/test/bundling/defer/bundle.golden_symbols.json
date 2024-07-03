@@ -207,6 +207,9 @@
     "name": "EventManagerPlugin"
   },
   {
+    "name": "EventType"
+  },
+  {
     "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
@@ -1350,9 +1353,6 @@
     "name": "init_dom_triggers"
   },
   {
-    "name": "init_earlyeventcontract"
-  },
-  {
     "name": "init_effect"
   },
   {
@@ -1879,9 +1879,6 @@
   },
   {
     "name": "init_reflection_capabilities"
-  },
-  {
-    "name": "init_register_events"
   },
   {
     "name": "init_render"

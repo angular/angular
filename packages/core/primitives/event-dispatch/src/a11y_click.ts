@@ -46,7 +46,7 @@ export function preventDefaultForA11yClick(eventInfo: eventInfoLib.EventInfo) {
 export function populateClickOnlyAction(
   actionElement: Element,
   eventInfo: eventInfoLib.EventInfo,
-  actionMap: {[key: string]: string},
+  actionMap: {[key: string]: string | undefined},
 ) {
   if (
     // If there's already an action, don't attempt to set a CLICKONLY
@@ -60,5 +60,5 @@ export function populateClickOnlyAction(
     return;
   }
   eventInfoLib.setEventType(eventInfo, EventType.CLICKONLY);
-  eventInfoLib.setAction(eventInfo, actionMap[EventType.CLICKONLY], actionElement);
+  eventInfoLib.setAction(eventInfo, actionMap[EventType.CLICKONLY]!, actionElement);
 }

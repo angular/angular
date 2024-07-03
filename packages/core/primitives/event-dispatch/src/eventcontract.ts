@@ -35,7 +35,7 @@ import * as eventLib from './event';
 import {EventContractContainerManager} from './event_contract_container';
 import {MOUSE_SPECIAL_SUPPORT} from './event_contract_defines';
 import * as eventInfoLib from './event_info';
-import {EventType, NON_BUBBLING_MOUSE_EVENTS} from './event_type';
+import {MOUSE_SPECIAL_EVENT_TYPES} from './event_type';
 import {Restriction} from './restriction';
 
 /**
@@ -154,7 +154,7 @@ export class EventContract implements UnrenamedEventContract {
       return;
     }
 
-    if (!EventContract.MOUSE_SPECIAL_SUPPORT && NON_BUBBLING_MOUSE_EVENTS.indexOf(eventType) >= 0) {
+    if (!EventContract.MOUSE_SPECIAL_SUPPORT && MOUSE_SPECIAL_EVENT_TYPES.indexOf(eventType) >= 0) {
       return;
     }
 
@@ -185,12 +185,9 @@ export class EventContract implements UnrenamedEventContract {
    * in the provided event contract. Once all the events are replayed, it cleans
    * up the early contract.
    */
-  replayEarlyEvents(
-    earlyJsactionContainer: EarlyJsactionDataContainer = window as EarlyJsactionDataContainer,
-  ) {
+  replayEarlyEvents(earlyJsactionData: EarlyJsactionData | undefined = window._ejsa) {
     // Check if the early contract is present and prevent calling this function
     // more than once.
-    const earlyJsactionData: EarlyJsactionData | undefined = earlyJsactionContainer._ejsa;
     if (!earlyJsactionData) {
       return;
     }
@@ -213,7 +210,7 @@ export class EventContract implements UnrenamedEventContract {
     const earlyEventHandler: (event: Event) => void = earlyJsactionData.h;
     removeEventListeners(earlyJsactionData.c, earlyJsactionData.et, earlyEventHandler);
     removeEventListeners(earlyJsactionData.c, earlyJsactionData.etc, earlyEventHandler, true);
-    delete earlyJsactionContainer._ejsa;
+    delete window._ejsa;
   }
 
   /**

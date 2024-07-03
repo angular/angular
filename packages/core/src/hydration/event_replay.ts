@@ -7,13 +7,12 @@
  */
 
 import {
-  isSupportedEvent,
-  isCaptureEvent,
+  isEarlyEventType,
+  isCaptureEventType,
   EventContractContainer,
   EventContract,
   EventDispatcher,
   registerDispatcher,
-  EarlyJsactionDataContainer,
 } from '@angular/core/primitives/event-dispatch';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
@@ -40,12 +39,6 @@ import {
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
-
-declare global {
-  var ngContracts: {[key: string]: EarlyJsactionDataContainer};
-}
-
-export const CONTRACT_PROPERTY = 'ngContracts';
 
 /**
  * A set of DOM elements with `jsaction` attributes.
@@ -81,7 +74,7 @@ export function withEventReplay(): Provider[] {
           // is enabled, but there are no events configured in this application, in which case
           // we don't activate this feature, since there are no events to replay.
           const appId = inject(APP_ID);
-          isEnabled = !!globalThis[CONTRACT_PROPERTY]?.[appId];
+          isEnabled = !!window._ejsas?.[appId];
         }
         if (isEnabled) {
           performanceMarkFeature('NgEventReplay');
@@ -133,16 +126,10 @@ export function withEventReplay(): Provider[] {
   ];
 }
 
-// TODO: Upstream this back into event-dispatch.
-function getJsactionData(container: EarlyJsactionDataContainer) {
-  return container._ejsa;
-}
-
 const initEventReplay = (eventDelegation: EventContractDetails, injector: Injector) => {
   const appId = injector.get(APP_ID);
   // This is set in packages/platform-server/src/utils.ts
-  const container = globalThis[CONTRACT_PROPERTY]?.[appId];
-  const earlyJsactionData = getJsactionData(container)!;
+  const earlyJsactionData = window._ejsas![appId]!;
   const eventContract = (eventDelegation.instance = new EventContract(
     new EventContractContainer(earlyJsactionData.c),
     /* useActionResolver= */ false,
@@ -153,7 +140,8 @@ const initEventReplay = (eventDelegation: EventContractDetails, injector: Inject
   for (const et of earlyJsactionData.etc) {
     eventContract.addEvent(et);
   }
-  eventContract.replayEarlyEvents(container);
+  eventContract.replayEarlyEvents(earlyJsactionData);
+  window._ejsas![appId] = undefined;
   const dispatcher = new EventDispatcher(invokeRegisteredListeners);
   registerDispatcher(eventContract, dispatcher);
 };
@@ -167,11 +155,11 @@ export function collectDomEventsInfo(
   lView: LView,
   eventTypesToReplay: {regular: Set<string>; capture: Set<string>},
 ): Map<Element, string[]> {
-  const events = new Map<Element, string[]>();
+  const domEventsInfo = new Map<Element, string[]>();
   const lCleanup = lView[CLEANUP];
   const tCleanup = tView.cleanup;
   if (!tCleanup || !lCleanup) {
-    return events;
+    return domEventsInfo;
   }
   for (let i = 0; i < tCleanup.length; ) {
     const firstParam = tCleanup[i++];
@@ -179,14 +167,14 @@ export function collectDomEventsInfo(
     if (typeof firstParam !== 'string') {
       continue;
     }
-    const name: string = firstParam;
-    if (!isSupportedEvent(name)) {
+    const eventType = firstParam;
+    if (!isEarlyEventType(eventType)) {
       continue;
     }
-    if (isCaptureEvent(name)) {
-      eventTypesToReplay.capture.add(name);
+    if (isCaptureEventType(eventType)) {
+      eventTypesToReplay.capture.add(eventType);
     } else {
-      eventTypesToReplay.regular.add(name);
+      eventTypesToReplay.regular.add(eventType);
     }
     const listenerElement = unwrapRNode(lView[secondParam]) as any as Element;
     i++; // move the cursor to the next position (location of the listener idx)
@@ -198,11 +186,11 @@ export function collectDomEventsInfo(
     if (!isDomEvent) {
       continue;
     }
-    if (!events.has(listenerElement)) {
-      events.set(listenerElement, [name]);
+    if (!domEventsInfo.has(listenerElement)) {
+      domEventsInfo.set(listenerElement, [eventType]);
     } else {
-      events.get(listenerElement)!.push(name);
+      domEventsInfo.get(listenerElement)!.push(eventType);
     }
   }
-  return events;
+  return domEventsInfo;
 }
