@@ -48,7 +48,7 @@ src
 
 <docs-code language="shell">
 
-ng run my-app:app-shell:development
+ng build --configuration=development
 
 </docs-code>
 
@@ -56,7 +56,7 @@ Or to use the production configuration.
 
 <docs-code language="shell">
 
-ng run my-app:app-shell:production
+ng build
 
 </docs-code>
 
