@@ -320,7 +320,7 @@ export class DowngradeComponentAdapter {
     }
 
     this.inputChangeCount++;
-    componentRef.instance[prop] = currValue;
+    componentRef.setInput(prop, currValue);
   }
 
   private groupProjectableNodes() {
