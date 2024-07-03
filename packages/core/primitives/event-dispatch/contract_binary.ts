@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bootstrapEarlyEventContract} from './src/register_events';
+import {bootstrapAppScopedEarlyEventContract} from './src/bootstrap_app_scoped';
 
-(window as any)['__jsaction_bootstrap'] = bootstrapEarlyEventContract;
+(window as any)['__jsaction_bootstrap'] = bootstrapAppScopedEarlyEventContract;

@@ -144,11 +144,13 @@ function insertEventRecordScript(
   const eventDispatchScript = findEventDispatchScript(doc);
   if (eventDispatchScript) {
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
-    const replayScriptContents = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
-      appId,
-    )}, ${JSON.stringify(Array.from(regular))}${
-      capture.size ? ',' + JSON.stringify(Array.from(capture)) : ''
-    });`;
+    const replayScriptContents =
+      `window.__jsaction_bootstrap(` +
+      `document.body,` +
+      `"${appId}",` +
+      `${JSON.stringify(Array.from(regular))},` +
+      `${JSON.stringify(Array.from(capture))}` +
+      `);`;
 
     const replayScript = createScript(doc, replayScriptContents, nonce);
 

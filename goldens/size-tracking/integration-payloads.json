@@ -56,7 +56,7 @@
     "uncompressed": {
       "main": 207890,
       "polyfills": 33807,
-      "event-dispatch-contract.min": 648
+      "event-dispatch-contract.min": 476
     }
   }
 }

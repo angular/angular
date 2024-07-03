@@ -283,34 +283,26 @@ export const EventType = {
   CUSTOM: '_custom',
 };
 
-export const NON_BUBBLING_MOUSE_EVENTS = [
+/** All event types that do not bubble or capture and need a polyfill. */
+export const MOUSE_SPECIAL_EVENT_TYPES = [
   EventType.MOUSEENTER,
   EventType.MOUSELEAVE,
   'pointerenter',
   'pointerleave',
 ];
 
-/**
- * Detects whether a given event type is supported by JSAction.
- */
-export const isSupportedEvent = (eventType: string) => SUPPORTED_EVENTS.indexOf(eventType) >= 0;
-
-const SUPPORTED_EVENTS = [
+/** All event types that are registered in the bubble phase. */
+export const BUBBLE_EVENT_TYPES = [
   EventType.CLICK,
   EventType.DBLCLICK,
-  EventType.FOCUS,
   EventType.FOCUSIN,
-  EventType.BLUR,
-  EventType.ERROR,
   EventType.FOCUSOUT,
   EventType.KEYDOWN,
   EventType.KEYUP,
   EventType.KEYPRESS,
-  EventType.LOAD,
   EventType.MOUSEOVER,
   EventType.MOUSEOUT,
   EventType.SUBMIT,
-  EventType.TOGGLE,
   EventType.TOUCHSTART,
   EventType.TOUCHEND,
   EventType.TOUCHMOVE,
@@ -362,19 +354,27 @@ const SUPPORTED_EVENTS = [
   'beforematch',
 ];
 
-/**
- *
- * Decides whether or not an event type is an event that only has a capture phase.
- *
- * @param eventType
- * @returns bool
- */
-export const isCaptureEvent = (eventType: string) => CAPTURE_EVENTS.indexOf(eventType) >= 0;
-
-const CAPTURE_EVENTS = [
+/** All event types that are registered in the capture phase. */
+export const CAPTURE_EVENT_TYPES = [
   EventType.FOCUS,
   EventType.BLUR,
   EventType.ERROR,
   EventType.LOAD,
   EventType.TOGGLE,
 ];
+
+/**
+ * Whether or not an event type should be registered in the capture phase.
+ * @param eventType
+ * @returns bool
+ */
+export const isCaptureEventType = (eventType: string) =>
+  CAPTURE_EVENT_TYPES.indexOf(eventType) >= 0;
+
+/** All event types that are registered early.  */
+const EARLY_EVENT_TYPES = [...BUBBLE_EVENT_TYPES, ...CAPTURE_EVENT_TYPES];
+
+/**
+ * Whether or not an event type is registered in the early contract.
+ */
+export const isEarlyEventType = (eventType: string) => EARLY_EVENT_TYPES.indexOf(eventType) >= 0;
