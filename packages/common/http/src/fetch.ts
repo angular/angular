@@ -76,17 +76,22 @@ export class FetchBackend implements HttpBackend {
     let response;
 
     try {
-      const fetchPromise = this.fetchImpl(request.urlWithParams, {signal, ...init});
+      // Run fetch outside of Angular zone.
+      // This is due to Node.js fetch implementation (Undici) which uses a number of setTimeouts to check if
+      // the response should eventually timeout which causes extra CD cycles every 500ms
+      response = await this.ngZone.runOutsideAngular(() => {
+        const fetchPromise = this.fetchImpl(request.urlWithParams, {signal, ...init});
 
-      // Make sure Zone.js doesn't trigger false-positive unhandled promise
-      // error in case the Promise is rejected synchronously. See function
-      // description for additional information.
-      silenceSuperfluousUnhandledPromiseRejection(fetchPromise);
+        // Make sure Zone.js doesn't trigger false-positive unhandled promise
+        // error in case the Promise is rejected synchronously. See function
+        // description for additional information.
+        silenceSuperfluousUnhandledPromiseRejection(fetchPromise);
 
-      // Send the `Sent` event before awaiting the response.
-      observer.next({type: HttpEventType.Sent});
+        // Send the `Sent` event before awaiting the response.
+        observer.next({type: HttpEventType.Sent});
 
-      response = await fetchPromise;
+        return fetchPromise;
+      });
     } catch (error: any) {
       observer.error(
         new HttpErrorResponse({
