@@ -31,7 +31,7 @@ const enum PROCESS_EXIT_CODE {
   SIGTERM = 143, // 143 = gracefully terminated by SIGTERM, e.g. Ctrl + C
 }
 
-export const PACKAGE_MANAGER = 'npm';
+export const PACKAGE_MANAGER = 'pnpm';
 
 /**
  * This service is responsible for handling the WebContainer instance, which
