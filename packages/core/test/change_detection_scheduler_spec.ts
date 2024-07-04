@@ -620,6 +620,27 @@ describe('Angular with zoneless enabled', () => {
     expect(fixture.nativeElement.innerText).toContain('new');
   });
 
+  it('reruns change detection in the microtask queue even if run manually before scheduled', async () => {
+    @Component({
+      template: '{{thing}}',
+      standalone: true,
+    })
+    class App {
+      thing = 'initial';
+      cdr = inject(ChangeDetectorRef);
+      ngAfterViewInit() {
+        queueMicrotask(() => {
+          this.thing = 'new';
+          this.cdr.markForCheck();
+        });
+      }
+    }
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    await Promise.resolve();
+    expect(fixture.nativeElement.innerText).toContain('new');
+  });
+
   it('throws a nice error when notifications prevent exiting the event loop (infinite CD)', async () => {
     let caughtError: unknown;
     let previousHandle = (Zone.root as any)._zoneDelegate.handleError;

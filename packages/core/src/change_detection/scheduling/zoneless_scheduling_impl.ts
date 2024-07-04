@@ -200,7 +200,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       return;
     }
 
-    const task = this.taskService.add();
     try {
       this.ngZone.run(
         () => {
@@ -210,22 +209,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         undefined,
         this.schedulerTickApplyArgs,
       );
-    } catch (e: unknown) {
-      this.taskService.remove(task);
-      throw e;
     } finally {
       this.cleanup();
     }
-    // If we're notified of a change within 1 microtask of running change
-    // detection, run another round in the same event loop. This allows code
-    // which uses Promise.resolve (see NgModel) to avoid
-    // ExpressionChanged...Error to still be reflected in a single browser
-    // paint, even if that spans multiple rounds of change detection.
-    this.useMicrotaskScheduler = true;
-    scheduleCallbackWithMicrotask(() => {
-      this.useMicrotaskScheduler = false;
-      this.taskService.remove(task);
-    });
   }
 
   ngOnDestroy() {
@@ -233,23 +219,26 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     this.cleanup();
   }
 
-  private cleanup() {
+  private async cleanup() {
     this.shouldRefreshViews = false;
     this.runningTick = false;
     this.cancelScheduledCallback?.();
     this.cancelScheduledCallback = null;
-    // If this is the last task, the service will synchronously emit a stable
-    // notification. If there is a subscriber that then acts in a way that
-    // tries to notify the scheduler again, we need to be able to respond to
-    // schedule a new change detection. Therefore, we should clear the task ID
-    // before removing it from the pending tasks (or the tasks service should
-    // not synchronously emit stable, similar to how Zone stableness only
-    // happens if it's still stable after a microtask).
-    if (this.pendingRenderTaskId !== null) {
-      const taskId = this.pendingRenderTaskId;
-      this.pendingRenderTaskId = null;
-      this.taskService.remove(taskId);
+    const taskId = this.pendingRenderTaskId;
+    this.pendingRenderTaskId = null;
+    if (taskId === null) {
+      return;
     }
+
+    // If we're notified of a change within 1 microtask of running change
+    // detection, run another round in the same event loop. This allows code
+    // which uses Promise.resolve (see NgModel) to avoid
+    // ExpressionChanged...Error to still be reflected in a single browser
+    // paint, even if that spans multiple rounds of change detection.
+    this.useMicrotaskScheduler = true;
+    await this.ngZone.runOutsideAngular(() => Promise.resolve());
+    this.useMicrotaskScheduler = false;
+    this.taskService.remove(taskId);
   }
 }
 
