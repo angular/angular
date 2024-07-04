@@ -114,7 +114,6 @@ export interface AnimationPlayer {
  *
  * @see {@link animate}
  * @see {@link AnimationPlayer}
- * @see {@link ɵAnimationGroupPlayer AnimationGroupPlayer}
  *
  * @publicApi
  */
