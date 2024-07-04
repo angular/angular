@@ -43,14 +43,14 @@ graph TD;
     main --- details[DetailsComponent];
     event>Event] --- search
 
-    style main fill:#E4BE74,color:#000
-    style login fill:#E4BE74,color:#000
-    style details fill:#E4BE74,color:#000
+style main fill:#E4BE74,color:#000
+style login fill:#E4BE74,color:#000
+style details fill:#E4BE74,color:#000
 
-    style app fill:#E4BE74,color:#000
-    style header fill:#E4BE74,color:#000
-    style button fill:#E4BE74,color:#000
-    style search fill:#E4BE74,color:#000
+style app fill:#C1D5B0,color:#000
+style header fill:#C1D5B0,color:#000
+style button fill:#C1D5B0,color:#000
+style search fill:#C1D5B0,color:#000
 ```
 
 ## An event is handled by a component with OnPush
