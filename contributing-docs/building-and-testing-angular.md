@@ -87,7 +87,7 @@ yarn build
 Bazel is used as the primary tool for building and testing Angular.
 
 To see how to run and debug Angular tests locally please refer to the
-Bazel [Testing Angular](./BAZEL.md#testing-angular) section.
+Bazel [Testing Angular](./building-with-bazel.md#testing-angular) section.
 
 Note that you should execute all test suites before submitting a PR to
 GitHub (`yarn test //packages/...`).
