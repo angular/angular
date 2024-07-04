@@ -5818,7 +5818,7 @@ suppress
         ]);
       });
 
-      it('should not allow usages of aliased `if` block variables inside the tracking exprssion', () => {
+      it('should not allow usages of aliased `if` block variables inside the tracking expression', () => {
         env.write(
           '/test.ts',
           `
@@ -7341,6 +7341,88 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
+      });
+
+      it('should report @let declaration used in the expression of a @if block before it is defined', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @if (value) {
+                Hello
+              }
+              @let value = 123;
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot read @let declaration 'value' before it has been defined.`,
+        );
+      });
+
+      it('should report @let declaration used in the expression of a @for block before it is defined', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (current of value; track $index) {
+                {{current}}
+              }
+
+              @let value = [1, 2, 3];
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot read @let declaration 'value' before it has been defined.`,
+        );
+      });
+
+      it('should report @let declaration used in the expression of a @switch block before it is defined', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @switch (value) {
+                @case (123) {
+                  Hello
+                }
+              }
+
+              @let value = [1, 2, 3];
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot read @let declaration 'value' before it has been defined.`,
+        );
       });
     });
   });
