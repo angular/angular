@@ -35,6 +35,7 @@ export function mapApiManifestToRoutes(): Route[] {
           ),
         },
         data: {
+          label: api.name,
           displaySecondaryNav: true,
         },
       });
