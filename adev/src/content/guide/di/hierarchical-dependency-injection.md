@@ -16,7 +16,7 @@ Angular has two injector hierarchies:
 
 | Injector hierarchies        | Details |
 |:---                         |:---     |
-| `EnvironmentInjector` hierarchy | Configure an `ElementInjector` in this hierarchy using `@Injectable()` or `providers` array in `ApplicationConfig`. |
+| `EnvironmentInjector` hierarchy | Configure an `ElementInjector` in this hierarchy using `@Injectable()` or `providers` array in `ApplicationConfig` or `providers` array in `Route`. |
 | `ElementInjector` hierarchy | Created implicitly at each DOM element. An `ElementInjector` is empty by default unless you configure it in the `providers` property on `@Directive()` or `@Component()`. |
 
 <docs-callout title="NgModule Based Applications">
@@ -29,6 +29,7 @@ The `EnvironmentInjector` can be configured in one of two ways by using:
 
 * The `@Injectable()` `providedIn` property to refer to `root` or `platform`
 * The `ApplicationConfig` `providers` array
+* The `Route` `providers` array
 
 <docs-callout title="Tree-shaking and @Injectable()">
 
