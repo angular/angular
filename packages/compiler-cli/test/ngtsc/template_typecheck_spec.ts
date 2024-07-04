@@ -7136,6 +7136,52 @@ suppress
         );
       });
 
+      it('should produce a single diagnostic if a @let declaration refers to properties on itself', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = value.a.b.c;
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot read @let declaration 'value' before it has been defined.`,
+        );
+      });
+
+      it('should produce a single diagnostic if a @let declaration invokes itself', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = value();
+            \`,
+            standalone: true,
+          })
+          export class Main {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Cannot read @let declaration 'value' before it has been defined.`,
+        );
+      });
+
       it('should allow event listeners to refer to a declaration before it has been defined', () => {
         env.write(
           'test.ts',
