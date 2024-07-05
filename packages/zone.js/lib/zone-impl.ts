@@ -645,6 +645,11 @@ export declare interface TaskData {
   isPeriodic?: boolean;
 
   /**
+   * A [MacroTask] that can be manually rescheduled.
+   */
+  isRefreshable?: boolean;
+
+  /**
    * Delay in milliseconds when the Task will run.
    */
   delay?: number;
@@ -653,6 +658,9 @@ export declare interface TaskData {
    * identifier returned by the native setTimeout.
    */
   handleId?: number;
+
+  /** The target handler. */
+  handle?: any;
 }
 
 /**
@@ -925,26 +933,29 @@ export function initZone(): ZoneType {
             ')',
         );
       }
+
+      const zoneTask = task as ZoneTask<any>;
       // https://github.com/angular/zone.js/issues/778, sometimes eventTask
       // will run in notScheduled(canceled) state, we should not try to
       // run such kind of task but just return
+      const {type, data: {isPeriodic = false, isRefreshable = false} = {}} = task;
 
-      if (task.state === notScheduled && (task.type === eventTask || task.type === macroTask)) {
+      if (task.state === notScheduled && (type === eventTask || type === macroTask)) {
         return;
       }
 
       const reEntryGuard = task.state != running;
-      reEntryGuard && (task as ZoneTask<any>)._transitionTo(running, scheduled);
-      task.runCount++;
+      reEntryGuard && zoneTask._transitionTo(running, scheduled);
       const previousTask = _currentTask;
-      _currentTask = task;
+      _currentTask = zoneTask;
       _currentZoneFrame = {parent: _currentZoneFrame, zone: this};
+
       try {
-        if (task.type == macroTask && task.data && !task.data.isPeriodic) {
+        if (type == macroTask && task.data && !isPeriodic && !isRefreshable) {
           task.cancelFn = undefined;
         }
         try {
-          return this._zoneDelegate.invokeTask(this, task, applyThis, applyArgs);
+          return this._zoneDelegate.invokeTask(this, zoneTask, applyThis, applyArgs);
         } catch (error) {
           if (this._zoneDelegate.handleError(this, error)) {
             throw error;
@@ -953,14 +964,18 @@ export function initZone(): ZoneType {
       } finally {
         // if the task's state is notScheduled or unknown, then it has already been cancelled
         // we should not reset the state to scheduled
-        if (task.state !== notScheduled && task.state !== unknown) {
-          if (task.type == eventTask || (task.data && task.data.isPeriodic)) {
-            reEntryGuard && (task as ZoneTask<any>)._transitionTo(scheduled, running);
+        const state = task.state;
+        if (state !== notScheduled && state !== unknown) {
+          if (type == eventTask || isPeriodic || (isRefreshable && state === scheduling)) {
+            reEntryGuard && zoneTask._transitionTo(scheduled, running, scheduling);
           } else {
-            task.runCount = 0;
-            this._updateTaskCount(task as ZoneTask<any>, -1);
-            reEntryGuard &&
-              (task as ZoneTask<any>)._transitionTo(notScheduled, running, notScheduled);
+            const zoneDelegates = zoneTask._zoneDelegates;
+            this._updateTaskCount(zoneTask, -1);
+            reEntryGuard && zoneTask._transitionTo(notScheduled, running, notScheduled);
+
+            if (isRefreshable) {
+              zoneTask._zoneDelegates = zoneDelegates;
+            }
           }
         }
         _currentZoneFrame = _currentZoneFrame.parent!;
@@ -1066,7 +1081,7 @@ export function initZone(): ZoneType {
       }
       this._updateTaskCount(task as ZoneTask<any>, -1);
       (task as ZoneTask<any>)._transitionTo(notScheduled, canceling);
-      task.runCount = 0;
+      task.runCount = -1;
       return task;
     }
 
