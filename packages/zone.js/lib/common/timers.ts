@@ -10,9 +10,15 @@
  * @suppress {missingRequire}
  */
 
-import {patchMethod, scheduleMacroTaskWithCurrentZone, zoneSymbol} from './utils';
+import {
+  isFunction,
+  isNumber,
+  patchMethod,
+  scheduleMacroTaskWithCurrentZone,
+  zoneSymbol,
+} from './utils';
 
-const taskSymbol = zoneSymbol('zoneTask');
+export const taskSymbol = zoneSymbol('zoneTask');
 
 interface TimerOptions extends TaskData {
   handleId?: number;
@@ -32,12 +38,27 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
     data.args[0] = function () {
       return task.invoke.apply(this, arguments);
     };
-    data.handleId = setNative!.apply(window, data.args);
+
+    const handleOrId = setNative!.apply(window, data.args);
+
+    // Whlist on Node.js when get can the ID by using `[Symbol.toPrimitive]()` we do
+    // to this so that we do not cause potentally leaks when using `setTimeout`
+    // since this can be periodic when using `.refresh`.
+    if (isNumber(handleOrId)) {
+      data.handleId = handleOrId;
+    } else {
+      data.handle = handleOrId;
+      // On Node.js a timeout and interval can be restarted over and over again by using the `.refresh` method.
+      data.isRefreshable = isFunction(handleOrId.refresh);
+    }
+
     return task;
   }
 
   function clearTask(task: Task) {
-    return clearNative!.call(window, (<TimerOptions>task.data).handleId);
+    const {handle, handleId} = task.data!;
+
+    return clearNative!.call(window, handle ?? handleId);
   }
 
   setNative = patchMethod(
@@ -45,12 +66,14 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
     setName,
     (delegate: Function) =>
       function (self: any, args: any[]) {
-        if (typeof args[0] === 'function') {
+        if (isFunction(args[0])) {
           const options: TimerOptions = {
+            isRefreshable: false,
             isPeriodic: nameSuffix === 'Interval',
             delay: nameSuffix === 'Timeout' || nameSuffix === 'Interval' ? args[1] || 0 : undefined,
             args: args,
           };
+
           const callback = args[0];
           args[0] = function timer(this: unknown) {
             try {
@@ -64,15 +87,17 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
               // Cleanup tasksByHandleId should be handled before scheduleTask
               // Since some zoneSpec may intercept and doesn't trigger
               // scheduleFn(scheduleTask) provided here.
-              if (!options.isPeriodic) {
-                if (typeof options.handleId === 'number') {
+              const {handle, handleId, isPeriodic, isRefreshable} = options;
+
+              if (!isPeriodic && !isRefreshable) {
+                if (handleId) {
                   // in non-nodejs env, we remove timerId
                   // from local cache
-                  delete tasksByHandleId[options.handleId];
-                } else if (options.handleId) {
+                  delete tasksByHandleId[handleId];
+                } else if (handle) {
                   // Node returns complex objects as handleIds
                   // we remove task reference from timer object
-                  (options.handleId as any)[taskSymbol] = null;
+                  handle[taskSymbol] = null;
                 }
               }
             }
@@ -84,37 +109,39 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
             scheduleTask,
             clearTask,
           );
+
           if (!task) {
             return task;
           }
+
           // Node.js must additionally support the ref and unref functions.
-          const handle: any = (<TimerOptions>task.data).handleId;
-          if (typeof handle === 'number') {
+          const {handleId, handle, isRefreshable, isPeriodic} = <TimerOptions>task.data;
+          if (handleId) {
             // for non nodejs env, we save handleId: task
             // mapping in local cache for clearTimeout
-            tasksByHandleId[handle] = task;
+            tasksByHandleId[handleId] = task;
           } else if (handle) {
             // for nodejs env, we save task
             // reference in timerId Object for clearTimeout
             handle[taskSymbol] = task;
+
+            if (isRefreshable && !isPeriodic) {
+              const originalRefresh = handle.refresh;
+              handle.refresh = function () {
+                const {zone, state} = task as any;
+                if (state === 'notScheduled') {
+                  (task as any)._state = 'scheduled';
+                  zone._updateTaskCount(task, 1);
+                } else if (state === 'running') {
+                  (task as any)._state = 'scheduling';
+                }
+
+                return originalRefresh.call(this);
+              };
+            }
           }
 
-          // check whether handle is null, because some polyfill or browser
-          // may return undefined from setTimeout/setInterval/setImmediate/requestAnimationFrame
-          if (
-            handle &&
-            handle.ref &&
-            handle.unref &&
-            typeof handle.ref === 'function' &&
-            typeof handle.unref === 'function'
-          ) {
-            (<any>task).ref = (<any>handle).ref.bind(handle);
-            (<any>task).unref = (<any>handle).unref.bind(handle);
-          }
-          if (typeof handle === 'number' || handle) {
-            return handle;
-          }
-          return task;
+          return handle ?? handleId ?? task;
         } else {
           // cause an error by calling it directly.
           return delegate.apply(window, args);
@@ -129,27 +156,23 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
       function (self: any, args: any[]) {
         const id = args[0];
         let task: Task;
-        if (typeof id === 'number') {
+
+        if (isNumber(id)) {
           // non nodejs env.
           task = tasksByHandleId[id];
+          delete tasksByHandleId[id];
         } else {
-          // nodejs env.
-          task = id && id[taskSymbol];
-          // other environments.
-          if (!task) {
+          // nodejs env ?? other environments.
+          task = id?.[taskSymbol];
+          if (task) {
+            id[taskSymbol] = null;
+          } else {
             task = id;
           }
         }
-        if (task && typeof task.type === 'string') {
-          if (
-            task.state !== 'notScheduled' &&
-            ((task.cancelFn && task.data!.isPeriodic) || task.runCount === 0)
-          ) {
-            if (typeof id === 'number') {
-              delete tasksByHandleId[id];
-            } else if (id) {
-              id[taskSymbol] = null;
-            }
+
+        if (task?.type) {
+          if (task.cancelFn) {
             // Do not cancel already canceled functions
             task.zone.cancelTask(task);
           }

@@ -13,10 +13,6 @@ describe('AsyncTestZoneSpec', function () {
   let log: string[];
   const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
 
-  function finishCallback() {
-    log.push('finish');
-  }
-
   function failCallback() {
     log.push('fail');
   }
