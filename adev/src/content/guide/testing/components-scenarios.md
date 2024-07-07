@@ -1066,7 +1066,7 @@ Fortunately, the `HeroDetailService` delegates responsibility for remote data ac
 
 <docs-code header="app/hero/hero-detail.service.ts (prototype)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.service.ts" visibleRegion="prototype"/>
 
-The [previous test configuration](#feature-module-import) replaces the real `HeroService` with a `TestHeroService` that intercepts server requests and fakes their responses.
+The [previous test configuration](#import-a-feature-module) replaces the real `HeroService` with a `TestHeroService` that intercepts server requests and fakes their responses.
 
 What if you aren't so lucky.
 What if faking the `HeroService` is hard?
