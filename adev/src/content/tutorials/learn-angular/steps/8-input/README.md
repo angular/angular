@@ -12,7 +12,7 @@ To create an `Input` property, add the `@Input` decorator to a property of a com
 
 <docs-code header="user.component.ts" language="ts">
 class UserComponent {
-  @Input() occupation = '';
+  @Input() name = '';
 }
 </docs-code>
 
@@ -21,17 +21,17 @@ When you are ready to pass in a value through an `Input`, values can be set in t
 <docs-code header="app.component.ts" language="ts" highlight="[3]">
 @Component({
   ...
-  template: `<app-user occupation="Angular Developer"><app-user/>`
+  template: `<app-user name="Simran"><app-user/>`
 })
 class AppComponent {}
 </docs-code>
 
-Make sure you bind the property `occupation` in your `UserComponent`.
+Make sure you bind the property `name` in your `UserComponent`.
 
 <docs-code header="user.component.ts" language="ts">
 @Component({
   ...
-  template: `<p>The user's name is {{occupation}}</p>`
+  template: `<p>The user's name is {{name}}</p>`
 })
 </docs-code>
 
