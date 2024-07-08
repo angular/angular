@@ -9,8 +9,8 @@
 import {Decorator} from '@angular/compiler-cli/src/ngtsc/reflection';
 import ts from 'typescript';
 
-import {isAngularDecorator, tryParseSignalModelMapping} from '../../../ngtsc/annotations';
-import {ImportManager} from '../../../ngtsc/translator';
+import {isAngularDecorator, tryParseSignalModelMapping} from '../../../../annotations';
+import {ImportManager} from '../../../../translator';
 
 import {createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './transform_api';
 

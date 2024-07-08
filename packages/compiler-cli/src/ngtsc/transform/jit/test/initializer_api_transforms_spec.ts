@@ -8,14 +8,11 @@
 
 import ts from 'typescript';
 
-import {ImportedSymbolsTracker} from '../src/ngtsc/imports';
-import {TypeScriptReflectionHost} from '../src/ngtsc/reflection';
-import {
-  getDownlevelDecoratorsTransform,
-  getInitializerApiJitTransform,
-} from '../src/transformers/jit_transforms';
+import {ImportedSymbolsTracker} from '../../../imports';
+import {TypeScriptReflectionHost} from '../../../reflection';
+import {getDownlevelDecoratorsTransform, getInitializerApiJitTransform} from '../index';
 
-import {MockAotContext, MockCompilerHost} from './mocks';
+import {MockAotContext, MockCompilerHost} from '../../../../../test/mocks';
 
 const TEST_FILE_INPUT = '/test.ts';
 const TEST_FILE_OUTPUT = `/test.js`;

@@ -8,7 +8,7 @@
 
 import {ImportedSymbolsTracker} from '@angular/compiler-cli/src/ngtsc/imports';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {getInitializerApiJitTransform} from '@angular/compiler-cli/src/transformers/jit_transforms';
+import {getInitializerApiJitTransform} from '@angular/compiler-cli/src/ngtsc/transform/jit';
 import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';

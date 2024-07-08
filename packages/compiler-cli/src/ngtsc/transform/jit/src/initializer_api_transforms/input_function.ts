@@ -9,7 +9,7 @@
 import {core} from '@angular/compiler';
 import ts from 'typescript';
 
-import {isAngularDecorator, tryParseSignalInputMapping} from '../../../ngtsc/annotations';
+import {isAngularDecorator, tryParseSignalInputMapping} from '../../../../annotations';
 
 import {
   castAsAny,

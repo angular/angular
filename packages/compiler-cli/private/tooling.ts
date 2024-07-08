@@ -15,7 +15,7 @@
 
 import ts from 'typescript';
 
-import {angularJitApplicationTransform} from '../src/transformers/jit_transforms/index';
+import {angularJitApplicationTransform} from '../src/ngtsc/transform/jit/index';
 
 /**
  * Known values for global variables in `@angular/core` that Terser should set using
