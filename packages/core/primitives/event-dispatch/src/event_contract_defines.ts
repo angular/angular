@@ -7,12 +7,6 @@
  */
 
 /**
- * @define Support for accessible click actions.  This flag can be overridden in
- * a build rule.
- */
-export const A11Y_CLICK_SUPPORT = false;
-
-/**
  * @define Support for the non-bubbling mouseenter and mouseleave events.  This
  * flag can be overridden in a build rule.
  */
