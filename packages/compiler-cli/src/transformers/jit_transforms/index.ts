@@ -38,6 +38,7 @@ export {getInitializerApiJitTransform} from './initializer_api_transforms/transf
 export function angularJitApplicationTransform(
   program: ts.Program,
   isCore = false,
+  shouldTransformClass?: (node: ts.ClassDeclaration) => boolean,
 ): ts.TransformerFactory<ts.SourceFile> {
   const typeChecker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(typeChecker);
@@ -49,12 +50,14 @@ export function angularJitApplicationTransform(
     [],
     isCore,
     /* enableClosureCompiler */ false,
+    shouldTransformClass,
   );
 
   const initializerApisJitTransform = getInitializerApiJitTransform(
     reflectionHost,
     importTracker,
     isCore,
+    shouldTransformClass,
   );
 
   return (ctx) => {

@@ -177,6 +177,7 @@ import {
   validateAndFlattenComponentImports,
 } from './util';
 import {getTemplateDiagnostics} from '../../../typecheck';
+import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -249,6 +250,7 @@ export class ComponentDecoratorHandler
     private readonly enableBlockSyntax: boolean,
     private readonly enableLetSyntax: boolean,
     private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
+    private readonly jitDeclarationRegistry: JitDeclarationRegistry,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -410,10 +412,11 @@ export class ComponentDecoratorHandler
       this.compilationMode,
       this.elementSchemaRegistry.getDefaultComponentElementName(),
     );
-    if (directiveResult === undefined) {
-      // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
-      // case, compilation of the decorator is skipped. Returning an empty object signifies
-      // that no analysis was produced.
+    // `extractDirectiveMetadata` returns `jitForced = true` when the `@Component` has
+    // set `jit: true`. In this case, compilation of the decorator is skipped. Returning
+    // an empty object signifies that no analysis was produced.
+    if (directiveResult.jitForced) {
+      this.jitDeclarationRegistry.jitDeclarations.add(node);
       return {};
     }
 

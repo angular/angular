@@ -39,6 +39,7 @@ import {getDeclaration, makeProgram} from '../../../testing';
 import {CompilationMode} from '../../../transform';
 import {
   InjectableClassRegistry,
+  JitDeclarationRegistry,
   NoopReferencesRegistry,
   ResourceLoader,
   ResourceLoaderContext,
@@ -105,6 +106,7 @@ function setup(
   );
   const resourceLoader = new StubResourceLoader();
   const importTracker = new ImportedSymbolsTracker();
+  const jitDeclarationRegistry = new JitDeclarationRegistry();
 
   const handler = new ComponentDecoratorHandler(
     reflectionHost,
@@ -144,6 +146,7 @@ function setup(
     /* enableBlockSyntax */ true,
     /* enableLetSyntax */ true,
     /* localCompilationExtraImportsTracker */ null,
+    jitDeclarationRegistry,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }

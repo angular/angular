@@ -76,6 +76,7 @@ import {
 
 import {extractDirectiveMetadata} from './shared';
 import {DirectiveSymbol} from './symbol';
+import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 
 const FIELD_DECORATORS = [
   'Input',
@@ -133,7 +134,7 @@ export class DirectiveDecoratorHandler
     private importTracker: ImportedSymbolsTracker,
     private includeClassMetadata: boolean,
     private readonly compilationMode: CompilationMode,
-    private readonly generateExtraImportsInLocalMode: boolean,
+    private readonly jitDeclarationRegistry: JitDeclarationRegistry,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -189,9 +190,14 @@ export class DirectiveDecoratorHandler
       this.compilationMode,
       /* defaultSelector */ null,
     );
-    if (directiveResult === undefined) {
+    // `extractDirectiveMetadata` returns `jitForced = true` when the `@Directive` has
+    // set `jit: true`. In this case, compilation of the decorator is skipped. Returning
+    // an empty object signifies that no analysis was produced.
+    if (directiveResult.jitForced) {
+      this.jitDeclarationRegistry.jitDeclarations.add(node);
       return {};
     }
+
     const analysis = directiveResult.metadata;
 
     let providersRequiringFactory: Set<Reference<ClassDeclaration>> | null = null;

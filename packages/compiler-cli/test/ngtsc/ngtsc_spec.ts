@@ -606,6 +606,41 @@ runInEachFileSystem((os: string) => {
       ]);
     });
 
+    it('should run JIT transform for components marked as `jit: true`', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, input} from '@angular/core';
+
+        @Component({
+          template: '<non-existent />',
+          jit: true,
+        })
+        class MyTestComponent {
+          name = input('John');
+        }
+
+        @Component({
+          template: '',
+        })
+        class NonJitComponent {
+          nonJitInput = input(true);
+        }
+      `,
+      );
+
+      env.driveMain();
+
+      expect(trim(env.getContents('test.js'))).toContain(
+        trim(`
+        MyTestComponent.propDecorators = {
+          name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: false, transform: undefined },] }]
+        };
+      `),
+      );
+      expect(env.getContents('test.js')).not.toContain('NonJitComponent.propDecorators');
+    });
+
     // This test triggers the Tsickle compiler which asserts that the file-paths
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.
@@ -3081,7 +3116,9 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain('Directive({');
-        expect(jsContents).toContain('__param(0, Inject');
+        expect(jsContents).toContain(
+          ` { type: String, decorators: [{ type: Inject, args: ['foo',] }] }`,
+        );
       });
     });
 

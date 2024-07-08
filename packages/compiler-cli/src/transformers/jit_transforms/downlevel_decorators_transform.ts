@@ -271,6 +271,7 @@ interface ParameterDecorationInfo {
  * @param diagnostics List which will be populated with diagnostics if any.
  * @param isCore Whether the current TypeScript program is for the `@angular/core` package.
  * @param isClosureCompilerEnabled Whether closure annotations need to be added where needed.
+ * @param shouldTransformClass Optional function to check if a given class should be transformed.
  */
 export function getDownlevelDecoratorsTransform(
   typeChecker: ts.TypeChecker,
@@ -278,6 +279,7 @@ export function getDownlevelDecoratorsTransform(
   diagnostics: ts.Diagnostic[],
   isCore: boolean,
   isClosureCompilerEnabled: boolean,
+  shouldTransformClass?: (node: ts.ClassDeclaration) => boolean,
 ): ts.TransformerFactory<ts.SourceFile> {
   function addJSDocTypeAnnotation(node: ts.Node, jsdocType: string): void {
     if (!isClosureCompilerEnabled) {
@@ -599,7 +601,10 @@ export function getDownlevelDecoratorsTransform(
      * class declaration that are decorated with an Angular decorator.
      */
     function decoratorDownlevelVisitor(node: ts.Node): ts.Node {
-      if (ts.isClassDeclaration(node)) {
+      if (
+        ts.isClassDeclaration(node) &&
+        (shouldTransformClass === undefined || shouldTransformClass(node))
+      ) {
         return transformClassDeclaration(node);
       }
       return ts.visitEachChild(node, decoratorDownlevelVisitor, context);
