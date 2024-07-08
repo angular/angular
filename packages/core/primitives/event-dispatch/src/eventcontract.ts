@@ -33,7 +33,7 @@
 import {EarlyJsactionData, EarlyJsactionDataContainer} from './earlyeventcontract';
 import * as eventLib from './event';
 import {EventContractContainerManager} from './event_contract_container';
-import {A11Y_CLICK_SUPPORT, MOUSE_SPECIAL_SUPPORT} from './event_contract_defines';
+import {MOUSE_SPECIAL_SUPPORT} from './event_contract_defines';
 import * as eventInfoLib from './event_info';
 import {EventType, NON_BUBBLING_MOUSE_EVENTS} from './event_type';
 import {Restriction} from './restriction';
@@ -75,7 +75,6 @@ type EventHandler = (eventType: string, event: Event, container: Element) => voi
  * be delay loaded in a generic way.
  */
 export class EventContract implements UnrenamedEventContract {
-  static A11Y_CLICK_SUPPORT = A11Y_CLICK_SUPPORT;
   static MOUSE_SPECIAL_SUPPORT = MOUSE_SPECIAL_SUPPORT;
 
   private containerManager: EventContractContainerManager | null;
