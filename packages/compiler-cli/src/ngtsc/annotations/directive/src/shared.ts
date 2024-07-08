@@ -117,6 +117,7 @@ export function extractDirectiveMetadata(
   defaultSelector: string | null,
 ):
   | {
+      jitForced: false;
       decorator: Map<string, ts.Expression>;
       metadata: R3DirectiveMetadata;
       inputs: ClassPropertyMapping<InputMapping>;
@@ -125,7 +126,7 @@ export function extractDirectiveMetadata(
       hostDirectives: HostDirectiveMeta[] | null;
       rawHostDirectives: ts.Expression | null;
     }
-  | undefined {
+  | {jitForced: true} {
   let directive: Map<string, ts.Expression>;
   if (decorator.args === null || decorator.args.length === 0) {
     directive = new Map<string, ts.Expression>();
@@ -149,7 +150,7 @@ export function extractDirectiveMetadata(
 
   if (directive.has('jit')) {
     // The only allowed value is true, so there's no need to expand further.
-    return undefined;
+    return {jitForced: true};
   }
 
   const members = reflector.getMembersOfClass(clazz);
@@ -407,6 +408,7 @@ export function extractDirectiveMetadata(
       null,
   };
   return {
+    jitForced: false,
     decorator: directive,
     metadata,
     inputs,
