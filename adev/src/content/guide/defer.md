@@ -128,7 +128,7 @@ You could also use both `when` and `on` together in one statement, and the swap 
 
 ### on viewport
 
-`viewport` would trigger the deferred block when the specified content enters the viewport using the [`IntersectionObserver` API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API). This could be the placeholder content or an element reference.
+`viewport` would trigger the deferred block when the specified content enters the viewport using the [`IntersectionObserver` API](https://developer.mozilla.org/docs/Web/API/Intersection_Observer_API). This could be the placeholder content or an element reference.
 
 By default, the placeholder will act as the element watched for entering viewport as long as it is a single root element node.
 

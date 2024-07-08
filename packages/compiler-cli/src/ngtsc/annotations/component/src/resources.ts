@@ -13,6 +13,7 @@ import {
   ParsedTemplate,
   ParseSourceFile,
   parseTemplate,
+  ParseTemplateOptions,
   TmplAstNode,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -131,6 +132,7 @@ export interface ExtractTemplateOptions {
   enableI18nLegacyMessageIdFormat: boolean;
   i18nNormalizeLineEndingsInICUs: boolean;
   enableBlockSyntax: boolean;
+  enableLetSyntax: boolean;
 }
 
 export function extractTemplate(
@@ -259,16 +261,20 @@ function parseExtractedTemplate(
 ): ParsedComponentTemplate {
   // We always normalize line endings if the template has been escaped (i.e. is inline).
   const i18nNormalizeLineEndingsInICUs = escapedString || options.i18nNormalizeLineEndingsInICUs;
-
-  const parsedTemplate = parseTemplate(sourceStr, sourceMapUrl ?? '', {
-    preserveWhitespaces: template.preserveWhitespaces,
+  const commonParseOptions: ParseTemplateOptions = {
     interpolationConfig: template.interpolationConfig,
     range: sourceParseRange ?? undefined,
-    escapedString,
     enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat,
     i18nNormalizeLineEndingsInICUs,
     alwaysAttemptHtmlToR3AstConversion: options.usePoisonedData,
+    escapedString,
     enableBlockSyntax: options.enableBlockSyntax,
+    enableLetSyntax: options.enableLetSyntax,
+  };
+
+  const parsedTemplate = parseTemplate(sourceStr, sourceMapUrl ?? '', {
+    ...commonParseOptions,
+    preserveWhitespaces: template.preserveWhitespaces,
   });
 
   // Unfortunately, the primary parse of the template above may not contain accurate source map
@@ -287,16 +293,10 @@ function parseExtractedTemplate(
   // with the above options set to preserve source mappings.
 
   const {nodes: diagNodes} = parseTemplate(sourceStr, sourceMapUrl ?? '', {
+    ...commonParseOptions,
     preserveWhitespaces: true,
     preserveLineEndings: true,
-    interpolationConfig: template.interpolationConfig,
-    range: sourceParseRange ?? undefined,
-    escapedString,
-    enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat,
-    i18nNormalizeLineEndingsInICUs,
     leadingTriviaChars: [],
-    alwaysAttemptHtmlToR3AstConversion: options.usePoisonedData,
-    enableBlockSyntax: options.enableBlockSyntax,
   });
 
   return {

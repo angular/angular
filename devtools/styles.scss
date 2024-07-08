@@ -48,6 +48,7 @@ $dark-theme: map.deep-merge(
 }
 
 .dark-theme {
+  color-scheme: dark;
   background: #202124;
   @include mat.all-component-themes($dark-theme);
 

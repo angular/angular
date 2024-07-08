@@ -577,7 +577,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <div i18n-title="m|d" title="intro {% valueA | uppercase %}"></div>
   `,
-                    interpolation: ['{%', '%}']
+                    interpolation: ['{%', '%}'],
                 }]
         }] });
 export class MyModule {

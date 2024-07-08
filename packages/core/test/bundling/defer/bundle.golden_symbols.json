@@ -195,6 +195,9 @@
     "name": "ErrorHandler"
   },
   {
+    "name": "EventDelegationPlugin"
+  },
+  {
     "name": "EventEmitter"
   },
   {
@@ -202,6 +205,9 @@
   },
   {
     "name": "EventManagerPlugin"
+  },
+  {
+    "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
     "name": "GenericBrowserDomAdapter"
@@ -462,6 +468,9 @@
     "name": "Subscription"
   },
   {
+    "name": "TEMPORARY_CONSUMER_NODE"
+  },
+  {
     "name": "TESTABILITY"
   },
   {
@@ -579,9 +588,6 @@
     "name": "_wasLastNodeCreated"
   },
   {
-    "name": "_wrapInTimeout"
-  },
-  {
     "name": "activeConsumer"
   },
   {
@@ -679,6 +685,12 @@
   },
   {
     "name": "configureViewWithDirective"
+  },
+  {
+    "name": "consumerBeforeComputation"
+  },
+  {
+    "name": "consumerDestroy"
   },
   {
     "name": "consumerIsLive"
@@ -921,6 +933,9 @@
     "name": "getOrCreateComponentTView"
   },
   {
+    "name": "getOrCreateEnvironmentInjector"
+  },
+  {
     "name": "getOrCreateInjectable"
   },
   {
@@ -1032,9 +1047,6 @@
     "name": "init_UnsubscriptionError"
   },
   {
-    "name": "init_a11y_click"
-  },
-  {
     "name": "init_action_resolver"
   },
   {
@@ -1129,6 +1141,9 @@
   },
   {
     "name": "init_callback_scheduler"
+  },
+  {
+    "name": "init_chained_injector"
   },
   {
     "name": "init_change_detection"
@@ -1332,9 +1347,6 @@
     "name": "init_dom"
   },
   {
-    "name": "init_dom2"
-  },
-  {
     "name": "init_dom_triggers"
   },
   {
@@ -1405,6 +1417,12 @@
   },
   {
     "name": "init_event_contract_defines"
+  },
+  {
+    "name": "init_event_delegation"
+  },
+  {
+    "name": "init_event_delegation_utils"
   },
   {
     "name": "init_event_dispatch"
@@ -1615,6 +1633,9 @@
   },
   {
     "name": "init_lang"
+  },
+  {
+    "name": "init_let_declaration"
   },
   {
     "name": "init_lift"
@@ -2436,9 +2457,6 @@
     "name": "stringifyCSSSelector"
   },
   {
-    "name": "throwError"
-  },
-  {
     "name": "throwProviderNotFoundError"
   },
   {
@@ -2466,6 +2484,9 @@
     "name": "viewAttachedToChangeDetector"
   },
   {
+    "name": "viewShouldHaveReactiveConsumer"
+  },
+  {
     "name": "walkProviderTree"
   },
   {
@@ -2485,9 +2506,6 @@
   },
   {
     "name": "ɵɵdefer"
-  },
-  {
-    "name": "ɵɵdeferWhen"
   },
   {
     "name": "ɵɵdefineComponent"

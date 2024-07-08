@@ -91,6 +91,7 @@ export async function runOneBuild(
     'forbidOrphanComponents',
     'onlyExplicitDeferDependencyImports',
     'generateExtraImportsInLocalMode',
+    '_enableLetSyntax',
   ]);
 
   const userOverrides = Object.entries(userOptions)

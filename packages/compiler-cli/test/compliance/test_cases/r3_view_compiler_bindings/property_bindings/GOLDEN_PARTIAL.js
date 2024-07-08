@@ -762,7 +762,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     imports: [Dir],
                     template: `
     <div dir [(a)]="value" [b]="value" [(c)]="value" [d]="value"></div>
-  `
+  `,
                 }]
         }] });
 

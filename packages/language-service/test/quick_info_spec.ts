@@ -705,6 +705,16 @@ describe('quick info', () => {
       });
     });
 
+    describe('let declarations', () => {
+      it('should get quick info for a let declaration', () => {
+        expectQuickInfo({
+          templateOverride: `@let na¦me = 'Frodo';`,
+          expectedSpanText: `@let name = 'Frodo'`,
+          expectedDisplayString: `(let) name: "Frodo"`,
+        });
+      });
+    });
+
     it('should work for object literal with shorthand property declarations', () => {
       initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();

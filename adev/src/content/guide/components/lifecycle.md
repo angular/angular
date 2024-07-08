@@ -31,7 +31,7 @@ process.
       <td>Creation</td>
       <td><code>constructor</code></td>
       <td>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor" target="_blank">
+        <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Classes/constructor" target="_blank">
           Standard JavaScript class constructor
         </a>. Runs when Angular instantiates the component.
       </td>
@@ -239,30 +239,42 @@ Render callbacks do not run during server-side rendering or during build-time pr
 
 #### afterRender phases
 
-When using `afterRender` or `afterNextRender`, you can optionally specify a `phase`. The phase
-gives you control over the sequencing of DOM operations, letting you sequence _write_ operations
-before _read_ operations in order to minimize
-[layout thrashing](https://web.dev/avoid-large-complex-layouts-and-layout-thrashing).
+When using `afterRender` or `afterNextRender`, you can optionally split the work into phases. The
+phase gives you control over the sequencing of DOM operations, letting you sequence _write_
+operations before _read_ operations in order to minimize
+[layout thrashing](https://web.dev/avoid-large-complex-layouts-and-layout-thrashing). In order to
+communicate across phases, a phase function may return a result value that can be accessed in the
+next phase.
 
 ```ts
-import {Component, ElementRef, afterNextRender, AfterRenderPhase} from '@angular/core';
+import {Component, ElementRef, afterNextRender} from '@angular/core';
 
 @Component({...})
 export class UserProfile {
+  private prevPadding = 0;
   private elementHeight = 0;
 
   constructor(elementRef: ElementRef) {
     const nativeElement = elementRef.nativeElement;
 
-    // Use the `Write` phase to write to a geometric property.
-    afterNextRender(() => {
-      nativeElement.style.padding = computePadding();
-    }, {phase: AfterRenderPhase.Write});
+    afterNextRender({
+      // Use the `Write` phase to write to a geometric property.
+      write: () => {
+        const padding = computePadding();
+        const changed = padding !== prevPadding;
+        if (changed) {
+          nativeElement.style.padding = padding;
+        }
+        return changed; // Communicate whether anything changed to the read phase.
+      },
 
-    // Use the `Read` phase to read geometric properties after all writes have occurred.
-    afterNextRender(() => {
-      this.elementHeight = nativeElement.getBoundingClientRect().height;
-    }, {phase: AfterRenderPhase.Read});
+      // Use the `Read` phase to read geometric properties after all writes have occurred.
+      read: (didWrite) => {
+        if (didWrite) {
+          this.elementHeight = nativeElement.getBoundingClientRect().height;
+        }
+      }
+    });
   }
 }
 ```
@@ -271,10 +283,10 @@ There are four phases, run in the following order:
 
 | Phase            | Description                                                                                                                                                                                           |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `EarlyRead`      | Use this phase to read any layout-affecting DOM properties and styles that are strictly necessary for subsequent calculation. Avoid this phase if possible, preferring the `Write` and `Read` phases. |
-| `MixedReadWrite` | Default phase. Use for any operations need to both read and write layout-affecting properties and styles. Avoid this phase if possible, preferring the explicit `Write` and `Read` phases.            |
-| `Write`          | Use this phase to write layout-affecting DOM properties and styles.                                                                                                                                   |
-| `Read`           | Use this phase to read any layout-affecting DOM properties.                                                                                                                                           |
+| `earlyRead`      | Use this phase to read any layout-affecting DOM properties and styles that are strictly necessary for subsequent calculation. Avoid this phase if possible, preferring the `write` and `read` phases. |
+| `mixedReadWrite` | Default phase. Use for any operations need to both read and write layout-affecting properties and styles. Avoid this phase if possible, preferring the explicit `write` and `read` phases.            |
+| `write`          | Use this phase to write layout-affecting DOM properties and styles.                                                                                                                                   |
+| `read`           | Use this phase to read any layout-affecting DOM properties.                                                                                                                                           |
 
 ## Lifecycle interfaces
 

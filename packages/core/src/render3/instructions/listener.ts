@@ -35,10 +35,10 @@ import {
  * an actual implementation when the event replay feature is enabled via
  * `withEventReplay()` call.
  */
-let disableEventReplayFn = (el: RElement, eventName: string, listenerFn: (e?: any) => any) => {};
+let stashEventListener = (el: RElement, eventName: string, listenerFn: (e?: any) => any) => {};
 
-export function setDisableEventReplayImpl(fn: typeof disableEventReplayFn) {
-  disableEventReplayFn = fn;
+export function setStashFn(fn: typeof stashEventListener) {
+  stashEventListener = fn;
 }
 
 /**
@@ -182,8 +182,6 @@ export function listenerInternal(
       ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
       : tNode.index;
 
-    disableEventReplayFn(native, eventName, listenerFn);
-
     // In order to match current behavior, native DOM event listeners must be added for all
     // events (including outputs).
 
@@ -218,6 +216,7 @@ export function listenerInternal(
       processOutputs = false;
     } else {
       listenerFn = wrapListener(tNode, lView, context, listenerFn);
+      stashEventListener(native, eventName, listenerFn);
       const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
       ngDevMode && ngDevMode.rendererAddEventListener++;
 

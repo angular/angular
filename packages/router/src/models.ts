@@ -803,10 +803,6 @@ export interface LoadedRouterConfig {
  * ```
  *
  * @publicApi
- * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
- * function: `canActivate: [() => inject(myGuard).canActivate()]`.
- * @see {@link CanActivateFn}
  */
 export interface CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult>;
@@ -926,10 +922,6 @@ export type CanActivateFn = (
  * ```
  *
  * @publicApi
- * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
- * function: `canActivateChild: [() => inject(myGuard).canActivateChild()]`.
- * @see {@link CanActivateChildFn}
  */
 export interface CanActivateChild {
   canActivateChild(
@@ -1013,10 +1005,6 @@ export type CanActivateChildFn = (
  * ```
  *
  * @publicApi
- * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
- * function: `canDeactivate: [() => inject(myGuard).canDeactivate()]`.
- * @see {@link CanDeactivateFn}
  */
 export interface CanDeactivate<T> {
   canDeactivate(
@@ -1109,10 +1097,6 @@ export type CanDeactivateFn<T> = (
  * could not be used for a URL match but the catch-all `**` `Route` did instead.
  *
  * @publicApi
- * @deprecated Class-based `Route` guards are deprecated in favor of functional guards. An
- *     injectable class can be used as a functional guard using the [`inject`](api/core/inject)
- * function: `canMatch: [() => inject(myGuard).canMatch()]`.
- * @see {@link CanMatchFn}
  */
 export interface CanMatch {
   canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
@@ -1226,10 +1210,6 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * The order of execution is: BaseGuard, ChildGuard, BaseDataResolver, ChildDataResolver.
  *
  * @publicApi
- * @deprecated Class-based `Route` resolvers are deprecated in favor of functional resolvers. An
- * injectable class can be used as a functional guard using the [`inject`](api/core/inject)
- function: `resolve:
- * {'user': () => inject(UserResolver).resolve()}`.
  * @see {@link ResolveFn}
  */
 export interface Resolve<T> {
@@ -1395,7 +1375,7 @@ export type ResolveFn<T> = (
  * ```
  *
  * @publicApi
- * @deprecated Use {@link CanMatchFn} instead
+ * @deprecated Use {@link CanMatch} instead
  */
 export interface CanLoad {
   canLoad(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
@@ -1407,7 +1387,7 @@ export interface CanLoad {
  * @publicApi
  * @see {@link CanLoad}
  * @see {@link Route}
- * @see {@link CanMatchFn}
+ * @see {@link CanMatch}
  * @deprecated Use `Route.canMatch` and `CanMatchFn` instead
  */
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
@@ -1499,4 +1479,39 @@ export interface NavigationBehaviorOptions {
    * when the transition has finished animating.
    */
   readonly info?: unknown;
+
+  /**
+   * When set, the Router will update the browser's address bar to match the given `UrlTree` instead
+   * of the one used for route matching.
+   *
+   *
+   * @usageNotes
+   *
+   * This feature is useful for redirects, such as redirecting to an error page, without changing
+   * the value that will be displayed in the browser's address bar.
+   *
+   * ```
+   * const canActivate: CanActivateFn = (route: ActivatedRouteSnapshot) => {
+   *   const userService = inject(UserService);
+   *   const router = inject(Router);
+   *   if (!userService.isLoggedIn()) {
+   *     const targetOfCurrentNavigation = router.getCurrentNavigation()?.finalUrl;
+   *     const redirect = router.parseUrl('/404');
+   *     return new RedirectCommand(redirect, {browserUrl: targetOfCurrentNavigation});
+   *   }
+   *   return true;
+   * };
+   * ```
+   *
+   * This value is used directly, without considering any `UrlHandingStrategy`. In this way,
+   * `browserUrl` can also be used to use a different value for the browser URL than what would have
+   * been produced by from the navigation due to `UrlHandlingStrategy.merge`.
+   *
+   * This value only affects the path presented in the browser's address bar. It does not apply to
+   * the internal `Router` state. Information such as `params` and `data` will match the internal
+   * state used to match routes which will be different from the browser URL when using this feature
+   * The same is true when using other APIs that cause the browser URL the differ from the Router
+   * state, such as `skipLocationChange`.
+   */
+  readonly browserUrl?: UrlTree | string;
 }

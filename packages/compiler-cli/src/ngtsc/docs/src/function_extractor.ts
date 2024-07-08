@@ -35,15 +35,18 @@ export class FunctionExtractor {
       ? this.typeChecker.typeToString(this.typeChecker.getReturnTypeOfSignature(signature))
       : 'unknown';
 
+    const jsdocsTags = extractJsDocTags(this.declaration);
+
     return {
       params: extractAllParams(this.declaration.parameters, this.typeChecker),
       name: this.name,
       isNewType: ts.isConstructSignatureDeclaration(this.declaration),
       returnType,
+      returnDescription: jsdocsTags.find((tag) => tag.name === 'returns')?.comment,
       entryType: EntryType.Function,
       generics: extractGenerics(this.declaration),
       description: extractJsDocDescription(this.declaration),
-      jsdocTags: extractJsDocTags(this.declaration),
+      jsdocTags: jsdocsTags,
       rawComment: extractRawJsDoc(this.declaration),
     };
   }

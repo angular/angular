@@ -36,6 +36,11 @@ export interface PluginConfig {
    * Version of `@angular/core` that was detected in the user's workspace.
    */
   angularCoreVersion?: string;
+
+  /**
+   * If false, disables parsing of `@let` declarations in the compiler.
+   */
+  enableLetSyntax?: false;
 }
 
 export type GetTcbResponse = {

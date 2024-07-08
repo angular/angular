@@ -814,6 +814,29 @@ describe('completions', () => {
       expect(ts.displayPartsToString(details.documentation!)).toEqual('This is another component.');
     });
 
+    it('should return component completions not imported', () => {
+      const {templateFile} = setup(
+        `<other-cmp>`,
+        '',
+        {},
+        `
+        @Component({selector: 'other-cmp', template: 'unimportant', standalone: true})
+        export class OtherCmp {}
+      `,
+      );
+      templateFile.moveCursorToText('<other-cmp¦>');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+        completions,
+        unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.COMPONENT),
+        ['other-cmp'],
+      );
+
+      const details = templateFile.getCompletionEntryDetails('other-cmp')!;
+      expect(details).toBeDefined();
+      expect(details.codeActions?.[0].description).toEqual('Import OtherCmp');
+    });
+
     it('should return completions for an incomplete tag', () => {
       const OTHER_CMP = {
         'OtherCmp': `
@@ -1950,6 +1973,65 @@ describe('completions', () => {
         ['mat-button="$1"'],
       );
       expectReplacementText(completions, templateFile.contents, 'mat-');
+    });
+  });
+
+  describe('let declarations', () => {
+    it('should complete a let declaration', () => {
+      const {templateFile} = setup(
+        `
+        @let message = 'hello';
+        {{mess}}
+      `,
+        '',
+      );
+      templateFile.moveCursorToText('{{mess¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, DisplayInfoKind.LET, ['message']);
+    });
+
+    it('should complete an empty let declaration with a terminating character', () => {
+      const {templateFile} = setup('@let foo = ;', `title!: string; hero!52: number;`);
+      templateFile.moveCursorToText('@let foo = ¦;');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
+    });
+
+    it('should complete a single let declaration without a terminating character', () => {
+      const {templateFile} = setup('@let foo =  ', `title!: string; hero!52: number;`);
+      templateFile.moveCursorToText('@let foo = ¦');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
+    });
+
+    it('should complete a let declaration property in the global scope', () => {
+      const {templateFile} = setup(
+        `
+        @let hobbit = {name: 'Frodo', age: 53};
+        {{hobbit.}}
+      `,
+        '',
+      );
+      templateFile.moveCursorToText('{{hobbit.¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['age', 'name']);
+    });
+
+    it('should complete a shadowed let declaration property', () => {
+      const {templateFile} = setup(
+        `
+        @let hobbit = {name: 'Frodo', age: 53};
+
+        @if (true) {
+          @let hobbit = {hasRing: true, size: 'small'};
+          {{hobbit.}}
+        }
+      `,
+        '',
+      );
+      templateFile.moveCursorToText('{{hobbit.¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['hasRing', 'size']);
     });
   });
 });

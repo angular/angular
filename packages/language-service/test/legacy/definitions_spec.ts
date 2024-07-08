@@ -287,6 +287,19 @@ describe('definitions', () => {
     });
   });
 
+  describe('@let declarations', () => {
+    it('should work for a @let declaration', () => {
+      const definitions = getDefinitionsAndAssertBoundSpan({
+        templateOverride: `@let value = 42; {{val¦ue}}`,
+        expectedSpanText: 'value',
+      });
+
+      expect(definitions.length).toBe(1);
+      const [def] = definitions;
+      expect(def.textSpan).toBe('@let value = 42');
+    });
+  });
+
   describe('pipes', () => {
     it('should work for pipes', () => {
       const templateOverride = `<p>The hero's birthday is {{birthday | da¦te: "MM/dd/yy"}}</p>`;

@@ -67,7 +67,8 @@ export type CreateOp =
   | IcuEndOp
   | IcuPlaceholderOp
   | I18nContextOp
-  | I18nAttributesOp;
+  | I18nAttributesOp
+  | DeclareLetOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -1068,6 +1069,35 @@ export function createDeferOnOp(
     trigger,
     prefetch,
     sourceSpan,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Op that reserves a slot during creation time for a `@let` declaration.
+ */
+export interface DeclareLetOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.DeclareLet;
+  xref: XrefId;
+  sourceSpan: ParseSourceSpan;
+  declaredName: string;
+}
+
+/**
+ * Creates a `DeclareLetOp`.
+ */
+export function createDeclareLetOp(
+  xref: XrefId,
+  declaredName: string,
+  sourceSpan: ParseSourceSpan,
+): DeclareLetOp {
+  return {
+    kind: OpKind.DeclareLet,
+    xref,
+    declaredName,
+    sourceSpan,
+    handle: new SlotHandle(),
+    ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
 }

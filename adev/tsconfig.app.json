@@ -5,6 +5,6 @@
     "outDir": "../../out-tsc/app",
     "types": ["node"]
   },
-  "files": ["src/main.ts", "src/main.server.ts", "src/polyfills.ts"],
+  "files": ["src/main.ts", "src/main.server.ts"],
   "include": ["src/**/*.d.ts", "../../node_modules/@types/dom-navigation/index.d.ts"]
 }

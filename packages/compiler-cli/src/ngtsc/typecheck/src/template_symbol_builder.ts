@@ -18,6 +18,7 @@ import {
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstElement,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
   TmplAstTemplate,
@@ -39,6 +40,7 @@ import {
   ElementSymbol,
   ExpressionSymbol,
   InputBindingSymbol,
+  LetDeclarationSymbol,
   OutputBindingSymbol,
   PipeSymbol,
   ReferenceSymbol,
@@ -81,7 +83,9 @@ export class SymbolBuilder {
   ) {}
 
   getSymbol(node: TmplAstTemplate | TmplAstElement): TemplateSymbol | ElementSymbol | null;
-  getSymbol(node: TmplAstReference | TmplAstVariable): ReferenceSymbol | VariableSymbol | null;
+  getSymbol(
+    node: TmplAstReference | TmplAstVariable | TmplAstLetDeclaration,
+  ): ReferenceSymbol | VariableSymbol | LetDeclarationSymbol | null;
   getSymbol(node: AST | TmplAstNode): Symbol | null;
   getSymbol(node: AST | TmplAstNode): Symbol | null {
     if (this.symbolCache.has(node)) {
@@ -101,6 +105,8 @@ export class SymbolBuilder {
       symbol = this.getSymbolOfAstTemplate(node);
     } else if (node instanceof TmplAstVariable) {
       symbol = this.getSymbolOfVariable(node);
+    } else if (node instanceof TmplAstLetDeclaration) {
+      symbol = this.getSymbolOfLetDeclaration(node);
     } else if (node instanceof TmplAstReference) {
       symbol = this.getSymbolOfReference(node);
     } else if (node instanceof BindingPipe) {
@@ -620,6 +626,36 @@ export class SymbolBuilder {
     }
   }
 
+  private getSymbolOfLetDeclaration(decl: TmplAstLetDeclaration): LetDeclarationSymbol | null {
+    const node = findFirstMatchingNode(this.typeCheckBlock, {
+      withSpan: decl.sourceSpan,
+      filter: ts.isVariableDeclaration,
+    });
+
+    if (node === null) {
+      return null;
+    }
+
+    const nodeValueSymbol = this.getSymbolOfTsNode(node.initializer!);
+
+    if (nodeValueSymbol === null) {
+      return null;
+    }
+
+    return {
+      tsType: nodeValueSymbol.tsType,
+      tsSymbol: nodeValueSymbol.tsSymbol,
+      initializerLocation: nodeValueSymbol.tcbLocation,
+      kind: SymbolKind.LetDeclaration,
+      declaration: decl,
+      localVarLocation: {
+        tcbPath: this.tcbPath,
+        isShimFile: this.tcbIsShim,
+        positionInFile: this.getTcbPositionForNode(node.name),
+      },
+    };
+  }
+
   private getSymbolOfPipe(expression: BindingPipe): PipeSymbol | null {
     const methodAccess = findFirstMatchingNode(this.typeCheckBlock, {
       withSpan: expression.nameSpan,
@@ -660,7 +696,7 @@ export class SymbolBuilder {
 
   private getSymbolOfTemplateExpression(
     expression: AST,
-  ): VariableSymbol | ReferenceSymbol | ExpressionSymbol | null {
+  ): VariableSymbol | ReferenceSymbol | ExpressionSymbol | LetDeclarationSymbol | null {
     if (expression instanceof ASTWithSource) {
       expression = expression.ast;
     }

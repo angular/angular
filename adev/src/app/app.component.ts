@@ -8,9 +8,11 @@
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {
+  afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   inject,
-  NgZone,
+  Injector,
   OnInit,
   PLATFORM_ID,
   signal,
@@ -23,17 +25,18 @@ import {
   getActivatedRouteSnapshotFromRouter,
   IS_SEARCH_DIALOG_OPEN,
   SearchDialog,
-  WINDOW,
 } from '@angular/docs';
 import {Footer} from './core/layout/footer/footer.component';
 import {Navigation} from './core/layout/navigation/navigation.component';
 import {SecondaryNavigation} from './core/layout/secondary-navigation/secondary-navigation.component';
 import {ProgressBarComponent} from './core/layout/progress-bar/progress-bar.component';
 import {ESCAPE, SEARCH_TRIGGER_KEY} from './core/constants/keys';
+import {HeaderService} from './core/services/header.service';
 
 @Component({
-  standalone: true,
   selector: 'adev-root',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
   imports: [
     CookiePopup,
     Navigation,
@@ -46,12 +49,14 @@ import {ESCAPE, SEARCH_TRIGGER_KEY} from './core/constants/keys';
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  host: {
+    '(window:keydown)': 'setSearchDialogVisibilityOnKeyPress($event)',
+  },
 })
 export class AppComponent implements OnInit {
   private readonly document = inject(DOCUMENT);
-  private readonly ngZone = inject(NgZone);
   private readonly router = inject(Router);
-  private readonly window = inject(WINDOW);
+  private readonly headerService = inject(HeaderService);
 
   currentUrl = signal('');
   displayFooter = signal(false);
@@ -61,7 +66,6 @@ export class AppComponent implements OnInit {
   isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   ngOnInit(): void {
-    this.setSearchDialogVisibilityOnKeyPress();
     this.closeSearchDialogOnNavigationSkipped();
     this.router.events
       .pipe(
@@ -72,6 +76,8 @@ export class AppComponent implements OnInit {
         this.currentUrl.set(url);
         this.setComponentsVisibility();
         this.displaySearchDialog.set(false);
+
+        this.updateCanonicalLink(url);
       });
 
     this.focusFirstHeadingOnRouteChange();
@@ -84,6 +90,10 @@ export class AppComponent implements OnInit {
 
     const h1 = this.document.querySelector<HTMLHeadingElement>('h1');
     h1?.focus();
+  }
+
+  private updateCanonicalLink(absoluteUrl: string) {
+    this.headerService.setCanonical(absoluteUrl);
   }
 
   private setComponentsVisibility(): void {
@@ -105,24 +115,16 @@ export class AppComponent implements OnInit {
       });
   }
 
-  private setSearchDialogVisibilityOnKeyPress(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.window.addEventListener('keydown', (event: KeyboardEvent) => {
-        if (event.key === SEARCH_TRIGGER_KEY && (event.metaKey || event.ctrlKey)) {
-          this.ngZone.run(() => {
-            event.preventDefault();
-            this.displaySearchDialog.update((display) => !display);
-          });
-        }
+  private setSearchDialogVisibilityOnKeyPress(event: KeyboardEvent): void {
+    if (event.key === SEARCH_TRIGGER_KEY && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      this.displaySearchDialog.update((display) => !display);
+    }
 
-        if (event.key === ESCAPE && this.displaySearchDialog()) {
-          this.ngZone.run(() => {
-            event.preventDefault();
-            this.displaySearchDialog.set(false);
-          });
-        }
-      });
-    });
+    if (event.key === ESCAPE && this.displaySearchDialog()) {
+      event.preventDefault();
+      this.displaySearchDialog.set(false);
+    }
   }
 
   private closeSearchDialogOnNavigationSkipped(): void {

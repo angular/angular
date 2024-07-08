@@ -1,7 +1,7 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
 package(default_visibility = ["//visibility:public"])
 
-docs_example(
-    name = "accessibility",
-)
+exports_files([
+    "src/app/app.component.html",
+    "src/app/app.component.ts",
+    "src/app/progress-bar.component.ts",
+])

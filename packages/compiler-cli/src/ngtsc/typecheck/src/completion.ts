@@ -10,10 +10,12 @@ import {
   AST,
   EmptyExpr,
   ImplicitReceiver,
+  LetDeclaration,
   LiteralPrimitive,
   PropertyRead,
   PropertyWrite,
   SafePropertyRead,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
   TmplAstTemplate,
@@ -28,6 +30,7 @@ import {
   ReferenceCompletion,
   TcbLocation,
   VariableCompletion,
+  LetDeclarationCompletion,
 } from '../api';
 
 import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
@@ -48,7 +51,7 @@ export class CompletionEngine {
    */
   private templateContextCache = new Map<
     TmplAstTemplate | null,
-    Map<string, ReferenceCompletion | VariableCompletion>
+    Map<string, ReferenceCompletion | VariableCompletion | LetDeclarationCompletion>
   >();
 
   private expressionCompletionCache = new Map<
@@ -236,12 +239,15 @@ export class CompletionEngine {
    */
   private getTemplateContextCompletions(
     context: TmplAstTemplate | null,
-  ): Map<string, ReferenceCompletion | VariableCompletion> | null {
+  ): Map<string, ReferenceCompletion | VariableCompletion | LetDeclarationCompletion> | null {
     if (this.templateContextCache.has(context)) {
       return this.templateContextCache.get(context)!;
     }
 
-    const templateContext = new Map<string, ReferenceCompletion | VariableCompletion>();
+    const templateContext = new Map<
+      string,
+      ReferenceCompletion | VariableCompletion | LetDeclarationCompletion
+    >();
 
     // The bound template already has details about the references and variables in scope in the
     // `context` template - they just need to be converted to `Completion`s.
@@ -249,6 +255,11 @@ export class CompletionEngine {
       if (node instanceof TmplAstReference) {
         templateContext.set(node.name, {
           kind: CompletionKind.Reference,
+          node,
+        });
+      } else if (node instanceof TmplAstLetDeclaration) {
+        templateContext.set(node.name, {
+          kind: CompletionKind.LetDeclaration,
           node,
         });
       } else {

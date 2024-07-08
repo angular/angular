@@ -1,6 +1,6 @@
 # Usage of Angular libraries published to npm
 
-When you build your Angular application, take advantage of sophisticated first-party libraries, as well as rich ecosystem of third-party libraries.
+When you build your Angular application, take advantage of sophisticated first-party libraries, as well as a rich ecosystem of third-party libraries.
 [Angular Material][AngularMaterialMain] is an example of a sophisticated first-party library.
 
 ## Install libraries
@@ -186,7 +186,7 @@ If you do not add the interface for the script-defined extension, your IDE shows
 
 [AngularMaterialMain]: https://material.angular.io "Angular Material | Angular"
 
-[AngularUpdateMain]: https://update.angular.io "Angular Update Guide | Angular"
+[AngularUpdateMain]: https://angular.dev/update-guide "Angular Update Guide | Angular"
 
 [GetbootstrapDocs40GettingStartedIntroduction]: https://getbootstrap.com/docs/4.0/getting-started/introduction "Introduction | Bootstrap"
 

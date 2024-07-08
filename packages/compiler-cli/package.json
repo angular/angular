@@ -43,7 +43,7 @@
     }
   },
   "dependencies": {
-    "@babel/core": "7.24.4",
+    "@babel/core": "7.24.7",
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "reflect-metadata": "^0.2.0",
     "chokidar": "^3.0.0",
@@ -67,7 +67,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": "^18.13.0 || >=20.9.0"
+    "node": "^18.19.1 || ^20.11.1 || >=22.0.0"
   },
   "bugs": {
     "url": "https://github.com/angular/angular/issues"

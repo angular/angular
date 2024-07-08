@@ -235,16 +235,7 @@ export class TsCreateProgramDriver implements ProgramDriver {
     }
 
     for (const [filePath, {newText, originalFile}] of contents.entries()) {
-      const sf = ts.createSourceFile(
-        filePath,
-        newText,
-        {
-          // Not passing the implied Node format appears not break program reuse in TS 5.5.
-          impliedNodeFormat: undefined,
-          languageVersion: ts.ScriptTarget.Latest,
-        },
-        true,
-      );
+      const sf = ts.createSourceFile(filePath, newText, ts.ScriptTarget.Latest, true);
 
       if (originalFile !== null) {
         (sf as MaybeSourceFileWithOriginalFile)[NgOriginalFile] = originalFile;
@@ -272,9 +263,9 @@ export class TsCreateProgramDriver implements ProgramDriver {
     });
     host.postProgramCreationCleanup();
 
-    // And untag them afterwards. We explicitly untag both programs here, because the oldProgram
-    // may still be used for emit and needs to not contain tags.
-    untagAllTsFiles(this.program);
+    // Only untag the old program. The new program needs to keep the tagged files, because as of
+    // TS 5.5 not having the files tagged while producing diagnostics can lead to errors. See:
+    // https://github.com/microsoft/TypeScript/pull/58398
     untagAllTsFiles(oldProgram);
   }
 }

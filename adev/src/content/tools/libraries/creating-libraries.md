@@ -38,7 +38,7 @@ See [Setting up for a multi-project workspace](reference/configs/file-structure#
 
 When you generate a new library, the workspace configuration file, `angular.json`, is updated with a project of type `library`.
 
-<docs-code>
+<docs-code language="json">
 
 "projects": {
   …

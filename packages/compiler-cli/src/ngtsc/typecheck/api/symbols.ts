@@ -8,6 +8,7 @@
 
 import {
   TmplAstElement,
+  TmplAstLetDeclaration,
   TmplAstReference,
   TmplAstTemplate,
   TmplAstVariable,
@@ -31,6 +32,7 @@ export enum SymbolKind {
   Expression,
   DomBinding,
   Pipe,
+  LetDeclaration,
 }
 
 /**
@@ -46,7 +48,8 @@ export type Symbol =
   | DirectiveSymbol
   | TemplateSymbol
   | DomBindingSymbol
-  | PipeSymbol;
+  | PipeSymbol
+  | LetDeclarationSymbol;
 
 /**
  * A `Symbol` which declares a new named entity in the template scope.
@@ -238,6 +241,36 @@ export interface VariableSymbol {
   /**
    * The location in the shim file for the initializer node of the variable that represents the
    * template variable.
+   */
+  initializerLocation: TcbLocation;
+}
+
+/**
+ * A representation of an `@let` declaration in a component template.
+ */
+export interface LetDeclarationSymbol {
+  kind: SymbolKind.LetDeclaration;
+
+  /** The `ts.Type` of the entity. */
+  tsType: ts.Type;
+
+  /**
+   * The `ts.Symbol` for the declaration.
+   *
+   * This will be `null` if the symbol could not be resolved using the type checker.
+   */
+  tsSymbol: ts.Symbol | null;
+
+  /** The node in the `TemplateAst` where the `@let` is declared.  */
+  declaration: TmplAstLetDeclaration;
+
+  /**
+   * The location in the shim file for the identifier of the `@let` declaration.
+   */
+  localVarLocation: TcbLocation;
+
+  /**
+   * The location in the shim file of the `@let` declaration's initializer expression.
    */
   initializerLocation: TcbLocation;
 }

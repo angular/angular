@@ -131,10 +131,6 @@ export class Navigation implements OnInit {
     this.closeMobileNavOnPrimaryRouteChange();
   }
 
-  redirectToDocsVersion(versionUrl: string): void {
-    this.window.location.href = versionUrl;
-  }
-
   setTheme(theme: Theme): void {
     this.themeManager.setTheme(theme);
   }

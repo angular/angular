@@ -32,26 +32,23 @@ For more information about this command, see [App shell command](cli/generate#ap
 
 The command updates the application code and adds extra files to the project structure.
 
-<code-example language="text">
-
-  src
-  ├── app
-  │   ├── app.config.server.ts               # server application configuration
-  │   └── app-shell                          # app-shell component
-  │       ├── app-shell.component.html
-  │       ├── app-shell.component.scss
-  │       ├── app-shell.component.spec.ts
-  │       └── app-shell.component.ts
-  └── main.server.ts                         # main server application bootstrapping
-
-</code-example>
-
+<docs-code language="text">
+src
+├── app
+│ ├── app.config.server.ts # server application configuration
+│ └── app-shell # app-shell component
+│ ├── app-shell.component.html
+│ ├── app-shell.component.scss
+│ ├── app-shell.component.spec.ts
+│ └── app-shell.component.ts
+└── main.server.ts # main server application bootstrapping
+</docs-code>
 
 <docs-step title="Verify the application is built with the shell content">
 
 <docs-code language="shell">
 
-ng run my-app:app-shell:development
+ng build --configuration=development
 
 </docs-code>
 
@@ -59,7 +56,7 @@ Or to use the production configuration.
 
 <docs-code language="shell">
 
-ng run my-app:app-shell:production
+ng build
 
 </docs-code>
 

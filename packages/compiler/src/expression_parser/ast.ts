@@ -248,6 +248,7 @@ export class LiteralArray extends AST {
 export type LiteralMapKey = {
   key: string;
   quoted: boolean;
+  isShorthandInitialized?: boolean;
 };
 
 export class LiteralMap extends AST {

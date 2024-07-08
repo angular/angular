@@ -1,9 +1,0 @@
-{
-  "description": "Accessibility",
-  "files": [
-    "!**/*.d.ts",
-    "!**/*.js",
-    "!**/*.[1,2].*"
-  ],
-  "tags": ["Accessibility"]
-}

@@ -10,7 +10,7 @@ Components let you neatly encapsulate responsibility for discrete parts of your 
 
 ## Defining state
 
-To define state, you use [class fields syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Public_class_fields) inside of your component.
+To define state, you use [class fields syntax](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Classes/Public_class_fields) inside of your component.
 
 For example, using the `TodoListItem` component, create two properties that you want to track:
 

@@ -35,19 +35,19 @@ You can bind to keyboard events using Angular's binding syntax. You can specify 
 
 Combinations of keys can be separated by a `.` (period). For example, `keydown.enter` will allow you to bind events to the `enter` key. You can also use modifier keys, such as `shift`, `alt`, `control`, and the `command` keys from Mac. The following example shows how to bind a keyboard event to `keydown.shift.t`.
 
-   ```html
-   <input (keydown.shift.t)="onKeydown($event)" />
-   ```
+```html
+<input (keydown.shift.t)="onKeydown($event)" />
+```
 
 Depending on the operating system, some key combinations might create special characters instead of the key combination that you expect. MacOS, for example, creates special characters when you use the option and shift keys together. If you bind to `keydown.shift.alt.t`, on macOS, that combination produces a `ˇ` character instead of a `t`, which doesn't match the binding and won't trigger your event handler. To bind to `keydown.shift.alt.t` on macOS, use the `code` keyboard event field to get the correct behavior, such as `keydown.code.shiftleft.altleft.keyt` shown in this example.
 
-   ```html
-   <input (keydown.code.shiftleft.altleft.keyt)="onKeydown($event)" />
-   ```
+```html
+<input (keydown.code.shiftleft.altleft.keyt)="onKeydown($event)" />
+```
 
 The `code` field is more specific than the `key` field. The `key` field always reports `shift`, whereas the `code` field will specify `leftshift` or `rightshift`. When using the `code` field, you might need to add separate bindings to catch all the behaviors you want. Using the `code` field avoids the need to handle OS specific behaviors such as the `shift + option` behavior on macOS.
 
-For more information, visit the full reference for [key](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values) and [code](https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values) to help build out your event strings.
+For more information, visit the full reference for [key](https://developer.mozilla.org/docs/Web/API/UI_Events/Keyboard_event_key_values) and [code](https://developer.mozilla.org/docs/Web/API/UI_Events/Keyboard_event_code_values) to help build out your event strings.
 
 ## Binding to passive events
 
@@ -55,23 +55,25 @@ Angular also supports [passive event](https://developer.chrome.com/en/docs/light
 
 This is an advanced technique that is not necessary for most applications. You may find this useful if you need to optimize handling of frequently occurring events that are causing performance problems.
 
-For example, use the following steps to make a scroll event passive.
+For example, to make a scroll event passive, it may be necessary to set the special zone.js flag in `src/index.html`:
 
-1. Create a file `zone-flags.ts` under `src` directory.
-2. Add the following line into this file.
-
-   ```typescript
-   (window as any)['__zone_symbol__PASSIVE_EVENTS'] = ['scroll'];
-   ```
-
-3. In the `src/polyfills.ts` file, before importing zone.js, import the newly created `zone-flags`.
-
-   ```typescript
-   import './zone-flags';
-   import 'zone.js';  // Included with Angular CLI.
-   ```
+```html
+<!doctype html>
+<html>
+  <head>
+    <script>
+      window.__zone_symbol__PASSIVE_EVENTS = ['scroll'];
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>
+```
 
 After those steps, if you add event listeners for the `scroll` event, the listeners will be `passive`.
+
+Note that the above case applies only to applications using zone.js.
 
 ## What's next
 

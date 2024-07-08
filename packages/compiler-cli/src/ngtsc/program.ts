@@ -88,10 +88,6 @@ export class NgtscProgram implements api.Program {
 
     this.host.postProgramCreationCleanup();
 
-    // Shim tagging has served its purpose, and tags can now be removed from all `ts.SourceFile`s in
-    // the program.
-    untagAllTsFiles(this.tsProgram);
-
     const programDriver = new TsCreateProgramDriver(
       this.tsProgram,
       this.host,

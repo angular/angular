@@ -19,6 +19,7 @@ import {
   DomBindingSymbol,
   ElementSymbol,
   InputBindingSymbol,
+  LetDeclarationSymbol,
   OutputBindingSymbol,
   PipeSymbol,
   ReferenceSymbol,
@@ -93,6 +94,8 @@ export class QuickInfoBuilder {
         return this.getQuickInfoForElementSymbol(symbol);
       case SymbolKind.Variable:
         return this.getQuickInfoForVariableSymbol(symbol);
+      case SymbolKind.LetDeclaration:
+        return this.getQuickInfoForLetDeclarationSymbol(symbol);
       case SymbolKind.Reference:
         return this.getQuickInfoForReferenceSymbol(symbol);
       case SymbolKind.DomBinding:
@@ -141,6 +144,18 @@ export class QuickInfoBuilder {
     return createQuickInfo(
       symbol.declaration.name,
       DisplayInfoKind.VARIABLE,
+      getTextSpanOfNode(this.node),
+      undefined /* containerName */,
+      this.typeChecker.typeToString(symbol.tsType),
+      documentation,
+    );
+  }
+
+  private getQuickInfoForLetDeclarationSymbol(symbol: LetDeclarationSymbol): ts.QuickInfo {
+    const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.initializerLocation);
+    return createQuickInfo(
+      symbol.declaration.name,
+      DisplayInfoKind.LET,
       getTextSpanOfNode(this.node),
       undefined /* containerName */,
       this.typeChecker.typeToString(symbol.tsType),

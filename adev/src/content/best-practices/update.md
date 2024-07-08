@@ -34,7 +34,7 @@ By default, [`ng update`](cli/update)(without additional arguments) lists the up
 
 ## Updating your environment and apps
 
-To make updating uncomplicated, we provide complete instructions in the interactive [Angular Update Guide](https://update.angular.io/ "Angular Update Guide").
+To make updating uncomplicated, we provide complete instructions in the interactive [Angular Update Guide](update-guide).
 
 The Angular Update Guide provides customized update instructions, based on the current and target versions that you specify.
 It includes basic and advanced update paths, to match the complexity of your applications.
@@ -55,7 +55,7 @@ It also describes supported update paths.
     [Angular change log](https://github.com/angular/angular/blob/main/CHANGELOG.md "Angular change log")
 
 * Update instructions:
-    [Angular Update Guide](https://update.angular.io/ "Angular Update Guide")
+    [Angular Update Guide](update-guide)
 
 * Update command reference:
     [Angular CLI `ng update` command reference](cli/update)

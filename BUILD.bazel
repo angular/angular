@@ -67,7 +67,6 @@ nodejs_binary(
     data = [".yarn/releases/yarn-1.22.19.cjs"],
     entry_point = ".yarn/releases/yarn-1.22.19.cjs",
     visibility = [
-        "//aio/tools/examples/shared:__pkg__",
         "//integration:__subpackages__",
     ],
 )

@@ -18,6 +18,7 @@ import {
   OnChanges,
   OnDestroy,
   Renderer2,
+  ɵRuntimeError as RuntimeError,
   SimpleChanges,
   ɵɵsanitizeUrlOrResourceUrl,
 } from '@angular/core';
@@ -28,7 +29,8 @@ import {QueryParamsHandling} from '../models';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {Params} from '../shared';
-import {UrlTree} from '../url_tree';
+import {isUrlTree, UrlTree} from '../url_tree';
+import {RuntimeErrorCode} from '../errors';
 
 /**
  * @description
@@ -96,6 +98,9 @@ import {UrlTree} from '../url_tree';
  *   link to user component
  * </a>
  * ```
+ *
+ * `queryParams`, `fragment`, `queryParamsHandling`, `preserveFragment`, and `relativeTo`
+ * cannot be used when the `routerLink` input is a `UrlTree`.
  *
  * See {@link UrlCreationOptions#queryParamsHandling}.
  *
@@ -190,8 +195,6 @@ export class RouterLink implements OnChanges, OnDestroy {
    */
   @Input() relativeTo?: ActivatedRoute | null;
 
-  private commands: any[] | null = null;
-
   /** Whether a host element is an `<a>` tag. */
   private isAnchorElement: boolean;
 
@@ -258,7 +261,22 @@ export class RouterLink implements OnChanges, OnDestroy {
   }
 
   /** @nodoc */
-  ngOnChanges(changes: SimpleChanges) {
+  // TODO(atscott): Remove changes parameter in major version as a breaking change.
+  ngOnChanges(changes?: SimpleChanges) {
+    if (
+      ngDevMode &&
+      isUrlTree(this.routerLinkInput) &&
+      (this.fragment !== undefined ||
+        this.queryParams ||
+        this.queryParamsHandling ||
+        this.preserveFragment ||
+        this.relativeTo)
+    ) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTER_LINK_INPUTS,
+        'Cannot configure queryParams or fragment when using a UrlTree as the routerLink input value.',
+      );
+    }
     if (this.isAnchorElement) {
       this.updateHref();
     }
@@ -267,21 +285,31 @@ export class RouterLink implements OnChanges, OnDestroy {
     this.onChanges.next(this);
   }
 
+  private routerLinkInput: any[] | UrlTree | null = null;
+
   /**
-   * Commands to pass to {@link Router#createUrlTree}.
+   * Commands to pass to {@link Router#createUrlTree} or a `UrlTree`.
    *   - **array**: commands to pass to {@link Router#createUrlTree}.
    *   - **string**: shorthand for array of commands with just the string, i.e. `['/route']`
+   *   - **UrlTree**: a `UrlTree` for this link rather than creating one from the commands
+   *     and other inputs that correspond to properties of `UrlCreationOptions`.
    *   - **null|undefined**: effectively disables the `routerLink`
    * @see {@link Router#createUrlTree}
    */
   @Input()
-  set routerLink(commands: any[] | string | null | undefined) {
-    if (commands != null) {
-      this.commands = Array.isArray(commands) ? commands : [commands];
-      this.setTabIndexIfNotOnNativeEl('0');
-    } else {
-      this.commands = null;
+  set routerLink(commandsOrUrlTree: any[] | string | UrlTree | null | undefined) {
+    if (commandsOrUrlTree == null) {
+      this.routerLinkInput = null;
       this.setTabIndexIfNotOnNativeEl(null);
+    } else {
+      if (isUrlTree(commandsOrUrlTree)) {
+        this.routerLinkInput = commandsOrUrlTree;
+      } else {
+        this.routerLinkInput = Array.isArray(commandsOrUrlTree)
+          ? commandsOrUrlTree
+          : [commandsOrUrlTree];
+      }
+      this.setTabIndexIfNotOnNativeEl('0');
     }
   }
 
@@ -374,10 +402,12 @@ export class RouterLink implements OnChanges, OnDestroy {
   }
 
   get urlTree(): UrlTree | null {
-    if (this.commands === null) {
+    if (this.routerLinkInput === null) {
       return null;
+    } else if (isUrlTree(this.routerLinkInput)) {
+      return this.routerLinkInput;
     }
-    return this.router.createUrlTree(this.commands, {
+    return this.router.createUrlTree(this.routerLinkInput, {
       // If the `relativeTo` input is not defined, we want to use `this.route` by default.
       // Otherwise, we should use the value provided by the user in the input.
       relativeTo: this.relativeTo !== undefined ? this.relativeTo : this.route,

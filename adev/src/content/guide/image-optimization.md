@@ -6,9 +6,9 @@ The directive ensures that the loading of the [Largest Contentful Paint (LCP)](h
 
 * Automatically setting the `fetchpriority` attribute on the `<img>` tag
 * Lazy loading other images by default
-* Asserting that there is a corresponding preconnect link tag in the document head
+* Automatically generating a preconnect link tag in the document head
 * Automatically generating a `srcset` attribute
-* Generating a [preload hint](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types/preload) if app is using SSR
+* Generating a [preload hint](https://developer.mozilla.org/docs/Web/HTML/Link_types/preload) if app is using SSR
 
 In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enforces a number of image best practices, such as:
 
@@ -16,6 +16,8 @@ In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enfor
 * Preventing layout shift by requiring `width` and `height`
 * Warning if `width` or `height` have been set incorrectly
 * Warning if the image will be visually distorted when rendered
+
+If you're using a background image in CSS, [start here](#how-to-migrate-your-background-image).
 
 **Note: Although the `NgOptimizedImage` directive was made a stable feature in Angular version 15, it has been backported and is available as a stable feature in versions 13.4.0 and 14.3.0 as well.**
 
@@ -71,7 +73,7 @@ Marking an image as `priority` applies the following optimizations:
 
 * Sets `fetchpriority=high` (read more about priority hints [here](https://web.dev/priority-hints))
 * Sets `loading=eager` (read more about native lazy loading [here](https://web.dev/browser-level-image-lazy-loading))
-* Automatically generates a [preload link element](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types/preload) if [rendering on the server](guide/ssr).
+* Automatically generates a [preload link element](https://developer.mozilla.org/docs/Web/HTML/Link_types/preload) if [rendering on the server](guide/ssr).
 
 Angular displays a warning during development if the LCP element is an image that does not have the `priority` attribute. A page’s LCP element can vary based on a number of factors - such as the dimensions of a user's screen, so a page may have multiple images that should be marked `priority`. See [CSS for Web Vitals](https://web.dev/css-web-vitals/#images-and-largest-contentful-paint-lcp) for more details.
 </docs-step>
@@ -104,13 +106,26 @@ When you add the `fill` attribute to your image, you do not need and should not 
 
 </docs-code>
 
-You can use the [object-fit](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) CSS property to change how the image will fill its container. If you style your image with `object-fit: "contain"`, the image will maintain its aspect ratio and be "letterboxed" to fit the element. If you set `object-fit: "cover"`, the element will retain its aspect ratio, fully fill the element, and some content may be "cropped" off.
+You can use the [object-fit](https://developer.mozilla.org/docs/Web/CSS/object-fit) CSS property to change how the image will fill its container. If you style your image with `object-fit: "contain"`, the image will maintain its aspect ratio and be "letterboxed" to fit the element. If you set `object-fit: "cover"`, the element will retain its aspect ratio, fully fill the element, and some content may be "cropped" off.
 
-See visual examples of the above at the [MDN object-fit documentation.](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit)
+See visual examples of the above at the [MDN object-fit documentation.](https://developer.mozilla.org/docs/Web/CSS/object-fit)
 
-You can also style your image with the [object-position property](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) to adjust its position within its containing element.
+You can also style your image with the [object-position property](https://developer.mozilla.org/docs/Web/CSS/object-position) to adjust its position within its containing element.
 
 IMPORTANT: For the "fill" image to render properly, its parent element **must** be styled with `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
+
+## How to migrate your background image
+
+Here's a simple step-by-step process for migrating from `background-image` to `NgOptimizedImage`. For these steps, we'll refer to the element that has an image background as the "containing element":
+
+1) Remove the `background-image` style from the containing element.
+2) Ensure that the containing element has `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
+3) Create a new image element as a child of the containing element, using `ngSrc` to enable the `NgOptimizedImage` directive.
+4) Give that element the `fill` attribute. Do not include a `height` and `width`.
+5) If you believe this image might be your [LCP element](https://web.dev/lcp/), add the `priority` attribute to the image element.
+
+You can adjust how the background image fills the container as described in the [Using fill mode](#using-fill-mode) section.
+
 
 ## Using placeholders
 
@@ -143,7 +158,7 @@ If you want sharp edges around your blurred placeholder, you can wrap your image
 
 ### Data URL placeholders
 
-You can also specify a placeholder using a base64 [data URL](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs) without an image loader. The data url format is `data:image/[imagetype];[data]`, where `[imagetype]` is the image format, just as `png`, and `[data]` is a base64 encoding of the image. That encoding can be done using the command line or in JavaScript. For specific commands, see [the MDN documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs#encoding_data_into_base64_format). An example of a data URL placeholder with truncated data is shown below:
+You can also specify a placeholder using a base64 [data URL](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URLs) without an image loader. The data url format is `data:image/[imagetype];[data]`, where `[imagetype]` is the image format, just as `png`, and `[data]` is a base64 encoding of the image. That encoding can be done using the command line or in JavaScript. For specific commands, see [the MDN documentation](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URLs#encoding_data_into_base64_format). An example of a data URL placeholder with truncated data is shown below:
 
 <docs-code format="typescript" language="typescript">
 
@@ -177,7 +192,9 @@ NgOptimizedImage includes a number of features designed to improve loading perfo
 
 ### Add resource hints
 
-You can add a [`preconnect` resource hint](https://web.dev/preconnect-and-dns-prefetch) for your image origin to ensure that the LCP image loads as quickly as possible. Always put resource hints in the `<head>` of the document.
+A [`preconnect` resource hint](https://web.dev/preconnect-and-dns-prefetch) for your image origin ensures that the LCP image loads as quickly as possible.
+
+Preconnect links are automatically generated for domains provided as an argument to a [loader](#optional-set-up-a-loader). If an image origin cannot be automatically identified, and no preconnect link is detected for the LCP image, `NgOptimizedImage` will warn during development. In that case, you should manually add a resource hint to `index.html`. Within the `<head>` of the document, add a `link` tag with `rel="preconnect"`, as shown below:
 
 <docs-code language="html">
 
@@ -185,9 +202,8 @@ You can add a [`preconnect` resource hint](https://web.dev/preconnect-and-dns-pr
 
 </docs-code>
 
-By default, if you use a loader for a third-party image service, the `NgOptimizedImage` directive will warn during development if it detects that there is no `preconnect` resource hint for the origin that serves the LCP image.
 
-To disable these warnings, inject the `PRECONNECT_CHECK_BLOCKLIST` token:
+To disable preconnect warnings, inject the `PRECONNECT_CHECK_BLOCKLIST` token:
 
 <docs-code language="typescript">
 
@@ -197,9 +213,12 @@ providers: [
 
 </docs-code>
 
+See more information on automatic preconnect generation [here](#why-is-a-preconnect-element-not-being-generated-for-my-image-domain).
+
+
 ### Request images at the correct size with automatic `srcset`
 
-Defining a [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset) ensures that the browser requests an image at the right size for your user's viewport, so it doesn't waste time downloading an image that's too large. `NgOptimizedImage` generates an appropriate `srcset` for the image, based on the presence and value of the [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes) on the image tag.
+Defining a [`srcset` attribute](https://developer.mozilla.org/docs/Web/API/HTMLImageElement/srcset) ensures that the browser requests an image at the right size for your user's viewport, so it doesn't waste time downloading an image that's too large. `NgOptimizedImage` generates an appropriate `srcset` for the image, based on the presence and value of the [`sizes` attribute](https://developer.mozilla.org/docs/Web/API/HTMLImageElement/sizes) on the image tag.
 
 #### Fixed-size images
 
@@ -209,7 +228,7 @@ Example srcset generated: `<img ... srcset="image-400w.jpg 1x, image-800w.jpg 2x
 
 #### Responsive images
 
-If your image should be responsive (i.e. grow and shrink according to viewport size), then you will need to define a [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes) to generate the `srcset`.
+If your image should be responsive (i.e. grow and shrink according to viewport size), then you will need to define a [`sizes` attribute](https://developer.mozilla.org/docs/Web/API/HTMLImageElement/sizes) to generate the `srcset`.
 
 If you haven't used `sizes` before, a good place to start is to set it based on viewport width. For example, if your CSS causes the image to fill 100% of viewport width, set `sizes` to `100vw` and the browser will select the image in the `srcset` that is closest to the viewport width (after accounting for pixel density). If your image is only likely to take up half the screen (ex: in a sidebar), set `sizes` to `50vw` to ensure the browser selects a smaller image. And so on.
 
@@ -260,7 +279,7 @@ To disable srcset generation for a single image, you can add the `disableOptimiz
 
 ### Disabling image lazy loading
 
-By default, `NgOptimizedImage` sets `loading=lazy` for all images that are not marked `priority`. You can disable this behavior for non-priority images by setting the `loading` attribute. This attribute accepts values: `eager`, `auto`, and `lazy`. [See the documentation for the standard image `loading` attribute for details](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/loading#value).
+By default, `NgOptimizedImage` sets `loading=lazy` for all images that are not marked `priority`. You can disable this behavior for non-priority images by setting the `loading` attribute. This attribute accepts values: `eager`, `auto`, and `lazy`. [See the documentation for the standard image `loading` attribute for details](https://developer.mozilla.org/docs/Web/API/HTMLImageElement/loading#value).
 
 <docs-code language="html">
 
@@ -280,7 +299,7 @@ You may want to have images displayed at varying widths on differently-sized scr
 
 The `sizes` attribute in the above example says "I expect this image to be 100 percent of the screen width on devices under 768px wide. Otherwise, I expect it to be 50 percent of the screen width.
 
-For additional information about the `sizes` attribute, see [web.dev](https://web.dev/learn/design/responsive-images/#sizes) or [mdn](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes).
+For additional information about the `sizes` attribute, see [web.dev](https://web.dev/learn/design/responsive-images/#sizes) or [mdn](https://developer.mozilla.org/docs/Web/API/HTMLImageElement/sizes).
 
 ## Configuring an image loader for `NgOptimizedImage`
 
@@ -381,19 +400,23 @@ Note that in the above example, we've invented the 'roundedCorners' property nam
 
 The NgOptimizedImage does not directly support the `background-image` css property, but it is designed to easily accommodate the use case of having an image as the background of another element.
 
-Here's a simple step-by-step process for migrating from `background-image` to `NgOptimizedImage`. For these steps, we'll refer to the element that has an image background as the "containing element":
-
-1) Remove the `background-image` style from the containing element.
-2) Ensure that the containing element has `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
-3) Create a new image element as a child of the containing element, using `ngSrc` to enable the `NgOptimizedImage` directive.
-4) Give that element the `fill` attribute. Do not include a `height` and `width`.
-5) If you believe this image might be your [LCP element](https://web.dev/lcp/), add the `priority` attribute to the image element.
-
-You can adjust how the background image fills the container as described in the [Using fill mode](#using-fill-mode) section.
+For a step-by-step process for migration from `background-image` to `NgOptimizedImage`, see the [How to migrate your background image](#how-to-migrate-your-background-image) section above. 
 
 ### Why can't I use `src` with `NgOptimizedImage`?
 
 The `ngSrc` attribute was chosen as the trigger for NgOptimizedImage due to technical considerations around how images are loaded by the browser. NgOptimizedImage makes programmatic changes to the `loading` attribute -- if the browser sees the `src` attribute before those changes are made, it will begin eagerly downloading the image file, and the loading changes will be ignored.
+
+### Why is a preconnect element not being generated for my image domain?
+Preconnect generation is performed based on static analysis of your application. That means that the image domain must be directly included in the loader parameter, as in the following example:
+
+<docs-code language="typescript">
+providers: [
+  provideImgixLoader('https://my.base.url/'),
+],
+</docs-code>
+
+If you use a variable to pass the domain string to the loader, or you're not using a loader, the static analysis will not be able to identify the domain, and no preconnect link will be generated. In this case you should manually add a preconnect link to the document head, as [described above](#add-resource-hints).
+
 
 ### Can I use two different image domains in the same page?
 
@@ -404,3 +427,9 @@ To do this, we recommend writing a [custom image loader](#custom-loaders) which 
 ### Can you add a new built-in loader for my preferred CDN?
 
 For maintenance reasons, we don't currently plan to support additional built-in loaders in the Angular repository. Instead, we encourage developers to publish any additional image loaders as third-party packages.
+
+### Can I use this with the `<picture>` tag
+
+No, but this is on our roadmap, so stay tuned. 
+
+If you're waiting on this feature, please upvote the Github issue [here](https://github.com/angular/angular/issues/56594).

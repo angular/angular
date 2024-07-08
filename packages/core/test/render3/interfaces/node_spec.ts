@@ -18,6 +18,7 @@ describe('node interfaces', () => {
       expect(toTNodeTypeAsString(TNodeType.ElementContainer)).toEqual('ElementContainer');
       expect(toTNodeTypeAsString(TNodeType.Icu)).toEqual('IcuContainer');
       expect(toTNodeTypeAsString(TNodeType.Placeholder)).toEqual('Placeholder');
+      expect(toTNodeTypeAsString(TNodeType.LetDeclaration)).toEqual('LetDeclaration');
 
       expect(
         toTNodeTypeAsString(
@@ -25,9 +26,10 @@ describe('node interfaces', () => {
             TNodeType.Projection |
             TNodeType.Element |
             TNodeType.ElementContainer |
-            TNodeType.Icu,
+            TNodeType.Icu |
+            TNodeType.LetDeclaration,
         ),
-      ).toEqual('Element|Container|ElementContainer|Projection|IcuContainer');
+      ).toEqual('Element|Container|ElementContainer|Projection|IcuContainer|LetDeclaration');
     });
   });
 });

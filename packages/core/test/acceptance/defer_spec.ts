@@ -13,17 +13,13 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ComponentRef,
   createComponent,
-  DebugElement,
   Directive,
   EnvironmentInjector,
   ErrorHandler,
-  getDebugNode,
   inject,
   Injectable,
   InjectionToken,
-  Injector,
   Input,
   NgModule,
   NgZone,
@@ -34,11 +30,12 @@ import {
   Type,
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+  ɵRuntimeError as RuntimeError,
+  Injector,
+  ElementRef,
+  ViewChild,
 } from '@angular/core';
-import {isRouterOutletInjector} from '@angular/core/src/defer/instructions';
 import {getComponentDef} from '@angular/core/src/render3/definition';
-import {NodeInjector} from '@angular/core/src/render3/di';
-import {getInjectorResolutionPath} from '@angular/core/src/render3/util/injector_discovery_utils';
 import {
   ComponentFixture,
   DeferBlockBehavior,
@@ -47,7 +44,10 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import {getInjectorResolutionPath} from '@angular/core/src/render3/util/injector_discovery_utils';
 import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
+import {ChainedInjector} from '@angular/core/src/render3/chained_injector';
+import {global} from '../../src/util/global';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -1033,6 +1033,92 @@ describe('@defer', () => {
       // Expect that the `@loading` UI is removed, but the `@error` is *not* rendered,
       // because it was a component initialization error, not resource loading issue.
       expect(fixture.nativeElement.textContent).toBe('');
+    });
+
+    describe('with ngDevMode', () => {
+      const _global: {ngDevMode: any} = global;
+      let saveNgDevMode!: typeof ngDevMode;
+      beforeEach(() => (saveNgDevMode = ngDevMode));
+      afterEach(() => (_global.ngDevMode = saveNgDevMode));
+
+      [true, false].forEach((devMode) => {
+        it(`should log an error in the handler when there is no error block with devMode:${devMode}`, async () => {
+          @Component({
+            selector: 'nested-cmp',
+            standalone: true,
+            template: 'Rendering {{ block }} block.',
+          })
+          class NestedCmp {
+            @Input() block!: string;
+          }
+
+          @Component({
+            standalone: true,
+            selector: 'simple-app',
+            imports: [NestedCmp],
+            template: `
+          @defer (when isVisible) {
+            <nested-cmp [block]="'primary'" />
+          } @loading {
+            Loading...
+          } @placeholder {
+            Placeholder!
+          }
+          `,
+          })
+          class MyCmp {
+            isVisible = false;
+            @ViewChildren(NestedCmp) cmps!: QueryList<NestedCmp>;
+          }
+
+          const deferDepsInterceptor = {
+            intercept() {
+              return () => [failedDynamicImport()];
+            },
+          };
+
+          const errorLogs: Error[] = [];
+          @Injectable()
+          class CustomErrorHandler {
+            handleError(error: Error): void {
+              errorLogs.push(error);
+            }
+          }
+
+          TestBed.configureTestingModule({
+            providers: [
+              {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+              {
+                provide: ErrorHandler,
+                useClass: CustomErrorHandler,
+              },
+            ],
+          });
+
+          const fixture = TestBed.createComponent(MyCmp);
+          fixture.detectChanges();
+
+          expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+          fixture.componentInstance.isVisible = true;
+          fixture.detectChanges();
+
+          expect(fixture.nativeElement.outerHTML).toContain('Loading');
+
+          // ngDevMode should not be set earlier than here
+          // as it would prevent the DEFER_BLOCK_DEPENDENCY_INTERCEPTOR from being set
+          _global.ngDevMode = devMode;
+
+          // Wait for dependencies to load.
+          await allPendingDynamicImports();
+          fixture.detectChanges();
+
+          expect(errorLogs.length).toBe(1);
+          const error = errorLogs[0];
+          expect(error).toBeInstanceOf(RuntimeError);
+          expect(error.message).toMatch(/NG0750/);
+        });
+      });
     });
   });
 
@@ -4030,6 +4116,101 @@ describe('@defer', () => {
         `<child-cmp>Token A: ${tokenA} | Token B: ${tokenB}</child-cmp>`,
       );
     });
+
+    it(
+      'should provide access to tokens from a parent component ' +
+        'for components instantiated via `createComponent` call (when a corresponding NodeInjector is used in the call), ' +
+        'but attached to the ApplicationRef',
+      async () => {
+        const TokenA = new InjectionToken('A');
+        const TokenB = new InjectionToken('B');
+
+        @NgModule({
+          providers: [{provide: TokenB, useValue: 'TokenB value'}],
+        })
+        class MyModule {}
+
+        @Component({
+          selector: 'lazy',
+          standalone: true,
+          imports: [MyModule],
+          template: `
+          Lazy Component! Token: {{ token }}
+        `,
+        })
+        class Lazy {
+          token = inject(TokenA);
+        }
+
+        @Component({
+          standalone: true,
+          imports: [Lazy],
+          template: `
+          @defer {
+            <lazy />
+          }
+        `,
+        })
+        class Dialog {}
+
+        @Component({
+          standalone: true,
+          selector: 'app-root',
+          providers: [{provide: TokenA, useValue: 'TokenA from RootCmp'}],
+          template: `
+          <div #container></div>
+        `,
+        })
+        class RootCmp {
+          injector = inject(Injector);
+          appRef = inject(ApplicationRef);
+          envInjector = inject(EnvironmentInjector);
+          @ViewChild('container', {read: ElementRef}) container!: ElementRef;
+
+          openModal() {
+            const hostElement = this.container.nativeElement;
+            const componentRef = createComponent(Dialog, {
+              hostElement,
+              elementInjector: this.injector,
+              environmentInjector: this.envInjector,
+            });
+            this.appRef.attachView(componentRef.hostView);
+            componentRef.changeDetectorRef.detectChanges();
+          }
+        }
+
+        const deferDepsInterceptor = {
+          intercept() {
+            return () => {
+              return [dynamicImportOf(Lazy)];
+            };
+          },
+        };
+
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          ],
+          deferBlockBehavior: DeferBlockBehavior.Playthrough,
+        });
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+
+        fixture.componentInstance.openModal();
+
+        // The call above instantiates a component that uses a `@defer` block,
+        // so we need to wait for dynamic imports to complete.
+        await allPendingDynamicImports();
+        fixture.detectChanges();
+
+        // Verify that tokens from parent components are available for injection
+        // inside a component within a `@defer` block.
+        expect(fixture.nativeElement.innerHTML).toContain(
+          `<lazy> Lazy Component! Token: TokenA from RootCmp </lazy>`,
+        );
+      },
+    );
   });
 
   describe('NgModules', () => {
@@ -4131,7 +4312,7 @@ describe('@defer', () => {
 
   describe('Router', () => {
     it('should inject correct `ActivatedRoutes` in components within defer blocks', async () => {
-      let routeCmpNodeInjector;
+      let deferCmpEnvInjector: EnvironmentInjector;
 
       const TokenA = new InjectionToken<string>('TokenA');
 
@@ -4157,7 +4338,7 @@ describe('@defer', () => {
         route = inject(ActivatedRoute);
         tokenA = inject(TokenA);
         constructor() {
-          routeCmpNodeInjector = inject(Injector);
+          deferCmpEnvInjector = inject(EnvironmentInjector);
         }
       }
 
@@ -4214,6 +4395,15 @@ describe('@defer', () => {
 
       await allPendingDynamicImports();
       app.detectChanges();
+
+      // Make sure that the `getInjectorResolutionPath` debugging utility
+      // (used by DevTools) doesn't expose Router's `OutletInjector` in
+      // the resolution path. `OutletInjector` is a special case, because it
+      // doesn't store any tokens itself, we point to the parent injector instead.
+      const resolutionPath = getInjectorResolutionPath(deferCmpEnvInjector!);
+      for (const inj of resolutionPath) {
+        expect(inj).not.toBeInstanceOf(ChainedInjector);
+      }
 
       // Expect that `ActivatedRoute` information get updated inside
       // of a component used in a `@defer` block.

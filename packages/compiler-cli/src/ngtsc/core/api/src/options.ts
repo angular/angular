@@ -83,6 +83,14 @@ export interface InternalOptions {
   _enableBlockSyntax?: boolean;
 
   /**
+   * Whether `@let` syntax is enabled in the compiler.
+   * Defaults to false while the feature is being developed.
+   *
+   * @internal
+   */
+  _enableLetSyntax?: boolean;
+
+  /**
    * Detected version of `@angular/core` in the workspace. Used by the
    * compiler to adjust the output depending on the available symbols.
    *

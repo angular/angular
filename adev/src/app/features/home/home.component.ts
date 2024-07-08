@@ -13,7 +13,6 @@ import {
   Component,
   ElementRef,
   Injector,
-  NgZone,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
@@ -45,7 +44,6 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
-  private readonly ngZone = inject(NgZone);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly window = inject(WINDOW);
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -65,7 +63,7 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     this.element = this.home.nativeElement;
 
     if (isPlatformBrowser(this.platformId)) {
@@ -77,9 +75,7 @@ export default class Home implements OnInit, AfterViewInit, OnDestroy {
       this.initIntersectionObserver();
 
       if (this.isWebGLAvailable() && !shouldReduceMotion() && !this.isUwu) {
-        this.ngZone.runOutsideAngular(async () => {
-          await this.loadHomeAnimation();
-        });
+        this.loadHomeAnimation();
       }
     }
   }

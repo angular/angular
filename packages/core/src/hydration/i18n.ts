@@ -8,18 +8,19 @@
 
 import {inject, Injector} from '../di';
 import {isRootTemplateMessage} from '../render3/i18n/i18n_util';
-import {I18nNode, I18nNodeKind, I18nPlaceholderType, TI18n} from '../render3/interfaces/i18n';
-import {TNode, TNodeType} from '../render3/interfaces/node';
+import {createIcuIterator} from '../render3/instructions/i18n_icu_container_visitor';
+import {I18nNode, I18nNodeKind, I18nPlaceholderType, TI18n, TIcu} from '../render3/interfaces/i18n';
+import {isTNodeShape, TNode, TNodeType} from '../render3/interfaces/node';
 import type {Renderer} from '../render3/interfaces/renderer';
 import type {RNode} from '../render3/interfaces/renderer_dom';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView, TVIEW} from '../render3/interfaces/view';
-import {nativeRemoveNode} from '../render3/node_manipulation';
+import {getFirstNativeNode, nativeRemoveNode} from '../render3/node_manipulation';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {assertDefined, assertNotEqual} from '../util/assert';
 
 import type {HydrationContext} from './annotate';
 import {DehydratedIcuData, DehydratedView, I18N_DATA} from './interfaces';
-import {locateNextRNode, tryLocateRNodeByPath} from './node_lookup_utils';
+import {isDisconnectedRNode, locateNextRNode, tryLocateRNodeByPath} from './node_lookup_utils';
 import {IS_I18N_HYDRATION_ENABLED} from './tokens';
 import {
   getNgContainerSize,
@@ -131,6 +132,38 @@ function collectI18nChildren(tView: TView): Set<number> | null {
 }
 
 /**
+ * Resulting data from serializing an i18n block.
+ */
+export interface SerializedI18nBlock {
+  /**
+   * A queue of active ICU cases from a depth-first traversal
+   * of the i18n AST. This is serialized to the client in order
+   * to correctly associate DOM nodes with i18n nodes during
+   * hydration.
+   */
+  caseQueue: Array<number>;
+
+  /**
+   * A set of indices in the lView of the block for nodes
+   * that are disconnected from the DOM. In i18n, this can
+   * happen when using content projection but some nodes are
+   * not selected by an <ng-content />.
+   */
+  disconnectedNodes: Set<number>;
+
+  /**
+   * A set of indices in the lView of the block for nodes
+   * considered "disjoint", indicating that we need to serialize
+   * a path to the node in order to hydrate it.
+   *
+   * A node is considered disjoint when its RNode does not
+   * directly follow the RNode of the previous i18n node, for
+   * example, because of content projection.
+   */
+  disjointNodes: Set<number>;
+}
+
+/**
  * Attempts to serialize i18n data for an i18n block, located at
  * the given view and instruction index.
  *
@@ -143,7 +176,7 @@ export function trySerializeI18nBlock(
   lView: LView,
   index: number,
   context: HydrationContext,
-): Array<number> | null {
+): SerializedI18nBlock | null {
   if (!context.isI18nHydrationEnabled) {
     return null;
   }
@@ -154,38 +187,123 @@ export function trySerializeI18nBlock(
     return null;
   }
 
-  const caseQueue: number[] = [];
-  tI18n.ast.forEach((node) => serializeI18nBlock(lView, caseQueue, context, node));
-  return caseQueue.length > 0 ? caseQueue : null;
+  const serializedI18nBlock: SerializedI18nBlock = {
+    caseQueue: [],
+    disconnectedNodes: new Set(),
+    disjointNodes: new Set(),
+  };
+  serializeI18nBlock(lView, serializedI18nBlock, context, tI18n.ast);
+
+  return serializedI18nBlock.caseQueue.length === 0 &&
+    serializedI18nBlock.disconnectedNodes.size === 0 &&
+    serializedI18nBlock.disjointNodes.size === 0
+    ? null
+    : serializedI18nBlock;
 }
 
 function serializeI18nBlock(
   lView: LView,
-  caseQueue: number[],
+  serializedI18nBlock: SerializedI18nBlock,
+  context: HydrationContext,
+  nodes: I18nNode[],
+): Node | null {
+  let prevRNode = null;
+  for (const node of nodes) {
+    const nextRNode = serializeI18nNode(lView, serializedI18nBlock, context, node);
+    if (nextRNode) {
+      if (isDisjointNode(prevRNode, nextRNode)) {
+        serializedI18nBlock.disjointNodes.add(node.index - HEADER_OFFSET);
+      }
+      prevRNode = nextRNode;
+    }
+  }
+  return prevRNode;
+}
+
+/**
+ * Helper to determine whether the given nodes are "disjoint".
+ *
+ * The i18n hydration process walks through the DOM and i18n nodes
+ * at the same time. It expects the sibling DOM node of the previous
+ * i18n node to be the first node of the next i18n node.
+ *
+ * In cases of content projection, this won't always be the case. So
+ * when we detect that, we mark the node as "disjoint", ensuring that
+ * we will serialize the path to the node. This way, when we hydrate the
+ * i18n node, we will be able to find the correct place to start.
+ */
+function isDisjointNode(prevNode: Node | null, nextNode: Node) {
+  return prevNode && prevNode.nextSibling !== nextNode;
+}
+
+/**
+ * Process the given i18n node for serialization.
+ * Returns the first RNode for the i18n node to begin hydration.
+ */
+function serializeI18nNode(
+  lView: LView,
+  serializedI18nBlock: SerializedI18nBlock,
   context: HydrationContext,
   node: I18nNode,
-) {
+): Node | null {
+  const maybeRNode = unwrapRNode(lView[node.index]!);
+  if (!maybeRNode || isDisconnectedRNode(maybeRNode)) {
+    serializedI18nBlock.disconnectedNodes.add(node.index - HEADER_OFFSET);
+    return null;
+  }
+
+  const rNode = maybeRNode as Node;
   switch (node.kind) {
-    case I18nNodeKind.TEXT:
-      const rNode = unwrapRNode(lView[node.index]!);
+    case I18nNodeKind.TEXT: {
       processTextNodeBeforeSerialization(context, rNode);
       break;
+    }
 
     case I18nNodeKind.ELEMENT:
-    case I18nNodeKind.PLACEHOLDER:
-      node.children.forEach((node) => serializeI18nBlock(lView, caseQueue, context, node));
+    case I18nNodeKind.PLACEHOLDER: {
+      serializeI18nBlock(lView, serializedI18nBlock, context, node.children);
       break;
+    }
 
-    case I18nNodeKind.ICU:
+    case I18nNodeKind.ICU: {
       const currentCase = lView[node.currentCaseLViewIndex] as number | null;
       if (currentCase != null) {
         // i18n uses a negative value to signal a change to a new case, so we
         // need to invert it to get the proper value.
         const caseIdx = currentCase < 0 ? ~currentCase : currentCase;
-        caseQueue.push(caseIdx);
-        node.cases[caseIdx].forEach((node) => serializeI18nBlock(lView, caseQueue, context, node));
+        serializedI18nBlock.caseQueue.push(caseIdx);
+        serializeI18nBlock(lView, serializedI18nBlock, context, node.cases[caseIdx]);
       }
       break;
+    }
+  }
+
+  return getFirstNativeNodeForI18nNode(lView, node) as Node | null;
+}
+
+/**
+ * Helper function to get the first native node to begin hydrating
+ * the given i18n node.
+ */
+function getFirstNativeNodeForI18nNode(lView: LView, node: I18nNode) {
+  const tView = lView[TVIEW];
+  const maybeTNode = tView.data[node.index];
+
+  if (isTNodeShape(maybeTNode)) {
+    // If the node is backed by an actual TNode, we can simply delegate.
+    return getFirstNativeNode(lView, maybeTNode);
+  } else if (node.kind === I18nNodeKind.ICU) {
+    // A nested ICU container won't have an actual TNode. In that case, we can use
+    // an iterator to find the first child.
+    const icuIterator = createIcuIterator(maybeTNode as TIcu, lView);
+    let rNode: RNode | null = icuIterator();
+
+    // If the ICU container has no nodes, then we use the ICU anchor as the node.
+    return rNode ?? unwrapRNode(lView[node.index]);
+  } else {
+    // Otherwise, the node is a text or trivial element in an ICU container,
+    // and we can just use the RNode directly.
+    return unwrapRNode(lView[node.index]) ?? null;
   }
 }
 
@@ -346,19 +464,28 @@ function collectI18nNodesFromDom(
   nodeOrNodes: I18nNode | I18nNode[],
 ) {
   if (Array.isArray(nodeOrNodes)) {
+    let nextState = state;
     for (const node of nodeOrNodes) {
-      // If the node is being projected elsewhere, we need to temporarily
-      // branch the state to that location to continue hydration.
-      // Otherwise, we continue hydration from the current location.
+      // Whenever a node doesn't directly follow the previous RNode, it
+      // is given a path. We need to resume collecting nodes from that location
+      // until and unless we find another disjoint node.
       const targetNode = tryLocateRNodeByPath(
         context.hydrationInfo,
         context.lView,
         node.index - HEADER_OFFSET,
       );
-      const nextState = targetNode ? forkHydrationState(state, targetNode as Node) : state;
+      if (targetNode) {
+        nextState = forkHydrationState(state, targetNode as Node);
+      }
       collectI18nNodesFromDom(context, nextState, node);
     }
   } else {
+    if (context.disconnectedNodes.has(nodeOrNodes.index - HEADER_OFFSET)) {
+      // i18n nodes can be considered disconnected if e.g. they were projected.
+      // In that case, we have to make sure to skip over them.
+      return;
+    }
+
     switch (nodeOrNodes.kind) {
       case I18nNodeKind.TEXT: {
         // Claim a text node for hydration

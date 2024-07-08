@@ -1047,6 +1047,10 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'cli/generate/config',
           },
           {
+            label: 'directive',
+            path: 'cli/generate/directive',
+          },
+          {
             label: 'enum',
             path: 'cli/generate/enum',
           },
@@ -1260,6 +1264,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG0912',
       },
       {
+        label: 'NG0913: Runtime Performance Warnings',
+        path: 'errors/NG0913',
+        contentPath: 'reference/errors/NG0913',
+      },
+      {
         label: 'NG0950: Required input is accessed before a value is set.',
         path: 'errors/NG0950',
         contentPath: 'reference/errors/NG0950',
@@ -1378,6 +1387,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'NG8109: Signals must be invoked in template interpolations',
         path: 'extended-diagnostics/NG8109',
         contentPath: 'reference/extended-diagnostics/NG8109',
+      },
+      {
+        label: 'NG8111: Functions must be invoked in event bindings',
+        path: 'extended-diagnostics/NG8111',
+        contentPath: 'reference/extended-diagnostics/NG8111',
       },
     ],
   },

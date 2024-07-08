@@ -89,7 +89,6 @@ TEST_DEPS = APPLICATION_DEPS + [
     "@npm//@angular/platform-browser-dynamic",
     "@npm//@types/jasmine",
     "@npm//@types/node",
-    "@npm//assert",
     "@npm//jasmine",
     "@npm//jasmine-core",
     "@npm//karma-chrome-launcher",
@@ -176,7 +175,7 @@ architect_test(
     ],
     chdir = package_name(),
     data = ensure_local_package_deps(TEST_DEPS) + TEST_FILES + APPLICATION_ASSETS + [
-        "//aio/tools:windows-chromium-path",
+        "//adev/tools:windows-chromium-path",
         "@npm//@angular/build-tooling/bazel/browsers/chromium",
     ],
     env = {

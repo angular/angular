@@ -15,7 +15,13 @@ import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
 import {Interpolation, type UpdateOp} from './ops/update';
-import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
+import {
+  ConsumesVarsTrait,
+  DependsOnSlotContext,
+  DependsOnSlotContextOpTrait,
+  UsesVarOffset,
+  UsesVarOffsetTrait,
+} from './traits';
 
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
@@ -42,7 +48,9 @@ export type Expression =
   | SlotLiteralExpr
   | ConditionalCaseExpr
   | ConstCollectedExpr
-  | TwoWayBindingSetExpr;
+  | TwoWayBindingSetExpr
+  | ContextLetReferenceExpr
+  | StoreLetExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -135,6 +143,73 @@ export class ReferenceExpr extends ExpressionBase {
 
   override clone(): ReferenceExpr {
     return new ReferenceExpr(this.target, this.targetSlot, this.offset);
+  }
+}
+
+export class StoreLetExpr
+  extends ExpressionBase
+  implements ConsumesVarsTrait, DependsOnSlotContextOpTrait
+{
+  override readonly kind = ExpressionKind.StoreLet;
+  readonly [ConsumesVarsTrait] = true;
+  readonly [DependsOnSlotContext] = true;
+
+  constructor(
+    readonly target: XrefId,
+    public value: o.Expression,
+    override sourceSpan: ParseSourceSpan,
+  ) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(e: o.Expression): boolean {
+    return (
+      e instanceof StoreLetExpr && e.target === this.target && e.value.isEquivalent(this.value)
+    );
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
+    this.value = transformExpressionsInExpression(this.value, transform, flags);
+  }
+
+  override clone(): StoreLetExpr {
+    return new StoreLetExpr(this.target, this.value, this.sourceSpan);
+  }
+}
+
+export class ContextLetReferenceExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.ContextLetReference;
+
+  constructor(
+    readonly target: XrefId,
+    readonly targetSlot: SlotHandle,
+  ) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(e: o.Expression): boolean {
+    return e instanceof ContextLetReferenceExpr && e.target === this.target;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(): void {}
+
+  override clone(): ContextLetReferenceExpr {
+    return new ContextLetReferenceExpr(this.target, this.targetSlot);
   }
 }
 
@@ -1115,6 +1190,9 @@ export function transformExpressionsInOp(
     case OpKind.DeferWhen:
       op.expr = transformExpressionsInExpression(op.expr, transform, flags);
       break;
+    case OpKind.StoreLet:
+      op.value = transformExpressionsInExpression(op.value, transform, flags);
+      break;
     case OpKind.Advance:
     case OpKind.Container:
     case OpKind.ContainerEnd:
@@ -1140,6 +1218,7 @@ export function transformExpressionsInOp(
     case OpKind.Text:
     case OpKind.I18nAttributes:
     case OpKind.IcuPlaceholder:
+    case OpKind.DeclareLet:
       // These operations contain no expressions.
       break;
     default:

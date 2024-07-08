@@ -131,6 +131,8 @@ export const isMix: boolean =
 
 const zoneSymbolEventNames: {[eventName: string]: string} = {};
 
+const enableBeforeunloadSymbol = zoneSymbol('enable_beforeunload');
+
 const wrapFn = function (this: unknown, event: Event) {
   // https://github.com/angular/zone.js/issues/911, in IE, sometimes
   // event will be undefined, so we need to use window.event
@@ -165,7 +167,25 @@ const wrapFn = function (this: unknown, event: Event) {
     }
   } else {
     result = listener && listener.apply(this, arguments);
-    if (result != undefined && !result) {
+    if (
+      // https://github.com/angular/angular/issues/47579
+      // https://www.w3.org/TR/2011/WD-html5-20110525/history.html#beforeunloadevent
+      // This is the only specific case we should check for. The spec defines that the
+      // `returnValue` attribute represents the message to show the user. When the event
+      // is created, this attribute must be set to the empty string.
+      event.type === 'beforeunload' &&
+      // To prevent any breaking changes resulting from this change, given that
+      // it was already causing a significant number of failures in G3, we have hidden
+      // that behavior behind a global configuration flag. Consumers can enable this
+      // flag explicitly if they want the `beforeunload` event to be handled as defined
+      // in the specification.
+      _global[enableBeforeunloadSymbol] &&
+      // The IDL event definition is `attribute DOMString returnValue`, so we check whether
+      // `typeof result` is a string.
+      typeof result === 'string'
+    ) {
+      (event as BeforeUnloadEvent).returnValue = result;
+    } else if (result != undefined && !result) {
       event.preventDefault();
     }
   }

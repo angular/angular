@@ -517,9 +517,7 @@ function findImportLocation(
  * E.g. `declarations: [Foo]` or `declarations: SOME_VAR` would match this description,
  * but not `declarations: []`.
  */
-function hasNgModuleMetadataElements(
-  node: ts.Node,
-): node is ts.PropertyAssignment & {initializer: ts.ArrayLiteralExpression} {
+function hasNgModuleMetadataElements(node: ts.Node): node is ts.PropertyAssignment {
   return (
     ts.isPropertyAssignment(node) &&
     (!ts.isArrayLiteralExpression(node.initializer) || node.initializer.elements.length > 0)
@@ -788,7 +786,9 @@ function analyzeTestingModules(
 
     const importsProp = findLiteralProperty(obj, 'imports');
     const importElements =
-      importsProp && hasNgModuleMetadataElements(importsProp)
+      importsProp &&
+      hasNgModuleMetadataElements(importsProp) &&
+      ts.isArrayLiteralExpression(importsProp.initializer)
         ? importsProp.initializer.elements.filter((el) => {
             // Filter out calls since they may be a `ModuleWithProviders`.
             return (
@@ -847,7 +847,11 @@ function extractDeclarationsFromTestObject(
   const results: ts.ClassDeclaration[] = [];
   const declarations = findLiteralProperty(obj, 'declarations');
 
-  if (declarations && hasNgModuleMetadataElements(declarations)) {
+  if (
+    declarations &&
+    hasNgModuleMetadataElements(declarations) &&
+    ts.isArrayLiteralExpression(declarations.initializer)
+  ) {
     for (const element of declarations.initializer.elements) {
       const declaration = findClassDeclaration(element, typeChecker);
 

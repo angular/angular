@@ -1,7 +1,14 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
 package(default_visibility = ["//visibility:public"])
 
-docs_example(
-    name = "forms",
-)
+exports_files([
+    "src/app/actor.ts",
+    "src/app/actor-form/actor-form.component.html",
+    "src/app/actor-form/actor-form.component.ts",
+    "src/app/app.component.html",
+    "src/app/app.component.ts",
+    "src/app/app.module.ts",
+    "src/assets/forms.css",
+    "src/index.html",
+    "src/main.ts",
+    "src/styles.1.css",
+])

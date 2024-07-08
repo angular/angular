@@ -1570,12 +1570,8 @@ describe('HtmlLexer', () => {
   });
 
   describe('@let declarations', () => {
-    function tokenizeLet(input: string) {
-      return tokenizeAndHumanizeParts(input, {tokenizeLet: true});
-    }
-
     it('should parse a @let declaration', () => {
-      expect(tokenizeLet('@let foo = 123 + 456;')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo = 123 + 456;')).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, '123 + 456'],
         [TokenType.LET_END],
@@ -1591,10 +1587,12 @@ describe('HtmlLexer', () => {
         [TokenType.EOF],
       ];
 
-      expect(tokenizeLet('@let               foo       =          123 + 456;')).toEqual(expected);
-      expect(tokenizeLet('@let foo=123 + 456;')).toEqual(expected);
-      expect(tokenizeLet('@let foo =123 + 456;')).toEqual(expected);
-      expect(tokenizeLet('@let foo=   123 + 456;')).toEqual(expected);
+      expect(
+        tokenizeAndHumanizeParts('@let               foo       =          123 + 456;'),
+      ).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@let foo=123 + 456;')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@let foo =123 + 456;')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@let foo=   123 + 456;')).toEqual(expected);
     });
 
     it('should parse a @let declaration with newlines before/after its name', () => {
@@ -1605,17 +1603,17 @@ describe('HtmlLexer', () => {
         [TokenType.EOF],
       ];
 
-      expect(tokenizeLet('@let\nfoo = 123;')).toEqual(expected);
-      expect(tokenizeLet('@let    \nfoo = 123;')).toEqual(expected);
-      expect(tokenizeLet('@let    \n              foo = 123;')).toEqual(expected);
-      expect(tokenizeLet('@let foo\n= 123;')).toEqual(expected);
-      expect(tokenizeLet('@let foo\n       = 123;')).toEqual(expected);
-      expect(tokenizeLet('@let foo   \n   = 123;')).toEqual(expected);
-      expect(tokenizeLet('@let  \n   foo   \n   = 123;')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@let\nfoo = 123;')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@let    \nfoo = 123;')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@let    \n              foo = 123;')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@let foo\n= 123;')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@let foo\n       = 123;')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@let foo   \n   = 123;')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@let  \n   foo   \n   = 123;')).toEqual(expected);
     });
 
     it('should parse a @let declaration with new lines in its value', () => {
-      expect(tokenizeLet('@let foo = \n123 + \n 456 + \n789\n;')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo = \n123 + \n 456 + \n789\n;')).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, '123 + \n 456 + \n789\n'],
         [TokenType.LET_END],
@@ -1624,7 +1622,7 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse a @let declaration inside of a block', () => {
-      expect(tokenizeLet('@block {@let foo = 123 + 456;}')).toEqual([
+      expect(tokenizeAndHumanizeParts('@block {@let foo = 123 + 456;}')).toEqual([
         [TokenType.BLOCK_OPEN_START, 'block'],
         [TokenType.BLOCK_OPEN_END],
         [TokenType.LET_START, 'foo'],
@@ -1636,14 +1634,14 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse @let declaration using semicolon inside of a string', () => {
-      expect(tokenizeLet(`@let foo = 'a; b';`)).toEqual([
+      expect(tokenizeAndHumanizeParts(`@let foo = 'a; b';`)).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, `'a; b'`],
         [TokenType.LET_END],
         [TokenType.EOF],
       ]);
 
-      expect(tokenizeLet(`@let foo = "';'";`)).toEqual([
+      expect(tokenizeAndHumanizeParts(`@let foo = "';'";`)).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, `"';'"`],
         [TokenType.LET_END],
@@ -1654,7 +1652,7 @@ describe('HtmlLexer', () => {
     it('should parse @let declaration using escaped quotes in a string', () => {
       const markup = `@let foo = '\\';\\'' + "\\",";`;
 
-      expect(tokenizeLet(markup)).toEqual([
+      expect(tokenizeAndHumanizeParts(markup)).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, `'\\';\\'' + "\\","`],
         [TokenType.LET_END],
@@ -1665,7 +1663,7 @@ describe('HtmlLexer', () => {
     it('should parse @let declaration using function calls in its value', () => {
       const markup = '@let foo = fn(a, b) + fn2(c, d, e);';
 
-      expect(tokenizeLet(markup)).toEqual([
+      expect(tokenizeAndHumanizeParts(markup)).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, 'fn(a, b) + fn2(c, d, e)'],
         [TokenType.LET_END],
@@ -1674,14 +1672,14 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse @let declarations using array literals in their value', () => {
-      expect(tokenizeLet('@let foo = [1, 2, 3];')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo = [1, 2, 3];')).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, '[1, 2, 3]'],
         [TokenType.LET_END],
         [TokenType.EOF],
       ]);
 
-      expect(tokenizeLet('@let foo = [0, [foo[1]], 3];')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo = [0, [foo[1]], 3];')).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, '[0, [foo[1]], 3]'],
         [TokenType.LET_END],
@@ -1690,19 +1688,19 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse @let declarations using object literals', () => {
-      expect(tokenizeLet('@let foo = {a: 1, b: {c: something + 2}};')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo = {a: 1, b: {c: something + 2}};')).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, '{a: 1, b: {c: something + 2}}'],
         [TokenType.LET_END],
         [TokenType.EOF],
       ]);
-      expect(tokenizeLet('@let foo = {};')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo = {};')).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, '{}'],
         [TokenType.LET_END],
         [TokenType.EOF],
       ]);
-      expect(tokenizeLet('@let foo = {foo: ";"};')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo = {foo: ";"};')).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, '{foo: ";"}'],
         [TokenType.LET_END],
@@ -1713,7 +1711,7 @@ describe('HtmlLexer', () => {
     it('should parse a @let declaration containing complex expression', () => {
       const markup = '@let foo = fn({a: 1, b: [otherFn([{c: ";"}], 321, {d: [\',\']})]});';
 
-      expect(tokenizeLet(markup)).toEqual([
+      expect(tokenizeAndHumanizeParts(markup)).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, 'fn({a: 1, b: [otherFn([{c: ";"}], 321, {d: [\',\']})]})'],
         [TokenType.LET_END],
@@ -1722,25 +1720,25 @@ describe('HtmlLexer', () => {
     });
 
     it('should handle @let declaration with invalid syntax in the value', () => {
-      expect(tokenizeAndHumanizeErrors(`@let foo = ";`, {tokenizeLet: true})).toEqual([
+      expect(tokenizeAndHumanizeErrors(`@let foo = ";`)).toEqual([
         [TokenType.LET_VALUE, 'Unexpected character "EOF"', '0:13'],
       ]);
 
-      expect(tokenizeLet(`@let foo = {a: 1,;`)).toEqual([
+      expect(tokenizeAndHumanizeParts(`@let foo = {a: 1,;`)).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, '{a: 1,'],
         [TokenType.LET_END],
         [TokenType.EOF],
       ]);
 
-      expect(tokenizeLet(`@let foo = [1, ;`)).toEqual([
+      expect(tokenizeAndHumanizeParts(`@let foo = [1, ;`)).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, '[1, '],
         [TokenType.LET_END],
         [TokenType.EOF],
       ]);
 
-      expect(tokenizeLet(`@let foo = fn(;`)).toEqual([
+      expect(tokenizeAndHumanizeParts(`@let foo = fn(;`)).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, 'fn('],
         [TokenType.LET_END],
@@ -1751,7 +1749,7 @@ describe('HtmlLexer', () => {
     // This case is a bit odd since an `@let` without a value is invalid,
     // but it will be validated further down in the parsing pipeline.
     it('should parse a @let declaration without a value', () => {
-      expect(tokenizeLet('@let foo =;')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo =;')).toEqual([
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, ''],
         [TokenType.LET_END],
@@ -1760,7 +1758,7 @@ describe('HtmlLexer', () => {
     });
 
     it('should handle no space after @let', () => {
-      expect(tokenizeLet('@letFoo = 123;')).toEqual([
+      expect(tokenizeAndHumanizeParts('@letFoo = 123;')).toEqual([
         [TokenType.INCOMPLETE_LET, '@let'],
         [TokenType.TEXT, 'Foo = 123;'],
         [TokenType.EOF],
@@ -1768,17 +1766,17 @@ describe('HtmlLexer', () => {
     });
 
     it('should handle unsupported characters in the name of @let', () => {
-      expect(tokenizeLet('@let foo\\bar = 123;')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo\\bar = 123;')).toEqual([
         [TokenType.INCOMPLETE_LET, 'foo'],
         [TokenType.TEXT, '\\bar = 123;'],
         [TokenType.EOF],
       ]);
-      expect(tokenizeLet('@let #foo = 123;')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let #foo = 123;')).toEqual([
         [TokenType.INCOMPLETE_LET, ''],
         [TokenType.TEXT, '#foo = 123;'],
         [TokenType.EOF],
       ]);
-      expect(tokenizeLet('@let foo\nbar = 123;')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo\nbar = 123;')).toEqual([
         [TokenType.INCOMPLETE_LET, 'foo'],
         [TokenType.TEXT, 'bar = 123;'],
         [TokenType.EOF],
@@ -1786,13 +1784,13 @@ describe('HtmlLexer', () => {
     });
 
     it('should handle digits in the name of an @let', () => {
-      expect(tokenizeLet('@let a123 = foo;')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let a123 = foo;')).toEqual([
         [TokenType.LET_START, 'a123'],
         [TokenType.LET_VALUE, 'foo'],
         [TokenType.LET_END],
         [TokenType.EOF],
       ]);
-      expect(tokenizeLet('@let 123a = 123;')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let 123a = 123;')).toEqual([
         [TokenType.INCOMPLETE_LET, ''],
         [TokenType.TEXT, '123a = 123;'],
         [TokenType.EOF],
@@ -1800,17 +1798,17 @@ describe('HtmlLexer', () => {
     });
 
     it('should handle an @let declaration without an ending token', () => {
-      expect(tokenizeLet('@let foo = 123 + 456')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo = 123 + 456')).toEqual([
         [TokenType.INCOMPLETE_LET, 'foo'],
         [TokenType.LET_VALUE, '123 + 456'],
         [TokenType.EOF],
       ]);
-      expect(tokenizeLet('@let foo = 123 + 456                  ')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo = 123 + 456                  ')).toEqual([
         [TokenType.INCOMPLETE_LET, 'foo'],
         [TokenType.LET_VALUE, '123 + 456                  '],
         [TokenType.EOF],
       ]);
-      expect(tokenizeLet('@let foo = 123, bar = 456')).toEqual([
+      expect(tokenizeAndHumanizeParts('@let foo = 123, bar = 456')).toEqual([
         [TokenType.INCOMPLETE_LET, 'foo'],
         [TokenType.LET_VALUE, '123, bar = 456'],
         [TokenType.EOF],
@@ -1818,7 +1816,7 @@ describe('HtmlLexer', () => {
     });
 
     it('should not parse @let inside an interpolation', () => {
-      expect(tokenizeLet('{{ @let foo = 123; }}')).toEqual([
+      expect(tokenizeAndHumanizeParts('{{ @let foo = 123; }}')).toEqual([
         [TokenType.TEXT, ''],
         [TokenType.INTERPOLATION, '{{', ' @let foo = 123; ', '}}'],
         [TokenType.TEXT, ''],

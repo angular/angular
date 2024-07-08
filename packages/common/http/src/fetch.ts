@@ -76,7 +76,12 @@ export class FetchBackend implements HttpBackend {
     let response;
 
     try {
-      const fetchPromise = this.fetchImpl(request.urlWithParams, {signal, ...init});
+      // Run fetch outside of Angular zone.
+      // This is due to Node.js fetch implementation (Undici) which uses a number of setTimeouts to check if
+      // the response should eventually timeout which causes extra CD cycles every 500ms
+      const fetchPromise = this.ngZone.runOutsideAngular(() =>
+        this.fetchImpl(request.urlWithParams, {signal, ...init}),
+      );
 
       // Make sure Zone.js doesn't trigger false-positive unhandled promise
       // error in case the Promise is rejected synchronously. See function
@@ -245,10 +250,12 @@ export class FetchBackend implements HttpBackend {
     req.headers.forEach((name, values) => (headers[name] = values.join(',')));
 
     // Add an Accept header if one isn't present already.
-    headers['Accept'] ??= 'application/json, text/plain, */*';
+    if (!req.headers.has('Accept')) {
+      headers['Accept'] = 'application/json, text/plain, */*';
+    }
 
     // Auto-detect the Content-Type header if one isn't present already.
-    if (!headers['Content-Type']) {
+    if (!req.headers.has('Content-Type')) {
       const detectedType = req.detectContentTypeHeader();
       // Sometimes Content-Type detection fails.
       if (detectedType !== null) {

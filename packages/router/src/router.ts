@@ -54,8 +54,9 @@ import {
   UrlSerializer,
   UrlTree,
 } from './url_tree';
-import {standardizeConfig, validateConfig} from './utils/config';
+import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
+import {standardizeConfig} from './components/empty_outlet';
 
 function defaultErrorHandler(error: any): never {
   throw error;
@@ -222,7 +223,7 @@ export class Router {
               currentTransition.currentRawUrl,
             );
             const extras = {
-              // Persist transient navigation info from the original navigation request.
+              browserUrl: currentTransition.extras.browserUrl,
               info: currentTransition.extras.info,
               skipLocationChange: currentTransition.extras.skipLocationChange,
               // The URL is already updated at this point if we have 'eager' URL

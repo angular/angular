@@ -56,6 +56,11 @@ export interface IdentifierVariable extends SemanticVariableBase {
    * The identifier whose value in the template is tracked in this variable.
    */
   identifier: string;
+
+  /**
+   * Whether the variable was declared locally within the same view or somewhere else.
+   */
+  local: boolean;
 }
 
 /**

@@ -1,7 +1,8 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
 package(default_visibility = ["//visibility:public"])
 
-docs_example(
-    name = "forms-overview",
-)
+exports_files([
+    "src/app/reactive/favorite-color/favorite-color.component.spec.ts",
+    "src/app/reactive/favorite-color/favorite-color.component.ts",
+    "src/app/template/favorite-color/favorite-color.component.spec.ts",
+    "src/app/template/favorite-color/favorite-color.component.ts",
+])

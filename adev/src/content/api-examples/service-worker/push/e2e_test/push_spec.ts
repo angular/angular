@@ -7,7 +7,7 @@
  */
 
 import {browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../../../../packages/examples/test-utils/index';
 
 describe('SW `SwPush` example', () => {
   const pageUrl = '/push';

@@ -375,7 +375,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: '<ng-template #foo>some-content</ng-template>'
+                    template: '<ng-template #foo>some-content</ng-template>',
                 }]
         }] });
 export class MyModule {
@@ -415,7 +415,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: '<ng-template (outDirective)="$event.doSth()"></ng-template>'
+                    template: '<ng-template (outDirective)="$event.doSth()"></ng-template>',
                 }]
         }] });
 export class MyModule {
@@ -471,7 +471,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-app',
-                    template: '<ng-template dir="{{ message }}"></ng-template>'
+                    template: '<ng-template dir="{{ message }}"></ng-template>',
                 }]
         }] });
 
@@ -514,7 +514,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-app',
-                    template: '<ng-template *ngIf="true" dir="{{ message }}"></ng-template>'
+                    template: '<ng-template *ngIf="true" dir="{{ message }}"></ng-template>',
                 }]
         }] });
 
@@ -560,7 +560,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div *ngFor="let item of items">
       <p *ngIf="item > 10">more than 10</p>
     </div>
-  `
+  `,
                 }]
         }] });
 export class AModule {
@@ -616,7 +616,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         <p *ngIf="subitem > 10">more than 10</p>
       </ng-container>
     </div>
-  `
+  `,
                 }]
         }] });
 export class BModule {
@@ -676,7 +676,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'a-component',
                     template: `
     <ng-content *ngIf="show"></ng-content>
-  `
+  `,
                 }]
         }] });
 export class BComponent {
@@ -694,7 +694,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'b-component',
                     template: `
     <ng-content *ngIf="show"></ng-content>
-  `
+  `,
                 }]
         }] });
 export class AModule {
@@ -759,7 +759,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div *ngFor="let item of items">
       <p (click)="$event">{{ item }}</p>
     </div>
-  `
+  `,
                 }]
         }] });
 export class MyModule {
@@ -800,7 +800,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: `<div *ngIf="val | pipe"></div>`
+                    template: `<div *ngIf="val | pipe"></div>`,
                 }]
         }] });
 export class MyModule {
@@ -842,7 +842,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     template: `
-    {{a?.b ? 1 : 2 }}`
+    {{a?.b ? 1 : 2 }}`,
                 }]
         }] });
 export class MyModule {
@@ -935,7 +935,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     standalone: true,
-                    template: '<ng-template l="l1" [p]="p1" [attr.a]="a1" [class.c]="c1"></ng-template>'
+                    template: '<ng-template l="l1" [p]="p1" [attr.a]="a1" [class.c]="c1"></ng-template>',
                 }]
         }] });
 
@@ -1073,7 +1073,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     standalone: true,
                     template: `
   <ng-template *ngIf="true">Content</ng-template>
-`
+`,
                 }]
         }] });
 
@@ -1125,7 +1125,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <ng-container *ngIf="flag" />
     <ng-content *ngIf="flag" />
   </div>
-`
+`,
                 }]
         }] });
 
@@ -1163,7 +1163,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 	<div *ngFor="let someElem of someField.someMethod()"
 		[attr.someInputAttr]="someElem.someAttr()">
 	</div>
-`
+`,
                 }]
         }] });
 export class MyModule {
@@ -1212,7 +1212,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 	<ng-template #someLocalRef>
 		<span [attr.someAttr]="someField" *ngIf="someBooleanField"></span>
 	</ng-template>
-`
+`,
                 }]
         }] });
 export class MyModule {
@@ -1255,7 +1255,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     standalone: true,
-                    template: '<ng-template let-a [ngIf]="true">{{this.a}}</ng-template>'
+                    template: '<ng-template let-a [ngIf]="true">{{this.a}}</ng-template>',
                 }]
         }] });
 

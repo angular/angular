@@ -6,9 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {filter} from 'rxjs/operators';
+import {TestBed} from '@angular/core/testing';
+import {filter, tap} from 'rxjs/operators';
 
 import {EventEmitter} from '../src/event_emitter';
+import {ApplicationRef} from '../public_api';
+import {firstValueFrom} from 'rxjs';
+import {PendingTasks} from '../src/pending_tasks';
 
 describe('EventEmitter', () => {
   let emitter: EventEmitter<number>;
@@ -188,6 +192,20 @@ describe('EventEmitter', () => {
 
     expect(errorPropagated).toBe(true);
     expect(emitter.observers.length).toBe(0);
+  });
+
+  it('contributes to app stability', async () => {
+    const emitter = TestBed.runInInjectionContext(() => new EventEmitter<number>(true));
+    let emitValue: number;
+    emitter.subscribe({
+      next: (v: number) => {
+        emitValue = v;
+      },
+    });
+    emitter.emit(1);
+    await firstValueFrom(TestBed.inject(ApplicationRef).isStable.pipe(filter((stable) => stable)));
+    expect(emitValue!).toBeDefined();
+    expect(emitValue!).toEqual(1);
   });
 
   // TODO: vsavkin: add tests cases
