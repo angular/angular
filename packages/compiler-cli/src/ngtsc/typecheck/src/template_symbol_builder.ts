@@ -770,6 +770,8 @@ export class SymbolBuilder {
     let tsSymbol: ts.Symbol | undefined;
     if (ts.isPropertyAccessExpression(node)) {
       tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.name);
+    } else if (ts.isCallExpression(node)) {
+      tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.expression);
     } else {
       tsSymbol = this.getTypeChecker().getSymbolAtLocation(node);
     }
