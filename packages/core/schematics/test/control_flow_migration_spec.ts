@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {getSystemPath, logging, normalize, virtualFs} from '@angular-devkit/core';
+import {getSystemPath, logging, normalize} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
@@ -23,7 +23,7 @@ describe('control flow migration', () => {
   let warnOutput: string[] = [];
 
   function writeFile(filePath: string, contents: string) {
-    host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
+    host.sync.write(normalize(filePath), Buffer.from(contents));
   }
 
   function runMigration(path: string | undefined = undefined, format: boolean = true) {
