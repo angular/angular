@@ -229,6 +229,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/templates/control-flow',
           },
           {
+            label: 'Local template variables with @let',
+            path: 'guide/templates/let-template-variables',
+            contentPath: 'guide/templates/let-template-variables',
+          },
+          {
             label: 'Pipes',
             children: [
               {
