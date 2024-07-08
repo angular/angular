@@ -11,7 +11,7 @@ import {
   queryDecoratorNames,
   QueryFunctionName,
   tryParseSignalQueryFromInitializer,
-} from '../../../ngtsc/annotations';
+} from '../../../../annotations';
 
 import {
   castAsAny,

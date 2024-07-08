@@ -8,8 +8,8 @@
 
 import ts from 'typescript';
 
-import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from '../../ngtsc/imports';
-import {Decorator, ReflectionHost} from '../../ngtsc/reflection';
+import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from '../../../imports';
+import {Decorator, ReflectionHost} from '../../../reflection';
 
 /**
  * Whether a given decorator should be treated as an Angular decorator.

@@ -8,10 +8,10 @@
 
 import ts from 'typescript';
 
-import {TypeScriptReflectionHost} from '../src/ngtsc/reflection';
-import {getDownlevelDecoratorsTransform} from '../src/transformers/jit_transforms/index';
+import {TypeScriptReflectionHost} from '../../../reflection';
+import {getDownlevelDecoratorsTransform} from '../index';
 
-import {MockAotContext, MockCompilerHost} from './mocks';
+import {MockAotContext, MockCompilerHost} from '../../../../../test/mocks';
 
 const TEST_FILE_INPUT = '/test.ts';
 const TEST_FILE_OUTPUT = `/test.js`;

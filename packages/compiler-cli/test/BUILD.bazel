@@ -11,6 +11,7 @@ ts_library(
     ],
     visibility = [
         ":__subpackages__",
+        "//packages/compiler-cli/src/ngtsc/transform/jit/test:__pkg__",
         "//packages/language-service/test:__subpackages__",
     ],
     deps = [
@@ -49,32 +50,6 @@ jasmine_node_test(
         "//packages/common:npm_package",
         "//packages/core",
         "@npm//yargs",
-    ],
-)
-
-ts_library(
-    name = "jit_transforms_test_lib",
-    testonly = True,
-    srcs = [
-        "downlevel_decorators_transform_spec.ts",
-        "initializer_api_transforms_spec.ts",
-        "signal_queries_metadata_transform_spec.ts",
-    ],
-    deps = [
-        ":test_utils",
-        "//packages/compiler-cli/src/ngtsc/imports",
-        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/transformers/jit_transforms",
-        "@npm//typescript",
-    ],
-)
-
-jasmine_node_test(
-    name = "jit_transforms_test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":jit_transforms_test_lib",
     ],
 )
 

@@ -124,7 +124,7 @@ import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../
 
 import {coreHasSymbol} from './core_version';
 import {coreVersionSupportsFeature} from './feature_detection';
-import {angularJitApplicationTransform} from '@angular/compiler-cli/src/transformers/jit_transforms';
+import {angularJitApplicationTransform} from '../../transform/jit';
 
 /**
  * State information about a compilation which is only generated once some data is requested from

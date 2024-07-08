@@ -8,9 +8,9 @@
 
 import ts from 'typescript';
 
-import {ImportedSymbolsTracker} from '../../../ngtsc/imports';
-import {ClassMember, Decorator, ReflectionHost} from '../../../ngtsc/reflection';
-import {ImportManager} from '../../../ngtsc/translator';
+import {ImportedSymbolsTracker} from '../../../../imports';
+import {ClassMember, Decorator, ReflectionHost} from '../../../../reflection';
+import {ImportManager} from '../../../../translator';
 
 /** Function that can be used to transform class properties. */
 export type PropertyTransform = (

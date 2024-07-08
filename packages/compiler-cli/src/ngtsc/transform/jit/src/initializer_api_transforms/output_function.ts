@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isAngularDecorator, tryParseInitializerBasedOutput} from '../../../ngtsc/annotations';
+import {isAngularDecorator, tryParseInitializerBasedOutput} from '../../../../annotations';
 
 import {createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './transform_api';
 

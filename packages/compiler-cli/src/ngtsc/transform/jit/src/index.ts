@@ -8,8 +8,8 @@
 
 import ts from 'typescript';
 
-import {ImportedSymbolsTracker} from '../../ngtsc/imports';
-import {TypeScriptReflectionHost} from '../../ngtsc/reflection';
+import {ImportedSymbolsTracker} from '../../../imports';
+import {TypeScriptReflectionHost} from '../../../reflection';
 
 import {getDownlevelDecoratorsTransform} from './downlevel_decorators_transform';
 import {getInitializerApiJitTransform} from './initializer_api_transforms/transform';

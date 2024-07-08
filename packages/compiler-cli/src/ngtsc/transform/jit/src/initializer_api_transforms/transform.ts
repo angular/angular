@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {reflectClassMember} from '@angular/compiler-cli/src/ngtsc/reflection/src/typescript';
 import ts from 'typescript';
 
-import {isAngularDecorator} from '../../../ngtsc/annotations';
-import {ImportedSymbolsTracker} from '../../../ngtsc/imports';
-import {ReflectionHost} from '../../../ngtsc/reflection';
-import {ImportManager} from '../../../ngtsc/translator';
+import {isAngularDecorator} from '../../../../annotations';
+import {ImportedSymbolsTracker} from '../../../../imports';
+import {ReflectionHost} from '../../../../reflection';
+import {reflectClassMember} from '../../../../reflection/src/typescript';
+import {ImportManager} from '../../../../translator';
 
 import {signalInputsTransform} from './input_function';
 import {signalModelTransform} from './model_function';

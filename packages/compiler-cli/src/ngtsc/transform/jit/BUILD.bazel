@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "ts_library")
 package(default_visibility = ["//visibility:public"])
 
 ts_library(
-    name = "jit_transforms",
+    name = "jit",
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/compiler",
