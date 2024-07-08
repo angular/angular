@@ -168,6 +168,16 @@ export enum PerfPhase {
    * Time spent by the Angular Language Service to fix all detected same type errors.
    */
   LsCodeFixesAll,
+
+  /**
+   * Time spent computing possible Angular refactorings.
+   */
+  LSComputeApplicableRefactorings,
+
+  /**
+   * Time spent computing changes for applying a given refactoring.
+   */
+  LSApplyRefactoring,
 }
 
 /**

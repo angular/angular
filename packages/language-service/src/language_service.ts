@@ -18,6 +18,7 @@ import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {
+  ApplyRefactoringProgressFn,
   GetComponentLocationsForTemplateResponse,
   GetTcbResponse,
   GetTemplateLocationForComponentResponse,
@@ -46,6 +47,7 @@ import {
   getPropertyAssignmentFromValue,
 } from './ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
+import {allRefactorings} from './refactorings/refactoring';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
@@ -515,6 +517,41 @@ export class LanguageService {
         };
       },
     );
+  }
+
+  getPossibleRefactorings(
+    fileName: string,
+    positionOrRange: number | ts.TextRange,
+  ): ts.ApplicableRefactorInfo[] {
+    return this.withCompilerAndPerfTracing(
+      PerfPhase.LSComputeApplicableRefactorings,
+      (compiler) => {
+        return allRefactorings
+          .filter((r) => r.isApplicable(compiler, fileName, positionOrRange))
+          .map((r) => ({name: r.id, description: r.description, actions: []}));
+      },
+    );
+  }
+
+  applyRefactoring(
+    fileName: string,
+    positionOrRange: number | ts.TextRange,
+    refactorName: string,
+    reportProgress: ApplyRefactoringProgressFn,
+  ): ts.RefactorEditInfo | undefined {
+    const matchingRefactoring = allRefactorings.find((r) => r.id === refactorName);
+    if (matchingRefactoring === undefined) {
+      return undefined;
+    }
+
+    return this.withCompilerAndPerfTracing(PerfPhase.LSApplyRefactoring, (compiler) => {
+      return matchingRefactoring.computeEditsForFix(
+        compiler,
+        fileName,
+        positionOrRange,
+        reportProgress,
+      );
+    });
   }
 
   /**
