@@ -42,7 +42,7 @@ You might also be interested in the following:
 | [Event binding](guide/templates/event-binding)                            | Listen for events and your HTML.                                              |
 | [Two-way binding](guide/templates/two-way-binding)                        | Share data between a class and its template.                                  |
 | [Control flow](guide/templates/control-flow)                              | Angular's syntax for conditionally showing, hiding, and repeating elements.   |
-| [Local template variables](let-template-variables)                        | Define and reuse variables in your template.                                  |
+| [Local template variables](guide/templates/let-template-variables)        | Define and reuse variables in your template.                                  |
 | [Built-in directives](guide/directives)                                   | Listen to and modify the behavior and layout of HTML.                         |
 | [Template reference variables](guide/templates/reference-variables)       | Use special variables to reference a DOM element within a template.           |
 | [Inputs](guide/components/inputs)                                         | Accepting data with input properties                                          |
