@@ -150,8 +150,19 @@ export class ElementToMigrate {
     this.aliasAttrs = aliasAttrs;
   }
 
+  normalizeConditionString(value: string): string {
+    value = this.insertSemicolon(value, value.indexOf(' else '));
+    value = this.insertSemicolon(value, value.indexOf(' then '));
+    value = this.insertSemicolon(value, value.indexOf(' let '));
+    return value.replace(';;', ';');
+  }
+
+  insertSemicolon(str: string, ix: number): string {
+    return ix > -1 ? `${str.slice(0, ix)};${str.slice(ix)}` : str;
+  }
+
   getCondition(): string {
-    const chunks = this.attr.value.split(';');
+    const chunks = this.normalizeConditionString(this.attr.value).split(';');
     let condition = chunks[0];
 
     // checks for case of no usage of `;` in if else / if then else
