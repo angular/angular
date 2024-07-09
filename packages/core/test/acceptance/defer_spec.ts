@@ -4146,7 +4146,7 @@ describe('@defer', () => {
           standalone: true,
           imports: [Lazy],
           template: `
-          @defer {
+          @defer (on immediate) {
             <lazy />
           }
         `,
