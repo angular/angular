@@ -32,7 +32,12 @@ export class FunctionExtractor {
     //     Is void a better type?
     const signature = this.typeChecker.getSignatureFromDeclaration(this.declaration);
     const returnType = signature
-      ? this.typeChecker.typeToString(this.typeChecker.getReturnTypeOfSignature(signature))
+      ? this.typeChecker.typeToString(
+          this.typeChecker.getReturnTypeOfSignature(signature),
+          undefined,
+          // This ensures that e.g. `T | undefined` is not reduced to `T`.
+          ts.TypeFormatFlags.NoTypeReduction | ts.TypeFormatFlags.NoTruncation,
+        )
       : 'unknown';
 
     const jsdocsTags = extractJsDocTags(this.declaration);

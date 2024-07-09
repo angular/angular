@@ -1,3 +1,21 @@
+<a name="18.0.6"></a>
+# 18.0.6 (2024-07-03)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a55719f55e](https://github.com/angular/angular/commit/a55719f55eb9b75799dfe41bb56cacdd85b4bd9f) | fix | Don't run preconnect assertion on the server. ([#56213](https://github.com/angular/angular/pull/56213)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4909844805](https://github.com/angular/angular/commit/4909844805635d62535bcb247ef1ca65927c6a3d) | fix | establish proper defer injector hierarchy for components attached to ApplicationRef ([#56763](https://github.com/angular/angular/pull/56763)) |
+| [fec5b80aaf](https://github.com/angular/angular/commit/fec5b80aaff402bb62bd21d7e8c4182d2484a97f) | fix | support injection of object with null constructor. ([#56553](https://github.com/angular/angular/pull/56553)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b7d3ecc873](https://github.com/angular/angular/commit/b7d3ecc873b2cafe45ffa1bbfc8cfeda4b4c9e6b) | fix | routes should not get stale providers ([#56798](https://github.com/angular/angular/pull/56798)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.1.0-rc.0"></a>
 # 18.1.0-rc.0 (2024-07-01)
 ### common

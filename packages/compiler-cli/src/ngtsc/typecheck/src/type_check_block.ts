@@ -1647,23 +1647,23 @@ class TcbIfOp extends TcbOp {
       return ts.factory.createBlock(branchScope.render());
     }
 
-    // We need to process the expression first so it gets its own scope that the body of the
-    // conditional will inherit from. We do this, because we need to declare a separate variable
+    // We process the expression first in the parent scope, but create a scope around the block
+    // that the body will inherit from. We do this, because we need to declare a separate variable
     // for the case where the expression has an alias _and_ because we need the processed
     // expression when generating the guard for the body.
-    const expressionScope = Scope.forNodes(this.tcb, this.scope, branch, [], null);
-    expressionScope.render().forEach((stmt) => this.scope.addStatement(stmt));
-    this.expressionScopes.set(branch, expressionScope);
+    const outerScope = Scope.forNodes(this.tcb, this.scope, branch, [], null);
+    outerScope.render().forEach((stmt) => this.scope.addStatement(stmt));
+    this.expressionScopes.set(branch, outerScope);
 
-    let expression = tcbExpression(branch.expression, this.tcb, expressionScope);
+    let expression = tcbExpression(branch.expression, this.tcb, this.scope);
     if (branch.expressionAlias !== null) {
       expression = ts.factory.createBinaryExpression(
         ts.factory.createParenthesizedExpression(expression),
         ts.SyntaxKind.AmpersandAmpersandToken,
-        expressionScope.resolve(branch.expressionAlias),
+        outerScope.resolve(branch.expressionAlias),
       );
     }
-    const bodyScope = this.getBranchScope(expressionScope, branch, index);
+    const bodyScope = this.getBranchScope(outerScope, branch, index);
 
     return ts.factory.createIfStatement(
       expression,
@@ -1889,7 +1889,7 @@ class TcbForOfOp extends TcbOp {
     // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
     // Add a non-null expression to allow such values to be assigned.
     const expression = ts.factory.createNonNullExpression(
-      tcbExpression(this.block.expression, this.tcb, loopScope),
+      tcbExpression(this.block.expression, this.tcb, this.scope),
     );
     const trackTranslator = new TcbForLoopTrackTranslator(this.tcb, loopScope, this.block);
     const trackExpression = trackTranslator.translate(this.block.trackBy);
@@ -2723,10 +2723,23 @@ class TcbExpressionTranslator {
       // returned here to let it fall through resolution so it will be caught when the
       // `ImplicitReceiver` is resolved in the branch below.
       const target = this.tcb.boundTarget.getExpressionTarget(ast);
-      if (target instanceof TmplAstLetDeclaration) {
-        this.validateLetDeclarationAccess(target, ast);
+      const targetExpression = target === null ? null : this.getTargetNodeExpression(target, ast);
+      if (
+        target instanceof TmplAstLetDeclaration &&
+        !this.isValidLetDeclarationAccess(target, ast)
+      ) {
+        this.tcb.oobRecorder.letUsedBeforeDefinition(this.tcb.id, ast, target);
+        // Cast the expression to `any` so we don't produce additional diagnostics.
+        // We don't use `markIgnoreForDiagnostics` here, because it won't prevent duplicate
+        // diagnostics for nested accesses in cases like `@let value = value.foo.bar.baz`.
+        if (targetExpression !== null) {
+          return ts.factory.createAsExpression(
+            targetExpression,
+            ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+          );
+        }
       }
-      return target === null ? null : this.getTargetNodeExpression(target, ast);
+      return targetExpression;
     } else if (ast instanceof PropertyWrite && ast.receiver instanceof ImplicitReceiver) {
       const target = this.tcb.boundTarget.getExpressionTarget(ast);
       if (target === null) {
@@ -2859,7 +2872,7 @@ class TcbExpressionTranslator {
     return expr;
   }
 
-  protected validateLetDeclarationAccess(target: TmplAstLetDeclaration, ast: PropertyRead): void {
+  protected isValidLetDeclarationAccess(target: TmplAstLetDeclaration, ast: PropertyRead): boolean {
     const targetStart = target.sourceSpan.start.offset;
     const targetEnd = target.sourceSpan.end.offset;
     const astStart = ast.sourceSpan.start;
@@ -2867,12 +2880,7 @@ class TcbExpressionTranslator {
     // We only flag local references that occur before the declaration, because embedded views
     // are updated before the child views. In practice this means that something like
     // `<ng-template [ngIf]="true">{{value}}</ng-template> @let value = 1;` is valid.
-    if (
-      (targetStart > astStart || (astStart >= targetStart && astStart <= targetEnd)) &&
-      this.scope.isLocal(target)
-    ) {
-      this.tcb.oobRecorder.letUsedBeforeDefinition(this.tcb.id, ast, target);
-    }
+    return (targetStart < astStart && astStart > targetEnd) || !this.scope.isLocal(target);
   }
 }
 
@@ -3200,9 +3208,10 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
     return super.resolve(ast);
   }
 
-  protected override validateLetDeclarationAccess(): void {
+  protected override isValidLetDeclarationAccess(): boolean {
     // Event listeners are allowed to read `@let` declarations before
     // they're declared since the callback won't be executed immediately.
+    return true;
   }
 }
 

@@ -229,6 +229,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/templates/control-flow',
           },
           {
+            label: 'Local template variables with @let',
+            path: 'guide/templates/let-template-variables',
+            contentPath: 'guide/templates/let-template-variables',
+          },
+          {
             label: 'Pipes',
             children: [
               {
@@ -1387,6 +1392,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'NG8109: Signals must be invoked in template interpolations',
         path: 'extended-diagnostics/NG8109',
         contentPath: 'reference/extended-diagnostics/NG8109',
+      },
+      {
+        label: 'NG8111: Functions must be invoked in event bindings',
+        path: 'extended-diagnostics/NG8111',
+        contentPath: 'reference/extended-diagnostics/NG8111',
       },
     ],
   },

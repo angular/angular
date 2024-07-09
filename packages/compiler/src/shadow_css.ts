@@ -334,8 +334,8 @@ export class ShadowCss {
    * animation declaration (with possibly multiple animation definitions)
    *
    * The regular expression can be divided in three parts
-   *  - (^|\s+)
-   *    simply captures how many (if any) leading whitespaces are present
+   *  - (^|\s+|,)
+   *    captures how many (if any) leading whitespaces are present or a comma
    *  - (?:(?:(['"])((?:\\\\|\\\2|(?!\2).)+)\2)|(-?[A-Za-z][\w\-]*))
    *    captures two different possible keyframes, ones which are quoted or ones which are valid css
    * idents (custom properties excluded)
@@ -344,7 +344,7 @@ export class ShadowCss {
    * semicolon or the end of the string
    */
   private _animationDeclarationKeyframesRe =
-    /(^|\s+)(?:(?:(['"])((?:\\\\|\\\2|(?!\2).)+)\2)|(-?[A-Za-z][\w\-]*))(?=[,\s]|$)/g;
+    /(^|\s+|,)(?:(?:(['"])((?:\\\\|\\\2|(?!\2).)+)\2)|(-?[A-Za-z][\w\-]*))(?=[,\s]|$)/g;
 
   /**
    * Scope an animation rule so that the keyframes mentioned in such rule
@@ -364,7 +364,7 @@ export class ShadowCss {
     unscopedKeyframesSet: ReadonlySet<string>,
   ): CssRule {
     let content = rule.content.replace(
-      /((?:^|\s+|;)(?:-webkit-)?animation(?:\s*):(?:\s*))([^;]+)/g,
+      /((?:^|\s+|;)(?:-webkit-)?animation\s*:\s*),*([^;]+)/g,
       (_, start, animationDeclarations) =>
         start +
         animationDeclarations.replace(

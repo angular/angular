@@ -31,6 +31,9 @@ import {
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
   ɵRuntimeError as RuntimeError,
+  Injector,
+  ElementRef,
+  ViewChild,
 } from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {
@@ -4113,6 +4116,101 @@ describe('@defer', () => {
         `<child-cmp>Token A: ${tokenA} | Token B: ${tokenB}</child-cmp>`,
       );
     });
+
+    it(
+      'should provide access to tokens from a parent component ' +
+        'for components instantiated via `createComponent` call (when a corresponding NodeInjector is used in the call), ' +
+        'but attached to the ApplicationRef',
+      async () => {
+        const TokenA = new InjectionToken('A');
+        const TokenB = new InjectionToken('B');
+
+        @NgModule({
+          providers: [{provide: TokenB, useValue: 'TokenB value'}],
+        })
+        class MyModule {}
+
+        @Component({
+          selector: 'lazy',
+          standalone: true,
+          imports: [MyModule],
+          template: `
+          Lazy Component! Token: {{ token }}
+        `,
+        })
+        class Lazy {
+          token = inject(TokenA);
+        }
+
+        @Component({
+          standalone: true,
+          imports: [Lazy],
+          template: `
+          @defer (on immediate) {
+            <lazy />
+          }
+        `,
+        })
+        class Dialog {}
+
+        @Component({
+          standalone: true,
+          selector: 'app-root',
+          providers: [{provide: TokenA, useValue: 'TokenA from RootCmp'}],
+          template: `
+          <div #container></div>
+        `,
+        })
+        class RootCmp {
+          injector = inject(Injector);
+          appRef = inject(ApplicationRef);
+          envInjector = inject(EnvironmentInjector);
+          @ViewChild('container', {read: ElementRef}) container!: ElementRef;
+
+          openModal() {
+            const hostElement = this.container.nativeElement;
+            const componentRef = createComponent(Dialog, {
+              hostElement,
+              elementInjector: this.injector,
+              environmentInjector: this.envInjector,
+            });
+            this.appRef.attachView(componentRef.hostView);
+            componentRef.changeDetectorRef.detectChanges();
+          }
+        }
+
+        const deferDepsInterceptor = {
+          intercept() {
+            return () => {
+              return [dynamicImportOf(Lazy)];
+            };
+          },
+        };
+
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          ],
+          deferBlockBehavior: DeferBlockBehavior.Playthrough,
+        });
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+
+        fixture.componentInstance.openModal();
+
+        // The call above instantiates a component that uses a `@defer` block,
+        // so we need to wait for dynamic imports to complete.
+        await allPendingDynamicImports();
+        fixture.detectChanges();
+
+        // Verify that tokens from parent components are available for injection
+        // inside a component within a `@defer` block.
+        expect(fixture.nativeElement.innerHTML).toContain(
+          `<lazy> Lazy Component! Token: TokenA from RootCmp </lazy>`,
+        );
+      },
+    );
   });
 
   describe('NgModules', () => {
