@@ -1674,6 +1674,48 @@ describe('control flow migration', () => {
       );
     });
 
+    it('should migrate if/else with let variable in wrong place with no semicolons', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          user$ = of({ name: 'Jane' }})
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<div>`,
+          `<div *ngIf="user of users; let tooltipContent else noUserBlock">{{ user.name }}</div>`,
+          `<ng-template #noUserBlock>No user</ng-template>`,
+          `</div>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe(
+        [
+          `<div>`,
+          `  @if (user of users; as tooltipContent) {`,
+          `    <div>{{ user.name }}</div>`,
+          `  } @else {`,
+          `    No user`,
+          `  }`,
+          `</div>`,
+        ].join('\n'),
+      );
+    });
+
     it('should migrate if/then/else with alias', async () => {
       writeFile(
         '/comp.ts',
