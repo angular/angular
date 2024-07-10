@@ -474,6 +474,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Performance',
         children: [
           {
+            label: 'Overview',
+            path: 'guide/performance',
+            contentPath: 'guide/performance/overview',
+          },
+          {
             label: 'Deferrable views',
             path: 'guide/defer',
             contentPath: 'guide/defer',
