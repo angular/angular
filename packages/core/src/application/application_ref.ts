@@ -37,7 +37,7 @@ import {isStandalone} from '../render3/definition';
 import {ChangeDetectionMode, detectChangesInternal} from '../render3/instructions/change_detection';
 import {FLAGS, LView, LViewFlags} from '../render3/interfaces/view';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
-import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
+import {removeLViewOnDestroy, requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
 import {isPromise} from '../util/lang';
@@ -311,6 +311,23 @@ export class ApplicationRef {
   private readonly afterRenderEffectManager = inject(AfterRenderEventManager);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
 
+  /**
+   * Current dirty state of the application across a number of dimensions (views, afterRender hooks,
+   * etc).
+   *
+   * A flag set here means that `tick()` will attempt to resolve the dirtiness when executed.
+   *
+   * @internal
+   */
+  dirtyFlags = ApplicationRefDirtyFlags.None;
+
+  /**
+   * Like `dirtyFlags` but don't cause `tick()` to loop.
+   *
+   * @internal
+   */
+  deferredDirtyFlags = ApplicationRefDirtyFlags.None;
+
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
   private externalTestViews: Set<InternalViewRef<unknown>> = new Set();
@@ -557,11 +574,14 @@ export class ApplicationRef {
    * detection pass during which all change detection must complete.
    */
   tick(): void {
-    this._tick(true);
+    if (!this.zonelessEnabled) {
+      this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
+    }
+    this._tick();
   }
 
   /** @internal */
-  _tick(refreshViews: boolean): void {
+  _tick(): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     if (this._runningTick) {
       throw new RuntimeError(
@@ -573,8 +593,7 @@ export class ApplicationRef {
     const prevConsumer = setActiveConsumer(null);
     try {
       this._runningTick = true;
-
-      this.detectChangesInAttachedViews(refreshViews);
+      this.synchronize();
 
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
         for (let view of this._views) {
@@ -591,49 +610,23 @@ export class ApplicationRef {
     }
   }
 
-  private detectChangesInAttachedViews(refreshViews: boolean) {
+  /**
+   * Performs the core work of synchronizing the application state with the UI, resolving any
+   * pending dirtiness (potentially in a loop).
+   */
+  private synchronize(): void {
     let rendererFactory: RendererFactory2 | null = null;
     if (!(this._injector as R3Injector).destroyed) {
       rendererFactory = this._injector.get(RendererFactory2, null, {optional: true});
     }
 
+    // When beginning synchronization, all deferred dirtiness becomes active dirtiness.
+    this.dirtyFlags |= this.deferredDirtyFlags;
+    this.deferredDirtyFlags = ApplicationRefDirtyFlags.None;
+
     let runs = 0;
-    const afterRenderEffectManager = this.afterRenderEffectManager;
-    while (runs < MAXIMUM_REFRESH_RERUNS) {
-      const isFirstPass = runs === 0;
-      // Some notifications to run a `tick` will only trigger render hooks. so we skip refreshing views the first time through.
-      // After the we execute render hooks in the first pass, we loop while views are marked dirty and should refresh them.
-      if (refreshViews || !isFirstPass) {
-        this.beforeRender.next(isFirstPass);
-        for (let {_lView, notifyErrorHandler} of this._views) {
-          detectChangesInViewIfRequired(
-            _lView,
-            notifyErrorHandler,
-            isFirstPass,
-            this.zonelessEnabled,
-          );
-        }
-      } else {
-        // If we skipped refreshing views above, there might still be unflushed animations
-        // because we never called `detectChangesInternal` on the views.
-        rendererFactory?.begin?.();
-        rendererFactory?.end?.();
-      }
-      runs++;
-
-      afterRenderEffectManager.executeInternalCallbacks();
-      // If we have a newly dirty view after running internal callbacks, recheck the views again
-      // before running user-provided callbacks
-      if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
-        continue;
-      }
-
-      afterRenderEffectManager.execute();
-      // If after running all afterRender callbacks we have no more views that need to be refreshed,
-      // we can break out of the loop
-      if (!this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
-        break;
-      }
+    while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs++ < MAXIMUM_REFRESH_RERUNS) {
+      this.synchronizeOnce(rendererFactory);
     }
 
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && runs >= MAXIMUM_REFRESH_RERUNS) {
@@ -644,6 +637,85 @@ export class ApplicationRef {
             'Ensure views are not calling `markForCheck` on every template execution or ' +
             'that afterRender hooks always mark views for check.',
       );
+    }
+  }
+
+  /**
+   * Perform a single synchronization pass.
+   */
+  private synchronizeOnce(rendererFactory: RendererFactory2 | null): void {
+    // If we happened to loop, deferred dirtiness can be processed as active dirtiness again.
+    this.dirtyFlags |= this.deferredDirtyFlags;
+    this.deferredDirtyFlags = ApplicationRefDirtyFlags.None;
+
+    // First check dirty views, if there are any.
+    if (this.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeAny) {
+      // Change detection on views starts in targeted mode (only check components if they're
+      // marked as dirty) unless global checking is specifically requested via APIs like
+      // `ApplicationRef.tick()` and the `NgZone` integration.
+      const useGlobalCheck = Boolean(this.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeGlobal);
+
+      // Clear the view-related dirty flags.
+      this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeAny;
+
+      // Set the AfterRender bit, as we're checking views and will need to run afterRender hooks.
+      this.dirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
+
+      // Check all potentially dirty views.
+      this.beforeRender.next(useGlobalCheck);
+      for (let {_lView, notifyErrorHandler} of this.allViews) {
+        detectChangesInViewIfRequired(
+          _lView,
+          notifyErrorHandler,
+          useGlobalCheck,
+          this.zonelessEnabled,
+        );
+      }
+
+      // If `markForCheck()` was called during view checking, it will have set the `ViewTreeCheck`
+      // flag. We clear the flag here because, for backwards compatibility, `markForCheck()`
+      // during view checking doesn't cause the view to be re-checked.
+      this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeCheck;
+    } else {
+      // If we skipped refreshing views above, there might still be unflushed animations
+      // because we never called `detectChangesInternal` on the views.
+      rendererFactory?.begin?.();
+      rendererFactory?.end?.();
+    }
+
+    // Even if there were no dirty views, afterRender hooks might still be dirty.
+    if (this.dirtyFlags & ApplicationRefDirtyFlags.AfterRender) {
+      this.dirtyFlags &= ~ApplicationRefDirtyFlags.AfterRender;
+
+      this.afterRenderEffectManager.executeInternalCallbacks();
+
+      // If we have a newly dirty view after running internal callbacks, recheck the views again
+      // before running user-provided callbacks
+      if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
+        // Should be a no-op, but just in case:
+        this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
+        return;
+      }
+
+      this.afterRenderEffectManager.execute();
+
+      if (this.dirtyFlags & ApplicationRefDirtyFlags.AfterRender) {
+        // If an afterRender hook schedules new afterRender hooks, we don't immediately loop, but
+        // instead queue them to run in the next synchronization pass, whenever that is. Therefore
+        // we clear the `AfterRender` bit here, but add it to `deferredDirtyFlags` to be applied
+        // on the next pass.
+        this.dirtyFlags &= ~ApplicationRefDirtyFlags.AfterRender;
+        this.deferredDirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
+      }
+    }
+
+    if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
+      // If after running all afterRender callbacks new views are dirty, ensure we loop back.
+      this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
+    } else {
+      // Even though this flag may be set, none of _our_ views require traversal, and so the
+      // `ApplicationRef` doesn't require any repeated checking.
+      this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeAny;
     }
   }
 
@@ -767,6 +839,35 @@ export function remove<T>(list: T[], el: T): void {
   if (index > -1) {
     list.splice(index, 1);
   }
+}
+
+export const enum ApplicationRefDirtyFlags {
+  None = 0,
+
+  /**
+   * A global change detection round has been requested.
+   */
+  ViewTreeGlobal = 0b00000001,
+
+  /**
+   * Part of the view tree is marked for traversal.
+   */
+  ViewTreeTraversal = 0b00000010,
+
+  /**
+   * Part of the view tree is marked to be checked (dirty).
+   */
+  ViewTreeCheck = 0b00000100,
+
+  /**
+   * Helper for any view tree bit being set.
+   */
+  ViewTreeAny = ViewTreeGlobal | ViewTreeTraversal | ViewTreeCheck,
+
+  /**
+   * After render hooks need to run.
+   */
+  AfterRender = 0b00001000,
 }
 
 let whenStableStore: WeakMap<ApplicationRef, Promise<void>> | undefined;
