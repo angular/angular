@@ -34,7 +34,14 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/core/testing';
+import {
+  ComponentFixture,
+  ComponentFixtureAutoDetect,
+  TestBed,
+  fakeAsync,
+  flush,
+  tick,
+} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
@@ -648,6 +655,47 @@ describe('Angular with zoneless enabled', () => {
 
     (Zone.root as any)._zoneDelegate.handleError = previousHandle;
   });
+
+  it('runs inside fakeAsync zone', fakeAsync(() => {
+    let didRun = false;
+    @Component({standalone: true, template: ''})
+    class App {
+      ngOnInit() {
+        didRun = true;
+      }
+    }
+
+    TestBed.createComponent(App);
+    expect(didRun).toBe(false);
+    tick();
+    expect(didRun).toBe(true);
+
+    didRun = false;
+    TestBed.createComponent(App);
+    expect(didRun).toBe(false);
+    flush();
+    expect(didRun).toBe(true);
+  }));
+
+  it('can run inside fakeAsync zone', fakeAsync(() => {
+    let didRun = false;
+    @Component({standalone: true, template: ''})
+    class App {
+      ngDoCheck() {
+        didRun = true;
+      }
+    }
+
+    // create component runs inside the zone and triggers CD as a result
+    const fixture = TestBed.createComponent(App);
+    didRun = false;
+
+    // schedules change detection
+    fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
+    expect(didRun).toBe(false);
+    tick();
+    expect(didRun).toBe(true);
+  }));
 });
 
 describe('Angular with scheduler and ZoneJS', () => {
@@ -882,4 +930,27 @@ describe('Angular with scheduler and ZoneJS', () => {
     await fixture.whenStable();
     expect(ticks).toBe(1);
   });
+
+  it('can run inside fakeAsync zone', fakeAsync(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection({scheduleInRootZone: false} as any)],
+    });
+    let didRun = false;
+    @Component({standalone: true, template: ''})
+    class App {
+      ngDoCheck() {
+        didRun = true;
+      }
+    }
+
+    // create component runs inside the zone and triggers CD as a result
+    const fixture = TestBed.createComponent(App);
+    didRun = false;
+
+    // schedules change detection
+    fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
+    expect(didRun).toBe(false);
+    tick();
+    expect(didRun).toBe(true);
+  }));
 });

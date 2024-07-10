@@ -654,6 +654,9 @@
     "name": "SAFE_URL_PATTERN"
   },
   {
+    "name": "SCHEDULE_IN_ROOT_ZONE"
+  },
+  {
     "name": "SEGMENT_RE"
   },
   {
