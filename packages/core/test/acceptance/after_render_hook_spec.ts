@@ -1383,7 +1383,7 @@ describe('after render hooks', () => {
       const fixture = TestBed.createComponent(TestCmp);
       const appRef = TestBed.inject(ApplicationRef);
       appRef.attachView(fixture.componentRef.hostView);
-      await firstValueFrom(appRef.isStable.pipe(filter((stable) => stable)));
+      await appRef.whenStable();
       expect(fixture.nativeElement.innerText).toBe('1');
     });
 

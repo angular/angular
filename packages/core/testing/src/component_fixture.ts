@@ -25,7 +25,6 @@ import {
   ɵPendingTasks as PendingTasks,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
-import {first} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
@@ -136,13 +135,10 @@ export abstract class ComponentFixture<T> {
 
     return new Promise((resolve, reject) => {
       this.appErrorHandler.whenStableRejectFunctions.add(reject);
-      this._appRef.isStable
-        .pipe(first((stable) => stable))
-        .toPromise()
-        .then((v) => {
-          this.appErrorHandler.whenStableRejectFunctions.delete(reject);
-          resolve(v);
-        });
+      this._appRef.whenStable().then(() => {
+        this.appErrorHandler.whenStableRejectFunctions.delete(reject);
+        resolve(true);
+      });
     });
   }
 

@@ -203,7 +203,7 @@ describe('EventEmitter', () => {
       },
     });
     emitter.emit(1);
-    await firstValueFrom(TestBed.inject(ApplicationRef).isStable.pipe(filter((stable) => stable)));
+    await TestBed.inject(ApplicationRef).whenStable();
     expect(emitValue!).toBeDefined();
     expect(emitValue!).toEqual(1);
   });

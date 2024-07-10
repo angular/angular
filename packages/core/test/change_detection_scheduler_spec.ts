@@ -277,8 +277,8 @@ describe('Angular with zoneless enabled', () => {
       expect(fixture.nativeElement.innerText).toEqual('');
     });
 
-    function whenStable(applicationRef = TestBed.inject(ApplicationRef)): Promise<boolean> {
-      return firstValueFrom(applicationRef.isStable.pipe(filter((stable) => stable)));
+    function whenStable(): Promise<void> {
+      return TestBed.inject(ApplicationRef).whenStable();
     }
 
     it(
@@ -316,14 +316,14 @@ describe('Angular with zoneless enabled', () => {
           ],
         });
         const appViewRef = (applicationRef as any)._views[0] as {context: App; rootNodes: any[]};
-        await whenStable(applicationRef);
+        await applicationRef.whenStable();
 
         const component2 = createComponent(DynamicCmp, {
           environmentInjector: applicationRef.injector,
         });
         appViewRef.context.viewContainer.insert(component2.hostView);
         expect(isStable(applicationRef.injector)).toBe(false);
-        await whenStable(applicationRef);
+        await applicationRef.whenStable();
         component2.destroy();
 
         // destroying the view synchronously removes element from DOM when not using animations
@@ -333,7 +333,7 @@ describe('Angular with zoneless enabled', () => {
 
         let checkCountBeforeStable = doCheckCount;
         let renderCountBeforeStable = renderHookCalls;
-        await whenStable(applicationRef);
+        await applicationRef.whenStable();
         // The view should not have refreshed
         expect(doCheckCount).toEqual(checkCountBeforeStable);
         // but render hooks should have run
