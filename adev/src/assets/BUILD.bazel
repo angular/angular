@@ -20,6 +20,7 @@ copy_to_directory(
         "//adev/src/content/guide/http",
         "//adev/src/content/guide/i18n",
         "//adev/src/content/guide/ngmodules",
+        "//adev/src/content/guide/performance",
         "//adev/src/content/guide/pipes",
         "//adev/src/content/guide/routing",
         "//adev/src/content/guide/signals",
