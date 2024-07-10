@@ -1,3 +1,20 @@
+<a name="18.0.7"></a>
+# 18.0.7 (2024-07-10)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [85f77b5cda](https://github.com/angular/angular/commit/85f77b5cda26cefa322e232b4336ae965279f72b) | fix | fix CSS animation rule scope ([#56800](https://github.com/angular/angular/pull/56800)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [95d7076d1a](https://github.com/angular/angular/commit/95d7076d1a8c3d0d9544ca7091e78af11cd963b6) | perf | execute `fetch` outside of Angular zone ([#56820](https://github.com/angular/angular/pull/56820)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d6fff45e73](https://github.com/angular/angular/commit/d6fff45e735044612795ae37cf62968bdb0758dd) | fix | Fix cf migration let condition semicolon order ([#56913](https://github.com/angular/angular/pull/56913)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.6"></a>
 # 18.0.6 (2024-07-03)
 ### common
