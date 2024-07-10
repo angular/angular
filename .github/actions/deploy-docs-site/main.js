@@ -11344,6 +11344,9 @@ function getCredentialFilePath() {
   }
   return credentialFilePath;
 }
+var githubReleaseTrainReadToken = (0, import_core.getInput)("githubReleaseTrainReadToken", {
+  required: true
+});
 
 // 
 async function deployToFirebase(deployment, configPath, distDirPath) {
@@ -12977,7 +12980,7 @@ AuthenticatedGitClient._authenticatedInstance = null;
 
 // 
 async function getDeployments() {
-  const { github } = await GitClient.get();
+  const { github } = await AuthenticatedGitClient.get();
   const releaseTrains = await ActiveReleaseTrains.fetch({
     api: github,
     name: "angular",
@@ -13033,6 +13036,7 @@ async function deployDocs() {
       owner: "angular"
     }
   });
+  AuthenticatedGitClient.configure(githubReleaseTrainReadToken);
   if (import_github3.context.eventName !== "push") {
     throw Error();
   }
