@@ -13,5 +13,5 @@ import {ClassDeclaration} from '../../../reflection';
  * marked for JIT compilation and are skipping compilation by trait handlers.
  */
 export class JitDeclarationRegistry {
-  jitDeclarations: ClassDeclaration[] = [];
+  jitDeclarations = new Set<ClassDeclaration>();
 }

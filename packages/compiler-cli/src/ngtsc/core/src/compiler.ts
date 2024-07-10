@@ -819,13 +819,15 @@ export class NgCompiler {
 
     // If there are JIT declarations, wire up the JIT transform and efficiently
     // run it against the target declarations.
-    if (
-      compilation.supportJitMode &&
-      compilation.jitDeclarationRegistry.jitDeclarations.length > 0
-    ) {
+    if (compilation.supportJitMode && compilation.jitDeclarationRegistry.jitDeclarations.size > 0) {
       const {jitDeclarations} = compilation.jitDeclarationRegistry;
-      const jitDeclarationsSet = new Set(jitDeclarations.map((d) => ts.getOriginalNode(d)));
-      const sourceFilesWithJit = new Set(jitDeclarations.map((d) => d.getSourceFile().fileName));
+      const jitDeclarationsArray = Array.from(jitDeclarations);
+      const jitDeclarationOriginalNodes = new Set(
+        jitDeclarationsArray.map((d) => ts.getOriginalNode(d)),
+      );
+      const sourceFilesWithJit = new Set(
+        jitDeclarationsArray.map((d) => d.getSourceFile().fileName),
+      );
 
       before.push((ctx) => {
         const reflectionHost = new TypeScriptReflectionHost(this.inputProgram.getTypeChecker());
@@ -835,7 +837,7 @@ export class NgCompiler {
           (node) => {
             // Class may be synthetic at this point due to Ivy transform.
             node = ts.getOriginalNode(node, ts.isClassDeclaration);
-            return reflectionHost.isClass(node) && jitDeclarationsSet.has(node);
+            return reflectionHost.isClass(node) && jitDeclarationOriginalNodes.has(node);
           },
         )(ctx);
 

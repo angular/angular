@@ -416,7 +416,7 @@ export class ComponentDecoratorHandler
     // set `jit: true`. In this case, compilation of the decorator is skipped. Returning
     // an empty object signifies that no analysis was produced.
     if (directiveResult.jitForced) {
-      this.jitDeclarationRegistry.jitDeclarations.push(node);
+      this.jitDeclarationRegistry.jitDeclarations.add(node);
       return {};
     }
 
