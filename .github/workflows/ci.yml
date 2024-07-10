@@ -197,5 +197,6 @@ jobs:
         uses: ./.github/actions/deploy-docs-site
         with:
           serviceKey: ${{ secrets.ANGULAR_DEV_SITE_DEPLOY }}
+          githubReleaseTrainReadToken: ${{ secrets.DOCS_DEPLOY_GITHUB_RELEASE_TRAIN_TOKEN }}
           configPath: 'adev/firebase.json'
           distDir: 'dist/bin/adev/build/browser'

@@ -2,7 +2,8 @@ import {getInput, setFailed} from '@actions/core';
 import {context} from '@actions/github';
 import {deployToFirebase, setupRedirect} from './deploy';
 import {getDeployments} from './deployments';
-import {GithubConfig, setConfig} from '@angular/ng-dev';
+import {AuthenticatedGitClient, GithubConfig, setConfig} from '@angular/ng-dev';
+import {githubReleaseTrainReadToken} from './credential';
 
 const refMatcher = /refs\/heads\/(.*)/;
 
@@ -14,6 +15,9 @@ async function deployDocs() {
       owner: 'angular',
     },
   });
+
+  AuthenticatedGitClient.configure(githubReleaseTrainReadToken);
+
   if (context.eventName !== 'push') {
     throw Error();
   }
