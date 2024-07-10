@@ -8,7 +8,7 @@
 
 import {Subscription} from 'rxjs';
 
-import {ApplicationRef} from '../../application/application_ref';
+import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
 import {Injectable} from '../../di/injectable';
 import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders} from '../../di/interface/provider';
@@ -74,7 +74,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     (inject(SCHEDULE_IN_ROOT_ZONE, {optional: true}) ?? false);
 
   private cancelScheduledCallback: null | (() => void) = null;
-  private shouldRefreshViews = false;
   private useMicrotaskScheduler = false;
   runningTick = false;
   pendingRenderTaskId: number | null = null;
@@ -124,13 +123,16 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       return;
     }
     switch (source) {
+      case NotificationSource.MarkAncestorsForTraversal: {
+        this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
+        break;
+      }
       case NotificationSource.DebugApplyChanges:
       case NotificationSource.DeferBlockStateUpdate:
-      case NotificationSource.MarkAncestorsForTraversal:
       case NotificationSource.MarkForCheck:
       case NotificationSource.Listener:
       case NotificationSource.SetInput: {
-        this.shouldRefreshViews = true;
+        this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeCheck;
         break;
       }
       case NotificationSource.ViewDetachedFromDOM:
@@ -141,6 +143,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         // These notifications only schedule a tick but do not change whether we should refresh
         // views. Instead, we only need to run render hooks unless another notification from the
         // other set is also received before `tick` happens.
+        this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
       }
     }
 
@@ -162,12 +165,10 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       : scheduleCallbackWithRafRace;
     this.pendingRenderTaskId = this.taskService.add();
     if (this.scheduleInRootZone) {
-      this.cancelScheduledCallback = Zone.root.run(() =>
-        scheduleCallback(() => this.tick(this.shouldRefreshViews)),
-      );
+      this.cancelScheduledCallback = Zone.root.run(() => scheduleCallback(() => this.tick()));
     } else {
       this.cancelScheduledCallback = this.ngZone.runOutsideAngular(() =>
-        scheduleCallback(() => this.tick(this.shouldRefreshViews)),
+        scheduleCallback(() => this.tick()),
       );
     }
   }
@@ -202,7 +203,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
    * @param shouldRefreshViews Passed directly to `ApplicationRef._tick` and skips straight to
    *     render hooks when `false`.
    */
-  private tick(shouldRefreshViews: boolean): void {
+  private tick(): void {
     // When ngZone.run below exits, onMicrotaskEmpty may emit if the zone is
     // stable. We want to prevent double ticking so we track whether the tick is
     // already running and skip it if so.
@@ -215,7 +216,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       this.ngZone.run(
         () => {
           this.runningTick = true;
-          this.appRef._tick(shouldRefreshViews);
+          this.appRef._tick();
         },
         undefined,
         this.schedulerTickApplyArgs,
@@ -244,7 +245,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   }
 
   private cleanup() {
-    this.shouldRefreshViews = false;
     this.runningTick = false;
     this.cancelScheduledCallback?.();
     this.cancelScheduledCallback = null;
