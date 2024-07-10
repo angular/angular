@@ -1,0 +1,62 @@
+{
+  "cli-hello-world": {
+    "uncompressed": {
+      "main": 132425,
+      "polyfills": 33792
+    }
+  },
+  "cli-hello-world-ivy-i18n": {
+    "uncompressed": {
+      "main": 130590,
+      "polyfills": 34676
+    }
+  },
+  "cli-hello-world-lazy": {
+    "uncompressed": {
+      "main": 108611,
+      "polyfills": 34169,
+      "lazy.routes": 388
+    }
+  },
+  "forms": {
+    "uncompressed": {
+      "main": 176726,
+      "polyfills": 33772
+    }
+  },
+  "animations": {
+    "uncompressed": {
+      "main": 143167,
+      "polyfills": 34023,
+      "open-close.component": 1190
+    }
+  },
+  "animations-async": {
+    "uncompressed": {
+      "main": 86540,
+      "polyfills": 33782,
+      "browser": 63949,
+      "open-close.component": 1218
+    }
+  },
+  "standalone-bootstrap": {
+    "uncompressed": {
+      "main": 89354,
+      "polyfills": 33802
+    }
+  },
+  "defer": {
+    "uncompressed": {
+      "main": 12148,
+      "polyfills": 33807,
+      "defer.component": 371
+    }
+  },
+  "platform-server-hydration/browser": {
+    "uncompressed": {
+      "main": 207890,
+      "polyfills": 33807,
+      "event-dispatch-contract.min": 648
+    }
+  }
+}

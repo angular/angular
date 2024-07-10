@@ -1,0 +1,7 @@
+@if (currentSelectedElement) {
+  @for (directive of getCurrentDirectives(); track $index) {
+    <div class="explorer-panel">
+      <ng-property-view (inspect)="inspect.emit($event)" (viewSource)="viewSource.emit(directive)" [directive]="directive" />
+    </div>
+  }
+}

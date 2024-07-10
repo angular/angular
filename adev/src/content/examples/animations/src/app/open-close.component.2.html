@@ -1,0 +1,12 @@
+<!-- #docplaster -->
+<nav>
+  <button type="button" (click)="toggle()">Toggle Boolean/Close</button>
+</nav>
+
+<!-- #docregion trigger-boolean -->
+<div [@openClose]="isOpen ? true : false" class="open-close-container">
+<!-- #enddocregion trigger-boolean -->
+  <p>The box is now {{ isOpen ? 'Open' : 'Closed' }}!</p>
+<!-- #docregion trigger-boolean -->
+</div>
+<!-- #enddocregion trigger-boolean -->

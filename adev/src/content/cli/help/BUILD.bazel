@@ -1,0 +1,24 @@
+load("@npm//@angular/build-tooling/bazel/api-gen/rendering:render_api_to_html.bzl", "render_api_to_html")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["build-info.json"])
+
+filegroup(
+    name = "help",
+    srcs = glob(
+        ["*"],
+        exclude = [
+            # Exlucde build-info.json as it is not a help entry.
+            "build-info.json",
+            "BUILD.bazel",
+        ],
+    ),
+)
+
+render_api_to_html(
+    name = "cli_docs",
+    srcs = [
+        ":help",
+    ],
+)

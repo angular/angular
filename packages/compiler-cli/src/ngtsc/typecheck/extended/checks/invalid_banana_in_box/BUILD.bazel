@@ -1,0 +1,17 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "invalid_banana_in_box",
+    srcs = ["index.ts"],
+    visibility = [
+        "//packages/compiler-cli/src/ngtsc:__subpackages__",
+        "//packages/compiler-cli/test/ngtsc:__pkg__",
+    ],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
+        "@npm//typescript",
+    ],
+)

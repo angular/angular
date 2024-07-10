@@ -1,0 +1,10 @@
+{
+  "description": "Two-way binding",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["Two-way binding"]
+}

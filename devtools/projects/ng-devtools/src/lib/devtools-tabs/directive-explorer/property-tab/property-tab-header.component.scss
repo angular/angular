@@ -1,0 +1,45 @@
+.element-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  font-size: 11px;
+
+  .component-name {
+    margin-left: 10px;
+    font-weight: 700;
+    line-height: 25px;
+  }
+
+  .element-name {
+    margin-left: 10px;
+    line-height: 25px;
+    font-weight: 700;
+  }
+}
+
+::ng-deep {
+  .property-tab-header {
+    mat-expansion-panel {
+      border-radius: unset !important;
+    }
+
+    &.mat-accordion {
+      .mat-expansion-panel {
+        .mat-expansion-panel-header {
+          padding: 0;
+
+          .mat-expansion-panel-header-title {
+            margin-right: 0;
+          }
+        }
+
+        .mat-expansion-panel-content {
+          .mat-expansion-panel-body {
+            padding: 0;
+          }
+        }
+      }
+    }
+  }
+}

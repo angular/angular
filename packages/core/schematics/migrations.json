@@ -1,0 +1,19 @@
+{
+  "schematics": {
+    "invalid-two-way-bindings": {
+      "version": "18.0.0",
+      "description": "Updates two-way bindings that have an invalid expression to use the longform expression instead.",
+      "factory": "./migrations/invalid-two-way-bindings/bundle"
+    },
+    "migration-http-providers": {
+      "version": "18.0.0",
+      "description": "Replace deprecated HTTP related modules with provider functions",
+      "factory": "./migrations/http-providers/bundle"
+    },
+    "migration-after-render-phase": {
+      "version": "18.1.0",
+      "description": "Updates calls to afterRender with an explicit phase to the new API",
+      "factory": "./migrations/after-render-phase/bundle"
+    }
+  }
+}

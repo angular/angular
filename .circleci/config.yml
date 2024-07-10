@@ -1,0 +1,16 @@
+# This config is remaining in place to prevent pull requests failing because of CircleCI config missing.
+
+version: 2.1
+
+jobs:
+  pass:
+    docker:
+      - image: cimg/base:2022.05
+    steps:
+      - run: echo "This too shall pass (always)"
+
+workflows:
+  version: 2
+  default_workflow:
+    jobs:
+      - pass

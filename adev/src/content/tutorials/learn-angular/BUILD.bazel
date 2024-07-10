@@ -1,0 +1,21 @@
+load("@npm//@angular/docs:index.bzl", "generate_guides", "generate_tutorial")
+
+package(default_visibility = ["//adev:__subpackages__"])
+
+generate_guides(
+    name = "learn-angular-guides",
+    srcs = glob(["**/*.md"]),
+)
+
+filegroup(
+    name = "files",
+    srcs = glob(
+        ["**/*"],
+        exclude = ["**/*.md"],
+    ),
+)
+
+generate_tutorial(
+    name = "learn-angular",
+    tutorial_srcs = ":files",
+)
