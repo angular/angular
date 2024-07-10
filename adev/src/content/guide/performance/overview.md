@@ -8,8 +8,8 @@ That said, please note that these best practices will only take the performance 
 
 | Guides Types                              | Description                                                                                                |
 | :---------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
-| [Deferrable views](/defer)                | Defer loading of select dependencies within a template by wrapping corresponding parts in a `@defer` block.                                                    |
-| [Image optimization](/image-optimization) | Use the `NgOptimizedImage` directive to adopt best practices for loading images.                            |
-| [Server-side rendering](/ssr)             | Learn how to leverage rendering pages on the server to improve load times.                                 |
-| [Build-time prerendering](/prerendering)  | Also known as static-side generation (SSG), is an alternate rendering method to improve load times.           |
-| [Hydration](/hydration)                   | A process to improve application performance by restoring its state after server-side rendering and reusing existing DOM structure as much as possible. |
+| [Deferrable views](/guide/defer)                | Defer loading of select dependencies within a template by wrapping corresponding parts in a `@defer` block.                                                    |
+| [Image optimization](/guide/image-optimization) | Use the `NgOptimizedImage` directive to adopt best practices for loading images.                            |
+| [Server-side rendering](/guide/ssr)             | Learn how to leverage rendering pages on the server to improve load times.                                 |
+| [Build-time prerendering](/guide/prerendering)  | Also known as static-side generation (SSG), is an alternate rendering method to improve load times.           |
+| [Hydration](/guide/hydration)                   | A process to improve application performance by restoring its state after server-side rendering and reusing existing DOM structure as much as possible. |
