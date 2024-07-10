@@ -1,3 +1,16 @@
+<a name="18.2.0-next.0"></a>
+# 18.2.0-next.0 (2024-07-10)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c8e2885136](https://github.com/angular/angular/commit/c8e2885136b08981333a336b7b2ba553266eba63) | feat | Add extended diagnostic to warn when there are uncalled functions in event bindings ([#56295](https://github.com/angular/angular/pull/56295)) ([#56295](https://github.com/angular/angular/pull/56295)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5dcdbfcba9](https://github.com/angular/angular/commit/5dcdbfcba934a930468aec140a7183b034466bdf) | fix | rename the equality function option in toSignal ([#56769](https://github.com/angular/angular/pull/56769)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.1.0"></a>
 # 18.1.0 (2024-07-10)
 ### common
