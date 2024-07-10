@@ -55,29 +55,22 @@ import {
  *
  * Simple
  * ```
- * <ng-container *ngComponentOutlet="componentTypeExpression"></ng-container>
+ * <ng-container *ngComponentOutlet="componentTypeExpression"/>
  * ```
  *
  * With inputs
  * ```
- * <ng-container *ngComponentOutlet="componentTypeExpression;
- *                                   inputs: inputsExpression;">
- * </ng-container>
+ * <ng-container *ngComponentOutlet="componentTypeExpression; inputs: inputsExpression;"/>
  * ```
  *
  * Customized injector/content
  * ```
- * <ng-container *ngComponentOutlet="componentTypeExpression;
- *                                   injector: injectorExpression;
- *                                   content: contentNodesExpression;">
- * </ng-container>
+ * <ng-container *ngComponentOutlet="componentTypeExpression; injector: injectorExpression; content: contentNodesExpression;"/>
  * ```
  *
  * Customized NgModule reference
  * ```
- * <ng-container *ngComponentOutlet="componentTypeExpression;
- *                                   ngModule: ngModuleClass;">
- * </ng-container>
+ * <ng-container *ngComponentOutlet="componentTypeExpression; ngModule: ngModuleClass;"/>
  * ```
  *
  * ### A simple example
