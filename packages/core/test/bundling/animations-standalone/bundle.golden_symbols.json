@@ -459,6 +459,9 @@
     "name": "RuntimeError"
   },
   {
+    "name": "SCHEDULE_IN_ROOT_ZONE"
+  },
+  {
     "name": "SELF_TOKEN_REGEX"
   },
   {
