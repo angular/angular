@@ -13,3 +13,8 @@ export function getCredentialFilePath(): string {
   }
   return credentialFilePath;
 }
+
+/** Github access token. Used for querying the active release trains. */
+export const githubReleaseTrainReadToken: string = getInput('githubReleaseTrainReadToken', {
+  required: true,
+});
