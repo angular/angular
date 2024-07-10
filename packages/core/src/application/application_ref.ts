@@ -12,7 +12,7 @@ import {
   setActiveConsumer,
   setThrowInvalidWriteToSignalError,
 } from '@angular/core/primitives/signals';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
@@ -346,6 +346,24 @@ export class ApplicationRef {
   public readonly isStable: Observable<boolean> = inject(PendingTasks).hasPendingTasks.pipe(
     map((pending) => !pending),
   );
+
+  /**
+   * @returns A promise that resolves when the application becomes stable
+   */
+  whenStable(): Promise<void> {
+    let subscription: Subscription;
+    return new Promise<void>((resolve) => {
+      subscription = this.isStable.subscribe({
+        next: (stable) => {
+          if (stable) {
+            resolve();
+          }
+        },
+      });
+    }).finally(() => {
+      subscription.unsubscribe();
+    });
+  }
 
   private readonly _injector = inject(EnvironmentInjector);
   /**

@@ -137,6 +137,8 @@ export class ApplicationRef {
     tick(): void;
     get viewCount(): number;
     // (undocumented)
+    whenStable(): Promise<void>;
+    // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ApplicationRef, never>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<ApplicationRef>;

@@ -30,8 +30,7 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
     let swRegisterSpy: jasmine.Spy;
 
     const untilStable = () => {
-      const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
-      return appRef.isStable.pipe(filter(Boolean), take(1)).toPromise();
+      return TestBed.inject(ApplicationRef).whenStable();
     };
 
     beforeEach(
@@ -170,6 +169,7 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
                   provide: ApplicationRef,
                   useValue: {
                     isStable: isStableSub.asObservable(),
+                    whenStable: () => isStableSub.pipe(filter(Boolean), take(1)),
                     afterTick: new Subject(),
                     onDestroy: () => {},
                   },
@@ -189,6 +189,7 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
                   provide: ApplicationRef,
                   useValue: {
                     isStable: isStableSub.asObservable(),
+                    whenStable: () => isStableSub.pipe(filter(Boolean), take(1)),
                     afterTick: new Subject(),
                     onDestroy: () => {},
                   },
