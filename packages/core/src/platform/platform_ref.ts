@@ -56,14 +56,15 @@ export class PlatformRef {
     moduleFactory: NgModuleFactory<M>,
     options?: BootstrapOptions,
   ): Promise<NgModuleRef<M>> {
+    const scheduleInRootZone = (options as any)?.scheduleInRootZone;
     const ngZoneFactory = () =>
-      getNgZone(
-        options?.ngZone,
-        getNgZoneOptions({
+      getNgZone(options?.ngZone, {
+        ...getNgZoneOptions({
           eventCoalescing: options?.ngZoneEventCoalescing,
           runCoalescing: options?.ngZoneRunCoalescing,
         }),
-      );
+        scheduleInRootZone,
+      });
     const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
     const allAppProviders = [
       internalProvideZoneChangeDetection({
