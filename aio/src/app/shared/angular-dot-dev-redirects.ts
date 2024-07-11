@@ -24,6 +24,10 @@ const linksMap = new Map<string, string>([
   ['api/common/testing', 'api#common-testing'],
   ['api/common/upgrade', 'api#common-upgrade'],
   ['api/core', 'api#core'],
+  ['api/core/for', 'api/core/@for'],
+  ['api/core/if', 'api/core/@if'],
+  ['api/core/switch', 'api/core/@switch'],
+  ['api/core/switch', 'api/core/@defer'],
   ['api/core/rxjs-interop', 'api#core-rxjs-interop'],
   ['api/core/testing', 'api#core-testing'],
   ['api/elements', 'api#elements'],
@@ -266,6 +270,7 @@ const linksMap = new Map<string, string>([
   ['guide/docs-style-guide', 'https://github.com/angular/angular/blob/main/CONTRIBUTING.md'],
   ['guide/localizing-angular', 'https://github.com/angular/angular/blob/main/CONTRIBUTING.md'],
   ['guide/localized-documentation', 'https://github.com/angular/angular/blob/main/CONTRIBUTING.md'],
+  ['cli', 'tools/cli'],
   ['presskit', 'press-kit'],
   ['contribute', 'https://github.com/angular/angular/blob/main/CONTRIBUTING.md'],
 ]);
