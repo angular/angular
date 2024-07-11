@@ -597,7 +597,8 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'adev/**/{.*,*}'
+          'adev/**/{.*,*}',
+          'aio/**/{.*,*}'
           ])
     reviewers:
       users:
