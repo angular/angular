@@ -198,7 +198,7 @@
     "gulp": "^5.0.0",
     "gulp-conventional-changelog": "^5.0.0",
     "husky": "9.0.11",
-    "inquirer": "^9.2.7",
+    "inquirer": "^10.0.0",
     "jsdom": "^24.0.0",
     "karma-coverage": "^2.2.1",
     "karma-jasmine-html-reporter": "^2.1.0",
