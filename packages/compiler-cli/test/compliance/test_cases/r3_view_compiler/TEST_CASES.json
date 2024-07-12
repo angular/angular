@@ -34,6 +34,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle exponentiation operator",
+      "inputFiles": [
+        "exponentiation.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "exponentiation_template.js",
+              "generated": "exponentiation.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

@@ -224,13 +224,14 @@ class _Scanner {
         return this.scanPrivateIdentifier();
       case chars.$PLUS:
       case chars.$MINUS:
-      case chars.$STAR:
       case chars.$SLASH:
       case chars.$PERCENT:
       case chars.$CARET:
         return this.scanOperator(start, String.fromCharCode(peek));
       case chars.$QUESTION:
         return this.scanQuestion(start);
+      case chars.$STAR:
+        return this.scanStar(start);
       case chars.$LT:
       case chars.$GT:
         return this.scanComplexOperator(start, String.fromCharCode(peek), chars.$EQ, '=');
@@ -412,6 +413,17 @@ class _Scanner {
     // Either `a ?? b` or 'a?.b'.
     if (this.peek === chars.$QUESTION || this.peek === chars.$PERIOD) {
       str += this.peek === chars.$PERIOD ? '.' : '?';
+      this.advance();
+    }
+    return newOperatorToken(start, this.index, str);
+  }
+
+  scanStar(start: number): Token {
+    this.advance();
+    let str: string = '*';
+    // Either `a * b` or 'a ** b'.
+    if (this.peek === chars.$STAR) {
+      str += '*';
       this.advance();
     }
     return newOperatorToken(start, this.index, str);

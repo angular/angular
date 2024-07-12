@@ -70,6 +70,7 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
   ['&', ts.SyntaxKind.AmpersandToken],
   ['|', ts.SyntaxKind.BarToken],
   ['??', ts.SyntaxKind.QuestionQuestionToken],
+  ['**', ts.SyntaxKind.AsteriskAsteriskToken],
 ]);
 
 /**

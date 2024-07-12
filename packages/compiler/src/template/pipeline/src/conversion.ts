@@ -28,6 +28,12 @@ export const BINARY_OPERATORS = new Map([
   ['??', o.BinaryOperator.NullishCoalesce],
   ['||', o.BinaryOperator.Or],
   ['+', o.BinaryOperator.Plus],
+  ['**', o.BinaryOperator.Exponentiation],
+]);
+
+export const UNPARENTHESIZED_OPERATORS = new Set([
+  // Exponentiation operators shouldn't be parenthesized since it can change the meaning.
+  o.BinaryOperator.Exponentiation,
 ]);
 
 export function namespaceForKey(namespacePrefixKey: string | null): ir.Namespace {

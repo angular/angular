@@ -329,6 +329,14 @@ describe('lexer', () => {
       expectOperatorToken(lex('??')[0], 0, 2, '??');
     });
 
+    it('should tokenize * as operator', () => {
+      expectOperatorToken(lex('*')[0], 0, 1, '*');
+    });
+
+    it('should tokenize ** as operator', () => {
+      expectOperatorToken(lex('**')[0], 0, 2, '**');
+    });
+
     it('should tokenize number with separator', () => {
       expectNumberToken(lex('123_456')[0], 0, 7, 123_456);
       expectNumberToken(lex('1_000_000_000')[0], 0, 13, 1_000_000_000);

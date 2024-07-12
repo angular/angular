@@ -928,6 +928,7 @@ class _ParseAST {
     while (this.next.type == TokenType.Operator) {
       const operator = this.next.strValue;
       switch (operator) {
+        case '**':
         case '*':
         case '%':
         case '/':

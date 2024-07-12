@@ -110,3 +110,43 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: exponentiation.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.two = 2;
+        this.three = 3;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <span>Four cubed is {{ 4 ** 3 }}</span>
+    <span>{{ two ** three ** 2 }} is smaller than {{ 3 ** 3 ** 2 }}</span>
+    <span>My favorite number is {{ (2 ** 3 ** two + 7 - 3 * 6) / 16 }}</span>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <span>Four cubed is {{ 4 ** 3 }}</span>
+    <span>{{ two ** three ** 2 }} is smaller than {{ 3 ** 3 ** 2 }}</span>
+    <span>My favorite number is {{ (2 ** 3 ** two + 7 - 3 * 6) / 16 }}</span>
+  `,
+                    standalone: true,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: exponentiation.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    two: number;
+    three: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

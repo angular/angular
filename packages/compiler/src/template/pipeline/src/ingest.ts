@@ -27,7 +27,12 @@ import {
   type CompilationJob,
   type ViewCompilationUnit,
 } from './compilation';
-import {BINARY_OPERATORS, namespaceForKey, prefixWithNamespace} from './conversion';
+import {
+  BINARY_OPERATORS,
+  namespaceForKey,
+  prefixWithNamespace,
+  UNPARENTHESIZED_OPERATORS,
+} from './conversion';
 
 const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
 
@@ -1053,6 +1058,7 @@ function convertAst(
       convertAst(ast.right, job, baseSourceSpan),
       undefined,
       convertSourceSpan(ast.span, baseSourceSpan),
+      UNPARENTHESIZED_OPERATORS.has(operator) ? false : undefined,
     );
   } else if (ast instanceof e.ThisReceiver) {
     // TODO: should context expressions have source maps?

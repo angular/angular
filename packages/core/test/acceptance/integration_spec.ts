@@ -2083,6 +2083,28 @@ describe('acceptance integration tests', () => {
     expect(logs).toEqual(['Baggins']);
   });
 
+  it('should handle exponential operators in expressions', () => {
+    @Component({
+      template: `
+        <span>Four cubed is {{ 4 ** 3 }}</span>
+        <span>{{ two ** three ** 2 }} is smaller than {{ 3 ** 3 ** 2 }}</span>
+        <span>My favorite number is {{ (2 ** 3 ** two + 7 - 3 * 6) / 16 }}</span>
+      `,
+      standalone: true,
+    })
+    class App {
+      two = 2;
+      three = 3;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const content = fixture.nativeElement.textContent;
+    expect(content).toContain('Four cubed is 64');
+    expect(content).toContain('512 is smaller than 19683');
+    expect(content).toContain('My favorite number is 31.3125');
+  });
+
   it('should render SVG nodes placed inside ng-template', () => {
     @Component({
       template: `

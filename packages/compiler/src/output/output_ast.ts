@@ -140,6 +140,7 @@ export enum BinaryOperator {
   Bigger,
   BiggerEquals,
   NullishCoalesce,
+  Exponentiation,
 }
 
 export function nullSafeIsEquivalent<T extends {isEquivalent(other: T): boolean}>(
@@ -300,6 +301,16 @@ export abstract class Expression {
   }
   nullishCoalesce(rhs: Expression, sourceSpan?: ParseSourceSpan | null): BinaryOperatorExpr {
     return new BinaryOperatorExpr(BinaryOperator.NullishCoalesce, this, rhs, null, sourceSpan);
+  }
+  exponentiation(rhs: Expression, sourceSpan?: ParseSourceSpan | null): BinaryOperatorExpr {
+    return new BinaryOperatorExpr(
+      BinaryOperator.Exponentiation,
+      this,
+      rhs,
+      null,
+      sourceSpan,
+      false,
+    );
   }
 
   toStmt(): Statement {
