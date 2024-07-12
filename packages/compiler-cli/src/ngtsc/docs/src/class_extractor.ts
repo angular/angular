@@ -272,7 +272,8 @@ class ClassExtractor {
     return (
       !member.name ||
       !this.isDocumentableMember(member) ||
-      !!member.modifiers?.some((mod) => mod.kind === ts.SyntaxKind.PrivateKeyword) ||
+      (!ts.isCallSignatureDeclaration(member) &&
+        member.modifiers?.some((mod) => mod.kind === ts.SyntaxKind.PrivateKeyword)) ||
       member.name.getText() === 'prototype' ||
       isAngularPrivateName(member.name.getText()) ||
       isInternal(member)
@@ -280,8 +281,16 @@ class ClassExtractor {
   }
 
   /** Gets whether a class member is a method, property, or accessor. */
-  private isDocumentableMember(member: ts.Node): member is MethodLike | PropertyLike {
-    return this.isMethod(member) || this.isProperty(member) || ts.isAccessor(member);
+  private isDocumentableMember(
+    member: ts.Node,
+  ): member is MethodLike | PropertyLike | ts.CallSignatureDeclaration {
+    return (
+      this.isMethod(member) ||
+      this.isProperty(member) ||
+      ts.isAccessor(member) ||
+      // Signatures are documentable if they are part of an interface.
+      ts.isCallSignatureDeclaration(member)
+    );
   }
 
   /** Gets whether a member is a property. */
