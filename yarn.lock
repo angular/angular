@@ -453,10 +453,10 @@
     vite "5.3.1"
     watchpack "2.4.1"
 
-"@angular/cdk@18.1.0-next.1":
-  version "18.1.0-next.1"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-18.1.0-next.1.tgz#05bb2b1b9d99cdea775e5f15dbbd8cd5566cf501"
-  integrity sha512-fTE78Q/8pi7wpuOBhnwwGfr8X+GY2pAb5dcRkXAHJqigevkikpsXrWlb0JiWpl0CjwtfNLanWH51NZLx4I5d+A==
+"@angular/cdk@18.1.0":
+  version "18.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-18.1.0.tgz#31333e00094a040df78c680c1241a4d799a6fa97"
+  integrity sha512-GWUyJQ7KdOS0WwQPp7UKnRd7lUKvOrMvktqNWfSxBy/VEdyEeKlXfghk6GQ4u1RXFZ2RU0m1KhX8rY9srYJOwA==
   dependencies:
     tslib "^2.3.0"
   optionalDependencies:
@@ -507,10 +507,10 @@
     marked "~12.0.2"
     mermaid "^10.8.0"
 
-"@angular/material@18.1.0-next.1":
-  version "18.1.0-next.1"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-18.1.0-next.1.tgz#b1ebd0a77b26f8699319d5f3a4c65a6bdc94ce87"
-  integrity sha512-TVMnpwzo4NStnuun4YhqclB6HIRUzjEn1DhoX/8ITJ8/vXIELF0Q8lNCyYBPy+Dhv1UulydPfwpN69CYEu6hBg==
+"@angular/material@18.1.0":
+  version "18.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-18.1.0.tgz#141e0873d8656ff7b9378d52beead88f161fb106"
+  integrity sha512-tL6Qx+E/Q/TaNXec9uuCRNoqK9yjABEraDSbd9WSh2/UYbGlEnE2MaXSha12GKa/l8RRrRYUR7y+v0fIGECBOg==
   dependencies:
     "@material/animation" "15.0.0-canary.7f224ddd4.0"
     "@material/auto-init" "15.0.0-canary.7f224ddd4.0"
