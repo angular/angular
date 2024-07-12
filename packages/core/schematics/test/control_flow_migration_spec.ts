@@ -6243,6 +6243,54 @@ describe('control flow migration', () => {
       expect(actual).toBe(expected);
     });
 
+    it('should not remove common module when second run of migration and common module symbols are found', async () => {
+      writeFile(
+        '/comp.ts',
+        [
+          `import {Component} from '@angular/core';`,
+          `import {CommonModule} from '@angular/common';\n`,
+          `@Component({`,
+          `  standalone: true`,
+          `  selector: 'example-cmp',`,
+          `  templateUrl: './comp.html',`,
+          `  imports: [CommonModule],`,
+          `})`,
+          `export class ExampleCmp {`,
+          `}`,
+        ].join('\n'),
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<div>`,
+          `  @if (state$ | async; as state) {`,
+          `    <div>`,
+          `      <span>Content here {{state}}</span>`,
+          `    </div>`,
+          `  }`,
+          `</div>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {Component} from '@angular/core';`,
+        `import {CommonModule} from '@angular/common';\n`,
+        `@Component({`,
+        `  standalone: true`,
+        `  selector: 'example-cmp',`,
+        `  templateUrl: './comp.html',`,
+        `  imports: [CommonModule],`,
+        `})`,
+        `export class ExampleCmp {`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
     it('should not remove imports when mismatch in counts', async () => {
       writeFile(
         '/comp.ts',
