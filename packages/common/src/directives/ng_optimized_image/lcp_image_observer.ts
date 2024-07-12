@@ -11,6 +11,7 @@ import {
   Injectable,
   OnDestroy,
   ɵformatRuntimeError as formatRuntimeError,
+  PLATFORM_ID,
 } from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
@@ -19,6 +20,7 @@ import {RuntimeErrorCode} from '../../errors';
 import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';
 import {getUrl} from './url';
+import {isPlatformBrowser} from '../../platform_id';
 
 interface ObservedImageState {
   priority: boolean;
@@ -46,9 +48,10 @@ export class LCPImageObserver implements OnDestroy {
   private observer: PerformanceObserver | null = null;
 
   constructor() {
+    const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     assertDevMode('LCP checker');
     const win = inject(DOCUMENT).defaultView;
-    if (typeof win !== 'undefined' && typeof PerformanceObserver !== 'undefined') {
+    if (isBrowser && typeof PerformanceObserver !== 'undefined') {
       this.window = win;
       this.observer = this.initPerformanceObserver();
     }
@@ -107,6 +110,7 @@ export class LCPImageObserver implements OnDestroy {
   }
 
   updateImage(originalSrc: string, newSrc: string) {
+    if (!this.observer) return;
     const originalUrl = getUrl(originalSrc, this.window!).href;
     const img = this.images.get(originalUrl);
     if (img) {

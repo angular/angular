@@ -1360,6 +1360,9 @@ describe('Image directive', () => {
     it(
       'should log a warning if there is no preconnect link for a priority image',
       withHead('', () => {
+        // The warning is only logged on the client
+        if (!isBrowser) return;
+
         setupTestingModule({imageLoader});
 
         const consoleWarnSpy = spyOn(console, 'warn');
@@ -1398,6 +1401,9 @@ describe('Image directive', () => {
     it(
       "should log a warning if there is a preconnect, but it doesn't match the priority image",
       withHead('<link rel="preconnect" href="http://angular.io">', () => {
+        // The warning is only logged on the client
+        if (!isBrowser) return;
+
         setupTestingModule({imageLoader});
 
         const consoleWarnSpy = spyOn(console, 'warn');
@@ -1422,6 +1428,9 @@ describe('Image directive', () => {
       withHead(
         '<link rel="preload" href="https://angular.io/assets/images/logos/angular/angular.svg" as="image">',
         () => {
+          // The warning is only logged on the client
+          if (!isBrowser) return;
+
           setupTestingModule({imageLoader});
 
           const consoleWarnSpy = spyOn(console, 'warn');
