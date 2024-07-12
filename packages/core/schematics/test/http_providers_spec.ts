@@ -475,4 +475,37 @@ describe('Http providers migration', () => {
     expect(content).not.toContain('HttpClientModule');
     expect(content).not.toContain('provideHttpClient');
   });
+
+  it('should not migrate HttClientModule when it is not an import', async () => {
+    writeFile(
+      '/index.ts',
+      `
+        import { HttpClientModule } from '@angular/common/http';
+        import { HttpClientTestingModule } from '@angular/common/http/testing';
+        import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
+
+        import { AppComponent } from './app.component';
+        describe('AppComponent', () => {
+          let fixture: MockedComponentFixture<AppComponent>;
+          beforeEach(() =>
+            MockBuilder(AppComponent).replace(HttpClientModule, HttpClientTestingModule)
+          );
+          beforeEach(() => {
+            fixture = MockRender(AppComponent);
+          });
+          it('should create', () => {
+            expect(fixture.point.componentInstance).toBeDefined();
+          });
+        });
+      `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts');
+    expect(content).toContain(`import { HttpClientModule } from '@angular/common/http';`);
+    expect(content).toContain(
+      `import { HttpClientTestingModule } from '@angular/common/http/testing';`,
+    );
+  });
 });

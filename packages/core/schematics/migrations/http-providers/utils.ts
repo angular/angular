@@ -57,8 +57,25 @@ export function migrateFile(
     ),
   );
 
+  const moduleSymbols = [...commonHttpIdentifiers, ...commonHttpTestingIdentifiers];
+
+  // We count usages so we know if we can remove the import
+  const importUsages = new Map<string, number>(moduleSymbols.map((symbol) => [symbol, 0]));
+
   ts.forEachChild(sourceFile, function visit(node: ts.Node) {
+    if (node.kind === ts.SyntaxKind.ImportSpecifier) {
+      // We don't need to visit the children of an ImportSpecifier
+      // So the Identifier we count are not imports
+      return;
+    }
+
     ts.forEachChild(node, visit);
+    if (node.kind === ts.SyntaxKind.Identifier) {
+      const identifierStr = node.getText();
+      if (moduleSymbols.includes(identifierStr)) {
+        importUsages.set(identifierStr, importUsages.get(identifierStr)! + 1);
+      }
+    }
 
     if (ts.isClassDeclaration(node)) {
       const decorators = getAngularDecorators(typeChecker, ts.getDecorators(node) || []);
@@ -70,6 +87,7 @@ export function migrateFile(
           addedImports,
           changeTracker,
           sourceFile,
+          importUsages,
         );
       });
     }
@@ -80,6 +98,7 @@ export function migrateFile(
       commonHttpTestingIdentifiers,
       addedImports,
       changeTracker,
+      importUsages,
     );
   });
 
@@ -89,7 +108,9 @@ export function migrateFile(
   // Remove the HttpModules imports from common/http
   const commonHttpImports = getNamedImports(sourceFile, COMMON_HTTP);
   if (commonHttpImports) {
-    const symbolImportsToRemove = getImportSpecifiers(sourceFile, COMMON_HTTP, [...HTTP_MODULES]);
+    const symbolImportsToRemove = getImportSpecifiers(sourceFile, COMMON_HTTP, [
+      ...HTTP_MODULES,
+    ]).filter((specifier) => importUsages.get(specifier.getText()) === 0);
 
     const newImports = ts.factory.updateNamedImports(commonHttpImports, [
       ...commonHttpImports.elements.filter((current) => !symbolImportsToRemove.includes(current)),
@@ -116,7 +137,7 @@ export function migrateFile(
   if (commonHttpTestingImports) {
     const symbolImportsToRemove = getImportSpecifiers(sourceFile, COMMON_HTTP_TESTING, [
       ...HTTP_TESTING_MODULES,
-    ]);
+    ]).filter((specifier) => importUsages.get(specifier.getText()) === 0);
 
     const newHttpTestingImports = ts.factory.updateNamedImports(commonHttpTestingImports, [
       ...commonHttpTestingImports.elements.filter(
@@ -148,6 +169,7 @@ function migrateDecorator(
   addedImports: Map<string, Set<string>>,
   changeTracker: ChangeTracker,
   sourceFile: ts.SourceFile,
+  importUsages: Map<string, number>,
 ) {
   // Only @NgModule and @Component support `imports`.
   // Also skip decorators with no arguments.
@@ -206,10 +228,14 @@ function migrateDecorator(
   if (importedModules.client || importedModules.clientTesting) {
     commonHttpAddedImports?.add(WITH_INTERCEPTORS_FROM_DI);
     addedProviders.add(createCallExpression(WITH_INTERCEPTORS_FROM_DI));
+    if (importedModules.client) {
+      importUsages.set(HTTP_CLIENT_MODULE, importUsages.get(HTTP_CLIENT_MODULE)! - 1);
+    }
   }
   if (importedModules.clientJsonp) {
     commonHttpAddedImports?.add(WITH_JSONP_SUPPORT);
     addedProviders.add(createCallExpression(WITH_JSONP_SUPPORT));
+    importUsages.set(HTTP_CLIENT_JSONP_MODULE, importUsages.get(HTTP_CLIENT_JSONP_MODULE)! - 1);
   }
   if (importedModules.xsrf) {
     // HttpClientXsrfModule is the only module with Class methods.
@@ -226,6 +252,7 @@ function migrateDecorator(
         ),
       );
     }
+    importUsages.set(HTTP_CLIENT_XSRF_MODULE, importUsages.get(HTTP_CLIENT_XSRF_MODULE)! - 1);
   }
 
   // Removing the imported Http modules from the imports list
@@ -248,6 +275,7 @@ function migrateDecorator(
     const commonHttpTestingAddedImports = addedImports.get(COMMON_HTTP_TESTING);
     commonHttpTestingAddedImports?.add(PROVIDE_HTTP_CLIENT_TESTING);
     provideHttpClientTestingExpr = createCallExpression(PROVIDE_HTTP_CLIENT_TESTING);
+    importUsages.set(HTTP_CLIENT_TESTING_MODULE, importUsages.get(HTTP_CLIENT_TESTING_MODULE)! - 1);
   }
   const provideHttpExpr = createCallExpression(PROVIDE_HTTP_CLIENT, [...addedProviders]);
   const providersToAppend = provideHttpClientTestingExpr
@@ -287,6 +315,7 @@ function migrateTestingModuleImports(
   commonHttpTestingIdentifiers: Set<string>,
   addedImports: Map<string, Set<string>>,
   changeTracker: ChangeTracker,
+  importUsages: Map<string, number>,
 ) {
   // Look for calls to `TestBed.configureTestingModule` with at least one argument.
   // TODO: this won't work if `TestBed` is aliased or type cast.
@@ -318,6 +347,7 @@ function migrateTestingModuleImports(
   // Does the imports array contain the HttpClientModule?
   const httpClient = importsArray.elements.find((elt) => elt.getText() === HTTP_CLIENT_MODULE);
   if (httpClient && commonHttpIdentifiers.has(HTTP_CLIENT_MODULE)) {
+    importUsages.set(HTTP_CLIENT_MODULE, importUsages.get(HTTP_CLIENT_MODULE)! - 1);
     // We add the imports for provideHttpClient(withInterceptorsFromDi())
     commonHttpAddedImports?.add(PROVIDE_HTTP_CLIENT);
     commonHttpAddedImports?.add(WITH_INTERCEPTORS_FROM_DI);
@@ -366,6 +396,7 @@ function migrateTestingModuleImports(
     commonHttpAddedImports?.add(PROVIDE_HTTP_CLIENT);
     commonHttpAddedImports?.add(WITH_INTERCEPTORS_FROM_DI);
     addedImports.get(COMMON_HTTP_TESTING)?.add(PROVIDE_HTTP_CLIENT_TESTING);
+    importUsages.set(HTTP_CLIENT_TESTING_MODULE, importUsages.get(HTTP_CLIENT_TESTING_MODULE)! - 1);
 
     const newImports = ts.factory.createArrayLiteralExpression([
       ...importsArray.elements.filter((item) => item !== httpClientTesting),
