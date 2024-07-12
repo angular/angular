@@ -76,6 +76,26 @@ runInEachFileSystem(() => {
       expect(propertyEntry.type).toBe('number');
     });
 
+    it('should extract call signatures', () => {
+      env.write(
+        'index.ts',
+        `
+        export interface UserProfile {
+          (name: string): string;
+        }
+      `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      const interfaceEntry = docs[0] as InterfaceEntry;
+      expect(interfaceEntry.members.length).toBe(1);
+
+      const methodEntry = interfaceEntry.members[0] as MethodEntry;
+      expect(methodEntry.memberType).toBe(MemberType.Method);
+      expect(methodEntry.name).toBe('');
+      expect(methodEntry.returnType).toBe('string');
+    });
+
     it('should extract a method with a rest parameter', () => {
       env.write(
         'index.ts',
