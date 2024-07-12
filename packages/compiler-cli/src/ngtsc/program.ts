@@ -293,6 +293,10 @@ export class NgtscProgram implements api.Program {
       }
     }
 
+    // Untag all the files, otherwise TS 5.4 may end up emitting
+    // references to typecheck files (see #56945).
+    untagAllTsFiles(this.tsProgram);
+
     const forceEmit = opts?.forceEmit ?? false;
 
     this.compiler.perfRecorder.memory(PerfCheckpoint.PreEmit);
