@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Element, ParseTreeResult, RecursiveVisitor, Text} from '@angular/compiler';
+import {
+  Attribute,
+  Block,
+  Element,
+  ParseTreeResult,
+  RecursiveVisitor,
+  Text,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {lookupIdentifiersInSourceFile} from './identifier-lookup';
@@ -375,6 +382,14 @@ export class CommonCollector extends RecursiveVisitor {
       }
     }
     super.visitElement(el, null);
+  }
+
+  override visitBlock(ast: Block): void {
+    for (const blockParam of ast.parameters) {
+      if (this.hasPipes(blockParam.expression)) {
+        this.count++;
+      }
+    }
   }
 
   override visitText(ast: Text) {
