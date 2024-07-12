@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ElementRef, inject, NgZone, ViewChild} from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  NgZone,
+  signal,
+  viewChild,
+} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {MatExpansionPanel} from '@angular/material/expansion';
@@ -55,13 +64,14 @@ import {
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InjectorTreeComponent {
-  @ViewChild('svgContainer', {static: false}) private svgContainer!: ElementRef;
-  @ViewChild('mainGroup', {static: false}) private g!: ElementRef;
+  private svgContainer = viewChild.required<ElementRef>('svgContainer');
+  private g = viewChild.required<ElementRef>('mainGroup');
 
-  @ViewChild('elementSvgContainer', {static: false}) private elementSvgContainer!: ElementRef;
-  @ViewChild('elementMainGroup', {static: false}) private elementG!: ElementRef;
+  private elementSvgContainer = viewChild.required<ElementRef>('elementSvgContainer');
+  private elementG = viewChild.required<ElementRef>('elementMainGroup');
 
   private _messageBus = inject(MessageBus) as MessageBus<Events>;
   zone = inject(NgZone);
@@ -71,22 +81,27 @@ export class InjectorTreeComponent {
   rawDirectiveForest: DevToolsNode[] = [];
   injectorTreeGraph!: InjectorTreeVisualizer;
   elementInjectorTreeGraph!: InjectorTreeVisualizer;
-  diDebugAPIsAvailable = false;
+  readonly diDebugAPIsAvailable = signal(false);
   providers: SerializedProviderRecord[] = [];
   elementToEnvironmentPath: Map<string, SerializedInjector[]> = new Map();
 
   hideInjectorsWithNoProviders = false;
   hideFrameworkInjectors = false;
 
-  ngAfterViewInit() {
-    this.setUpEnvironmentInjectorVisualizer();
-    this.setUpElementInjectorVisualizer();
+  constructor() {
+    afterNextRender({
+      write: () => {
+        this.setUpEnvironmentInjectorVisualizer();
+        this.setUpElementInjectorVisualizer();
+        this.init();
+      },
+    });
   }
 
-  ngOnInit() {
+  private init() {
     this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       if (view.forest[0].resolutionPath !== undefined) {
-        this.diDebugAPIsAvailable = true;
+        this.diDebugAPIsAvailable.set(true);
         this.rawDirectiveForest = view.forest;
         this.updateInjectorTreeVisualization(view.forest);
       }
@@ -254,35 +269,32 @@ export class InjectorTreeComponent {
   }
 
   setUpEnvironmentInjectorVisualizer(): void {
-    if (!this.svgContainer?.nativeElement || !this.g?.nativeElement) {
+    const svg = this.svgContainer()?.nativeElement;
+    const g = this.g()?.nativeElement;
+    if (!svg || !g) {
       return;
     }
 
     this.injectorTreeGraph?.cleanup?.();
-    this.injectorTreeGraph = new InjectorTreeVisualizer(
-      this.svgContainer.nativeElement,
-      this.g.nativeElement,
-    );
+    this.injectorTreeGraph = new InjectorTreeVisualizer(svg, g);
   }
 
   setUpElementInjectorVisualizer(): void {
-    if (!this.elementSvgContainer?.nativeElement || !this.elementG?.nativeElement) {
+    const svg = this.elementSvgContainer()?.nativeElement;
+    const g = this.elementG()?.nativeElement;
+    if (!svg || !g) {
       return;
     }
 
     this.elementInjectorTreeGraph?.cleanup?.();
-    this.elementInjectorTreeGraph = new InjectorTreeVisualizer(
-      this.elementSvgContainer.nativeElement,
-      this.elementG.nativeElement,
-      {nodeSeparation: () => 1},
-    );
+    this.elementInjectorTreeGraph = new InjectorTreeVisualizer(svg, g, {nodeSeparation: () => 1});
   }
 
   highlightPathFromSelectedInjector(): void {
-    this.unhighlightAllEdges(this.elementG);
-    this.unhighlightAllNodes(this.elementG);
-    this.unhighlightAllEdges(this.g);
-    this.unhighlightAllNodes(this.g);
+    this.unhighlightAllEdges(this.elementG());
+    this.unhighlightAllNodes(this.elementG());
+    this.unhighlightAllEdges(this.g());
+    this.unhighlightAllNodes(this.g());
 
     this.checkIfSelectedNodeStillExists();
 
@@ -292,22 +304,22 @@ export class InjectorTreeComponent {
 
     if (this.selectedNode.data.injector.type === 'element') {
       const idsToRoot = getInjectorIdsToRootFromNode(this.selectedNode);
-      idsToRoot.forEach((id) => this.highlightNodeById(this.elementG, id));
+      idsToRoot.forEach((id) => this.highlightNodeById(this.elementG(), id));
       const edgeIds = generateEdgeIdsFromNodeIds(idsToRoot);
-      edgeIds.forEach((edgeId) => this.highlightEdgeById(this.elementG, edgeId));
+      edgeIds.forEach((edgeId) => this.highlightEdgeById(this.elementG(), edgeId));
 
       const environmentPath =
         this.elementToEnvironmentPath.get(this.selectedNode.data.injector.id) ?? [];
-      environmentPath.forEach((injector) => this.highlightNodeById(this.g, injector.id));
+      environmentPath.forEach((injector) => this.highlightNodeById(this.g(), injector.id));
       const environmentEdgeIds = generateEdgeIdsFromNodeIds(
         environmentPath.map((injector) => injector.id),
       );
-      environmentEdgeIds.forEach((edgeId) => this.highlightEdgeById(this.g, edgeId));
+      environmentEdgeIds.forEach((edgeId) => this.highlightEdgeById(this.g(), edgeId));
     } else {
       const idsToRoot = getInjectorIdsToRootFromNode(this.selectedNode);
-      idsToRoot.forEach((id) => this.highlightNodeById(this.g, id));
+      idsToRoot.forEach((id) => this.highlightNodeById(this.g(), id));
       const edgeIds = generateEdgeIdsFromNodeIds(idsToRoot);
-      edgeIds.forEach((edgeId) => this.highlightEdgeById(this.g, edgeId));
+      edgeIds.forEach((edgeId) => this.highlightEdgeById(this.g(), edgeId));
     }
   }
 

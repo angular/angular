@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatCard} from '@angular/material/card';
 
@@ -16,13 +16,14 @@ import {MatCard} from '@angular/material/card';
   styleUrls: ['./filter.component.scss'],
   standalone: true,
   imports: [MatCard, MatIcon],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterComponent {
-  @Output() filter: EventEmitter<string> = new EventEmitter<string>();
-  @Output() nextMatched: EventEmitter<void> = new EventEmitter();
-  @Output() prevMatched: EventEmitter<void> = new EventEmitter();
+  readonly filter = output<string>();
+  readonly nextMatched = output<void>();
+  readonly prevMatched = output<void>();
 
-  @Input() hasMatched = false;
+  readonly hasMatched = input(false);
 
   emitFilter(event: InputEvent): void {
     this.filter.emit((event.target as HTMLInputElement).value);

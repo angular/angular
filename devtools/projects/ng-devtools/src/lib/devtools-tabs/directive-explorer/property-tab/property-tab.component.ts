@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
@@ -19,9 +19,10 @@ import {PropertyTabHeaderComponent} from './property-tab-header.component';
   selector: 'ng-property-tab',
   standalone: true,
   imports: [PropertyTabHeaderComponent, PropertyTabBodyComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyTabComponent {
-  @Input({required: true}) currentSelectedElement!: IndexedNode;
-  @Output() viewSource = new EventEmitter<string>();
-  @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
+  currentSelectedElement = input.required<IndexedNode>();
+  readonly viewSource = output<string>();
+  readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 import {PropType} from 'protocol';
 
 import {FlatNode} from '../../property-resolver/element-property-resolver';
@@ -16,15 +16,17 @@ import {FlatNode} from '../../property-resolver/element-property-resolver';
   templateUrl: './property-preview.component.html',
   styleUrls: ['./property-preview.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyPreviewComponent {
-  @Input({required: true}) node!: FlatNode;
-  @Output() inspect = new EventEmitter<void>();
+  readonly node = input.required<FlatNode>();
+  readonly inspect = output<void>();
 
-  get isClickableProp(): boolean {
+  readonly isClickableProp = computed(() => {
+    const node = this.node();
     return (
-      this.node.prop.descriptor.type === PropType.Function ||
-      this.node.prop.descriptor.type === PropType.HTMLNode
+      node.prop.descriptor.type === PropType.Function ||
+      node.prop.descriptor.type === PropType.HTMLNode
     );
-  }
+  });
 }

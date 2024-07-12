@@ -7,16 +7,15 @@
  */
 
 import {
-  AfterViewInit,
+  afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   computed,
-  EventEmitter,
   inject,
   input,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
+  output,
+  signal,
+  viewChild,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatIcon} from '@angular/material/icon';
@@ -59,30 +58,34 @@ type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
     MatSlideToggle,
   ],
   providers: [TabUpdate],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DevToolsTabsComponent implements OnInit, AfterViewInit {
-  @Input() isHydrationEnabled = false;
+export class DevToolsTabsComponent {
+  public tabUpdate = inject(TabUpdate);
+  public themeService = inject(ThemeService);
+  private _messageBus = inject<MessageBus<Events>>(MessageBus);
+  readonly applicationEnvironment = inject(ApplicationEnvironment);
+  readonly frameManager = inject(FrameManager);
 
-  @Output() frameSelected = new EventEmitter<Frame>();
-  @ViewChild(DirectiveExplorerComponent) directiveExplorer!: DirectiveExplorerComponent;
-  @ViewChild('navBar', {static: true}) navbar!: MatTabNav;
+  readonly isHydrationEnabled = input(false);
+  readonly frameSelected = output<Frame>();
+  readonly navbar = viewChild.required<MatTabNav>('navBar');
 
-  applicationEnvironment = inject(ApplicationEnvironment);
-  activeTab: Tabs = 'Components';
-  inspectorRunning = false;
-  routerTreeEnabled = false;
-  showCommentNodes = false;
-  timingAPIEnabled = false;
+  readonly activeTab = signal<Tabs>('Components');
+  readonly inspectorRunning = signal(false);
+  readonly showCommentNodes = signal(false);
+  readonly timingAPIEnabled = signal(false);
 
-  currentTheme!: Theme;
-  routes: Route[] = [];
-
-  frameManager = inject(FrameManager);
+  readonly routes = signal<Route[]>([]);
+  readonly tabs = computed<Tabs[]>(() => {
+    const alwaysShown: Tabs[] = ['Components', 'Profiler', 'Injector Tree'];
+    return this.routes().length === 0 ? alwaysShown : [...alwaysShown, 'Router Tree'];
+  });
 
   TOP_LEVEL_FRAME_ID = TOP_LEVEL_FRAME_ID;
 
-  angularVersion = input<string | undefined>(undefined);
-  majorAngularVersion = computed(() => {
+  readonly angularVersion = input<string | undefined>(undefined);
+  readonly majorAngularVersion = computed(() => {
     const version = this.angularVersion();
     if (!version) {
       return -1;
@@ -90,46 +93,32 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
     return parseInt(version.toString().split('.')[0], 10);
   });
 
-  extensionVersion = 'Development Build';
+  readonly extensionVersion = signal('Development Build');
 
-  constructor(
-    public tabUpdate: TabUpdate,
-    public themeService: ThemeService,
-    private _messageBus: MessageBus<Events>,
-  ) {
-    this.themeService.currentTheme
-      .pipe(takeUntilDestroyed())
-      .subscribe((theme) => (this.currentTheme = theme));
-
+  constructor() {
     this._messageBus.on('updateRouterTree', (routes) => {
-      this.routes = routes || [];
+      this.routes.set(routes || []);
+    });
+
+    afterNextRender({
+      read: () => {
+        this.navbar().stretchTabs = false;
+        this.navbar().disablePagination = true;
+
+        if (chrome !== undefined && chrome.runtime !== undefined) {
+          this.extensionVersion.set(chrome.runtime.getManifest().version);
+        }
+      },
     });
   }
 
   emitSelectedFrame(frameId: string): void {
     const frame = this.frameManager.frames.find((frame) => frame.id === parseInt(frameId, 10));
-    this.frameSelected.emit(frame);
-  }
-
-  ngOnInit(): void {
-    this.navbar.stretchTabs = false;
-
-    if (chrome !== undefined && chrome.runtime !== undefined) {
-      this.extensionVersion = chrome.runtime.getManifest().version;
-    }
-  }
-
-  get tabs(): Tabs[] {
-    const alwaysShown: Tabs[] = ['Components', 'Profiler', 'Injector Tree'];
-    return this.routes.length === 0 ? alwaysShown : [...alwaysShown, 'Router Tree'];
-  }
-
-  ngAfterViewInit(): void {
-    this.navbar.disablePagination = true;
+    this.frameSelected.emit(frame!);
   }
 
   changeTab(tab: Tabs): void {
-    this.activeTab = tab;
+    this.activeTab.set(tab);
     this.tabUpdate.notify();
     if (tab === 'Router Tree') {
       this._messageBus.emit('getRoutes');
@@ -142,7 +131,7 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   }
 
   emitInspectorEvent(): void {
-    if (this.inspectorRunning) {
+    if (this.inspectorRunning()) {
       this._messageBus.emit('inspectorStart');
     } else {
       this._messageBus.emit('inspectorEnd');
@@ -151,12 +140,12 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   }
 
   toggleInspectorState(): void {
-    this.inspectorRunning = !this.inspectorRunning;
+    this.inspectorRunning.update((state) => !state);
   }
 
   toggleTimingAPI(): void {
-    this.timingAPIEnabled = !this.timingAPIEnabled;
-    this.timingAPIEnabled
+    this.timingAPIEnabled.update((state) => !state);
+    this.timingAPIEnabled()
       ? this._messageBus.emit('enableTimingAPI')
       : this._messageBus.emit('disableTimingAPI');
   }

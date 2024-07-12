@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, input} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 
 import {BargraphNode} from '../record-formatter/bargraph-formatter';
@@ -50,17 +50,12 @@ export interface SelectedDirective {
     ExecutionDetailsComponent,
     DecimalPipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineVisualizerComponent {
-  @Input()
-  set visualizationMode(mode: VisualizationMode) {
-    this._visualizationMode = mode;
-    this.selectedEntry = null;
-    this.selectedDirectives = [];
-    this.parentHierarchy = [];
-  }
-  @Input({required: true}) frame!: ProfilerFrame;
-  @Input({required: true}) changeDetection!: boolean;
+  readonly visualizationMode = input<VisualizationMode>();
+  readonly frame = input.required<ProfilerFrame>();
+  readonly changeDetection = input.required<boolean>();
 
   cmpVisualizationModes = VisualizationMode;
 
@@ -68,8 +63,14 @@ export class TimelineVisualizerComponent {
   selectedDirectives: SelectedDirective[] = [];
   parentHierarchy: {name: string}[] = [];
 
-  /** @internal */
-  _visualizationMode!: VisualizationMode;
+  constructor() {
+    effect(() => {
+      const _ = this.visualizationMode();
+      this.selectedEntry = null;
+      this.selectedDirectives = [];
+      this.parentHierarchy = [];
+    });
+  }
 
   handleNodeSelect({entry, parentHierarchy, selectedDirectives}: SelectedEntry): void {
     this.selectedEntry = entry;

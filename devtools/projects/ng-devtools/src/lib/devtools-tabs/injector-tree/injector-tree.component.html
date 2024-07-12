@@ -1,9 +1,9 @@
-@if (!diDebugAPIsAvailable) {
+@if (!diDebugAPIsAvailable()) {
   <p class="not-supported">
     This feature is only available on version 17.0.0 or higher of Angular.
   </p>
 }
-<as-split [class.hidden]="!diDebugAPIsAvailable" unit="pixel" direction="vertical" [gutterSize]="9" [disabled]="true">
+<as-split [class.hidden]="!diDebugAPIsAvailable()" unit="pixel" direction="vertical" [gutterSize]="9" [disabled]="true">
   <as-split-area size="50">
     <mat-checkbox
       (change)="toggleHideInjectorsWithNoProviders()"

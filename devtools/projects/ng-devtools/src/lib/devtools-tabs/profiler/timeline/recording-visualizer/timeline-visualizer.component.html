@@ -1,18 +1,18 @@
 <as-split unit="percent" [gutterSize]="9">
   <as-split-area size="75">
-    @switch (_visualizationMode) {
+    @switch (visualizationMode()) {
       @case (cmpVisualizationModes.FlameGraph) {
         <ng-flamegraph-visualizer
-          [frame]="frame"
-          [changeDetection]="changeDetection"
+          [frame]="frame()"
+          [changeDetection]="changeDetection()"
           (nodeSelect)="handleNodeSelect($event)"
         />
       }
       @case (cmpVisualizationModes.TreeMap) {
-        <ng-tree-map-visualizer [frame]="frame"/>
+        <ng-tree-map-visualizer [frame]="frame()"/>
       }
       @case (cmpVisualizationModes.BarGraph) {
-        <ng-bargraph-visualizer [frame]="frame" (nodeSelect)="handleNodeSelect($event)"/>
+        <ng-bargraph-visualizer [frame]="frame()" (nodeSelect)="handleNodeSelect($event)"/>
       }
     }
   </as-split-area>

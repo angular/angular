@@ -1,9 +1,9 @@
 <mat-card class="breadcrumb-card">
-  <button class="scroll-button" [class.hidden]="!showScrollLeftButton" (click)="scroll(-100)">
+  <button class="scroll-button" [class.hidden]="!showScrollLeftButton()" (click)="scroll(-100)">
     <mat-icon> more_horiz </mat-icon>
   </button>
   <div class="breadcrumbs" #breadcrumbs (scroll)="updateScrollButtonVisibility$.next()">
-    @for (node of parents; track $index) {
+    @for (node of parents(); track $index) {
       <button
         (mouseover)="mouseOverNode.emit(node)"
         (mouseleave)="mouseLeaveNode.emit(node)"
@@ -16,7 +16,7 @@
       </button>
     }
   </div>
-  <button class="scroll-button" [class.hidden]="!showScrollRightButton" (click)="scroll(100)">
+  <button class="scroll-button" [class.hidden]="!showScrollRightButton()" (click)="scroll(100)">
     <mat-icon> more_horiz </mat-icon>
   </button>
 </mat-card>

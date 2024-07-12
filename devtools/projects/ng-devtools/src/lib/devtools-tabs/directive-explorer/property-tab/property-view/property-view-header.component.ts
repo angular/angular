@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatToolbar} from '@angular/material/toolbar';
@@ -17,10 +17,11 @@ import {MatToolbar} from '@angular/material/toolbar';
   styleUrls: ['./property-view-header.component.scss'],
   standalone: true,
   imports: [MatToolbar, MatTooltip, MatIcon],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewHeaderComponent {
-  @Input({required: true}) directive!: string;
-  @Output() viewSource = new EventEmitter<void>();
+  readonly directive = input.required<string>();
+  readonly viewSource = output<void>();
 
   // output that emits directive
   handleViewSource(event: MouseEvent): void {

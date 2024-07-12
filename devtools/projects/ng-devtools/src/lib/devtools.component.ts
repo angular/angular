@@ -10,13 +10,12 @@ import {animate, style, transition, trigger} from '@angular/animations';
 import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
   OnDestroy,
-  OnInit,
   signal,
-  WritableSignal,
 } from '@angular/core';
 import {Events, MessageBus} from 'protocol';
 import {interval} from 'rxjs';
@@ -62,16 +61,17 @@ const LAST_SUPPORTED_VERSION = 9;
   ],
   standalone: true,
   imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DevToolsComponent implements OnInit, OnDestroy {
-  AngularStatus = AngularStatus;
-  angularStatus: AngularStatus = AngularStatus.UNKNOWN;
-  angularVersion: WritableSignal<string | undefined> = signal(undefined);
-  angularIsInDevMode = true;
-  hydration: boolean = false;
-  ivy: WritableSignal<boolean | undefined> = signal(undefined);
+export class DevToolsComponent implements OnDestroy {
+  readonly AngularStatus = AngularStatus;
+  readonly angularStatus = signal<AngularStatus>(AngularStatus.UNKNOWN);
+  readonly angularVersion = signal<string | undefined>(undefined);
+  readonly angularIsInDevMode = signal(true);
+  readonly hydration = signal(false);
+  readonly ivy = signal<boolean | undefined>(undefined);
 
-  supportedVersion = computed(() => {
+  readonly supportedVersion = computed(() => {
     const version = this.angularVersion();
     if (!version) {
       return false;
@@ -93,7 +93,7 @@ export class DevToolsComponent implements OnInit, OnDestroy {
 
   private _interval$ = interval(500).subscribe((attempt) => {
     if (attempt === DETECT_ANGULAR_ATTEMPTS) {
-      this.angularStatus = AngularStatus.DOES_NOT_EXIST;
+      this.angularStatus.set(AngularStatus.DOES_NOT_EXIST);
     }
     this._messageBus.emit('queryNgAvailability');
   });
@@ -102,16 +102,16 @@ export class DevToolsComponent implements OnInit, OnDestroy {
     this._frameManager.inspectFrame(frame);
   }
 
-  ngOnInit(): void {
+  constructor() {
     this._themeService.initializeThemeWatcher();
 
     this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration}) => {
-      this.angularStatus = version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST;
+      this.angularStatus.set(version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST);
       this.angularVersion.set(version);
-      this.angularIsInDevMode = devMode;
+      this.angularIsInDevMode.set(devMode);
       this.ivy.set(ivy);
       this._interval$.unsubscribe();
-      this.hydration = hydration;
+      this.hydration.set(hydration);
     });
 
     const browserStyleName = this._platform.FIREFOX

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {MatProgressBar} from '@angular/material/progress-bar';
 
 @Component({
@@ -15,5 +15,6 @@ import {MatProgressBar} from '@angular/material/progress-bar';
   styleUrls: ['./recording-dialog.component.scss'],
   standalone: true,
   imports: [MatProgressBar],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecordingDialogComponent {}

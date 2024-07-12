@@ -73,6 +73,10 @@ ts_test_library(
     ],
     deps = [
         ":timeline",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/recording-visualizer",
+        "//packages/core",
+        "//packages/core/testing",
+        "@npm//rxjs",
     ],
 )
 

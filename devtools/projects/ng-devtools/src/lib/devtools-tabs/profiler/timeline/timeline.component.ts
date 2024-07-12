@@ -6,10 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  input,
+  OnDestroy,
+  output,
+  signal,
+} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
-import {map, share} from 'rxjs/operators';
+import {Observable, Subscription} from 'rxjs';
 
 import {createFilter, Filter, noopFilter} from './filter';
 import {mergeFrames} from './record-formatter/frame-merger';
@@ -33,50 +41,49 @@ const MAX_HEIGHT = 50;
     FrameSelectorComponent,
     TimelineVisualizerComponent,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimelineComponent implements OnDestroy {
-  @Input()
-  set stream(data: Observable<ProfilerFrame[]>) {
-    if (this._subscription) {
-      this._subscription.unsubscribe();
-    }
-    this._allRecords = [];
-    this._filtered = [];
-    this._maxDuration = -Infinity;
-    this._subscription = data.subscribe({
-      next: (frames: ProfilerFrame[]): void => {
-        this._processFrames(frames);
-      },
-      complete: (): void => {
-        this.visualizing = true;
-      },
-    });
-  }
-  @Output() exportProfile = new EventEmitter<void>();
-  visualizationMode = VisualizationMode.BarGraph;
-  changeDetection = false;
-  frame: ProfilerFrame | null = null;
+export class TimelineComponent {
+  readonly stream = input.required<Observable<ProfilerFrame[]>>();
 
-  private _filter: Filter = noopFilter;
+  readonly exportProfile = output<void>();
+  readonly visualizationMode = signal(VisualizationMode.BarGraph);
+  readonly changeDetection = signal(false);
+  readonly selectFrames = signal<number[]>([]);
+  readonly frame = computed(() => {
+    const indexes = this.selectFrames();
+    const data = this.graphData();
+    return mergeFrames(indexes.map((index) => data[index]?.frame).filter(Boolean));
+  });
+
+  private readonly _filter = signal<Filter>(noopFilter);
   private _maxDuration = -Infinity;
   private _subscription!: Subscription;
   private _allRecords: ProfilerFrame[] = [];
-  private _filtered: GraphNode[] = [];
-  private _graphDataSubject = new BehaviorSubject<GraphNode[]>([]);
-  visualizing = false;
-  graphData$ = this._graphDataSubject.pipe(
-    share(),
-    map((nodes) => {
-      return (this._filtered = nodes.filter((node) => this._filter(node)));
-    }),
-  );
+  readonly visualizing = signal(false);
+  private readonly _graphDataSubject = signal<GraphNode[]>([]);
+  readonly graphData = computed(() => {
+    const nodes = this._graphDataSubject();
+    const filter = this._filter();
+    return nodes.filter((node) => filter(node));
+  });
+  readonly hasFrames = computed(() => this._graphDataSubject().length > 0);
 
-  selectFrames({indexes}: {indexes: number[]}): void {
-    this.frame = mergeFrames(indexes.map((index) => this._filtered[index].frame));
-  }
-
-  get hasFrames(): boolean {
-    return this._graphDataSubject.value.length > 0;
+  constructor() {
+    effect((cleanup) => {
+      cleanup(() => this._subscription?.unsubscribe());
+      const data = this.stream();
+      this._allRecords = [];
+      this._maxDuration = -Infinity;
+      this._subscription = data.subscribe({
+        next: (frames: ProfilerFrame[]): void => {
+          this._processFrames(frames);
+        },
+        complete: (): void => {
+          this.visualizing.set(true);
+        },
+      });
+    });
   }
 
   estimateFrameRate(timeSpent: number): number {
@@ -85,8 +92,7 @@ export class TimelineComponent implements OnDestroy {
   }
 
   setFilter(filter: string): void {
-    this._filter = createFilter(filter);
-    this._graphDataSubject.next(this._graphDataSubject.value);
+    this._filter.set(createFilter(filter));
   }
 
   getColorByFrameRate(framerate: number): string {
@@ -100,12 +106,6 @@ export class TimelineComponent implements OnDestroy {
     return '#fad1d1';
   }
 
-  ngOnDestroy(): void {
-    if (this._subscription) {
-      this._subscription.unsubscribe();
-    }
-  }
-
   private _processFrames(frames: ProfilerFrame[]): void {
     let regenerate = false;
     for (const frame of frames) {
@@ -115,18 +115,19 @@ export class TimelineComponent implements OnDestroy {
       this._allRecords.push(frame);
     }
     if (regenerate) {
-      this._graphDataSubject.next(this._generateBars());
+      this._graphDataSubject.set(this._generateBars());
       return;
     }
     const multiplicationFactor = parseFloat((MAX_HEIGHT / this._maxDuration).toFixed(2));
-    frames.forEach((frame) =>
-      this._graphDataSubject.value.push(this._getBarStyles(frame, multiplicationFactor)),
-    );
+    this._graphDataSubject.update((value) => {
+      frames.forEach((frame) => value.push(this._getBarStyles(frame, multiplicationFactor)));
+      return [...value];
+    });
 
     // We need to pass a new reference, because the CDK virtual scroll
     // has OnPush strategy, so it doesn't update the UI otherwise.
     // If this turns out ot be a bottleneck, we can easily create an immutable reference.
-    this._graphDataSubject.next(this._graphDataSubject.value.slice());
+    // this._graphDataSubject.next(this._graphDataSubject.value.slice());
   }
 
   private _generateBars(): GraphNode[] {

@@ -12,7 +12,7 @@
       placeholder="Search components"
       />
   </label>
-  @if (hasMatched) {
+  @if (hasMatched()) {
     <div class="up-down-buttons">
       <button matTooltip="Select previous element" (click)="emitPrevMatched()">
         <mat-icon class="mat-icon-rtl-mirror">

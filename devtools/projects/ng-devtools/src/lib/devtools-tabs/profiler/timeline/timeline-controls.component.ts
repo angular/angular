@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, model, output} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 
 import {VisualizationMode} from './visualization-mode';
@@ -23,6 +23,7 @@ import {DecimalPipe} from '@angular/common';
   templateUrl: './timeline-controls.component.html',
   styleUrls: ['./timeline-controls.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatFormField,
     MatLabel,
@@ -35,15 +36,13 @@ import {DecimalPipe} from '@angular/common';
   ],
 })
 export class TimelineControlsComponent {
-  @Input() record: ProfilerFrame | undefined;
-  @Input({required: true}) estimatedFrameRate!: number;
-  @Input({required: true}) visualizationMode!: VisualizationMode;
-  @Input({required: true}) empty!: boolean;
-  @Input({required: true}) changeDetection!: boolean;
-  @Output() changeVisualizationMode = new EventEmitter<VisualizationMode>();
-  @Output() exportProfile = new EventEmitter<void>();
-  @Output() toggleChangeDetection = new EventEmitter<boolean>();
-  @Output() filter = new EventEmitter<string>();
+  readonly record = input<ProfilerFrame>();
+  readonly estimatedFrameRate = input.required<number>();
+  readonly visualizationMode = model.required<VisualizationMode>();
+  readonly empty = input.required<boolean>();
+  readonly changeDetection = model.required<boolean>();
+  readonly exportProfile = output<void>();
+  readonly filter = output<string>();
 
   flameGraphMode = VisualizationMode.FlameGraph;
   treeMapMode = VisualizationMode.TreeMap;

@@ -12,16 +12,17 @@ import {
   CdkVirtualForOf,
 } from '@angular/cdk/scrolling';
 import {
+  ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
+  effect,
   ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
+  inject,
+  input,
+  output,
+  viewChild,
 } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {Observable, Subscription} from 'rxjs';
 
 import {TabUpdate} from '../../tab-update/index';
 
@@ -50,56 +51,44 @@ const ITEM_WIDTH = 30;
     NgStyle,
     AsyncPipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FrameSelectorComponent {
-  @ViewChild('barContainer') barContainer!: ElementRef;
-  @Input()
-  set graphData$(graphData: Observable<GraphNode[]>) {
-    this._graphData$ = graphData;
-    this._graphDataSubscription?.unsubscribe();
-    this._graphDataSubscription = this._graphData$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((items) =>
-        setTimeout(() => {
-          this.frameCount = items.length;
-          this.viewport.scrollToIndex(items.length);
-        }),
-      );
-  }
+  private _tabUpdate = inject(TabUpdate);
 
-  get graphData$(): Observable<GraphNode[]> {
-    return this._graphData$;
-  }
+  readonly barContainer = viewChild.required<ElementRef>('barContainer');
 
-  @Output() selectFrames = new EventEmitter<{indexes: number[]}>();
+  readonly graphData = input<GraphNode[]>([]);
 
-  @ViewChild(CdkVirtualScrollViewport) viewport!: CdkVirtualScrollViewport;
+  readonly selectFrames = output<{indexes: number[]}>();
+
+  readonly viewport = viewChild.required<CdkVirtualScrollViewport>(CdkVirtualScrollViewport);
 
   startFrameIndex = -1;
   endFrameIndex = -1;
   selectedFrameIndexes = new Set<number>();
-  frameCount!: number;
+  frameCount = computed(() => this.graphData().length);
 
   private _viewportScrollState = {scrollLeft: 0, xCoordinate: 0, isDragScrolling: false};
 
-  get itemWidth(): number {
-    return ITEM_WIDTH;
-  }
+  readonly itemWidth = ITEM_WIDTH;
 
-  private _graphData$!: Observable<GraphNode[]>;
-  private _graphDataSubscription?: Subscription;
-
-  constructor(
-    private _tabUpdate: TabUpdate,
-    private destroyRef: DestroyRef,
-  ) {
-    this._tabUpdate.tabUpdate$.pipe(takeUntilDestroyed()).subscribe(() => {
-      if (this.viewport) {
+  constructor() {
+    effect(() => {
+      const _ = this._tabUpdate.tabUpdate();
+      const viewport = this.viewport();
+      if (viewport) {
         setTimeout(() => {
-          this.viewport.scrollToIndex(0);
-          this.viewport.checkViewportSize();
+          viewport.scrollToIndex(0);
+          viewport.checkViewportSize();
         });
       }
+    });
+    effect(() => {
+      const items = this.graphData();
+      setTimeout(() => {
+        this.viewport().scrollToIndex(items.length);
+      });
     });
   }
 
@@ -146,7 +135,7 @@ export class FrameSelectorComponent {
   move(value: number): void {
     const newVal = this.startFrameIndex + value;
     this.selectedFrameIndexes = new Set([newVal]);
-    if (newVal > -1 && newVal < this.frameCount) {
+    if (newVal > -1 && newVal < this.frameCount()) {
       this._selectFrames({indexes: this.selectedFrameIndexes});
     }
   }
@@ -185,10 +174,10 @@ export class FrameSelectorComponent {
   }
 
   private _ensureVisible(index: number): void {
-    if (!this.viewport) {
+    if (!this.viewport()) {
       return;
     }
-    const scrollParent = this.viewport.elementRef.nativeElement;
+    const scrollParent = this.viewport().elementRef.nativeElement;
     // The left most point we see an element
     const left = scrollParent.scrollLeft;
     // That's the right most point we currently see an element.
@@ -208,7 +197,7 @@ export class FrameSelectorComponent {
   startDragScroll(event: MouseEvent): void {
     this._viewportScrollState = {
       xCoordinate: event.clientX,
-      scrollLeft: this.viewport.elementRef.nativeElement.scrollLeft,
+      scrollLeft: this.viewport().elementRef.nativeElement.scrollLeft,
       isDragScrolling: true,
     };
   }
@@ -220,7 +209,7 @@ export class FrameSelectorComponent {
 
     const dragScrollSpeed = 2;
     const dx = event.clientX - this._viewportScrollState.xCoordinate;
-    this.viewport.elementRef.nativeElement.scrollLeft =
+    this.viewport().elementRef.nativeElement.scrollLeft =
       this._viewportScrollState.scrollLeft - dx * dragScrollSpeed;
   }
 }

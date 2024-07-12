@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, signal} from '@angular/core';
+import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FrameManager} from './frame_manager';
 import {DevToolsComponent} from './devtools.component';
@@ -42,17 +42,17 @@ describe('DevtoolsComponent', () => {
   });
 
   it('should render ng devtools tabs when Angular Status is EXISTS and is in dev mode and is supported version', () => {
-    component.angularStatus = component.AngularStatus.EXISTS;
-    component.angularIsInDevMode = true;
-    component.angularVersion = signal('0.0.0');
-    component.ivy = signal(true);
+    component.angularStatus.set(component.AngularStatus.EXISTS);
+    component.angularIsInDevMode.set(true);
+    component.angularVersion.set('0.0.0');
+    component.ivy.set(true);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('ng-devtools-tabs')).toBeTruthy();
   });
 
   it('should render Angular Devtools dev mode only support text when Angular Status is EXISTS and is angular is not in dev mode', () => {
-    component.angularStatus = component.AngularStatus.EXISTS;
-    component.angularIsInDevMode = false;
+    component.angularStatus.set(component.AngularStatus.EXISTS);
+    component.angularIsInDevMode.set(false);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.devtools').textContent).toContain(
       'We detected an application built with production configuration. Angular DevTools only supports development build.',
@@ -60,9 +60,9 @@ describe('DevtoolsComponent', () => {
   });
 
   it('should render version support message when Angular Status is EXISTS and angular version is not supported', () => {
-    component.angularStatus = component.AngularStatus.EXISTS;
-    component.angularIsInDevMode = true;
-    component.angularVersion = signal('1.0.0');
+    component.angularStatus.set(component.AngularStatus.EXISTS);
+    component.angularIsInDevMode.set(true);
+    component.angularVersion.set('1.0.0');
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.devtools').textContent).toContain(
       'Angular Devtools only supports Angular versions 12 and above',
@@ -70,7 +70,7 @@ describe('DevtoolsComponent', () => {
   });
 
   it('should render Angular application not detected when Angular Status is DOES_NOT_EXIST', () => {
-    component.angularStatus = component.AngularStatus.DOES_NOT_EXIST;
+    component.angularStatus.set(component.AngularStatus.DOES_NOT_EXIST);
     fixture.detectChanges();
     // expect the text to be "Angular application not detected"
     expect(fixture.nativeElement.querySelector('.not-detected').textContent).toContain(
@@ -79,7 +79,7 @@ describe('DevtoolsComponent', () => {
   });
 
   it('should render loading svg when Angular Status is UNKNOWN', () => {
-    component.angularStatus = component.AngularStatus.UNKNOWN;
+    component.angularStatus.set(component.AngularStatus.UNKNOWN);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.loading svg')).toBeTruthy();
   });

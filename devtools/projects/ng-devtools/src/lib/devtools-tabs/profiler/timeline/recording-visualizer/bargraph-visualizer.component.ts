@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 
-import {Theme, ThemeService} from '../../../../theme-service';
+import {ThemeService} from '../../../../theme-service';
 import {BarGraphFormatter, BargraphNode} from '../record-formatter/bargraph-formatter/index';
 
 import {formatDirectiveProfile} from './profile-formatter';
@@ -23,25 +22,20 @@ import {BarChartComponent} from './bar-chart.component';
   styleUrls: ['./bargraph-visualizer.component.scss'],
   standalone: true,
   imports: [BarChartComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BargraphVisualizerComponent {
-  barColor!: string;
-  profileRecords!: BargraphNode[];
+  public themeService = inject(ThemeService);
+  readonly barColor = computed(() => {
+    return this.themeService.currentTheme() === 'dark-theme' ? '#073d69' : '#cfe8fc';
+  });
+  frame = input.required<ProfilerFrame>();
 
-  @Output() nodeSelect = new EventEmitter<SelectedEntry>();
+  profileRecords = computed(() => this._formatter.formatFrame(this.frame()));
 
-  private _formatter = new BarGraphFormatter();
+  readonly nodeSelect = output<SelectedEntry>();
 
-  @Input()
-  set frame(data: ProfilerFrame) {
-    this.profileRecords = this._formatter.formatFrame(data);
-  }
-
-  constructor(public themeService: ThemeService) {
-    this.themeService.currentTheme.pipe(takeUntilDestroyed()).subscribe((theme) => {
-      this.barColor = theme === 'dark-theme' ? '#073d69' : '#cfe8fc';
-    });
-  }
+  private readonly _formatter = new BarGraphFormatter();
 
   formatEntryData(bargraphNode: BargraphNode): SelectedDirective[] {
     return formatDirectiveProfile(bargraphNode.directives ?? []);
