@@ -20,29 +20,20 @@ describe('ApiItemsSection', () => {
   let fixture: ComponentFixture<ApiItemsSection>;
   let apiReferenceManagerSpy: jasmine.SpyObj<ApiReferenceManager>;
 
-  const fakeFeaturedGroup: ApiItemsGroup = {
-    title: 'Featured',
-    id: 'featured',
-    isFeatured: true,
+  const fakeGroupMultiple: ApiItemsGroup = {
+    title: 'Group title',
+    id: 'group-id',
     items: [
-      {
-        title: 'Fake Featured Title',
-        itemType: ApiItemType.CLASS,
-        url: 'api/fakeFeaturedTitle',
-        isFeatured: true,
-      },
       {
         title: 'Fake Deprecated Title',
         itemType: ApiItemType.CONST,
         url: 'api/fakeDeprecatedTitle',
-        isFeatured: false,
         isDeprecated: true,
       },
       {
         title: 'Fake Standard Title',
         itemType: ApiItemType.DIRECTIVE,
         url: 'api/fakeTitle',
-        isFeatured: false,
       },
     ],
   };
@@ -50,10 +41,7 @@ describe('ApiItemsSection', () => {
   const fakeGroup: ApiItemsGroup = {
     title: 'Example group',
     id: 'example',
-    isFeatured: false,
-    items: [
-      {title: 'Fake Title', itemType: ApiItemType.CONST, url: 'api/fakeTitle', isFeatured: false},
-    ],
+    items: [{title: 'Fake Title', itemType: ApiItemType.CONST, url: 'api/fakeTitle'}],
   };
 
   beforeEach(() => {
@@ -63,15 +51,6 @@ describe('ApiItemsSection', () => {
     });
     fixture = TestBed.createComponent(ApiItemsSection);
     component = fixture.componentInstance;
-  });
-
-  it('should render star icon for featured group', () => {
-    component.group = fakeFeaturedGroup;
-    fixture.detectChanges();
-
-    const starIcon = fixture.debugElement.query(By.css('.adev-api-items-section-header docs-icon'));
-
-    expect(starIcon).toBeTruthy();
   });
 
   it('should not render star icon for standard group', () => {
@@ -84,16 +63,16 @@ describe('ApiItemsSection', () => {
   });
 
   it('should render list of all APIs of provided group', () => {
-    component.group = fakeFeaturedGroup;
+    component.group = fakeGroupMultiple;
     fixture.detectChanges();
 
     const apis = fixture.debugElement.queryAll(By.css('.adev-api-items-section-grid li'));
 
-    expect(apis.length).toBe(3);
+    expect(apis.length).toBe(2);
   });
 
   it('should display deprecated icon for deprecated API', () => {
-    component.group = fakeFeaturedGroup;
+    component.group = fakeGroupMultiple;
     fixture.detectChanges();
 
     const deprecatedApiIcons = fixture.debugElement.queryAll(
@@ -104,19 +83,5 @@ describe('ApiItemsSection', () => {
     expect(deprecatedApiIcons.length).toBe(1);
     expect(deprecatedApiIcons[0]).toBeTruthy();
     expect(deprecatedApiTitle?.nativeElement.innerText).toBe('Fake Deprecated Title');
-  });
-
-  it('should display star icon for featured API', () => {
-    component.group = fakeFeaturedGroup;
-    fixture.detectChanges();
-
-    const featuredApiIcons = fixture.debugElement.queryAll(
-      By.css('.adev-api-items-section-grid li .adev-api-items-section-item-featured'),
-    );
-    const featuredApiTitle = featuredApiIcons[0].parent?.query(By.css('.adev-item-title'));
-
-    expect(featuredApiIcons.length).toBe(1);
-    expect(featuredApiIcons[0]).toBeTruthy();
-    expect(featuredApiTitle?.nativeElement.innerText).toBe('Fake Featured Title');
   });
 });

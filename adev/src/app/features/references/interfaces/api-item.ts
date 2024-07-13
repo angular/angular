@@ -12,7 +12,6 @@ export interface ApiItem {
   title: string;
   itemType: ApiItemType;
   url: string;
-  isFeatured?: boolean;
   isDeprecated?: boolean;
   groupName?: string;
 }

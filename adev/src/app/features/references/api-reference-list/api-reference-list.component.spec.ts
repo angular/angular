@@ -40,13 +40,11 @@ describe('ApiReferenceList', () => {
       {
         title: 'Fake Group',
         items: [fakeItem1, fakeItem2, fakeDeprecatedFeaturedItem],
-        isFeatured: false,
       },
     ]),
     featuredGroup: signal({
       title: 'Featured Group',
       items: [],
-      isFeatured: true,
     }),
   };
 

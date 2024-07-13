@@ -63,12 +63,10 @@ export default class ApiReferenceList {
   includeDeprecated = signal(false);
   type = signal(ALL_STATUSES_KEY);
 
-  featuredGroup = this.apiReferenceManager.featuredGroup;
   filteredGroups = computed((): ApiItemsGroup[] => {
     return this.allGroups()
       .map((group) => ({
         title: group.title,
-        isFeatured: group.isFeatured,
         id: group.id,
         items: group.items.filter((apiItem) => {
           return (

@@ -15,7 +15,6 @@ import {ApiItemsGroup} from '../interfaces/api-items-group';
 import {ApiManifest} from '../interfaces/api-manifest';
 
 export const FEATURED_API_ITEMS_KEY = 'apiFeaturedItems';
-export const FEATURED_GROUP_TITLE = 'Most Common';
 
 export type FeaturedItemsByGroup = Record<string, ApiItem[]>;
 
@@ -38,14 +37,6 @@ export const FEATURED_ITEMS_URLS = [
   providedIn: 'root',
 })
 export class ApiReferenceManager {
-  // Represents group of the featured items.
-  featuredGroup = signal<ApiItemsGroup>({
-    title: FEATURED_GROUP_TITLE,
-    id: 'featured',
-    items: [],
-    isFeatured: true,
-  });
-
   apiGroups = signal<ApiItemsGroup[]>(this.mapManifestToApiGroups());
 
   private mapManifestToApiGroups(): ApiItemsGroup[] {
@@ -64,21 +55,12 @@ export class ApiReferenceManager {
         items: packageApis
           .map((api) => {
             const url = getApiUrl(packageNameWithoutPrefix, api.name);
-            const isFeatured = FEATURED_ITEMS_URLS.some((featuredUrl) => featuredUrl === url);
             const apiItem = {
               itemType: api.type,
               title: api.name,
               isDeprecated: !!api.isDeprecated,
-              isFeatured,
               url,
             };
-
-            if (isFeatured) {
-              this.featuredGroup.update((group) => {
-                group.items.push(apiItem);
-                return group;
-              });
-            }
 
             return apiItem;
           })
