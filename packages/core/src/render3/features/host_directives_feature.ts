@@ -67,7 +67,13 @@ export function ɵɵHostDirectivesFeature(
       definition.findHostDirectiveDefs = findHostDirectiveDefs;
       definition.hostDirectives = resolved;
     } else {
-      definition.hostDirectives.unshift(...resolved);
+      definition.hostDirectives.forEach((hostDirective) => {
+        resolved.forEach((resolvedItem) => {
+          if (hostDirective.directive !== resolvedItem.directive) {
+            definition.hostDirectives?.unshift(resolvedItem);
+          }
+        });
+      });
     }
   };
   feature.ngInherit = true;

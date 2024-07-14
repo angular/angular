@@ -72,6 +72,48 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should generate a basic hostDirectives definition with components extends', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, Component} from '@angular/core';
+
+        @Directive({
+          standalone: true
+        })
+        export class MyDir {}
+
+        @Component({
+          selector: 'comp-a',
+          template: '',
+          hostDirectives: [MyDir]
+        })
+        export class ComponentA {}
+
+        @Component({
+          selector: 'comp-b',
+          template: '',
+          hostDirectives: [MyDir]
+        })
+        export class ComponentB extends ComponentA {}
+      `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(jsContents).toContain('ɵɵdefineDirective({ type: MyDir');
+      expect(jsContents).toContain('features: [i0.ɵɵHostDirectivesFeature([MyDir])]');
+      expect(dtsContents).toContain(
+        'ɵɵComponentDeclaration<ComponentA, "comp-a", never, {}, {}, never, never, false, ' +
+          '[{ directive: typeof MyDir; inputs: {}; outputs: {}; }]' +
+          'ɵɵComponentDeclaration<ComponentB, "comp-b", never, {}, {}, never, never, false, ' +
+          '[{ directive: typeof MyDir; inputs: {}; outputs: {}; }]',
+      );
+    });
+
     it('should generate a hostDirectives definition that has inputs and outputs', () => {
       env.write(
         'test.ts',
