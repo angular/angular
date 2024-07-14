@@ -29,6 +29,7 @@ import {first} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
+import {TestBedApplicationErrorHandler} from './application_error_handler';
 
 /**
  * Fixture for debugging and testing a component.
@@ -80,6 +81,10 @@ export abstract class ComponentFixture<T> {
   /** @internal */
   protected readonly _testAppRef = this._appRef as unknown as TestAppRef;
   private readonly pendingTasks = inject(PendingTasks);
+  /** @internal */
+  protected readonly _appErrorHandler = inject(TestBedApplicationErrorHandler);
+  /** @internal */
+  protected _rejectWhenStablePromiseOnAppError = true;
 
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
@@ -131,6 +136,7 @@ export abstract class ComponentFixture<T> {
     if (this.isStable()) {
       return Promise.resolve(false);
     }
+
     return this._appRef.isStable.pipe(first((stable) => stable)).toPromise();
   }
 
@@ -194,6 +200,16 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
     }
   }
 
+  override whenStable(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this._appErrorHandler.whenStableRejectFunctions.add(reject);
+      super.whenStable().then((v) => {
+        this._appErrorHandler.whenStableRejectFunctions.delete(reject);
+        resolve(v);
+      });
+    });
+  }
+
   override detectChanges(checkNoChanges = true): void {
     if (!checkNoChanges) {
       throw new Error(
@@ -236,6 +252,11 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   private beforeRenderSubscription: Subscription | undefined = undefined;
 
   initialize(): void {
+    // TODO(atscott): Determine whether we can align this behavior with the zoneless fixture.
+    // This exists to keep the previous zone-based fixture behavior consistent with how it was before.
+    // However, we currently feel that the zoneless fixture is doing the more correct thing.
+    this._rejectWhenStablePromiseOnAppError = false;
+
     if (this._autoDetect) {
       this.subscribeToAppRefEvents();
     }

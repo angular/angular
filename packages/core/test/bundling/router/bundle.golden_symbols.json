@@ -1779,9 +1779,6 @@
     "name": "ngOnChangesSetInput"
   },
   {
-    "name": "ngZoneApplicationErrorHandlerFactory"
-  },
-  {
     "name": "noMatch"
   },
   {
