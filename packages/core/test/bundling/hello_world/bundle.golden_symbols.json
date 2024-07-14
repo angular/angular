@@ -837,9 +837,6 @@
     "name": "ngOnChangesSetInput"
   },
   {
-    "name": "ngZoneApplicationErrorHandlerFactory"
-  },
-  {
     "name": "noop"
   },
   {

@@ -18,7 +18,6 @@ import {
   makeEnvironmentProviders,
   StaticProvider,
 } from '../../di';
-import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {PendingTasks} from '../../pending_tasks';
 import {performanceMarkFeature} from '../../util/performance';
@@ -113,17 +112,10 @@ export function internalProvideZoneChangeDetection({
         };
       },
     },
-    {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
     // Always disable scheduler whenever explicitly disabled, even if another place called
     // `provideZoneChangeDetection` without the 'ignore' option.
     ignoreChangesOutsideZone === true ? {provide: ZONELESS_SCHEDULER_DISABLED, useValue: true} : [],
   ];
-}
-
-export function ngZoneApplicationErrorHandlerFactory() {
-  const zone = inject(NgZone);
-  const userErrorHandler = inject(ErrorHandler);
-  return (e: unknown) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
 }
 
 /**

@@ -1062,9 +1062,6 @@
     "name": "ngOnChangesSetInput"
   },
   {
-    "name": "ngZoneApplicationErrorHandlerFactory"
-  },
-  {
     "name": "noSideEffects"
   },
   {

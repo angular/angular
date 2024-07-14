@@ -11,6 +11,7 @@ export {
   detectChangesInViewIfRequired as ɵdetectChangesInViewIfRequired,
   whenStable as ɵwhenStable,
 } from './application/application_ref';
+export {INTERNAL_APPLICATION_ERROR_HANDLER as ɵINTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
 export {
   IMAGE_CONFIG as ɵIMAGE_CONFIG,
   IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS,
