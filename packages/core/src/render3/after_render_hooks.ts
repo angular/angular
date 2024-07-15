@@ -598,6 +598,7 @@ function afterRenderImpl(
     unregisterFn();
   };
   const unregisterFn = injector.get(DestroyRef).onDestroy(destroy);
+  let callbacksLeftToRun = 0;
 
   const registerCallback = (
     phase: AfterRenderPhase,
@@ -608,7 +609,10 @@ function afterRenderImpl(
     }
     const callback = once
       ? (...args: [unknown]) => {
-          destroy();
+          callbacksLeftToRun--;
+          if (callbacksLeftToRun < 1) {
+            destroy();
+          }
           phaseCallback(...args);
         }
       : phaseCallback;
@@ -619,6 +623,7 @@ function afterRenderImpl(
     );
     callbackHandler.register(instance);
     instances.push(instance);
+    callbacksLeftToRun++;
   };
 
   registerCallback(AfterRenderPhase.EarlyRead, spec.earlyRead);
