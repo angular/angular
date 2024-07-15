@@ -30,7 +30,11 @@
  * possible and thus its dependencies to a minimum.
  */
 
-import {EarlyJsactionData, EarlyJsactionDataContainer} from './earlyeventcontract';
+import {
+  EarlyJsactionData,
+  EarlyJsactionDataContainer,
+  removeAllEventListeners,
+} from './earlyeventcontract';
 import * as eventLib from './event';
 import {EventContractContainerManager} from './event_contract_container';
 import {MOUSE_SPECIAL_SUPPORT} from './event_contract_defines';
@@ -105,10 +109,7 @@ export class EventContract implements UnrenamedEventContract {
    */
   private queuedEventInfos: eventInfoLib.EventInfo[] | null = [];
 
-  constructor(
-    containerManager: EventContractContainerManager,
-    private readonly useActionResolver?: false,
-  ) {
+  constructor(containerManager: EventContractContainerManager) {
     this.containerManager = containerManager;
   }
 
@@ -193,24 +194,29 @@ export class EventContract implements UnrenamedEventContract {
     }
 
     // Replay the early contract events.
-    const earlyEventInfos: eventInfoLib.EventInfo[] = earlyJsactionData.q;
-    for (let idx = 0; idx < earlyEventInfos.length; idx++) {
-      const earlyEventInfo: eventInfoLib.EventInfo = earlyEventInfos[idx];
+    this.replayEarlyEventInfos(earlyJsactionData.q);
+
+    // Clean up the early contract.
+    removeAllEventListeners(earlyJsactionData);
+    delete window._ejsa;
+  }
+
+  /**
+   * Replays all the early `EventInfo` objects, dispatching them through the normal
+   * `EventContract` flow.
+   */
+  replayEarlyEventInfos(earlyEventInfos: eventInfoLib.EventInfo[]) {
+    for (let i = 0; i < earlyEventInfos.length; i++) {
+      const earlyEventInfo: eventInfoLib.EventInfo = earlyEventInfos[i];
       const eventTypes = this.getEventTypesForBrowserEventType(earlyEventInfo.eventType);
-      for (let i = 0; i < eventTypes.length; i++) {
+      for (let j = 0; j < eventTypes.length; j++) {
         const eventInfo = eventInfoLib.cloneEventInfo(earlyEventInfo);
         // EventInfo eventType maps to JSAction's internal event type,
         // rather than the browser event type.
-        eventInfoLib.setEventType(eventInfo, eventTypes[i]);
+        eventInfoLib.setEventType(eventInfo, eventTypes[j]);
         this.handleEventInfo(eventInfo);
       }
     }
-
-    // Clean up the early contract.
-    const earlyEventHandler: (event: Event) => void = earlyJsactionData.h;
-    removeEventListeners(earlyJsactionData.c, earlyJsactionData.et, earlyEventHandler);
-    removeEventListeners(earlyJsactionData.c, earlyJsactionData.etc, earlyEventHandler, true);
-    delete window._ejsa;
   }
 
   /**
@@ -277,35 +283,4 @@ export class EventContract implements UnrenamedEventContract {
       this.queuedEventInfos = null;
     }
   }
-
-  /**
-   * Adds a11y click support to the given `EventContract`. Meant to be called in
-   * the same compilation unit as the `EventContract`.
-   */
-  addA11yClickSupport() {}
-
-  /**
-   * Enables a11y click support to be deferred. Meant to be called in the same
-   * compilation unit as the `EventContract`.
-   */
-  exportAddA11yClickSupport() {}
 }
-
-function removeEventListeners(
-  container: HTMLElement,
-  eventTypes: string[],
-  earlyEventHandler: (e: Event) => void,
-  capture?: boolean,
-) {
-  for (let idx = 0; idx < eventTypes.length; idx++) {
-    container.removeEventListener(eventTypes[idx], earlyEventHandler, /* useCapture */ capture);
-  }
-}
-
-/**
- * Adds a11y click support to the given `EventContract`. Meant to be called
- * in a different compilation unit from the `EventContract`. The `EventContract`
- * must have called `exportAddA11yClickSupport` in its compilation unit for this
- * to have any effect.
- */
-export function addDeferredA11yClickSupport(eventContract: EventContract) {}

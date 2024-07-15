@@ -9,6 +9,12 @@ export const Attribute: {
     JSACTION: "jsaction";
 };
 
+// @public
+export function bootstrapAppScopedEarlyEventContract(container: HTMLElement, appId: string, bubbleEventTypes: string[], captureEventTypes: string[], dataContainer?: EarlyJsactionDataContainer): void;
+
+// @public
+export function clearAppScopedEarlyEventContract(appId: string, dataContainer?: EarlyJsactionDataContainer): void;
+
 // @public (undocumented)
 export interface EarlyJsactionDataContainer {
     // (undocumented)
@@ -21,16 +27,15 @@ export interface EarlyJsactionDataContainer {
 
 // @public
 export class EventContract implements UnrenamedEventContract {
-    constructor(containerManager: EventContractContainerManager, useActionResolver?: false | undefined);
-    addA11yClickSupport(): void;
+    constructor(containerManager: EventContractContainerManager);
     addEvent(eventType: string, prefixedEventType?: string): void;
     cleanUp(): void;
     ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
-    exportAddA11yClickSupport(): void;
     handler(eventType: string): EventHandler | undefined;
     // (undocumented)
     static MOUSE_SPECIAL_SUPPORT: boolean;
     registerDispatcher(dispatcher: Dispatcher, restriction: Restriction): void;
+    replayEarlyEventInfos(earlyEventInfos: eventInfoLib.EventInfo[]): void;
     replayEarlyEvents(earlyJsactionData?: EarlyJsactionData | undefined): void;
 }
 
@@ -104,13 +109,22 @@ export function getActionCache(element: Element): {
 };
 
 // @public
+export function getAppScopedQueuedEventInfos(appId: string, dataContainer?: EarlyJsactionDataContainer): EventInfo[];
+
+// @public
 export const isCaptureEventType: (eventType: string) => boolean;
 
 // @public
 export const isEarlyEventType: (eventType: string) => boolean;
 
 // @public
+export function registerAppScopedDispatcher(restriction: Restriction, appId: string, dispatcher: (eventInfo: EventInfo) => void, dataContainer?: EarlyJsactionDataContainer): void;
+
+// @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: EventDispatcher): void;
+
+// @public
+export function removeAllAppScopedEventListeners(appId: string, dataContainer?: EarlyJsactionDataContainer): void;
 
 // (No @packageDocumentation comment for this package)
 

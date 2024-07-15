@@ -6,17 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BUBBLE_EVENT_TYPES, CAPTURE_EVENT_TYPES} from './event_type';
 import {Restriction} from './restriction';
-import {addEvents, createEarlyJsactionData} from './earlyeventcontract';
+import {
+  addEvents,
+  createEarlyJsactionData,
+  getQueuedEventInfos,
+  registerDispatcher,
+  removeAllEventListeners,
+} from './earlyeventcontract';
 import {EventInfo} from './event_info';
 
 /** Creates an `EarlyJsactionData`, adds events to it, and populates it on the window. */
-export function bootstrapGlobalEarlyEventContract() {
+export function bootstrapGlobalEarlyEventContract(
+  bubbleEventTypes: string[],
+  captureEventTypes: string[],
+) {
   const earlyJsactionData = createEarlyJsactionData(window.document.documentElement);
-  addEvents(earlyJsactionData, BUBBLE_EVENT_TYPES);
-  addEvents(earlyJsactionData, CAPTURE_EVENT_TYPES, /* capture= */ true);
+  addEvents(earlyJsactionData, bubbleEventTypes);
+  addEvents(earlyJsactionData, captureEventTypes, /* capture= */ true);
   window._ejsa = earlyJsactionData;
+}
+
+/** Get the queued `EventInfo` objects that were dispatched before a dispatcher was registered. */
+export function getGlobalQueuedEventInfos() {
+  return getQueuedEventInfos(window._ejsa);
 }
 
 /** Registers a dispatcher function on the `EarlyJsactionData` present on the window. */
@@ -24,5 +37,15 @@ export function registerGlobalDispatcher(
   restriction: Restriction,
   dispatcher: (eventInfo: EventInfo) => void,
 ) {
-  window._ejsa!.d = dispatcher;
+  registerDispatcher(window._ejsa, dispatcher);
+}
+
+/** Removes all event listener handlers. */
+export function removeAllGlobalEventListeners() {
+  removeAllEventListeners(window._ejsa);
+}
+
+/** Removes the global early event contract. */
+export function clearGlobalEarlyEventContract() {
+  window._ejsa = undefined;
 }
