@@ -113,7 +113,6 @@ export const initGlobalEventDelegation = (
   }
   const eventContract = (eventContractDetails.instance = new EventContract(
     new EventContractContainer(document.body),
-    /* useActionResolver= */ false,
   ));
   const dispatcher = new EventDispatcher(invokeRegisteredListeners);
   registerDispatcher(eventContract, dispatcher);

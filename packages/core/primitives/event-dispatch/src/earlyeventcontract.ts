@@ -104,3 +104,39 @@ export function addEvents(
     earlyJsactionData.c.addEventListener(eventType, earlyJsactionData.h, capture);
   }
 }
+
+/** Get the queued `EventInfo` objects that were dispatched before a dispatcher was registered. */
+export function getQueuedEventInfos(earlyJsactionData: EarlyJsactionData | undefined) {
+  return earlyJsactionData?.q ?? [];
+}
+
+/** Register a different dispatcher function on the `EarlyJsactionData`. */
+export function registerDispatcher(
+  earlyJsactionData: EarlyJsactionData | undefined,
+  dispatcher: (eventInfo: EventInfo) => void,
+) {
+  if (!earlyJsactionData) {
+    return;
+  }
+  earlyJsactionData.d = dispatcher;
+}
+
+/** Removes all event listener handlers. */
+export function removeAllEventListeners(earlyJsactionData: EarlyJsactionData | undefined) {
+  if (!earlyJsactionData) {
+    return;
+  }
+  removeEventListeners(earlyJsactionData.c, earlyJsactionData.et, earlyJsactionData.h);
+  removeEventListeners(earlyJsactionData.c, earlyJsactionData.etc, earlyJsactionData.h, true);
+}
+
+function removeEventListeners(
+  container: HTMLElement,
+  eventTypes: string[],
+  earlyEventHandler: (e: Event) => void,
+  capture?: boolean,
+) {
+  for (let i = 0; i < eventTypes.length; i++) {
+    container.removeEventListener(eventTypes[i], earlyEventHandler, /* useCapture */ capture);
+  }
+}
