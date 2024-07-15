@@ -1233,6 +1233,87 @@ describe('after render hooks', () => {
           'read-2',
         ]);
       });
+
+      it('should invoke all the callbacks once when they are registered at the same time', () => {
+        const log: string[] = [];
+
+        @Component({template: ''})
+        class Comp {
+          constructor() {
+            afterNextRender({
+              earlyRead: () => {
+                log.push('early-read');
+              },
+              write: () => {
+                log.push('write');
+              },
+              mixedReadWrite: () => {
+                log.push('mixed-read-write');
+              },
+              read: () => {
+                log.push('read');
+              },
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        createAndAttachComponent(Comp);
+
+        expect(log).toEqual([]);
+        TestBed.inject(ApplicationRef).tick();
+        expect(log).toEqual(['early-read', 'write', 'mixed-read-write', 'read']);
+        TestBed.inject(ApplicationRef).tick();
+        expect(log).toEqual(['early-read', 'write', 'mixed-read-write', 'read']);
+      });
+
+      it('should invoke all the callbacks each time when they are registered at the same time', () => {
+        const log: string[] = [];
+
+        @Component({template: ''})
+        class Comp {
+          constructor() {
+            afterRender({
+              earlyRead: () => {
+                log.push('early-read');
+              },
+              write: () => {
+                log.push('write');
+              },
+              mixedReadWrite: () => {
+                log.push('mixed-read-write');
+              },
+              read: () => {
+                log.push('read');
+              },
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        createAndAttachComponent(Comp);
+
+        expect(log).toEqual([]);
+        TestBed.inject(ApplicationRef).tick();
+        expect(log).toEqual(['early-read', 'write', 'mixed-read-write', 'read']);
+        TestBed.inject(ApplicationRef).tick();
+        expect(log).toEqual([
+          'early-read',
+          'write',
+          'mixed-read-write',
+          'read',
+          'early-read',
+          'write',
+          'mixed-read-write',
+          'read',
+        ]);
+      });
     });
 
     it('allows writing to a signal in afterRender', () => {
