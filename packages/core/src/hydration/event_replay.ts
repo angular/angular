@@ -13,6 +13,8 @@ import {
   EventContract,
   EventDispatcher,
   registerDispatcher,
+  getAppScopedQueuedEventInfos,
+  clearAppScopedEarlyEventContract,
 } from '@angular/core/primitives/event-dispatch';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
@@ -132,7 +134,6 @@ const initEventReplay = (eventDelegation: EventContractDetails, injector: Inject
   const earlyJsactionData = window._ejsas![appId]!;
   const eventContract = (eventDelegation.instance = new EventContract(
     new EventContractContainer(earlyJsactionData.c),
-    /* useActionResolver= */ false,
   ));
   for (const et of earlyJsactionData.et) {
     eventContract.addEvent(et);
@@ -140,8 +141,9 @@ const initEventReplay = (eventDelegation: EventContractDetails, injector: Inject
   for (const et of earlyJsactionData.etc) {
     eventContract.addEvent(et);
   }
-  eventContract.replayEarlyEvents(earlyJsactionData);
-  window._ejsas![appId] = undefined;
+  const eventInfos = getAppScopedQueuedEventInfos(appId);
+  eventContract.replayEarlyEventInfos(eventInfos);
+  clearAppScopedEarlyEventContract(appId);
   const dispatcher = new EventDispatcher(invokeRegisteredListeners);
   registerDispatcher(eventContract, dispatcher);
 };

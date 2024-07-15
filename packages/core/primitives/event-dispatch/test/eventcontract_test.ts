@@ -100,10 +100,7 @@ function createEventContract({
   eventTypes: Array<string | [string, string]>;
   dispatcher?: jasmine.Spy<Dispatcher>;
 }): EventContract {
-  const eventContract = new EventContract(
-    eventContractContainerManager,
-    /* useActionResolver= */ false,
-  );
+  const eventContract = new EventContract(eventContractContainerManager);
   for (const eventType of eventTypes) {
     if (typeof eventType === 'string') {
       eventContract.addEvent(eventType);
