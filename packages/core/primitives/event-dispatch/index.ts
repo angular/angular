@@ -14,3 +14,10 @@ export {EventDispatcher, EventPhase, registerDispatcher} from './src/event_dispa
 export {EventInfoWrapper} from './src/event_info';
 export {isEarlyEventType, isCaptureEventType} from './src/event_type';
 export {EventContract} from './src/eventcontract';
+export {
+  bootstrapAppScopedEarlyEventContract,
+  clearAppScopedEarlyEventContract,
+  getAppScopedQueuedEventInfos,
+  registerAppScopedDispatcher,
+  removeAllAppScopedEventListeners,
+} from './src/bootstrap_app_scoped';
