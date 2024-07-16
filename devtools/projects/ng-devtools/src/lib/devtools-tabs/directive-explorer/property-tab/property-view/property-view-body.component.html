@@ -1,6 +1,6 @@
-@if (controlsLoaded) {
+@if (controlsLoaded()) {
   <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" [multi]="true">
-    @if (controller.directiveMetadata?.dependencies.length > 0) {
+    @if (controller().directiveMetadata?.dependencies.length > 0) {
       <div class="mat-accordion-content">
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
@@ -17,19 +17,20 @@
               </a>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <ng-injected-services [controller]="controller"/>
+          <ng-injected-services [controller]="controller()"/>
         </mat-expansion-panel>
       </div>
     }
     @for (index of categoryOrder; track $index) {
       <div class="mat-accordion-content" cdkDrag>
-        @if (!panels[index].hidden) {
-          <mat-expansion-panel [class]="panels[index].class" [expanded]="true">
+        @let panel = panels()[index];
+        @if (!panel.hidden) {
+          <mat-expansion-panel [class]="panel.class" [expanded]="true">
             <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
               <mat-panel-title>
-                {{ panels[index].title }}
+                {{ panel.title }}
                 <a
-                  href="{{ panels[index].documentation }}"
+                  href="{{ panel.documentation }}"
                   target="_blank"
                   class="documentation"
                   matTooltip="Open docs reference"
@@ -40,8 +41,8 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <ng-property-view-tree
-              [dataSource]="panels[index].controls.dataSource"
-              [treeControl]="panels[index].controls.treeControl"
+              [dataSource]="panel.controls.dataSource"
+              [treeControl]="panel.controls.treeControl"
               (updateValue)="updateValue($event)"
               (inspect)="handleInspect($event)"
             />
