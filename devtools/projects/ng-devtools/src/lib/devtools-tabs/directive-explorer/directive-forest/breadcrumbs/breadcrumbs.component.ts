@@ -7,19 +7,15 @@
  */
 
 import {
-  AfterViewInit,
   Component,
+  computed,
+  effect,
   ElementRef,
-  EventEmitter,
-  HostListener,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  ViewChild,
+  input,
+  output,
+  signal,
+  viewChild,
 } from '@angular/core';
-import {Subject} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
 
 import {FlatNode} from '../component-data-source';
 import {MatButton} from '@angular/material/button';
@@ -33,46 +29,52 @@ import {MatCard} from '@angular/material/card';
   standalone: true,
   imports: [MatCard, MatIcon, MatButton],
 })
-export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
-  @Input({required: true}) parents!: FlatNode[];
-  @Output() handleSelect = new EventEmitter();
-  @Output() mouseOverNode = new EventEmitter();
-  @Output() mouseLeaveNode = new EventEmitter();
+export class BreadcrumbsComponent {
+  readonly parents = input.required<FlatNode[]>();
+  readonly handleSelect = output<FlatNode>();
+  readonly mouseOverNode = output<FlatNode>();
+  readonly mouseLeaveNode = output<FlatNode>();
 
-  @ViewChild('breadcrumbs') breadcrumbsScrollContent!: ElementRef;
+  readonly breadcrumbsScrollContent = viewChild.required<ElementRef>('breadcrumbs');
 
-  showScrollLeftButton = false;
-  showScrollRightButton = false;
+  readonly showScrollLeftButton = computed(() => {
+    const value = this.breadcrumbsScrollLayout();
+    return value && value.scrollLeft > 0;
+  });
 
-  updateScrollButtonVisibility$ = new Subject<void>();
+  readonly showScrollRightButton = computed(() => {
+    const value = this.breadcrumbsScrollLayout();
+    if (!value) {
+      return false;
+    }
+    const {clientWidth, scrollWidth, scrollLeft} = value;
+    return scrollWidth > clientWidth && scrollLeft + clientWidth < scrollWidth;
+  });
 
-  ngOnInit(): void {
-    this.updateScrollButtonVisibility$
-      .pipe(debounceTime(100))
-      .subscribe(() => this.updateScrollButtonVisibility());
-  }
+  private readonly breadcrumbsScrollLayout = signal<
+    | {
+        clientWidth: number;
+        scrollWidth: number;
+        scrollLeft: number;
+      }
+    | undefined
+  >(undefined);
 
-  ngAfterViewInit(): void {
-    this.updateScrollButtonVisibility$.next();
-  }
-
-  ngOnChanges(): void {
-    this.updateScrollButtonVisibility$.next();
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(): void {
-    this.updateScrollButtonVisibility$.next();
+  constructor() {
+    effect((cleanup) => {
+      const observer = new ResizeObserver(() => this.updateScrollButtonVisibility());
+      observer.observe(this.breadcrumbsScrollContent().nativeElement);
+      cleanup(() => observer.disconnect());
+    });
   }
 
   scroll(pixels: number): void {
-    this.breadcrumbsScrollContent.nativeElement.scrollLeft += pixels;
-    this.updateScrollButtonVisibility$.next();
+    this.breadcrumbsScrollContent().nativeElement.scrollLeft += pixels;
+    this.updateScrollButtonVisibility();
   }
 
   updateScrollButtonVisibility(): void {
-    const {clientWidth, scrollWidth, scrollLeft} = this.breadcrumbsScrollContent.nativeElement;
-    this.showScrollLeftButton = scrollLeft > 0;
-    this.showScrollRightButton = scrollLeft + clientWidth < scrollWidth;
+    const {clientWidth, scrollWidth, scrollLeft} = this.breadcrumbsScrollContent().nativeElement;
+    this.breadcrumbsScrollLayout.set({clientWidth, scrollWidth, scrollLeft});
   }
 }
