@@ -14,14 +14,16 @@ import {
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
+  computed,
+  effect,
   ElementRef,
-  EventEmitter,
   HostListener,
-  Input,
-  Output,
-  ViewChild,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {DevToolsNode, ElementPosition, Events, MessageBus} from 'protocol';
@@ -51,31 +53,19 @@ import {MatTooltip} from '@angular/material/tooltip';
   ],
 })
 export class DirectiveForestComponent {
-  @Input()
-  set forest(forest: DevToolsNode[]) {
-    this._latestForest = forest;
-    const result = this._updateForest(forest);
-    const changed =
-      result.movedItems.length || result.newItems.length || result.removedItems.length;
-    if (this.currentSelectedElement && changed) {
-      this._reselectNodeOnUpdate();
-    }
-  }
-  @Input({required: true}) currentSelectedElement!: IndexedNode;
-  @Input()
-  set showCommentNodes(show: boolean) {
-    this._showCommentNodes = show;
-    this.forest = this._latestForest;
-  }
+  readonly forest = input<DevToolsNode[]>([]);
+  readonly showCommentNodes = input<boolean>(false);
+  readonly currentSelectedElement = input.required<IndexedNode>();
 
-  @Output() selectNode = new EventEmitter<IndexedNode | null>();
-  @Output() selectDomElement = new EventEmitter<IndexedNode>();
-  @Output() setParents = new EventEmitter<FlatNode[] | null>();
-  @Output() highlightComponent = new EventEmitter<ElementPosition>();
-  @Output() removeComponentHighlight = new EventEmitter<void>();
-  @Output() toggleInspector = new EventEmitter<void>();
+  readonly selectNode = output<IndexedNode | null>();
+  readonly selectDomElement = output<IndexedNode>();
+  readonly setParents = output<FlatNode[] | null>();
+  readonly highlightComponent = output<ElementPosition>();
+  readonly removeComponentHighlight = output<void>();
+  readonly toggleInspector = output<void>();
 
-  @ViewChild(CdkVirtualScrollViewport) viewport!: CdkVirtualScrollViewport;
+  readonly viewport = viewChild.required<CdkVirtualScrollViewport>(CdkVirtualScrollViewport);
+  private readonly updateForestResult = computed(() => this._updateForest(this.forest()));
 
   filterRegex = new RegExp('.^');
   currentlyMatchedIndex = -1;
@@ -83,14 +73,7 @@ export class DirectiveForestComponent {
   selectedNode: FlatNode | null = null;
   parents!: FlatNode[];
 
-  private _highlightIDinTreeFromElement: number | null = null;
-  private _showCommentNodes = false;
-  private _latestForest!: DevToolsNode[];
-
-  set highlightIDinTreeFromElement(id: number | null) {
-    this._highlightIDinTreeFromElement = id;
-    this._cdr.markForCheck();
-  }
+  private readonly highlightIDinTreeFromElement = signal<number | null>(null);
 
   readonly treeControl = new FlatTreeControl<FlatNode>(
     (node) => node!.level,
@@ -102,28 +85,37 @@ export class DirectiveForestComponent {
   private _initialized = false;
   private resizeObserver: ResizeObserver;
 
-  constructor(
-    private _tabUpdate: TabUpdate,
-    private _messageBus: MessageBus<Events>,
-    private _cdr: ChangeDetectorRef,
-    private elementRef: ElementRef,
-  ) {
+  private _tabUpdate = inject(TabUpdate);
+  private _messageBus = inject<MessageBus<Events>>(MessageBus);
+  private elementRef = inject(ElementRef);
+
+  constructor() {
     this.subscribeToInspectorEvents();
     this._tabUpdate.tabUpdate$.pipe(takeUntilDestroyed()).subscribe(() => {
-      if (this.viewport) {
+      if (this.viewport()) {
         setTimeout(() => {
-          this.viewport.scrollToIndex(0);
-          this.viewport.checkViewportSize();
+          const viewport = this.viewport();
+          viewport.scrollToIndex(0);
+          viewport.checkViewportSize();
         });
       }
     });
 
     // In some cases there a height changes, we need to recalculate the viewport size.
     this.resizeObserver = new ResizeObserver(() => {
-      this.viewport.scrollToIndex(0);
-      this.viewport.checkViewportSize();
+      this.viewport().scrollToIndex(0);
+      this.viewport().checkViewportSize();
     });
     this.resizeObserver.observe(this.elementRef.nativeElement);
+
+    effect(() => {
+      const result = this.updateForestResult();
+      const changed =
+        result.movedItems.length || result.newItems.length || result.removedItems.length;
+      if (this.currentSelectedElement() && changed) {
+        this._reselectNodeOnUpdate();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -138,11 +130,11 @@ export class DirectiveForestComponent {
     });
 
     this._messageBus.on('highlightComponent', (id: number) => {
-      this.highlightIDinTreeFromElement = id;
+      this.highlightIDinTreeFromElement.set(id);
     });
 
     this._messageBus.on('removeComponentHighlight', () => {
-      this.highlightIDinTreeFromElement = null;
+      this.highlightIDinTreeFromElement.set(null);
     });
   }
 
@@ -167,7 +159,7 @@ export class DirectiveForestComponent {
   selectAndEnsureVisible(node: FlatNode): void {
     this.select(node);
 
-    const scrollParent = this.viewport.elementRef.nativeElement;
+    const scrollParent = this.viewport().elementRef.nativeElement;
     // The top most point we see an element
     const top = scrollParent.scrollTop;
     // That's the bottom most point we currently see an element.
@@ -201,7 +193,7 @@ export class DirectiveForestComponent {
 
   private _reselectNodeOnUpdate(): void {
     const nodeThatStillExists = this.dataSource.getFlatNodeFromIndexedNode(
-      this.currentSelectedElement,
+      this.currentSelectedElement(),
     );
     if (nodeThatStillExists) {
       this.select(nodeThatStillExists);
@@ -215,7 +207,7 @@ export class DirectiveForestComponent {
     movedItems: FlatNode[];
     removedItems: FlatNode[];
   } {
-    const result = this.dataSource.update(forest, this._showCommentNodes);
+    const result = this.dataSource.update(forest, this.showCommentNodes());
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();
       this._initialized = true;
@@ -399,7 +391,7 @@ export class DirectiveForestComponent {
   }
 
   highlightNode(position: ElementPosition): void {
-    this._highlightIDinTreeFromElement = null;
+    this.highlightIDinTreeFromElement.set(null);
     this.highlightComponent.emit(position);
   }
 
@@ -409,8 +401,8 @@ export class DirectiveForestComponent {
 
   isHighlighted(node: FlatNode): boolean {
     return (
-      !!this._highlightIDinTreeFromElement &&
-      this._highlightIDinTreeFromElement === node.original.component?.id
+      !!this.highlightIDinTreeFromElement() &&
+      this.highlightIDinTreeFromElement() === node.original.component?.id
     );
   }
 
