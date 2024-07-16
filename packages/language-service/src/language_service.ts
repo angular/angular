@@ -356,6 +356,17 @@ export class LanguageService {
     });
   }
 
+  /**
+   * Performance helper that can help make quick decisions for
+   * the VSCode language server to decide whether a code fix exists
+   * for the given error code.
+   *
+   * Related context: https://github.com/angular/vscode-ng-language-service/pull/2050#discussion_r1673079263
+   */
+  hasCodeFixesForErrorCode(errorCode: number): boolean {
+    return this.codeFixes.codeActionMetas.some((m) => m.errorCodes.includes(errorCode));
+  }
+
   getCodeFixesAtPosition(
     fileName: string,
     start: number,
@@ -367,6 +378,11 @@ export class LanguageService {
     return this.withCompilerAndPerfTracing<readonly ts.CodeFixAction[]>(
       PerfPhase.LsCodeFixes,
       (compiler) => {
+        // Fast exit if we know no code fix can exist for the given range/and error codes.
+        if (errorCodes.every((code) => !this.hasCodeFixesForErrorCode(code))) {
+          return [];
+        }
+
         const templateInfo = getTemplateInfoAtPosition(fileName, start, compiler);
         if (templateInfo === undefined) {
           return [];

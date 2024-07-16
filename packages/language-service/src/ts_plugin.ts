@@ -350,6 +350,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getSignatureHelpItems,
     getOutliningSpans,
     getTemplateLocationForComponent,
+    hasCodeFixesForErrorCode: ngLS.hasCodeFixesForErrorCode.bind(ngLS),
     getCodeFixesAtPosition,
     getCombinedCodeFix,
     getTypescriptLanguageService,
