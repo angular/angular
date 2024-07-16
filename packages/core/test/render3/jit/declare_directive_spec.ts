@@ -261,6 +261,47 @@ describe('directive declaration jit compilation', () => {
       features: [ɵɵNgOnChangesFeature],
     });
   });
+
+  it('should compile host directives', () => {
+    class One {}
+    class Two {}
+
+    const def = ɵɵngDeclareDirective({
+      type: TestClass,
+      hostDirectives: [
+        {
+          directive: One,
+          inputs: ['firstInput', 'firstInput', 'secondInput', 'secondInputAlias'],
+          outputs: ['firstOutput', 'firstOutput', 'secondOutput', 'secondOutputAlias'],
+        },
+        {
+          directive: Two,
+        },
+      ],
+    }) as DirectiveDef<TestClass>;
+
+    expectDirectiveDef(def, {
+      features: [jasmine.any(Function)],
+      hostDirectives: [
+        {
+          directive: One,
+          inputs: {
+            'firstInput': 'firstInput',
+            'secondInput': 'secondInputAlias',
+          },
+          outputs: {
+            'firstOutput': 'firstOutput',
+            'secondOutput': 'secondOutputAlias',
+          },
+        },
+        {
+          directive: Two,
+          inputs: {},
+          outputs: {},
+        },
+      ],
+    });
+  });
 });
 
 type DirectiveDefExpectations = jasmine.Expected<
@@ -278,6 +319,7 @@ type DirectiveDefExpectations = jasmine.Expected<
     | 'viewQuery'
     | 'exportAs'
     | 'providersResolver'
+    | 'hostDirectives'
   >
 >;
 
@@ -303,6 +345,7 @@ function expectDirectiveDef(
     viewQuery: null,
     exportAs: null,
     providersResolver: null,
+    hostDirectives: null,
     ...expected,
   };
 
@@ -321,6 +364,7 @@ function expectDirectiveDef(
   expect(actual.providersResolver)
     .withContext('providersResolver')
     .toEqual(expectation.providersResolver);
+  expect(actual.hostDirectives).withContext('hostDirectives').toEqual(expectation.hostDirectives);
 }
 
 class TestClass {}
