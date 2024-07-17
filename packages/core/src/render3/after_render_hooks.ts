@@ -613,7 +613,7 @@ function afterRenderImpl(
           if (callbacksLeftToRun < 1) {
             destroy();
           }
-          phaseCallback(...args);
+          return phaseCallback(...args);
         }
       : phaseCallback;
 
