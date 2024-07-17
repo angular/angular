@@ -68,6 +68,14 @@
   <button
     class="adev-editor-download-button"
     type="button"
+    (click)="openCurrentCodeInStackBlitz()"
+    aria-label="Open current code in editor in StackBlitz"
+  >
+    <docs-icon>launch</docs-icon>
+  </button>
+  <button
+    class="adev-editor-download-button"
+    type="button"
     (click)="downloadCurrentCodeEditorState()"
     aria-label="Download current code in editor"
   >

@@ -78,6 +78,7 @@ APPLICATION_DEPS = [
     "@npm//@lezer/highlight",
     "@npm//@lezer/javascript",
     "@npm//@lezer/common",
+    "@npm//@stackblitz/sdk",
     "@npm//@xterm/xterm",
     "@npm//@xterm/addon-fit",
     "@npm//algoliasearch",
