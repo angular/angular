@@ -33,7 +33,7 @@ For collections that remain static , `track $index` provides a straightforward t
 collections experiencing additions, deletions, or reordering, opt for a
 unique property of each item as the tracking key.
 
-<h3> `$index` and other contextual variables </h3>
+<h3><code>$index</code> and other contextual variables</h3>
 
 Inside `@for` contents, several implicit variables are always available:
 
