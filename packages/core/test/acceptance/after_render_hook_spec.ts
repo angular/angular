@@ -1279,15 +1279,19 @@ describe('after render hooks', () => {
             afterRender({
               earlyRead: () => {
                 log.push('early-read');
+                return 'early';
               },
-              write: () => {
-                log.push('write');
+              write: (previous) => {
+                log.push(`previous was ${previous}, this is write`);
+                return 'write';
               },
-              mixedReadWrite: () => {
-                log.push('mixed-read-write');
+              mixedReadWrite: (previous) => {
+                log.push(`previous was ${previous}, this is mixed-read-write`);
+                return 'mixed';
               },
-              read: () => {
-                log.push('read');
+              read: (previous) => {
+                log.push(`previous was ${previous}, this is read`);
+                return 'read';
               },
             });
           }
@@ -1301,17 +1305,22 @@ describe('after render hooks', () => {
 
         expect(log).toEqual([]);
         TestBed.inject(ApplicationRef).tick();
-        expect(log).toEqual(['early-read', 'write', 'mixed-read-write', 'read']);
+        expect(log).toEqual([
+          'early-read',
+          'previous was early, this is write',
+          'previous was write, this is mixed-read-write',
+          'previous was mixed, this is read',
+        ]);
         TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual([
           'early-read',
-          'write',
-          'mixed-read-write',
-          'read',
+          'previous was early, this is write',
+          'previous was write, this is mixed-read-write',
+          'previous was mixed, this is read',
           'early-read',
-          'write',
-          'mixed-read-write',
-          'read',
+          'previous was early, this is write',
+          'previous was write, this is mixed-read-write',
+          'previous was mixed, this is read',
         ]);
       });
     });
