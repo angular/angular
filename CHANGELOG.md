@@ -1,3 +1,12 @@
+<a name="17.3.12"></a>
+# 17.3.12 (2024-07-17)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [327bae473b](https://github.com/angular/angular/commit/327bae473b4ed430efefb4663312a01f59304081) | fix | JIT mode incorrectly interpreting host directive configuration in partial compilation ([#57002](https://github.com/angular/angular/pull/57002)) ([#57003](https://github.com/angular/angular/pull/57003)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.0-next.0"></a>
 # 18.2.0-next.0 (2024-07-10)
 ### compiler
