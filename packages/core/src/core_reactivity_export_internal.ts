@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+export {SIGNAL as ɵSIGNAL} from '@angular/core/primitives/signals';
+
 export {isSignal, Signal, ValueEqualityFn} from './render3/reactivity/api';
 export {computed, CreateComputedOptions} from './render3/reactivity/computed';
 export {
