@@ -181,6 +181,7 @@ withEachNg1Version(() => {
           $parse,
           componentFactory,
           wrapCallback,
+          /* unsafelyOverwriteSignalInputs */ false,
         );
       }
 
