@@ -159,10 +159,15 @@ export interface BootstrapOptions {
    * - calling `ChangeDetectorRef.markForCheck`
    * - calling `ComponentRef.setInput`
    * - updating a signal that is read in a template
-   * - when bound host or template listeners are triggered
    * - attaching a view that is marked dirty
    * - removing a view
    * - registering a render hook (templates are only refreshed if render hooks do one of the above)
+   *
+   * @deprecated This option was introduced out of caution as a way for developers to opt out of the
+   *    new behavior in v18 which schedule change detection for the above events when they occur
+   *    outside the Zone. After monitoring the results post-release, we have determined that this
+   *    feature is working as desired and do not believe it should ever be disabled by setting
+   *    this option to `true`.
    */
   ignoreChangesOutsideZone?: boolean;
 }
