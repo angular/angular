@@ -496,6 +496,19 @@ export enum ErrorCode {
   UNINVOKED_FUNCTION_IN_EVENT_BINDING = 8111,
 
   /**
+   * A `@let` declaration in a template isn't used.
+   *
+   * For example:
+   * ```
+   * @let used = 1; <!-- Not an error -->
+   * @let notUsed = 2; <!-- Error -->
+   *
+   * {{used}}
+   * ```
+   */
+  UNUSED_LET_DECLARATION = 8112,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
