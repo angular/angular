@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, inject, Input, signal} from '@angular/core';
+import {Component, computed, inject, input, signal} from '@angular/core';
 import {MatOption} from '@angular/material/core';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatIcon} from '@angular/material/icon';
@@ -19,8 +19,8 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
 @Component({
   selector: 'ng-injector-providers',
   template: `
-    <h1>Providers for {{ injector?.name }}</h1>
-    @if (injector) {
+    <h1>Providers for {{ injector()?.name }}</h1>
+    @if (injector()) {
     <div class="injector-providers">
       <mat-form-field appearance="fill" class="form-field-spacer">
         <mat-label>Search by token</mat-label>
@@ -42,8 +42,8 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
           }
         </mat-select>
       </mat-form-field>
-      @if (providers.length > 0) {
-      <table mat-table [dataSource]="providers" class="mat-elevation-z4">
+      @if (visibleProviders().length > 0) {
+      <table mat-table [dataSource]="visibleProviders()" class="mat-elevation-z4">
         <ng-container matColumnDef="token">
           <th mat-header-cell *matHeaderCellDef><h3 class="column-title">Token</h3></th>
           <td mat-cell *matCellDef="let provider">{{ provider.token }}</td>
@@ -155,12 +155,12 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
   ],
 })
 export class InjectorProvidersComponent {
-  @Input({required: true}) injector!: SerializedInjector;
-  @Input() providers: SerializedProviderRecord[] = [];
+  readonly injector = input.required<SerializedInjector>();
+  readonly providers = input<SerializedProviderRecord[]>([]);
 
-  searchToken = signal('');
-  searchType = signal('');
-  visibleProviders = computed(() => {
+  readonly searchToken = signal('');
+  readonly searchType = signal('');
+  readonly visibleProviders = computed(() => {
     const searchToken = this.searchToken().toLowerCase();
     const searchType = this.searchType();
 
@@ -169,7 +169,7 @@ export class InjectorProvidersComponent {
       predicates.push((provider) => provider.token.toLowerCase().includes(searchToken));
     searchType && predicates.push((provider) => provider.type === searchType);
 
-    return this.providers.filter((provider) =>
+    return this.providers().filter((provider) =>
       predicates.every((predicate) => predicate(provider)),
     );
   });
@@ -184,21 +184,15 @@ export class InjectorProvidersComponent {
 
   providerTypes = Object.keys(this.providerTypeToLabel);
 
-  messageBus = inject(MessageBus<Events>);
+  messageBus = inject<MessageBus<Events>>(MessageBus);
 
   select(row: SerializedProviderRecord) {
-    this.messageBus.emit('logProvider', [
-      {
-        id: this.injector.id,
-        type: this.injector.type,
-        name: this.injector.name,
-      },
-      row,
-    ]);
+    const {id, type, name} = this.injector();
+    this.messageBus.emit('logProvider', [{id, type, name}, row]);
   }
 
   get displayedColumns(): string[] {
-    if (this.injector?.type === 'element') {
+    if (this.injector()?.type === 'element') {
       return ['token', 'type', 'isViewProvider', 'log'];
     }
     return ['token', 'type', 'log'];

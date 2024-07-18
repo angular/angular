@@ -1,22 +1,22 @@
 <div class="meta-data-container">
-  @if (viewEncapsulation) {
+  @if (viewEncapsulation()) {
     <a
       mat-button
       color="primary"
       href="https://angular.dev/api/core/ViewEncapsulation"
       target="_blank"
       >
-      View Encapsulation: <span class="meta-data">{{ viewEncapsulation }}</span>
+      View Encapsulation: <span class="meta-data">{{ viewEncapsulation() }}</span>
     </a>
   }
-  @if (changeDetectionStrategy) {
+  @if (changeDetectionStrategy()) {
     <a
       mat-button
       color="primary"
       href="https://angular.dev/api/core/ChangeDetectionStrategy"
       target="_blank"
       >
-      Change Detection Strategy: <span class="meta-data">{{ changeDetectionStrategy }}</span>
+      Change Detection Strategy: <span class="meta-data">{{ changeDetectionStrategy() }}</span>
     </a>
   }
 </div>
