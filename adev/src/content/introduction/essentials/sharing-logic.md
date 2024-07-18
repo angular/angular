@@ -38,7 +38,7 @@ When you want to use a service in a component, you need to:
 Here’s what it might look like in the `Receipt` component:
 
 ```ts
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CalculatorService } from './calculator.service';
 
 @Component({
