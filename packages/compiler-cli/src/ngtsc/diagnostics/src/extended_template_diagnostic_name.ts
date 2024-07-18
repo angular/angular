@@ -27,4 +27,5 @@ export enum ExtendedTemplateDiagnosticName {
   SKIP_HYDRATION_NOT_STATIC = 'skipHydrationNotStatic',
   INTERPOLATED_SIGNAL_NOT_INVOKED = 'interpolatedSignalNotInvoked',
   CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 'controlFlowPreventingContentProjection',
+  UNUSED_LET_DECLARATION = 'unusedLetDeclaration',
 }
