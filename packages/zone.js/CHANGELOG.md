@@ -4,7 +4,7 @@
 ### Bug Fixes
 
 * **zone.js:** allow enabling default `beforeunload` handling ([#55875](https://github.com/angular/angular/issues/55875)) ([b8d5882](https://github.com/angular/angular/commit/b8d5882127a6e9944d30a7e0c87c2e2c59b352e6)), closes [#47579](https://github.com/angular/angular/issues/47579)
-* **zone.js:** support `Timeout.refresh` in Node.js ([#56852](https://github.com/angular/angular/issues/56852)) ([982f1b1](https://github.com/angular/angular/commit/982f1b125147e4292716f9524bef75423b70c71c)), closes [/github.com/nodejs/undici/blob/1dff4fd9b1b2cee97c5f8cf44041521a62d3f133/lib/util/timers.js#L45](https://github.com//github.com/nodejs/undici/blob/1dff4fd9b1b2cee97c5f8cf44041521a62d3f133/lib/util/timers.js/issues/L45) [#56586](https://github.com/angular/angular/issues/56586)
+* **zone.js:** support `Timeout.refresh` in Node.js ([#56852](https://github.com/angular/angular/issues/56852)) ([982f1b1](https://github.com/angular/angular/commit/982f1b125147e4292716f9524bef75423b70c71c)), closes [#56586](https://github.com/angular/angular/issues/56586)
 
 
 
