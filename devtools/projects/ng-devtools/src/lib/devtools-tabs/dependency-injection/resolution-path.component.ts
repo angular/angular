@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild} from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  input,
+  OnDestroy,
+  viewChild,
+} from '@angular/core';
 import {SerializedInjector} from 'protocol';
 
 import {InjectorTreeNode, InjectorTreeVisualizer} from './injector-tree-visualizer';
@@ -29,17 +38,17 @@ import {InjectorTreeNode, InjectorTreeVisualizer} from './injector-tree-visualiz
   ],
   standalone: true,
 })
-export class ResolutionPathComponent implements OnDestroy, AfterViewInit {
-  @ViewChild('svgContainer', {static: true}) private svgContainer!: ElementRef;
-  @ViewChild('mainGroup', {static: true}) private g!: ElementRef;
+export class ResolutionPathComponent implements OnDestroy {
+  private svgContainer = viewChild.required<ElementRef>('svgContainer');
+  private g = viewChild.required<ElementRef>('mainGroup');
 
-  @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
+  readonly orientation = input<'horizontal' | 'vertical'>('horizontal');
 
   private injectorTree!: InjectorTreeVisualizer;
-  private pathNode!: InjectorTreeNode;
 
-  @Input()
-  set path(path: SerializedInjector[]) {
+  readonly path = input<SerializedInjector[]>([]);
+  private readonly pathNode = computed(() => {
+    const path = this.path();
     const serializedInjectors = path.slice().reverse();
     const injectorTreeNodes: InjectorTreeNode[] = [];
 
@@ -57,30 +66,35 @@ export class ResolutionPathComponent implements OnDestroy, AfterViewInit {
       }
     }
 
-    this.pathNode = injectorTreeNodes[0];
-    this.injectorTree?.render?.(this.pathNode);
-  }
+    return injectorTreeNodes[0];
+  });
 
-  ngOnInit(): void {
-    this.injectorTree = new InjectorTreeVisualizer(
-      this.svgContainer.nativeElement,
-      this.g.nativeElement,
-      {
-        orientation: this.orientation,
+  constructor() {
+    afterNextRender({
+      read: () => {
+        this.injectorTree = new InjectorTreeVisualizer(
+          this.svgContainer().nativeElement,
+          this.g().nativeElement,
+          {
+            orientation: this.orientation(),
+          },
+        );
+
+        if (this.pathNode()) {
+          this.injectorTree.render(this.pathNode());
+        }
+
+        this.injectorTree.onNodeClick((_, node) => {
+          this.injectorTree.snapToNode(node);
+        });
+
+        this.injectorTree.snapToRoot(0.7);
       },
-    );
-
-    if (this.pathNode) {
-      this.injectorTree.render(this.pathNode);
-    }
-
-    this.injectorTree.onNodeClick((_, node) => {
-      this.injectorTree.snapToNode(node);
     });
-  }
 
-  ngAfterViewInit(): void {
-    this.injectorTree.snapToRoot(0.7);
+    effect(() => {
+      this.injectorTree?.render?.(this.pathNode());
+    });
   }
 
   ngOnDestroy(): void {

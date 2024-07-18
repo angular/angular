@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
 import * as d3 from 'd3';
 import {Events, MessageBus, Route} from 'protocol';
 
@@ -16,47 +24,52 @@ import {Events, MessageBus, Route} from 'protocol';
   styleUrls: ['./router-tree.component.scss'],
   standalone: true,
 })
-export class RouterTreeComponent implements AfterViewInit {
-  @ViewChild('svgContainer', {static: true}) private svgContainer!: ElementRef;
-  @ViewChild('mainGroup', {static: true}) private g!: ElementRef;
+export class RouterTreeComponent {
+  private svgContainer = viewChild.required<ElementRef>('svgContainer');
+  private g = viewChild.required<ElementRef>('mainGroup');
 
-  @Input()
-  set routes(routes: Route[]) {
-    this._routes = routes;
-    this.render();
-  }
+  routes = input<Route[]>([]);
 
-  private _routes: Route[] = [];
   private tree!: d3.TreeLayout<{}>;
   private tooltip: any;
+  private _messageBus = inject<MessageBus<Events>>(MessageBus);
 
-  constructor(private _messageBus: MessageBus<Events>) {}
+  constructor() {
+    effect(() => {
+      this.render();
+    });
 
-  ngAfterViewInit(): void {
-    this._messageBus.emit('getRoutes');
+    afterNextRender({
+      read: () => {
+        this._messageBus.emit('getRoutes');
+      },
+    });
   }
 
-  render(): void {
-    if (this._routes.length === 0 || !this.g) {
+  private render(): void {
+    const routes = this.routes();
+    const gEl = this.g()?.nativeElement;
+    const svgContainerEl = this.svgContainer()?.nativeElement;
+    if (routes.length === 0 || !this.g) {
       return;
     }
 
     // cleanup old render
     this.tooltip?.remove?.();
-    d3.select(this.g.nativeElement).selectAll('*').remove();
+    d3.select(gEl).selectAll('*').remove();
 
     this.tree = d3.tree();
-    const svg = d3.select(this.svgContainer.nativeElement);
+    const svg = d3.select(svgContainerEl);
     svg.attr('height', 500).attr('width', 500);
 
-    const g = d3.select(this.g.nativeElement);
+    const g = d3.select(gEl);
 
     const svgPadding = 20;
 
     // Compute the new tree layout.
     this.tree.nodeSize([75, 200]);
 
-    const root: any = this._routes[0];
+    const root: any = routes;
 
     const nodes = this.tree(
       d3.hierarchy(
@@ -138,8 +151,8 @@ export class RouterTreeComponent implements AfterViewInit {
     // reset transform
     g.attr('transform', 'translate(0, 0)');
 
-    const svgRect = this.svgContainer.nativeElement.getBoundingClientRect();
-    const gElRect = this.g.nativeElement.getBoundingClientRect();
+    const svgRect = svgContainerEl.getBoundingClientRect();
+    const gElRect = gEl.getBoundingClientRect();
 
     g.attr(
       'transform',
