@@ -670,15 +670,26 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   // Configure all defer `on` conditions.
   // TODO: refactor prefetch triggers to use a separate op type, with a shared superclass. This will
   // make it easier to refactor prefetch behavior in the future.
-  let prefetch = false;
   let deferOnOps: ir.DeferOnOp[] = [];
   let deferWhenOps: ir.DeferWhenOp[] = [];
-  for (const triggers of [deferBlock.triggers, deferBlock.prefetchTriggers]) {
+  const triggerSet: Array<{
+    triggers: Readonly<t.DeferredBlockTriggers>;
+    hydrate: boolean;
+    prefetch: boolean;
+  }> = [
+    // Hydrate triggers come before others because they "enable" other triggers on the server.
+    // TODO(alxhub): move this logic out of `ingest`.
+    {triggers: deferBlock.hydrateTriggers, hydrate: true, prefetch: false},
+    {triggers: deferBlock.triggers, hydrate: false, prefetch: false},
+    {triggers: deferBlock.prefetchTriggers, hydrate: false, prefetch: true},
+  ];
+  for (const {triggers, prefetch, hydrate} of triggerSet) {
     if (triggers.idle !== undefined) {
       const deferOnOp = ir.createDeferOnOp(
         deferXref,
         {kind: ir.DeferTriggerKind.Idle},
         prefetch,
+        hydrate,
         triggers.idle.sourceSpan,
       );
       deferOnOps.push(deferOnOp);
@@ -688,6 +699,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
         deferXref,
         {kind: ir.DeferTriggerKind.Immediate},
         prefetch,
+        hydrate,
         triggers.immediate.sourceSpan,
       );
       deferOnOps.push(deferOnOp);
@@ -697,6 +709,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
         deferXref,
         {kind: ir.DeferTriggerKind.Timer, delay: triggers.timer.delay},
         prefetch,
+        hydrate,
         triggers.timer.sourceSpan,
       );
       deferOnOps.push(deferOnOp);
@@ -713,6 +726,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
           targetSlotViewSteps: null,
         },
         prefetch,
+        hydrate,
         triggers.hover.sourceSpan,
       );
       deferOnOps.push(deferOnOp);
@@ -729,6 +743,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
           targetSlotViewSteps: null,
         },
         prefetch,
+        hydrate,
         triggers.interaction.sourceSpan,
       );
       deferOnOps.push(deferOnOp);
@@ -745,6 +760,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
           targetSlotViewSteps: null,
         },
         prefetch,
+        hydrate,
         triggers.viewport.sourceSpan,
       );
       deferOnOps.push(deferOnOp);
@@ -759,6 +775,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
         deferXref,
         convertAst(triggers.when.value, unit.job, triggers.when.sourceSpan),
         prefetch,
+        hydrate,
         triggers.when.sourceSpan,
       );
       deferWhenOps.push(deferOnOp);
@@ -767,10 +784,9 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
     // If no (non-prefetching) defer triggers were provided, default to `idle`.
     if (deferOnOps.length === 0 && deferWhenOps.length === 0) {
       deferOnOps.push(
-        ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, null!),
+        ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, false, null!),
       );
     }
-    prefetch = true;
   }
 
   unit.create.push(deferOnOps);

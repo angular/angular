@@ -269,20 +269,41 @@ export function defer(
 }
 
 const deferTriggerToR3TriggerInstructionsMap = new Map([
-  [ir.DeferTriggerKind.Idle, [Identifiers.deferOnIdle, Identifiers.deferPrefetchOnIdle]],
+  [
+    ir.DeferTriggerKind.Idle,
+    [Identifiers.deferOnIdle, Identifiers.deferPrefetchOnIdle, Identifiers.deferHydrateOnIdle],
+  ],
   [
     ir.DeferTriggerKind.Immediate,
-    [Identifiers.deferOnImmediate, Identifiers.deferPrefetchOnImmediate],
+    [
+      Identifiers.deferOnImmediate,
+      Identifiers.deferPrefetchOnImmediate,
+      Identifiers.deferHydrateOnImmediate,
+    ],
   ],
-  [ir.DeferTriggerKind.Timer, [Identifiers.deferOnTimer, Identifiers.deferPrefetchOnTimer]],
-  [ir.DeferTriggerKind.Hover, [Identifiers.deferOnHover, Identifiers.deferPrefetchOnHover]],
+  [
+    ir.DeferTriggerKind.Timer,
+    [Identifiers.deferOnTimer, Identifiers.deferPrefetchOnTimer, Identifiers.deferHydrateOnTimer],
+  ],
+  [
+    ir.DeferTriggerKind.Hover,
+    [Identifiers.deferOnHover, Identifiers.deferPrefetchOnHover, Identifiers.deferHydrateOnHover],
+  ],
   [
     ir.DeferTriggerKind.Interaction,
-    [Identifiers.deferOnInteraction, Identifiers.deferPrefetchOnInteraction],
+    [
+      Identifiers.deferOnInteraction,
+      Identifiers.deferPrefetchOnInteraction,
+      Identifiers.deferHydrateOnInteraction,
+    ],
   ],
   [
     ir.DeferTriggerKind.Viewport,
-    [Identifiers.deferOnViewport, Identifiers.deferPrefetchOnViewport],
+    [
+      Identifiers.deferOnViewport,
+      Identifiers.deferPrefetchOnViewport,
+      Identifiers.deferHydrateOnViewport,
+    ],
   ],
 ]);
 
@@ -290,13 +311,19 @@ export function deferOn(
   trigger: ir.DeferTriggerKind,
   args: number[],
   prefetch: boolean,
+  hydrate: boolean,
   sourceSpan: ParseSourceSpan | null,
 ): ir.CreateOp {
   const instructions = deferTriggerToR3TriggerInstructionsMap.get(trigger);
   if (instructions === undefined) {
     throw new Error(`Unable to determine instruction for trigger ${trigger}`);
   }
-  const instructionToCall = prefetch ? instructions[1] : instructions[0];
+  let instructionToCall = instructions[0];
+  if (prefetch) {
+    instructionToCall = instructions[1];
+  } else if (hydrate) {
+    instructionToCall = instructions[2];
+  }
   return call(
     instructionToCall,
     args.map((a) => o.literal(a)),
@@ -395,10 +422,16 @@ export function repeater(
 
 export function deferWhen(
   prefetch: boolean,
+  hydrate: boolean,
   expr: o.Expression,
   sourceSpan: ParseSourceSpan | null,
 ): ir.UpdateOp {
-  return call(prefetch ? Identifiers.deferPrefetchWhen : Identifiers.deferWhen, [expr], sourceSpan);
+  if (prefetch) {
+    return call(Identifiers.deferPrefetchWhen, [expr], sourceSpan);
+  } else if (hydrate) {
+    return call(Identifiers.deferHydrateWhen, [expr], sourceSpan);
+  }
+  return call(Identifiers.deferWhen, [expr], sourceSpan);
 }
 
 export function declareLet(slot: number, sourceSpan: ParseSourceSpan): ir.CreateOp {

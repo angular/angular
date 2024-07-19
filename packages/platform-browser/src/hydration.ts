@@ -19,6 +19,7 @@ import {
   ɵwithDomHydration as withDomHydration,
   ɵwithEventReplay,
   ɵwithI18nSupport,
+  ɵwithPartialHydration,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
@@ -34,6 +35,7 @@ export enum HydrationFeatureKind {
   HttpTransferCacheOptions,
   I18nSupport,
   EventReplay,
+  PartialHydration,
 }
 
 /**
@@ -117,6 +119,26 @@ export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSup
  */
 export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventReplay> {
   return hydrationFeature(HydrationFeatureKind.EventReplay, ɵwithEventReplay());
+}
+
+/**
+ * Enables support for partial hydration using the `hydrate` trigger syntax.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable event replay in your application when
+ * `bootstrapApplication` function is used:
+ * ```
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideClientHydration(withPartialHydration())]
+ * });
+ * ```
+ * @experimental
+ * @publicApi
+ * @see {@link provideClientHydration}
+ */
+export function withPartialHydration(): HydrationFeature<HydrationFeatureKind.PartialHydration> {
+  return hydrationFeature(HydrationFeatureKind.PartialHydration, ɵwithPartialHydration());
 }
 
 /**

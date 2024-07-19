@@ -1054,6 +1054,11 @@ export interface DeferOnOp extends Op<CreateOp> {
    */
   prefetch: boolean;
 
+  /**
+   * Whether to emit the prefetch version of the instruction.
+   */
+  hydrate: boolean;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -1061,6 +1066,7 @@ export function createDeferOnOp(
   defer: XrefId,
   trigger: DeferTrigger,
   prefetch: boolean,
+  hydrate: boolean,
   sourceSpan: ParseSourceSpan,
 ): DeferOnOp {
   return {
@@ -1068,6 +1074,7 @@ export function createDeferOnOp(
     defer,
     trigger,
     prefetch,
+    hydrate,
     sourceSpan,
     ...NEW_OP,
   };

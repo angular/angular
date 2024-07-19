@@ -56,3 +56,11 @@ export const EVENT_REPLAY_ENABLED_DEFAULT = false;
 export const IS_GLOBAL_EVENT_DELEGATION_ENABLED = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_GLOBAL_EVENT_DELEGATION_ENABLED' : '',
 );
+
+/**
+ * Internal token that indicates whether partial hydration support
+ * is enabled.
+ */
+export const IS_PARTIAL_HYDRATION_ENABLED = new InjectionToken<boolean>(
+  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_PARTIAL_HYDRATION_ENABLED' : '',
+);
