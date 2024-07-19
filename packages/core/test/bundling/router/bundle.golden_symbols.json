@@ -1104,9 +1104,6 @@
     "name": "defaultErrorFactory"
   },
   {
-    "name": "defaultErrorHandler2"
-  },
-  {
     "name": "defaultIfEmpty"
   },
   {

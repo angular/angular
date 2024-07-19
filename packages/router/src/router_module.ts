@@ -34,7 +34,7 @@ import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
-import {NavigationTransitions} from './navigation_transition';
+import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
 import {
   getBootstrapListener,
   rootRoute,
@@ -148,6 +148,12 @@ export class RouterModule {
           useFactory: provideForRootGuard,
           deps: [[Router, new Optional(), new SkipSelf()]],
         },
+        config?.errorHandler
+          ? {
+              provide: NAVIGATION_ERROR_HANDLER,
+              useValue: config.errorHandler,
+            }
+          : [],
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
         config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
         provideRouterScroller(),

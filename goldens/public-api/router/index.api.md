@@ -298,8 +298,7 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
     bindToComponentInputs?: boolean;
     enableTracing?: boolean;
     enableViewTransitions?: boolean;
-    // @deprecated
-    errorHandler?: (error: any) => any;
+    errorHandler?: (error: any) => RedirectCommand | any;
     initialNavigation?: InitialNavigation;
     preloadingStrategy?: any;
     scrollOffset?: [number, number] | (() => [number, number]);
@@ -705,8 +704,6 @@ export class Router {
     config: Routes;
     createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
     dispose(): void;
-    // @deprecated
-    errorHandler: (error: any) => any;
     get events(): Observable<Event_2>;
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
