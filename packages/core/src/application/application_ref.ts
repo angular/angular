@@ -101,7 +101,7 @@ export class NgProbeToken {
  */
 export interface BootstrapOptions {
   /**
-   * Optionally specify which `NgZone` should be used.
+   * Optionally specify which `NgZone` should be used when not configured in the providers.
    *
    * - Provide your own `NgZone` instance.
    * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
