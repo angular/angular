@@ -515,20 +515,12 @@ Here's the previous test, rewritten using the click helper.
 
 <docs-code header="app/dashboard/dashboard-hero.component.spec.ts (test with click helper)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard-hero.component.spec.ts" visibleRegion="click-test-3"/>
 
-<!-- TODO(atscott): Guide above this line updated on 06/11/2024. Continue updating sections below. -->
 ## Component inside a test host
 
 The previous tests played the role of the host `DashboardComponent` themselves.
 But does the `DashboardHeroComponent` work correctly when properly data-bound to a host component?
 
-You could test with the actual `DashboardComponent`.
-But doing so could require a lot of setup, especially when its template features an `*ngFor` repeater, other components, layout HTML, additional bindings, a constructor that injects multiple services, and it starts interacting with those services right away.
-
-Imagine the effort to disable these distractions, just to prove a point that can be made satisfactorily with a *test host* like this one:
-
 <docs-code header="app/dashboard/dashboard-hero.component.spec.ts (test host)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard-hero.component.spec.ts" visibleRegion="test-host"/>
-
-This test host binds to `DashboardHeroComponent` as the `DashboardComponent` would but without the noise of the `Router`, the `HeroService`, or the `*ngFor` repeater.
 
 The test host sets the component's `hero` input property with its test hero.
 It binds the component's `selected` event with its `onSelected` handler, which records the emitted hero in its `selectedHero` property.
@@ -541,7 +533,7 @@ The setup for the `test-host` tests is similar to the setup for the stand-alone 
 
 This testing module configuration shows three important differences:
 
-* It *declares* both the `DashboardHeroComponent` and the `TestHostComponent`
+* It *imports* both the `DashboardHeroComponent` and the `TestHostComponent`
 * It *creates* the `TestHostComponent` instead of the `DashboardHeroComponent`
 * The `TestHostComponent` sets the `DashboardHeroComponent.hero` with a binding
 
@@ -562,14 +554,7 @@ It confirms that the selected `DashboardHeroComponent` hero really does find its
 A *routing component* is a component that tells the `Router` to navigate to another component.
 The `DashboardComponent` is a *routing component* because the user can navigate to the `HeroDetailComponent` by clicking on one of the *hero buttons* on the dashboard.
 
-Routing is pretty complicated.
-Testing the `DashboardComponent` seemed daunting in part because it involves the `Router`, which it injects together with the `HeroService`.
-
-<docs-code header="app/dashboard/dashboard.component.ts (constructor)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard.component.ts" visibleRegion="ctor"/>
-
-<docs-code header="app/dashboard/dashboard.component.ts (goToDetail)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard.component.ts" visibleRegion="goto-detail" />
-
-Angular provides test helpers to reduce boilerplate and more effectively test code which depends on the Router and HttpClient.
+Angular provides test helpers to reduce boilerplate and more effectively test code which depends HttpClient. The `provideRouter` function can be used directly in the test module as well.
 
 <docs-code header="app/dashboard/dashboard.component.spec.ts" path="adev/src/content/examples/testing/src/app/dashboard/dashboard.component.spec.ts" visibleRegion="router-harness"/>
 
@@ -624,13 +609,13 @@ This test expects the component to try to navigate to the `HeroListComponent`.
 
 Component templates often have nested components, whose templates might contain more components.
 
-The component tree can be very deep and, most of the time, the nested components play no role in testing the component at the top of the tree.
+The component tree can be very deep and sometimes the nested components play no role in testing the component at the top of the tree.
 
 The `AppComponent`, for example, displays a navigation bar with anchors and their `RouterLink` directives.
 
 <docs-code header="app/app.component.html" path="adev/src/content/examples/testing/src/app/app.component.html"/>
 
-To validate the links, you don't need the `Router` to navigate and you don't need the `<router-outlet>` to mark where the `Router` inserts *routed components*.
+To validate the links but not the navigation, you don't need the `Router` to navigate and you don't need the `<router-outlet>` to mark where the `Router` inserts *routed components*.
 
 The `BannerComponent` and `WelcomeComponent` \(indicated by `<app-banner>` and `<app-welcome>`\) are also irrelevant.
 
@@ -639,8 +624,6 @@ Yet any test that creates the `AppComponent` in the DOM also creates instances o
 If you neglect to declare them, the Angular compiler won't recognize the `<app-banner>`, `<app-welcome>`, and `<router-outlet>` tags in the `AppComponent` template and will throw an error.
 
 If you declare the real components, you'll also have to declare *their* nested components and provide for *all* services injected in *any* component in the tree.
-
-That's too much effort just to answer a few simple questions about links.
 
 This section describes two techniques for minimizing the setup.
 Use them, alone or in combination, to stay focused on testing the primary component.
@@ -719,8 +702,6 @@ Here are some tests that confirm those links are wired to the `routerLink` direc
 
 The `HeroDetailComponent` is a simple view with a title, two hero fields, and two buttons.
 
-<img alt="HeroDetailComponent in action" src="assets/images/guide/testing/hero-detail.component.png">
-
 But there's plenty of template complexity even in this simple form.
 
 <docs-code
@@ -732,7 +713,6 @@ Tests that exercise the component need …
 * A reference to the title text
 * A reference to the name input box to inspect and set it
 * References to the two buttons so they can click them
-* Spies for some of the component and router methods
 
 Even a small form such as this one can produce a mess of tortured conditional setup and CSS element selection.
 

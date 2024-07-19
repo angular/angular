@@ -115,6 +115,7 @@ function overrideSetup() {
     expect(TestBed.inject(Router).url).toEqual('/heroes');
   }));
 }
+// #enddocregion override-tests
 
 ////////////////////
 import {getTestHeroes} from '../model/testing/test-hero.service';
