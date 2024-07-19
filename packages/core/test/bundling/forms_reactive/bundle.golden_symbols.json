@@ -813,6 +813,9 @@
     "name": "bloomHasToken"
   },
   {
+    "name": "bootstrap"
+  },
+  {
     "name": "callHook"
   },
   {
@@ -1360,6 +1363,9 @@
   },
   {
     "name": "isAbstractControlOptions"
+  },
+  {
+    "name": "isApplicationBootstrapConfig"
   },
   {
     "name": "isArrayLike"
