@@ -91,6 +91,7 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  * This service is provided in the root scope and configured with [provideRouter](api/router/provideRouter).
  *
  * @see {@link Route}
+ * @see {@link provideRouter}
  * @see [Routing and Navigation Guide](guide/routing/common-router-tasks).
  *
  * @ngModule RouterModule
