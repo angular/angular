@@ -88,7 +88,7 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  * @description
  *
  * A service that facilitates navigation among views and URL manipulation capabilities.
- * This service is provided at root level in hierarchical dependency injection structure by importing module returned from `forRoot` method of [RouterModule](api/router/RouterModule) .
+ * This service is provided in the root scope and configured with [provideRouter](api/router/provideRouter).
  *
  * @see {@link Route}
  * @see [Routing and Navigation Guide](guide/routing/common-router-tasks).
