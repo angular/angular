@@ -15,6 +15,11 @@
       "aliases": [
         "control-flow"
       ]
+    },
+    "inject-migration": {
+      "description": "Converts usages of constructor-based injection to the inject() function",
+      "factory": "./ng-generate/inject-migration/bundle",
+      "schema": "./ng-generate/inject-migration/schema.json"
     }
   }
 }
