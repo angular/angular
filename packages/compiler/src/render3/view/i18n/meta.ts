@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WhitespaceVisitor} from '../../../ml_parser/html_whitespaces';
+import {WhitespaceVisitor, visitAllWithSiblings} from '../../../ml_parser/html_whitespaces';
 import {computeDecimalDigest, computeDigest, decimalDigest} from '../../../i18n/digest';
 import * as i18n from '../../../i18n/i18n_ast';
 import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser';
@@ -129,7 +129,7 @@ export class I18nMetaVisitor implements html.Visitor {
           const originalNodeMap = new Map<html.Node, html.Node>();
           const trimmedNodes = this.preserveSignificantWhitespace
             ? element.children
-            : html.visitAll(
+            : visitAllWithSiblings(
                 new WhitespaceVisitor(false /* preserveSignificantWhitespace */, originalNodeMap),
                 element.children,
               );

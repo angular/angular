@@ -237,8 +237,19 @@ export function parseTemplate(
     // and `$localize` calls which should retain significant whitespace in order to render the
     // correct output. We let this diverge from the message IDs generated earlier which might not
     // have preserved significant whitespace.
+    //
+    // This should use `visitAllWithSiblings` to set `WhitespaceVisitor` context correctly, however
+    // there is an existing bug where significant whitespace is not properly retained in the JS
+    // output of leading/trailing whitespace for ICU messages due to the existing lack of context\
+    // in `WhitespaceVisitor`. Using `visitAllWithSiblings` here would fix that bug and retain the
+    // whitespace, however it would also change the runtime representation which we don't want to do
+    // right now.
     rootNodes = html.visitAll(
-      new WhitespaceVisitor(/* preserveSignificantWhitespace */ true),
+      new WhitespaceVisitor(
+        /* preserveSignificantWhitespace */ true,
+        /* originalNodeMap */ undefined,
+        /* requireContext */ false,
+      ),
       rootNodes,
     );
 
