@@ -78,7 +78,9 @@ export default class ApiReferenceList {
               ? apiItem.title.toLocaleLowerCase().includes(this.query().toLocaleLowerCase())
               : true) &&
             (this.includeDeprecated() ? true : apiItem.isDeprecated === this.includeDeprecated()) &&
-            (this.type() === ALL_STATUSES_KEY || apiItem.itemType === this.type())
+            (this.type() === undefined ||
+              this.type() === ALL_STATUSES_KEY ||
+              apiItem.itemType === this.type())
           );
         }),
       }))
