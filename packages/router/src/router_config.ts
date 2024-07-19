@@ -8,23 +8,7 @@
 
 import {InjectionToken} from '@angular/core';
 
-import {OnSameUrlNavigation, QueryParamsHandling} from './models';
-
-/**
- * Error handler that is invoked when a navigation error occurs.
- *
- * If the handler returns a value, the navigation Promise is resolved with this value.
- * If the handler throws an exception, the navigation Promise is rejected with
- * the exception.
- *
- * @publicApi
- * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
- *   If the ErrorHandler is used to prevent unhandled promise rejections when navigation
- *   errors occur, use the `resolveNavigationPromiseOnError` option instead.
- *
- * @see RouterConfigOptions
- */
-export type ErrorHandler = (error: any) => any;
+import {OnSameUrlNavigation, QueryParamsHandling, RedirectCommand} from './models';
 
 /**
  * Allowed values in an `ExtraOptions` object that configure
@@ -248,13 +232,9 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * If the handler returns a value, the navigation Promise is resolved with this value.
    * If the handler throws an exception, the navigation Promise is rejected with the exception.
    *
-   * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
-   *   If the ErrorHandler is used to prevent unhandled promise rejections when navigation
-   *   errors occur, use the `resolveNavigationPromiseOnError` option instead.
-   *
    * @see RouterConfigOptions
    */
-  errorHandler?: (error: any) => any;
+  errorHandler?: (error: any) => RedirectCommand | any;
 
   /**
    * Configures a preloading strategy.

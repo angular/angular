@@ -328,10 +328,6 @@ export interface NavigationTransition {
  */
 interface InternalRouterInterface {
   config: Routes;
-  // All of these are public API of router interface and can change during runtime because they are
-  // writeable. Ideally, these would be removed and the values retrieved instead from the values
-  // available in DI.
-  errorHandler: (error: any) => any;
   navigated: boolean;
   routeReuseStrategy: RouteReuseStrategy;
   onSameUrlNavigation: 'reload' | 'ignore';
@@ -893,10 +889,7 @@ export class NavigationTransitions {
                   );
                 } else {
                   this.events.next(navigationError);
-                  // TODO(atscott): remove deprecation on errorHandler in RouterModule.forRoot and change behavior to provide NAVIGATION_ERROR_HANDLER
-                  // Note: Still remove public `Router.errorHandler` property, as this is supposed to be configured in DI.
-                  const errorHandlerResult = router.errorHandler(e);
-                  overallTransitionState.resolve(!!errorHandlerResult);
+                  throw e;
                 }
               } catch (ee) {
                 // TODO(atscott): consider flipping the default behavior of

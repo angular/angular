@@ -143,15 +143,6 @@ export class Router {
   }
 
   /**
-   * A handler for navigation errors in this NgModule.
-   *
-   * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
-   *   `provideRouter` has the `withNavigationErrorHandler` feature to make this easier.
-   * @see {@link withNavigationErrorHandler}
-   */
-  errorHandler: (error: any) => any = this.options.errorHandler || defaultErrorHandler;
-
-  /**
    * True if at least one navigation event has occurred,
    * false otherwise.
    */
