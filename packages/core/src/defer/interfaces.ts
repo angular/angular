@@ -121,6 +121,11 @@ export interface TDeferBlockDetails {
    * Id of the pending task, indicating that dependencies are being loaded.
    */
   taskId: number | null;
+
+  /**
+   * Id of the pending task, indicating that dependencies are being loaded.
+   */
+  hydrate: boolean;
 }
 
 /**

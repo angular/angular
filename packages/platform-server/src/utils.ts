@@ -18,6 +18,7 @@ import {
   Type,
   ɵannotateForHydration as annotateForHydration,
   ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
+  ɵIS_PARTIAL_HYDRATION_ENABLED as IS_PARTIAL_HYDRATION_ENABLED,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵwhenStable as whenStable,
 } from '@angular/core';

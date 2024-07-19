@@ -211,6 +211,16 @@ export function collectDomEventsInfo(
   return domEventsInfo;
 }
 
+function invokeListeners(event: Event, currentTarget: Element | null) {
+  const handlerFns = currentTarget?.__jsaction_fns?.get(event.type);
+  if (!handlerFns) {
+    return;
+  }
+  for (const handler of handlerFns) {
+    handler(event);
+  }
+}
+
 export function invokeRegisteredReplayListeners(
   appRef: ApplicationRef,
   event: Event,
@@ -220,13 +230,7 @@ export function invokeRegisteredReplayListeners(
   if (/d\d+/.test(blockName)) {
     hydrateAndInvokeBlockListeners(blockName, appRef, event, currentTarget!);
   } else if (event.eventPhase === EventPhase.REPLAY) {
-    const handlerFns = currentTarget?.__jsaction_fns?.get(event.type);
-    if (!handlerFns) {
-      return;
-    }
-    for (const handler of handlerFns) {
-      handler(event);
-    }
+    invokeListeners(event, currentTarget);
   }
 }
 
@@ -262,13 +266,7 @@ function replayQueuedBlockEvents(hydratedBlocks: Set<string>) {
   for (let {event, currentTarget} of queue) {
     const blockName = currentTarget.getAttribute(BLOCKNAME_ATTRIBUTE)!;
     if (hydratedBlocks.has(blockName)) {
-      const handlerFns = currentTarget?.__jsaction_fns?.get(event.type);
-      if (!handlerFns) {
-        return;
-      }
-      for (const handler of handlerFns) {
-        handler(event);
-      }
+      invokeListeners(event, currentTarget);
     } else {
       // requeue events that weren't yet hydrated
       blockEventQueue.push({event, currentTarget});

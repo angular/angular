@@ -48,8 +48,6 @@ export {provideExperimentalCheckNoChangesForDebug} from './change_detection/sche
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
 export {
   APP_ID,
-  DEFER_BLOCK_CONFIG,
-  DeferBlockConfig,
   PACKAGE_ROOT_URL,
   PLATFORM_INITIALIZER,
   PLATFORM_ID,

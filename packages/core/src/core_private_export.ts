@@ -70,6 +70,7 @@ export {annotateForHydration as ɵannotateForHydration} from './hydration/annota
 export {
   withDomHydration as ɵwithDomHydration,
   withI18nSupport as ɵwithI18nSupport,
+  withPartialHydration as ɵwithPartialHydration,
 } from './hydration/api';
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
 export {
@@ -77,7 +78,10 @@ export {
   JSACTION_EVENT_CONTRACT as ɵJSACTION_EVENT_CONTRACT,
 } from './event_delegation_utils';
 export {provideGlobalEventDelegation as ɵprovideGlobalEventDelegation} from './event_dispatch/event_delegation';
-export {IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED} from './hydration/tokens';
+export {
+  IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED,
+  IS_PARTIAL_HYDRATION_ENABLED as ɵIS_PARTIAL_HYDRATION_ENABLED,
+} from './hydration/tokens';
 export {
   HydratedNode as ɵHydratedNode,
   HydrationInfo as ɵHydrationInfo,

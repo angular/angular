@@ -777,6 +777,11 @@ export interface DeferWhenOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait, 
    */
   prefetch: boolean;
 
+  /**
+   * Whether to emit the hydrate version of the instruction.
+   */
+  hydrate: boolean;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -784,6 +789,7 @@ export function createDeferWhenOp(
   target: XrefId,
   expr: o.Expression,
   prefetch: boolean,
+  hydrate: boolean,
   sourceSpan: ParseSourceSpan,
 ): DeferWhenOp {
   return {
@@ -791,6 +797,7 @@ export function createDeferWhenOp(
     target,
     expr,
     prefetch,
+    hydrate,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
