@@ -756,6 +756,9 @@
     "name": "bloomHasToken"
   },
   {
+    "name": "bootstrap"
+  },
+  {
     "name": "buildAnimationAst"
   },
   {
@@ -1183,6 +1186,9 @@
   },
   {
     "name": "invokeQuery"
+  },
+  {
+    "name": "isApplicationBootstrapConfig"
   },
   {
     "name": "isComponentDef"

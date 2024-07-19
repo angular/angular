@@ -792,6 +792,9 @@
     "name": "booleanAttribute"
   },
   {
+    "name": "bootstrap"
+  },
+  {
     "name": "callHook"
   },
   {
@@ -1318,6 +1321,9 @@
   },
   {
     "name": "invokeHostBindingsInCreationMode"
+  },
+  {
+    "name": "isApplicationBootstrapConfig"
   },
   {
     "name": "isArrayLike"

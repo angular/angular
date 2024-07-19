@@ -721,7 +721,7 @@ describe('bootstrap factory method', () => {
   it('should allow provideZoneChangeDetection in bootstrapModule', async () => {
     @NgModule({imports: [BrowserModule], providers: [provideZoneChangeDetection()]})
     class SomeModule {
-      ngDoBootstrap(){}
+      ngDoBootstrap() {}
     }
 
     await expectAsync(platformBrowserDynamic().bootstrapModule(SomeModule)).toBeResolved();

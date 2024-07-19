@@ -117,15 +117,15 @@ export function bootstrap<M>(
         // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
         const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
         setLocaleId(localeId || DEFAULT_LOCALE_ID);
+        if (typeof ngDevMode === 'undefined' || ngDevMode) {
+          const imagePerformanceService = envInjector.get(ImagePerformanceWarning);
+          imagePerformanceService.start();
+        }
 
         if (isApplicationBootstrapConfig(config)) {
           const appRef = envInjector.get(ApplicationRef);
           if (config.rootComponent !== undefined) {
             appRef.bootstrap(config.rootComponent);
-          }
-          if (typeof ngDevMode === 'undefined' || ngDevMode) {
-            const imagePerformanceService = envInjector.get(ImagePerformanceWarning);
-            imagePerformanceService.start();
           }
           return appRef;
         } else {
