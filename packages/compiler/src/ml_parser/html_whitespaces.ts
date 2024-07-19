@@ -63,6 +63,7 @@ export class WhitespaceVisitor implements html.Visitor {
   constructor(
     private readonly preserveSignificantWhitespace: boolean,
     private readonly originalNodeMap?: Map<html.Node, html.Node>,
+    private readonly requireContext = true,
   ) {}
 
   visitElement(element: html.Element, context: any): any {
@@ -71,7 +72,7 @@ export class WhitespaceVisitor implements html.Visitor {
       // but still visit all attributes to eliminate one used as a market to preserve WS
       const newElement = new html.Element(
         element.name,
-        html.visitAll(this, element.attrs),
+        visitAllWithSiblings(this, element.attrs),
         element.children,
         element.sourceSpan,
         element.startSourceSpan,
@@ -202,6 +203,18 @@ export class WhitespaceVisitor implements html.Visitor {
   visitLetDeclaration(decl: html.LetDeclaration, context: any) {
     return decl;
   }
+
+  visit(_node: html.Node, context: any) {
+    // `visitAllWithSiblings` provides context necessary for ICU messages to be handled correctly.
+    // Prefer that over calling `html.visitAll` directly on this visitor.
+    if (this.requireContext && !context) {
+      throw new Error(
+        `WhitespaceVisitor requires context. Visit via \`visitAllWithSiblings\` to get this context.`,
+      );
+    }
+
+    return false;
+  }
 }
 
 function trimLeadingWhitespace(
@@ -261,7 +274,7 @@ export function removeWhitespaces(
   preserveSignificantWhitespace: boolean,
 ): ParseTreeResult {
   return new ParseTreeResult(
-    html.visitAll(
+    visitAllWithSiblings(
       new WhitespaceVisitor(preserveSignificantWhitespace),
       htmlAstWithErrors.rootNodes,
     ),
@@ -274,7 +287,7 @@ interface SiblingVisitorContext {
   next: html.Node | undefined;
 }
 
-function visitAllWithSiblings(visitor: WhitespaceVisitor, nodes: html.Node[]): any[] {
+export function visitAllWithSiblings(visitor: WhitespaceVisitor, nodes: html.Node[]): any[] {
   const result: any[] = [];
 
   nodes.forEach((ast, i) => {

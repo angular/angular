@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as html from '../ml_parser/ast';
 import {InterpolationConfig} from '../ml_parser/defaults';
 import {HtmlParser} from '../ml_parser/html_parser';
-import {WhitespaceVisitor} from '../ml_parser/html_whitespaces';
+import {WhitespaceVisitor, visitAllWithSiblings} from '../ml_parser/html_whitespaces';
 import {ParseError} from '../parse_util';
 
 import {extractMessages} from './extractor_merger';
@@ -49,7 +48,7 @@ export class MessageBundle {
     // affected message IDs.
     const rootNodes = this._preserveWhitespace
       ? htmlParserResult.rootNodes
-      : html.visitAll(
+      : visitAllWithSiblings(
           new WhitespaceVisitor(/* preserveSignificantWhitespace */ false),
           htmlParserResult.rootNodes,
         );
