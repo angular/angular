@@ -52,8 +52,8 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   // tslint:disable-next-line:require-internal-with-underscore
   _bootstrapComponents: Type<any>[] = [];
   // tslint:disable-next-line:require-internal-with-underscore
-  _r3Injector: R3Injector;
-  override instance: T;
+  private readonly _r3Injector: R3Injector;
+  override instance!: T;
   destroyCbs: (() => void)[] | null = [];
 
   // When bootstrapping a module we have a dependency graph that looks like this:
@@ -66,9 +66,10 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     new ComponentFactoryResolver(this);
 
   constructor(
-    ngModuleType: Type<T>,
+    private readonly ngModuleType: Type<T>,
     public _parent: Injector | null,
     additionalProviders: StaticProvider[],
+    runInjectorInitializers = true,
   ) {
     super();
     const ngModuleDef = getNgModuleDef(ngModuleType);
@@ -97,8 +98,14 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     // We need to resolve the injector types separately from the injector creation, because
     // the module might be trying to use this ref in its constructor for DI which will cause a
     // circular error that will eventually error out, because the injector isn't created yet.
+    if (runInjectorInitializers) {
+      this.resolveInjectorInitializers();
+    }
+  }
+
+  resolveInjectorInitializers() {
     this._r3Injector.resolveInjectorInitializers();
-    this.instance = this._r3Injector.get(ngModuleType);
+    this.instance = this._r3Injector.get(this.ngModuleType);
   }
 
   override get injector(): EnvironmentInjector {
@@ -133,7 +140,7 @@ export function createNgModuleRefWithProviders<T>(
   parentInjector: Injector | null,
   additionalProviders: StaticProvider[],
 ): InternalNgModuleRef<T> {
-  return new NgModuleRef(moduleType, parentInjector, additionalProviders);
+  return new NgModuleRef(moduleType, parentInjector, additionalProviders, false);
 }
 
 export class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {

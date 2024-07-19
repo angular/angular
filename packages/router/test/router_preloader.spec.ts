@@ -17,9 +17,8 @@ import {
   NgModuleFactory,
   NgModuleRef,
   Type,
+  EnvironmentInjector,
 } from '@angular/core';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
-import {NgModuleRef as R3NgModuleRef} from '@angular/core/src/render3';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {
   PreloadAllModules,
@@ -127,7 +126,11 @@ describe('RouterPreloader', () => {
     it('should work', fakeAsync(
       inject(
         [RouterPreloader, Router, NgModuleRef],
-        (preloader: RouterPreloader, router: Router, testModule: R3NgModuleRef<unknown>) => {
+        (
+          preloader: RouterPreloader,
+          router: Router,
+          testModule: {_r3Injector: EnvironmentInjector},
+        ) => {
           const events: Array<RouteConfigLoadStart | RouteConfigLoadEnd> = [];
           @NgModule({
             declarations: [LazyLoadedCmp],
@@ -238,7 +241,7 @@ describe('RouterPreloader', () => {
         (
           preloader: RouterPreloader,
           router: Router,
-          testModule: R3NgModuleRef<unknown>,
+          testModule: {_r3Injector: EnvironmentInjector},
           compiler: Compiler,
         ) => {
           @NgModule()
@@ -270,13 +273,15 @@ describe('RouterPreloader', () => {
 
           const c = router.config;
 
-          const injector = getLoadedInjector(c[0]) as R3Injector;
+          const injector = getLoadedInjector(c[0]) as unknown as {parent: EnvironmentInjector};
 
           const loadedRoutes = getLoadedRoutes(c[0])!;
           expect(injector.parent).toBe(testModule._r3Injector);
 
           const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
-          const injector3 = getLoadedInjector(loadedRoutes2[0]) as R3Injector;
+          const injector3 = getLoadedInjector(loadedRoutes2[0]) as unknown as {
+            parent: EnvironmentInjector;
+          };
           expect(injector3.parent).toBe(module2.injector);
         },
       ),

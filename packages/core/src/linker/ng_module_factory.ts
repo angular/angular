@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
-import {EnvironmentInjector} from '../di/r3_injector';
+import {EnvironmentInjector, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 
 import {ComponentFactoryResolver} from './component_factory_resolver';
@@ -56,6 +56,7 @@ export interface InternalNgModuleRef<T> extends NgModuleRef<T> {
   // Note: we are using the prefix _ as NgModuleData is an NgModuleRef and therefore directly
   // exposed to the user.
   _bootstrapComponents: Type<any>[];
+  resolveInjectorInitializers(): void;
 }
 
 /**

@@ -22,7 +22,7 @@ import {
 } from '../change_detection/scheduling/ng_zone_scheduling';
 import {
   ChangeDetectionScheduler,
-  ZONELESS_ENABLED,
+  PROVIDED_ZONELESS,
 } from '../change_detection/scheduling/zoneless_scheduling';
 import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {Injectable, InjectionToken, Injector} from '../di';
@@ -36,7 +36,7 @@ import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from '../linker/ng_mo
 import {setLocaleId} from '../render3';
 import {createNgModuleRefWithProviders} from '../render3/ng_module_ref';
 import {stringify} from '../util/stringify';
-import {getNgZone} from '../zone/ng_zone';
+import {getNgZone, NgZone, NoopNgZone} from '../zone/ng_zone';
 
 /**
  * Internal token that allows to register extra callbacks that should be invoked during the
@@ -76,54 +76,49 @@ export class PlatformRef {
     moduleFactory: NgModuleFactory<M>,
     options?: BootstrapOptions,
   ): Promise<NgModuleRef<M>> {
-    // Note: We need to create the NgZone _before_ we instantiate the module,
-    // as instantiating the module creates some providers eagerly.
-    // So we create a mini parent injector that just contains the new NgZone and
-    // pass that as parent to the NgModuleFactory.
-    const ngZone = getNgZone(
-      options?.ngZone,
-      getNgZoneOptions({
-        eventCoalescing: options?.ngZoneEventCoalescing,
-        runCoalescing: options?.ngZoneRunCoalescing,
-      }),
-    );
-    // Note: Create ngZoneInjector within ngZone.run so that all of the instantiated services are
-    // created within the Angular zone
-    // Do not try to replace ngZone.run with ApplicationRef#run because ApplicationRef would then be
-    // created outside of the Angular zone.
-    return ngZone.run(() => {
-      const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
-      const moduleRef = createNgModuleRefWithProviders(moduleFactory.moduleType, this.injector, [
-        ...internalProvideZoneChangeDetection({
-          ngZoneFactory: () => ngZone,
-          ignoreChangesOutsideZone,
+    const ngZoneFactory = () =>
+      getNgZone(
+        options?.ngZone,
+        getNgZoneOptions({
+          eventCoalescing: options?.ngZoneEventCoalescing,
+          runCoalescing: options?.ngZoneRunCoalescing,
         }),
-        {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
-      ]);
+      );
+    const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
+    const allAppProviders = [
+      internalProvideZoneChangeDetection({
+        ngZoneFactory,
+        ignoreChangesOutsideZone,
+      }),
+      {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+    ];
+    const moduleRef = createNgModuleRefWithProviders(
+      moduleFactory.moduleType,
+      this.injector,
+      allAppProviders,
+    );
+    const envInjector = moduleRef.injector;
+    const ngZone = envInjector.get(NgZone);
 
+    return ngZone.run(() => {
+      moduleRef.resolveInjectorInitializers();
+      const exceptionHandler = envInjector.get(ErrorHandler, null);
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        if (moduleRef.injector.get(PROVIDED_NG_ZONE)) {
+        if (exceptionHandler === null) {
           throw new RuntimeError(
-            RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
-            '`bootstrapModule` does not support `provideZoneChangeDetection`. Use `BootstrapOptions` instead.',
+            RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+            'No ErrorHandler. Is platform module (BrowserModule) included?',
           );
         }
-        if (moduleRef.injector.get(ZONELESS_ENABLED) && options?.ngZone !== 'noop') {
+        if (envInjector.get(PROVIDED_ZONELESS) && envInjector.get(PROVIDED_NG_ZONE)) {
           throw new RuntimeError(
             RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
             'Invalid change detection configuration: ' +
-              "`ngZone: 'noop'` must be set in `BootstrapOptions` with provideExperimentalZonelessChangeDetection.",
+              'provideZoneChangeDetection and provideExperimentalZonelessChangeDetection cannot be used together.',
           );
         }
       }
 
-      const exceptionHandler = moduleRef.injector.get(ErrorHandler, null);
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && exceptionHandler === null) {
-        throw new RuntimeError(
-          RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-          'No ErrorHandler. Is platform module (BrowserModule) included?',
-        );
-      }
       ngZone.runOutsideAngular(() => {
         const subscription = ngZone.onError.subscribe({
           next: (error: any) => {
@@ -136,11 +131,12 @@ export class PlatformRef {
         });
       });
       return _callAndReportToErrorHandler(exceptionHandler!, ngZone, () => {
-        const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
+        const initStatus = envInjector.get(ApplicationInitStatus);
         initStatus.runInitializers();
+
         return initStatus.donePromise.then(() => {
           // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
-          const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+          const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
           setLocaleId(localeId || DEFAULT_LOCALE_ID);
           this._moduleDoBootstrap(moduleRef);
           return moduleRef;
