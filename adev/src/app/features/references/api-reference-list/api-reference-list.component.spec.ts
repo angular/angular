@@ -14,6 +14,7 @@ import {signal} from '@angular/core';
 import {ApiItemType} from '../interfaces/api-item-type';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter} from '@angular/router';
+import {Location} from '@angular/common';
 
 describe('ApiReferenceList', () => {
   let component: ApiReferenceList;
@@ -116,5 +117,31 @@ describe('ApiReferenceList', () => {
     component.filterByItemType(ApiItemType.BLOCK);
     harness.navigateByUrl(`/api`);
     expect(component.type()).toBe(ALL_STATUSES_KEY);
+  });
+
+  it('should set the value of the queryParam equal to the query value', async () => {
+    const location = TestBed.inject(Location);
+    component.query.set('item1');
+    await fixture.whenStable();
+    expect(location.path()).toBe(`?query=item1&type=All`);
+  });
+
+  it('should keep the values of existing queryParams and set new queryParam equal to the type', async () => {
+    const location = TestBed.inject(Location);
+
+    component.query.set('item1');
+    await fixture.whenStable();
+    expect(location.path()).toBe(`?query=item1&type=All`);
+
+    component.filterByItemType(ApiItemType.BLOCK);
+    await fixture.whenStable();
+    expect(location.path()).toBe(`?query=item1&type=${ApiItemType.BLOCK}`);
+  });
+
+  it('should display all items when query and type are undefined', async () => {
+    component.query.set(undefined);
+    component.type.set(undefined);
+    await fixture.whenStable();
+    expect(component.filteredGroups()![0].items).toEqual([fakeItem1, fakeItem2]);
   });
 });
