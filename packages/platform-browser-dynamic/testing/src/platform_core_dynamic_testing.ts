@@ -15,8 +15,4 @@ import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-br
  * @publicApi
  */
 export const platformCoreDynamicTesting: (extraProviders?: any[]) => PlatformRef =
-    createPlatformFactory(
-        platformCoreDynamic,
-        'coreDynamicTesting',
-        [],
-    );
+  createPlatformFactory(platformCoreDynamic, 'coreDynamicTesting', []);

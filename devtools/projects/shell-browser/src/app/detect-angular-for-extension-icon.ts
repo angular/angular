@@ -6,48 +6,50 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export interface AngularDetection {
-  // This is necessary because the runtime
-  // message listener handles messages globally
-  // including from other extensions. We don't
-  // want to set icon and/or popup based on
-  // a message coming from an unrelated extension.
-  isAngularDevTools: true;
-  isIvy: boolean;
-  isAngular: boolean;
-  isDebugMode: boolean;
-  isSupportedAngularVersion: boolean;
-}
+import {AngularDetection} from 'protocol';
+import {
+  appIsAngular,
+  appIsAngularInDevMode,
+  appIsAngularIvy,
+  appIsSupportedAngularVersion,
+} from 'shared-utils';
+
+import {SamePageMessageBus} from './same-page-message-bus';
+
+const detectAngularMessageBus = new SamePageMessageBus(
+  `angular-devtools-detect-angular-${location.href}`,
+  `angular-devtools-content-script-${location.href}`,
+);
 
 function detectAngular(win: Window): void {
-  const isDebugMode = Boolean((win as any).ng);
-  const ngVersionElement = document.querySelector('[ng-version]');
-  let isSupportedAngularVersion = false;
-  let isAngular = false;
+  const isAngular = appIsAngular();
+  const isSupportedAngularVersion = appIsSupportedAngularVersion();
+  const isDebugMode = appIsAngularInDevMode();
+  const isIvy = appIsAngularIvy();
 
-  if (ngVersionElement) {
-    isAngular = true;
-    const attr = ngVersionElement.getAttribute('ng-version');
-    const major = attr ? parseInt(attr.split('.')[0], 10) : -1;
-    // In case of g3 apps we support major 0.
-    if (attr && (major >= 12 || major === 0)) {
-      isSupportedAngularVersion = true;
-    }
-  }
+  const detection: AngularDetection = {
+    isIvy,
+    isAngular,
+    isDebugMode,
+    isSupportedAngularVersion,
+    isAngularDevTools: true,
+  };
 
-  win.postMessage(
-      {
-        isIvy: typeof (ngVersionElement as any)?.__ngContext__ !== 'undefined',
-        isAngular,
-        isDebugMode,
-        isSupportedAngularVersion,
-        isAngularDevTools: true,
-      } as AngularDetection,
-      '*');
+  // For the background script to toggle the icon.
+  win.postMessage(detection, '*');
 
-  if (!isAngular) {
-    setTimeout(() => detectAngular(win), 1000);
-  }
+  // For the content script to inject the backend.
+  detectAngularMessageBus.emit('detectAngular', [
+    {
+      isIvy,
+      isAngular,
+      isDebugMode,
+      isSupportedAngularVersion,
+      isAngularDevTools: true,
+    },
+  ]);
+
+  setTimeout(() => detectAngular(win), 1000);
 }
 
 detectAngular(window);

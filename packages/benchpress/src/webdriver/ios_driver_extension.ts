@@ -27,7 +27,7 @@ export class IOsDriverExtension extends WebDriverExtension {
     return this._driver.executeScript(`console.time('${name}');`);
   }
 
-  override timeEnd(name: string, restartName: string|null = null): Promise<any> {
+  override timeEnd(name: string, restartName: string | null = null): Promise<any> {
     let script = `console.timeEnd('${name}');`;
     if (restartName != null) {
       script += `console.time('${restartName}');`;
@@ -39,29 +39,30 @@ export class IOsDriverExtension extends WebDriverExtension {
   override readPerfLog() {
     // TODO(tbosch): Bug in IOsDriver: Need to execute at least one command
     // so that the browser logs can be read out!
-    return this._driver.executeScript('1+1')
-        .then((_) => this._driver.logs('performance'))
-        .then((entries) => {
-          const records: any[] = [];
-          entries.forEach((entry: any) => {
-            const message =
-                (JSON.parse(entry['message']) as
-                 {message: {method: string, params: PerfLogEvent}})['message'];
-            if (message['method'] === 'Timeline.eventRecorded') {
-              records.push(message['params']['record']);
-            }
-          });
-          return this._convertPerfRecordsToEvents(records);
+    return this._driver
+      .executeScript('1+1')
+      .then((_) => this._driver.logs('performance'))
+      .then((entries) => {
+        const records: any[] = [];
+        entries.forEach((entry: any) => {
+          const message = (
+            JSON.parse(entry['message']) as {message: {method: string; params: PerfLogEvent}}
+          )['message'];
+          if (message['method'] === 'Timeline.eventRecorded') {
+            records.push(message['params']['record']);
+          }
         });
+        return this._convertPerfRecordsToEvents(records);
+      });
   }
 
   /** @internal */
-  private _convertPerfRecordsToEvents(records: any[], events: PerfLogEvent[]|null = null) {
+  private _convertPerfRecordsToEvents(records: any[], events: PerfLogEvent[] | null = null) {
     if (!events) {
       events = [];
     }
     records.forEach((record) => {
-      let endEvent: PerfLogEvent|null = null;
+      let endEvent: PerfLogEvent | null = null;
       const type = record['type'];
       const data = record['data'];
       const startTime = record['startTime'];
@@ -75,8 +76,13 @@ export class IOsDriverExtension extends WebDriverExtension {
       } else if (type === 'TimeEnd') {
         events!.push(createMarkEndEvent(data['message'], startTime));
       } else if (
-          type === 'RecalculateStyles' || type === 'Layout' || type === 'UpdateLayerTree' ||
-          type === 'Paint' || type === 'Rasterize' || type === 'CompositeLayers') {
+        type === 'RecalculateStyles' ||
+        type === 'Layout' ||
+        type === 'UpdateLayerTree' ||
+        type === 'Paint' ||
+        type === 'Rasterize' ||
+        type === 'CompositeLayers'
+      ) {
         events!.push(createStartEvent('render', startTime));
         endEvent = createEndEvent('render', endTime);
       }
@@ -100,7 +106,12 @@ export class IOsDriverExtension extends WebDriverExtension {
   }
 }
 
-function createEvent(ph: 'X'|'B'|'E'|'B'|'E', name: string, time: number, args: any = null) {
+function createEvent(
+  ph: 'X' | 'B' | 'E' | 'B' | 'E',
+  name: string,
+  time: number,
+  args: any = null,
+) {
   const result: PerfLogEvent = {
     'cat': 'timeline',
     'name': name,
@@ -108,7 +119,7 @@ function createEvent(ph: 'X'|'B'|'E'|'B'|'E', name: string, time: number, args: 
     'ph': ph,
     // The ios protocol does not support the notions of multiple processes in
     // the perflog...
-    'pid': 'pid0'
+    'pid': 'pid0',
   };
   if (args != null) {
     result['args'] = args;

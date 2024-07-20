@@ -3,7 +3,9 @@
   "cases": [
     {
       "description": "should handle nullish coalescing inside interpolations",
-      "inputFiles": ["nullish_coalescing_interpolation.ts"],
+      "inputFiles": [
+        "nullish_coalescing_interpolation.ts"
+      ],
       "expectations": [
         {
           "files": [
@@ -18,7 +20,9 @@
     },
     {
       "description": "should handle nullish coalescing inside property bindings",
-      "inputFiles": ["nullish_coalescing_property.ts"],
+      "inputFiles": [
+        "nullish_coalescing_property.ts"
+      ],
       "expectations": [
         {
           "files": [
@@ -33,7 +37,9 @@
     },
     {
       "description": "should handle nullish coalescing inside host bindings",
-      "inputFiles": ["nullish_coalescing_host.ts"],
+      "inputFiles": [
+        "nullish_coalescing_host.ts"
+      ],
       "expectations": [
         {
           "files": [
@@ -44,8 +50,7 @@
           ],
           "failureMessage": "Incorrect host bindings"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

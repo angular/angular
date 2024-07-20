@@ -46,12 +46,13 @@ export class PreloadLinkCreator {
     if (ngDevMode) {
       if (this.preloadedImages.size >= DEFAULT_PRELOADED_IMAGES_LIMIT) {
         throw new RuntimeError(
-            RuntimeErrorCode.TOO_MANY_PRELOADED_IMAGES,
-            ngDevMode &&
-                `The \`NgOptimizedImage\` directive has detected that more than ` +
-                    `${DEFAULT_PRELOADED_IMAGES_LIMIT} images were marked as priority. ` +
-                    `This might negatively affect an overall performance of the page. ` +
-                    `To fix this, remove the "priority" attribute from images with less priority.`);
+          RuntimeErrorCode.TOO_MANY_PRELOADED_IMAGES,
+          ngDevMode &&
+            `The \`NgOptimizedImage\` directive has detected that more than ` +
+              `${DEFAULT_PRELOADED_IMAGES_LIMIT} images were marked as priority. ` +
+              `This might negatively affect an overall performance of the page. ` +
+              `To fix this, remove the "priority" attribute from images with less priority.`,
+        );
       }
     }
 

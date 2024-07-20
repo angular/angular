@@ -1,0 +1,832 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {AsyncPipe} from '@angular/common';
+import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {
+  afterNextRender,
+  afterRender,
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  createComponent,
+  destroyPlatform,
+  Directive,
+  ElementRef,
+  EnvironmentInjector,
+  ErrorHandler,
+  EventEmitter,
+  inject,
+  Input,
+  NgZone,
+  Output,
+  PLATFORM_ID,
+  provideExperimentalZonelessChangeDetection as provideZonelessChangeDetection,
+  provideZoneChangeDetection,
+  signal,
+  TemplateRef,
+  Type,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/core/testing';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {withBody} from '@angular/private/testing';
+import {BehaviorSubject, firstValueFrom} from 'rxjs';
+import {filter, take, tap} from 'rxjs/operators';
+
+import {RuntimeError, RuntimeErrorCode} from '../src/errors';
+import {scheduleCallbackWithRafRace} from '../src/util/callback_scheduler';
+import {global} from '../src/util/global';
+
+function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
+  return toSignal(injector.get(ApplicationRef).isStable, {requireSync: true, injector})();
+}
+
+describe('Angular with zoneless enabled', () => {
+  async function createFixture<T>(type: Type<T>): Promise<ComponentFixture<T>> {
+    const fixture = TestBed.createComponent(type);
+    await fixture.whenStable();
+    return fixture;
+  }
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+      ],
+    });
+  });
+
+  describe('notifies scheduler', () => {
+    it('contributes to application stableness', async () => {
+      const val = signal('initial');
+      @Component({template: '{{val()}}', standalone: true})
+      class TestComponent {
+        val = val;
+      }
+      const fixture = await createFixture(TestComponent);
+
+      // Cause another pending CD immediately after render and verify app has not stabilized
+      await fixture.whenStable().then(() => {
+        val.set('new');
+      });
+      expect(fixture.isStable()).toBeFalse();
+
+      await fixture.whenStable();
+      expect(fixture.isStable()).toBeTrue();
+    });
+
+    it('when signal updates', async () => {
+      const val = signal('initial');
+      @Component({template: '{{val()}}', standalone: true})
+      class TestComponent {
+        val = val;
+      }
+
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      val.set('new');
+      expect(fixture.isStable()).toBeFalse();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
+    });
+
+    it('when using markForCheck()', async () => {
+      @Component({template: '{{val}}', standalone: true})
+      class TestComponent {
+        cdr = inject(ChangeDetectorRef);
+        val = 'initial';
+        setVal(val: string) {
+          this.val = val;
+          this.cdr.markForCheck();
+        }
+      }
+
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      fixture.componentInstance.setVal('new');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
+    });
+
+    it('on input binding', async () => {
+      @Component({template: '{{val}}', standalone: true})
+      class TestComponent {
+        @Input() val = 'initial';
+      }
+
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      fixture.componentRef.setInput('val', 'new');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
+    });
+
+    it('on event listener bound in template', async () => {
+      @Component({template: '<div (click)="updateVal()">{{val}}</div>', standalone: true})
+      class TestComponent {
+        val = 'initial';
+
+        updateVal() {
+          this.val = 'new';
+        }
+      }
+
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      fixture.debugElement
+        .query((p) => p.nativeElement.tagName === 'DIV')
+        .triggerEventHandler('click');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
+    });
+
+    it('on event listener bound in host', async () => {
+      @Component({host: {'(click)': 'updateVal()'}, template: '{{val}}', standalone: true})
+      class TestComponent {
+        val = 'initial';
+
+        updateVal() {
+          this.val = 'new';
+        }
+      }
+
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      fixture.debugElement.triggerEventHandler('click');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
+    });
+
+    it('with async pipe', async () => {
+      @Component({template: '{{val | async}}', standalone: true, imports: [AsyncPipe]})
+      class TestComponent {
+        val = new BehaviorSubject('initial');
+      }
+
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      fixture.componentInstance.val.next('new');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
+    });
+
+    it('when creating a view', async () => {
+      @Component({
+        template: '<ng-template #ref>{{"binding"}}</ng-template>',
+        standalone: true,
+      })
+      class TestComponent {
+        @ViewChild(TemplateRef) template!: TemplateRef<unknown>;
+        @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
+
+        createView(): any {
+          this.viewContainer.createEmbeddedView(this.template);
+        }
+      }
+
+      const fixture = await createFixture(TestComponent);
+
+      fixture.componentInstance.createView();
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('binding');
+    });
+
+    it('when inserting a view', async () => {
+      @Component({
+        template: '{{"binding"}}',
+        standalone: true,
+      })
+      class DynamicCmp {
+        elementRef = inject(ElementRef);
+      }
+      @Component({
+        template: '<ng-template #ref></ng-template>',
+        standalone: true,
+      })
+      class TestComponent {
+        @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
+      }
+
+      const fixture = await createFixture(TestComponent);
+
+      const otherComponent = createComponent(DynamicCmp, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
+      fixture.componentInstance.viewContainer.insert(otherComponent.hostView);
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('binding');
+    });
+
+    it('when destroying a view (with animations)', async () => {
+      @Component({
+        template: '{{"binding"}}',
+        standalone: true,
+      })
+      class DynamicCmp {
+        elementRef = inject(ElementRef);
+      }
+      @Component({
+        template: '<ng-template #ref></ng-template>',
+        standalone: true,
+      })
+      class TestComponent {
+        @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
+      }
+
+      const fixture = await createFixture(TestComponent);
+      const component = createComponent(DynamicCmp, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
+
+      fixture.componentInstance.viewContainer.insert(component.hostView);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('binding');
+      fixture.componentInstance.viewContainer.remove();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('');
+
+      const component2 = createComponent(DynamicCmp, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
+      fixture.componentInstance.viewContainer.insert(component2.hostView);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('binding');
+      component2.destroy();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('');
+    });
+
+    function whenStable(applicationRef = TestBed.inject(ApplicationRef)): Promise<boolean> {
+      return firstValueFrom(applicationRef.isStable.pipe(filter((stable) => stable)));
+    }
+
+    it(
+      'when destroying a view (*no* animations)',
+      withBody('<app></app>', async () => {
+        destroyPlatform();
+        let doCheckCount = 0;
+        let renderHookCalls = 0;
+        @Component({
+          template: '{{"binding"}}',
+          standalone: true,
+        })
+        class DynamicCmp {
+          elementRef = inject(ElementRef);
+        }
+        @Component({
+          selector: 'app',
+          template: '<ng-template #ref></ng-template>',
+          standalone: true,
+        })
+        class App {
+          @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
+          unused = afterRender(() => {
+            renderHookCalls++;
+          });
+
+          ngDoCheck() {
+            doCheckCount++;
+          }
+        }
+        const applicationRef = await bootstrapApplication(App, {
+          providers: [
+            provideZonelessChangeDetection(),
+            {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+          ],
+        });
+        const appViewRef = (applicationRef as any)._views[0] as {context: App; rootNodes: any[]};
+        await whenStable(applicationRef);
+
+        const component2 = createComponent(DynamicCmp, {
+          environmentInjector: applicationRef.injector,
+        });
+        appViewRef.context.viewContainer.insert(component2.hostView);
+        expect(isStable(applicationRef.injector)).toBe(false);
+        await whenStable(applicationRef);
+        component2.destroy();
+
+        // destroying the view synchronously removes element from DOM when not using animations
+        expect(appViewRef.rootNodes[0].innerText).toEqual('');
+        // Destroying the view notifies scheduler because render hooks need to run
+        expect(isStable(applicationRef.injector)).toBe(false);
+
+        let checkCountBeforeStable = doCheckCount;
+        let renderCountBeforeStable = renderHookCalls;
+        await whenStable(applicationRef);
+        // The view should not have refreshed
+        expect(doCheckCount).toEqual(checkCountBeforeStable);
+        // but render hooks should have run
+        expect(renderHookCalls).toEqual(renderCountBeforeStable + 1);
+
+        destroyPlatform();
+      }),
+    );
+
+    it('when attaching view to ApplicationRef', async () => {
+      @Component({
+        selector: 'dynamic-cmp',
+        template: '{{"binding"}}',
+        standalone: true,
+      })
+      class DynamicCmp {
+        elementRef = inject(ElementRef);
+      }
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const appRef = TestBed.inject(ApplicationRef);
+      const component = createComponent(DynamicCmp, {environmentInjector});
+      const host = document.createElement('div');
+      host.appendChild(component.instance.elementRef.nativeElement);
+      expect(host.innerHTML).toEqual('<dynamic-cmp></dynamic-cmp>');
+
+      appRef.attachView(component.hostView);
+      await whenStable();
+      expect(host.innerHTML).toEqual('<dynamic-cmp>binding</dynamic-cmp>');
+
+      const component2 = createComponent(DynamicCmp, {environmentInjector});
+      // TODO(atscott): Only needed because renderFactory will not run if ApplicationRef has no
+      // views. This should likely be fixed in ApplicationRef
+      appRef.attachView(component2.hostView);
+      appRef.detachView(component.hostView);
+      // DOM is not synchronously removed because change detection hasn't run
+      expect(host.innerHTML).toEqual('<dynamic-cmp>binding</dynamic-cmp>');
+      expect(isStable()).toBe(false);
+      await whenStable();
+      expect(host.innerHTML).toEqual('');
+      host.appendChild(component.instance.elementRef.nativeElement);
+      // reattaching non-dirty view notifies scheduler because afterRender hooks must run
+      appRef.attachView(component.hostView);
+      expect(isStable()).toBe(false);
+    });
+
+    it('when a stable subscription synchronously causes another notification', async () => {
+      const val = signal('initial');
+      @Component({template: '{{val()}}', standalone: true})
+      class TestComponent {
+        val = val;
+      }
+
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      val.set('new');
+      await TestBed.inject(ApplicationRef)
+        .isStable.pipe(
+          filter((stable) => stable),
+          take(1),
+          tap(() => val.set('newer')),
+        )
+        .toPromise();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('newer');
+    });
+
+    it('executes render hooks when a new one is registered', async () => {
+      let resolveFn: Function;
+      let calledPromise = new Promise((resolve) => {
+        resolveFn = resolve;
+      });
+      TestBed.runInInjectionContext(() => {
+        afterNextRender(() => {
+          resolveFn();
+        });
+      });
+      await expectAsync(calledPromise).toBeResolved();
+    });
+
+    it('executes render hooks without refreshing CheckAlways views', async () => {
+      let checks = 0;
+      @Component({
+        template: '',
+        standalone: true,
+      })
+      class Dummy {
+        ngDoCheck() {
+          checks++;
+        }
+      }
+
+      const fixture = TestBed.createComponent(Dummy);
+      await fixture.whenStable();
+      expect(checks).toBe(1);
+
+      let resolveFn: Function;
+      let calledPromise = new Promise((resolve) => {
+        resolveFn = resolve;
+      });
+      TestBed.runInInjectionContext(() => {
+        afterNextRender(() => {
+          resolveFn();
+        });
+      });
+      await expectAsync(calledPromise).toBeResolved();
+      // render hooks was called but component was not refreshed
+      expect(checks).toBe(1);
+    });
+  });
+
+  it('can recover when an error is re-thrown by the ErrorHandler', async () => {
+    const val = signal('initial');
+    let throwError = false;
+    @Component({template: '{{val()}}{{maybeThrow()}}', standalone: true})
+    class TestComponent {
+      val = val;
+      maybeThrow() {
+        if (throwError) {
+          throw new Error('e');
+        } else {
+          return '';
+        }
+      }
+    }
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: ErrorHandler,
+          useClass: class extends ErrorHandler {
+            override handleError(error: any): void {
+              throw error;
+            }
+          },
+        },
+      ],
+    });
+
+    const fixture = await createFixture(TestComponent);
+    expect(fixture.nativeElement.innerText).toEqual('initial');
+
+    val.set('new');
+    throwError = true;
+    // error is thrown in a timeout and can't really be "caught".
+    // Still need to wrap in expect so it happens in the expect context and doesn't fail the test.
+    expect(async () => await fixture.whenStable()).not.toThrow();
+    expect(fixture.nativeElement.innerText).toEqual('initial');
+
+    throwError = false;
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toEqual('new');
+  });
+
+  it('change detects embedded view when attached to a host on ApplicationRef and declaration is marked for check', async () => {
+    @Component({
+      template: '<ng-template #template><div>{{thing}}</div></ng-template>',
+      standalone: true,
+    })
+    class DynamicCmp {
+      @ViewChild('template') templateRef!: TemplateRef<{}>;
+      thing = 'initial';
+    }
+    @Component({
+      template: '',
+      standalone: true,
+    })
+    class Host {
+      readonly vcr = inject(ViewContainerRef);
+    }
+
+    const fixture = TestBed.createComponent(DynamicCmp);
+    const host = createComponent(Host, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+    TestBed.inject(ApplicationRef).attachView(host.hostView);
+    await fixture.whenStable();
+
+    const embeddedViewRef = fixture.componentInstance.templateRef.createEmbeddedView({});
+    host.instance.vcr.insert(embeddedViewRef);
+    await fixture.whenStable();
+    expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('initial');
+
+    fixture.componentInstance.thing = 'new';
+    fixture.changeDetectorRef.markForCheck();
+    await fixture.whenStable();
+    expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('new');
+  });
+
+  it('change detects embedded view when attached directly to ApplicationRef and declaration is marked for check', async () => {
+    @Component({
+      template: '<ng-template #template><div>{{thing}}</div></ng-template>',
+      standalone: true,
+    })
+    class DynamicCmp {
+      @ViewChild('template') templateRef!: TemplateRef<{}>;
+      thing = 'initial';
+    }
+
+    const fixture = TestBed.createComponent(DynamicCmp);
+    await fixture.whenStable();
+
+    const embeddedViewRef = fixture.componentInstance.templateRef.createEmbeddedView({});
+    TestBed.inject(ApplicationRef).attachView(embeddedViewRef);
+    await fixture.whenStable();
+    expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('initial');
+
+    fixture.componentInstance.thing = 'new';
+    fixture.changeDetectorRef.markForCheck();
+    await fixture.whenStable();
+    expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('new');
+  });
+
+  it('does not fail when global timing functions are patched and unpatched', async () => {
+    @Component({template: '', standalone: true})
+    class App {
+      cdr = inject(ChangeDetectorRef);
+    }
+
+    let patched = false;
+    const originalSetTimeout = global.setTimeout;
+    global.setTimeout = (handler: any) => {
+      if (!patched) {
+        throw new Error('no longer patched');
+      }
+      originalSetTimeout(handler);
+    };
+    patched = true;
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    global.setTimeout = originalSetTimeout;
+    patched = false;
+    expect(() => {
+      // cause another scheduler notification. This should not fail due to `setTimeout` being
+      // unpatched.
+      fixture.componentInstance.cdr.markForCheck();
+    }).not.toThrow();
+    await fixture.whenStable();
+  });
+
+  it('should not run change detection twice if manual tick called when CD was scheduled', async () => {
+    let changeDetectionRuns = 0;
+    TestBed.runInInjectionContext(() => {
+      afterRender(() => {
+        changeDetectionRuns++;
+      });
+    });
+    @Component({template: '', standalone: true})
+    class MyComponent {
+      cdr = inject(ChangeDetectorRef);
+    }
+    const fixture = TestBed.createComponent(MyComponent);
+    await fixture.whenStable();
+    expect(changeDetectionRuns).toEqual(1);
+
+    // notify the scheduler
+    fixture.componentInstance.cdr.markForCheck();
+    // call tick manually
+    TestBed.inject(ApplicationRef).tick();
+    await fixture.whenStable();
+    // ensure we only ran render hook 1 more time rather than once for tick and once for the
+    // scheduled run
+    expect(changeDetectionRuns).toEqual(2);
+  });
+
+  it('coalesces microtasks that happen during change detection into a single paint', async () => {
+    if (!isBrowser) {
+      return;
+    }
+    @Component({
+      template: '{{thing}}',
+      standalone: true,
+    })
+    class App {
+      thing = 'initial';
+      cdr = inject(ChangeDetectorRef);
+      ngAfterViewInit() {
+        queueMicrotask(() => {
+          this.thing = 'new';
+          this.cdr.markForCheck();
+        });
+      }
+    }
+    const fixture = TestBed.createComponent(App);
+    await new Promise<void>((resolve) => scheduleCallbackWithRafRace(resolve));
+    expect(fixture.nativeElement.innerText).toContain('new');
+  });
+
+  it('throws a nice error when notifications prevent exiting the event loop (infinite CD)', async () => {
+    let caughtError: unknown;
+    let previousHandle = (Zone.root as any)._zoneDelegate.handleError;
+    (Zone.root as any)._zoneDelegate.handleError = (zone: ZoneSpec, e: unknown) => {
+      caughtError = e;
+    };
+    @Component({
+      template: '',
+      standalone: true,
+    })
+    class App {
+      cdr = inject(ChangeDetectorRef);
+      ngDoCheck() {
+        queueMicrotask(() => {
+          this.cdr.markForCheck();
+        });
+      }
+    }
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect(caughtError).toBeInstanceOf(RuntimeError);
+    const runtimeError = caughtError as RuntimeError;
+    expect(runtimeError.code).toEqual(RuntimeErrorCode.INFINITE_CHANGE_DETECTION);
+    expect(runtimeError.message).toContain('markForCheck');
+    expect(runtimeError.message).toContain('notify');
+
+    (Zone.root as any)._zoneDelegate.handleError = previousHandle;
+  });
+});
+
+describe('Angular with scheduler and ZoneJS', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        {provide: ComponentFixtureAutoDetect, useValue: true},
+        {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+      ],
+    });
+  });
+
+  it('requires updates inside Angular zone when using ngZoneOnly', async () => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: true})],
+    });
+    @Component({template: '{{thing()}}', standalone: true})
+    class App {
+      thing = signal('initial');
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toContain('initial');
+
+    TestBed.inject(NgZone).runOutsideAngular(() => {
+      fixture.componentInstance.thing.set('new');
+    });
+    expect(fixture.isStable()).toBe(true);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toContain('initial');
+  });
+
+  it('will not schedule change detection if listener callback is outside the zone', async () => {
+    let renders = 0;
+    TestBed.runInInjectionContext(() => {
+      afterRender(() => {
+        renders++;
+      });
+    });
+
+    @Component({selector: 'component-with-output', template: '', standalone: true})
+    class ComponentWithOutput {
+      @Output() out = new EventEmitter();
+    }
+    let called = false;
+    @Component({
+      standalone: true,
+      imports: [ComponentWithOutput],
+      template: '<component-with-output (out)="onOut()" />',
+    })
+    class App {
+      onOut() {
+        called = true;
+      }
+    }
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const outComponent = fixture.debugElement.query(
+      (debugNode) => debugNode.providerTokens!.indexOf(ComponentWithOutput) !== -1,
+    ).componentInstance as ComponentWithOutput;
+    TestBed.inject(NgZone).runOutsideAngular(() => {
+      outComponent.out.emit();
+    });
+    await fixture.whenStable();
+
+    expect(renders).toBe(1);
+    expect(called).toBe(true);
+    expect(renders).toBe(1);
+  });
+
+  it('updating signal outside of zone still schedules update when in hybrid mode', async () => {
+    @Component({template: '{{thing()}}', standalone: true})
+    class App {
+      thing = signal('initial');
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toContain('initial');
+
+    TestBed.inject(NgZone).runOutsideAngular(() => {
+      fixture.componentInstance.thing.set('new');
+    });
+    expect(fixture.isStable()).toBe(false);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toContain('new');
+  });
+
+  it('should not run change detection twice if notified during AppRef.tick', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZoneChangeDetection({ignoreChangesOutsideZone: false}),
+        {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+      ],
+    });
+
+    let changeDetectionRuns = 0;
+    TestBed.runInInjectionContext(() => {
+      afterRender(() => {
+        changeDetectionRuns++;
+      });
+    });
+    @Component({template: '', standalone: true})
+    class MyComponent {
+      cdr = inject(ChangeDetectorRef);
+      ngDoCheck() {
+        // notify scheduler every time this component is checked
+        this.cdr.markForCheck();
+      }
+    }
+    const fixture = TestBed.createComponent(MyComponent);
+    await fixture.whenStable();
+    expect(changeDetectionRuns).toEqual(1);
+
+    // call tick manually
+    TestBed.inject(ApplicationRef).tick();
+    await fixture.whenStable();
+    // ensure we only ran render hook 1 more time rather than once for tick and once for the
+    // scheduled run
+    expect(changeDetectionRuns).toEqual(2);
+  });
+
+  it('does not cause double change detection with run coalescing', async () => {
+    if (isNode) {
+      return;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideZoneChangeDetection({runCoalescing: true, ignoreChangesOutsideZone: false}),
+      ],
+    });
+    @Component({template: '{{thing()}}', standalone: true})
+    class App {
+      thing = signal('initial');
+    }
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    let ticks = 0;
+    TestBed.runInInjectionContext(() => {
+      afterRender(() => {
+        ticks++;
+      });
+    });
+    fixture.componentInstance.thing.set('new');
+    await fixture.whenStable();
+    expect(ticks).toBe(1);
+  });
+
+  it('does not cause double change detection with run coalescing when both schedulers are notified', async () => {
+    if (isNode) {
+      return;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideZoneChangeDetection({runCoalescing: true, ignoreChangesOutsideZone: false}),
+      ],
+    });
+    @Component({template: '{{thing()}}', standalone: true})
+    class App {
+      thing = signal('initial');
+    }
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    let ticks = 0;
+    TestBed.runInInjectionContext(() => {
+      afterRender(() => {
+        ticks++;
+      });
+    });
+    // notifies the zoneless scheduler
+    fixture.componentInstance.thing.set('new');
+    // notifies the zone scheduler
+    TestBed.inject(NgZone).run(() => {});
+    await fixture.whenStable();
+    expect(ticks).toBe(1);
+  });
+});

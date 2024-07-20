@@ -20,7 +20,11 @@ export function resetMessageIndex(): void {
  * Generate a string that represents expected i18n block content for a simple message.
  */
 export function i18nMsg(
-    message: string, placeholders: Placeholder[], options: Options, meta: Meta): string {
+  message: string,
+  placeholders: Placeholder[],
+  options: Options,
+  meta: Meta,
+): string {
   const varName = `$I18N_${msgIndex++}$`;
   const closurePlaceholders = i18nPlaceholdersToString(placeholders);
   const closureOptions = i18nOptionsToString(options);
@@ -29,8 +33,7 @@ export function i18nMsg(
     let ${varName};
     if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
         ${i18nMsgClosureMeta(meta)}
-        const $MSG_EXTERNAL_${msgIndex}$ = goog.getMsg("${message}"${closurePlaceholders}${
-      closureOptions});
+        const $MSG_EXTERNAL_${msgIndex}$ = goog.getMsg("${message}"${closurePlaceholders}${closureOptions});
         ${varName} = $MSG_EXTERNAL_${msgIndex}$;
     }
     else {
@@ -48,8 +51,12 @@ export interface Options {
  * post-processing.
  */
 export function i18nMsgWithPostprocess(
-    message: string, placeholders: Placeholder[], options: Options, meta: Meta,
-    postprocessPlaceholders: Placeholder[]): string {
+  message: string,
+  placeholders: Placeholder[],
+  options: Options,
+  meta: Meta,
+  postprocessPlaceholders: Placeholder[],
+): string {
   const varName = `$I18N_${msgIndex}$`;
   const ppPlaceholders = i18nPlaceholdersToString(postprocessPlaceholders);
   return String.raw`
@@ -84,7 +91,6 @@ interface Meta {
   id?: string;
 }
 
-
 /**
  * Convert a set of placeholders to a string (as it's expected from compiler).
  */
@@ -106,13 +112,12 @@ function i18nOptionsToString({original_code: originals = {}}: Options = {}): str
  */
 function i18nMsgInsertLocalizePlaceholders(message: string, placeholders: Placeholder[]): string {
   if (placeholders.length > 0) {
-    message = message.replace(/{\$(.*?)}/g, function(_, name) {
+    message = message.replace(/{\$(.*?)}/g, function (_, name) {
       const placeholder = placeholders.find((p) => p[0] === name)!;
       // e.g. startDivTag -> START_DIV_TAG
       const key = name.replace(/[A-Z]/g, (ch: string) => '_' + ch).toUpperCase();
       const associated = placeholder.length === 3 ? `@@${placeholder[2]}` : '';
-      return '$' +
-          `{${quotedValue(placeholder[1])}}:${key}${associated}:`;
+      return '$' + `{${quotedValue(placeholder[1])}}:${key}${associated}:`;
     });
   }
   return message;

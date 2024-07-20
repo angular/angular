@@ -6,15 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {first} from 'rxjs/operators';
-
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application_ref';
-import {ENABLED_SSR_FEATURES} from '../application_tokens';
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
 import {Console} from '../console';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironmentProviders} from '../di';
+import {
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentProviders,
+  Injector,
+  makeEnvironmentProviders,
+  Provider,
+} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
+import {enableLocateOrCreateI18nNodeImpl} from '../render3/i18n/i18n_apply';
 import {enableLocateOrCreateElementNodeImpl} from '../render3/instructions/element';
 import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructions/element_container';
 import {enableApplyRootElementTransformImpl} from '../render3/instructions/shared';
@@ -23,10 +27,21 @@ import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
 import {getDocument} from '../render3/interfaces/document';
 import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {TransferState} from '../transfer_state';
+import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
 
 import {cleanupDehydratedViews} from './cleanup';
-import {IS_HYDRATION_DOM_REUSE_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
+import {
+  enableClaimDehydratedIcuCaseImpl,
+  enablePrepareI18nBlockForHydrationImpl,
+  isI18nHydrationEnabled,
+  setIsI18nHydrationSupportEnabled,
+} from './i18n';
+import {
+  IS_HYDRATION_DOM_REUSE_ENABLED,
+  IS_I18N_HYDRATION_ENABLED,
+  PRESERVE_HOST_CONTENT,
+} from './tokens';
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 
@@ -35,6 +50,16 @@ import {enableFindMatchingDehydratedViewImpl} from './views';
  * prevents adding it multiple times.
  */
 let isHydrationSupportEnabled = false;
+
+/**
+ * Indicates whether the i18n-related code was added,
+ * prevents adding it multiple times.
+ *
+ * Note: This merely controls whether the code is loaded,
+ * while `setIsI18nHydrationSupportEnabled` determines
+ * whether i18n blocks are serialized or hydrated.
+ */
+let isI18nHydrationRuntimeSupportEnabled = false;
 
 /**
  * Defines a period of time that Angular waits for the `ApplicationRef.isStable` to emit `true`.
@@ -68,25 +93,38 @@ function enableHydrationRuntimeSupport() {
 }
 
 /**
+ * Brings the necessary i18n hydration code in tree-shakable manner.
+ * Similar to `enableHydrationRuntimeSupport`, the code is only
+ * present when `withI18nSupport` is invoked.
+ */
+function enableI18nHydrationRuntimeSupport() {
+  if (!isI18nHydrationRuntimeSupportEnabled) {
+    isI18nHydrationRuntimeSupportEnabled = true;
+    enableLocateOrCreateI18nNodeImpl();
+    enablePrepareI18nBlockForHydrationImpl();
+    enableClaimDehydratedIcuCaseImpl();
+  }
+}
+
+/**
  * Outputs a message with hydration stats into a console.
  */
 function printHydrationStats(injector: Injector) {
   const console = injector.get(Console);
-  const message = `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
-      `and ${ngDevMode!.hydratedNodes} node(s), ` +
-      `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
-      `Note: this feature is in Developer Preview mode. ` +
-      `Learn more at https://angular.io/guide/hydration.`;
+  const message =
+    `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
+    `and ${ngDevMode!.hydratedNodes} node(s), ` +
+    `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
+    `Learn more at https://angular.dev/guide/hydration.`;
   // tslint:disable-next-line:no-console
   console.log(message);
 }
 
-
 /**
  * Returns a Promise that is resolved when an application becomes stable.
  */
-function whenStable(appRef: ApplicationRef, injector: Injector): Promise<void> {
-  const isStablePromise = appRef.isStable.pipe(first((isStable: boolean) => isStable)).toPromise();
+function whenStableWithTimeout(appRef: ApplicationRef, injector: Injector): Promise<void> {
+  const whenStablePromise = whenStable(appRef);
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
     const console = injector.get(Console);
@@ -99,10 +137,10 @@ function whenStable(appRef: ApplicationRef, injector: Injector): Promise<void> {
       return setTimeout(() => logWarningOnStableTimedout(timeoutTime, console), timeoutTime);
     });
 
-    isStablePromise.finally(() => clearTimeout(timeoutId));
+    whenStablePromise.finally(() => clearTimeout(timeoutId));
   }
 
-  return isStablePromise.then(() => {});
+  return whenStablePromise;
 }
 
 /**
@@ -126,21 +164,22 @@ export function withDomHydration(): EnvironmentProviders {
           // hydration annotations. Otherwise, keep hydration disabled.
           const transferState = inject(TransferState, {optional: true});
           isEnabled = !!transferState?.get(NGH_DATA_KEY, null);
-          if (!isEnabled && (typeof ngDevMode !== 'undefined' && ngDevMode)) {
+          if (!isEnabled && typeof ngDevMode !== 'undefined' && ngDevMode) {
             const console = inject(Console);
             const message = formatRuntimeError(
-                RuntimeErrorCode.MISSING_HYDRATION_ANNOTATIONS,
-                'Angular hydration was requested on the client, but there was no ' +
-                    'serialized information present in the server response, ' +
-                    'thus hydration was not enabled. ' +
-                    'Make sure the `provideClientHydration()` is included into the list ' +
-                    'of providers in the server part of the application configuration.');
+              RuntimeErrorCode.MISSING_HYDRATION_ANNOTATIONS,
+              'Angular hydration was requested on the client, but there was no ' +
+                'serialized information present in the server response, ' +
+                'thus hydration was not enabled. ' +
+                'Make sure the `provideClientHydration()` is included into the list ' +
+                'of providers in the server part of the application configuration.',
+            );
             // tslint:disable-next-line:no-console
             console.warn(message);
           }
         }
         if (isEnabled) {
-          inject(ENABLED_SSR_FEATURES).add('hydration');
+          performanceMarkFeature('NgHydration');
         }
         return isEnabled;
       },
@@ -148,6 +187,10 @@ export function withDomHydration(): EnvironmentProviders {
     {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
+        // i18n support is enabled by calling withI18nSupport(), but there's
+        // no way to turn it off (e.g. for tests), so we turn it off by default.
+        setIsI18nHydrationSupportEnabled(false);
+
         // Since this function is used across both server and client,
         // make sure that the runtime code is only added when invoked
         // on the client. Moving forward, the `isPlatformBrowser` check should
@@ -168,7 +211,7 @@ export function withDomHydration(): EnvironmentProviders {
         // On a server, an application is rendered from scratch,
         // so the host content needs to be empty.
         return isPlatformBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED);
-      }
+      },
     },
     {
       provide: APP_BOOTSTRAP_LISTENER,
@@ -182,23 +225,43 @@ export function withDomHydration(): EnvironmentProviders {
             // The timing is similar to when we start the serialization process
             // on the server.
             //
-            // Note: the cleanup task *MUST* be scheduled within the Angular zone
+            // Note: the cleanup task *MUST* be scheduled within the Angular zone in Zone apps
             // to ensure that change detection is properly run afterward.
-            whenStable(appRef, injector).then(() => {
-              NgZone.assertInAngularZone();
+            whenStableWithTimeout(appRef, injector).then(() => {
               cleanupDehydratedViews(appRef);
-
               if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                 printHydrationStats(injector);
               }
             });
           };
         }
-        return () => {};  // noop
+        return () => {}; // noop
       },
       multi: true,
-    }
+    },
   ]);
+}
+
+/**
+ * Returns a set of providers required to setup support for i18n hydration.
+ * Requires hydration to be enabled separately.
+ */
+export function withI18nSupport(): Provider[] {
+  return [
+    {
+      provide: IS_I18N_HYDRATION_ENABLED,
+      useValue: true,
+    },
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      useValue: () => {
+        enableI18nHydrationRuntimeSupport();
+        setIsI18nHydrationSupportEnabled(true);
+        performanceMarkFeature('NgI18nHydration');
+      },
+      multi: true,
+    },
+  ];
 }
 
 /**
@@ -207,10 +270,9 @@ export function withDomHydration(): EnvironmentProviders {
  */
 function logWarningOnStableTimedout(time: number, console: Console): void {
   const message =
-      `Angular hydration expected the ApplicationRef.isStable() to emit \`true\`, but it ` +
-      `didn't happen within ${
-          time}ms. Angular hydration logic depends on the application becoming stable ` +
-      `as a signal to complete hydration process.`;
+    `Angular hydration expected the ApplicationRef.isStable() to emit \`true\`, but it ` +
+    `didn't happen within ${time}ms. Angular hydration logic depends on the application becoming stable ` +
+    `as a signal to complete hydration process.`;
 
   console.warn(formatRuntimeError(RuntimeErrorCode.HYDRATION_STABLE_TIMEDOUT, message));
 }
@@ -227,21 +289,25 @@ function logWarningOnStableTimedout(time: number, console: Console): void {
  */
 function verifySsrContentsIntegrity(): void {
   const doc = getDocument();
-  let hydrationMarker: Node|undefined;
+  let hydrationMarker: Node | undefined;
   for (const node of doc.body.childNodes) {
-    if (node.nodeType === Node.COMMENT_NODE &&
-        node.textContent?.trim() === SSR_CONTENT_INTEGRITY_MARKER) {
+    if (
+      node.nodeType === Node.COMMENT_NODE &&
+      node.textContent?.trim() === SSR_CONTENT_INTEGRITY_MARKER
+    ) {
       hydrationMarker = node;
       break;
     }
   }
   if (!hydrationMarker) {
     throw new RuntimeError(
-        RuntimeErrorCode.MISSING_SSR_CONTENT_INTEGRITY_MARKER,
-        typeof ngDevMode !== 'undefined' && ngDevMode &&
-            'Angular hydration logic detected that HTML content of this page was modified after it ' +
-                'was produced during server side rendering. Make sure that there are no optimizations ' +
-                'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
-                'relies on HTML produced by the server, including whitespaces and comment nodes.');
+      RuntimeErrorCode.MISSING_SSR_CONTENT_INTEGRITY_MARKER,
+      typeof ngDevMode !== 'undefined' &&
+        ngDevMode &&
+        'Angular hydration logic detected that HTML content of this page was modified after it ' +
+          'was produced during server side rendering. Make sure that there are no optimizations ' +
+          'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
+          'relies on HTML produced by the server, including whitespaces and comment nodes.',
+    );
   }
 }

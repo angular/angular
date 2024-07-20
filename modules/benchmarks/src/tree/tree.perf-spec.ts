@@ -16,7 +16,7 @@ describe('tree benchmark perf', () => {
       // has the "createOnly" id already. See: https://github.com/angular/angular/pull/21503
       id: 'createOnlyForReal',
       prepare: () => $('#destroyDom').click(),
-      work: () => $('#createDom').click()
+      work: () => $('#createDom').click(),
     });
   });
 
@@ -26,7 +26,7 @@ describe('tree benchmark perf', () => {
       // named "createOnly". See https://github.com/angular/angular/pull/21503.
       id: 'createOnly',
       prepare: () => $('#createDom').click(),
-      work: () => $('#destroyDom').click()
+      work: () => $('#destroyDom').click(),
     });
   });
 
@@ -36,7 +36,7 @@ describe('tree benchmark perf', () => {
       work: () => {
         $('#destroyDom').click();
         $('#createDom').click();
-      }
+      },
     });
   });
 

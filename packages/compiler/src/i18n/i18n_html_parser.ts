@@ -7,8 +7,8 @@
  */
 
 import {MissingTranslationStrategy} from '../core';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/defaults';
 import {HtmlParser} from '../ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/interpolation_config';
 import {TokenizeOptions} from '../ml_parser/lexer';
 import {ParseTreeResult} from '../ml_parser/parser';
 import {Console} from '../util';
@@ -29,16 +29,30 @@ export class I18NHtmlParser implements HtmlParser {
   private _translationBundle: TranslationBundle;
 
   constructor(
-      private _htmlParser: HtmlParser, translations?: string, translationsFormat?: string,
-      missingTranslation: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
-      console?: Console) {
+    private _htmlParser: HtmlParser,
+    translations?: string,
+    translationsFormat?: string,
+    missingTranslation: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
+    console?: Console,
+  ) {
     if (translations) {
       const serializer = createSerializer(translationsFormat);
-      this._translationBundle =
-          TranslationBundle.load(translations, 'i18n', serializer, missingTranslation, console);
+      this._translationBundle = TranslationBundle.load(
+        translations,
+        'i18n',
+        serializer,
+        missingTranslation,
+        console,
+      );
     } else {
-      this._translationBundle =
-          new TranslationBundle({}, null, digest, undefined, missingTranslation, console);
+      this._translationBundle = new TranslationBundle(
+        {},
+        null,
+        digest,
+        undefined,
+        missingTranslation,
+        console,
+      );
     }
   }
 
@@ -51,7 +65,12 @@ export class I18NHtmlParser implements HtmlParser {
     }
 
     return mergeTranslations(
-        parseResult.rootNodes, this._translationBundle, interpolationConfig, [], {});
+      parseResult.rootNodes,
+      this._translationBundle,
+      interpolationConfig,
+      [],
+      {},
+    );
   }
 }
 

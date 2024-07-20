@@ -12,7 +12,15 @@ import {Observable, Observer} from 'rxjs';
 import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
 import {HttpRequest} from './request';
-import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpResponse, HttpStatusCode} from './response';
+import {
+  HTTP_STATUS_CODE_OK,
+  HttpDownloadProgressEvent,
+  HttpErrorResponse,
+  HttpEvent,
+  HttpEventType,
+  HttpHeaderResponse,
+  HttpResponse,
+} from './response';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
@@ -22,7 +30,7 @@ const REQUEST_URL_HEADER = `X-Request-URL`;
  * Determine an appropriate URL for the response, by checking either
  * response url or the X-Request-URL header.
  */
-function getResponseUrl(response: Response): string|null {
+function getResponseUrl(response: Response): string | null {
   if (response.url) {
     return response.url;
   }
@@ -41,32 +49,39 @@ function getResponseUrl(response: Response): string|null {
  * @see {@link HttpHandler}
  *
  * @publicApi
- * @developerPreview
  */
 @Injectable()
 export class FetchBackend implements HttpBackend {
   // We need to bind the native fetch to its context or it will throw an "illegal invocation"
   private readonly fetchImpl =
-      inject(FetchFactory, {optional: true})?.fetch ?? fetch.bind(globalThis);
+    inject(FetchFactory, {optional: true})?.fetch ?? fetch.bind(globalThis);
   private readonly ngZone = inject(NgZone);
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
-    return new Observable(observer => {
+    return new Observable((observer) => {
       const aborter = new AbortController();
-      this.doRequest(request, aborter.signal, observer)
-          .then(noop, error => observer.error(new HttpErrorResponse({error})));
+      this.doRequest(request, aborter.signal, observer).then(noop, (error) =>
+        observer.error(new HttpErrorResponse({error})),
+      );
       return () => aborter.abort();
     });
   }
 
   private async doRequest(
-      request: HttpRequest<any>, signal: AbortSignal,
-      observer: Observer<HttpEvent<any>>): Promise<void> {
+    request: HttpRequest<any>,
+    signal: AbortSignal,
+    observer: Observer<HttpEvent<any>>,
+  ): Promise<void> {
     const init = this.createRequestInit(request);
     let response;
 
     try {
-      const fetchPromise = this.fetchImpl(request.urlWithParams, {signal, ...init});
+      // Run fetch outside of Angular zone.
+      // This is due to Node.js fetch implementation (Undici) which uses a number of setTimeouts to check if
+      // the response should eventually timeout which causes extra CD cycles every 500ms
+      const fetchPromise = this.ngZone.runOutsideAngular(() =>
+        this.fetchImpl(request.urlWithParams, {signal, ...init}),
+      );
 
       // Make sure Zone.js doesn't trigger false-positive unhandled promise
       // error in case the Promise is rejected synchronously. See function
@@ -78,13 +93,15 @@ export class FetchBackend implements HttpBackend {
 
       response = await fetchPromise;
     } catch (error: any) {
-      observer.error(new HttpErrorResponse({
-        error,
-        status: error.status ?? 0,
-        statusText: error.statusText,
-        url: request.urlWithParams,
-        headers: error.headers,
-      }));
+      observer.error(
+        new HttpErrorResponse({
+          error,
+          status: error.status ?? 0,
+          statusText: error.statusText,
+          url: request.urlWithParams,
+          headers: error.headers,
+        }),
+      );
       return;
     }
 
@@ -93,7 +110,7 @@ export class FetchBackend implements HttpBackend {
     const url = getResponseUrl(response) ?? request.urlWithParams;
 
     let status = response.status;
-    let body: string|ArrayBuffer|Blob|object|null = null;
+    let body: string | ArrayBuffer | Blob | object | null = null;
 
     if (request.reportProgress) {
       observer.next(new HttpHeaderResponse({headers, status, statusText, url}));
@@ -107,7 +124,7 @@ export class FetchBackend implements HttpBackend {
       let receivedLength = 0;
 
       let decoder: TextDecoder;
-      let partialText: string|undefined;
+      let partialText: string | undefined;
 
       // We have to check whether the Zone is defined in the global scope because this may be called
       // when the zone is nooped.
@@ -128,16 +145,19 @@ export class FetchBackend implements HttpBackend {
           receivedLength += value.length;
 
           if (request.reportProgress) {
-            partialText = request.responseType === 'text' ?
-                (partialText ?? '') + (decoder ??= new TextDecoder).decode(value, {stream: true}) :
-                undefined;
+            partialText =
+              request.responseType === 'text'
+                ? (partialText ?? '') +
+                  (decoder ??= new TextDecoder()).decode(value, {stream: true})
+                : undefined;
 
-            const reportProgress = () => observer.next({
-              type: HttpEventType.DownloadProgress,
-              total: contentLength ? +contentLength : undefined,
-              loaded: receivedLength,
-              partialText,
-            } as HttpDownloadProgressEvent);
+            const reportProgress = () =>
+              observer.next({
+                type: HttpEventType.DownloadProgress,
+                total: contentLength ? +contentLength : undefined,
+                loaded: receivedLength,
+                partialText,
+              } as HttpDownloadProgressEvent);
             reqZone ? reqZone.run(reportProgress) : reportProgress();
           }
         }
@@ -146,23 +166,26 @@ export class FetchBackend implements HttpBackend {
       // Combine all chunks.
       const chunksAll = this.concatChunks(chunks, receivedLength);
       try {
-        body = this.parseBody(request, chunksAll);
+        const contentType = response.headers.get('Content-Type') ?? '';
+        body = this.parseBody(request, chunksAll, contentType);
       } catch (error) {
         // Body loading or parsing failed
-        observer.error(new HttpErrorResponse({
-          error,
-          headers: new HttpHeaders(response.headers),
-          status: response.status,
-          statusText: response.statusText,
-          url: getResponseUrl(response) ?? request.urlWithParams,
-        }));
+        observer.error(
+          new HttpErrorResponse({
+            error,
+            headers: new HttpHeaders(response.headers),
+            status: response.status,
+            statusText: response.statusText,
+            url: getResponseUrl(response) ?? request.urlWithParams,
+          }),
+        );
         return;
       }
     }
 
     // Same behavior as the XhrBackend
     if (status === 0) {
-      status = body ? HttpStatusCode.Ok : 0;
+      status = body ? HTTP_STATUS_CODE_OK : 0;
     }
 
     // ok determines whether the response will be transmitted on the event or
@@ -172,39 +195,46 @@ export class FetchBackend implements HttpBackend {
     const ok = status >= 200 && status < 300;
 
     if (ok) {
-      observer.next(new HttpResponse({
-        body,
-        headers,
-        status,
-        statusText,
-        url,
-      }));
+      observer.next(
+        new HttpResponse({
+          body,
+          headers,
+          status,
+          statusText,
+          url,
+        }),
+      );
 
       // The full body has been received and delivered, no further events
       // are possible. This request is complete.
       observer.complete();
     } else {
-      observer.error(new HttpErrorResponse({
-        error: body,
-        headers,
-        status,
-        statusText,
-        url,
-      }));
+      observer.error(
+        new HttpErrorResponse({
+          error: body,
+          headers,
+          status,
+          statusText,
+          url,
+        }),
+      );
     }
   }
 
-  private parseBody(request: HttpRequest<any>, binContent: Uint8Array): string|ArrayBuffer|Blob
-      |object|null {
+  private parseBody(
+    request: HttpRequest<any>,
+    binContent: Uint8Array,
+    contentType: string,
+  ): string | ArrayBuffer | Blob | object | null {
     switch (request.responseType) {
       case 'json':
         // stripping the XSSI when present
         const text = new TextDecoder().decode(binContent).replace(XSSI_PREFIX, '');
-        return text === '' ? null : JSON.parse(text) as object;
+        return text === '' ? null : (JSON.parse(text) as object);
       case 'text':
         return new TextDecoder().decode(binContent);
       case 'blob':
-        return new Blob([binContent]);
+        return new Blob([binContent], {type: contentType});
       case 'arraybuffer':
         return binContent.buffer;
     }
@@ -214,16 +244,18 @@ export class FetchBackend implements HttpBackend {
     // We could share some of this logic with the XhrBackend
 
     const headers: Record<string, string> = {};
-    const credentials: RequestCredentials|undefined = req.withCredentials ? 'include' : undefined;
+    const credentials: RequestCredentials | undefined = req.withCredentials ? 'include' : undefined;
 
     // Setting all the requested headers.
     req.headers.forEach((name, values) => (headers[name] = values.join(',')));
 
     // Add an Accept header if one isn't present already.
-    headers['Accept'] ??= 'application/json, text/plain, */*';
+    if (!req.headers.has('Accept')) {
+      headers['Accept'] = 'application/json, text/plain, */*';
+    }
 
     // Auto-detect the Content-Type header if one isn't present already.
-    if (!headers['Content-Type']) {
+    if (!req.headers.has('Content-Type')) {
       const detectedType = req.detectContentTypeHeader();
       // Sometimes Content-Type detection fails.
       if (detectedType !== null) {

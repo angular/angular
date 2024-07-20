@@ -8,14 +8,10 @@
 
 import {Injector, NgModule, NgZone, PlatformRef, Testability} from '@angular/core';
 
-import {bootstrap, element as angularElement, IInjectorService, IIntervalService, IProvideService, ITestabilityService, module_ as angularModule} from '../../src/common/src/angular1';
-import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
-import {controllerKey, destroyApp, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
+import {ɵangular1, ɵconstants, ɵutil} from '../common';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
-
-
 
 /**
  * @description
@@ -152,16 +148,17 @@ export class UpgradeModule {
   public injector: Injector;
 
   constructor(
-      /** The root `Injector` for the upgrade application. */
-      injector: Injector,
-      /** The bootstrap zone for the upgrade application */
-      public ngZone: NgZone,
-      /**
-       * The owning `NgModuleRef`s `PlatformRef` instance.
-       * This is used to tie the lifecycle of the bootstrapped AngularJS apps to that of the Angular
-       * `PlatformRef`.
-       */
-      private platformRef: PlatformRef) {
+    /** The root `Injector` for the upgrade application. */
+    injector: Injector,
+    /** The bootstrap zone for the upgrade application */
+    public ngZone: NgZone,
+    /**
+     * The owning `NgModuleRef`s `PlatformRef` instance.
+     * This is used to tie the lifecycle of the bootstrapped AngularJS apps to that of the Angular
+     * `PlatformRef`.
+     */
+    private platformRef: PlatformRef,
+  ) {
     this.injector = new NgAdapterInjector(injector);
   }
 
@@ -174,145 +171,170 @@ export class UpgradeModule {
    *     [angular.bootstrap()](https://docs.angularjs.org/api/ng/function/angular.bootstrap).
    */
   bootstrap(
-      element: Element, modules: string[] = [], config?: any /*angular.IAngularBootstrapConfig*/):
-      any /*ReturnType<typeof angular.bootstrap>*/ {
-    const INIT_MODULE_NAME = UPGRADE_MODULE_NAME + '.init';
+    element: Element,
+    modules: string[] = [],
+    config?: any /*angular.IAngularBootstrapConfig*/,
+  ): any /*ReturnType<typeof angular.bootstrap>*/ {
+    const INIT_MODULE_NAME = ɵconstants.UPGRADE_MODULE_NAME + '.init';
 
     // Create an ng1 module to bootstrap
-    angularModule(INIT_MODULE_NAME, [])
+    ɵangular1
+      .module_(INIT_MODULE_NAME, [])
 
-        .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
+      .constant(ɵconstants.UPGRADE_APP_TYPE_KEY, ɵutil.UpgradeAppType.Static)
 
-        .value(INJECTOR_KEY, this.injector)
+      .value(ɵconstants.INJECTOR_KEY, this.injector)
 
-        .factory(
-            LAZY_MODULE_REF, [INJECTOR_KEY, (injector: Injector) => ({injector} as LazyModuleRef)])
+      .factory(ɵconstants.LAZY_MODULE_REF, [
+        ɵconstants.INJECTOR_KEY,
+        (injector: Injector) => ({injector}) as ɵutil.LazyModuleRef,
+      ])
 
-        .config([
-          $PROVIDE, $INJECTOR,
-          ($provide: IProvideService, $injector: IInjectorService) => {
-            if ($injector.has($$TESTABILITY)) {
-              $provide.decorator($$TESTABILITY, [
-                $DELEGATE,
-                (testabilityDelegate: ITestabilityService) => {
-                  const originalWhenStable: Function = testabilityDelegate.whenStable;
-                  const injector = this.injector;
-                  // Cannot use arrow function below because we need the context
-                  const newWhenStable = function(callback: Function) {
-                    originalWhenStable.call(testabilityDelegate, function() {
-                      const ng2Testability: Testability = injector.get(Testability);
-                      if (ng2Testability.isStable()) {
-                        callback();
-                      } else {
-                        ng2Testability.whenStable(
-                            newWhenStable.bind(testabilityDelegate, callback));
-                      }
-                    });
-                  };
+      .config([
+        ɵconstants.$PROVIDE,
+        ɵconstants.$INJECTOR,
+        ($provide: ɵangular1.IProvideService, $injector: ɵangular1.IInjectorService) => {
+          if ($injector.has(ɵconstants.$$TESTABILITY)) {
+            $provide.decorator(ɵconstants.$$TESTABILITY, [
+              ɵconstants.$DELEGATE,
+              (testabilityDelegate: ɵangular1.ITestabilityService) => {
+                const originalWhenStable: Function = testabilityDelegate.whenStable;
+                const injector = this.injector;
+                // Cannot use arrow function below because we need the context
+                const newWhenStable = function (callback: Function) {
+                  originalWhenStable.call(testabilityDelegate, function () {
+                    const ng2Testability: Testability = injector.get(Testability);
+                    if (ng2Testability.isStable()) {
+                      callback();
+                    } else {
+                      ng2Testability.whenStable(newWhenStable.bind(testabilityDelegate, callback));
+                    }
+                  });
+                };
 
-                  testabilityDelegate.whenStable = newWhenStable;
-                  return testabilityDelegate;
-                }
-              ]);
-            }
+                testabilityDelegate.whenStable = newWhenStable;
+                return testabilityDelegate;
+              },
+            ]);
+          }
 
-            if ($injector.has($INTERVAL)) {
-              $provide.decorator($INTERVAL, [
-                $DELEGATE,
-                (intervalDelegate: IIntervalService) => {
-                  // Wrap the $interval service so that setInterval is called outside NgZone,
-                  // but the callback is still invoked within it. This is so that $interval
-                  // won't block stability, which preserves the behavior from AngularJS.
-                  let wrappedInterval =
-                      (fn: Function, delay: number, count?: number, invokeApply?: boolean,
-                       ...pass: any[]) => {
-                        return this.ngZone.runOutsideAngular(() => {
-                          return intervalDelegate((...args: any[]) => {
-                            // Run callback in the next VM turn - $interval calls
-                            // $rootScope.$apply, and running the callback in NgZone will
-                            // cause a '$digest already in progress' error if it's in the
-                            // same vm turn.
-                            setTimeout(() => {
-                              this.ngZone.run(() => fn(...args));
-                            });
-                          }, delay, count, invokeApply, ...pass);
+          if ($injector.has(ɵconstants.$INTERVAL)) {
+            $provide.decorator(ɵconstants.$INTERVAL, [
+              ɵconstants.$DELEGATE,
+              (intervalDelegate: ɵangular1.IIntervalService) => {
+                // Wrap the $interval service so that setInterval is called outside NgZone,
+                // but the callback is still invoked within it. This is so that $interval
+                // won't block stability, which preserves the behavior from AngularJS.
+                let wrappedInterval = (
+                  fn: Function,
+                  delay: number,
+                  count?: number,
+                  invokeApply?: boolean,
+                  ...pass: any[]
+                ) => {
+                  return this.ngZone.runOutsideAngular(() => {
+                    return intervalDelegate(
+                      (...args: any[]) => {
+                        // Run callback in the next VM turn - $interval calls
+                        // $rootScope.$apply, and running the callback in NgZone will
+                        // cause a '$digest already in progress' error if it's in the
+                        // same vm turn.
+                        setTimeout(() => {
+                          this.ngZone.run(() => fn(...args));
                         });
-                      };
+                      },
+                      delay,
+                      count,
+                      invokeApply,
+                      ...pass,
+                    );
+                  });
+                };
 
-                  (Object.keys(intervalDelegate) as (keyof IIntervalService)[])
-                      .forEach(prop => (wrappedInterval as any)[prop] = intervalDelegate[prop]);
+                (Object.keys(intervalDelegate) as (keyof ɵangular1.IIntervalService)[]).forEach(
+                  (prop) => ((wrappedInterval as any)[prop] = intervalDelegate[prop]),
+                );
 
-                  // the `flush` method will be present when ngMocks is used
-                  if (intervalDelegate.hasOwnProperty('flush')) {
-                    (wrappedInterval as any)['flush'] = () => {
-                      (intervalDelegate as any)['flush']();
-                      return wrappedInterval;
-                    };
-                  }
-
-                  return wrappedInterval;
-                }
-              ]);
-            }
-          }
-        ])
-
-        .run([
-          $INJECTOR,
-          ($injector: IInjectorService) => {
-            this.$injector = $injector;
-            const $rootScope = $injector.get('$rootScope');
-
-            // Initialize the ng1 $injector provider
-            setTempInjectorRef($injector);
-            this.injector.get($INJECTOR);
-
-            // Put the injector on the DOM, so that it can be "required"
-            angularElement(element).data!(controllerKey(INJECTOR_KEY), this.injector);
-
-            // Destroy the AngularJS app once the Angular `PlatformRef` is destroyed.
-            // This does not happen in a typical SPA scenario, but it might be useful for
-            // other use-cases where disposing of an Angular/AngularJS app is necessary
-            // (such as Hot Module Replacement (HMR)).
-            // See https://github.com/angular/angular/issues/39935.
-            this.platformRef.onDestroy(() => destroyApp($injector));
-
-            // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
-            // We need to do this in the next tick so that we don't prevent the bootup stabilizing
-            setTimeout(() => {
-              const subscription = this.ngZone.onMicrotaskEmpty.subscribe(() => {
-                if ($rootScope.$$phase) {
-                  if (typeof ngDevMode === 'undefined' || ngDevMode) {
-                    console.warn(
-                        'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.');
-                  }
-
-                  return $rootScope.$evalAsync();
+                // the `flush` method will be present when ngMocks is used
+                if (intervalDelegate.hasOwnProperty('flush')) {
+                  (wrappedInterval as any)['flush'] = () => {
+                    (intervalDelegate as any)['flush']();
+                    return wrappedInterval;
+                  };
                 }
 
-                return $rootScope.$digest();
-              });
-              $rootScope.$on('$destroy', () => {
-                subscription.unsubscribe();
-              });
-            }, 0);
+                return wrappedInterval;
+              },
+            ]);
           }
-        ]);
+        },
+      ])
 
-    const upgradeModule = angularModule(UPGRADE_MODULE_NAME, [INIT_MODULE_NAME].concat(modules));
+      .run([
+        ɵconstants.$INJECTOR,
+        ($injector: ɵangular1.IInjectorService) => {
+          this.$injector = $injector;
+          const $rootScope = $injector.get('$rootScope');
+
+          // Initialize the ng1 $injector provider
+          setTempInjectorRef($injector);
+          this.injector.get(ɵconstants.$INJECTOR);
+
+          // Put the injector on the DOM, so that it can be "required"
+          ɵangular1.element(element).data!(
+            ɵutil.controllerKey(ɵconstants.INJECTOR_KEY),
+            this.injector,
+          );
+
+          // Destroy the AngularJS app once the Angular `PlatformRef` is destroyed.
+          // This does not happen in a typical SPA scenario, but it might be useful for
+          // other use-cases where disposing of an Angular/AngularJS app is necessary
+          // (such as Hot Module Replacement (HMR)).
+          // See https://github.com/angular/angular/issues/39935.
+          this.platformRef.onDestroy(() => ɵutil.destroyApp($injector));
+
+          // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
+          // We need to do this in the next tick so that we don't prevent the bootup stabilizing
+          setTimeout(() => {
+            const subscription = this.ngZone.onMicrotaskEmpty.subscribe(() => {
+              if ($rootScope.$$phase) {
+                if (typeof ngDevMode === 'undefined' || ngDevMode) {
+                  console.warn(
+                    'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.',
+                  );
+                }
+
+                return $rootScope.$evalAsync();
+              }
+
+              return $rootScope.$digest();
+            });
+            $rootScope.$on('$destroy', () => {
+              subscription.unsubscribe();
+            });
+          }, 0);
+        },
+      ]);
+
+    const upgradeModule = ɵangular1.module_(
+      ɵconstants.UPGRADE_MODULE_NAME,
+      [INIT_MODULE_NAME].concat(modules),
+    );
 
     // Make sure resumeBootstrap() only exists if the current bootstrap is deferred
     const windowAngular = (window as any)['angular'];
     windowAngular.resumeBootstrap = undefined;
 
     // Bootstrap the AngularJS application inside our zone
-    const returnValue = this.ngZone.run(() => bootstrap(element, [upgradeModule.name], config));
+    const returnValue = this.ngZone.run(() =>
+      ɵangular1.bootstrap(element, [upgradeModule.name], config),
+    );
 
     // Patch resumeBootstrap() to run inside the ngZone
     if (windowAngular.resumeBootstrap) {
       const originalResumeBootstrap: () => void = windowAngular.resumeBootstrap;
       const ngZone = this.ngZone;
-      windowAngular.resumeBootstrap = function() {
+      windowAngular.resumeBootstrap = function () {
         let args = arguments;
         windowAngular.resumeBootstrap = originalResumeBootstrap;
         return ngZone.run(() => windowAngular.resumeBootstrap.apply(this, args));

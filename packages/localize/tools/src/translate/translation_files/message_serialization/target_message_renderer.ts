@@ -27,7 +27,7 @@ export class TargetMessageRenderer implements MessageRenderer<ɵParsedTranslatio
   text(text: string): void {
     this.current.text += text;
   }
-  placeholder(name: string, body: string|undefined): void {
+  placeholder(name: string, body: string | undefined): void {
     this.renderPlaceholder(name);
   }
   startPlaceholder(name: string): void {

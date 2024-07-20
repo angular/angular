@@ -18,7 +18,7 @@ describe('embedded views', () => {
       template: 'Child',
     })
     class ChildCmp {
-      @Input() addItemFn: Function|undefined;
+      @Input() addItemFn: Function | undefined;
     }
 
     @Component({
@@ -45,8 +45,7 @@ describe('embedded views', () => {
 
   it('should resolve template input variables through the implicit receiver', () => {
     @Component({template: `<ng-template let-a [ngIf]="true">{{this.a}}</ng-template>`})
-    class TestCmp {
-    }
+    class TestCmp {}
 
     TestBed.configureTestingModule({declarations: [TestCmp]});
     const fixture = TestBed.createComponent(TestCmp);
@@ -60,7 +59,7 @@ describe('embedded views', () => {
       template: `
         <ng-template [ngIf]="true">
           <ng-template [ngIf]="true">{{this.myProp}}{{myProp}}</ng-template>
-        </ng-template>`
+        </ng-template>`,
     })
     class TestCmp {
       myProp = 'Hello';

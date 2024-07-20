@@ -10,15 +10,20 @@ import {Events, MessageBus, Parameters} from 'protocol';
 
 type AnyEventCallback<Ev> = <E extends keyof Ev>(topic: E, args: Parameters<Ev[E]>) => void;
 
-export class SamePageMessageBus extends MessageBus<Events> {
-  private _listeners: any[] = [];
+type ListenerFn = (e: MessageEvent) => void;
 
-  constructor(private _source: string, private _destination: string) {
+export class SamePageMessageBus extends MessageBus<Events> {
+  private _listeners: ListenerFn[] = [];
+
+  constructor(
+    private _source: string,
+    private _destination: string,
+  ) {
     super();
   }
 
   onAny(cb: AnyEventCallback<Events>): () => void {
-    const listener = (e: MessageEvent): void => {
+    const listener: ListenerFn = (e) => {
       if (e.source !== window || !e.data || !e.data.topic || e.data.source !== this._destination) {
         return;
       }
@@ -32,13 +37,13 @@ export class SamePageMessageBus extends MessageBus<Events> {
     };
   }
 
-  on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
-    const listener = (e: MessageEvent): void => {
+  override on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
+    const listener: ListenerFn = (e) => {
       if (e.source !== window || !e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
       }
       if (e.data.topic === topic) {
-        cb.apply(null, e.data.args);
+        (cb as any).apply(null, e.data.args);
       }
     };
     window.addEventListener('message', listener);
@@ -49,31 +54,33 @@ export class SamePageMessageBus extends MessageBus<Events> {
     };
   }
 
-  once<E extends keyof Events>(topic: E, cb: Events[E]): void {
-    const listener = (e: MessageEvent): void => {
+  override once<E extends keyof Events>(topic: E, cb: Events[E]): void {
+    const listener: ListenerFn = (e) => {
       if (e.source !== window || !e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
       }
       if (e.data.topic === topic) {
-        cb.apply(null, e.data.args);
+        (cb as any).apply(null, e.data.args);
       }
       window.removeEventListener('message', listener);
     };
     window.addEventListener('message', listener);
   }
 
-  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
+  override emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
     window.postMessage(
-        {
-          source: this._source,
-          topic,
-          args,
-        },
-        '*');
+      {
+        source: this._source,
+        topic,
+        args,
+        __ignore_ng_zone__: true,
+      },
+      '*',
+    );
     return true;
   }
 
-  destroy(): void {
+  override destroy(): void {
     this._listeners.forEach((l) => window.removeEventListener('message', l));
     this._listeners = [];
   }

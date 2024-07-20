@@ -23,7 +23,7 @@ ts_library(
         "//packages/common/locales",
         "//packages/compiler",
         "//packages/core",
-        "//packages/core/src/signals",
+        "//packages/core/primitives/signals",
         "//packages/core/src/util",
         "//packages/core/test/render3:matchers",
         "//packages/core/testing",
@@ -64,7 +64,6 @@ jasmine_node_test(
         ":acceptance_lib",
         ":forward_ref_test_lib",
         "//packages/zone.js/lib:zone_d_ts",
-        "@npm//base64-js",
         "@npm//source-map",
     ],
 )

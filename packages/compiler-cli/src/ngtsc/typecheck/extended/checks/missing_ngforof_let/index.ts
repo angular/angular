@@ -21,8 +21,10 @@ class MissingNgForOfLetCheck extends TemplateCheckWithVisitor<ErrorCode.MISSING_
   override code = ErrorCode.MISSING_NGFOROF_LET as const;
 
   override visitNode(
-      ctx: TemplateContext<ErrorCode.MISSING_NGFOROF_LET>, component: ts.ClassDeclaration,
-      node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.MISSING_NGFOROF_LET>[] {
+    ctx: TemplateContext<ErrorCode.MISSING_NGFOROF_LET>,
+    component: ts.ClassDeclaration,
+    node: TmplAstNode | AST,
+  ): NgTemplateDiagnostic<ErrorCode.MISSING_NGFOROF_LET>[] {
     const isTemplate = node instanceof TmplAstTemplate;
     if (!(node instanceof TmplAstTemplate)) {
       return [];
@@ -31,7 +33,7 @@ class MissingNgForOfLetCheck extends TemplateCheckWithVisitor<ErrorCode.MISSING_
     if (node.templateAttrs.length === 0) {
       return [];
     }
-    const attr = node.templateAttrs.find(x => x.name === 'ngFor');
+    const attr = node.templateAttrs.find((x) => x.name === 'ngFor');
     if (attr === undefined) {
       return [];
     }
@@ -46,7 +48,9 @@ class MissingNgForOfLetCheck extends TemplateCheckWithVisitor<ErrorCode.MISSING_
 }
 
 export const factory: TemplateCheckFactory<
-    ErrorCode.MISSING_NGFOROF_LET, ExtendedTemplateDiagnosticName.MISSING_NGFOROF_LET> = {
+  ErrorCode.MISSING_NGFOROF_LET,
+  ExtendedTemplateDiagnosticName.MISSING_NGFOROF_LET
+> = {
   code: ErrorCode.MISSING_NGFOROF_LET,
   name: ExtendedTemplateDiagnosticName.MISSING_NGFOROF_LET,
   create: () => new MissingNgForOfLetCheck(),

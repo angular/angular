@@ -9,7 +9,6 @@ import {ɵParsedMessage as ParsedMessage} from '@angular/localize';
 import {Diagnostics} from '../../diagnostics';
 import {TranslationSerializer} from './translation_serializer';
 
-
 /**
  * A translation serializer that generates the mapping file for the legacy message ID migration.
  * The file is used by the `localize-migrate` script to migrate existing translation files from
@@ -20,24 +19,28 @@ export class LegacyMessageIdMigrationSerializer implements TranslationSerializer
 
   serialize(messages: ParsedMessage[]): string {
     let hasMessages = false;
-    const mapping = messages.reduce((output, message) => {
-      if (shouldMigrate(message)) {
-        for (const legacyId of message.legacyIds!) {
-          if (output.hasOwnProperty(legacyId)) {
-            this._diagnostics.warn(`Detected duplicate legacy ID ${legacyId}.`);
-          }
+    const mapping = messages.reduce(
+      (output, message) => {
+        if (shouldMigrate(message)) {
+          for (const legacyId of message.legacyIds!) {
+            if (output.hasOwnProperty(legacyId)) {
+              this._diagnostics.warn(`Detected duplicate legacy ID ${legacyId}.`);
+            }
 
-          output[legacyId] = message.id;
-          hasMessages = true;
+            output[legacyId] = message.id;
+            hasMessages = true;
+          }
         }
-      }
-      return output;
-    }, {} as Record<string, string>);
+        return output;
+      },
+      {} as Record<string, string>,
+    );
 
     if (!hasMessages) {
       this._diagnostics.warn(
-          'Could not find any legacy message IDs in source files while generating ' +
-          'the legacy message migration file.');
+        'Could not find any legacy message IDs in source files while generating ' +
+          'the legacy message migration file.',
+      );
     }
 
     return JSON.stringify(mapping, null, 2);

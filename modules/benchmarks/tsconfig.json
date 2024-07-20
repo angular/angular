@@ -30,6 +30,5 @@
     "no-floating-promises": true,
     "no-unused-expression": true,
     "no-unused-variable": true
-  },
-  "include": ["../../node_modules/@angular/build-tooling/bazel/benchmark/driver-utilities/"]
+  }
 }

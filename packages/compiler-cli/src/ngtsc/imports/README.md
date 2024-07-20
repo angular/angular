@@ -121,7 +121,7 @@ Because the first import of an NgModule from a user library to a `.d.ts` is alwa
 Aliasing is currently used in two cases:
 
 1. To address strict dependency checking issues when using a `UnifiedModulesHost`.
-2. To support dependening on non-Angular Package Format packages (e.g. private libraries in monorepos) which do not have an entrypoint file through which all directives/pipes/modules are exported.
+2. To support depending on non-Angular Package Format packages (e.g. private libraries in monorepos) which do not have an entrypoint file through which all directives/pipes/modules are exported.
 
 In environments with "strict dependency checking" as described above, an NgModule which exports another NgModule from one of its dependencies needs to export its directives/pipes as well, in order to make them available to the downstream compiler.
 

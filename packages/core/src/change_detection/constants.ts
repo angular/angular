@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * The strategy that the default change detector uses to detect changes.
  * When set, takes effect the next time change detection is triggered.
  *
- * @see {@link ChangeDetectorRef#usage-notes Change detection usage}
+ * @see [Change detection usage](/api/core/ChangeDetectorRef?tab=usage-notes)
+ * @see [Skipping component subtrees](/best-practices/skipping-subtrees)
  *
  * @publicApi
  */

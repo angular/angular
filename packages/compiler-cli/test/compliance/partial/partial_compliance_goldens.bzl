@@ -10,10 +10,9 @@ def partial_compliance_golden(filePath):
     generate_partial_name = "partial_%s" % path
     data = [
         "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
-        "//packages/compiler-cli/test/compliance/test_cases",
-        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
+        "//packages/core:npm_package",
         filePath,
-    ]
+    ] + native.glob(["%s/*.ts" % path, "%s/**/*.html" % path])
 
     nodejs_binary(
         name = generate_partial_name,

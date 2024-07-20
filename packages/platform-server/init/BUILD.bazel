@@ -1,8 +1,7 @@
-load("//tools:defaults.bzl", "ng_module", "tsec_test")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//tools:defaults.bzl", "esbuild", "ng_module", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
-
-exports_files(["package.json"])
 
 ng_module(
     name = "init",
@@ -11,9 +10,26 @@ ng_module(
             "*.ts",
             "src/**/*.ts",
         ],
+        exclude = ["src/bundled-domino.d.ts"],
     ),
     deps = [
-        "//packages/platform-server",
+        ":bundled_domino_lib",
+    ],
+)
+
+esbuild(
+    name = "bundled_domino",
+    entry_point = "@npm//:node_modules/domino/lib/index.js",
+    format = "esm",
+    output = "src/bundled-domino.mjs",
+    deps = ["@npm//domino"],
+)
+
+js_library(
+    name = "bundled_domino_lib",
+    srcs = [
+        "src/bundled-domino.d.ts",
+        ":bundled_domino",
     ],
 )
 

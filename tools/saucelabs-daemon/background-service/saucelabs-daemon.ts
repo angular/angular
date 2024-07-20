@@ -15,9 +15,10 @@ import {IpcServer} from './ipc';
 import {openSauceConnectTunnel} from './sauce-connect-tunnel';
 
 const defaultCapabilities = {
-  recordVideo: false,
+  // TODO: Turn off long-term. Right now this is just for debugging.
+  recordVideo: true,
   recordScreenshots: false,
-  idleTimeout: 90,
+  idleTimeout: 1000,
   // These represent the maximum values supported by Saucelabs.
   // See: https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options
   commandTimeout: 600,
@@ -27,8 +28,9 @@ const defaultCapabilities = {
 
 interface RemoteBrowser {
   id: string;
-  state: 'claimed'|'free'|'launching';
-  driver: WebDriver|null;
+  state: 'claimed' | 'free' | 'launching';
+  driver: WebDriver | null;
+  sessionUrl: string | null;
 }
 
 interface BrowserTest {
@@ -64,22 +66,22 @@ export class SaucelabsDaemon {
   private _baseCapabilities = {...defaultCapabilities, ...this._userCapabilities};
 
   /** Id of the keep alive interval that ensures no remote browsers time out. */
-  private _keepAliveIntervalId: NodeJS.Timeout|null = null;
+  private _keepAliveIntervalId: NodeJS.Timeout | null = null;
 
   /* Promise  indicating whether we the tunnel is active, or if we are still connecting. */
-  private _connection: Promise<void>|undefined = undefined;
+  private _connection: Promise<void> | undefined = undefined;
 
   /* Number of parallel executions started */
   private _parallelExecutions: number = 0;
 
   constructor(
-      private _username: string,
-      private _accessKey: string,
-      private _buildName: string,
-      private _browsers: Browser[],
-      private _maxParallelExecutions: number,
-      private _sauceConnect: string,
-      private _userCapabilities: object = {},
+    private _username: string,
+    private _accessKey: string,
+    private _buildName: string,
+    private _browsers: Browser[],
+    private _maxParallelExecutions: number,
+    private _sauceConnect: string,
+    private _userCapabilities: object = {},
   ) {
     // Starts the keep alive loop for all active browsers, running every 15 seconds.
     this._keepAliveIntervalId = setInterval(() => this._keepAliveBrowsers(), 15_000);
@@ -102,7 +104,7 @@ export class SaucelabsDaemon {
    */
   async quitAllBrowsers() {
     let quitBrowsers: Promise<void>[] = [];
-    this._activeBrowsers.forEach(b => {
+    this._activeBrowsers.forEach((b) => {
       if (b.driver) {
         quitBrowsers.push(b.driver.quit());
       }
@@ -188,7 +190,9 @@ export class SaucelabsDaemon {
    **/
   private async _connect() {
     await openSauceConnectTunnel(
-        (this._userCapabilities as any).tunnelIdentifier, this._sauceConnect);
+      (this._userCapabilities as any).tunnelIdentifier,
+      this._sauceConnect,
+    );
   }
 
   /**
@@ -200,68 +204,76 @@ export class SaucelabsDaemon {
   private async launchBrowserSet() {
     this._parallelExecutions++;
     console.debug(
-        `Launching browsers set ${this._parallelExecutions} of ${this._maxParallelExecutions}...`);
+      `Launching browsers set ${this._parallelExecutions} of ${this._maxParallelExecutions}...`,
+    );
 
     // Once the tunnel is established we can launch browsers
     await Promise.all(
-        this._browsers.map(async (browser, id) => {
-          const browserId = getUniqueId(browser);
-          const launched: RemoteBrowser = {state: 'launching', driver: null, id: browserId};
-          const browserDescription = `${this._buildName} - ${browser.browserName} - #${id + 1}`;
+      this._browsers.map(async (browser, id) => {
+        const browserId = getUniqueId(browser);
+        const launched: RemoteBrowser = {
+          state: 'launching',
+          driver: null,
+          sessionUrl: null,
+          id: browserId,
+        };
+        const browserDescription = `${this._buildName} - ${browser.browserName} - #${id + 1}`;
 
-          const capabilities: any = {
-            'browserName': browser.browserName,
-            'sauce:options': {...this._baseCapabilities, ...browser},
-          };
+        const capabilities: any = {
+          'browserName': browser.browserName,
+          'sauce:options': {...this._baseCapabilities, ...browser},
+        };
 
-          // Set `sauce:options` to provide a build name for the remote browser instances.
-          // This helps with debugging. Also ensures the W3C protocol is used.
-          // See. https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options
-          capabilities['sauce:options']['name'] = browserDescription;
-          capabilities['sauce:options']['build'] = browserDescription;
+        // Set `sauce:options` to provide a build name for the remote browser instances.
+        // This helps with debugging. Also ensures the W3C protocol is used.
+        // See. https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options
+        capabilities['sauce:options']['name'] = browserDescription;
+        capabilities['sauce:options']['build'] = browserDescription;
 
-          console.debug(
-              `Capabilities for ${browser.browserName}:`, JSON.stringify(capabilities, null, 2));
-          console.debug(`  > Browser-ID: `, browserId);
-          console.debug(`  > Browser-Description: `, browserDescription);
+        console.debug(
+          `Capabilities for ${browser.browserName}:`,
+          JSON.stringify(capabilities, null, 2),
+        );
+        console.debug(`  > Browser-ID: `, browserId);
+        console.debug(`  > Browser-Description: `, browserDescription);
 
-          // Keep track of the launched browser. We do this before it even completed the
-          // launch as we can then handle scheduled tests when the browser is still launching.
-          this._activeBrowsers.push(launched);
+        // Keep track of the launched browser. We do this before it even completed the
+        // launch as we can then handle scheduled tests when the browser is still launching.
+        this._activeBrowsers.push(launched);
 
-          // See the following link for public API of the selenium server.
-          // https://wiki.saucelabs.com/display/DOCS/Instant+Selenium+Node.js+Tests
-          const driver = await new Builder()
-                             .withCapabilities(capabilities)
-                             .usingServer(
-                                 `http://${this._username}:${
-                                     this._accessKey}@ondemand.saucelabs.com:80/wd/hub`,
-                                 )
-                             .build();
+        // See the following link for public API of the selenium server.
+        // https://wiki.saucelabs.com/display/DOCS/Instant+Selenium+Node.js+Tests
+        const driver = await new Builder()
+          .withCapabilities(capabilities)
+          .usingServer(
+            `http://${this._username}:${this._accessKey}@ondemand.saucelabs.com:80/wd/hub`,
+          )
+          .build();
 
-          // Only wait 30 seconds to load a test page.
-          await driver.manage().setTimeouts({pageLoad: 30000});
+        // Only wait 30 seconds to load a test page.
+        await driver.manage().setTimeouts({pageLoad: 30000});
 
-          const sessionId = (await driver.getSession()).getId();
-          console.info(
-              chalk.yellow(
-                  `Started browser ${browser.browserName} on Saucelabs: ` +
-                      `https://saucelabs.com/tests/${sessionId}`,
-                  ),
-          );
+        const sessionId = (await driver.getSession()).getId();
 
-          // Mark the browser as available after launch completion.
-          launched.state = 'free';
-          launched.driver = driver;
+        // Mark the browser as available after launch completion.
+        launched.state = 'free';
+        launched.driver = driver;
+        launched.sessionUrl = `https://saucelabs.com/tests/${sessionId}`;
 
-          // If a test has been scheduled before the browser completed launching, run
-          // it now given that the browser is ready now.
-          if (this._pendingTests.has(launched)) {
-            const test = this._pendingTests.get(launched)!;
-            this._pendingTests.delete(launched);
-            this._startBrowserTest(launched, test);
-          }
-        }),
+        console.info(
+          chalk.yellow(
+            `Started browser ${browser.browserName} on Saucelabs: ${launched.sessionUrl}`,
+          ),
+        );
+
+        // If a test has been scheduled before the browser completed launching, run
+        // it now given that the browser is ready now.
+        if (this._pendingTests.has(launched)) {
+          const test = this._pendingTests.get(launched)!;
+          this._pendingTests.delete(launched);
+          this._startBrowserTest(launched, test);
+        }
+      }),
     );
   }
 
@@ -281,6 +293,7 @@ export class SaucelabsDaemon {
 
       try {
         console.debug(`Opening test url for #${test.testId}: ${test.pageUrl}`);
+        console.debug(`  > Instance URL: ${browser.sessionUrl}`);
         await browser.driver!.get(test.pageUrl);
         const pageTitle = await browser.driver!.getTitle();
         console.debug(`Test page loaded for #${test.testId}: "${pageTitle}".`);
@@ -296,7 +309,7 @@ export class SaucelabsDaemon {
    * or launching with no pending test. If no such browser if found, returns
    * null.
    **/
-  private _findAvailableBrowser(browserId: string): RemoteBrowser|null {
+  private _findAvailableBrowser(browserId: string): RemoteBrowser | null {
     for (const browser of this._activeBrowsers) {
       // If the browser ID doesn't match, continue searching.
       if (browser.id !== browserId) {
@@ -328,13 +341,16 @@ export class SaucelabsDaemon {
    **/
   private async _keepAliveBrowsers() {
     const pendingCommands: Promise<string>[] = [];
-    this._activeBrowsers.forEach(b => {
+    this._activeBrowsers.forEach((b) => {
       if (b.driver !== null) {
         pendingCommands.push(b.driver.getTitle() as Promise<string>);
       }
     });
     await Promise.all(pendingCommands);
-    console.debug(`${Date().toLocaleString()}: Refreshed ${pendingCommands.length} browsers (pid ${
-        process.pid}).`);
+    console.debug(
+      `${Date().toLocaleString()}: Refreshed ${pendingCommands.length} browsers (pid ${
+        process.pid
+      }).`,
+    );
   }
 }

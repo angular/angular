@@ -1,8 +1,0 @@
-extends: existence
-message: "Use 'midnight' or 'noon'."
-link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
-ignorecase: true
-level: error
-nonword: true
-tokens:
-  - '12 ?[ap]\.?m\.?'

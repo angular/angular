@@ -1,10 +1,8 @@
 .visual-controls {
   display: flex;
   flex-direction: column;
-  height: 80px;
   justify-content: space-around;
-  margin-right: 25px;
-  width: 180px;
+  min-width: 30%;
 }
 
 .hidden {
@@ -32,7 +30,7 @@
   }
 
   ::ng-deep .details {
-    flex: 1 1 150px;
+    flex: 1;
     display: flex;
     flex-direction: column;
     font-weight: 500;

@@ -6,6 +6,8 @@
     "module": "es2020",
     "moduleResolution": "node",
     "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
     "strictPropertyInitialization": true,
     "outDir": "../../../dist/all/@angular/service-worker/cli-custom",
     "noImplicitAny": true,

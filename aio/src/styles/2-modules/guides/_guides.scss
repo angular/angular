@@ -1,7 +1,0 @@
-@use '../../mixins';
-
-.reviewed {
-  @include mixins.font-size(13);
-  font-style: italic;
-  text-align: right;
-}

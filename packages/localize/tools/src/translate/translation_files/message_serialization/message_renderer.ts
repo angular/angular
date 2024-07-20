@@ -11,7 +11,7 @@ export interface MessageRenderer<T> {
   startRender(): void;
   endRender(): void;
   text(text: string): void;
-  placeholder(name: string, body: string|undefined): void;
+  placeholder(name: string, body: string | undefined): void;
   startPlaceholder(name: string): void;
   closePlaceholder(name: string): void;
   startContainer(): void;

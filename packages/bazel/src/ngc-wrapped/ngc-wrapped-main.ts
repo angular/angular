@@ -8,7 +8,9 @@
 
 import {main} from './index';
 
-main(process.argv.slice(2)).then(exitCode => process.exitCode = exitCode).catch(e => {
-  console.error(e);
-  process.exitCode = 1;
-});
+main(process.argv.slice(2))
+  .then((exitCode) => (process.exitCode = exitCode))
+  .catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  });

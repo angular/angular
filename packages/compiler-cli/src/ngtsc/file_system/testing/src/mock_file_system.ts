@@ -16,8 +16,10 @@ export abstract class MockFileSystem implements FileSystem {
   private _fileTree: Folder = {};
   private _cwd: AbsoluteFsPath;
 
-
-  constructor(private _isCaseSensitive = false, cwd: AbsoluteFsPath = '/' as AbsoluteFsPath) {
+  constructor(
+    private _isCaseSensitive = false,
+    cwd: AbsoluteFsPath = '/' as AbsoluteFsPath,
+  ) {
     this._cwd = this.normalize(cwd);
   }
 
@@ -47,16 +49,22 @@ export abstract class MockFileSystem implements FileSystem {
     }
   }
 
-  writeFile(path: AbsoluteFsPath, data: string|Uint8Array, exclusive: boolean = false): void {
+  writeFile(path: AbsoluteFsPath, data: string | Uint8Array, exclusive: boolean = false): void {
     const [folderPath, basename] = this.splitIntoFolderAndFile(path);
     const {entity} = this.findFromPath(folderPath);
     if (entity === null || !isFolder(entity)) {
       throw new MockFileSystemError(
-          'ENOENT', path, `Unable to write file "${path}". The containing folder does not exist.`);
+        'ENOENT',
+        path,
+        `Unable to write file "${path}". The containing folder does not exist.`,
+      );
     }
     if (exclusive && entity[basename] !== undefined) {
       throw new MockFileSystemError(
-          'EEXIST', path, `Unable to exclusively write file "${path}". The file already exists.`);
+        'EEXIST',
+        path,
+        `Unable to exclusively write file "${path}". The file already exists.`,
+      );
     }
     entity[basename] = data;
   }
@@ -66,11 +74,17 @@ export abstract class MockFileSystem implements FileSystem {
     const {entity} = this.findFromPath(folderPath);
     if (entity === null || !isFolder(entity)) {
       throw new MockFileSystemError(
-          'ENOENT', path, `Unable to remove file "${path}". The containing folder does not exist.`);
+        'ENOENT',
+        path,
+        `Unable to remove file "${path}". The containing folder does not exist.`,
+      );
     }
     if (isFolder(entity[basename])) {
       throw new MockFileSystemError(
-          'EISDIR', path, `Unable to remove file "${path}". The path to remove is a folder.`);
+        'EISDIR',
+        path,
+        `Unable to remove file "${path}". The path to remove is a folder.`,
+      );
     }
     delete entity[basename];
   }
@@ -80,8 +94,10 @@ export abstract class MockFileSystem implements FileSystem {
     const {entity} = this.findFromPath(folderPath);
     if (entity === null || !isFolder(entity)) {
       throw new MockFileSystemError(
-          'ENOENT', path,
-          `Unable to create symlink at "${path}". The containing folder does not exist.`);
+        'ENOENT',
+        path,
+        `Unable to create symlink at "${path}". The containing folder does not exist.`,
+      );
     }
     entity[basename] = new SymLink(target);
   }
@@ -90,11 +106,17 @@ export abstract class MockFileSystem implements FileSystem {
     const {entity} = this.findFromPath(path);
     if (entity === null) {
       throw new MockFileSystemError(
-          'ENOENT', path, `Unable to read directory "${path}". It does not exist.`);
+        'ENOENT',
+        path,
+        `Unable to read directory "${path}". It does not exist.`,
+      );
     }
     if (isFile(entity)) {
       throw new MockFileSystemError(
-          'ENOTDIR', path, `Unable to read directory "${path}". It is a file.`);
+        'ENOTDIR',
+        path,
+        `Unable to read directory "${path}". It is a file.`,
+      );
     }
     return Object.keys(entity) as PathSegment[];
   }
@@ -128,7 +150,7 @@ export abstract class MockFileSystem implements FileSystem {
   }
 
   ensureDir(path: AbsoluteFsPath): Folder {
-    const segments = this.splitPath(path).map(segment => this.getCanonicalPath(segment));
+    const segments = this.splitPath(path).map((segment) => this.getCanonicalPath(segment));
 
     // Convert the root folder to a canonical empty string `''` (on Windows it would be `'C:'`).
     segments[0] = '';
@@ -155,8 +177,10 @@ export abstract class MockFileSystem implements FileSystem {
     const {entity} = this.findFromPath(folderPath);
     if (entity === null || !isFolder(entity)) {
       throw new MockFileSystemError(
-          'ENOENT', path,
-          `Unable to remove folder "${path}". The containing folder does not exist.`);
+        'ENOENT',
+        path,
+        `Unable to remove folder "${path}". The containing folder does not exist.`,
+      );
     }
     delete entity[basename];
   }
@@ -165,7 +189,7 @@ export abstract class MockFileSystem implements FileSystem {
     return this.dirname(path) === path;
   }
 
-  extname(path: AbsoluteFsPath|PathSegment): string {
+  extname(path: AbsoluteFsPath | PathSegment): string {
     const match = /.+(\.[^.]*)$/.exec(path);
     return match !== null ? match[1] : '';
   }
@@ -174,7 +198,10 @@ export abstract class MockFileSystem implements FileSystem {
     const result = this.findFromPath(filePath, {followSymLinks: true});
     if (result.entity === null) {
       throw new MockFileSystemError(
-          'ENOENT', filePath, `Unable to find the real path of "${filePath}". It does not exist.`);
+        'ENOENT',
+        filePath,
+        `Unable to find the real path of "${filePath}". It does not exist.`,
+      );
     } else {
       return result.path;
     }
@@ -220,7 +247,7 @@ export abstract class MockFileSystem implements FileSystem {
   abstract resolve(...paths: string[]): AbsoluteFsPath;
   abstract dirname<T extends string>(file: T): T;
   abstract join<T extends string>(basePath: T, ...paths: string[]): T;
-  abstract relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath;
+  abstract relative<T extends PathString>(from: T, to: T): PathSegment | AbsoluteFsPath;
   abstract basename(filePath: string, extension?: string): PathSegment;
   abstract isRooted(path: string): boolean;
   abstract normalize<T extends PathString>(path: T): T;
@@ -268,7 +295,6 @@ export abstract class MockFileSystem implements FileSystem {
     }
   }
 
-
   protected findFromPath(path: AbsoluteFsPath, options?: {followSymLinks: boolean}): FindResult {
     const followSymLinks = !!options && options.followSymLinks;
     const segments = this.splitPath(path);
@@ -278,7 +304,7 @@ export abstract class MockFileSystem implements FileSystem {
     }
     // Convert the root folder to a canonical empty string `""` (on Windows it would be `C:`).
     segments[0] = '';
-    let current: Entity|null = this._fileTree;
+    let current: Entity | null = this._fileTree;
     while (segments.length) {
       current = current[this.getCanonicalPath(segments.shift()!)];
       if (current === undefined) {
@@ -318,18 +344,18 @@ export abstract class MockFileSystem implements FileSystem {
   }
 
   protected getCanonicalPath<T extends string>(p: T): T {
-    return this.isCaseSensitive() ? p : p.toLowerCase() as T;
+    return this.isCaseSensitive() ? p : (p.toLowerCase() as T);
   }
 }
 export interface FindResult {
   path: AbsoluteFsPath;
-  entity: Entity|null;
+  entity: Entity | null;
 }
-export type Entity = Folder|File|SymLink;
+export type Entity = Folder | File | SymLink;
 export interface Folder {
   [pathSegments: string]: Entity;
 }
-export type File = string|Uint8Array;
+export type File = string | Uint8Array;
 export class SymLink {
   constructor(public path: AbsoluteFsPath) {}
 }
@@ -348,19 +374,23 @@ class MockFileStats implements FileStats {
 }
 
 class MockFileSystemError extends Error {
-  constructor(public code: string, public path: string, message: string) {
+  constructor(
+    public code: string,
+    public path: string,
+    message: string,
+  ) {
     super(message);
   }
 }
 
-export function isFile(item: Entity|null): item is File {
+export function isFile(item: Entity | null): item is File {
   return Buffer.isBuffer(item) || typeof item === 'string';
 }
 
-export function isSymLink(item: Entity|null): item is SymLink {
+export function isSymLink(item: Entity | null): item is SymLink {
   return item instanceof SymLink;
 }
 
-export function isFolder(item: Entity|null): item is Folder {
+export function isFolder(item: Entity | null): item is Folder {
   return item !== null && !isFile(item) && !isSymLink(item);
 }

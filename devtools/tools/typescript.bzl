@@ -9,7 +9,7 @@ def ts_library(name, tsconfig = "//devtools:tsconfig.json", **kwargs):
         **kwargs
     )
 
-def ts_test_library(name, tsconfig = "//devtools:tsconfig.json", deps = [], **kwargs):
+def ts_test_library(name, tsconfig = "//devtools:tsconfig_spec", deps = [], **kwargs):
     _ts_library(
         name = name,
         tsconfig = tsconfig,

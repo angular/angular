@@ -7,7 +7,21 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, ErrorHandler, EventEmitter, HostListener, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  Directive,
+  ErrorHandler,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewChildren,
+  ViewContainerRef,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -110,8 +124,8 @@ describe('event listeners', () => {
     });
 
     it('should be able to access a property called $event using `this`', () => {
-      let eventVariable: number|undefined;
-      let eventObject: MouseEvent|undefined;
+      let eventVariable: number | undefined;
+      let eventObject: MouseEvent | undefined;
 
       @Component({
         template: `
@@ -137,30 +151,29 @@ describe('event listeners', () => {
       expect(eventObject?.type).toBe('click');
     });
 
-    it('should be able to use a keyed write on `this` from a listener inside an ng-template',
-       () => {
-         @Component({
-           template: `
+    it('should be able to use a keyed write on `this` from a listener inside an ng-template', () => {
+      @Component({
+        template: `
           <ng-template #template>
             <button (click)="this['mes' + 'sage'] = 'hello'">Click me</button>
           </ng-template>
   
           <ng-container [ngTemplateOutlet]="template"></ng-container>
-        `
-         })
-         class MyComp {
-           message = '';
-         }
+        `,
+      })
+      class MyComp {
+        message = '';
+      }
 
-         TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
-         const fixture = TestBed.createComponent(MyComp);
-         fixture.detectChanges();
-         const button = fixture.nativeElement.querySelector('button');
-         button.click();
-         fixture.detectChanges();
+      TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      fixture.detectChanges();
 
-         expect(fixture.componentInstance.message).toBe('hello');
-       });
+      expect(fixture.componentInstance.message).toBe('hello');
+    });
 
     it('should reference the correct context object if it is swapped out', () => {
       @Component({
@@ -170,7 +183,7 @@ describe('event listeners', () => {
           </ng-template>
   
           <ng-container *ngTemplateOutlet="template; context: {$implicit: current}"></ng-container>
-        `
+        `,
       })
       class MyComp {
         one = {value: 'one'};
@@ -209,8 +222,7 @@ describe('event listeners', () => {
         standalone: true,
         template: ``,
       })
-      class MyComp {
-      }
+      class MyComp {}
 
       @Component({
         standalone: true,
@@ -221,7 +233,7 @@ describe('event listeners', () => {
         `,
       })
       class App {
-        comp: MyComp|null = null;
+        comp: MyComp | null = null;
 
         onClick(comp: MyComp) {
           this.comp = comp;
@@ -244,16 +256,17 @@ describe('event listeners', () => {
         template: `<button (click)="onClick($event)">Click</button>`,
       })
       class MyComp {
-        handlerReturnValue: boolean|undefined;
-        event: Event|undefined;
+        handlerReturnValue: boolean | undefined;
+        event: Event | undefined;
 
         onClick(e: any) {
           this.event = e;
 
           // stub preventDefault() to check whether it's called
-          Object.defineProperty(
-              this.event, 'preventDefault',
-              {value: jasmine.createSpy('preventDefault'), writable: true});
+          Object.defineProperty(this.event, 'preventDefault', {
+            value: jasmine.createSpy('preventDefault'),
+            writable: true,
+          });
 
           return this.handlerReturnValue;
         }
@@ -283,7 +296,7 @@ describe('event listeners', () => {
   describe('coalescing', () => {
     @Component({
       selector: 'with-clicks-cmpt',
-      template: `<button likes-clicks (click)="count()" md-button>Click me!</button>`
+      template: `<button likes-clicks (click)="count()" md-button>Click me!</button>`,
     })
     class WithClicksCmpt {
       counter = 0;
@@ -314,7 +327,7 @@ describe('event listeners', () => {
     class ReturnsFalse {
       counter = 0;
       event!: Event;
-      handlerShouldReturn: boolean|undefined = undefined;
+      handlerShouldReturn: boolean | undefined = undefined;
 
       @HostListener('click', ['$event'])
       count(e: Event) {
@@ -322,9 +335,10 @@ describe('event listeners', () => {
         this.event = e;
 
         // stub preventDefault() to check whether it's called
-        Object.defineProperty(
-            this.event, 'preventDefault',
-            {value: jasmine.createSpy('preventDefault'), writable: true});
+        Object.defineProperty(this.event, 'preventDefault', {
+          value: jasmine.createSpy('preventDefault'),
+          writable: true,
+        });
 
         return this.handlerShouldReturn;
       }
@@ -333,13 +347,13 @@ describe('event listeners', () => {
     it('should coalesce multiple event listeners for the same event on the same element', () => {
       @Component({
         selector: 'test-cmpt',
-        template: `<with-clicks-cmpt></with-clicks-cmpt><with-clicks-cmpt></with-clicks-cmpt>`
+        template: `<with-clicks-cmpt></with-clicks-cmpt><with-clicks-cmpt></with-clicks-cmpt>`,
       })
-      class TestCmpt {
-      }
+      class TestCmpt {}
 
-      TestBed.configureTestingModule(
-          {declarations: [TestCmpt, WithClicksCmpt, LikesClicks, MdButton]});
+      TestBed.configureTestingModule({
+        declarations: [TestCmpt, WithClicksCmpt, LikesClicks, MdButton],
+      });
       const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
@@ -371,7 +385,7 @@ describe('event listeners', () => {
     it('should coalesce multiple event listeners in presence of queries', () => {
       @Component({
         selector: 'test-cmpt',
-        template: `<button likes-clicks (click)="counter = counter+1">Click me!</button>`
+        template: `<button likes-clicks (click)="counter = counter+1">Click me!</button>`,
       })
       class TestCmpt {
         counter = 0;
@@ -395,20 +409,20 @@ describe('event listeners', () => {
       expect(fixture.componentInstance.counter).toBe(1);
     });
 
-
     it('should try to execute remaining coalesced listeners if one of the listeners throws', () => {
       @Directive({selector: '[throws-on-clicks]'})
       class ThrowsOnClicks {
         @HostListener('click')
         dontCount() {
-          throw new Error('I was clicked and I don\'t like it!');
+          throw new Error("I was clicked and I don't like it!");
         }
       }
 
-      @Component(
-          {selector: 'test-cmpt', template: `<button throws-on-clicks likes-clicks><button>`})
-      class TestCmpt {
-      }
+      @Component({
+        selector: 'test-cmpt',
+        template: `<button throws-on-clicks likes-clicks><button>`,
+      })
+      class TestCmpt {}
 
       let noOfErrors = 0;
 
@@ -420,7 +434,7 @@ describe('event listeners', () => {
 
       TestBed.configureTestingModule({
         declarations: [TestCmpt, LikesClicks, ThrowsOnClicks],
-        providers: [{provide: ErrorHandler, useClass: CountingErrorHandler}]
+        providers: [{provide: ErrorHandler, useClass: CountingErrorHandler}],
       });
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
@@ -438,10 +452,9 @@ describe('event listeners', () => {
         selector: 'test-cmpt',
         template: `
           <button returns-false likes-clicks></button>
-        `
+        `,
       })
-      class TestCmpt {
-      }
+      class TestCmpt {}
 
       TestBed.configureTestingModule({declarations: [TestCmpt, ReturnsFalse, LikesClicks]});
       const fixture = TestBed.createComponent(TestCmpt);
@@ -480,13 +493,13 @@ describe('event listeners', () => {
 
       @Component({
         selector: 'test-component',
-        template: `<div [(foo)]="someValue" (fooChange)="fooChange($event)"></div>`
+        template: `<div [(foo)]="someValue" (fooChange)="fooChange($event)"></div>`,
       })
       class TestComponent {
         count = 0;
         someValue = -1;
 
-        @ViewChild(FooDirective) fooDirective: FooDirective|null = null;
+        @ViewChild(FooDirective) fooDirective: FooDirective | null = null;
 
         fooChange() {
           this.count++;
@@ -728,8 +741,7 @@ describe('event listeners', () => {
         imports: [HostListenerDir],
         template: `<button hostListenerDir>Click</button>`,
       })
-      class MyComp {
-      }
+      class MyComp {}
 
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
@@ -762,8 +774,7 @@ describe('event listeners', () => {
         imports: [HostListenerDir],
         template: `<button hostListenerDir>Click</button>`,
       })
-      class MyComp {
-      }
+      class MyComp {}
 
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
@@ -795,10 +806,9 @@ describe('event listeners', () => {
               <ng-container add-global-listener>
                 <button>Click me!</button>
               </ng-container>
-            `
+            `,
       })
-      class MyComp {
-      }
+      class MyComp {}
 
       TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
       const fixture = TestBed.createComponent(MyComp);
@@ -827,13 +837,14 @@ describe('event listeners', () => {
               </ng-template>
   
               <ng-container [ngTemplateOutlet]="template"></ng-container>
-            `
+            `,
       })
-      class MyComp {
-      }
+      class MyComp {}
 
-      TestBed.configureTestingModule(
-          {declarations: [MyComp, AddGlobalListener], imports: [CommonModule]});
+      TestBed.configureTestingModule({
+        declarations: [MyComp, AddGlobalListener],
+        imports: [CommonModule],
+      });
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
       const button = fixture.nativeElement.querySelector('button');
@@ -852,7 +863,10 @@ describe('event listeners', () => {
           clicks++;
         }
 
-        constructor(private _vcr: ViewContainerRef, private _templateRef: TemplateRef<any>) {}
+        constructor(
+          private _vcr: ViewContainerRef,
+          private _templateRef: TemplateRef<any>,
+        ) {}
 
         ngOnInit() {
           this._vcr.createEmbeddedView(this._templateRef);
@@ -864,10 +878,9 @@ describe('event listeners', () => {
               <div *add-global-listener>
                 <button>Click me!</button>
               </div>
-            `
+            `,
       })
-      class MyComp {
-      }
+      class MyComp {}
 
       TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
       const fixture = TestBed.createComponent(MyComp);

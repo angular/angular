@@ -7,8 +7,9 @@ describe('cli-hello-world-ivy App', () => {
     page.navigateTo();
   });
 
-  it('should display translated title',
-     () => { expect(page.getHeading()).toEqual('Bonjour cli-hello-world-ivy-compat!'); });
+  it('should display translated title', () => {
+    expect(page.getHeading()).toEqual('Bonjour cli-hello-world-ivy-compat!');
+  });
 
   it('should display untranslated welcome message', () => {
     // This message does not get translated because we did not provide a translation for it
@@ -16,5 +17,7 @@ describe('cli-hello-world-ivy App', () => {
     expect(page.getParagraph('message')).toEqual('Welcome to the i18n app.');
   });
 
-  it('should display the locale', () => { expect(page.getParagraph('locale')).toEqual('legacy'); });
+  it('should display the locale', () => {
+    expect(page.getParagraph('locale')).toEqual('legacy');
+  });
 });

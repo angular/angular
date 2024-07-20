@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '@angular/core';
-
+import {
+  Injector,
+  ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR,
+} from '@angular/core';
 
 export class NgAdapterInjector implements Injector {
   constructor(private modInjector: Injector) {}

@@ -49,13 +49,13 @@ export const scheduler = {
  * Convert a camelCased string to kebab-cased.
  */
 export function camelToDashCase(input: string): string {
-  return input.replace(/[A-Z]/g, char => `-${char.toLowerCase()}`);
+  return input.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`);
 }
 
 /**
  * Check whether the input is an `Element`.
  */
-export function isElement(node: Node|null): node is Element {
+export function isElement(node: Node | null): node is Element {
   return !!node && node.nodeType === Node.ELEMENT_NODE;
 }
 
@@ -83,8 +83,13 @@ let _matches: (this: any, selector: string) => boolean;
 export function matchesSelector(el: any, selector: string): boolean {
   if (!_matches) {
     const elProto = <any>Element.prototype;
-    _matches = elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
-        elProto.msMatchesSelector || elProto.oMatchesSelector || elProto.webkitMatchesSelector;
+    _matches =
+      elProto.matches ||
+      elProto.matchesSelector ||
+      elProto.mozMatchesSelector ||
+      elProto.msMatchesSelector ||
+      elProto.oMatchesSelector ||
+      elProto.webkitMatchesSelector;
   }
   return el.nodeType === Node.ELEMENT_NODE ? _matches.call(el, selector) : false;
 }
@@ -98,9 +103,11 @@ export function strictEquals(value1: any, value2: any): boolean {
 
 /** Gets a map of default set of attributes to observe and the properties they affect. */
 export function getDefaultAttributeToPropertyInputs(
-    inputs: {propName: string, templateName: string, transform?: (value: any) => any}[]) {
-  const attributeToPropertyInputs:
-      {[key: string]: [propName: string, transform: ((value: any) => any)|undefined]} = {};
+  inputs: {propName: string; templateName: string; transform?: (value: any) => any}[],
+) {
+  const attributeToPropertyInputs: {
+    [key: string]: [propName: string, transform: ((value: any) => any) | undefined];
+  } = {};
   inputs.forEach(({propName, templateName, transform}) => {
     attributeToPropertyInputs[camelToDashCase(templateName)] = [propName, transform];
   });
@@ -112,10 +119,13 @@ export function getDefaultAttributeToPropertyInputs(
  * Gets a component's set of inputs. Uses the injector to get the component factory where the inputs
  * are defined.
  */
-export function getComponentInputs(component: Type<any>, injector: Injector): {
-  propName: string,
-  templateName: string,
-  transform?: (value: any) => any,
+export function getComponentInputs(
+  component: Type<any>,
+  injector: Injector,
+): {
+  propName: string;
+  templateName: string;
+  transform?: (value: any) => any;
 }[] {
   const componentFactoryResolver = injector.get(ComponentFactoryResolver);
   const componentFactory = componentFactoryResolver.resolveComponentFactory(component);

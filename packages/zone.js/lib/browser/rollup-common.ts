@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../zone';
-import '../common/promise';
-import '../common/to-string';
-import './api-util';
+import {patchPromise} from '../common/promise';
+import {patchToString} from '../common/to-string';
+import {ZoneType} from '../zone-impl';
+
+import {patchUtil} from './api-util';
+
+export function patchCommon(Zone: ZoneType): void {
+  patchPromise(Zone);
+  patchToString(Zone);
+  patchUtil(Zone);
+}

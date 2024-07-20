@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -13,7 +12,7 @@ import {IInjectorService} from '../../src/common/src/angular1';
 // We store the ng1 injector so that the provider in the module injector can access it
 // Then we "get" the ng1 injector from the module injector, which triggers the provider to read
 // the stored injector and release the reference to it.
-let tempInjectorRef: IInjectorService|null = null;
+let tempInjectorRef: IInjectorService | null = null;
 export function setTempInjectorRef(injector: IInjectorService) {
   tempInjectorRef = injector;
 }
@@ -23,7 +22,7 @@ export function injectorFactory() {
   }
 
   const injector: IInjectorService = tempInjectorRef;
-  tempInjectorRef = null;  // clear the value to prevent memory leaks
+  tempInjectorRef = null; // clear the value to prevent memory leaks
   return injector;
 }
 
@@ -47,5 +46,5 @@ export const angular1Providers = [
   {provide: '$injector', useFactory: injectorFactory, deps: []},
   {provide: '$rootScope', useFactory: rootScopeFactory, deps: ['$injector']},
   {provide: '$compile', useFactory: compileFactory, deps: ['$injector']},
-  {provide: '$parse', useFactory: parseFactory, deps: ['$injector']}
+  {provide: '$parse', useFactory: parseFactory, deps: ['$injector']},
 ];

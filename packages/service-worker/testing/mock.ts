@@ -11,7 +11,7 @@ import {Subject} from 'rxjs';
 export const patchDecodeBase64 = (proto: {decodeBase64: typeof atob}) => {
   let unpatch: () => void = () => undefined;
 
-  if ((typeof atob === 'undefined') && (typeof Buffer === 'function')) {
+  if (typeof atob === 'undefined' && typeof Buffer === 'function') {
     const oldDecodeBase64 = proto.decodeBase64;
     const newDecodeBase64 = (input: string) => Buffer.from(input, 'base64').toString('binary');
 
@@ -27,12 +27,12 @@ export const patchDecodeBase64 = (proto: {decodeBase64: typeof atob}) => {
 export class MockServiceWorkerContainer {
   private onControllerChange: Function[] = [];
   private onMessage: Function[] = [];
-  mockRegistration: MockServiceWorkerRegistration|null = null;
-  controller: MockServiceWorker|null = null;
+  mockRegistration: MockServiceWorkerRegistration | null = null;
+  controller: MockServiceWorker | null = null;
   messages = new Subject<any>();
   notificationClicks = new Subject<{}>();
 
-  addEventListener(event: 'controllerchange'|'message', handler: Function) {
+  addEventListener(event: 'controllerchange' | 'message', handler: Function) {
     if (event === 'controllerchange') {
       this.onControllerChange.push(handler);
     } else if (event === 'message') {
@@ -42,9 +42,9 @@ export class MockServiceWorkerContainer {
 
   removeEventListener(event: 'controllerchange', handler: Function) {
     if (event === 'controllerchange') {
-      this.onControllerChange = this.onControllerChange.filter(h => h !== handler);
+      this.onControllerChange = this.onControllerChange.filter((h) => h !== handler);
     } else if (event === 'message') {
-      this.onMessage = this.onMessage.filter(h => h !== handler);
+      this.onMessage = this.onMessage.filter((h) => h !== handler);
     }
   }
 
@@ -59,18 +59,23 @@ export class MockServiceWorkerContainer {
   setupSw(url: string = '/ngsw-worker.js'): void {
     this.mockRegistration = new MockServiceWorkerRegistration();
     this.controller = new MockServiceWorker(this, url);
-    this.onControllerChange.forEach(onChange => onChange(this.controller));
+    this.onControllerChange.forEach((onChange) => onChange(this.controller));
   }
 
   sendMessage(value: Object): void {
-    this.onMessage.forEach(onMessage => onMessage({
-                             data: value,
-                           }));
+    this.onMessage.forEach((onMessage) =>
+      onMessage({
+        data: value,
+      }),
+    );
   }
 }
 
 export class MockServiceWorker {
-  constructor(private mock: MockServiceWorkerContainer, readonly scriptURL: string) {}
+  constructor(
+    private mock: MockServiceWorkerContainer,
+    readonly scriptURL: string,
+  ) {}
 
   postMessage(value: Object) {
     this.mock.messages.next(value);
@@ -82,9 +87,9 @@ export class MockServiceWorkerRegistration {
 }
 
 export class MockPushManager {
-  private subscription: PushSubscription|null = null;
+  private subscription: PushSubscription | null = null;
 
-  getSubscription(): Promise<PushSubscription|null> {
+  getSubscription(): Promise<PushSubscription | null> {
     return Promise.resolve(this.subscription);
   }
 

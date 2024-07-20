@@ -10,9 +10,18 @@ import {RENDERER} from '../interfaces/view';
 import {getBindingIndex, getLView, getSelectedTNode, getTView} from '../state';
 import {NO_CHANGE} from '../tokens';
 
-import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
+import {
+  interpolation1,
+  interpolation2,
+  interpolation3,
+  interpolation4,
+  interpolation5,
+  interpolation6,
+  interpolation7,
+  interpolation8,
+  interpolationV,
+} from './interpolation';
 import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
-
 
 /**
  *
@@ -44,11 +53,13 @@ import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate(
-    propName: string, v0: any, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate {
+  propName: string,
+  v0: any,
+  sanitizer?: SanitizerFn,
+): typeof ɵɵpropertyInterpolate {
   ɵɵpropertyInterpolate1(propName, '', v0, '', sanitizer);
   return ɵɵpropertyInterpolate;
 }
-
 
 /**
  *
@@ -79,18 +90,36 @@ export function ɵɵpropertyInterpolate(
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate1(
-    propName: string, prefix: string, v0: any, suffix: string,
-    sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate1 {
+  propName: string,
+  prefix: string,
+  v0: any,
+  suffix: string,
+  sanitizer?: SanitizerFn,
+): typeof ɵɵpropertyInterpolate1 {
   const lView = getLView();
   const interpolatedValue = interpolation1(lView, prefix, v0, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      interpolatedValue,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     ngDevMode &&
-        storePropertyBindingMetadata(
-            tView.data, tNode, propName, getBindingIndex() - 1, prefix, suffix);
+      storePropertyBindingMetadata(
+        tView.data,
+        tNode,
+        propName,
+        getBindingIndex() - 1,
+        prefix,
+        suffix,
+      );
   }
   return ɵɵpropertyInterpolate1;
 }
@@ -126,18 +155,39 @@ export function ɵɵpropertyInterpolate1(
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate2(
-    propName: string, prefix: string, v0: any, i0: string, v1: any, suffix: string,
-    sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate2 {
+  propName: string,
+  prefix: string,
+  v0: any,
+  i0: string,
+  v1: any,
+  suffix: string,
+  sanitizer?: SanitizerFn,
+): typeof ɵɵpropertyInterpolate2 {
   const lView = getLView();
   const interpolatedValue = interpolation2(lView, prefix, v0, i0, v1, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      interpolatedValue,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     ngDevMode &&
-        storePropertyBindingMetadata(
-            tView.data, tNode, propName, getBindingIndex() - 2, prefix, i0, suffix);
+      storePropertyBindingMetadata(
+        tView.data,
+        tNode,
+        propName,
+        getBindingIndex() - 2,
+        prefix,
+        i0,
+        suffix,
+      );
   }
   return ɵɵpropertyInterpolate2;
 }
@@ -176,18 +226,42 @@ export function ɵɵpropertyInterpolate2(
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate3(
-    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any,
-    suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate3 {
+  propName: string,
+  prefix: string,
+  v0: any,
+  i0: string,
+  v1: any,
+  i1: string,
+  v2: any,
+  suffix: string,
+  sanitizer?: SanitizerFn,
+): typeof ɵɵpropertyInterpolate3 {
   const lView = getLView();
   const interpolatedValue = interpolation3(lView, prefix, v0, i0, v1, i1, v2, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      interpolatedValue,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     ngDevMode &&
-        storePropertyBindingMetadata(
-            tView.data, tNode, propName, getBindingIndex() - 3, prefix, i0, i1, suffix);
+      storePropertyBindingMetadata(
+        tView.data,
+        tNode,
+        propName,
+        getBindingIndex() - 3,
+        prefix,
+        i0,
+        i1,
+        suffix,
+      );
   }
   return ɵɵpropertyInterpolate3;
 }
@@ -228,18 +302,45 @@ export function ɵɵpropertyInterpolate3(
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate4(
-    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate4 {
+  propName: string,
+  prefix: string,
+  v0: any,
+  i0: string,
+  v1: any,
+  i1: string,
+  v2: any,
+  i2: string,
+  v3: any,
+  suffix: string,
+  sanitizer?: SanitizerFn,
+): typeof ɵɵpropertyInterpolate4 {
   const lView = getLView();
   const interpolatedValue = interpolation4(lView, prefix, v0, i0, v1, i1, v2, i2, v3, suffix);
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      interpolatedValue,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     ngDevMode &&
-        storePropertyBindingMetadata(
-            tView.data, tNode, propName, getBindingIndex() - 4, prefix, i0, i1, i2, suffix);
+      storePropertyBindingMetadata(
+        tView.data,
+        tNode,
+        propName,
+        getBindingIndex() - 4,
+        prefix,
+        i0,
+        i1,
+        i2,
+        suffix,
+      );
   }
   return ɵɵpropertyInterpolate4;
 }
@@ -282,20 +383,61 @@ export function ɵɵpropertyInterpolate4(
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate5(
-    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, i3: string, v4: any, suffix: string,
-    sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate5 {
+  propName: string,
+  prefix: string,
+  v0: any,
+  i0: string,
+  v1: any,
+  i1: string,
+  v2: any,
+  i2: string,
+  v3: any,
+  i3: string,
+  v4: any,
+  suffix: string,
+  sanitizer?: SanitizerFn,
+): typeof ɵɵpropertyInterpolate5 {
   const lView = getLView();
-  const interpolatedValue =
-      interpolation5(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, suffix);
+  const interpolatedValue = interpolation5(
+    lView,
+    prefix,
+    v0,
+    i0,
+    v1,
+    i1,
+    v2,
+    i2,
+    v3,
+    i3,
+    v4,
+    suffix,
+  );
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      interpolatedValue,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     ngDevMode &&
-        storePropertyBindingMetadata(
-            tView.data, tNode, propName, getBindingIndex() - 5, prefix, i0, i1, i2, i3, suffix);
+      storePropertyBindingMetadata(
+        tView.data,
+        tNode,
+        propName,
+        getBindingIndex() - 5,
+        prefix,
+        i0,
+        i1,
+        i2,
+        i3,
+        suffix,
+      );
   }
   return ɵɵpropertyInterpolate5;
 }
@@ -340,20 +482,66 @@ export function ɵɵpropertyInterpolate5(
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate6(
-    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, i3: string, v4: any, i4: string, v5: any, suffix: string,
-    sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate6 {
+  propName: string,
+  prefix: string,
+  v0: any,
+  i0: string,
+  v1: any,
+  i1: string,
+  v2: any,
+  i2: string,
+  v3: any,
+  i3: string,
+  v4: any,
+  i4: string,
+  v5: any,
+  suffix: string,
+  sanitizer?: SanitizerFn,
+): typeof ɵɵpropertyInterpolate6 {
   const lView = getLView();
-  const interpolatedValue =
-      interpolation6(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, suffix);
+  const interpolatedValue = interpolation6(
+    lView,
+    prefix,
+    v0,
+    i0,
+    v1,
+    i1,
+    v2,
+    i2,
+    v3,
+    i3,
+    v4,
+    i4,
+    v5,
+    suffix,
+  );
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      interpolatedValue,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     ngDevMode &&
-        storePropertyBindingMetadata(
-            tView.data, tNode, propName, getBindingIndex() - 6, prefix, i0, i1, i2, i3, i4, suffix);
+      storePropertyBindingMetadata(
+        tView.data,
+        tNode,
+        propName,
+        getBindingIndex() - 6,
+        prefix,
+        i0,
+        i1,
+        i2,
+        i3,
+        i4,
+        suffix,
+      );
   }
   return ɵɵpropertyInterpolate6;
 }
@@ -400,21 +588,71 @@ export function ɵɵpropertyInterpolate6(
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate7(
-    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string,
-    sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate7 {
+  propName: string,
+  prefix: string,
+  v0: any,
+  i0: string,
+  v1: any,
+  i1: string,
+  v2: any,
+  i2: string,
+  v3: any,
+  i3: string,
+  v4: any,
+  i4: string,
+  v5: any,
+  i5: string,
+  v6: any,
+  suffix: string,
+  sanitizer?: SanitizerFn,
+): typeof ɵɵpropertyInterpolate7 {
   const lView = getLView();
-  const interpolatedValue =
-      interpolation7(lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, suffix);
+  const interpolatedValue = interpolation7(
+    lView,
+    prefix,
+    v0,
+    i0,
+    v1,
+    i1,
+    v2,
+    i2,
+    v3,
+    i3,
+    v4,
+    i4,
+    v5,
+    i5,
+    v6,
+    suffix,
+  );
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      interpolatedValue,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     ngDevMode &&
-        storePropertyBindingMetadata(
-            tView.data, tNode, propName, getBindingIndex() - 7, prefix, i0, i1, i2, i3, i4, i5,
-            suffix);
+      storePropertyBindingMetadata(
+        tView.data,
+        tNode,
+        propName,
+        getBindingIndex() - 7,
+        prefix,
+        i0,
+        i1,
+        i2,
+        i3,
+        i4,
+        i5,
+        suffix,
+      );
   }
   return ɵɵpropertyInterpolate7;
 }
@@ -463,21 +701,76 @@ export function ɵɵpropertyInterpolate7(
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolate8(
-    propName: string, prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string,
-    v3: any, i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
-    suffix: string, sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolate8 {
+  propName: string,
+  prefix: string,
+  v0: any,
+  i0: string,
+  v1: any,
+  i1: string,
+  v2: any,
+  i2: string,
+  v3: any,
+  i3: string,
+  v4: any,
+  i4: string,
+  v5: any,
+  i5: string,
+  v6: any,
+  i6: string,
+  v7: any,
+  suffix: string,
+  sanitizer?: SanitizerFn,
+): typeof ɵɵpropertyInterpolate8 {
   const lView = getLView();
   const interpolatedValue = interpolation8(
-      lView, prefix, v0, i0, v1, i1, v2, i2, v3, i3, v4, i4, v5, i5, v6, i6, v7, suffix);
+    lView,
+    prefix,
+    v0,
+    i0,
+    v1,
+    i1,
+    v2,
+    i2,
+    v3,
+    i3,
+    v4,
+    i4,
+    v5,
+    i5,
+    v6,
+    i6,
+    v7,
+    suffix,
+  );
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      interpolatedValue,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     ngDevMode &&
-        storePropertyBindingMetadata(
-            tView.data, tNode, propName, getBindingIndex() - 8, prefix, i0, i1, i2, i3, i4, i5, i6,
-            suffix);
+      storePropertyBindingMetadata(
+        tView.data,
+        tNode,
+        propName,
+        getBindingIndex() - 8,
+        prefix,
+        i0,
+        i1,
+        i2,
+        i3,
+        i4,
+        i5,
+        i6,
+        suffix,
+      );
   }
   return ɵɵpropertyInterpolate8;
 }
@@ -513,22 +806,37 @@ export function ɵɵpropertyInterpolate8(
  * @codeGenApi
  */
 export function ɵɵpropertyInterpolateV(
-    propName: string, values: any[], sanitizer?: SanitizerFn): typeof ɵɵpropertyInterpolateV {
+  propName: string,
+  values: any[],
+  sanitizer?: SanitizerFn,
+): typeof ɵɵpropertyInterpolateV {
   const lView = getLView();
   const interpolatedValue = interpolationV(lView, values);
   if (interpolatedValue !== NO_CHANGE) {
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, interpolatedValue, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      interpolatedValue,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     if (ngDevMode) {
-      const interpolationInBetween = [values[0]];  // prefix
+      const interpolationInBetween = [values[0]]; // prefix
       for (let i = 2; i < values.length; i += 2) {
         interpolationInBetween.push(values[i]);
       }
       storePropertyBindingMetadata(
-          tView.data, tNode, propName, getBindingIndex() - interpolationInBetween.length + 1,
-          ...interpolationInBetween);
+        tView.data,
+        tNode,
+        propName,
+        getBindingIndex() - interpolationInBetween.length + 1,
+        ...interpolationInBetween,
+      );
     }
   }
   return ɵɵpropertyInterpolateV;

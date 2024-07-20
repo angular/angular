@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "generate_api_docs", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,4 +19,14 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "animations_browser_testing_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/animations/browser/testing",
 )

@@ -7,9 +7,18 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath, FileSystem, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
+import {
+  AbsoluteFsPath,
+  FileSystem,
+  PathManipulation,
+  ReadonlyFileSystem,
+} from '../../../src/ngtsc/file_system';
 import {initMockFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles, loadTestDirectory, NgtscTestCompilerHost} from '../../../src/ngtsc/testing';
+import {
+  loadStandardTestFiles,
+  loadTestDirectory,
+  NgtscTestCompilerHost,
+} from '../../../src/ngtsc/testing';
 import {performCompilation} from '../../../src/perform_compile';
 import {CompilerOptions} from '../../../src/transformers/api';
 
@@ -46,15 +55,20 @@ export interface CompileResult {
  * @returns A collection of paths of the generated files (absolute within the mock file-system).
  */
 export function compileTest(
-    fs: FileSystem, files: string[], compilerOptions: ConfigOptions|undefined,
-    angularCompilerOptions: ConfigOptions|undefined): CompileResult {
+  fs: FileSystem,
+  files: string[],
+  compilerOptions: ConfigOptions | undefined,
+  angularCompilerOptions: ConfigOptions | undefined,
+): CompileResult {
   const rootDir = getRootDirectory(fs);
   const outDir = getBuildOutputDirectory(fs);
   const options = getOptions(rootDir, outDir, compilerOptions, angularCompilerOptions);
-  const rootNames = files.map(f => fs.resolve(f));
+  const rootNames = files.map((f) => fs.resolve(f));
   const host = new NgtscTestCompilerHost(fs, options);
   const {diagnostics, emitResult} = performCompilation({rootNames, host, options});
-  const emittedFiles = emitResult ? emitResult.emittedFiles!.map(p => fs.resolve(rootDir, p)) : [];
+  const emittedFiles = emitResult
+    ? emitResult.emittedFiles!.map((p) => fs.resolve(rootDir, p))
+    : [];
   const errors = parseDiagnostics(diagnostics);
   return {errors, emittedFiles};
 }
@@ -90,13 +104,17 @@ export function getBuildOutputDirectory(fs: PathManipulation): AbsoluteFsPath {
  * @param angularCompilerOptions Additional options for the Angular compiler.
  */
 function getOptions(
-    rootDir: AbsoluteFsPath, outDir: AbsoluteFsPath, compilerOptions: ConfigOptions|undefined,
-    angularCompilerOptions: ConfigOptions|undefined): CompilerOptions {
+  rootDir: AbsoluteFsPath,
+  outDir: AbsoluteFsPath,
+  compilerOptions: ConfigOptions | undefined,
+  angularCompilerOptions: ConfigOptions | undefined,
+): CompilerOptions {
   const convertedCompilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions, rootDir);
   if (convertedCompilerOptions.errors.length > 0) {
     throw new Error(
-        'Invalid compilerOptions in test-case::\n' +
-        convertedCompilerOptions.errors.map(d => d.messageText).join('\n'));
+      'Invalid compilerOptions in test-case::\n' +
+        convertedCompilerOptions.errors.map((d) => d.messageText).join('\n'),
+    );
   }
   return {
     emitDecoratorMetadata: true,
@@ -132,13 +150,15 @@ function monkeyPatchReadFile(fs: ReadonlyFileSystem): void {
   const originalReadFile = fs.readFile;
   fs.readFile = (path: AbsoluteFsPath): string => {
     const file = originalReadFile.call(fs, path);
-    return file
+    return (
+      file
         // First convert actual `\r\n` sequences to `\n`
         .replace(/\r\n/g, '\n')
         // unescape `\r\n` at the end of a line
         .replace(/\\r\\n\n/g, '\r\n')
         // unescape `\\r\\n`, at the end of a line, to `\r\n`
-        .replace(/\\\\r\\\\n(\r?\n)/g, '\\r\\n$1');
+        .replace(/\\\\r\\\\n(\r?\n)/g, '\\r\\n$1')
+    );
   };
 }
 
@@ -150,7 +170,7 @@ function monkeyPatchReadFile(fs: ReadonlyFileSystem): void {
  * @param diagnostics The diagnostics to parse.
  */
 function parseDiagnostics(diagnostics: readonly ts.Diagnostic[]): string[] {
-  return diagnostics.map(diagnostic => {
+  return diagnostics.map((diagnostic) => {
     const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
     if ('file' in diagnostic && diagnostic.file !== undefined && diagnostic.start !== undefined) {
       const {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);

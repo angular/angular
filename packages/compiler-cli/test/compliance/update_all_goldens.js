@@ -13,10 +13,11 @@ import shelljs from 'shelljs';
 const {exec} = shelljs;
 
 process.stdout.write('Gathering all partial golden update targets');
-const queryCommand =
-    `yarn bazel query --output label 'filter('golden.update', kind(nodejs_binary, //packages/compiler-cli/test/compliance/test_cases:*))'`;
-const allUpdateTargets =
-    exec(queryCommand, {silent: true}).trim().split('\n').map(test => test.trim());
+const queryCommand = `yarn bazel query --output label 'filter('golden.update', kind(nodejs_binary, //packages/compiler-cli/test/compliance/test_cases:*))'`;
+const allUpdateTargets = exec(queryCommand, {silent: true})
+  .trim()
+  .split('\n')
+  .map((test) => test.trim());
 process.stdout.clearLine();
 process.stdout.cursorTo(0);
 

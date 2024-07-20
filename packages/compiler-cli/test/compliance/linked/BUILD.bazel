@@ -7,6 +7,7 @@ ts_library(
     deps = [
         "//packages/compiler-cli/linker",
         "//packages/compiler-cli/linker/babel",
+        "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
@@ -19,14 +20,10 @@ jasmine_node_test(
     name = "linked",
     bootstrap = ["//tools/testing:node_no_angular"],
     data = [
-        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
         "//packages/compiler-cli/test/compliance/test_cases",
+        "//packages/core:npm_package",
     ],
     shard_count = 2,
-    tags = [
-        # TODO: renable this test after debugging the issues related to babel updates
-        "manual",
-    ],
     deps = [
         ":test_lib",
     ],

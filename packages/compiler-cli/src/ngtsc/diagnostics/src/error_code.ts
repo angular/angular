@@ -23,6 +23,39 @@ export enum ErrorCode {
   VALUE_HAS_WRONG_TYPE = 1010,
   VALUE_NOT_LITERAL = 1011,
 
+  /**
+   * Raised when an initializer API is annotated with an unexpected decorator.
+   *
+   * e.g. `@Input` is also applied on the class member using `input`.
+   */
+  INITIALIZER_API_WITH_DISALLOWED_DECORATOR = 1050,
+
+  /**
+   * Raised when an initializer API feature (like signal inputs) are also
+   * declared in the class decorator metadata.
+   *
+   * e.g. a signal input is also declared in the `@Directive` `inputs` array.
+   */
+  INITIALIZER_API_DECORATOR_METADATA_COLLISION = 1051,
+
+  /**
+   * Raised whenever an initializer API does not support the `.required`
+   * function, but is still detected unexpectedly.
+   */
+  INITIALIZER_API_NO_REQUIRED_FUNCTION = 1052,
+
+  /**
+   * Raised whenever an initializer API is used on a class member
+   * and the given access modifiers (e.g. `private`) are not allowed.
+   */
+  INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY = 1053,
+
+  /**
+   * An Angular feature, like inputs, outputs or queries is incorrectly
+   * declared on a static member.
+   */
+  INCORRECTLY_DECLARED_ON_STATIC_MEMBER = 1100,
+
   COMPONENT_MISSING_TEMPLATE = 2001,
   PIPE_MISSING_NAME = 2002,
   PARAM_MISSING_TOKEN = 2003,
@@ -113,6 +146,14 @@ export enum ErrorCode {
    */
   CONFLICTING_INPUT_TRANSFORM = 2020,
 
+  /** Raised when a component has both `styleUrls` and `styleUrl`. */
+  COMPONENT_INVALID_STYLE_URLS = 2021,
+
+  /**
+   * Raised when a type in the `deferredImports` of a component is not a component, directive or
+   * pipe.
+   */
+  COMPONENT_UNKNOWN_DEFERRED_IMPORT = 2022,
 
   SYMBOL_NOT_EXPORTED = 3001,
   /**
@@ -199,10 +240,9 @@ export enum ErrorCode {
   WARN_NGMODULE_ID_UNNECESSARY = 6100,
 
   /**
-   * Not actually raised by the compiler, but reserved for documentation of a View Engine error when
-   * a View Engine build depends on an Ivy-compiled NgModule.
+   * 6999 was previously assigned to NGMODULE_VE_DEPENDENCY_ON_IVY_LIB
+   * To prevent any confusion, let's not reassign it.
    */
-  NGMODULE_VE_DEPENDENCY_ON_IVY_LIB = 6999,
 
   /**
    * An element name failed validation against the DOM schema.
@@ -258,6 +298,74 @@ export enum ErrorCode {
    * A directive usage isn't binding to one or more required inputs.
    */
   MISSING_REQUIRED_INPUTS = 8008,
+
+  /**
+   * The tracking expression of a `for` loop block is accessing a variable that is unavailable,
+   * for example:
+   *
+   * ```
+   * <ng-template let-ref>
+   *   @for (item of items; track ref) {}
+   * </ng-template>
+   * ```
+   */
+  ILLEGAL_FOR_LOOP_TRACK_ACCESS = 8009,
+
+  /**
+   * The trigger of a `defer` block cannot access its trigger element,
+   * either because it doesn't exist or it's in a different view.
+   *
+   * ```
+   * @defer (on interaction(trigger)) {...}
+   *
+   * <ng-template>
+   *   <button #trigger></button>
+   * </ng-template>
+   * ```
+   */
+  INACCESSIBLE_DEFERRED_TRIGGER_ELEMENT = 8010,
+
+  /**
+   * A control flow node is projected at the root of a component and is preventing its direct
+   * descendants from being projected, because it has more than one root node.
+   *
+   * ```
+   * <comp>
+   *  @if (expr) {
+   *    <div projectsIntoSlot></div>
+   *    Text preventing the div from being projected
+   *  }
+   * </comp>
+   * ```
+   */
+  CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 8011,
+
+  /**
+   * A pipe imported via `@Component.deferredImports` is
+   * used outside of a `@defer` block in a template.
+   */
+  DEFERRED_PIPE_USED_EAGERLY = 8012,
+
+  /**
+   * A directive/component imported via `@Component.deferredImports` is
+   * used outside of a `@defer` block in a template.
+   */
+  DEFERRED_DIRECTIVE_USED_EAGERLY = 8013,
+
+  /**
+   * A directive/component/pipe imported via `@Component.deferredImports` is
+   * also included into the `@Component.imports` list.
+   */
+  DEFERRED_DEPENDENCY_IMPORTED_EAGERLY = 8014,
+
+  /** An expression is trying to write to an `@let` declaration. */
+  ILLEGAL_LET_WRITE = 8015,
+
+  /** An expression is trying to read an `@let` before it has been defined. */
+  LET_USED_BEFORE_DEFINITION = 8016,
+
+  /** A `@let` declaration conflicts with another symbol in the same scope. */
+  CONFLICTING_LET_DECLARATION = 8017,
 
   /**
    * A two way binding in a template has an incorrect syntax,
@@ -336,7 +444,6 @@ export enum ErrorCode {
    */
   OPTIONAL_CHAIN_NOT_NULLABLE = 8107,
 
-
   /**
    * `ngSkipHydration` should not be a binding (it should be a static attribute).
    *
@@ -349,6 +456,57 @@ export enum ErrorCode {
    * value
    */
   SKIP_HYDRATION_NOT_STATIC = 8108,
+
+  /**
+   * Signal functions should be invoked when interpolated in templates.
+   *
+   * For example:
+   * ```
+   * {{ mySignal() }}
+   * ```
+   */
+  INTERPOLATED_SIGNAL_NOT_INVOKED = 8109,
+
+  /**
+   * Initializer-based APIs can only be invoked from inside of an initializer.
+   *
+   * ```
+   * // Allowed
+   * myInput = input();
+   *
+   * // Not allowed
+   * function myInput() {
+   *   return input();
+   * }
+   * ```
+   */
+  UNSUPPORTED_INITIALIZER_API_USAGE = 8110,
+
+  /**
+   * A function in an event binding is not called.
+   *
+   * For example:
+   * ```
+   * <button (click)="myFunc"></button>
+   * ```
+   *
+   * This will not call `myFunc` when the button is clicked. Instead, it should be
+   * `<button (click)="myFunc()"></button>`.
+   */
+  UNINVOKED_FUNCTION_IN_EVENT_BINDING = 8111,
+
+  /**
+   * A `@let` declaration in a template isn't used.
+   *
+   * For example:
+   * ```
+   * @let used = 1; <!-- Not an error -->
+   * @let notUsed = 2; <!-- Error -->
+   *
+   * {{used}}
+   * ```
+   */
+  UNUSED_LET_DECLARATION = 8112,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a
@@ -385,14 +543,18 @@ export enum ErrorCode {
   SUGGEST_SUBOPTIMAL_TYPE_INFERENCE = 10002,
 
   /**
-   * A string is imported from another file to be used as template string for a component in local
-   * compilation mode.
+   * In local compilation mode a const is required to be resolved statically but cannot be so since
+   * it is imported from a file outside of the compilation unit. This usually happens with const
+   * being used as Angular decorators parameters such as `@Component.template`,
+   * `@HostListener.eventName`, etc.
    */
-  LOCAL_COMPILATION_IMPORTED_TEMPLATE_STRING = 11001,
+  LOCAL_COMPILATION_UNRESOLVED_CONST = 11001,
 
   /**
-   * A string is imported from another file to be used as styles string for a component in local
-   * compilation mode.
+   * In local compilation mode a certain expression or syntax is not supported. This is usually
+   * because the expression/syntax is not very common and so we did not add support for it yet. This
+   * can be changed in the future and support for more expressions could be added if need be.
+   * Meanwhile, this error is thrown to indicate a current unavailability.
    */
-  LOCAL_COMPILATION_IMPORTED_STYLES_STRING = 11002,
+  LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION = 11003,
 }

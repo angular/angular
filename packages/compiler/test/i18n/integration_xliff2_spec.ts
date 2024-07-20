@@ -10,19 +10,25 @@ import {Xliff2} from '@angular/compiler/src/i18n/serializers/xliff2';
 import {waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {configureCompiler, createComponent, HTML, serializeTranslations, validateHtml} from './integration_common';
+import {
+  configureCompiler,
+  createComponent,
+  HTML,
+  serializeTranslations,
+  validateHtml,
+} from './integration_common';
 
 // TODO(alxhub): figure out if this test is still relevant.
 xdescribe('i18n XLIFF integration spec', () => {
   describe('(with LF line endings)', () => {
-    beforeEach(waitForAsync(
-        () => configureCompiler(XLIFF2_TOMERGE + LF_LINE_ENDING_XLIFF2_TOMERGE, 'xlf2')));
+    beforeEach(waitForAsync(() =>
+      configureCompiler(XLIFF2_TOMERGE + LF_LINE_ENDING_XLIFF2_TOMERGE, 'xlf2')));
 
     it('should extract from templates', () => {
       const serializer = new Xliff2();
       const serializedXliff2 = serializeTranslations(HTML, serializer);
 
-      XLIFF2_EXTRACTED.forEach(x => {
+      XLIFF2_EXTRACTED.forEach((x) => {
         expect(serializedXliff2).toContain(x);
       });
       expect(serializedXliff2).toContain(LF_LINE_ENDING_XLIFF2_EXTRACTED);
@@ -35,14 +41,14 @@ xdescribe('i18n XLIFF integration spec', () => {
   });
 
   describe('(with CRLF line endings', () => {
-    beforeEach(waitForAsync(
-        () => configureCompiler(XLIFF2_TOMERGE + CRLF_LINE_ENDING_XLIFF2_TOMERGE, 'xlf2')));
+    beforeEach(waitForAsync(() =>
+      configureCompiler(XLIFF2_TOMERGE + CRLF_LINE_ENDING_XLIFF2_TOMERGE, 'xlf2')));
 
     it('should extract from templates (with CRLF line endings)', () => {
       const serializer = new Xliff2();
       const serializedXliff = serializeTranslations(HTML.replace(/\n/g, '\r\n'), serializer);
 
-      XLIFF2_EXTRACTED.forEach(x => {
+      XLIFF2_EXTRACTED.forEach((x) => {
         expect(serializedXliff).toContain(x);
       });
       expect(serializedXliff).toContain(CRLF_LINE_ENDING_XLIFF2_EXTRACTED);
@@ -428,7 +434,7 @@ const XLIFF2_EXTRACTED = [
       <segment>
         <source><ph id="0" equiv="MAP NAME" disp="{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}"/></source>
       </segment>
-    </unit>`
+    </unit>`,
 ];
 
 const LF_LINE_ENDING_XLIFF2_EXTRACTED = `    <unit id="4085484936881858615">

@@ -7,7 +7,11 @@
  */
 
 import {compressNodeLocation, decompressNodeLocation} from '../../src/hydration/compression';
-import {NodeNavigationStep, REFERENCE_NODE_BODY, REFERENCE_NODE_HOST} from '../../src/hydration/interfaces';
+import {
+  NodeNavigationStep,
+  REFERENCE_NODE_BODY,
+  REFERENCE_NODE_HOST,
+} from '../../src/hydration/interfaces';
 
 describe('compression of node location', () => {
   it('should handle basic cases', () => {

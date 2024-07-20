@@ -1,6 +1,6 @@
-const $c0$ = function () { return { foo: null }; };
-const $c1$ = function () { return {}; };
-const $c2$ = function (a0) { return { foo: a0 }; };
+const $c0$ = () => ({ foo: null });
+const $c1$ = () => ({});
+const $c2$ = $a0$ => ({ foo: $a0$ });
 // ...
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
@@ -14,7 +14,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     }
     if (rf & 2) {
       $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
-      $r3$.ɵɵadvance(1);
+      $r3$.ɵɵadvance();
       $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(4, $c2$, $r3$.ɵɵpureFunction0(3, $c1$)));
     }
   },

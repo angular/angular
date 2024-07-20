@@ -13,13 +13,15 @@ import {Component} from '@angular/core';
     <button id="create" (click)="create()">Create</button>
     <button id="update" (click)="update()">Update</button>
     <button id="destroy" (click)="destroy()">Destroy</button>
-    <class-bindings *ngIf="show" [msg]="msg" [list]="list"><class-bindings>
-  `
+    <class-bindings *ngIf="show" [msg]="msg" [list]="list"
+      ><class-bindings> </class-bindings
+    ></class-bindings>
+  `,
 })
 export class AppComponent {
   show = false;
   msg = 'hello';
-  list: {i: number, text: string}[] = [];
+  list: {i: number; text: string}[] = [];
 
   constructor() {
     for (let i = 0; i < 1000; i++) {

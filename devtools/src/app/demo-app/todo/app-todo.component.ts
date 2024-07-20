@@ -6,19 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
+import {Component, Injectable} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
 
 import {DialogComponent} from './dialog.component';
+
+@Injectable()
+export class MyServiceA {}
 
 @Component({
   selector: 'app-todo-demo',
   templateUrl: './app-todo.component.html',
   styleUrls: ['./app-todo.component.scss'],
+  viewProviders: [MyServiceA],
 })
 export class AppTodoComponent {
-  name: string;
-  animal: string;
+  name!: string;
+  animal!: string;
 
   constructor(public dialog: MatDialog) {}
 

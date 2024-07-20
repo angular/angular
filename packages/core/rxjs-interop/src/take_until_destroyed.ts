@@ -16,7 +16,7 @@ import {takeUntil} from 'rxjs/operators';
  *
  * @param destroyRef optionally, the `DestroyRef` representing the current context. This can be
  *     passed explicitly to use `takeUntilDestroyed` outside of an [injection
- * context](guide/dependency-injection-context). Otherwise, the current `DestroyRef` is injected.
+ * context](guide/di/dependency-injection-context). Otherwise, the current `DestroyRef` is injected.
  *
  * @developerPreview
  */
@@ -26,7 +26,7 @@ export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperator
     destroyRef = inject(DestroyRef);
   }
 
-  const destroyed$ = new Observable<void>(observer => {
+  const destroyed$ = new Observable<void>((observer) => {
     const unregisterFn = destroyRef!.onDestroy(observer.next.bind(observer));
     return unregisterFn;
   });

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -14,6 +14,7 @@ ng_module(
         "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
+        "@npm//@types/dom-view-transitions",
         "@npm//rxjs",
     ],
 )
@@ -30,9 +31,7 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
-        "//aio:__pkg__",
-        "//aio/content/examples:__subpackages__",
-        "//aio/tools/examples:__pkg__",
+        "//adev:__pkg__",
         "//integration:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
@@ -62,7 +61,7 @@ api_golden_test(
         "//packages/router",
     ],
     entry_point = "angular/packages/router/src/errors.d.ts",
-    golden = "angular/goldens/public-api/router/errors.md",
+    golden = "angular/goldens/public-api/router/errors.api.md",
 )
 
 filegroup(
@@ -71,4 +70,17 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "router_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+        "//packages/common/http:files_for_docgen",
+        "@npm//@types/dom-view-transitions",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/router",
 )

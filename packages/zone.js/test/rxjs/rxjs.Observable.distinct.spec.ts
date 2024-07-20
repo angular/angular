@@ -27,17 +27,18 @@ describe('Observable.distinct', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            log.push(result);
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          },
-          (err: any) => {
-            fail('should not call error');
-          },
-          () => {
-            log.push('completed');
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          });
+        (result: any) => {
+          log.push(result);
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+        (err: any) => {
+          fail('should not call error');
+        },
+        () => {
+          log.push('completed');
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+      );
     });
     expect(log).toEqual([1, 2, 3, 4, 'completed']);
   });
@@ -52,17 +53,18 @@ describe('Observable.distinct', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            log.push(result);
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          },
-          (err: any) => {
-            fail('should not call error');
-          },
-          () => {
-            log.push('completed');
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          });
+        (result: any) => {
+          log.push(result);
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+        (err: any) => {
+          fail('should not call error');
+        },
+        () => {
+          log.push('completed');
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+      );
     });
     expect(log).toEqual([1, 2, 1, 2, 3, 4, 'completed']);
   });
@@ -72,26 +74,34 @@ describe('Observable.distinct', () => {
     const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
     const error = new Error('test');
     observable1 = constructorZone1.run(() => {
-      return of({age: 4, name: 'Foo'}, {age: 7, name: 'Bar'}, {age: 5, name: 'Foo'},
-                {age: 6, name: 'Foo'})
-          .pipe(distinctUntilKeyChanged('name'));
+      return of(
+        {age: 4, name: 'Foo'},
+        {age: 7, name: 'Bar'},
+        {age: 5, name: 'Foo'},
+        {age: 6, name: 'Foo'},
+      ).pipe(distinctUntilKeyChanged('name'));
     });
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            log.push(result);
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          },
-          (err: any) => {
-            fail('should not call error');
-          },
-          () => {
-            log.push('completed');
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          });
+        (result: any) => {
+          log.push(result);
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+        (err: any) => {
+          fail('should not call error');
+        },
+        () => {
+          log.push('completed');
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+      );
     });
-    expect(log).toEqual(
-        [{age: 4, name: 'Foo'}, {age: 7, name: 'Bar'}, {age: 5, name: 'Foo'}, 'completed']);
+    expect(log).toEqual([
+      {age: 4, name: 'Foo'},
+      {age: 7, name: 'Bar'},
+      {age: 5, name: 'Foo'},
+      'completed',
+    ]);
   });
 });

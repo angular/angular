@@ -3,15 +3,12 @@ import {NgModule, Component} from '@angular/core';
 @Component({
   selector: 'lazy-component',
   template: 'Lazy-loaded component!',
-  jit: true
+  jit: true,
 })
-export class LazyComponent {
-
-}
+export class LazyComponent {}
 
 @NgModule({
   declarations: [LazyComponent],
   jit: true,
 })
-export class LazyModule {
-}
+export class LazyModule {}

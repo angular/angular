@@ -17,5 +17,4 @@ function loadTask(fileName, taskName) {
   return task(gulp);
 }
 
-
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));

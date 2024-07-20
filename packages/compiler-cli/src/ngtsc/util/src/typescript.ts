@@ -16,18 +16,20 @@ import {DeclarationNode} from '../../reflection';
 /**
  * Type describing a symbol that is guaranteed to have a value declaration.
  */
-export type SymbolWithValueDeclaration = ts.Symbol&{
+export type SymbolWithValueDeclaration = ts.Symbol & {
   valueDeclaration: ts.Declaration;
   declarations: ts.Declaration[];
 };
 
-export function isSymbolWithValueDeclaration(symbol: ts.Symbol|null|
-                                             undefined): symbol is SymbolWithValueDeclaration {
+export function isSymbolWithValueDeclaration(
+  symbol: ts.Symbol | null | undefined,
+): symbol is SymbolWithValueDeclaration {
   // If there is a value declaration set, then the `declarations` property is never undefined. We
   // still check for the property to exist as this matches with the type that `symbol` is narrowed
   // to.
-  return symbol != null && symbol.valueDeclaration !== undefined &&
-      symbol.declarations !== undefined;
+  return (
+    symbol != null && symbol.valueDeclaration !== undefined && symbol.declarations !== undefined
+  );
 }
 
 export function isDtsPath(filePath: string): boolean {
@@ -39,20 +41,22 @@ export function isNonDeclarationTsPath(filePath: string): boolean {
 }
 
 export function isFromDtsFile(node: ts.Node): boolean {
-  let sf: ts.SourceFile|undefined = node.getSourceFile();
+  let sf: ts.SourceFile | undefined = node.getSourceFile();
   if (sf === undefined) {
     sf = ts.getOriginalNode(node).getSourceFile();
   }
   return sf !== undefined && sf.isDeclarationFile;
 }
 
-export function nodeNameForError(node: ts.Node&{name?: ts.Node}): string {
+export function nodeNameForError(node: ts.Node & {name?: ts.Node}): string {
   if (node.name !== undefined && ts.isIdentifier(node.name)) {
     return node.name.text;
   } else {
     const kind = ts.SyntaxKind[node.kind];
-    const {line, character} =
-        ts.getLineAndCharacterOfPosition(node.getSourceFile(), node.getStart());
+    const {line, character} = ts.getLineAndCharacterOfPosition(
+      node.getSourceFile(),
+      node.getStart(),
+    );
     return `${kind}@${line}:${character}`;
   }
 }
@@ -65,18 +69,19 @@ export function getSourceFile(node: ts.Node): ts.SourceFile {
   return directSf !== undefined ? directSf : ts.getOriginalNode(node).getSourceFile();
 }
 
-export function getSourceFileOrNull(program: ts.Program, fileName: AbsoluteFsPath): ts.SourceFile|
-    null {
+export function getSourceFileOrNull(
+  program: ts.Program,
+  fileName: AbsoluteFsPath,
+): ts.SourceFile | null {
   return program.getSourceFile(fileName) || null;
 }
-
 
 export function getTokenAtPosition(sf: ts.SourceFile, pos: number): ts.Node {
   // getTokenAtPosition is part of TypeScript's private API.
   return (ts as any).getTokenAtPosition(sf, pos);
 }
 
-export function identifierOfNode(decl: ts.Node&{name?: ts.Node}): ts.Identifier|null {
+export function identifierOfNode(decl: ts.Node & {name?: ts.Node}): ts.Identifier | null {
   if (decl.name !== undefined && ts.isIdentifier(decl.name)) {
     return decl.name;
   } else {
@@ -88,19 +93,23 @@ export function isDeclaration(node: ts.Node): node is ts.Declaration {
   return isValueDeclaration(node) || isTypeDeclaration(node);
 }
 
-export function isValueDeclaration(node: ts.Node): node is ts.ClassDeclaration|
-    ts.FunctionDeclaration|ts.VariableDeclaration {
-  return ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node) ||
-      ts.isVariableDeclaration(node);
+export function isValueDeclaration(
+  node: ts.Node,
+): node is ts.ClassDeclaration | ts.FunctionDeclaration | ts.VariableDeclaration {
+  return (
+    ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node) || ts.isVariableDeclaration(node)
+  );
 }
 
-export function isTypeDeclaration(node: ts.Node): node is ts.EnumDeclaration|
-    ts.TypeAliasDeclaration|ts.InterfaceDeclaration {
-  return ts.isEnumDeclaration(node) || ts.isTypeAliasDeclaration(node) ||
-      ts.isInterfaceDeclaration(node);
+export function isTypeDeclaration(
+  node: ts.Node,
+): node is ts.EnumDeclaration | ts.TypeAliasDeclaration | ts.InterfaceDeclaration {
+  return (
+    ts.isEnumDeclaration(node) || ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node)
+  );
 }
 
-export function isNamedDeclaration(node: ts.Node): node is ts.Declaration&{name: ts.Identifier} {
+export function isNamedDeclaration(node: ts.Node): node is ts.Declaration & {name: ts.Identifier} {
   const namedNode = node as {name?: ts.Identifier};
   return namedNode.name !== undefined && ts.isIdentifier(namedNode.name);
 }
@@ -111,13 +120,16 @@ export function isExported(node: DeclarationNode): boolean {
     topLevel = node.parent.parent;
   }
   const modifiers = ts.canHaveModifiers(topLevel) ? ts.getModifiers(topLevel) : undefined;
-  return modifiers !== undefined &&
-      modifiers.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword);
+  return (
+    modifiers !== undefined &&
+    modifiers.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
+  );
 }
 
 export function getRootDirs(
-    host: Pick<ts.CompilerHost, 'getCurrentDirectory'|'getCanonicalFileName'>,
-    options: ts.CompilerOptions): AbsoluteFsPath[] {
+  host: Pick<ts.CompilerHost, 'getCurrentDirectory' | 'getCanonicalFileName'>,
+  options: ts.CompilerOptions,
+): AbsoluteFsPath[] {
   const rootDirs: string[] = [];
   const cwd = host.getCurrentDirectory();
   const fs = getFileSystem();
@@ -133,7 +145,7 @@ export function getRootDirs(
   // See:
   // https://github.com/Microsoft/TypeScript/blob/3f7357d37f66c842d70d835bc925ec2a873ecfec/src/compiler/sys.ts#L650
   // Also compiler options might be set via an API which doesn't normalize paths
-  return rootDirs.map(rootDir => fs.resolve(cwd, host.getCanonicalFileName(rootDir)));
+  return rootDirs.map((rootDir) => fs.resolve(cwd, host.getCanonicalFileName(rootDir)));
 }
 
 export function nodeDebugInfo(node: ts.Node): string {
@@ -149,21 +161,28 @@ export function nodeDebugInfo(node: ts.Node): string {
  * Otherwise it will fallback on the `ts.ResolveModuleName()` function.
  */
 export function resolveModuleName(
-    moduleName: string, containingFile: string, compilerOptions: ts.CompilerOptions,
-    compilerHost: ts.ModuleResolutionHost&Pick<ts.CompilerHost, 'resolveModuleNames'>,
-    moduleResolutionCache: ts.ModuleResolutionCache|null): ts.ResolvedModule|undefined {
+  moduleName: string,
+  containingFile: string,
+  compilerOptions: ts.CompilerOptions,
+  compilerHost: ts.ModuleResolutionHost & Pick<ts.CompilerHost, 'resolveModuleNames'>,
+  moduleResolutionCache: ts.ModuleResolutionCache | null,
+): ts.ResolvedModule | undefined {
   if (compilerHost.resolveModuleNames) {
     return compilerHost.resolveModuleNames(
-        [moduleName], containingFile,
-        undefined,  // reusedNames
-        undefined,  // redirectedReference
-        compilerOptions)[0];
+      [moduleName],
+      containingFile,
+      undefined, // reusedNames
+      undefined, // redirectedReference
+      compilerOptions,
+    )[0];
   } else {
-    return ts
-        .resolveModuleName(
-            moduleName, containingFile, compilerOptions, compilerHost,
-            moduleResolutionCache !== null ? moduleResolutionCache : undefined)
-        .resolvedModule;
+    return ts.resolveModuleName(
+      moduleName,
+      containingFile,
+      compilerOptions,
+      compilerHost,
+      moduleResolutionCache !== null ? moduleResolutionCache : undefined,
+    ).resolvedModule;
   }
 }
 
@@ -191,7 +210,7 @@ export type RequiredDelegations<T> = {
  * `redirectInfo` property that refers to the original source file.
  */
 interface RedirectedSourceFile extends ts.SourceFile {
-  redirectInfo?: {unredirected: ts.SourceFile;};
+  redirectInfo?: {unredirected: ts.SourceFile};
 }
 
 /**

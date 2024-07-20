@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-module.exports = function(config) {
+module.exports = function (config) {
   require('./karma-evergreen-dist-jasmine.conf.js')(config);
   require('./sauce-evergreen.conf')(config);
 };

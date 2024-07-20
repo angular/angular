@@ -13,29 +13,25 @@ import {BrowserModule} from '@angular/platform-browser';
   selector: 'app-root',
   template: ` <h1>Component One</h1> `,
 })
-export class ComponentOne {
-}
+export class ComponentOne {}
 
 @Component({
   selector: 'app-root',
   template: ` <h1>Component Two</h1> `,
 })
-export class ComponentTwo {
-}
+export class ComponentTwo {}
 
 @Component({
   selector: 'app-root',
   template: ` <h1>Component Three</h1> `,
 })
-export class ComponentThree {
-}
+export class ComponentThree {}
 
 @Component({
   selector: 'app-root',
   template: ` <h1>Component Four</h1> `,
 })
-export class ComponentFour {
-}
+export class ComponentFour {}
 
 @NgModule({imports: [BrowserModule], declarations: [ComponentOne, ComponentTwo]})
 export class AppModule implements DoBootstrap {

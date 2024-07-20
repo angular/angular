@@ -6,8 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, ComponentRef, inject, Inject, InjectionToken, ModuleWithProviders, NgModule, NgProbeToken, NgZone, Optional, Provider, SkipSelf, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  HashLocationStrategy,
+  Location,
+  LocationStrategy,
+  PathLocationStrategy,
+  ViewportScroller,
+} from '@angular/common';
+import {
+  APP_BOOTSTRAP_LISTENER,
+  ComponentRef,
+  inject,
+  Inject,
+  InjectionToken,
+  ModuleWithProviders,
+  NgModule,
+  NgZone,
+  Optional,
+  Provider,
+  SkipSelf,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
 import {RouterLink} from './directives/router_link';
@@ -16,7 +35,17 @@ import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
 import {NavigationTransitions} from './navigation_transition';
-import {getBootstrapListener, rootRoute, ROUTER_IS_PROVIDED, withComponentInputBinding, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
+import {
+  getBootstrapListener,
+  rootRoute,
+  ROUTER_IS_PROVIDED,
+  withComponentInputBinding,
+  withDebugTracing,
+  withDisabledInitialNavigation,
+  withEnabledBlockingInitialNavigation,
+  withPreloading,
+  withViewTransitions,
+} from './provide_router';
 import {Router} from './router';
 import {ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
@@ -24,7 +53,6 @@ import {ChildrenOutletContexts} from './router_outlet_context';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
-
 
 /**
  * The directives defined in the `RouterModule`.
@@ -35,8 +63,10 @@ const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkActive, EmptyOutl
  * @docsNotRequired
  */
 export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'router duplicate forRoot guard' :
-                                                      'ROUTER_FORROOT_GUARD');
+  typeof ngDevMode === 'undefined' || ngDevMode
+    ? 'router duplicate forRoot guard'
+    : 'ROUTER_FORROOT_GUARD',
+);
 
 // TODO(atscott): All of these except `ActivatedRoute` are `providedIn: 'root'`. They are only kept
 // here to avoid a breaking change whereby the provider order matters based on where the
@@ -51,13 +81,10 @@ export const ROUTER_PROVIDERS: Provider[] = [
   RouterConfigLoader,
   // Only used to warn when `provideRoutes` is used without `RouterModule` or `provideRouter`. Can
   // be removed when `provideRoutes` is removed.
-  (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: ROUTER_IS_PROVIDED, useValue: true} :
-                                                    [],
+  typeof ngDevMode === 'undefined' || ngDevMode
+    ? {provide: ROUTER_IS_PROVIDED, useValue: true}
+    : [],
 ];
-
-export function routerNgProbeToken() {
-  return new NgProbeToken('Router', Router);
-}
 
 /**
  * @description
@@ -75,7 +102,7 @@ export function routerNgProbeToken() {
  * * The `forChild()` method creates an `NgModule` that contains all the directives and the given
  * routes, but does not include the `Router` service.
  *
- * @see [Routing and Navigation guide](guide/router) for an
+ * @see [Routing and Navigation guide](guide/routing/common-router-tasks) for an
  * overview of how the `Router` service should be used.
  *
  * @publicApi
@@ -110,22 +137,24 @@ export class RouterModule {
       ngModule: RouterModule,
       providers: [
         ROUTER_PROVIDERS,
-        (typeof ngDevMode === 'undefined' || ngDevMode) ?
-            (config?.enableTracing ? withDebugTracing().ɵproviders : []) :
-            [],
+        typeof ngDevMode === 'undefined' || ngDevMode
+          ? config?.enableTracing
+            ? withDebugTracing().ɵproviders
+            : []
+          : [],
         {provide: ROUTES, multi: true, useValue: routes},
         {
           provide: ROUTER_FORROOT_GUARD,
           useFactory: provideForRootGuard,
-          deps: [[Router, new Optional(), new SkipSelf()]]
+          deps: [[Router, new Optional(), new SkipSelf()]],
         },
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
         config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
         provideRouterScroller(),
         config?.preloadingStrategy ? withPreloading(config.preloadingStrategy).ɵproviders : [],
-        {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
         config?.initialNavigation ? provideInitialNavigation(config) : [],
         config?.bindToComponentInputs ? withComponentInputBinding().ɵproviders : [],
+        config?.enableViewTransitions ? withViewTransitions().ɵproviders : [],
         provideRouterInitializer(),
       ],
     };
@@ -191,9 +220,10 @@ function providePathLocationStrategy(): Provider {
 export function provideForRootGuard(router: Router): any {
   if ((typeof ngDevMode === 'undefined' || ngDevMode) && router) {
     throw new RuntimeError(
-        RuntimeErrorCode.FOR_ROOT_CALLED_TWICE,
-        `The Router was provided more than once. This can happen if 'forRoot' is used outside of the root injector.` +
-            ` Lazy loaded modules should use RouterModule.forChild() instead.`);
+      RuntimeErrorCode.FOR_ROOT_CALLED_TWICE,
+      `The Router was provided more than once. This can happen if 'forRoot' is used outside of the root injector.` +
+        ` Lazy loaded modules should use RouterModule.forChild() instead.`,
+    );
   }
   return 'guarded';
 }
@@ -203,21 +233,22 @@ export function provideForRootGuard(router: Router): any {
 function provideInitialNavigation(config: Pick<ExtraOptions, 'initialNavigation'>): Provider[] {
   return [
     config.initialNavigation === 'disabled' ? withDisabledInitialNavigation().ɵproviders : [],
-    config.initialNavigation === 'enabledBlocking' ?
-        withEnabledBlockingInitialNavigation().ɵproviders :
-        [],
+    config.initialNavigation === 'enabledBlocking'
+      ? withEnabledBlockingInitialNavigation().ɵproviders
+      : [],
   ];
 }
 
 // TODO(atscott): This should not be in the public API
 /**
- * A [DI token](guide/glossary/#di-token) for the router initializer that
+ * A DI token for the router initializer that
  * is called after the app is bootstrapped.
  *
  * @publicApi
  */
 export const ROUTER_INITIALIZER = new InjectionToken<(compRef: ComponentRef<any>) => void>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'Router Initializer' : '');
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'Router Initializer' : '',
+);
 
 function provideRouterInitializer(): Provider[] {
   return [

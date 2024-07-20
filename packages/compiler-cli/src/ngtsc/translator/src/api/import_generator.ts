@@ -7,14 +7,29 @@
  */
 
 /**
- * The symbol name and import namespace of an imported symbol,
- * which has been registered through the ImportGenerator.
+ * A request to import a given symbol from the given module.
  */
-export interface NamedImport<TExpression> {
-  /** The import namespace containing this imported symbol. */
-  moduleImport: TExpression|null;
-  /** The (possibly rewritten) name of the imported symbol. */
-  symbol: string;
+export interface ImportRequest<TFile> {
+  /**
+   * Name of the export to be imported.
+   * May be `null` if a namespace import is requested.
+   */
+  exportSymbolName: string | null;
+
+  /**
+   * Module specifier to be imported.
+   * May be a module name, or a file-relative path.
+   */
+  exportModuleSpecifier: string;
+
+  /**
+   * File for which the import is requested for. This may
+   * be used by import generators to re-use existing imports.
+   *
+   * Import managers may also allow this to be nullable if
+   * imports are never re-used. E.g. in the linker generator.
+   */
+  requestedFile: TFile;
 }
 
 /**
@@ -23,7 +38,6 @@ export interface NamedImport<TExpression> {
  * Implementations of these methods return a specific identifier that corresponds to the imported
  * module.
  */
-export interface ImportGenerator<TExpression> {
-  generateNamespaceImport(moduleName: string): TExpression;
-  generateNamedImport(moduleName: string, originalSymbol: string): NamedImport<TExpression>;
+export interface ImportGenerator<TFile, TExpression> {
+  addImport(request: ImportRequest<TFile>): TExpression;
 }

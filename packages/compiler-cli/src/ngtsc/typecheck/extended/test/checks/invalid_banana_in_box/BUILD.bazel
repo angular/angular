@@ -21,6 +21,9 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node_no_angular"],
+    data = [
+        "//packages/core:npm_package",
+    ],
     deps = [
         ":test_lib",
     ],

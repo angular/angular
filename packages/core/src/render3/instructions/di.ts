@@ -41,7 +41,10 @@ import {getCurrentTNode, getLView} from '../state';
  */
 export function ɵɵdirectiveInject<T>(token: ProviderToken<T>): T;
 export function ɵɵdirectiveInject<T>(token: ProviderToken<T>, flags: InjectFlags): T;
-export function ɵɵdirectiveInject<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|null {
+export function ɵɵdirectiveInject<T>(
+  token: ProviderToken<T>,
+  flags = InjectFlags.Default,
+): T | null {
   const lView = getLView();
   // Fall back to inject() if view hasn't been created. This situation can happen in tests
   // if inject utilities are used before bootstrapping.
@@ -51,8 +54,12 @@ export function ɵɵdirectiveInject<T>(token: ProviderToken<T>, flags = InjectFl
     return ɵɵinject(token, flags);
   }
   const tNode = getCurrentTNode();
-  const value =
-      getOrCreateInjectable<T>(tNode as TDirectiveHostNode, lView, resolveForwardRef(token), flags);
+  const value = getOrCreateInjectable<T>(
+    tNode as TDirectiveHostNode,
+    lView,
+    resolveForwardRef(token),
+    flags,
+  );
   ngDevMode && emitInjectEvent(token as Type<unknown>, value, flags);
   return value;
 }
@@ -70,7 +77,8 @@ export function ɵɵdirectiveInject<T>(token: ProviderToken<T>, flags = InjectFl
  * @codeGenApi
  */
 export function ɵɵinvalidFactory(): never {
-  const msg =
-      ngDevMode ? `This constructor was not compatible with Dependency Injection.` : 'invalid';
+  const msg = ngDevMode
+    ? `This constructor was not compatible with Dependency Injection.`
+    : 'invalid';
   throw new Error(msg);
 }

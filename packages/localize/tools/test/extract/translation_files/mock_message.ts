@@ -15,9 +15,9 @@ export interface MockMessageOptions {
   description?: string;
   location?: SourceLocation;
   legacyIds?: string[];
-  messagePartLocations?: (SourceLocation|undefined)[];
+  messagePartLocations?: (SourceLocation | undefined)[];
   associatedMessageIds?: Record<string, string>;
-  substitutionLocations?: Record<string, SourceLocation|undefined>;
+  substitutionLocations?: Record<string, SourceLocation | undefined>;
 }
 
 /**
@@ -25,8 +25,11 @@ export interface MockMessageOptions {
  * `TranslationSerializer` tests.
  */
 export function mockMessage(
-    id: MessageId, messageParts: string[], placeholderNames: string[],
-    options: MockMessageOptions): ɵParsedMessage {
+  id: MessageId,
+  messageParts: string[],
+  placeholderNames: string[],
+  options: MockMessageOptions,
+): ɵParsedMessage {
   let text = messageParts[0];
   for (let i = 1; i < messageParts.length; i++) {
     text += `{$${placeholderNames[i - 1]}}${messageParts[i]}`;
@@ -34,7 +37,7 @@ export function mockMessage(
   return {
     substitutions: [],
     ...options,
-    id: options.customId || id,  // customId trumps id
+    id: options.customId || id, // customId trumps id
     text,
     messageParts,
     placeholderNames,
@@ -42,11 +45,15 @@ export function mockMessage(
 }
 
 export function location(
-    file: string, startLine: number, startCol: number, endLine: number,
-    endCol: number): SourceLocation {
+  file: string,
+  startLine: number,
+  startCol: number,
+  endLine: number,
+  endCol: number,
+): SourceLocation {
   return {
     file: absoluteFrom(file),
     start: {line: startLine, column: startCol},
-    end: {line: endLine, column: endCol}
+    end: {line: endLine, column: endCol},
   };
 }

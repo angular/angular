@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, SchemaMetadata} from '@angular/core';
-
+import {
+  InjectionToken,
+  SchemaMetadata,
+  ɵDeferBlockBehavior as DeferBlockBehavior,
+} from '@angular/core';
 
 /** Whether test modules should be torn down by default. */
 export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = true;
@@ -17,6 +20,9 @@ export const THROW_ON_UNKNOWN_ELEMENTS_DEFAULT = false;
 
 /** Whether unknown properties in templates should throw by default. */
 export const THROW_ON_UNKNOWN_PROPERTIES_DEFAULT = false;
+
+/** Whether defer blocks should use manual triggering or play through normally. */
+export const DEFER_BLOCK_DEFAULT_BEHAVIOR = DeferBlockBehavior.Playthrough;
 
 /**
  * An abstract class for inserting the root test component element in a platform independent way.
@@ -45,7 +51,7 @@ export interface TestModuleMetadata {
   providers?: any[];
   declarations?: any[];
   imports?: any[];
-  schemas?: Array<SchemaMetadata|any[]>;
+  schemas?: Array<SchemaMetadata | any[]>;
   teardown?: ModuleTeardownOptions;
   /**
    * Whether NG0304 runtime errors should be thrown when unknown elements are present in component's
@@ -61,6 +67,12 @@ export interface TestModuleMetadata {
    * @see [NG8002](/errors/NG8002) for the description of the error and how to fix it
    */
   errorOnUnknownProperties?: boolean;
+
+  /**
+   * Whether defer blocks should behave with manual triggering or play through normally.
+   * Defaults to `manual`.
+   */
+  deferBlockBehavior?: DeferBlockBehavior;
 }
 
 /**

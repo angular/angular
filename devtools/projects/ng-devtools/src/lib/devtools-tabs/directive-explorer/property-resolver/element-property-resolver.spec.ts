@@ -8,14 +8,17 @@
 
 import {Properties, PropType} from 'protocol';
 
+import {IndexedNode} from '../directive-forest/index-forest';
+
 import {ElementPropertyResolver} from './element-property-resolver';
 
-const mockIndexedNode = {
+const mockIndexedNode: IndexedNode = {
   component: {
     name: 'FooCmp',
     id: 0,
     isElement: false,
   },
+  hydration: null,
   directives: [
     {
       id: 1,
@@ -54,6 +57,7 @@ const fooNestedProperties: Properties = {
           value: {},
         },
       },
+      containerType: null,
     },
   },
 };
@@ -66,6 +70,7 @@ const barNestedProps: Properties = {
       preview: 'undefined',
       type: PropType.Undefined,
       value: undefined,
+      containerType: null,
     },
   },
 };

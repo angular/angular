@@ -47,13 +47,12 @@
           "failureMessage": "Invalid MyApp definition",
           "files": [
             {
-              "expected": "pipes_my_app_def.js",
+              "expected": "pipes_my_app_def.pipeline.js",
               "generated": "pipes.js"
             }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should use appropriate function for a given no of pipe arguments",

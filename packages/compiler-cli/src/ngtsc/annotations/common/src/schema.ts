@@ -15,7 +15,10 @@ import {PartialEvaluator} from '../../../partial_evaluator';
 import {createValueHasWrongTypeError} from './diagnostics';
 
 export function extractSchemas(
-    rawExpr: ts.Expression, evaluator: PartialEvaluator, context: string): SchemaMetadata[] {
+  rawExpr: ts.Expression,
+  evaluator: PartialEvaluator,
+  context: string,
+): SchemaMetadata[] {
   const schemas: SchemaMetadata[] = [];
   const result = evaluator.evaluate(rawExpr);
   if (!Array.isArray(result)) {
@@ -25,12 +28,18 @@ export function extractSchemas(
   for (const schemaRef of result) {
     if (!(schemaRef instanceof Reference)) {
       throw createValueHasWrongTypeError(
-          rawExpr, result, `${context}.schemas must be an array of schemas`);
+        rawExpr,
+        result,
+        `${context}.schemas must be an array of schemas`,
+      );
     }
     const id = schemaRef.getIdentityIn(schemaRef.node.getSourceFile());
     if (id === null || schemaRef.ownedByModuleGuess !== '@angular/core') {
       throw createValueHasWrongTypeError(
-          rawExpr, result, `${context}.schemas must be an array of schemas`);
+        rawExpr,
+        result,
+        `${context}.schemas must be an array of schemas`,
+      );
     }
     // Since `id` is the `ts.Identifier` within the schema ref's declaration file, it's safe to
     // use `id.text` here to figure out which schema is in use. Even if the actual reference was
@@ -44,7 +53,10 @@ export function extractSchemas(
         break;
       default:
         throw createValueHasWrongTypeError(
-            rawExpr, schemaRef, `'${schemaRef.debugName}' is not a valid ${context} schema`);
+          rawExpr,
+          schemaRef,
+          `'${schemaRef.debugName}' is not a valid ${context} schema`,
+        );
     }
   }
   return schemas;

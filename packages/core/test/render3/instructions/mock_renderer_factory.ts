@@ -12,7 +12,7 @@ import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 
 export class MockRendererFactory implements RendererFactory {
   wasCalled = false;
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer {
+  createRenderer(hostElement: RElement | null, rendererType: RendererType2 | null): Renderer {
     this.wasCalled = true;
     return new MockRenderer();
   }
@@ -21,15 +21,16 @@ export class MockRendererFactory implements RendererFactory {
 class MockRenderer implements Renderer {
   data = {};
 
-  destroyNode: ((node: any) => void)|null = null;
+  destroyNode: ((node: any) => void) | null = null;
 
   destroy(): void {}
   createComment(value: string): Comment {
     return document.createComment(value);
   }
-  createElement(name: string, namespace?: string|null): RElement {
-    return namespace ? document.createElementNS(namespace, name) as unknown as RElement :
-                       document.createElement(name);
+  createElement(name: string, namespace?: string | null): RElement {
+    return namespace
+      ? (document.createElementNS(namespace, name) as unknown as RElement)
+      : document.createElement(name);
   }
   createText(value: string): Text {
     return document.createTextNode(value);
@@ -37,23 +38,24 @@ class MockRenderer implements Renderer {
   appendChild(parent: RElement, newChild: Node): void {
     parent.appendChild(newChild);
   }
-  insertBefore(parent: Node, newChild: Node, refChild: Node|null): void {
+  insertBefore(parent: Node, newChild: Node, refChild: Node | null): void {
     parent.insertBefore(newChild, refChild);
   }
   removeChild(parent: RElement, oldChild: Node): void {
     parent.removeChild(oldChild);
   }
-  selectRootElement(selectorOrNode: string|any): RElement {
-    return typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
-                                                selectorOrNode;
+  selectRootElement(selectorOrNode: string | any): RElement {
+    return typeof selectorOrNode === 'string'
+      ? document.querySelector(selectorOrNode)
+      : selectorOrNode;
   }
-  parentNode(node: Node): RElement|null {
+  parentNode(node: Node): RElement | null {
     return node.parentNode as RElement | null;
   }
-  nextSibling(node: Node): Node|null {
+  nextSibling(node: Node): Node | null {
     return node.nextSibling;
   }
-  setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {
+  setAttribute(el: RElement, name: string, value: string, namespace?: string | null): void {
     // set all synthetic attributes as properties
     if (name[0] === '@') {
       this.setProperty(el, name, value);
@@ -61,7 +63,7 @@ class MockRenderer implements Renderer {
       el.setAttribute(name, value);
     }
   }
-  removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
+  removeAttribute(el: RElement, name: string, namespace?: string | null): void {}
   addClass(el: RElement, name: string): void {
     el.classList.add(name);
   }

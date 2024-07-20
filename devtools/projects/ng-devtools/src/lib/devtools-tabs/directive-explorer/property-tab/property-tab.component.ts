@@ -11,13 +11,17 @@ import {DirectivePosition} from 'protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
 import {FlatNode} from '../property-resolver/element-property-resolver';
+import {PropertyTabBodyComponent} from './property-view/property-tab-body.component';
+import {PropertyTabHeaderComponent} from './property-tab-header.component';
 
 @Component({
   templateUrl: './property-tab.component.html',
   selector: 'ng-property-tab',
+  standalone: true,
+  imports: [PropertyTabHeaderComponent, PropertyTabBodyComponent],
 })
 export class PropertyTabComponent {
-  @Input() currentSelectedElement: IndexedNode;
+  @Input({required: true}) currentSelectedElement!: IndexedNode;
   @Output() viewSource = new EventEmitter<string>();
   @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
 }

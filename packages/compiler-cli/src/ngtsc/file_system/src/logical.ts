@@ -7,11 +7,16 @@
  */
 import ts from 'typescript';
 
-import {absoluteFromSourceFile, dirname, isLocalRelativePath, relative, resolve, toRelativeImport} from './helpers';
+import {
+  absoluteFromSourceFile,
+  dirname,
+  isLocalRelativePath,
+  relative,
+  resolve,
+  toRelativeImport,
+} from './helpers';
 import {AbsoluteFsPath, BrandedPath, PathSegment} from './types';
 import {stripExtension} from './util';
-
-
 
 /**
  * A path that's relative to the logical root of a TypeScript project (one of the project's
@@ -28,7 +33,7 @@ export const LogicalProjectPath = {
    * This will return a `PathSegment` which would be a valid module specifier to use in `from` when
    * importing from `to`.
    */
-  relativePathBetween: function(from: LogicalProjectPath, to: LogicalProjectPath): PathSegment {
+  relativePathBetween: function (from: LogicalProjectPath, to: LogicalProjectPath): PathSegment {
     const relativePath = relative(dirname(resolve(from)), resolve(to));
     return toRelativeImport(relativePath) as PathSegment;
   },
@@ -54,16 +59,18 @@ export class LogicalFileSystem {
    * A cache of file paths to project paths, because computation of these paths is slightly
    * expensive.
    */
-  private cache: Map<AbsoluteFsPath, LogicalProjectPath|null> = new Map();
+  private cache: Map<AbsoluteFsPath, LogicalProjectPath | null> = new Map();
 
   constructor(
-      rootDirs: AbsoluteFsPath[],
-      private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>) {
+    rootDirs: AbsoluteFsPath[],
+    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
+  ) {
     // Make a copy and sort it by length in reverse order (longest first). This speeds up lookups,
     // since there's no need to keep going through the array once a match is found.
     this.rootDirs = rootDirs.concat([]).sort((a, b) => b.length - a.length);
-    this.canonicalRootDirs =
-        this.rootDirs.map(dir => this.compilerHost.getCanonicalFileName(dir) as AbsoluteFsPath);
+    this.canonicalRootDirs = this.rootDirs.map(
+      (dir) => this.compilerHost.getCanonicalFileName(dir) as AbsoluteFsPath,
+    );
   }
 
   /**
@@ -72,7 +79,7 @@ export class LogicalFileSystem {
    * This method is provided as a convenient alternative to calling
    * `logicalPathOfFile(absoluteFromSourceFile(sf))`.
    */
-  logicalPathOfSf(sf: ts.SourceFile): LogicalProjectPath|null {
+  logicalPathOfSf(sf: ts.SourceFile): LogicalProjectPath | null {
     return this.logicalPathOfFile(absoluteFromSourceFile(sf));
   }
 
@@ -82,11 +89,12 @@ export class LogicalFileSystem {
    * @returns A `LogicalProjectPath` to the source file, or `null` if the source file is not in any
    * of the TS project's root directories.
    */
-  logicalPathOfFile(physicalFile: AbsoluteFsPath): LogicalProjectPath|null {
+  logicalPathOfFile(physicalFile: AbsoluteFsPath): LogicalProjectPath | null {
     if (!this.cache.has(physicalFile)) {
-      const canonicalFilePath =
-          this.compilerHost.getCanonicalFileName(physicalFile) as AbsoluteFsPath;
-      let logicalFile: LogicalProjectPath|null = null;
+      const canonicalFilePath = this.compilerHost.getCanonicalFileName(
+        physicalFile,
+      ) as AbsoluteFsPath;
+      let logicalFile: LogicalProjectPath | null = null;
       for (let i = 0; i < this.rootDirs.length; i++) {
         const rootDir = this.rootDirs[i];
         const canonicalRootDir = this.canonicalRootDirs[i];
@@ -107,8 +115,10 @@ export class LogicalFileSystem {
     return this.cache.get(physicalFile)!;
   }
 
-  private createLogicalProjectPath(file: AbsoluteFsPath, rootDir: AbsoluteFsPath):
-      LogicalProjectPath {
+  private createLogicalProjectPath(
+    file: AbsoluteFsPath,
+    rootDir: AbsoluteFsPath,
+  ): LogicalProjectPath {
     const logicalPath = stripExtension(file.slice(rootDir.length));
     return (logicalPath.startsWith('/') ? logicalPath : '/' + logicalPath) as LogicalProjectPath;
   }

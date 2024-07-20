@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isArrayEqual, isReferenceEqual, SemanticReference, SemanticSymbol} from '../../../incremental/semantic_graph';
+import {
+  isArrayEqual,
+  isReferenceEqual,
+  SemanticReference,
+  SemanticSymbol,
+} from '../../../incremental/semantic_graph';
 import {DirectiveSymbol} from '../../directive';
 
 /**
@@ -17,8 +22,10 @@ export class ComponentSymbol extends DirectiveSymbol {
   usedPipes: SemanticReference[] = [];
   isRemotelyScoped = false;
 
-  override isEmitAffected(previousSymbol: SemanticSymbol, publicApiAffected: Set<SemanticSymbol>):
-      boolean {
+  override isEmitAffected(
+    previousSymbol: SemanticSymbol,
+    publicApiAffected: Set<SemanticSymbol>,
+  ): boolean {
     if (!(previousSymbol instanceof ComponentSymbol)) {
       return true;
     }
@@ -27,7 +34,7 @@ export class ComponentSymbol extends DirectiveSymbol {
     // declaration, but only if the symbol in the current compilation does not have its public API
     // affected.
     const isSymbolUnaffected = (current: SemanticReference, previous: SemanticReference) =>
-        isReferenceEqual(current, previous) && !publicApiAffected.has(current.symbol);
+      isReferenceEqual(current, previous) && !publicApiAffected.has(current.symbol);
 
     // The emit of a component is affected if either of the following is true:
     //  1. The component used to be remotely scoped but no longer is, or vice versa.
@@ -36,13 +43,17 @@ export class ComponentSymbol extends DirectiveSymbol {
     //     the component must still be re-emitted, as this may affect directive instantiation order.
     //  3. The list of used pipes has changed, or any of those pipes have had their public API
     //     changed.
-    return this.isRemotelyScoped !== previousSymbol.isRemotelyScoped ||
-        !isArrayEqual(this.usedDirectives, previousSymbol.usedDirectives, isSymbolUnaffected) ||
-        !isArrayEqual(this.usedPipes, previousSymbol.usedPipes, isSymbolUnaffected);
+    return (
+      this.isRemotelyScoped !== previousSymbol.isRemotelyScoped ||
+      !isArrayEqual(this.usedDirectives, previousSymbol.usedDirectives, isSymbolUnaffected) ||
+      !isArrayEqual(this.usedPipes, previousSymbol.usedPipes, isSymbolUnaffected)
+    );
   }
 
   override isTypeCheckBlockAffected(
-      previousSymbol: SemanticSymbol, typeCheckApiAffected: Set<SemanticSymbol>): boolean {
+    previousSymbol: SemanticSymbol,
+    typeCheckApiAffected: Set<SemanticSymbol>,
+  ): boolean {
     if (!(previousSymbol instanceof ComponentSymbol)) {
       return true;
     }
@@ -50,7 +61,7 @@ export class ComponentSymbol extends DirectiveSymbol {
     // To verify that a used directive is not affected we need to verify that its full inheritance
     // chain is not present in `typeCheckApiAffected`.
     const isInheritanceChainAffected = (symbol: SemanticSymbol): boolean => {
-      let currentSymbol: SemanticSymbol|null = symbol;
+      let currentSymbol: SemanticSymbol | null = symbol;
       while (currentSymbol instanceof DirectiveSymbol) {
         if (typeCheckApiAffected.has(currentSymbol)) {
           return true;
@@ -65,21 +76,22 @@ export class ComponentSymbol extends DirectiveSymbol {
     // declaration and if the symbol and all symbols it inherits from in the current compilation
     // do not have their type-check API affected.
     const isDirectiveUnaffected = (current: SemanticReference, previous: SemanticReference) =>
-        isReferenceEqual(current, previous) && !isInheritanceChainAffected(current.symbol);
+      isReferenceEqual(current, previous) && !isInheritanceChainAffected(current.symbol);
 
     // Create an equality function that considers pipes equal if they represent the same
     // declaration and if the symbol in the current compilation does not have its type-check
     // API affected.
     const isPipeUnaffected = (current: SemanticReference, previous: SemanticReference) =>
-        isReferenceEqual(current, previous) && !typeCheckApiAffected.has(current.symbol);
+      isReferenceEqual(current, previous) && !typeCheckApiAffected.has(current.symbol);
 
     // The emit of a type-check block of a component is affected if either of the following is true:
     //  1. The list of used directives has changed or any of those directives have had their
     //     type-check API changed.
     //  2. The list of used pipes has changed, or any of those pipes have had their type-check API
     //     changed.
-    return !isArrayEqual(
-               this.usedDirectives, previousSymbol.usedDirectives, isDirectiveUnaffected) ||
-        !isArrayEqual(this.usedPipes, previousSymbol.usedPipes, isPipeUnaffected);
+    return (
+      !isArrayEqual(this.usedDirectives, previousSymbol.usedDirectives, isDirectiveUnaffected) ||
+      !isArrayEqual(this.usedPipes, previousSymbol.usedPipes, isPipeUnaffected)
+    );
   }
 }

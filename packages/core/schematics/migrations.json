@@ -1,14 +1,19 @@
 {
   "schematics": {
-    "migration-v16-remove-module-id": {
-      "version": "16.0.0",
-      "description": "As of Angular v16, the `moduleId` property of `@Component` is deprecated as it no longer has any effect.",
-      "factory": "./migrations/remove-module-id/bundle"
+    "invalid-two-way-bindings": {
+      "version": "18.0.0",
+      "description": "Updates two-way bindings that have an invalid expression to use the longform expression instead.",
+      "factory": "./migrations/invalid-two-way-bindings/bundle"
     },
-    "migration-v16-guard-and-resolve-interfaces": {
-      "version": "16.0.0",
-      "description": "In Angular version 15.2, the guard and resolver interfaces (CanActivate, Resolve, etc) were deprecated. This migration removes imports and 'implements' clauses that contain them.",
-      "factory": "./migrations/guard-and-resolve-interfaces/bundle"
+    "migration-http-providers": {
+      "version": "18.0.0",
+      "description": "Replace deprecated HTTP related modules with provider functions",
+      "factory": "./migrations/http-providers/bundle"
+    },
+    "migration-after-render-phase": {
+      "version": "18.1.0",
+      "description": "Updates calls to afterRender with an explicit phase to the new API",
+      "factory": "./migrations/after-render-phase/bundle"
     }
   }
 }

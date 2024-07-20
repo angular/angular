@@ -9,11 +9,19 @@
 import {PerfLogEvent} from '../index';
 
 export class TraceEventFactory {
-  constructor(private _cat: string, private _pid: string) {}
+  constructor(
+    private _cat: string,
+    private _pid: string,
+  ) {}
 
   create(ph: any, name: string, time: number, args: any = null) {
-    const res:
-        PerfLogEvent = {'name': name, 'cat': this._cat, 'ph': ph, 'ts': time, 'pid': this._pid};
+    const res: PerfLogEvent = {
+      'name': name,
+      'cat': this._cat,
+      'ph': ph,
+      'ts': time,
+      'pid': this._pid,
+    };
     if (args != null) {
       res['args'] = args;
     }

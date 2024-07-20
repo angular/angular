@@ -8,7 +8,12 @@ exports_files(glob([
 
 ts_library(
     name = "zone_d_ts",
-    srcs = [":zone.ts"],
+    srcs = [
+        ":zone.api.extensions.ts",
+        ":zone.configurations.api.ts",
+        ":zone.ts",
+        ":zone-impl.ts",
+    ],
     deps = [
         "@npm//@types/node",
     ],
@@ -19,7 +24,12 @@ ts_library(
     package_name = "zone.js/lib",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["zone.ts"],
+        exclude = [
+            "zone.ts",
+            "zone-impl.ts",
+            "zone.api.extensions.ts",
+            "zone.configurations.api.ts",
+        ],
     ),
     module_name = "zone.js/lib",
     deps = [

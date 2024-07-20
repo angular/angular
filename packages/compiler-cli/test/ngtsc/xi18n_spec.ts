@@ -12,9 +12,9 @@ import {platform} from 'os';
 
 import {NgtscTestEnvironment} from './env';
 
-const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
+const testFiles = loadStandardTestFiles({fakeCommon: true});
 
-runInEachFileSystem(os => {
+runInEachFileSystem((os) => {
   let env!: NgtscTestEnvironment;
 
   if (os === 'Windows' || platform() === 'win32') {
@@ -78,7 +78,7 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 
 <!ELEMENT ex (#PCDATA)>
 ]>
-<messagebundle>
+<messagebundle handler="angular">
   <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/basic.html:1</source><source>src/comp2.ts:1</source><source>src/basic.html:1</source>translate me</msg>
   <msg id="9038505069473852515"><source>src/basic.html:3,4</source><source>src/comp2.ts:3,4</source><source>src/comp2.ts:2,3</source><source>src/basic.html:3,4</source>
     Welcome</msg>
@@ -246,19 +246,27 @@ function writeTestCode(env: NgtscTestEnvironment): void {
     <!--i18n-->
     Welcome<!--/i18n-->
     `;
-  env.write('src/basic.html', `<div title="translate me" i18n-title="meaning|desc"></div>
-         <p id="welcomeMessage">${welcomeMessage}</p>`);
+  env.write(
+    'src/basic.html',
+    `<div title="translate me" i18n-title="meaning|desc"></div>
+         <p id="welcomeMessage">${welcomeMessage}</p>`,
+  );
 
-  env.write('src/comp1.ts', `
+  env.write(
+    'src/comp1.ts',
+    `
     import {Component} from '@angular/core';
 
     @Component({
       selector: 'basic',
       templateUrl: './basic.html',
     })
-    export class BasicCmp1 {}`);
+    export class BasicCmp1 {}`,
+  );
 
-  env.write('src/comp2.ts', `
+  env.write(
+    'src/comp2.ts',
+    `
     import {Component} from '@angular/core';
 
     @Component({
@@ -271,47 +279,65 @@ function writeTestCode(env: NgtscTestEnvironment): void {
       selector: 'basic4',
       template: \`<p id="welcomeMessage">${welcomeMessage}</p>\`,
     })
-    export class BasicCmp4 {}`);
+    export class BasicCmp4 {}`,
+  );
 
-  env.write('src/comp3.ts', `
+  env.write(
+    'src/comp3.ts',
+    `
     import {Component} from '@angular/core';
 
     @Component({
       selector: 'basic3',
       templateUrl: './basic.html',
     })
-    export class BasicCmp3 {}`);
+    export class BasicCmp3 {}`,
+  );
 
-  env.write('src/placeholders.html', `<div i18n="with placeholders">Name: <b>{{
+  env.write(
+    'src/placeholders.html',
+    `<div i18n="with placeholders">Name: <b>{{
       name // i18n(ph="name")
-    }}</b></div>`);
+    }}</b></div>`,
+  );
 
-  env.write('src/placeholder_cmp.ts', `
+  env.write(
+    'src/placeholder_cmp.ts',
+    `
     import {Component} from '@angular/core';
 
     @Component({
       selector: 'placeholders',
       templateUrl: './placeholders.html',
     })
-    export class PlaceholderCmp { name = 'whatever'; }`);
+    export class PlaceholderCmp { name = 'whatever'; }`,
+  );
 
-  env.write('src/icu.html', `<div i18n="with ICU">{
+  env.write(
+    'src/icu.html',
+    `<div i18n="with ICU">{
       count, plural, =1 {book} other {books}
     }</div>
     <div i18n="with ICU and other things">
      foo { count, plural, =1 {book} other {books} }
-    </div>`);
+    </div>`,
+  );
 
-  env.write('src/icu_cmp.ts', `
+  env.write(
+    'src/icu_cmp.ts',
+    `
     import {Component} from '@angular/core';
 
     @Component({
       selector: 'icu',
       templateUrl: './icu.html',
     })
-    export class IcuCmp { count = 3; }`);
+    export class IcuCmp { count = 3; }`,
+  );
 
-  env.write('src/module.ts', `
+  env.write(
+    'src/module.ts',
+    `
     import {NgModule} from '@angular/core';
     import {CommonModule} from '@angular/common';
     import {BasicCmp1} from './comp1';
@@ -332,5 +358,6 @@ function writeTestCode(env: NgtscTestEnvironment): void {
       imports: [CommonModule],
     })
     export class I18nModule {}
-    `);
+    `,
+  );
 }

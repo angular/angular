@@ -7,7 +7,7 @@ function MyComponent_li_2_Template(rf, ctx) {
   if (rf & 2) {
     const $myComp$ = $r3$.ɵɵnextContext();
     const $foo$ = $r3$.ɵɵreference(1);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate2("", $myComp$.salutation, " ", $foo$, "");
   }
 }

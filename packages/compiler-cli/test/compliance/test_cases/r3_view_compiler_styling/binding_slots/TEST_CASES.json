@@ -13,8 +13,7 @@
             "component_host_binding_slots.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should count only non-style and non-class host bindings on Directives",
@@ -28,8 +27,7 @@
             "directive_host_binding_slots.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate the correct amount of host bindings when styling is present",
@@ -43,8 +41,7 @@
             "host_binding_slots.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

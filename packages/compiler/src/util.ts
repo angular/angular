@@ -26,7 +26,7 @@ function _splitAt(input: string, character: string, defaultValues: string[]): st
   return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];
 }
 
-export function noUndefined<T>(val: T|undefined): T {
+export function noUndefined<T>(val: T | undefined): T {
   return val === undefined ? null! : val;
 }
 
@@ -48,7 +48,7 @@ export function utf8Encode(str: string): Byte[] {
 
     // decode surrogate
     // see https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
-    if (codePoint >= 0xd800 && codePoint <= 0xdbff && str.length > (index + 1)) {
+    if (codePoint >= 0xd800 && codePoint <= 0xdbff && str.length > index + 1) {
       const low = str.charCodeAt(index + 1);
       if (low >= 0xdc00 && low <= 0xdfff) {
         index++;
@@ -59,14 +59,20 @@ export function utf8Encode(str: string): Byte[] {
     if (codePoint <= 0x7f) {
       encoded.push(codePoint);
     } else if (codePoint <= 0x7ff) {
-      encoded.push(((codePoint >> 6) & 0x1F) | 0xc0, (codePoint & 0x3f) | 0x80);
+      encoded.push(((codePoint >> 6) & 0x1f) | 0xc0, (codePoint & 0x3f) | 0x80);
     } else if (codePoint <= 0xffff) {
       encoded.push(
-          (codePoint >> 12) | 0xe0, ((codePoint >> 6) & 0x3f) | 0x80, (codePoint & 0x3f) | 0x80);
+        (codePoint >> 12) | 0xe0,
+        ((codePoint >> 6) & 0x3f) | 0x80,
+        (codePoint & 0x3f) | 0x80,
+      );
     } else if (codePoint <= 0x1fffff) {
       encoded.push(
-          ((codePoint >> 18) & 0x07) | 0xf0, ((codePoint >> 12) & 0x3f) | 0x80,
-          ((codePoint >> 6) & 0x3f) | 0x80, (codePoint & 0x3f) | 0x80);
+        ((codePoint >> 18) & 0x07) | 0xf0,
+        ((codePoint >> 12) & 0x3f) | 0x80,
+        ((codePoint >> 6) & 0x3f) | 0x80,
+        (codePoint & 0x3f) | 0x80,
+      );
     }
   }
 
@@ -150,7 +156,9 @@ export function newArray<T>(size: number, value?: T): T[] {
  * boolean value.
  */
 export function partitionArray<T, F = T>(
-    arr: (T|F)[], conditionFn: (value: T|F) => boolean): [T[], F[]] {
+  arr: (T | F)[],
+  conditionFn: (value: T | F) => boolean,
+): [T[], F[]] {
   const truthy: T[] = [];
   const falsy: F[] = [];
   for (const item of arr) {

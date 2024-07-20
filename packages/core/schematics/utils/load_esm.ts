@@ -21,9 +21,10 @@ import {URL} from 'url';
  * @param modulePath The path of the module to load.
  * @returns A Promise that resolves to the dynamically imported module.
  */
-export async function loadEsmModule<T>(modulePath: string|URL): Promise<T> {
-  const namespaceObject =
-      (await new Function('modulePath', `return import(modulePath);`)(modulePath));
+export async function loadEsmModule<T>(modulePath: string | URL): Promise<T> {
+  const namespaceObject = await new Function('modulePath', `return import(modulePath);`)(
+    modulePath,
+  );
 
   // If it is not ESM then the values needed will be stored in the `default` property.
   // TODO_ESM: This can be removed once `@angular/*` packages are ESM only.
@@ -41,8 +42,9 @@ export async function loadEsmModule<T>(modulePath: string|URL): Promise<T> {
  * @returns A Promise that resolves to the dynamically imported compiler-cli private migrations
  * entry or an equivalent object if not available.
  */
-export async function loadCompilerCliMigrationsModule():
-    Promise<typeof import('@angular/compiler-cli/private/migrations')> {
+export async function loadCompilerCliMigrationsModule(): Promise<
+  typeof import('@angular/compiler-cli/private/migrations')
+> {
   try {
     return await loadEsmModule('@angular/compiler-cli/private/migrations');
   } catch {

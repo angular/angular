@@ -14,8 +14,12 @@ describe('BrowserViewportScroller', () => {
     let windowSpy: any;
 
     beforeEach(() => {
-      windowSpy =
-          jasmine.createSpyObj('window', ['history', 'scrollTo', 'pageXOffset', 'pageYOffset']);
+      windowSpy = jasmine.createSpyObj('window', [
+        'history',
+        'scrollTo',
+        'pageXOffset',
+        'pageYOffset',
+      ]);
       windowSpy.history.scrollRestoration = 'auto';
       scroller = new BrowserViewportScroller(document, windowSpy);
     });
@@ -106,7 +110,7 @@ describe('BrowserViewportScroller', () => {
         cleanup: () => {
           document.body.removeChild(tallItem);
           document.body.removeChild(anchorNode);
-        }
+        },
       };
     }
 
@@ -126,7 +130,7 @@ describe('BrowserViewportScroller', () => {
         cleanup: () => {
           document.body.removeChild(tallItem);
           document.body.removeChild(elementWithShadowRoot);
-        }
+        },
       };
     }
 

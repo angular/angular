@@ -2,7 +2,7 @@ import {Component, Pipe} from '@angular/core';
 
 @Pipe({standalone: true, name: 'testPipe'})
 export class TestPipe {
-  tranform() {
+  transform() {
     return true;
   }
 }
@@ -10,7 +10,9 @@ export class TestPipe {
 @Component({
   template: `
     {{message}}
-    {#defer when isVisible() && (isReady | testPipe)}Hello{/defer}
+    @defer (when isVisible() && (isReady | testPipe)) {
+      Hello
+    }
   `,
   standalone: true,
   imports: [TestPipe],

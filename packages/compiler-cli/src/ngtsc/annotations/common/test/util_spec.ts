@@ -24,13 +24,17 @@ describe('ngtsc annotation utilities', () => {
 
     it('should unwrap an ObjectLiteralExpression with a type cast', () => {
       const cast = ts.factory.createAsExpression(
-          obj, ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+        obj,
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+      );
       expect(unwrapExpression(cast)).toBe(obj);
     });
 
     it('should unwrap an ObjectLiteralExpression with a type cast in parentheses', () => {
       const cast = ts.factory.createAsExpression(
-          obj, ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+        obj,
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+      );
       const wrapped = ts.factory.createParenthesizedExpression(cast);
       expect(unwrapExpression(wrapped)).toBe(obj);
     });

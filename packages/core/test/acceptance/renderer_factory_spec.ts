@@ -7,23 +7,35 @@
  */
 
 import {AnimationEvent} from '@angular/animations';
-import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
+import {
+  ɵAnimationEngine,
+  ɵAnimationRendererFactory,
+  ɵNoopAnimationStyleNormalizer,
+} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {Component, DoCheck, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {
+  Component,
+  DoCheck,
+  NgZone,
+  Renderer2,
+  RendererFactory2,
+  RendererStyleFlags2,
+  RendererType2,
+  ViewEncapsulation,
+} from '@angular/core';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 import {EventManager, ɵSharedStylesHost} from '@angular/platform-browser';
-import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];
-  let lastCapturedType: RendererType2|null = null;
+  let lastCapturedType: RendererType2 | null = null;
 
   @Component({selector: 'some-component', template: `foo`})
   class SomeComponent implements DoCheck {
@@ -57,7 +69,7 @@ describe('renderer factory lifecycle', () => {
     let rendererFactory = getRendererFactory2(document);
     const createRender = rendererFactory.createRenderer;
 
-    rendererFactory.createRenderer = (hostElement: any, type: RendererType2|null) => {
+    rendererFactory.createRenderer = (hostElement: any, type: RendererType2 | null) => {
       logs.push('create');
       lastCapturedType = type;
       return createRender.apply(rendererFactory, [hostElement, type]);
@@ -74,28 +86,36 @@ describe('renderer factory lifecycle', () => {
 
     TestBed.configureTestingModule({
       declarations: [SomeComponent, SomeComponentWhichThrows, TestComponent],
-      providers: [{
-        provide: RendererFactory2,
-        useFactory: (document: any) => createPatchedRendererFactory(document),
-        deps: [DOCUMENT]
-      }]
+      providers: [
+        {
+          provide: RendererFactory2,
+          useFactory: (document: any) => createPatchedRendererFactory(document),
+          deps: [DOCUMENT],
+        },
+      ],
     });
   });
 
   it('should work with a component', () => {
     const fixture = TestBed.createComponent(SomeComponent);
-    fixture.detectChanges();
-    expect(logs).toEqual(
-        ['create', 'create', 'begin', 'some_component create', 'some_component update', 'end']);
+    fixture.componentRef.changeDetectorRef.detectChanges();
+    expect(logs).toEqual([
+      'create',
+      'create',
+      'begin',
+      'some_component create',
+      'some_component update',
+      'end',
+    ]);
     logs = [];
-    fixture.detectChanges();
+    fixture.componentRef.changeDetectorRef.detectChanges();
     expect(logs).toEqual(['begin', 'some_component update', 'end']);
   });
 
   it('should work with a component which throws', () => {
     expect(() => {
       const fixture = TestBed.createComponent(SomeComponentWhichThrows);
-      fixture.detectChanges();
+      fixture.componentRef.changeDetectorRef.detectChanges();
     }).toThrow();
     expect(logs).toEqual(['create', 'create', 'begin', 'end']);
   });
@@ -107,8 +127,7 @@ describe('renderer factory lifecycle', () => {
       template: '...',
       encapsulation: ViewEncapsulation.ShadowDom,
     })
-    class StyledComp {
-    }
+    class StyledComp {}
 
     TestBed.createComponent(StyledComp);
 
@@ -124,13 +143,9 @@ describe('renderer factory lifecycle', () => {
       @Component({
         standalone: true,
         template: '',
-        animations: [
-          animA,
-          animB,
-        ],
+        animations: [animA, animB],
       })
-      class AnimComp {
-      }
+      class AnimComp {}
 
       TestBed.createComponent(AnimComp);
 
@@ -147,13 +162,12 @@ describe('renderer factory lifecycle', () => {
         template: '...',
         animations: [],
       })
-      class AnimComp {
-      }
+      class AnimComp {}
 
       TestBed.createComponent(AnimComp);
 
       const data = lastCapturedType!.data;
-      expect(data.animation).toEqual([]);
+      expect(data['animation']).toEqual([]);
     });
 
     it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {
@@ -162,17 +176,18 @@ describe('renderer factory lifecycle', () => {
         template: '<div @fooAnimation></div>',
         animations: [],
       })
-      class AnimComp {
-      }
+      class AnimComp {}
 
       const rendererFactory = new MockRendererFactory(['setProperty']);
 
       TestBed.configureTestingModule({
-        providers: [{
-          provide: RendererFactory2,
-          useValue: rendererFactory,
-          deps: [DOCUMENT],
-        }]
+        providers: [
+          {
+            provide: RendererFactory2,
+            useValue: rendererFactory,
+            deps: [DOCUMENT],
+          },
+        ],
       });
 
       const fixture = TestBed.createComponent(AnimComp);
@@ -202,11 +217,13 @@ describe('renderer factory lifecycle', () => {
 
     const rendererFactory = new MockRendererFactory(['destroy', 'createElement']);
     TestBed.configureTestingModule({
-      providers: [{
-        provide: RendererFactory2,
-        useValue: rendererFactory,
-        deps: [DOCUMENT],
-      }]
+      providers: [
+        {
+          provide: RendererFactory2,
+          useValue: rendererFactory,
+          deps: [DOCUMENT],
+        },
+      ],
     });
 
     const fixture = TestBed.createComponent(Comp);
@@ -234,7 +251,7 @@ describe('renderer factory lifecycle', () => {
 
 describe('animation renderer factory', () => {
   let eventLogs: string[] = [];
-  let rendererFactory: RendererFactory2|null = null;
+  let rendererFactory: RendererFactory2 | null = null;
 
   function getAnimationLog(): MockAnimationPlayer[] {
     return MockAnimationDriver.log as MockAnimationPlayer[];
@@ -247,11 +264,13 @@ describe('animation renderer factory', () => {
 
     TestBed.configureTestingModule({
       declarations: [SomeComponentWithAnimation, SomeComponent],
-      providers: [{
-        provide: RendererFactory2,
-        useFactory: (d: any) => rendererFactory = getAnimationRendererFactory2(d),
-        deps: [DOCUMENT]
-      }]
+      providers: [
+        {
+          provide: RendererFactory2,
+          useFactory: (d: Document) => (rendererFactory = getAnimationRendererFactory2(d)),
+          deps: [DOCUMENT],
+        },
+      ],
     });
   });
 
@@ -264,20 +283,26 @@ describe('animation renderer factory', () => {
         foo
       </div>
     `,
-    animations: [{
-      type: 7,
-      name: 'myAnimation',
-      definitions: [{
-        type: 1,
-        expr: '* => on',
-        animation: [{type: 4, styles: {type: 6, styles: {opacity: 1}, offset: null}, timings: 10}],
-        options: null
-      }],
-      options: {}
-    }]
+    animations: [
+      {
+        type: 7,
+        name: 'myAnimation',
+        definitions: [
+          {
+            type: 1,
+            expr: '* => on',
+            animation: [
+              {type: 4, styles: {type: 6, styles: {opacity: 1}, offset: null}, timings: 10},
+            ],
+            options: null,
+          },
+        ],
+        options: {},
+      },
+    ],
   })
   class SomeComponentWithAnimation {
-    exp: string|undefined;
+    exp: string | undefined;
 
     callback(event: AnimationEvent) {
       eventLogs.push(`${event.fromState ? event.fromState : event.toState} - ${event.phaseName}`);
@@ -285,8 +310,7 @@ describe('animation renderer factory', () => {
   }
 
   @Component({selector: 'some-component', template: 'foo'})
-  class SomeComponent {
-  }
+  class SomeComponent {}
 
   it('should work with components without animations', () => {
     const fixture = TestBed.createComponent(SomeComponent);
@@ -294,40 +318,54 @@ describe('animation renderer factory', () => {
     expect(fixture.nativeElement.innerHTML).toEqual('foo');
   });
 
-  isBrowser && it('should work with animated components', (done) => {
-    const fixture = TestBed.createComponent(SomeComponentWithAnimation);
-    fixture.detectChanges();
+  isBrowser &&
+    it('should work with animated components', (done) => {
+      const fixture = TestBed.createComponent(SomeComponentWithAnimation);
+      fixture.detectChanges();
 
-    expect(rendererFactory).toBeTruthy();
-    expect(fixture.nativeElement.innerHTML)
-        .toMatch(/<div class="ng-tns-c\d+-0 ng-trigger ng-trigger-myAnimation">\s+foo\s+<\/div>/);
+      expect(rendererFactory).toBeTruthy();
+      expect(fixture.nativeElement.innerHTML).toMatch(
+        /<div class="ng-tns-c\d+-0 ng-trigger ng-trigger-myAnimation">\s+foo\s+<\/div>/,
+      );
 
-    fixture.componentInstance.exp = 'on';
-    fixture.detectChanges();
+      fixture.componentInstance.exp = 'on';
+      fixture.detectChanges();
 
-    const [player] = getAnimationLog();
-    expect(player.keyframes).toEqual([
-      new Map<string, string|number>([['opacity', '*'], ['offset', 0]]),
-      new Map<string, string|number>([['opacity', 1], ['offset', 1]]),
-    ]);
-    player.finish();
+      const [player] = getAnimationLog();
+      expect(player.keyframes).toEqual([
+        new Map<string, string | number>([
+          ['opacity', '*'],
+          ['offset', 0],
+        ]),
+        new Map<string, string | number>([
+          ['opacity', 1],
+          ['offset', 1],
+        ]),
+      ]);
+      player.finish();
 
-    rendererFactory!.whenRenderingDone!().then(() => {
-      expect(eventLogs).toEqual(['void - start', 'void - done', 'on - start', 'on - done']);
-      done();
+      rendererFactory!.whenRenderingDone!().then(() => {
+        expect(eventLogs).toEqual(['void - start', 'void - done', 'on - start', 'on - done']);
+        done();
+      });
     });
-  });
 });
 
-function getRendererFactory2(document: any): RendererFactory2 {
+function getRendererFactory2(document: Document): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([], fakeNgZone);
   const appId = 'app-id';
   const rendererFactory = new DomRendererFactory2(
-      eventManager, new ɵSharedStylesHost(document, appId), appId, true, document,
-      isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID, fakeNgZone);
+    eventManager,
+    new ɵSharedStylesHost(document, appId),
+    appId,
+    true,
+    document,
+    isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID,
+    fakeNgZone,
+  );
   const origCreateRenderer = rendererFactory.createRenderer;
-  rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+  rendererFactory.createRenderer = function (element: any, type: RendererType2 | null) {
     const renderer = origCreateRenderer.call(this, element, type);
     renderer.destroyNode = () => {};
     return renderer;
@@ -335,13 +373,13 @@ function getRendererFactory2(document: any): RendererFactory2 {
   return rendererFactory;
 }
 
-function getAnimationRendererFactory2(document: any): RendererFactory2 {
+function getAnimationRendererFactory2(document: Document): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   return new ɵAnimationRendererFactory(
-      getRendererFactory2(document),
-      new ɵAnimationEngine(
-          document.body, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
-      fakeNgZone);
+    getRendererFactory2(document),
+    new ɵAnimationEngine(document, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
+    fakeNgZone,
+  );
 }
 
 describe('custom renderer', () => {
@@ -349,16 +387,15 @@ describe('custom renderer', () => {
     selector: 'some-component',
     template: `<div><span></span></div>`,
   })
-  class SomeComponent {
-  }
+  class SomeComponent {}
 
   /**
    * Creates a patched renderer factory that creates elements with a shape different than DOM node
    */
-  function createPatchedRendererFactory(document: any) {
+  function createPatchedRendererFactory(document: Document) {
     let rendererFactory = getRendererFactory2(document);
     const origCreateRenderer = rendererFactory.createRenderer;
-    rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+    rendererFactory.createRenderer = function (element: any, type: RendererType2 | null) {
       const renderer = origCreateRenderer.call(this, element, type);
       renderer.appendChild = () => {};
       renderer.createElement = (name: string) => ({
@@ -374,11 +411,13 @@ describe('custom renderer', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [SomeComponent],
-      providers: [{
-        provide: RendererFactory2,
-        useFactory: (document: any) => createPatchedRendererFactory(document),
-        deps: [DOCUMENT]
-      }]
+      providers: [
+        {
+          provide: RendererFactory2,
+          useFactory: (document: Document) => createPatchedRendererFactory(document),
+          deps: [DOCUMENT],
+        },
+      ],
     });
   });
 
@@ -407,8 +446,7 @@ describe('Renderer2 destruction hooks', () => {
     selector: 'basic-comp',
     template: 'comp(<ng-content></ng-content>)',
   })
-  class BasicComponent {
-  }
+  class BasicComponent {}
 
   @Component({
     selector: 'some-component',
@@ -429,11 +467,13 @@ describe('Renderer2 destruction hooks', () => {
 
     TestBed.configureTestingModule({
       declarations: [SimpleApp, AppWithComponents, BasicComponent],
-      providers: [{
-        provide: RendererFactory2,
-        useFactory: (document: any) => getRendererFactory2(document),
-        deps: [DOCUMENT]
-      }]
+      providers: [
+        {
+          provide: RendererFactory2,
+          useFactory: (document: Document) => getRendererFactory2(document),
+          deps: [DOCUMENT],
+        },
+      ],
     });
   });
 
@@ -474,8 +514,8 @@ export class MockRendererFactory implements RendererFactory2 {
     this._spyOnMethods = spyOnMethods || [];
   }
 
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer2 {
-    const renderer = this.lastRenderer = new MockRenderer(this._spyOnMethods);
+  createRenderer(hostElement: RElement | null, rendererType: RendererType2 | null): Renderer2 {
+    const renderer = (this.lastRenderer = new MockRenderer(this._spyOnMethods));
     return renderer;
   }
 }
@@ -484,10 +524,10 @@ class MockRenderer implements Renderer2 {
   public spies: {[methodName: string]: any} = {};
   data = {};
 
-  destroyNode: ((node: any) => void)|null = null;
+  destroyNode: ((node: any) => void) | null = null;
 
   constructor(spyOnMethods: string[]) {
-    spyOnMethods.forEach(methodName => {
+    spyOnMethods.forEach((methodName) => {
       this.spies[methodName] = spyOn(this as any, methodName).and.callThrough();
     });
   }
@@ -496,7 +536,7 @@ class MockRenderer implements Renderer2 {
   createComment(value: string): Comment {
     return document.createComment(value);
   }
-  createElement(name: string, namespace?: string|null): Element {
+  createElement(name: string, namespace?: string | null): Element {
     return namespace ? document.createElementNS(namespace, name) : document.createElement(name);
   }
   createText(value: string): Text {
@@ -505,23 +545,24 @@ class MockRenderer implements Renderer2 {
   appendChild(parent: RElement, newChild: Node): void {
     parent.appendChild(newChild);
   }
-  insertBefore(parent: Node, newChild: Node, refChild: Node|null): void {
+  insertBefore(parent: Node, newChild: Node, refChild: Node | null): void {
     parent.insertBefore(newChild, refChild);
   }
   removeChild(parent: RElement, oldChild: Node): void {
     parent.removeChild(oldChild);
   }
-  selectRootElement(selectorOrNode: string|any): RElement {
-    return typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
-                                                selectorOrNode;
+  selectRootElement(selectorOrNode: string | any): RElement {
+    return typeof selectorOrNode === 'string'
+      ? document.querySelector(selectorOrNode)
+      : selectorOrNode;
   }
-  parentNode(node: Node): Element|null {
+  parentNode(node: Node): Element | null {
     return node.parentNode as Element;
   }
-  nextSibling(node: Node): Node|null {
+  nextSibling(node: Node): Node | null {
     return node.nextSibling;
   }
-  setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {
+  setAttribute(el: RElement, name: string, value: string, namespace?: string | null): void {
     // set all synthetic attributes as properties
     if (name[0] === '@') {
       this.setProperty(el, name, value);
@@ -529,7 +570,7 @@ class MockRenderer implements Renderer2 {
       el.setAttribute(name, value);
     }
   }
-  removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
+  removeAttribute(el: RElement, name: string, namespace?: string | null): void {}
   addClass(el: RElement, name: string): void {}
   removeClass(el: RElement, name: string): void {}
   setStyle(el: RElement, style: string, value: any, flags?: RendererStyleFlags2): void {}

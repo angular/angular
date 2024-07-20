@@ -11,8 +11,11 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {LView, RENDERER, TView} from '../interfaces/view';
 import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 
-import {elementPropertyInternal, setInputsForProperty, storePropertyBindingMetadata} from './shared';
-
+import {
+  elementPropertyInternal,
+  setInputsForProperty,
+  storePropertyBindingMetadata,
+} from './shared';
 
 /**
  * Update a property on a selected element.
@@ -33,14 +36,25 @@ import {elementPropertyInternal, setInputsForProperty, storePropertyBindingMetad
  * @codeGenApi
  */
 export function ɵɵproperty<T>(
-    propName: string, value: T, sanitizer?: SanitizerFn|null): typeof ɵɵproperty {
+  propName: string,
+  value: T,
+  sanitizer?: SanitizerFn | null,
+): typeof ɵɵproperty {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
     const tNode = getSelectedTNode();
     elementPropertyInternal(
-        tView, tNode, lView, propName, value, lView[RENDERER], sanitizer, false);
+      tView,
+      tNode,
+      lView,
+      propName,
+      value,
+      lView[RENDERER],
+      sanitizer,
+      false,
+    );
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵproperty;
@@ -51,7 +65,12 @@ export function ɵɵproperty<T>(
  * directive input.
  */
 export function setDirectiveInputsWhichShadowsStyling(
-    tView: TView, tNode: TNode, lView: LView, value: any, isClassBased: boolean) {
+  tView: TView,
+  tNode: TNode,
+  lView: LView,
+  value: any,
+  isClassBased: boolean,
+) {
   const inputs = tNode.inputs!;
   const property = isClassBased ? 'class' : 'style';
   // We support both 'class' and `className` hence the fallback.

@@ -21,8 +21,8 @@ import {ViewRef} from '../render3/view_ref';
  * Use the methods to add and remove views from the tree, initiate change-detection,
  * and explicitly mark views as _dirty_, meaning that they have changed and need to be re-rendered.
  *
- * @see [Using change detection hooks](guide/lifecycle-hooks#using-change-detection-hooks)
- * @see [Defining custom change detection](guide/lifecycle-hooks#defining-custom-change-detection)
+ * @see [Using change detection hooks](guide/components/lifecycle#using-change-detection-hooks)
+ * @see [Defining custom change detection](guide/components/lifecycle#defining-custom-change-detection)
  *
  * @usageNotes
  *
@@ -104,6 +104,10 @@ export abstract class ChangeDetectorRef {
    *
    * Use in development mode to verify that running change detection doesn't introduce
    * other changes. Calling it in production mode is a noop.
+   *
+   * @deprecated This is a test-only API that does not have a place in production interface.
+   * `checkNoChanges` is already part of an `ApplicationRef` tick when the app is running in dev
+   * mode. For more granular `checkNoChanges` validation, use `ComponentFixture`.
    */
   abstract checkNoChanges(): void;
 
@@ -123,13 +127,13 @@ export abstract class ChangeDetectorRef {
   static __NG_ELEMENT_ID__: (flags: InjectFlags) => ChangeDetectorRef = injectChangeDetectorRef;
 }
 
-
-
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
 export function injectChangeDetectorRef(flags: InjectFlags): ChangeDetectorRef {
   return createViewRef(
-      getCurrentTNode()!, getLView(),
-      (flags & InternalInjectFlags.ForPipe) === InternalInjectFlags.ForPipe);
+    getCurrentTNode()!,
+    getLView(),
+    (flags & InternalInjectFlags.ForPipe) === InternalInjectFlags.ForPipe,
+  );
 }
 
 /**
@@ -144,12 +148,15 @@ function createViewRef(tNode: TNode, lView: LView, isPipe: boolean): ChangeDetec
   if (isComponentHost(tNode) && !isPipe) {
     // The LView represents the location where the component is declared.
     // Instead we want the LView for the component View and so we need to look it up.
-    const componentView = getComponentLViewByIndex(tNode.index, lView);  // look down
+    const componentView = getComponentLViewByIndex(tNode.index, lView); // look down
     return new ViewRef(componentView, componentView);
-  } else if (tNode.type & (TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Icu)) {
+  } else if (
+    tNode.type &
+    (TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Icu | TNodeType.LetDeclaration)
+  ) {
     // The LView represents the location where the injection is requested from.
     // We need to locate the containing LView (in case where the `lView` is an embedded view)
-    const hostComponentView = lView[DECLARATION_COMPONENT_VIEW];  // look up
+    const hostComponentView = lView[DECLARATION_COMPONENT_VIEW]; // look up
     return new ViewRef(hostComponentView, lView);
   }
   return null!;

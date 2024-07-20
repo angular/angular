@@ -10,7 +10,6 @@ import ts from 'typescript';
 
 import {DEFAULT_ERROR_CODE, SOURCE} from './api';
 
-
 export function error(msg: string): never {
   throw new Error(`Internal error: ${msg}`);
 }
@@ -33,5 +32,8 @@ export function createMessageDiagnostic(messageText: string): ts.Diagnostic {
  * This will also strip the JSDOC comment start marker (`/**`).
  */
 export function stripComment(commentText: string): string {
-  return commentText.replace(/^\/\*\*?/, '').replace(/\*\/$/, '').trim();
+  return commentText
+    .replace(/^\/\*\*?/, '')
+    .replace(/\*\/$/, '')
+    .trim();
 }

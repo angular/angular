@@ -33,7 +33,6 @@ ng_module(
         "property-preview.component.ts",
         "property-tab-body.component.ts",
         "property-view.component.ts",
-        "property-view.module.ts",
         "property-view-body.component.ts",
         "property-view-header.component.ts",
         "property-view-tree.component.ts",
@@ -48,6 +47,10 @@ ng_module(
         "property-tab-body.component.html",
     ] + _STYLE_LABELS,
     deps = [
+        "//devtools/projects/ng-devtools/src/lib:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:resolution_path",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
         "//devtools/projects/protocol",

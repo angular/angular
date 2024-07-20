@@ -35,7 +35,7 @@ const ABSOLUTE_PATH = Symbol('AbsolutePath');
  * Extract an `AbsoluteFsPath` from a `ts.SourceFile`-like object.
  */
 export function absoluteFromSourceFile(sf: {fileName: string}): AbsoluteFsPath {
-  const sfWithPatch = sf as {fileName: string, [ABSOLUTE_PATH]?: AbsoluteFsPath};
+  const sfWithPatch = sf as {fileName: string; [ABSOLUTE_PATH]?: AbsoluteFsPath};
 
   if (sfWithPatch[ABSOLUTE_PATH] === undefined) {
     sfWithPatch[ABSOLUTE_PATH] = fs.resolve(sfWithPatch.fileName);
@@ -93,7 +93,7 @@ export function isRooted(path: string): boolean {
 /**
  * Static access to `relative`.
  */
-export function relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
+export function relative<T extends PathString>(from: T, to: T): PathSegment | AbsoluteFsPath {
   return fs.relative(from, to);
 }
 
@@ -119,7 +119,8 @@ export function isLocalRelativePath(relativePath: string): boolean {
  *
  * In other words it adds the `./` to the path if it is locally relative.
  */
-export function toRelativeImport(relativePath: PathSegment|AbsoluteFsPath): PathSegment|
-    AbsoluteFsPath {
-  return isLocalRelativePath(relativePath) ? `./${relativePath}` as PathSegment : relativePath;
+export function toRelativeImport(
+  relativePath: PathSegment | AbsoluteFsPath,
+): PathSegment | AbsoluteFsPath {
+  return isLocalRelativePath(relativePath) ? (`./${relativePath}` as PathSegment) : relativePath;
 }

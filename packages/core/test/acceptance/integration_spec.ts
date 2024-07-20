@@ -9,7 +9,25 @@ import {animate, AnimationEvent, state, style, transition, trigger} from '@angul
 import {AnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
-import {Component, ContentChild, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgModule, OnInit, Output, Pipe, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  ContentChild,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  HostListener,
+  Input,
+  NgModule,
+  OnInit,
+  Output,
+  Pipe,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewChildren,
+  ViewContainerRef,
+} from '@angular/core';
 import {Inject} from '@angular/core/src/di';
 import {readPatchedLView} from '@angular/core/src/render3/context_discovery';
 import {LContainer} from '@angular/core/src/render3/interfaces/container';
@@ -30,8 +48,7 @@ describe('acceptance integration tests', () => {
   describe('render', () => {
     it('should render basic template', () => {
       @Component({template: '<span title="Hello">Greetings</span>'})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
@@ -59,8 +76,8 @@ describe('acceptance integration tests', () => {
 
       expect(fixture.nativeElement.innerHTML).toEqual('<h1>Hello, World!</h1>');
       expectPerfCounters({
-        tView: 2,  // Host view + App
-        tNode: 3,  // Host Node + <h1> + #text
+        tView: 2, // Host view + App
+        tNode: 3, // Host Node + <h1> + #text
       });
 
       fixture.componentInstance.name = 'New World';
@@ -77,23 +94,24 @@ describe('acceptance integration tests', () => {
 
   describe('ng-container', () => {
     it('should insert as a child of a regular element', () => {
-      @Component(
-          {template: '<div>before|<ng-container>Greetings<span></span></ng-container>|after</div>'})
-      class App {
-      }
+      @Component({
+        template: '<div>before|<ng-container>Greetings<span></span></ng-container>|after</div>',
+      })
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
 
       // Strip comments since VE and Ivy put them in different places.
-      expect(stripHtmlComments(fixture.nativeElement.innerHTML))
-          .toBe('<div>before|Greetings<span></span>|after</div>');
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe(
+        '<div>before|Greetings<span></span>|after</div>',
+      );
     });
 
     it('should add and remove DOM nodes when ng-container is a child of a regular element', () => {
       @Component({
         template:
-            '<ng-template [ngIf]="render"><div><ng-container>content</ng-container></div></ng-template>'
+          '<ng-template [ngIf]="render"><div><ng-container>content</ng-container></div></ng-template>',
       })
       class App {
         render = false;
@@ -134,84 +152,89 @@ describe('acceptance integration tests', () => {
     });
 
     // https://stackblitz.com/edit/angular-tfhcz1?file=src%2Fapp%2Fapp.component.ts
-    it('should add and remove DOM nodes when ng-container is a child of a delayed embedded view',
-       () => {
-         @Directive({selector: '[testDirective]'})
-         class TestDirective {
-           constructor(private _tplRef: TemplateRef<any>, private _vcRef: ViewContainerRef) {}
+    it('should add and remove DOM nodes when ng-container is a child of a delayed embedded view', () => {
+      @Directive({selector: '[testDirective]'})
+      class TestDirective {
+        constructor(
+          private _tplRef: TemplateRef<any>,
+          private _vcRef: ViewContainerRef,
+        ) {}
 
-           createAndInsert() {
-             this._vcRef.insert(this._tplRef.createEmbeddedView({}));
-           }
+        createAndInsert() {
+          this._vcRef.insert(this._tplRef.createEmbeddedView({}));
+        }
 
-           clear() {
-             this._vcRef.clear();
-           }
-         }
+        clear() {
+          this._vcRef.clear();
+        }
+      }
 
-         @Component({
-           template: '<ng-template testDirective><ng-container>content</ng-container></ng-template>'
-         })
-         class App {
-           @ViewChild(TestDirective, {static: true}) testDirective!: TestDirective;
-         }
+      @Component({
+        template: '<ng-template testDirective><ng-container>content</ng-container></ng-template>',
+      })
+      class App {
+        @ViewChild(TestDirective, {static: true}) testDirective!: TestDirective;
+      }
 
-         TestBed.configureTestingModule({declarations: [App, TestDirective]});
-         const fixture = TestBed.createComponent(App);
-         fixture.detectChanges();
+      TestBed.configureTestingModule({declarations: [App, TestDirective]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
 
-         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('');
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('');
 
-         fixture.componentInstance.testDirective.createAndInsert();
-         fixture.detectChanges();
-         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('content');
+      fixture.componentInstance.testDirective.createAndInsert();
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('content');
 
-         fixture.componentInstance.testDirective.clear();
-         fixture.detectChanges();
-         expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('');
-       });
+      fixture.componentInstance.testDirective.clear();
+      fixture.detectChanges();
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe('');
+    });
 
     it('should render at the component view root', () => {
-      @Component(
-          {selector: 'test-cmpt', template: '<ng-container>component template</ng-container>'})
-      class TestCmpt {
-      }
+      @Component({
+        selector: 'test-cmpt',
+        template: '<ng-container>component template</ng-container>',
+      })
+      class TestCmpt {}
 
       @Component({template: '<test-cmpt></test-cmpt>'})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, TestCmpt]});
       const fixture = TestBed.createComponent(App);
 
-      expect(stripHtmlComments(fixture.nativeElement.innerHTML))
-          .toBe('<test-cmpt>component template</test-cmpt>');
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe(
+        '<test-cmpt>component template</test-cmpt>',
+      );
     });
 
     it('should render inside another ng-container', () => {
       @Component({
         selector: 'test-cmpt',
         template:
-            '<ng-container><ng-container><ng-container>content</ng-container></ng-container></ng-container>'
+          '<ng-container><ng-container><ng-container>content</ng-container></ng-container></ng-container>',
       })
-      class TestCmpt {
-      }
+      class TestCmpt {}
 
       @Component({template: '<test-cmpt></test-cmpt>'})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, TestCmpt]});
       const fixture = TestBed.createComponent(App);
 
-      expect(stripHtmlComments(fixture.nativeElement.innerHTML))
-          .toBe('<test-cmpt>content</test-cmpt>');
+      expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toBe(
+        '<test-cmpt>content</test-cmpt>',
+      );
     });
 
     it('should render inside another ng-container at the root of a delayed view', () => {
       @Directive({selector: '[testDirective]'})
       class TestDirective {
-        constructor(private _tplRef: TemplateRef<any>, private _vcRef: ViewContainerRef) {}
+        constructor(
+          private _tplRef: TemplateRef<any>,
+          private _vcRef: ViewContainerRef,
+        ) {}
 
         createAndInsert() {
           this._vcRef.insert(this._tplRef.createEmbeddedView({}));
@@ -224,7 +247,7 @@ describe('acceptance integration tests', () => {
 
       @Component({
         template:
-            '<ng-template testDirective><ng-container><ng-container><ng-container>content</ng-container></ng-container></ng-container></ng-template>'
+          '<ng-template testDirective><ng-container><ng-container><ng-container>content</ng-container></ng-container></ng-container></ng-template>',
       })
       class App {
         @ViewChild(TestDirective, {static: true}) testDirective!: TestDirective;
@@ -265,14 +288,15 @@ describe('acceptance integration tests', () => {
       fixture.detectChanges();
 
       expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('<div></div>');
-      expect(fixture.componentInstance.testDirective.elRef.nativeElement.nodeType)
-          .toBe(Node.COMMENT_NODE);
+      expect(fixture.componentInstance.testDirective.elRef.nativeElement.nodeType).toBe(
+        Node.COMMENT_NODE,
+      );
     });
 
     it('should support ViewContainerRef when ng-container is at the root of a view', () => {
       @Directive({selector: '[dir]'})
       class TestDirective {
-        @Input() contentTpl: TemplateRef<{}>|null = null;
+        @Input() contentTpl: TemplateRef<{}> | null = null;
 
         constructor(private _vcRef: ViewContainerRef) {}
 
@@ -287,7 +311,7 @@ describe('acceptance integration tests', () => {
 
       @Component({
         template:
-            '<ng-container dir [contentTpl]="content"><ng-template #content>Content</ng-template></ng-container>'
+          '<ng-container dir [contentTpl]="content"><ng-template #content>Content</ng-template></ng-container>',
       })
       class App {
         @ViewChild(TestDirective) testDirective!: TestDirective;
@@ -311,7 +335,10 @@ describe('acceptance integration tests', () => {
     it('should support ViewContainerRef on <ng-template> inside <ng-container>', () => {
       @Directive({selector: '[dir]'})
       class TestDirective {
-        constructor(private _tplRef: TemplateRef<{}>, private _vcRef: ViewContainerRef) {}
+        constructor(
+          private _tplRef: TemplateRef<{}>,
+          private _vcRef: ViewContainerRef,
+        ) {}
 
         insertView() {
           this._vcRef.createEmbeddedView(this._tplRef);
@@ -344,8 +371,7 @@ describe('acceptance integration tests', () => {
 
     it('should not set any attributes', () => {
       @Component({template: '<div><ng-container id="foo"></ng-container></div>'})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
@@ -359,7 +385,7 @@ describe('acceptance integration tests', () => {
     it('should render "undefined" as ""', () => {
       @Component({template: '{{name}}'})
       class App {
-        name: string|undefined = 'benoit';
+        name: string | undefined = 'benoit';
       }
 
       TestBed.configureTestingModule({declarations: [App]});
@@ -377,7 +403,7 @@ describe('acceptance integration tests', () => {
     it('should render "null" as ""', () => {
       @Component({template: '{{name}}'})
       class App {
-        name: string|null = 'benoit';
+        name: string | null = 'benoit';
       }
 
       TestBed.configureTestingModule({declarations: [App]});
@@ -419,17 +445,17 @@ describe('acceptance integration tests', () => {
             <i>Hello {{ name }}!</i>
           </b>
           {{ myRef.id }}
-        `
+        `,
       })
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(stripNgNonBindable(fixture.nativeElement.innerHTML))
-          .toEqual('<b id="my-id"><i>Hello {{ name }}!</i></b> my-id ');
+      expect(stripNgNonBindable(fixture.nativeElement.innerHTML)).toEqual(
+        '<b id="my-id"><i>Hello {{ name }}!</i></b> my-id ',
+      );
     });
 
     it('should invoke directives for host element', () => {
@@ -447,7 +473,7 @@ describe('acceptance integration tests', () => {
           <b ngNonBindable directive>
             <i>Hello {{ name }}!</i>
           </b>
-        `
+        `,
       })
       class App {
         name = 'World';
@@ -457,8 +483,9 @@ describe('acceptance integration tests', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(stripNgNonBindable(fixture.nativeElement.innerHTML))
-          .toEqual('<b directive=""><i>Hello {{ name }}!</i></b>');
+      expect(stripNgNonBindable(fixture.nativeElement.innerHTML)).toEqual(
+        '<b directive=""><i>Hello {{ name }}!</i></b>',
+      );
       expect(directiveInvoked).toEqual(true);
     });
 
@@ -477,7 +504,7 @@ describe('acceptance integration tests', () => {
           <b ngNonBindable>
             <i directive>Hello {{ name }}!</i>
           </b>
-        `
+        `,
       })
       class App {
         name = 'World';
@@ -487,8 +514,9 @@ describe('acceptance integration tests', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(stripNgNonBindable(fixture.nativeElement.innerHTML))
-          .toEqual('<b><i directive="">Hello {{ name }}!</i></b>');
+      expect(stripNgNonBindable(fixture.nativeElement.innerHTML)).toEqual(
+        '<b><i directive="">Hello {{ name }}!</i></b>',
+      );
       expect(directiveInvoked).toEqual(false);
     });
   });
@@ -565,13 +593,15 @@ describe('acceptance integration tests', () => {
 
       fixture.componentInstance.id = 'foo';
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML)
-          .toEqual('<b><span></span><span class="foo" id="foo"></span></b>');
+      expect(fixture.nativeElement.innerHTML).toEqual(
+        '<b><span></span><span class="foo" id="foo"></span></b>',
+      );
 
       fixture.componentInstance.id = 'bar';
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML)
-          .toEqual('<b><span></span><span class="foo" id="bar"></span></b>');
+      expect(fixture.nativeElement.innerHTML).toEqual(
+        '<b><span></span><span class="foo" id="bar"></span></b>',
+      );
     });
 
     it('should handle sibling text node after element with child text node', () => {
@@ -603,8 +633,7 @@ describe('acceptance integration tests', () => {
 
     it('should support a basic component template', () => {
       @Component({template: '<todo></todo>'})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, TodoComponent]});
       const fixture = TestBed.createComponent(App);
@@ -615,8 +644,7 @@ describe('acceptance integration tests', () => {
 
     it('should support a component template with sibling', () => {
       @Component({template: '<todo></todo>two'})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, TodoComponent]});
       const fixture = TestBed.createComponent(App);
@@ -627,15 +655,15 @@ describe('acceptance integration tests', () => {
 
     it('should support a component template with component sibling', () => {
       @Component({template: '<todo></todo><todo></todo>'})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, TodoComponent]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.innerHTML)
-          .toEqual('<todo><p>Todo one</p></todo><todo><p>Todo one</p></todo>');
+      expect(fixture.nativeElement.innerHTML).toEqual(
+        '<todo><p>Todo one</p></todo><todo><p>Todo one</p></todo>',
+      );
     });
 
     it('should support a component with binding on host element', () => {
@@ -663,8 +691,7 @@ describe('acceptance integration tests', () => {
 
     it('should support root component with host attribute', () => {
       @Component({selector: 'host-attr-comp', template: '', host: {'role': 'button'}})
-      class HostAttributeComp {
-      }
+      class HostAttributeComp {}
 
       TestBed.configureTestingModule({declarations: [HostAttributeComp]});
       const fixture = TestBed.createComponent(HostAttributeComp);
@@ -680,8 +707,7 @@ describe('acceptance integration tests', () => {
       }
 
       @Component({template: '<comp></comp>'})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, MyComp]});
       const fixture = TestBed.createComponent(App);
@@ -721,7 +747,7 @@ describe('acceptance integration tests', () => {
       it('should support attribute bindings', () => {
         @Component({template: '<button [attr.title]="title"></button>'})
         class App {
-          title: string|null = '';
+          title: string | null = '';
         }
 
         TestBed.configureTestingModule({declarations: [App]});
@@ -756,8 +782,9 @@ describe('acceptance integration tests', () => {
 
         fixture.componentInstance.title = {toString: () => 'Custom toString'};
         fixture.detectChanges();
-        expect(fixture.nativeElement.innerHTML)
-            .toEqual('<button title="Custom toString"></button>');
+        expect(fixture.nativeElement.innerHTML).toEqual(
+          '<button title="Custom toString"></button>',
+        );
       });
 
       it('should update bindings', () => {
@@ -773,7 +800,7 @@ describe('acceptance integration tests', () => {
             'a6:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[4]}}{{c[5]}}{{c[6]}}{{c[7]}}{{c[8]}}{{c[9]}}{{c[10]}}{{c[11]}}{{c[16]}}',
             'a7:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[4]}}{{c[5]}}{{c[6]}}{{c[7]}}{{c[8]}}{{c[9]}}{{c[10]}}{{c[11]}}{{c[12]}}{{c[13]}}{{c[16]}}',
             'a8:{{c[0]}}{{c[1]}}{{c[2]}}{{c[3]}}{{c[4]}}{{c[5]}}{{c[6]}}{{c[7]}}{{c[8]}}{{c[9]}}{{c[10]}}{{c[11]}}{{c[12]}}{{c[13]}}{{c[14]}}{{c[15]}}{{c[16]}}',
-          ].join('\n')
+          ].join('\n'),
         })
         class App {
           c = ['(', 0, 'a', 1, 'b', 2, 'c', 3, 'd', 4, 'e', 5, 'f', 6, 'g', 7, ')'];
@@ -783,50 +810,56 @@ describe('acceptance integration tests', () => {
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
 
-        expect(fixture.nativeElement.textContent.trim()).toEqual([
-          'a:(0a1b2c3d4e5f6g7)',
-          'a0:0',
-          'a1:(0)',
-          'a2:(0a1)',
-          'a3:(0a1b2)',
-          'a4:(0a1b2c3)',
-          'a5:(0a1b2c3d4)',
-          'a6:(0a1b2c3d4e5)',
-          'a7:(0a1b2c3d4e5f6)',
-          'a8:(0a1b2c3d4e5f6g7)',
-        ].join('\n'));
+        expect(fixture.nativeElement.textContent.trim()).toEqual(
+          [
+            'a:(0a1b2c3d4e5f6g7)',
+            'a0:0',
+            'a1:(0)',
+            'a2:(0a1)',
+            'a3:(0a1b2)',
+            'a4:(0a1b2c3)',
+            'a5:(0a1b2c3d4)',
+            'a6:(0a1b2c3d4e5)',
+            'a7:(0a1b2c3d4e5f6)',
+            'a8:(0a1b2c3d4e5f6g7)',
+          ].join('\n'),
+        );
 
         fixture.componentInstance.c.reverse();
         fixture.detectChanges();
 
-        expect(fixture.nativeElement.textContent.trim()).toEqual([
-          'a:)7g6f5e4d3c2b1a0(',
-          'a0:7',
-          'a1:)7(',
-          'a2:)7g6(',
-          'a3:)7g6f5(',
-          'a4:)7g6f5e4(',
-          'a5:)7g6f5e4d3(',
-          'a6:)7g6f5e4d3c2(',
-          'a7:)7g6f5e4d3c2b1(',
-          'a8:)7g6f5e4d3c2b1a0(',
-        ].join('\n'));
+        expect(fixture.nativeElement.textContent.trim()).toEqual(
+          [
+            'a:)7g6f5e4d3c2b1a0(',
+            'a0:7',
+            'a1:)7(',
+            'a2:)7g6(',
+            'a3:)7g6f5(',
+            'a4:)7g6f5e4(',
+            'a5:)7g6f5e4d3(',
+            'a6:)7g6f5e4d3c2(',
+            'a7:)7g6f5e4d3c2b1(',
+            'a8:)7g6f5e4d3c2b1a0(',
+          ].join('\n'),
+        );
 
         fixture.componentInstance.c.reverse();
         fixture.detectChanges();
 
-        expect(fixture.nativeElement.textContent.trim()).toEqual([
-          'a:(0a1b2c3d4e5f6g7)',
-          'a0:0',
-          'a1:(0)',
-          'a2:(0a1)',
-          'a3:(0a1b2)',
-          'a4:(0a1b2c3)',
-          'a5:(0a1b2c3d4)',
-          'a6:(0a1b2c3d4e5)',
-          'a7:(0a1b2c3d4e5f6)',
-          'a8:(0a1b2c3d4e5f6g7)',
-        ].join('\n'));
+        expect(fixture.nativeElement.textContent.trim()).toEqual(
+          [
+            'a:(0a1b2c3d4e5f6g7)',
+            'a0:0',
+            'a1:(0)',
+            'a2:(0a1)',
+            'a3:(0a1b2)',
+            'a4:(0a1b2c3)',
+            'a5:(0a1b2c3d4)',
+            'a6:(0a1b2c3d4e5)',
+            'a7:(0a1b2c3d4e5f6)',
+            'a8:(0a1b2c3d4e5f6g7)',
+          ].join('\n'),
+        );
       });
 
       it('should not update DOM if context has not changed', () => {
@@ -835,10 +868,10 @@ describe('acceptance integration tests', () => {
             <span [attr.title]="title">
               <b [attr.title]="title" *ngIf="shouldRender"></b>
             </span>
-          `
+          `,
         })
         class App {
-          title: string|null = '';
+          title: string | null = '';
           shouldRender = true;
         }
 
@@ -901,7 +934,7 @@ describe('acceptance integration tests', () => {
       it('should support binding to styles', () => {
         @Component({template: '<span [style.font-size]="size"></span>'})
         class App {
-          size: string|null = '';
+          size: string | null = '';
         }
 
         TestBed.configureTestingModule({declarations: [App]});
@@ -924,7 +957,7 @@ describe('acceptance integration tests', () => {
       it('should support binding to styles with suffix', () => {
         @Component({template: '<span [style.font-size.px]="size"></span>'})
         class App {
-          size: string|number|null = '';
+          size: string | number | null = '';
         }
 
         TestBed.configureTestingModule({declarations: [App]});
@@ -1006,8 +1039,7 @@ describe('acceptance integration tests', () => {
 
       it('should apply classes properly when nodes are components', () => {
         @Component({selector: 'my-comp', template: 'Comp Content'})
-        class MyComp {
-        }
+        class MyComp {}
 
         @Component({template: '<my-comp [class.active]="value"></my-comp>'})
         class App {
@@ -1044,7 +1076,7 @@ describe('acceptance integration tests', () => {
           template: `
             <ng-template #foo>Temp Content</ng-template>
             <structural-comp [class.active]="value" [tmp]="foo"></structural-comp>
-          `
+          `,
         })
         class App {
           @ViewChild(StructuralComp) structuralComp!: StructuralComp;
@@ -1088,323 +1120,315 @@ describe('acceptance integration tests', () => {
         }
       }
 
-      it('should delegate initial classes to a [class] input binding if present on a directive on the same element',
-         () => {
-           @Component({template: '<div class="apple orange banana" DirWithClass></div>'})
-           class App {
-             @ViewChild(DirWithClassDirective) mockClassDirective!: DirWithClassDirective;
-           }
+      it('should delegate initial classes to a [class] input binding if present on a directive on the same element', () => {
+        @Component({template: '<div class="apple orange banana" DirWithClass></div>'})
+        class App {
+          @ViewChild(DirWithClassDirective) mockClassDirective!: DirWithClassDirective;
+        }
 
-           TestBed.configureTestingModule({declarations: [App, DirWithClassDirective]});
-           const fixture = TestBed.createComponent(App);
-           fixture.detectChanges();
+        TestBed.configureTestingModule({declarations: [App, DirWithClassDirective]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
 
-           // the initial values always get sorted in non VE code
-           // but there is no sorting guarantee within VE code
-           expect(fixture.componentInstance.mockClassDirective.classesVal.split(/\s+/).sort())
-               .toEqual(['apple', 'banana', 'orange']);
-         });
+        // the initial values always get sorted in non VE code
+        // but there is no sorting guarantee within VE code
+        expect(fixture.componentInstance.mockClassDirective.classesVal.split(/\s+/).sort()).toEqual(
+          ['apple', 'banana', 'orange'],
+        );
+      });
 
-      it('should delegate initial styles to a [style] input binding if present on a directive on the same element',
-         () => {
-           @Component({template: '<div style="width: 100px; height: 200px" DirWithStyle></div>'})
-           class App {
-             @ViewChild(DirWithStyleDirective) mockStyleDirective!: DirWithStyleDirective;
-           }
+      it('should delegate initial styles to a [style] input binding if present on a directive on the same element', () => {
+        @Component({template: '<div style="width: 100px; height: 200px" DirWithStyle></div>'})
+        class App {
+          @ViewChild(DirWithStyleDirective) mockStyleDirective!: DirWithStyleDirective;
+        }
 
-           TestBed.configureTestingModule({declarations: [App, DirWithStyleDirective]});
-           const fixture = TestBed.createComponent(App);
-           fixture.detectChanges();
+        TestBed.configureTestingModule({declarations: [App, DirWithStyleDirective]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
 
-           const styles = fixture.componentInstance.mockStyleDirective.stylesVal;
+        const styles = fixture.componentInstance.mockStyleDirective.stylesVal;
 
-           expect(styles).toEqual('width: 100px; height: 200px;');
-         });
+        expect(styles).toEqual('width: 100px; height: 200px;');
+      });
 
-      it('should update `[class]` and bindings in the provided directive if the input is matched',
-         () => {
-           @Component({template: '<div DirWithClass [class]="value"></div>'})
-           class App {
-             @ViewChild(DirWithClassDirective) mockClassDirective!: DirWithClassDirective;
-             value = '';
-           }
+      it('should update `[class]` and bindings in the provided directive if the input is matched', () => {
+        @Component({template: '<div DirWithClass [class]="value"></div>'})
+        class App {
+          @ViewChild(DirWithClassDirective) mockClassDirective!: DirWithClassDirective;
+          value = '';
+        }
 
-           TestBed.configureTestingModule({declarations: [App, DirWithClassDirective]});
-           const fixture = TestBed.createComponent(App);
-           fixture.componentInstance.value = 'cucumber grape';
-           fixture.detectChanges();
+        TestBed.configureTestingModule({declarations: [App, DirWithClassDirective]});
+        const fixture = TestBed.createComponent(App);
+        fixture.componentInstance.value = 'cucumber grape';
+        fixture.detectChanges();
 
-           expect(fixture.componentInstance.mockClassDirective.classesVal)
-               .toEqual('cucumber grape');
-         });
+        expect(fixture.componentInstance.mockClassDirective.classesVal).toEqual('cucumber grape');
+      });
 
-      it('should update `[style]` and bindings in the provided directive if the input is matched',
-         () => {
-           @Component({template: '<div DirWithStyle [style]="value"></div>'})
-           class App {
-             @ViewChild(DirWithStyleDirective) mockStyleDirective!: DirWithStyleDirective;
-             value!: {[key: string]: string};
-           }
+      it('should update `[style]` and bindings in the provided directive if the input is matched', () => {
+        @Component({template: '<div DirWithStyle [style]="value"></div>'})
+        class App {
+          @ViewChild(DirWithStyleDirective) mockStyleDirective!: DirWithStyleDirective;
+          value!: {[key: string]: string};
+        }
 
-           TestBed.configureTestingModule({declarations: [App, DirWithStyleDirective]});
-           const fixture = TestBed.createComponent(App);
-           fixture.componentInstance.value = {width: '200px', height: '500px'};
-           fixture.detectChanges();
+        TestBed.configureTestingModule({declarations: [App, DirWithStyleDirective]});
+        const fixture = TestBed.createComponent(App);
+        fixture.componentInstance.value = {width: '200px', height: '500px'};
+        fixture.detectChanges();
 
-           expect(fixture.componentInstance.mockStyleDirective.stylesVal)
-               .toEqual({width: '200px', height: '500px'});
-         });
+        expect(fixture.componentInstance.mockStyleDirective.stylesVal).toEqual({
+          width: '200px',
+          height: '500px',
+        });
+      });
 
-      it('should apply initial styling to the element that contains the directive with host styling',
-         () => {
-           @Directive({
-             selector: '[DirWithInitialStyling]',
-             host: {
-               'title': 'foo',
-               'class': 'heavy golden',
-               'style': 'color: purple',
-               '[style.font-weight]': '"bold"'
-             }
-           })
-           class DirWithInitialStyling {
-           }
+      it('should apply initial styling to the element that contains the directive with host styling', () => {
+        @Directive({
+          selector: '[DirWithInitialStyling]',
+          host: {
+            'title': 'foo',
+            'class': 'heavy golden',
+            'style': 'color: purple',
+            '[style.font-weight]': '"bold"',
+          },
+        })
+        class DirWithInitialStyling {}
 
-           @Component({
-             template: `
+        @Component({
+          template: `
                 <div DirWithInitialStyling
                   class="big"
                   style="color:black; font-size:200px"></div>
-             `
-           })
-           class App {
-           }
+             `,
+        })
+        class App {}
 
-           TestBed.configureTestingModule({declarations: [App, DirWithInitialStyling]});
-           const fixture = TestBed.createComponent(App);
-           fixture.detectChanges();
+        TestBed.configureTestingModule({declarations: [App, DirWithInitialStyling]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
 
-           const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
-           const classes = target.getAttribute('class')!.split(/\s+/).sort();
-           expect(classes).toEqual(['big', 'golden', 'heavy']);
+        const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
+        const classes = target.getAttribute('class')!.split(/\s+/).sort();
+        expect(classes).toEqual(['big', 'golden', 'heavy']);
 
-           expect(target.getAttribute('title')).toEqual('foo');
-           expect(target.style.getPropertyValue('color')).toEqual('black');
-           expect(target.style.getPropertyValue('font-size')).toEqual('200px');
-           expect(target.style.getPropertyValue('font-weight')).toEqual('bold');
-         });
+        expect(target.getAttribute('title')).toEqual('foo');
+        expect(target.style.getPropertyValue('color')).toEqual('black');
+        expect(target.style.getPropertyValue('font-size')).toEqual('200px');
+        expect(target.style.getPropertyValue('font-weight')).toEqual('bold');
+      });
 
-      it('should apply single styling bindings present within a directive onto the same element and defer the element\'s initial styling values when missing',
-         () => {
-           @Directive({
-             selector: '[DirWithSingleStylingBindings]',
-             host: {
-               'class': 'def',
-               '[class.xyz]': 'activateXYZClass',
-               '[style.width]': 'width',
-               '[style.height]': 'height'
-             }
-           })
-           class DirWithSingleStylingBindings {
-             width: string|null|undefined = undefined;
-             height: string|null|undefined = undefined;
-             activateXYZClass: boolean = false;
-           }
+      it("should apply single styling bindings present within a directive onto the same element and defer the element's initial styling values when missing", () => {
+        @Directive({
+          selector: '[DirWithSingleStylingBindings]',
+          host: {
+            'class': 'def',
+            '[class.xyz]': 'activateXYZClass',
+            '[style.width]': 'width',
+            '[style.height]': 'height',
+          },
+        })
+        class DirWithSingleStylingBindings {
+          width: string | null | undefined = undefined;
+          height: string | null | undefined = undefined;
+          activateXYZClass: boolean = false;
+        }
 
-           @Component({
-             template: `
+        @Component({
+          template: `
               <div DirWithSingleStylingBindings class="abc" style="width:100px;"></div>
-            `
-           })
-           class App {
-             @ViewChild(DirWithSingleStylingBindings) dirInstance!: DirWithSingleStylingBindings;
-           }
+            `,
+        })
+        class App {
+          @ViewChild(DirWithSingleStylingBindings) dirInstance!: DirWithSingleStylingBindings;
+        }
 
-           TestBed.configureTestingModule({declarations: [App, DirWithSingleStylingBindings]});
-           const fixture = TestBed.createComponent(App);
-           fixture.detectChanges();
-           const dirInstance = fixture.componentInstance.dirInstance;
-           const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
-           expect(target.style.getPropertyValue('width')).toEqual('100px');
-           expect(target.style.getPropertyValue('height')).toEqual('');
-           expect(target.classList.contains('abc')).toBeTruthy();
-           expect(target.classList.contains('def')).toBeTruthy();
-           expect(target.classList.contains('xyz')).toBeFalsy();
+        TestBed.configureTestingModule({declarations: [App, DirWithSingleStylingBindings]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const dirInstance = fixture.componentInstance.dirInstance;
+        const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
+        expect(target.style.getPropertyValue('width')).toEqual('100px');
+        expect(target.style.getPropertyValue('height')).toEqual('');
+        expect(target.classList.contains('abc')).toBeTruthy();
+        expect(target.classList.contains('def')).toBeTruthy();
+        expect(target.classList.contains('xyz')).toBeFalsy();
 
-           dirInstance.width = '444px';
-           dirInstance.height = '999px';
-           dirInstance.activateXYZClass = true;
-           fixture.detectChanges();
+        dirInstance.width = '444px';
+        dirInstance.height = '999px';
+        dirInstance.activateXYZClass = true;
+        fixture.detectChanges();
 
-           expect(target.style.getPropertyValue('width')).toEqual('100px');
-           expect(target.style.getPropertyValue('height')).toEqual('999px');
-           expect(target.classList.contains('abc')).toBeTruthy();
-           expect(target.classList.contains('def')).toBeTruthy();
-           expect(target.classList.contains('xyz')).toBeTruthy();
+        expect(target.style.getPropertyValue('width')).toEqual('100px');
+        expect(target.style.getPropertyValue('height')).toEqual('999px');
+        expect(target.classList.contains('abc')).toBeTruthy();
+        expect(target.classList.contains('def')).toBeTruthy();
+        expect(target.classList.contains('xyz')).toBeTruthy();
 
-           dirInstance.width = undefined;
-           dirInstance.height = undefined;
-           fixture.detectChanges();
+        dirInstance.width = undefined;
+        dirInstance.height = undefined;
+        fixture.detectChanges();
 
-           expect(target.style.getPropertyValue('width')).toEqual('100px');
-           expect(target.style.getPropertyValue('height')).toEqual('');
-           expect(target.classList.contains('abc')).toBeTruthy();
-           expect(target.classList.contains('def')).toBeTruthy();
-           expect(target.classList.contains('xyz')).toBeTruthy();
-         });
+        expect(target.style.getPropertyValue('width')).toEqual('100px');
+        expect(target.style.getPropertyValue('height')).toEqual('');
+        expect(target.classList.contains('abc')).toBeTruthy();
+        expect(target.classList.contains('def')).toBeTruthy();
+        expect(target.classList.contains('xyz')).toBeTruthy();
+      });
 
-      it('should properly prioritize single style binding collisions when they exist on multiple directives',
-         () => {
-           @Directive({selector: '[Dir1WithStyle]', host: {'[style.width]': 'width'}})
-           class Dir1WithStyle {
-             width: null|string|undefined = undefined;
-           }
+      it('should properly prioritize single style binding collisions when they exist on multiple directives', () => {
+        @Directive({selector: '[Dir1WithStyle]', host: {'[style.width]': 'width'}})
+        class Dir1WithStyle {
+          width: null | string | undefined = undefined;
+        }
 
-           @Directive({
-             selector: '[Dir2WithStyle]',
-             host: {'style': 'width: 111px', '[style.width]': 'width'}
-           })
-           class Dir2WithStyle {
-             width: null|string|undefined = undefined;
-           }
+        @Directive({
+          selector: '[Dir2WithStyle]',
+          host: {'style': 'width: 111px', '[style.width]': 'width'},
+        })
+        class Dir2WithStyle {
+          width: null | string | undefined = undefined;
+        }
 
-           @Component({template: '<div Dir1WithStyle Dir2WithStyle [style.width]="width"></div>'})
-           class App {
-             @ViewChild(Dir1WithStyle) dir1Instance!: Dir1WithStyle;
-             @ViewChild(Dir2WithStyle) dir2Instance!: Dir2WithStyle;
-             width: string|null|undefined = undefined;
-           }
+        @Component({template: '<div Dir1WithStyle Dir2WithStyle [style.width]="width"></div>'})
+        class App {
+          @ViewChild(Dir1WithStyle) dir1Instance!: Dir1WithStyle;
+          @ViewChild(Dir2WithStyle) dir2Instance!: Dir2WithStyle;
+          width: string | null | undefined = undefined;
+        }
 
-           TestBed.configureTestingModule({declarations: [App, Dir2WithStyle, Dir1WithStyle]});
-           const fixture = TestBed.createComponent(App);
-           fixture.detectChanges();
-           const {dir1Instance, dir2Instance} = fixture.componentInstance;
+        TestBed.configureTestingModule({declarations: [App, Dir2WithStyle, Dir1WithStyle]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const {dir1Instance, dir2Instance} = fixture.componentInstance;
 
-           const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
-           expect(target.style.getPropertyValue('width')).toEqual('111px');
+        const target: HTMLDivElement = fixture.nativeElement.querySelector('div');
+        expect(target.style.getPropertyValue('width')).toEqual('111px');
 
-           fixture.componentInstance.width = '999px';
-           dir1Instance.width = '222px';
-           dir2Instance.width = '333px';
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('999px');
+        fixture.componentInstance.width = '999px';
+        dir1Instance.width = '222px';
+        dir2Instance.width = '333px';
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('999px');
 
-           fixture.componentInstance.width = undefined;
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('222px');
+        fixture.componentInstance.width = undefined;
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('222px');
 
-           dir1Instance.width = undefined;
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('333px');
+        dir1Instance.width = undefined;
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('333px');
 
-           dir2Instance.width = undefined;
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('111px');
+        dir2Instance.width = undefined;
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('111px');
 
-           dir1Instance.width = '666px';
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('666px');
+        dir1Instance.width = '666px';
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('666px');
 
-           fixture.componentInstance.width = '777px';
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('777px');
-         });
+        fixture.componentInstance.width = '777px';
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('777px');
+      });
 
-      it('should properly prioritize multi style binding collisions when they exist on multiple directives',
-         () => {
-           @Directive({
-             selector: '[Dir1WithStyling]',
-             host: {'[style]': 'stylesExp', '[class]': 'classesExp'}
-           })
-           class Dir1WithStyling {
-             classesExp: any = {};
-             stylesExp: any = {};
-           }
+      it('should properly prioritize multi style binding collisions when they exist on multiple directives', () => {
+        @Directive({
+          selector: '[Dir1WithStyling]',
+          host: {'[style]': 'stylesExp', '[class]': 'classesExp'},
+        })
+        class Dir1WithStyling {
+          classesExp: any = {};
+          stylesExp: any = {};
+        }
 
-           @Directive({
-             selector: '[Dir2WithStyling]',
-             host: {'style': 'width: 111px', '[style]': 'stylesExp'}
-           })
-           class Dir2WithStyling {
-             stylesExp: any = {};
-           }
+        @Directive({
+          selector: '[Dir2WithStyling]',
+          host: {'style': 'width: 111px', '[style]': 'stylesExp'},
+        })
+        class Dir2WithStyling {
+          stylesExp: any = {};
+        }
 
-           @Component({
-             template:
-                 '<div Dir1WithStyling Dir2WithStyling [style]="stylesExp" [class]="classesExp"></div>'
-           })
-           class App {
-             @ViewChild(Dir1WithStyling) dir1Instance!: Dir1WithStyling;
-             @ViewChild(Dir2WithStyling) dir2Instance!: Dir2WithStyling;
-             stylesExp: any = {};
-             classesExp: any = {};
-           }
+        @Component({
+          template:
+            '<div Dir1WithStyling Dir2WithStyling [style]="stylesExp" [class]="classesExp"></div>',
+        })
+        class App {
+          @ViewChild(Dir1WithStyling) dir1Instance!: Dir1WithStyling;
+          @ViewChild(Dir2WithStyling) dir2Instance!: Dir2WithStyling;
+          stylesExp: any = {};
+          classesExp: any = {};
+        }
 
-           TestBed.configureTestingModule({declarations: [App, Dir2WithStyling, Dir1WithStyling]});
-           const fixture = TestBed.createComponent(App);
-           fixture.detectChanges();
-           const {dir1Instance, dir2Instance} = fixture.componentInstance;
+        TestBed.configureTestingModule({declarations: [App, Dir2WithStyling, Dir1WithStyling]});
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const {dir1Instance, dir2Instance} = fixture.componentInstance;
 
-           const target = fixture.nativeElement.querySelector('div')!;
-           expect(target.style.getPropertyValue('width')).toEqual('111px');
+        const target = fixture.nativeElement.querySelector('div')!;
+        expect(target.style.getPropertyValue('width')).toEqual('111px');
 
-           const compInstance = fixture.componentInstance;
-           compInstance.stylesExp = {width: '999px', height: undefined};
-           compInstance.classesExp = {one: true, two: false};
-           dir1Instance.stylesExp = {width: '222px'};
-           dir1Instance.classesExp = {two: true, three: false};
-           dir2Instance.stylesExp = {width: '333px', height: '100px'};
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('999px');
-           expect(target.style.getPropertyValue('height')).toEqual('100px');
-           expect(target.classList.contains('one')).toBeTruthy();
-           expect(target.classList.contains('two')).toBeFalsy();
-           expect(target.classList.contains('three')).toBeFalsy();
+        const compInstance = fixture.componentInstance;
+        compInstance.stylesExp = {width: '999px', height: undefined};
+        compInstance.classesExp = {one: true, two: false};
+        dir1Instance.stylesExp = {width: '222px'};
+        dir1Instance.classesExp = {two: true, three: false};
+        dir2Instance.stylesExp = {width: '333px', height: '100px'};
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('999px');
+        expect(target.style.getPropertyValue('height')).toEqual('100px');
+        expect(target.classList.contains('one')).toBeTruthy();
+        expect(target.classList.contains('two')).toBeFalsy();
+        expect(target.classList.contains('three')).toBeFalsy();
 
-           compInstance.stylesExp = {};
-           compInstance.classesExp = {};
-           dir1Instance.stylesExp = {width: '222px', height: '200px'};
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('222px');
-           expect(target.style.getPropertyValue('height')).toEqual('200px');
-           expect(target.classList.contains('one')).toBeFalsy();
-           expect(target.classList.contains('two')).toBeTruthy();
-           expect(target.classList.contains('three')).toBeFalsy();
+        compInstance.stylesExp = {};
+        compInstance.classesExp = {};
+        dir1Instance.stylesExp = {width: '222px', height: '200px'};
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('222px');
+        expect(target.style.getPropertyValue('height')).toEqual('200px');
+        expect(target.classList.contains('one')).toBeFalsy();
+        expect(target.classList.contains('two')).toBeTruthy();
+        expect(target.classList.contains('three')).toBeFalsy();
 
-           dir1Instance.stylesExp = {};
-           dir1Instance.classesExp = {};
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('333px');
-           expect(target.style.getPropertyValue('height')).toEqual('100px');
-           expect(target.classList.contains('one')).toBeFalsy();
-           expect(target.classList.contains('two')).toBeFalsy();
-           expect(target.classList.contains('three')).toBeFalsy();
+        dir1Instance.stylesExp = {};
+        dir1Instance.classesExp = {};
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('333px');
+        expect(target.style.getPropertyValue('height')).toEqual('100px');
+        expect(target.classList.contains('one')).toBeFalsy();
+        expect(target.classList.contains('two')).toBeFalsy();
+        expect(target.classList.contains('three')).toBeFalsy();
 
-           dir2Instance.stylesExp = {};
-           compInstance.stylesExp = {height: '900px'};
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('111px');
-           expect(target.style.getPropertyValue('height')).toEqual('900px');
+        dir2Instance.stylesExp = {};
+        compInstance.stylesExp = {height: '900px'};
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('111px');
+        expect(target.style.getPropertyValue('height')).toEqual('900px');
 
-           dir1Instance.stylesExp = {width: '666px', height: '600px'};
-           dir1Instance.classesExp = {four: true, one: true};
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('666px');
-           expect(target.style.getPropertyValue('height')).toEqual('900px');
-           expect(target.classList.contains('one')).toBeTruthy();
-           expect(target.classList.contains('two')).toBeFalsy();
-           expect(target.classList.contains('three')).toBeFalsy();
-           expect(target.classList.contains('four')).toBeTruthy();
+        dir1Instance.stylesExp = {width: '666px', height: '600px'};
+        dir1Instance.classesExp = {four: true, one: true};
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('666px');
+        expect(target.style.getPropertyValue('height')).toEqual('900px');
+        expect(target.classList.contains('one')).toBeTruthy();
+        expect(target.classList.contains('two')).toBeFalsy();
+        expect(target.classList.contains('three')).toBeFalsy();
+        expect(target.classList.contains('four')).toBeTruthy();
 
-           compInstance.stylesExp = {width: '777px'};
-           compInstance.classesExp = {four: false};
-           fixture.detectChanges();
-           expect(target.style.getPropertyValue('width')).toEqual('777px');
-           expect(target.style.getPropertyValue('height')).toEqual('600px');
-           expect(target.classList.contains('one')).toBeTruthy();
-           expect(target.classList.contains('two')).toBeFalsy();
-           expect(target.classList.contains('three')).toBeFalsy();
-           expect(target.classList.contains('four')).toBeFalsy();
-         });
+        compInstance.stylesExp = {width: '777px'};
+        compInstance.classesExp = {four: false};
+        fixture.detectChanges();
+        expect(target.style.getPropertyValue('width')).toEqual('777px');
+        expect(target.style.getPropertyValue('height')).toEqual('600px');
+        expect(target.classList.contains('one')).toBeTruthy();
+        expect(target.classList.contains('two')).toBeFalsy();
+        expect(target.classList.contains('three')).toBeFalsy();
+        expect(target.classList.contains('four')).toBeFalsy();
+      });
     });
 
     it('should properly handle and render interpolation for class attribute bindings', () => {
@@ -1431,12 +1455,10 @@ describe('acceptance integration tests', () => {
   describe('NgModule assertions', () => {
     it('should throw with descriptive error message when a module imports itself', () => {
       @Component({template: ''})
-      class FixtureComponent {
-      }
+      class FixtureComponent {}
 
       @NgModule({imports: [SomeModule], declarations: [FixtureComponent]})
-      class SomeModule {
-      }
+      class SomeModule {}
       expect(() => {
         TestBed.configureTestingModule({imports: [SomeModule]}).createComponent(FixtureComponent);
       }).toThrowError(`'SomeModule' module can't import itself`);
@@ -1444,100 +1466,88 @@ describe('acceptance integration tests', () => {
 
     it('should throw with descriptive error message when a directive is passed to imports', () => {
       @Component({template: ''})
-      class SomeComponent {
-      }
+      class SomeComponent {}
 
       @NgModule({imports: [SomeComponent]})
-      class ModuleWithImportedComponent {
-      }
+      class ModuleWithImportedComponent {}
       expect(() => {
-        TestBed.configureTestingModule({imports: [ModuleWithImportedComponent]})
-            .createComponent(SomeComponent);
-      })
-          .toThrowError(
-              /^Unexpected directive 'SomeComponent' imported by the module 'ModuleWithImportedComponent'\. Please add an @NgModule annotation\.$/);
+        TestBed.configureTestingModule({imports: [ModuleWithImportedComponent]}).createComponent(
+          SomeComponent,
+        );
+      }).toThrowError(
+        /^Unexpected directive 'SomeComponent' imported by the module 'ModuleWithImportedComponent'\. Please add an @NgModule annotation\.$/,
+      );
     });
 
     it('should throw with descriptive error message when a pipe is passed to imports', () => {
       @Component({template: ''})
-      class FixtureComponent {
-      }
+      class FixtureComponent {}
       @Pipe({name: 'somePipe'})
-      class SomePipe {
-      }
+      class SomePipe {}
       @NgModule({imports: [SomePipe], declarations: [FixtureComponent]})
-      class ModuleWithImportedPipe {
-      }
+      class ModuleWithImportedPipe {}
       expect(() => {
-        TestBed.configureTestingModule({imports: [ModuleWithImportedPipe]})
-            .createComponent(FixtureComponent);
-      })
-          .toThrowError(
-              /^Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'\. Please add an @NgModule annotation\.$/);
+        TestBed.configureTestingModule({imports: [ModuleWithImportedPipe]}).createComponent(
+          FixtureComponent,
+        );
+      }).toThrowError(
+        /^Unexpected pipe 'SomePipe' imported by the module 'ModuleWithImportedPipe'\. Please add an @NgModule annotation\.$/,
+      );
     });
 
     it('should throw with descriptive error message when a module is passed to declarations', () => {
       @Component({template: ''})
-      class FixtureComponent {
-      }
+      class FixtureComponent {}
       @NgModule({})
-      class SomeModule {
-      }
+      class SomeModule {}
       @NgModule({declarations: [SomeModule, FixtureComponent]})
-      class ModuleWithDeclaredModule {
-      }
+      class ModuleWithDeclaredModule {}
 
-      const expectedErrorMessage =
-          `Unexpected value 'SomeModule' declared by the module 'ModuleWithDeclaredModule'. Please add a @Pipe/@Directive/@Component annotation.`;
+      const expectedErrorMessage = `Unexpected value 'SomeModule' declared by the module 'ModuleWithDeclaredModule'. Please add a @Pipe/@Directive/@Component annotation.`;
 
       expect(() => {
-        TestBed.configureTestingModule({imports: [ModuleWithDeclaredModule]})
-            .createComponent(FixtureComponent);
+        TestBed.configureTestingModule({imports: [ModuleWithDeclaredModule]}).createComponent(
+          FixtureComponent,
+        );
       }).toThrowError(expectedErrorMessage);
     });
 
     it('should throw with descriptive error message when a declaration is missing annotation', () => {
       @Component({template: ''})
-      class FixtureComponent {
-      }
+      class FixtureComponent {}
       class SomeClass {}
       @NgModule({declarations: [SomeClass, FixtureComponent]})
-      class SomeModule {
-      }
+      class SomeModule {}
       expect(() => {
         TestBed.configureTestingModule({imports: [SomeModule]}).createComponent(FixtureComponent);
-      })
-          .toThrowError(
-              `Unexpected value 'SomeClass' declared by the module 'SomeModule'. Please add a @Pipe/@Directive/@Component annotation.`);
+      }).toThrowError(
+        `Unexpected value 'SomeClass' declared by the module 'SomeModule'. Please add a @Pipe/@Directive/@Component annotation.`,
+      );
     });
 
-    it('should throw with descriptive error message when an imported module is missing annotation',
-       () => {
-         @Component({template: ''})
-         class FixtureComponent {
-         }
-         class SomeModule {}
-         @NgModule({imports: [SomeModule], declarations: [FixtureComponent]})
-         class ModuleWithImportedModule {
-         }
-         expect(() => {
-           TestBed.configureTestingModule({imports: [ModuleWithImportedModule]})
-               .createComponent(FixtureComponent);
-         })
-             .toThrowError(
-                 /^Unexpected value 'SomeModule' imported by the module 'ModuleWithImportedModule'\. Please add an @NgModule annotation\.$/);
-       });
+    it('should throw with descriptive error message when an imported module is missing annotation', () => {
+      @Component({template: ''})
+      class FixtureComponent {}
+      class SomeModule {}
+      @NgModule({imports: [SomeModule], declarations: [FixtureComponent]})
+      class ModuleWithImportedModule {}
+      expect(() => {
+        TestBed.configureTestingModule({imports: [ModuleWithImportedModule]}).createComponent(
+          FixtureComponent,
+        );
+      }).toThrowError(
+        /^Unexpected value 'SomeModule' imported by the module 'ModuleWithImportedModule'\. Please add an @NgModule annotation\.$/,
+      );
+    });
   });
 
   describe('self-closing tags', () => {
     it('should allow a self-closing tag for a custom tag name', () => {
       @Component({selector: 'my-comp', template: 'hello'})
-      class MyComp {
-      }
+      class MyComp {}
 
       @Component({template: '<my-comp/>'})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, MyComp]});
       const fixture = TestBed.createComponent(App);
@@ -1547,18 +1557,17 @@ describe('acceptance integration tests', () => {
 
     it('should not confuse self-closing tag for an end tag', () => {
       @Component({selector: 'my-comp', template: '<ng-content/>'})
-      class MyComp {
-      }
+      class MyComp {}
 
       @Component({template: '<my-comp title="a">Before<my-comp title="b"/>After</my-comp>'})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, MyComp]});
       const fixture = TestBed.createComponent(App);
 
-      expect(fixture.nativeElement.innerHTML)
-          .toEqual('<my-comp title="a">Before<my-comp title="b"></my-comp>After</my-comp>');
+      expect(fixture.nativeElement.innerHTML).toEqual(
+        '<my-comp title="a">Before<my-comp title="b"></my-comp>After</my-comp>',
+      );
     });
   });
 
@@ -1574,12 +1583,10 @@ describe('acceptance integration tests', () => {
     }
 
     @Component({selector: 'button[custom-button]', template: ''})
-    class ButtonSubClass extends ButtonSuperClass {
-    }
+    class ButtonSubClass extends ButtonSuperClass {}
 
     @Component({template: '<button custom-button></button>'})
-    class MyApp {
-    }
+    class MyApp {}
 
     TestBed.configureTestingModule({declarations: [MyApp, ButtonSuperClass, ButtonSubClass]});
     const fixture = TestBed.createComponent(MyApp);
@@ -1594,8 +1601,7 @@ describe('acceptance integration tests', () => {
 
   it('should support inherited view queries', () => {
     @Directive({selector: '[someDir]'})
-    class SomeDir {
-    }
+    class SomeDir {}
 
     @Component({template: '<div someDir></div>'})
     class SuperComp {
@@ -1603,12 +1609,10 @@ describe('acceptance integration tests', () => {
     }
 
     @Component({selector: 'button[custom-button]', template: '<div someDir></div>'})
-    class SubComp extends SuperComp {
-    }
+    class SubComp extends SuperComp {}
 
     @Component({template: '<button custom-button></button>'})
-    class MyApp {
-    }
+    class MyApp {}
 
     TestBed.configureTestingModule({declarations: [MyApp, SuperComp, SubComp, SomeDir]});
     const fixture = TestBed.createComponent(MyApp);
@@ -1660,8 +1664,11 @@ describe('acceptance integration tests', () => {
   });
 
   it('should support host attribute and @ContentChild on the same component', () => {
-    @Component(
-        {selector: 'test-component', template: `foo`, host: {'[attr.aria-disabled]': 'true'}})
+    @Component({
+      selector: 'test-component',
+      template: `foo`,
+      host: {'[attr.aria-disabled]': 'true'},
+    })
     class TestComponent {
       @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;
     }
@@ -1680,8 +1687,7 @@ describe('acceptance integration tests', () => {
     }
 
     @Component({selector: 'button[custom-button]', template: ''})
-    class ButtonSubClass extends ButtonSuperClass {
-    }
+    class ButtonSubClass extends ButtonSuperClass {}
 
     @Component({template: '<button custom-button [isDisabled]="disableButton"></button>'})
     class MyApp {
@@ -1712,8 +1718,7 @@ describe('acceptance integration tests', () => {
     }
 
     @Component({selector: 'button[custom-button]', template: ''})
-    class ButtonSubClass extends ButtonSuperClass {
-    }
+    class ButtonSubClass extends ButtonSuperClass {}
 
     @Component({template: '<button custom-button (clicked)="handleClick()"></button>'})
     class MyApp {
@@ -1738,12 +1743,10 @@ describe('acceptance integration tests', () => {
     }
 
     @Component({selector: '[sub-button]', template: '<ng-content></ng-content>'})
-    class SubButton extends BaseButton {
-    }
+    class SubButton extends BaseButton {}
 
     @Component({template: '<button sub-button>Click me</button>'})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({declarations: [SubButton, App]});
     const fixture = TestBed.createComponent(App);
@@ -1766,12 +1769,10 @@ describe('acceptance integration tests', () => {
     class BaseButton extends SuperBaseButton {}
 
     @Component({selector: '[sub-button]', template: '<ng-content></ng-content>'})
-    class SubButton extends BaseButton {
-    }
+    class SubButton extends BaseButton {}
 
     @Component({template: '<button sub-button>Click me</button>'})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({declarations: [SubButton, App]});
     const fixture = TestBed.createComponent(App);
@@ -1797,12 +1798,10 @@ describe('acceptance integration tests', () => {
     }
 
     @Component({selector: '[sub-button]', template: '<ng-content></ng-content>'})
-    class SubButton extends BaseButton {
-    }
+    class SubButton extends BaseButton {}
 
     @Component({template: '<button sub-button>Click me</button>'})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({declarations: [SubButton, App]});
     const fixture = TestBed.createComponent(App);
@@ -1826,12 +1825,10 @@ describe('acceptance integration tests', () => {
     }
 
     @Component({selector: '[subButton]', template: '<ng-content></ng-content>'})
-    class SubButton extends BaseButton {
-    }
+    class SubButton extends BaseButton {}
 
     @Component({template: '<button subButton>Click me</button>'})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({declarations: [SubButton, BaseButton, App]});
     const fixture = TestBed.createComponent(App);
@@ -1855,16 +1852,13 @@ describe('acceptance integration tests', () => {
     }
 
     @Directive({selector: '[baseButton]'})
-    class BaseButton extends SuperBaseButton {
-    }
+    class BaseButton extends SuperBaseButton {}
 
     @Component({selector: '[subButton]', template: '<ng-content></ng-content>'})
-    class SubButton extends BaseButton {
-    }
+    class SubButton extends BaseButton {}
 
     @Component({template: '<button subButton>Click me</button>'})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({declarations: [SubButton, SuperBaseButton, BaseButton, App]});
     const fixture = TestBed.createComponent(App);
@@ -1888,23 +1882,20 @@ describe('acceptance integration tests', () => {
     }
 
     @Directive({selector: '[superBaseButton]'})
-    class SuperBaseButton extends SuperSuperBaseButton {
-    }
+    class SuperBaseButton extends SuperSuperBaseButton {}
 
     @Directive({selector: '[baseButton]'})
-    class BaseButton extends SuperBaseButton {
-    }
+    class BaseButton extends SuperBaseButton {}
 
     @Component({selector: '[subButton]', template: '<ng-content></ng-content>'})
-    class SubButton extends BaseButton {
-    }
+    class SubButton extends BaseButton {}
 
     @Component({template: '<button subButton>Click me</button>'})
-    class App {
-    }
+    class App {}
 
-    TestBed.configureTestingModule(
-        {declarations: [SubButton, SuperBaseButton, SuperSuperBaseButton, BaseButton, App]});
+    TestBed.configureTestingModule({
+      declarations: [SubButton, SuperBaseButton, SuperSuperBaseButton, BaseButton, App],
+    });
     const fixture = TestBed.createComponent(App);
     const button = fixture.debugElement.query(By.directive(SubButton)).nativeElement;
 
@@ -1956,11 +1947,11 @@ describe('acceptance integration tests', () => {
           Hello, {{ firstName ?? 'Frodo' }}!
           You are a Balrog: {{ falsyValue ?? true }}
         </span>
-      `
+      `,
     })
     class App {
-      firstName: string|null = null;
-      lastName: string|null = null;
+      firstName: string | null = null;
+      lastName: string | null = null;
       lastNameFallback = 'Baggins';
       falsyValue = false;
     }
@@ -1984,10 +1975,10 @@ describe('acceptance integration tests', () => {
         You are an Elf: {{ speciesMap?.[keys?.[0] ?? 'key'] }}
         You are an Orc: {{ speciesMap?.['key'] }}
       </span>
-    `
+    `,
     })
     class App {
-      unknownNames: string[]|null = null;
+      unknownNames: string[] | null = null;
       knownNames: string[][] = [['Frodo', 'Bilbo']];
       species = null;
       keys = null;
@@ -2012,13 +2003,13 @@ describe('acceptance integration tests', () => {
           Hello, {{ person.getName?.() }}!
           You are a Balrog: {{ person.getSpecies?.()?.()?.()?.()?.() || 'unknown' }}
         </span>
-      `
+      `,
     })
     class App {
       person: {
-        getName: () => string,
-        getLastName?: () => string,
-        getSpecies?: () => () => () => () => () => string,
+        getName: () => string;
+        getLastName?: () => string;
+        getSpecies?: () => () => () => () => () => string;
       } = {getName: () => 'Bilbo'};
     }
 
@@ -2065,12 +2056,12 @@ describe('acceptance integration tests', () => {
       selector: '[some-dir]',
       host: {
         '[attr.first-name]': `'Hello, ' + (firstName ?? 'Frodo') + '!'`,
-        '(click)': `logLastName(lastName ?? lastNameFallback ?? 'unknown')`
-      }
+        '(click)': `logLastName(lastName ?? lastNameFallback ?? 'unknown')`,
+      },
     })
     class Dir {
-      firstName: string|null = null;
-      lastName: string|null = null;
+      firstName: string | null = null;
+      lastName: string | null = null;
       lastNameFallback = 'Baggins';
 
       logLastName(name: string) {
@@ -2079,8 +2070,7 @@ describe('acceptance integration tests', () => {
     }
 
     @Component({template: `<button some-dir>Click me</button>`})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({declarations: [App, Dir]});
     const fixture = TestBed.createComponent(App);
@@ -2151,7 +2141,7 @@ describe('acceptance integration tests', () => {
     @Component({
       template: `
       <span>Hello, {{ (person?.getName() || 'unknown') }}!</span>
-    `
+    `,
     })
     class App {
       person = null;
@@ -2168,9 +2158,12 @@ describe('acceptance integration tests', () => {
     const log: string[] = [];
 
     class Person {
-      constructor(public name: string, public title: string) {}
+      constructor(
+        public name: string,
+        public title: string,
+      ) {}
 
-      getName(includeTitle: boolean|undefined) {
+      getName(includeTitle: boolean | undefined) {
         log.push(`person.getName(${includeTitle})`);
         return includeTitle ? `${this.title} ${this.name}` : this.name;
       }
@@ -2179,13 +2172,13 @@ describe('acceptance integration tests', () => {
     @Component({
       template: `
       <span>Hello, {{ (person?.getName(getConfig('showTitle')?.enabled ?? getDefaultShowTitle()) ?? getFallbackName()) }}!</span>
-    `
+    `,
     })
     class App {
-      person: Person|null = null;
-      showTitle: boolean|null = null;
+      person: Person | null = null;
+      showTitle: boolean | null = null;
 
-      getConfig(name: string): {enabled: boolean}|null {
+      getConfig(name: string): {enabled: boolean} | null {
         log.push(`getConfig(${name})`);
         return this.showTitle !== null ? {enabled: this.showTitle} : null;
       }
@@ -2229,16 +2222,13 @@ describe('acceptance integration tests', () => {
 
   it('should remove child LView from the registry when the root view is destroyed', () => {
     @Component({template: '<child></child>'})
-    class App {
-    }
+    class App {}
 
     @Component({selector: 'child', template: '<grand-child></grand-child>'})
-    class Child {
-    }
+    class Child {}
 
     @Component({selector: 'grand-child', template: ''})
-    class GrandChild {
-    }
+    class GrandChild {}
 
     TestBed.configureTestingModule({declarations: [App, Child, GrandChild]});
     const fixture = TestBed.createComponent(App);
@@ -2246,7 +2236,7 @@ describe('acceptance integration tests', () => {
     fixture.detectChanges();
     const leafLView = readPatchedLView(grandChild)!;
     const lViewIds: number[] = [];
-    let current: LView|LContainer|null = leafLView;
+    let current: LView | LContainer | null = leafLView;
 
     while (current) {
       isLView(current) && lViewIds.push(current[ID]);
@@ -2255,7 +2245,7 @@ describe('acceptance integration tests', () => {
 
     // We expect 3 views: `GrandChild`, `Child` and `App`.
     expect(lViewIds).toEqual([leafLView[ID], leafLView[ID] - 1, leafLView[ID] - 2]);
-    expect(lViewIds.every(id => getLViewById(id) !== null)).toBe(true);
+    expect(lViewIds.every((id) => getLViewById(id) !== null)).toBe(true);
 
     fixture.destroy();
 
@@ -2265,8 +2255,7 @@ describe('acceptance integration tests', () => {
 
   it('should handle content inside <template> elements', () => {
     @Component({template: '<template><strong>Hello</strong><em>World</em></template>'})
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
@@ -2364,95 +2353,92 @@ describe('acceptance integration tests', () => {
       expect(element.getAttribute('data-dir')).toEqual(value);
     }
 
-    it('should be marked with `firstUpdatePass` up until the template and host bindings are evaluated',
-       () => {
-         @Directive({
-           selector: '[dir]',
-         })
-         class Dir {
-           @HostBinding('attr.data-dir')
-           get text() {
-             return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
-           }
-         }
+    it('should be marked with `firstUpdatePass` up until the template and host bindings are evaluated', () => {
+      @Directive({
+        selector: '[dir]',
+      })
+      class Dir {
+        @HostBinding('attr.data-dir')
+        get text() {
+          return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+        }
+      }
 
-         @Component({
-           template: '<div [attr.data-comp]="text" dir></div>',
-         })
-         class Cmp {
-           get text() {
-             return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
-           }
-         }
+      @Component({
+        template: '<div [attr.data-comp]="text" dir></div>',
+      })
+      class Cmp {
+        get text() {
+          return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+        }
+      }
 
-         TestBed.configureTestingModule({
-           declarations: [Cmp, Dir],
-         });
-         const fixture = TestBed.createComponent(Cmp);
-         fixture.detectChanges(false);
-         const element = fixture.nativeElement.querySelector('div')!;
+      TestBed.configureTestingModule({
+        declarations: [Cmp, Dir],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges(false);
+      const element = fixture.nativeElement.querySelector('div')!;
 
-         assertAttrValues(element, 'first-update-pass');
+      assertAttrValues(element, 'first-update-pass');
 
-         fixture.detectChanges(false);
+      fixture.detectChanges(false);
 
-         assertAttrValues(element, 'post-update-pass');
-       });
+      assertAttrValues(element, 'post-update-pass');
+    });
 
-    it('tView.firstUpdatePass should be applied immediately after the first embedded view is processed',
-       () => {
-         @Directive({
-           selector: '[dir]',
-         })
-         class Dir {
-           @HostBinding('attr.data-dir')
-           get text() {
-             return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
-           }
-         }
+    it('tView.firstUpdatePass should be applied immediately after the first embedded view is processed', () => {
+      @Directive({
+        selector: '[dir]',
+      })
+      class Dir {
+        @HostBinding('attr.data-dir')
+        get text() {
+          return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+        }
+      }
 
-         @Component({
-           template: `
+      @Component({
+        template: `
           <div *ngFor="let item of items" dir [attr.data-comp]="text">
             ...
           </div>
-        `
-         })
-         class Cmp {
-           items = [1, 2, 3];
-           get text() {
-             return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
-           }
-         }
+        `,
+      })
+      class Cmp {
+        items = [1, 2, 3];
+        get text() {
+          return isFirstUpdatePass() ? 'first-update-pass' : 'post-update-pass';
+        }
+      }
 
-         TestBed.configureTestingModule({
-           declarations: [Cmp, Dir],
-         });
-         const fixture = TestBed.createComponent(Cmp);
-         fixture.detectChanges(false);
+      TestBed.configureTestingModule({
+        declarations: [Cmp, Dir],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges(false);
 
-         const elements = fixture.nativeElement.querySelectorAll('div');
-         assertAttrValues(elements[0], 'first-update-pass');
-         assertAttrValues(elements[1], 'post-update-pass');
-         assertAttrValues(elements[2], 'post-update-pass');
+      const elements = fixture.nativeElement.querySelectorAll('div');
+      assertAttrValues(elements[0], 'first-update-pass');
+      assertAttrValues(elements[1], 'post-update-pass');
+      assertAttrValues(elements[2], 'post-update-pass');
 
-         fixture.detectChanges(false);
-         assertAttrValues(elements[0], 'post-update-pass');
-         assertAttrValues(elements[1], 'post-update-pass');
-         assertAttrValues(elements[2], 'post-update-pass');
-       });
+      fixture.detectChanges(false);
+      assertAttrValues(elements[0], 'post-update-pass');
+      assertAttrValues(elements[1], 'post-update-pass');
+      assertAttrValues(elements[2], 'post-update-pass');
+    });
   });
 
   describe('animations', () => {
-    it('should apply triggers for a list of items when they are sorted and reSorted',
-       fakeAsync(() => {
-         interface Item {
-           value: any;
-           id: number;
-         }
+    it('should apply triggers for a list of items when they are sorted and reSorted', fakeAsync(() => {
+      interface Item {
+        value: any;
+        id: number;
+      }
 
-         @Component({
-           template: `
+      @Component({
+        template: `
           <div *ngIf="showWarningMessage; else listOfItems">
             Nooo!
           </div>
@@ -2462,98 +2448,91 @@ describe('acceptance integration tests', () => {
               {{ item.value }}
             </animation-comp>
           </ng-template>
-        `
-         })
-         class Cmp {
-           showWarningMessage = false;
+        `,
+      })
+      class Cmp {
+        showWarningMessage = false;
 
-           items: Item[] = [
-             {value: 1, id: 1},
-             {value: 2, id: 2},
-             {value: 3, id: 3},
-             {value: 4, id: 4},
-             {value: 5, id: 5},
-           ];
+        items: Item[] = [
+          {value: 1, id: 1},
+          {value: 2, id: 2},
+          {value: 3, id: 3},
+          {value: 4, id: 4},
+          {value: 5, id: 5},
+        ];
 
-           itemTrackFn(value: Item) {
-             return value.id;
-           }
-         }
+        itemTrackFn(value: Item) {
+          return value.id;
+        }
+      }
 
-         @Component({
-           selector: 'animation-comp',
-           animations: [
-             trigger(
-                 'host',
-                 [
-                   state('void', style({height: '0px'})),
-                   transition(
-                       '* => *',
-                       [
-                         animate('1s'),
-                       ]),
-                 ]),
-           ],
-           template: `
+      @Component({
+        selector: 'animation-comp',
+        animations: [
+          trigger('host', [
+            state('void', style({height: '0px'})),
+            transition('* => *', [animate('1s')]),
+          ]),
+        ],
+        template: `
                   <ng-content></ng-content>
-                `
-         })
-         class AnimationComp {
-           @HostBinding('@host') public hostState = '';
+                `,
+      })
+      class AnimationComp {
+        @HostBinding('@host') public hostState = '';
 
-           @HostListener('@host.start', ['$event'])
-           onLeaveStart(event: AnimationEvent) {
-             // we just want to register the listener
-           }
-         }
+        @HostListener('@host.start', ['$event'])
+        onLeaveStart(event: AnimationEvent) {
+          // we just want to register the listener
+        }
+      }
 
-         TestBed.configureTestingModule({
-           declarations: [Cmp, AnimationComp],
-           providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
-         });
-         const fixture = TestBed.createComponent(Cmp);
-         fixture.detectChanges();
+      TestBed.configureTestingModule({
+        declarations: [Cmp, AnimationComp],
+        providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
 
-         let elements = queryAll(fixture.nativeElement, 'animation-comp');
-         expect(elements.length).toEqual(5);
-         expect(elements.map(e => e.textContent?.trim())).toEqual(['1', '2', '3', '4', '5']);
+      let elements = queryAll(fixture.nativeElement, 'animation-comp');
+      expect(elements.length).toEqual(5);
+      expect(elements.map((e) => e.textContent?.trim())).toEqual(['1', '2', '3', '4', '5']);
 
-         const items = fixture.componentInstance.items;
-         arraySwap(items, 2, 0);  // 3 2 1 4 5
-         arraySwap(items, 2, 1);  // 3 1 2 4 5
-         const first = items.shift()!;
-         items.push(first);  // 1 2 4 5 3
-         fixture.detectChanges();
+      const items = fixture.componentInstance.items;
+      arraySwap(items, 2, 0); // 3 2 1 4 5
+      arraySwap(items, 2, 1); // 3 1 2 4 5
+      const first = items.shift()!;
+      items.push(first); // 1 2 4 5 3
+      fixture.detectChanges();
 
-         elements = queryAll(fixture.nativeElement, 'animation-comp');
-         expect(elements.length).toEqual(5);
-         expect(elements.map(e => e.textContent?.trim())).toEqual(['1', '2', '4', '5', '3']);
-         completeAnimations();
+      elements = queryAll(fixture.nativeElement, 'animation-comp');
+      expect(elements.length).toEqual(5);
+      expect(elements.map((e) => e.textContent?.trim())).toEqual(['1', '2', '4', '5', '3']);
+      completeAnimations();
 
-         fixture.componentInstance.showWarningMessage = true;
-         fixture.detectChanges();
-         completeAnimations();
+      fixture.componentInstance.showWarningMessage = true;
+      fixture.detectChanges();
+      completeAnimations();
 
-         elements = queryAll(fixture.nativeElement, 'animation-comp');
-         expect(elements.length).toEqual(0);
-         expect(fixture.nativeElement.textContent.trim()).toEqual('Nooo!');
+      elements = queryAll(fixture.nativeElement, 'animation-comp');
+      expect(elements.length).toEqual(0);
+      expect(fixture.nativeElement.textContent.trim()).toEqual('Nooo!');
 
-         fixture.componentInstance.showWarningMessage = false;
-         fixture.detectChanges();
+      fixture.componentInstance.showWarningMessage = false;
+      fixture.detectChanges();
 
-         elements = queryAll(fixture.nativeElement, 'animation-comp');
-         expect(elements.length).toEqual(5);
-       }));
+      elements = queryAll(fixture.nativeElement, 'animation-comp');
+      expect(elements.length).toEqual(5);
+    }));
 
-    it('should insert and remove views in the correct order when animations are present',
-       fakeAsync(() => {
-         @Component({
-           animations: [
-             trigger('root', [transition('* => *', [])]),
-             trigger('outer', [transition('* => *', [])]),
-             trigger('inner', [transition('* => *', [])]),
-           ],
-           template: `
+    it('should insert and remove views in the correct order when animations are present', fakeAsync(() => {
+      @Component({
+        animations: [
+          trigger('root', [transition('* => *', [])]),
+          trigger('outer', [transition('* => *', [])]),
+          trigger('inner', [transition('* => *', [])]),
+        ],
+        template: `
           <div *ngIf="showRoot" (@root.start)="track('root', $event)" @root>
             <div *ngIf="showIfContents; else innerCompList" (@outer.start)="track('outer', $event)" @outer>
               Nooo!
@@ -2565,81 +2544,79 @@ describe('acceptance integration tests', () => {
               </inner-comp>
             </ng-template>
           </div>
-        `
-         })
-         class Cmp {
-           showRoot = true;
-           showIfContents = true;
-           items = [1];
-           log: string[] = [];
+        `,
+      })
+      class Cmp {
+        showRoot = true;
+        showIfContents = true;
+        items = [1];
+        log: string[] = [];
 
-           track(name: string, event: AnimationEvent) {
-             this.log.push(name);
-           }
-         }
+        track(name: string, event: AnimationEvent) {
+          this.log.push(name);
+        }
+      }
 
-         @Component({
-           selector: 'inner-comp',
-           animations: [
-             trigger('host', [transition('* => *', [])]),
-           ],
-           template: `
+      @Component({
+        selector: 'inner-comp',
+        animations: [trigger('host', [transition('* => *', [])])],
+        template: `
                   <ng-content></ng-content>
-                `
-         })
-         class InnerComp {
-           @HostBinding('@host') public hostState = '';
+                `,
+      })
+      class InnerComp {
+        @HostBinding('@host') public hostState = '';
 
-           constructor(@Inject(Cmp) private parent: Cmp) {}
+        constructor(@Inject(Cmp) private parent: Cmp) {}
 
-           @HostListener('@host.start', ['$event'])
-           onLeaveStart(event: AnimationEvent) {
-             this.parent.log.push('host');
-           }
-         }
+        @HostListener('@host.start', ['$event'])
+        onLeaveStart(event: AnimationEvent) {
+          this.parent.log.push('host');
+        }
+      }
 
-         TestBed.configureTestingModule({
-           declarations: [Cmp, InnerComp],
-           providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
-         });
-         const fixture = TestBed.createComponent(Cmp);
-         fixture.detectChanges();
-         completeAnimations();
-         const comp = fixture.componentInstance;
-         expect(comp.log).toEqual([
-           'root',   // insertion of the inner-comp content
-           'outer',  // insertion of the default ngIf
-         ]);
+      TestBed.configureTestingModule({
+        declarations: [Cmp, InnerComp],
+        providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
+      });
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      completeAnimations();
+      const comp = fixture.componentInstance;
+      expect(comp.log).toEqual([
+        'root', // insertion of the inner-comp content
+        'outer', // insertion of the default ngIf
+      ]);
 
-         comp.log = [];
-         comp.showIfContents = false;
-         fixture.detectChanges();
-         completeAnimations();
+      comp.log = [];
+      comp.showIfContents = false;
+      fixture.detectChanges();
+      completeAnimations();
 
-         expect(comp.log).toEqual([
-           'host',   // insertion of the inner-comp content
-           'outer',  // insertion of the template into the ngIf
-           'inner'   // insertion of the inner comp element
-         ]);
+      expect(comp.log).toEqual([
+        'host', // insertion of the inner-comp content
+        'outer', // insertion of the template into the ngIf
+        'inner', // insertion of the inner comp element
+      ]);
 
-         comp.log = [];
-         comp.showRoot = false;
-         fixture.detectChanges();
-         completeAnimations();
+      comp.log = [];
+      comp.showRoot = false;
+      fixture.detectChanges();
+      completeAnimations();
 
-         expect(comp.log).toEqual([
-           'root',  // removal the root div container
-           'host',  // removal of the inner-comp content
-           'inner'  // removal of the inner comp element
-         ]);
-       }));
+      expect(comp.log).toEqual([
+        'root', // removal the root div container
+        'host', // removal of the inner-comp content
+        'inner', // removal of the inner comp element
+      ]);
+    }));
   });
 });
 
 function completeAnimations() {
   flushMicrotasks();
   const log = MockAnimationDriver.log as MockAnimationPlayer[];
-  log.forEach(player => player.finish());
+  log.forEach((player) => player.finish());
   flushMicrotasks();
 }
 

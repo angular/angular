@@ -23,8 +23,9 @@ import {MessageId, ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
  *     id.
  */
 export function consolidateMessages(
-    messages: ɵParsedMessage[],
-    getMessageId: (message: ɵParsedMessage) => string): ɵParsedMessage[][] {
+  messages: ɵParsedMessage[],
+  getMessageId: (message: ɵParsedMessage) => string,
+): ɵParsedMessage[][] {
   const messageGroups = new Map<MessageId, ɵParsedMessage[]>();
   for (const message of messages) {
     const id = getMessageId(message);
@@ -47,13 +48,16 @@ export function consolidateMessages(
 /**
  * Does the given message have a location property?
  */
-export function hasLocation(message: ɵParsedMessage): message is ɵParsedMessage&
-    {location: ɵSourceLocation} {
+export function hasLocation(
+  message: ɵParsedMessage,
+): message is ɵParsedMessage & {location: ɵSourceLocation} {
   return message.location !== undefined;
 }
 
 export function compareLocations(
-    {location: location1}: ɵParsedMessage, {location: location2}: ɵParsedMessage): number {
+  {location: location1}: ɵParsedMessage,
+  {location: location2}: ɵParsedMessage,
+): number {
   if (location1 === location2) {
     return 0;
   }

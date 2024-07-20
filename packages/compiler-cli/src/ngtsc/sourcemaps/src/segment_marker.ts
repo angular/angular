@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * A marker that indicates the start of a segment in a mapping.
  *
@@ -17,7 +16,7 @@ export interface SegmentMarker {
   readonly line: number;
   readonly column: number;
   readonly position: number;
-  next: SegmentMarker|undefined;
+  next: SegmentMarker | undefined;
 }
 
 /**
@@ -39,7 +38,10 @@ export function compareSegments(a: SegmentMarker, b: SegmentMarker): number {
  * @param offset the number of character to offset by.
  */
 export function offsetSegment(
-    startOfLinePositions: number[], marker: SegmentMarker, offset: number): SegmentMarker {
+  startOfLinePositions: number[],
+  marker: SegmentMarker,
+  offset: number,
+): SegmentMarker {
   if (offset === 0) {
     return marker;
   }

@@ -11,13 +11,20 @@ Implements _Zones_ for JavaScript, inspired by [Dart](https://dart.dev/articles/
 > * 'async-listener' as it patches global.setTimeout, global.setInterval before zone.js does
 > * 'continuation-local-storage' as it uses async-listener
 
-# NEW Zone.js POST-v0.6.0
+## Development Status of Zone.js
+
+As Angular moves towards a zoneless application development model, Zone.js is no longer accepting new features, including additional patches for native platform APIs. The team will also not be accepting any low priority bug fixes. Any critical bug fixes that relate to Angular's direct use of Zone.js will still be accepted.
+
+While still a supported part of Angular, the Angular team strongly discourages using Zone.js outside of Angular application contexts.
+
+
+## NEW Zone.js POST-v0.6.0
 
 See the new API [here](./lib/zone.ts).
 
 Read up on [Zone Primer](https://docs.google.com/document/d/1F5Ug0jcrm031vhSMJEOgp1l-Is-Vf0UCNDY-LsQtAIY).
 
-# BREAKING CHANGES since Zone.js v0.11.1
+## BREAKING CHANGES since Zone.js v0.11.1
 
 Prior to `v0.11.1`, Zone.js provided two distribution bundle formats in the `dist` folder.
 They were (1) `ES5` bundle distributed as `zone.js` and (2) `ES2015` bundle distributed as `zone-evergreen.js`.
@@ -133,9 +140,6 @@ import 'zone.js/plugins/zone-patch-canvas';
 |`zone-patch-socket-io.js`|patch for `socket-io`|
 |`zone-patch-user-media.js`|patch for `UserMedia API`|
 |`zone-patch-message-port.js`|patch for `MessagePort API`|
-
-## Promise A+ test passed
-[![Promises/A+ 1.1 compliant](https://promisesaplus.com/assets/logo-small.png)](https://promisesaplus.com/)
 
 ## License
 MIT

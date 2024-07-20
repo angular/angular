@@ -24,7 +24,7 @@ export interface ComponentInstanceType {
   isElement: boolean;
 }
 
-export interface ComponentTreeNode extends
-    DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
+export interface ComponentTreeNode
+  extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType> {
   children: ComponentTreeNode[];
 }

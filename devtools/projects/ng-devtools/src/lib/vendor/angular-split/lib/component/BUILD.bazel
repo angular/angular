@@ -13,7 +13,6 @@ ng_module(
     srcs = [
         "interface.ts",
         "split.component.ts",
-        "split.module.ts",
         "splitArea.directive.ts",
         "utils.ts",
     ],

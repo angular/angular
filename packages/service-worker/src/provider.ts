@@ -7,7 +7,16 @@
  */
 
 import {isPlatformBrowser} from '@angular/common';
-import {APP_INITIALIZER, ApplicationRef, EnvironmentProviders, InjectionToken, Injector, makeEnvironmentProviders, NgZone, PLATFORM_ID,} from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationRef,
+  EnvironmentProviders,
+  InjectionToken,
+  Injector,
+  makeEnvironmentProviders,
+  NgZone,
+  PLATFORM_ID,
+} from '@angular/core';
 import {merge, Observable, of} from 'rxjs';
 import {delay, filter, take} from 'rxjs/operators';
 
@@ -15,24 +24,39 @@ import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
 import {SwUpdate} from './update';
 
-export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
+export const SCRIPT = new InjectionToken<string>(ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '');
 
 export function ngswAppInitializer(
-    injector: Injector, script: string, options: SwRegistrationOptions,
-    platformId: string): Function {
+  injector: Injector,
+  script: string,
+  options: SwRegistrationOptions,
+  platformId: string,
+): Function {
   return () => {
-    if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
-          options.enabled !== false)) {
+    if (
+      !(isPlatformBrowser(platformId) && 'serviceWorker' in navigator && options.enabled !== false)
+    ) {
       return;
     }
 
-    // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
-    // becomes active. This allows the SW to initialize itself even if there is no application
-    // traffic.
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (navigator.serviceWorker.controller !== null) {
-        navigator.serviceWorker.controller.postMessage({action: 'INITIALIZE'});
-      }
+    const ngZone = injector.get(NgZone);
+    const appRef = injector.get(ApplicationRef);
+
+    // Set up the `controllerchange` event listener outside of
+    // the Angular zone to avoid unnecessary change detections,
+    // as this event has no impact on view updates.
+    ngZone.runOutsideAngular(() => {
+      // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
+      // becomes active. This allows the SW to initialize itself even if there is no application
+      // traffic.
+      const sw = navigator.serviceWorker;
+      const onControllerChange = () => sw.controller?.postMessage({action: 'INITIALIZE'});
+
+      sw.addEventListener('controllerchange', onControllerChange);
+
+      appRef.onDestroy(() => {
+        sw.removeEventListener('controllerchange', onControllerChange);
+      });
     });
 
     let readyToRegister$: Observable<unknown>;
@@ -40,8 +64,9 @@ export function ngswAppInitializer(
     if (typeof options.registrationStrategy === 'function') {
       readyToRegister$ = options.registrationStrategy();
     } else {
-      const [strategy, ...args] =
-          (options.registrationStrategy || 'registerWhenStable:30000').split(':');
+      const [strategy, ...args] = (
+        options.registrationStrategy || 'registerWhenStable:30000'
+      ).split(':');
 
       switch (strategy) {
         case 'registerImmediately':
@@ -51,13 +76,15 @@ export function ngswAppInitializer(
           readyToRegister$ = delayWithTimeout(+args[0] || 0);
           break;
         case 'registerWhenStable':
-          readyToRegister$ = !args[0] ? whenStable(injector) :
-                                        merge(whenStable(injector), delayWithTimeout(+args[0]));
+          readyToRegister$ = !args[0]
+            ? whenStable(injector)
+            : merge(whenStable(injector), delayWithTimeout(+args[0]));
           break;
         default:
           // Unknown strategy.
           throw new Error(
-              `Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`);
+            `Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`,
+          );
       }
     }
 
@@ -65,12 +92,15 @@ export function ngswAppInitializer(
     // Also, run outside the Angular zone to avoid preventing the app from stabilizing (especially
     // given that some registration strategies wait for the app to stabilize).
     // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
-    const ngZone = injector.get(NgZone);
-    ngZone.runOutsideAngular(
-        () => readyToRegister$.pipe(take(1)).subscribe(
-            () =>
-                navigator.serviceWorker.register(script, {scope: options.scope})
-                    .catch(err => console.error('Service worker registration failed with:', err))));
+    ngZone.runOutsideAngular(() =>
+      readyToRegister$
+        .pipe(take(1))
+        .subscribe(() =>
+          navigator.serviceWorker
+            .register(script, {scope: options.scope})
+            .catch((err) => console.error('Service worker registration failed with:', err)),
+        ),
+    );
   };
 }
 
@@ -80,14 +110,16 @@ function delayWithTimeout(timeout: number): Observable<unknown> {
 
 function whenStable(injector: Injector): Observable<unknown> {
   const appRef = injector.get(ApplicationRef);
-  return appRef.isStable.pipe(filter(stable => stable));
+  return appRef.isStable.pipe(filter((stable) => stable));
 }
 
 export function ngswCommChannelFactory(
-    opts: SwRegistrationOptions, platformId: string): NgswCommChannel {
+  opts: SwRegistrationOptions,
+  platformId: string,
+): NgswCommChannel {
   return new NgswCommChannel(
-      isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
-                                                                undefined);
+    isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker : undefined,
+  );
 }
 
 /**
@@ -141,13 +173,13 @@ export abstract class SwRegistrationOptions {
    *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
    *     `<timeout>` is omitted, is defaults to `0`, which will register the ServiceWorker as soon
    *     as possible but still asynchronously, once all pending micro-tasks are completed.
-   * - An [Observable](guide/observables) factory function: A function that returns an `Observable`.
+   * - An Observable factory function: A function that returns an `Observable`.
    *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
    *     ServiceWorker will be registered as soon as the first value is emitted.
    *
    * Default: 'registerWhenStable:30000'
    */
-  registrationStrategy?: string|(() => Observable<unknown>);
+  registrationStrategy?: string | (() => Observable<unknown>);
 }
 
 /**
@@ -168,7 +200,9 @@ export abstract class SwRegistrationOptions {
  * ```
  */
 export function provideServiceWorker(
-    script: string, options: SwRegistrationOptions = {}): EnvironmentProviders {
+  script: string,
+  options: SwRegistrationOptions = {},
+): EnvironmentProviders {
   return makeEnvironmentProviders([
     SwPush,
     SwUpdate,
@@ -177,7 +211,7 @@ export function provideServiceWorker(
     {
       provide: NgswCommChannel,
       useFactory: ngswCommChannelFactory,
-      deps: [SwRegistrationOptions, PLATFORM_ID]
+      deps: [SwRegistrationOptions, PLATFORM_ID],
     },
     {
       provide: APP_INITIALIZER,

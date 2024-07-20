@@ -8,7 +8,6 @@
 
 import {compareNumbers, compareVersions, isVersionBetween, toNumbers} from '../src/version_helpers';
 
-
 describe('toNumbers', () => {
   it('should handle strings', () => {
     expect(toNumbers('2')).toEqual([2]);

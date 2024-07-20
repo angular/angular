@@ -12,12 +12,12 @@ import {Filesystem} from '../src/filesystem';
 export class MockFilesystem implements Filesystem {
   private files = new Map<string, string>();
 
-  constructor(files: {[name: string]: string|undefined}) {
-    Object.keys(files).forEach(path => this.files.set(path, files[path]!));
+  constructor(files: {[name: string]: string | undefined}) {
+    Object.keys(files).forEach((path) => this.files.set(path, files[path]!));
   }
 
   async list(dir: string): Promise<string[]> {
-    return Array.from(this.files.keys()).filter(path => path.startsWith(dir));
+    return Array.from(this.files.keys()).filter((path) => path.startsWith(dir));
   }
 
   async read(path: string): Promise<string> {
@@ -44,7 +44,7 @@ export class HashTrackingMockFilesystem extends MockFilesystem {
     this.maxConcurrentHashings = Math.max(this.maxConcurrentHashings, this.concurrentHashings);
 
     // Artificial delay to check hashing concurrency.
-    await new Promise(resolve => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, 250));
 
     // Decrease the concurrent hashings count.
     this.concurrentHashings -= 1;

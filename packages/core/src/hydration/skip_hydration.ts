@@ -15,12 +15,13 @@ import {RElement} from '../render3/interfaces/renderer_dom';
  */
 export const SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
 
+/** Lowercase name of the `ngSkipHydration` attribute used for case-insensitive comparisons. */
+const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = 'ngskiphydration';
+
 /**
  * Helper function to check if a given TNode has the 'ngSkipHydration' attribute.
  */
 export function hasSkipHydrationAttrOnTNode(tNode: TNode): boolean {
-  const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
-
   const attrs = tNode.mergedAttrs;
   if (attrs === null) return false;
   // only ever look at the attribute name and skip the values
@@ -55,15 +56,14 @@ export function hasInSkipHydrationBlockFlag(tNode: TNode): boolean {
  * Helper function that determines if a given node is within a skip hydration block
  * by navigating up the TNode tree to see if any parent nodes have skip hydration
  * attribute.
- *
- * TODO(akushnir): this function should contain the logic of `hasInSkipHydrationBlockFlag`,
- * there is no need to traverse parent nodes when we have a TNode flag (which would also
- * make this lookup O(1)).
  */
 export function isInSkipHydrationBlock(tNode: TNode): boolean {
-  let currentTNode: TNode|null = tNode.parent;
+  if (hasInSkipHydrationBlockFlag(tNode)) {
+    return true;
+  }
+  let currentTNode: TNode | null = tNode.parent;
   while (currentTNode) {
-    if (hasSkipHydrationAttrOnTNode(currentTNode)) {
+    if (hasInSkipHydrationBlockFlag(tNode) || hasSkipHydrationAttrOnTNode(currentTNode)) {
       return true;
     }
     currentTNode = currentTNode.parent;

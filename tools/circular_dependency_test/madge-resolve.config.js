@@ -22,8 +22,7 @@ class BazelRunfileResolutionPlugin {
         // Update the request to refer to the runfile resolved file path.
         resolver.doResolve('resolve', {...request, request: resolvedPath}, null, callback, true);
         return;
-      } catch {
-      }
+      } catch {}
       // If the file could not be resolved through Bazel's runfile resolution, proceed
       // with the default module resolvers.
       callback();
@@ -34,5 +33,5 @@ class BazelRunfileResolutionPlugin {
 // Configures a plugin which ensures that Madge can properly resolve specified
 // dependencies through their configured module names.
 module.exports = {
-  resolve: {plugins: [new BazelRunfileResolutionPlugin()]}
+  resolve: {plugins: [new BazelRunfileResolutionPlugin()]},
 };

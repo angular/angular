@@ -13,59 +13,63 @@ import {Component} from '@angular/core';
   host: {
     '[@backgroundAnimation]': 'bgStatus',
     '(@backgroundAnimation.start)': 'bgStatusChanged($event, "started")',
-    '(@backgroundAnimation.done)': 'bgStatusChanged($event, "completed")'
+    '(@backgroundAnimation.done)': 'bgStatusChanged($event, "completed")',
   },
   selector: 'animate-app',
   styleUrls: ['../css/animate-app.css'],
   template: `
-    <button (click)="state='start'">Start State</button>
-    <button (click)="state='active'">Active State</button>
+    <button (click)="state = 'start'">Start State</button>
+    <button (click)="state = 'active'">Active State</button>
     |
-    <button (click)="state='void'">Void State</button>
+    <button (click)="state = 'void'">Void State</button>
     <button (click)="reorderAndRemove()">Scramble!</button>
-    <button (click)="state='default'">Unhandled (default) State</button>
-    <button style="float:right" (click)="bgStatus='blur'">Blur Page (Host)</button>
+    <button (click)="state = 'default'">Unhandled (default) State</button>
+    <button style="float:right" (click)="bgStatus = 'blur'">Blur Page (Host)</button>
     <hr />
-    <div *ngFor="let item of items; let i=index" class="box" [@boxAnimation]="state">
+    <div *ngFor="let item of items; let i = index" class="box" [@boxAnimation]="state">
       {{ item }} - {{ i }}
       <button (click)="remove(item)">x</button>
     </div>
   `,
   animations: [
     trigger('backgroundAnimation', [
-      state('focus', style({ 'background-color':'white' })),
-      state('blur', style({ 'background-color':'grey' })),
-      transition('* => *', [
-        animate(500)
-      ])
+      state('focus', style({'background-color': 'white'})),
+      state('blur', style({'background-color': 'grey'})),
+      transition('* => *', [animate(500)]),
     ]),
     trigger('boxAnimation', [
-      state('*', style({ 'height': '*', 'background-color': '#dddddd', 'color':'black' })),
-      state('void, hidden', style({ 'height': 0, 'opacity': 0 })),
-      state('start', style({ 'background-color': 'red', 'height': '*' })),
-      state('active', style({ 'background-color': 'orange', 'color': 'white', 'font-size':'100px' })),
+      state('*', style({'height': '*', 'background-color': '#dddddd', 'color': 'black'})),
+      state('void, hidden', style({'height': 0, 'opacity': 0})),
+      state('start', style({'background-color': 'red', 'height': '*'})),
+      state(
+        'active',
+        style({'background-color': 'orange', 'color': 'white', 'font-size': '100px'}),
+      ),
 
       transition('active <=> start', [
-        animate(500, style({ 'transform': 'scale(2)' })),
-        animate(500)
+        animate(500, style({'transform': 'scale(2)'})),
+        animate(500),
       ]),
 
       transition('* => *', [
-        animate(1000, style({ 'opacity': 1, 'height': 300 })),
-        animate(1000, style({ 'background-color': 'blue' })),
-        animate(1000, keyframes([
-          style({ 'background-color': 'blue', 'color': 'black', 'offset': 0.2 }),
-          style({ 'background-color': 'brown', 'color': 'black', 'offset': 0.5 }),
-          style({ 'background-color': 'black', 'color': 'white', 'offset': 1 })
-        ])),
-        animate(2000)
-      ])
-    ])
-  ]
+        animate(1000, style({'opacity': 1, 'height': 300})),
+        animate(1000, style({'background-color': 'blue'})),
+        animate(
+          1000,
+          keyframes([
+            style({'background-color': 'blue', 'color': 'black', 'offset': 0.2}),
+            style({'background-color': 'brown', 'color': 'black', 'offset': 0.5}),
+            style({'background-color': 'black', 'color': 'white', 'offset': 1}),
+          ]),
+        ),
+        animate(2000),
+      ]),
+    ]),
+  ],
 })
 export class AnimateApp {
   public items: number[] = [];
-  private _state: ('start'|'active'|'void'|'default');
+  private _state: 'start' | 'active' | 'void' | 'default';
 
   public bgStatus = 'focus';
 

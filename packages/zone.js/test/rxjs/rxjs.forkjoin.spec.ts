@@ -25,17 +25,18 @@ describe('Observable.forkjoin', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push('completed');
-          });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push('completed');
+        },
+      );
     });
 
     expect(log).toEqual([[2, 5], 'completed']);
@@ -51,17 +52,18 @@ describe('Observable.forkjoin', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push('completed');
-          });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push('completed');
+        },
+      );
     });
 
     expect(log).toEqual([7, 'completed']);

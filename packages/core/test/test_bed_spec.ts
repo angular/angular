@@ -6,13 +6,55 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ElementRef, ErrorHandler, getNgModuleById, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelementEnd as elementEnd, ɵɵelementStart as elementStart, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
+import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {
+  APP_INITIALIZER,
+  ChangeDetectorRef,
+  Compiler,
+  Component,
+  Directive,
+  ElementRef,
+  ErrorHandler,
+  getNgModuleById,
+  inject,
+  Inject,
+  Injectable,
+  InjectFlags,
+  InjectionToken,
+  InjectOptions,
+  Injector,
+  Input,
+  LOCALE_ID,
+  ModuleWithProviders,
+  NgModule,
+  Optional,
+  Pipe,
+  PLATFORM_ID,
+  Type,
+  ViewChild,
+  ɵsetClassMetadata as setClassMetadata,
+  ɵɵdefineComponent as defineComponent,
+  ɵɵdefineInjector as defineInjector,
+  ɵɵdefineNgModule as defineNgModule,
+  ɵɵelementEnd as elementEnd,
+  ɵɵelementStart as elementStart,
+  ɵɵsetNgModuleScope as setNgModuleScope,
+  ɵɵtext as text,
+} from '@angular/core';
+import {DeferBlockBehavior} from '@angular/core/testing';
 import {TestBed, TestBedImpl} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+import {NgModuleType} from '../src/render3';
+import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
 import {setClassMetadataAsync} from '../src/render3/metadata';
-import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from '../testing/src/test_bed_common';
+import {
+  TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT,
+  THROW_ON_UNKNOWN_ELEMENTS_DEFAULT,
+  THROW_ON_UNKNOWN_PROPERTIES_DEFAULT,
+} from '../testing/src/test_bed_common';
+import {DOCUMENT} from '@angular/common/src/dom_tokens';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -30,8 +72,7 @@ class SimpleService {
   selector: 'hello-world',
   template: '<greeting-cmp></greeting-cmp>',
 })
-export class HelloWorld {
-}
+export class HelloWorld {}
 
 // -- module: Greeting
 @Component({
@@ -42,8 +83,9 @@ export class GreetingCmp {
   name: string;
 
   constructor(
-      @Inject(NAME) @Optional() name: string,
-      @Inject(SimpleService) @Optional() service: SimpleService) {
+    @Inject(NAME) @Optional() name: string,
+    @Inject(SimpleService) @Optional() service: SimpleService,
+  ) {
     this.name = name || 'nobody!';
   }
 }
@@ -52,31 +94,26 @@ export class GreetingCmp {
   selector: 'cmp-with-providers',
   template: '<hello-world></hello-world>',
   providers: [
-    SimpleService,  //
-    {provide: NAME, useValue: `from Component`}
-  ]
+    SimpleService, //
+    {provide: NAME, useValue: `from Component`},
+  ],
 })
-class CmpWithProviders {
-}
+class CmpWithProviders {}
 
 @NgModule({
   declarations: [GreetingCmp],
   exports: [GreetingCmp],
 })
-export class GreetingModule {
-}
+export class GreetingModule {}
 
 @Component({selector: 'simple-cmp', template: '<b>simple</b>'})
-export class SimpleCmp {
-}
+export class SimpleCmp {}
 
 @Component({selector: 'with-refs-cmp', template: '<div #firstDiv></div>'})
-export class WithRefsCmp {
-}
+export class WithRefsCmp {}
 
 @Component({selector: 'inherited-cmp', template: 'inherited'})
-export class InheritedCmp extends SimpleCmp {
-}
+export class InheritedCmp extends SimpleCmp {}
 
 @Directive({selector: '[hostBindingDir]', host: {'[id]': 'id'}})
 export class HostBindingDir {
@@ -89,7 +126,7 @@ export class HostBindingDir {
     <div hostBindingDir [title]="title" [attr.aria-label]="label"></div>
     <p title="( {{ label }} - {{ title }} )" [attr.aria-label]="label" id="[ {{ label }} ] [ {{ title }} ]">
     </p>
-  `
+  `,
 })
 export class ComponentWithPropBindings {
   title = 'some title';
@@ -100,27 +137,28 @@ export class ComponentWithPropBindings {
   selector: 'simple-app',
   template: `
     <simple-cmp></simple-cmp> - <inherited-cmp></inherited-cmp>
-  `
+  `,
 })
-export class SimpleApp {
-}
+export class SimpleApp {}
 
 @Component({selector: 'inline-template', template: '<p>Hello</p>'})
-export class ComponentWithInlineTemplate {
-}
+export class ComponentWithInlineTemplate {}
 
 @NgModule({
   declarations: [
-    HelloWorld, SimpleCmp, WithRefsCmp, InheritedCmp, SimpleApp, ComponentWithPropBindings,
-    HostBindingDir, CmpWithProviders
+    HelloWorld,
+    SimpleCmp,
+    WithRefsCmp,
+    InheritedCmp,
+    SimpleApp,
+    ComponentWithPropBindings,
+    HostBindingDir,
+    CmpWithProviders,
   ],
   imports: [GreetingModule],
-  providers: [
-    {provide: NAME, useValue: 'World!'},
-  ]
+  providers: [{provide: NAME, useValue: 'World!'}],
 })
-export class HelloWorldModule {
-}
+export class HelloWorldModule {}
 
 describe('TestBed', () => {
   // This test is extracted to an individual `describe` block to avoid any extra TestBed
@@ -134,22 +172,19 @@ describe('TestBed', () => {
       selector: 'root',
       template: '<div dirA></div>',
     })
-    class Root {
-    }
+    class Root {}
     @Directive({
       selector: '[dirA]',
       host: {'title': 'Test title'},
     })
-    class DirA {
-    }
+    class DirA {}
 
     // Note: this module is not directly reference in the test intentionally.
     // Its presence triggers a side-effect of patching correct scopes on the declared components.
     @NgModule({
       declarations: [Root, DirA],
     })
-    class Module {
-    }
+    class Module {}
 
     TestBed.configureTestingModule({});
     // Trigger TestBed initialization.
@@ -170,6 +205,52 @@ describe('TestBed', () => {
 describe('TestBed with Standalone types', () => {
   beforeEach(() => {
     TestBed.resetTestingModule();
+  });
+
+  it('should override dependencies of standalone components', () => {
+    @Component({
+      selector: 'dep',
+      standalone: true,
+      template: 'main dep',
+    })
+    class MainDep {}
+
+    @Component({
+      selector: 'dep',
+      standalone: true,
+      template: 'mock dep',
+    })
+    class MockDep {}
+
+    @Component({
+      selector: 'app-root',
+      standalone: true,
+      imports: [MainDep],
+      template: '<dep />',
+    })
+    class AppComponent {}
+
+    TestBed.configureTestingModule({imports: [AppComponent]});
+
+    let fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    // No overrides defined, expecting main dependency to be used.
+    expect(fixture.nativeElement.innerHTML).toBe('<dep>main dep</dep>');
+
+    // Emulate an end of a test.
+    TestBed.resetTestingModule();
+
+    // Emulate the start of a next test, make sure previous overrides
+    // are not persisted across tests.
+    TestBed.configureTestingModule({imports: [AppComponent]});
+    TestBed.overrideComponent(AppComponent, {set: {imports: [MockDep]}});
+
+    fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    // Main dependency was overridden, expect to see a mock.
+    expect(fixture.nativeElement.innerHTML).toBe('<dep>mock dep</dep>');
   });
 
   it('should override providers on standalone component itself', () => {
@@ -195,13 +276,62 @@ describe('TestBed with Standalone types', () => {
     expect(fixture.nativeElement.innerHTML).toBe('Overridden A');
   });
 
+  it('should override providers on components used as standalone component dependency', () => {
+    @Injectable()
+    class Service {
+      id = 'Service(original)';
+    }
+
+    @Injectable()
+    class MockService {
+      id = 'Service(mock)';
+    }
+
+    @Component({
+      selector: 'dep',
+      standalone: true,
+      template: '{{ service.id }}',
+      providers: [Service],
+    })
+    class Dep {
+      service = inject(Service);
+    }
+
+    @Component({
+      standalone: true,
+      template: '<dep />',
+      imports: [Dep],
+    })
+    class MyStandaloneComp {}
+
+    TestBed.configureTestingModule({imports: [MyStandaloneComp]});
+    TestBed.overrideProvider(Service, {useFactory: () => new MockService()});
+
+    let fixture = TestBed.createComponent(MyStandaloneComp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('<dep>Service(mock)</dep>');
+
+    // Emulate an end of a test.
+    TestBed.resetTestingModule();
+
+    // Emulate the start of a next test, make sure previous overrides
+    // are not persisted across tests.
+    TestBed.configureTestingModule({imports: [MyStandaloneComp]});
+
+    fixture = TestBed.createComponent(MyStandaloneComp);
+    fixture.detectChanges();
+
+    // No provider overrides, expect original provider value to be used.
+    expect(fixture.nativeElement.innerHTML).toBe('<dep>Service(original)</dep>');
+  });
+
   it('should override providers in standalone component dependencies via overrideProvider', () => {
     const A = new InjectionToken('A');
     @NgModule({
       providers: [{provide: A, useValue: 'A'}],
     })
-    class ComponentDependenciesModule {
-    }
+    class ComponentDependenciesModule {}
 
     @Component({
       standalone: true,
@@ -228,8 +358,7 @@ describe('TestBed with Standalone types', () => {
     @NgModule({
       providers: [{provide: A, useValue: 'A'}],
     })
-    class ComponentDependenciesModule {
-    }
+    class ComponentDependenciesModule {}
 
     @Component({
       standalone: true,
@@ -242,8 +371,9 @@ describe('TestBed with Standalone types', () => {
 
     // NOTE: the `TestBed.configureTestingModule` is *not* needed here, since the TestBed
     // knows which NgModule was overridden and needs re-compilation.
-    TestBed.overrideModule(
-        ComponentDependenciesModule, {set: {providers: [{provide: A, useValue: 'Overridden A'}]}});
+    TestBed.overrideModule(ComponentDependenciesModule, {
+      set: {providers: [{provide: A, useValue: 'Overridden A'}]},
+    });
 
     const fixture = TestBed.createComponent(MyStandaloneComp);
     fixture.detectChanges();
@@ -256,8 +386,7 @@ describe('TestBed with Standalone types', () => {
       standalone: true,
       template: 'Original',
     })
-    class MyStandaloneComp {
-    }
+    class MyStandaloneComp {}
 
     // NOTE: the `TestBed.configureTestingModule` call is *not* required here, since TestBed already
     // knows that the `MyStandaloneComp` should be overridden/recompiled.
@@ -269,60 +398,60 @@ describe('TestBed with Standalone types', () => {
     expect(fixture.nativeElement.innerHTML).toBe('Overridden');
   });
 
-  it('should allow overriding the set of directives and pipes used in a standalone component',
-     () => {
-       @Directive({
-         selector: '[dir]',
-         standalone: true,
-         host: {'[id]': 'id'},
-       })
-       class MyStandaloneDirectiveA {
-         id = 'A';
-       }
+  it('should allow overriding the set of directives and pipes used in a standalone component', () => {
+    @Directive({
+      selector: '[dir]',
+      standalone: true,
+      host: {'[id]': 'id'},
+    })
+    class MyStandaloneDirectiveA {
+      id = 'A';
+    }
 
-       @Directive({
-         selector: '[dir]',
-         standalone: true,
-         host: {'[id]': 'id'},
-       })
-       class MyStandaloneDirectiveB {
-         id = 'B';
-       }
+    @Directive({
+      selector: '[dir]',
+      standalone: true,
+      host: {'[id]': 'id'},
+    })
+    class MyStandaloneDirectiveB {
+      id = 'B';
+    }
 
-       @Pipe({name: 'pipe', standalone: true})
-       class MyStandalonePipeA {
-         transform(value: string): string {
-           return `transformed ${value} (A)`;
-         }
-       }
-       @Pipe({name: 'pipe', standalone: true})
-       class MyStandalonePipeB {
-         transform(value: string): string {
-           return `transformed ${value} (B)`;
-         }
-       }
+    @Pipe({name: 'pipe', standalone: true})
+    class MyStandalonePipeA {
+      transform(value: string): string {
+        return `transformed ${value} (A)`;
+      }
+    }
+    @Pipe({name: 'pipe', standalone: true})
+    class MyStandalonePipeB {
+      transform(value: string): string {
+        return `transformed ${value} (B)`;
+      }
+    }
 
-       @Component({
-         standalone: true,
-         template: '<div dir>{{ name | pipe }}</div>',
-         imports: [MyStandalonePipeA, MyStandaloneDirectiveA],
-       })
-       class MyStandaloneComp {
-         name = 'MyStandaloneComp';
-       }
+    @Component({
+      standalone: true,
+      template: '<div dir>{{ name | pipe }}</div>',
+      imports: [MyStandalonePipeA, MyStandaloneDirectiveA],
+    })
+    class MyStandaloneComp {
+      name = 'MyStandaloneComp';
+    }
 
-       // NOTE: the `TestBed.configureTestingModule` call is *not* required here, since TestBed
-       // already knows that the `MyStandaloneComp` should be overridden/recompiled.
-       TestBed.overrideComponent(
-           MyStandaloneComp, {set: {imports: [MyStandalonePipeB, MyStandaloneDirectiveB]}});
+    // NOTE: the `TestBed.configureTestingModule` call is *not* required here, since TestBed
+    // already knows that the `MyStandaloneComp` should be overridden/recompiled.
+    TestBed.overrideComponent(MyStandaloneComp, {
+      set: {imports: [MyStandalonePipeB, MyStandaloneDirectiveB]},
+    });
 
-       const fixture = TestBed.createComponent(MyStandaloneComp);
-       fixture.detectChanges();
+    const fixture = TestBed.createComponent(MyStandaloneComp);
+    fixture.detectChanges();
 
-       const rootElement = fixture.nativeElement.firstChild;
-       expect(rootElement.id).toBe('B');
-       expect(rootElement.innerHTML).toBe('transformed MyStandaloneComp (B)');
-     });
+    const rootElement = fixture.nativeElement.firstChild;
+    expect(rootElement.id).toBe('B');
+    expect(rootElement.innerHTML).toBe('transformed MyStandaloneComp (B)');
+  });
 
   it('should reflect overrides on imported standalone directive', () => {
     @Directive({
@@ -348,14 +477,14 @@ describe('TestBed with Standalone types', () => {
       template: '<standalone-cmp dir>Hello world!</standalone-cmp>',
       imports: [DepStandaloneDirective, DepStandaloneComponent],
     })
-    class RootStandaloneComp {
-    }
+    class RootStandaloneComp {}
 
     // NOTE: the `TestBed.configureTestingModule` call is *not* required here, since TestBed
     // already knows which Components/Directives are overridden and should be recompiled.
-    TestBed.overrideComponent(
-        DepStandaloneComponent, {set: {template: 'Overridden MyStandaloneComponent'}});
-    TestBed.overrideDirective(DepStandaloneDirective, {set: {host: {'[id]': '\'Overridden\''}}});
+    TestBed.overrideComponent(DepStandaloneComponent, {
+      set: {template: 'Overridden MyStandaloneComponent'},
+    });
+    TestBed.overrideDirective(DepStandaloneDirective, {set: {host: {'[id]': "'Overridden'"}}});
 
     const fixture = TestBed.createComponent(RootStandaloneComp);
     fixture.detectChanges();
@@ -384,17 +513,15 @@ describe('TestBed with Standalone types', () => {
       exports: [TestPipe],
       providers: [{provide: TOKEN_A, useValue: 'A'}],
     })
-    class TestNgModule {
-    }
+    class TestNgModule {}
 
     @Component({
       selector: 'test-component',
       standalone: true,
       imports: [TestNgModule],
-      template: `{{ 'original value' | testPipe }}`
+      template: `{{ 'original value' | testPipe }}`,
     })
-    class TestComponent {
-    }
+    class TestComponent {}
 
     TestBed.configureTestingModule({
       imports: [TestComponent],
@@ -429,8 +556,7 @@ describe('TestBed with Standalone types', () => {
       declarations: [TestComponent],
       exports: [TestComponent],
     })
-    class TestModule {
-    }
+    class TestModule {}
 
     @Component({
       standalone: true,
@@ -446,7 +572,7 @@ describe('TestBed with Standalone types', () => {
       // replace TestComponent with MockTestComponent
       TestBed.overrideModule(TestModule, {
         remove: {declarations: [TestComponent], exports: [TestComponent]},
-        add: {declarations: [MockTestComponent], exports: [MockTestComponent]}
+        add: {declarations: [MockTestComponent], exports: [MockTestComponent]},
       });
       const fixture = TestBed.createComponent(AppComponent);
       fixture.detectChanges();
@@ -461,14 +587,12 @@ describe('TestBed with Standalone types', () => {
       @NgModule({
         providers: [{provide: fooToken, useValue: 'FOO'}],
       })
-      class ImportedModule {
-      }
+      class ImportedModule {}
 
       @NgModule({
         imports: [ImportedModule],
       })
-      class ImportingModule {
-      }
+      class ImportingModule {}
 
       TestBed.configureTestingModule({
         imports: [ImportingModule],
@@ -514,35 +638,29 @@ describe('TestBed', () => {
       selector: 'standalone-comp',
       template: '...',
     })
-    class StandaloneComponent {
-    }
+    class StandaloneComponent {}
 
     @Component({
       selector: 'non-standalone-comp',
       template: '...',
     })
-    class NonStandaloneComponent {
-    }
+    class NonStandaloneComponent {}
 
     @Directive({standalone: true})
-    class StandaloneDirective {
-    }
+    class StandaloneDirective {}
 
     @Directive({})
-    class NonStandaloneDirective {
-    }
+    class NonStandaloneDirective {}
 
     @Pipe({standalone: true, name: 'test'})
-    class StandalonePipe {
-    }
+    class StandalonePipe {}
 
     @Pipe({name: 'test'})
-    class NonStandalonePipe {
-    }
+    class NonStandalonePipe {}
 
     const getExpectedError = (typeName: string) =>
-        `An override for the ${typeName} class has the \`standalone\` flag. ` +
-        `Changing the \`standalone\` flag via TestBed overrides is not supported.`;
+      `An override for the ${typeName} class has the \`standalone\` flag. ` +
+      `Changing the \`standalone\` flag via TestBed overrides is not supported.`;
 
     const overrides = [
       {set: {standalone: false}},
@@ -553,15 +671,17 @@ describe('TestBed', () => {
     const scenarios = [
       [TestBed.overrideComponent, StandaloneComponent, NonStandaloneComponent],
       [TestBed.overrideDirective, StandaloneDirective, NonStandaloneDirective],
-      [TestBed.overridePipe, StandalonePipe, NonStandalonePipe]
+      [TestBed.overridePipe, StandalonePipe, NonStandalonePipe],
     ];
 
-    overrides.forEach(override => {
+    overrides.forEach((override) => {
       scenarios.forEach(([fn, standaloneType, nonStandaloneType]) => {
-        expect(() => (fn as Function)(standaloneType, override))
-            .toThrowError(getExpectedError(standaloneType.name));
-        expect(() => (fn as Function)(nonStandaloneType, override))
-            .toThrowError(getExpectedError(nonStandaloneType.name));
+        expect(() => (fn as Function)(standaloneType, override)).toThrowError(
+          getExpectedError(standaloneType.name),
+        );
+        expect(() => (fn as Function)(nonStandaloneType, override)).toThrowError(
+          getExpectedError(nonStandaloneType.name),
+        );
       });
     });
   });
@@ -599,8 +719,8 @@ describe('TestBed', () => {
     fixture.detectChanges();
 
     const divElement = fixture.debugElement.query(By.css('div'));
-    expect(divElement.properties.id).toEqual('one');
-    expect(divElement.properties.title).toEqual('some title');
+    expect(divElement.properties['id']).toEqual('one');
+    expect(divElement.properties['title']).toEqual('some title');
   });
 
   it('should give the ability to access interpolated properties on a node', () => {
@@ -608,8 +728,8 @@ describe('TestBed', () => {
     fixture.detectChanges();
 
     const paragraphEl = fixture.debugElement.query(By.css('p'));
-    expect(paragraphEl.properties.title).toEqual('( some label - some title )');
-    expect(paragraphEl.properties.id).toEqual('[ some label ] [ some title ]');
+    expect(paragraphEl.properties['title']).toEqual('( some label - some title )');
+    expect(paragraphEl.properties['id']).toEqual('[ some label ] [ some title ]');
   });
 
   it('should give access to the node injector', () => {
@@ -647,7 +767,7 @@ describe('TestBed', () => {
     const withRefsCmp = TestBed.createComponent(WithRefsCmp);
     const firstDivDebugEl = withRefsCmp.debugElement.query(By.css('div'));
     // assert that a native element is referenced by a local ref
-    expect(firstDivDebugEl.references.firstDiv.tagName.toLowerCase()).toBe('div');
+    expect(firstDivDebugEl.references['firstDiv'].tagName.toLowerCase()).toBe('div');
   });
 
   it('should give the ability to query by directive', () => {
@@ -661,15 +781,13 @@ describe('TestBed', () => {
   it('should allow duplicate NgModule registrations with the same id', () => {
     const id = 'registered';
     @NgModule({id})
-    class ModuleA {
-    }
+    class ModuleA {}
 
     expect(getNgModuleById(id)).toBe(ModuleA);
 
     // This would ordinarily error, if not in a test scenario.
     @NgModule({id})
-    class ModuleB {
-    }
+    class ModuleB {}
     expect(getNgModuleById(id)).toBe(ModuleB);
   });
 
@@ -696,34 +814,32 @@ describe('TestBed', () => {
   });
 
   // https://github.com/angular/angular/issues/42734
-  it('should override a component which is declared in an NgModule which is imported as a `ModuleWithProviders`',
-     () => {
-       // This test verifies that an overridden component that is declared in an NgModule that has
-       // been imported as a `ModuleWithProviders` continues to have access to the declaration scope
-       // of the NgModule.
-       TestBed.resetTestingModule();
+  it('should override a component which is declared in an NgModule which is imported as a `ModuleWithProviders`', () => {
+    // This test verifies that an overridden component that is declared in an NgModule that has
+    // been imported as a `ModuleWithProviders` continues to have access to the declaration scope
+    // of the NgModule.
+    TestBed.resetTestingModule();
 
-       const moduleWithProviders:
-           ModuleWithProviders<HelloWorldModule> = {ngModule: HelloWorldModule};
-       TestBed.configureTestingModule({imports: [moduleWithProviders]});
-       TestBed.overrideComponent(
-           HelloWorld, {set: {template: 'Overridden <greeting-cmp></greeting-cmp>'}});
+    const moduleWithProviders: ModuleWithProviders<HelloWorldModule> = {ngModule: HelloWorldModule};
+    TestBed.configureTestingModule({imports: [moduleWithProviders]});
+    TestBed.overrideComponent(HelloWorld, {
+      set: {template: 'Overridden <greeting-cmp></greeting-cmp>'},
+    });
 
-       const hello = TestBed.createComponent(HelloWorld);
-       hello.detectChanges();
-       expect(hello.nativeElement).toHaveText('Overridden Hello World!');
-     });
+    const hello = TestBed.createComponent(HelloWorld);
+    hello.detectChanges();
+    expect(hello.nativeElement).toHaveText('Overridden Hello World!');
+  });
 
   it('should run `APP_INITIALIZER` before accessing `LOCALE_ID` provider', () => {
     let locale: string = '';
     @NgModule({
       providers: [
-        {provide: APP_INITIALIZER, useValue: () => locale = 'fr-FR', multi: true},
-        {provide: LOCALE_ID, useFactory: () => locale}
-      ]
+        {provide: APP_INITIALIZER, useValue: () => (locale = 'fr-FR'), multi: true},
+        {provide: LOCALE_ID, useFactory: () => locale},
+      ],
     })
-    class TestModule {
-    }
+    class TestModule {}
 
     TestBed.configureTestingModule({imports: [TestModule]});
     expect(TestBed.inject(LOCALE_ID)).toBe('fr-FR');
@@ -747,9 +863,7 @@ describe('TestBed', () => {
   it('overrides a providers in an array', () => {
     TestBed.configureTestingModule({
       imports: [HelloWorldModule],
-      providers: [
-        [{provide: NAME, useValue: 'injected World!'}],
-      ]
+      providers: [[{provide: NAME, useValue: 'injected World!'}]],
     });
     TestBed.overrideProvider(NAME, {useValue: 'injected World a second time!'});
     const hello = TestBed.createComponent(HelloWorld);
@@ -781,16 +895,14 @@ describe('TestBed', () => {
       constructor(@Inject(token) public _token: number) {}
     }
 
-    TestBed.resetTestingModule();  // Reset the state from `beforeEach`.
+    TestBed.resetTestingModule(); // Reset the state from `beforeEach`.
 
     function compile(tokenValue: number) {
-      return TestBed
-          .configureTestingModule({
-            declarations: [TestComponent],
-            providers: [{provide: token, useValue: tokenValue}],
-            teardown: {destroyAfterEach: true}
-          })
-          .compileComponents();
+      return TestBed.configureTestingModule({
+        declarations: [TestComponent],
+        providers: [{provide: token, useValue: tokenValue}],
+        teardown: {destroyAfterEach: true},
+      }).compileComponents();
     }
 
     const initialCompilation = compile(1);
@@ -815,8 +927,7 @@ describe('TestBed', () => {
       declarations: [TestComponent],
       exports: [TestComponent],
     })
-    class TestModule {
-    }
+    class TestModule {}
 
     @Component({
       selector: 'app-root',
@@ -830,8 +941,7 @@ describe('TestBed', () => {
       declarations: [AppComponent],
       imports: [TestModule],
     })
-    class AppModule {
-    }
+    class AppModule {}
     @Component({
       selector: 'test-cmp',
       template: '...',
@@ -847,7 +957,7 @@ describe('TestBed', () => {
       // replace TestComponent with MockTestComponent
       TestBed.overrideModule(TestModule, {
         remove: {declarations: [TestComponent], exports: [TestComponent]},
-        add: {declarations: [MockTestComponent], exports: [MockTestComponent]}
+        add: {declarations: [MockTestComponent], exports: [MockTestComponent]},
       });
       const fixture = TestBed.createComponent(AppComponent);
       const app = fixture.componentInstance;
@@ -866,22 +976,19 @@ describe('TestBed', () => {
       selector: 'comp-a',
       template: 'comp-a content',
     })
-    class CompA {
-    }
+    class CompA {}
 
     @Component({
       selector: 'comp-a',
       template: 'comp-a mock content',
     })
-    class MockCompA {
-    }
+    class MockCompA {}
 
     @NgModule({
       declarations: [CompA],
       exports: [CompA],
     })
-    class ModuleA {
-    }
+    class ModuleA {}
 
     // ModuleB content:
 
@@ -889,23 +996,20 @@ describe('TestBed', () => {
       selector: 'comp-b',
       template: 'comp-b content',
     })
-    class CompB {
-    }
+    class CompB {}
 
     @Component({
       selector: 'comp-b',
       template: 'comp-b mock content',
     })
-    class MockCompB {
-    }
+    class MockCompB {}
 
     @NgModule({
       imports: [ModuleA],
       declarations: [CompB],
       exports: [CompB, ModuleA],
     })
-    class ModuleB {
-    }
+    class ModuleB {}
 
     // AppModule content:
 
@@ -916,28 +1020,25 @@ describe('TestBed', () => {
         <comp-b></comp-b>
       `,
     })
-    class App {
-    }
+    class App {}
 
     @NgModule({
       imports: [ModuleB],
       exports: [ModuleB],
     })
-    class AppModule {
-    }
+    class AppModule {}
 
     it('should detect nested module override', () => {
-      TestBed
-          .configureTestingModule({
-            declarations: [App],
-            // AppModule -> ModuleB -> ModuleA (to be overridden)
-            imports: [AppModule],
-          })
-          .overrideModule(ModuleA, {
-            remove: {declarations: [CompA], exports: [CompA]},
-            add: {declarations: [MockCompA], exports: [MockCompA]}
-          })
-          .compileComponents();
+      TestBed.configureTestingModule({
+        declarations: [App],
+        // AppModule -> ModuleB -> ModuleA (to be overridden)
+        imports: [AppModule],
+      })
+        .overrideModule(ModuleA, {
+          remove: {declarations: [CompA], exports: [CompA]},
+          add: {declarations: [MockCompA], exports: [MockCompA]},
+        })
+        .compileComponents();
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -950,21 +1051,20 @@ describe('TestBed', () => {
     });
 
     it('should detect chained modules override', () => {
-      TestBed
-          .configureTestingModule({
-            declarations: [App],
-            // AppModule -> ModuleB (to be overridden) -> ModuleA (to be overridden)
-            imports: [AppModule],
-          })
-          .overrideModule(ModuleA, {
-            remove: {declarations: [CompA], exports: [CompA]},
-            add: {declarations: [MockCompA], exports: [MockCompA]}
-          })
-          .overrideModule(ModuleB, {
-            remove: {declarations: [CompB], exports: [CompB]},
-            add: {declarations: [MockCompB], exports: [MockCompB]}
-          })
-          .compileComponents();
+      TestBed.configureTestingModule({
+        declarations: [App],
+        // AppModule -> ModuleB (to be overridden) -> ModuleA (to be overridden)
+        imports: [AppModule],
+      })
+        .overrideModule(ModuleA, {
+          remove: {declarations: [CompA], exports: [CompA]},
+          add: {declarations: [MockCompA], exports: [MockCompA]},
+        })
+        .overrideModule(ModuleB, {
+          remove: {declarations: [CompB], exports: [CompB]},
+          add: {declarations: [MockCompB], exports: [MockCompB]},
+        })
+        .compileComponents();
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -978,34 +1078,36 @@ describe('TestBed', () => {
   describe('multi providers', () => {
     const multiToken = new InjectionToken<string[]>('multiToken');
     const singleToken = new InjectionToken<string>('singleToken');
-    const multiTokenToOverrideAtModuleLevel =
-        new InjectionToken<string[]>('moduleLevelMultiOverride');
+    const multiTokenToOverrideAtModuleLevel = new InjectionToken<string[]>(
+      'moduleLevelMultiOverride',
+    );
     @NgModule({providers: [{provide: multiToken, useValue: 'valueFromModule', multi: true}]})
-    class MyModule {
-    }
+    class MyModule {}
 
     @NgModule({
       providers: [
-        {provide: singleToken, useValue: 't1'}, {
+        {provide: singleToken, useValue: 't1'},
+        {
           provide: multiTokenToOverrideAtModuleLevel,
           useValue: 'multiTokenToOverrideAtModuleLevelOriginal',
-          multi: true
+          multi: true,
         },
         {provide: multiToken, useValue: 'valueFromModule2', multi: true},
-        {provide: multiToken, useValue: 'secondValueFromModule2', multi: true}
-      ]
+        {provide: multiToken, useValue: 'secondValueFromModule2', multi: true},
+      ],
     })
-    class MyModule2 {
-    }
+    class MyModule2 {}
 
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [
-          MyModule, {
+          MyModule,
+          {
             ngModule: MyModule2,
-            providers:
-                [{provide: multiTokenToOverrideAtModuleLevel, useValue: 'override', multi: true}]
-          }
+            providers: [
+              {provide: multiTokenToOverrideAtModuleLevel, useValue: 'override', multi: true},
+            ],
+          },
         ],
       });
     });
@@ -1015,7 +1117,8 @@ describe('TestBed', () => {
       expect(TestBed.inject(multiToken).length).toEqual(3);
       expect(TestBed.inject(multiTokenToOverrideAtModuleLevel).length).toEqual(2);
       expect(TestBed.inject(multiTokenToOverrideAtModuleLevel)).toEqual([
-        'multiTokenToOverrideAtModuleLevelOriginal', 'override'
+        'multiTokenToOverrideAtModuleLevelOriginal',
+        'override',
       ]);
     });
 
@@ -1049,18 +1152,17 @@ describe('TestBed', () => {
       static forRoot() {
         return {
           ngModule: MyMod,
-          providers: [{provide: TOKEN, multi: MyMod.multi, useValue: 'forRootValue'}]
+          providers: [{provide: TOKEN, multi: MyMod.multi, useValue: 'forRootValue'}],
         };
       }
     }
 
-    beforeEach(() => MyMod.multi = true);
+    beforeEach(() => (MyMod.multi = true));
 
     it('when provider is a "regular" provider', () => {
       MyMod.multi = false;
       @NgModule({imports: [MyMod.forRoot()]})
-      class MyMod2 {
-      }
+      class MyMod2 {}
       TestBed.configureTestingModule({imports: [MyMod2]});
       TestBed.overrideProvider(TOKEN, {useValue: ['override']});
       expect(TestBed.inject(TOKEN)).toEqual(['override']);
@@ -1068,8 +1170,7 @@ describe('TestBed', () => {
 
     it('when provider is multi', () => {
       @NgModule({imports: [MyMod.forRoot()]})
-      class MyMod2 {
-      }
+      class MyMod2 {}
       TestBed.configureTestingModule({imports: [MyMod2]});
       TestBed.overrideProvider(TOKEN, {useValue: ['override']});
       expect(TestBed.inject(TOKEN)).toEqual(['override']);
@@ -1077,8 +1178,7 @@ describe('TestBed', () => {
 
     it('restores the original value', () => {
       @NgModule({imports: [MyMod.forRoot()]})
-      class MyMod2 {
-      }
+      class MyMod2 {}
       TestBed.configureTestingModule({imports: [MyMod2]});
       TestBed.overrideProvider(TOKEN, {useValue: ['override']});
       expect(TestBed.inject(TOKEN)).toEqual(['override']);
@@ -1089,38 +1189,37 @@ describe('TestBed', () => {
     });
   });
 
-  it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.overrideProvider)',
-     () => {
-       const serviceOverride = {
-         get() {
-           return 'override';
-         },
-       };
+  it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.overrideProvider)', () => {
+    const serviceOverride = {
+      get() {
+        return 'override';
+      },
+    };
 
-       @Injectable({providedIn: 'root'})
-       class MyService {
-         get() {
-           return 'original';
-         }
-       }
+    @Injectable({providedIn: 'root'})
+    class MyService {
+      get() {
+        return 'original';
+      }
+    }
 
-       @NgModule({})
-       class MyModule {
-         static forRoot(): ModuleWithProviders<MyModule> {
-           return {
-             ngModule: MyModule,
-             providers: [MyService],
-           };
-         }
-       }
-       TestBed.overrideProvider(MyService, {useValue: serviceOverride});
-       TestBed.configureTestingModule({
-         imports: [MyModule.forRoot()],
-       });
+    @NgModule({})
+    class MyModule {
+      static forRoot(): ModuleWithProviders<MyModule> {
+        return {
+          ngModule: MyModule,
+          providers: [MyService],
+        };
+      }
+    }
+    TestBed.overrideProvider(MyService, {useValue: serviceOverride});
+    TestBed.configureTestingModule({
+      imports: [MyModule.forRoot()],
+    });
 
-       const service = TestBed.inject(MyService);
-       expect(service.get()).toEqual('override');
-     });
+    const service = TestBed.inject(MyService);
+    expect(service.get()).toEqual('override');
+  });
 
   it('should handle overrides for a provider that has `ChangeDetectorRef` as a dependency', () => {
     @Injectable({providedIn: 'root'})
@@ -1136,38 +1235,37 @@ describe('TestBed', () => {
     expect(service.token).toBe('override');
   });
 
-  it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.configureTestingModule)',
-     () => {
-       const serviceOverride = {
-         get() {
-           return 'override';
-         },
-       };
+  it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.configureTestingModule)', () => {
+    const serviceOverride = {
+      get() {
+        return 'override';
+      },
+    };
 
-       @Injectable({providedIn: 'root'})
-       class MyService {
-         get() {
-           return 'original';
-         }
-       }
+    @Injectable({providedIn: 'root'})
+    class MyService {
+      get() {
+        return 'original';
+      }
+    }
 
-       @NgModule({})
-       class MyModule {
-         static forRoot(): ModuleWithProviders<MyModule> {
-           return {
-             ngModule: MyModule,
-             providers: [MyService],
-           };
-         }
-       }
-       TestBed.configureTestingModule({
-         imports: [MyModule.forRoot()],
-         providers: [{provide: MyService, useValue: serviceOverride}],
-       });
+    @NgModule({})
+    class MyModule {
+      static forRoot(): ModuleWithProviders<MyModule> {
+        return {
+          ngModule: MyModule,
+          providers: [MyService],
+        };
+      }
+    }
+    TestBed.configureTestingModule({
+      imports: [MyModule.forRoot()],
+      providers: [{provide: MyService, useValue: serviceOverride}],
+    });
 
-       const service = TestBed.inject(MyService);
-       expect(service.get()).toEqual('override');
-     });
+    const service = TestBed.inject(MyService);
+    expect(service.get()).toEqual('override');
+  });
 
   it('should allowing overriding a module with a cyclic structure in its metadata', () => {
     class Cyclic {
@@ -1184,45 +1282,39 @@ describe('TestBed', () => {
         {provide: CYCLES, useValue: new Cyclic('b'), multi: true},
       ],
     })
-    class TestModule {
-    }
+    class TestModule {}
 
-    TestBed
-        .configureTestingModule({
-          imports: [TestModule],
-        })
-        .overrideModule(TestModule, {
-          remove: {
-            providers: [
-              // Removing the cycle named "a" should result in removing the provider for "a".
-              // Note: although this removes a different instance than the one provided, metadata
-              // overrides compare objects by value, not by reference.
-              {provide: CYCLES, useValue: new Cyclic('a'), multi: true},
+    TestBed.configureTestingModule({
+      imports: [TestModule],
+    })
+      .overrideModule(TestModule, {
+        remove: {
+          providers: [
+            // Removing the cycle named "a" should result in removing the provider for "a".
+            // Note: although this removes a different instance than the one provided, metadata
+            // overrides compare objects by value, not by reference.
+            {provide: CYCLES, useValue: new Cyclic('a'), multi: true},
 
-              // Also attempt to remove a cycle named "B" (which does not exist) to verify that
-              // objects are correctly compared by value.
-              {provide: CYCLES, useValue: new Cyclic('B'), multi: true},
-            ],
-          },
-          add: {
-            providers: [
-              {provide: CYCLES, useValue: new Cyclic('c'), multi: true},
-            ],
-          },
-        })
-        .compileComponents();
+            // Also attempt to remove a cycle named "B" (which does not exist) to verify that
+            // objects are correctly compared by value.
+            {provide: CYCLES, useValue: new Cyclic('B'), multi: true},
+          ],
+        },
+        add: {
+          providers: [{provide: CYCLES, useValue: new Cyclic('c'), multi: true}],
+        },
+      })
+      .compileComponents();
 
     const values = TestBed.inject(CYCLES);
-    expect(values.map(v => v.name)).toEqual(['b', 'c']);
+    expect(values.map((v) => v.name)).toEqual(['b', 'c']);
   });
 
   it('overrides injectable that is using providedIn: AModule', () => {
     @NgModule()
-    class ServiceModule {
-    }
+    class ServiceModule {}
     @Injectable({providedIn: ServiceModule})
-    class Service {
-    }
+    class Service {}
 
     const fake = 'fake';
     TestBed.overrideProvider(Service, {useValue: fake});
@@ -1245,7 +1337,7 @@ describe('TestBed', () => {
 
     TestBed.configureTestingModule({
       declarations: [MyComp],
-      providers: [{provide: MY_TOKEN, useValue: {value: 'old provider'}, multi: true}]
+      providers: [{provide: MY_TOKEN, useValue: {value: 'old provider'}, multi: true}],
     });
 
     const multiOverride = {useValue: [{value: 'new provider'}], multi: true};
@@ -1262,60 +1354,58 @@ describe('TestBed', () => {
     expect(simpleApp.nativeElement).toHaveText('simple - inherited');
   });
 
-  it('should not trigger change detection for ComponentA while calling TestBed.createComponent for ComponentB',
-     () => {
-       const log: string[] = [];
-       @Component({
-         selector: 'comp-a',
-         template: '...',
-       })
-       class CompA {
-         @Input() inputA: string = '';
-         ngOnInit() {
-           log.push('CompA:ngOnInit', this.inputA);
-         }
-       }
+  it('should not trigger change detection for ComponentA while calling TestBed.createComponent for ComponentB', () => {
+    const log: string[] = [];
+    @Component({
+      selector: 'comp-a',
+      template: '...',
+    })
+    class CompA {
+      @Input() inputA: string = '';
+      ngOnInit() {
+        log.push('CompA:ngOnInit', this.inputA);
+      }
+    }
 
-       @Component({
-         selector: 'comp-b',
-         template: '...',
-       })
-       class CompB {
-         @Input() inputB: string = '';
-         ngOnInit() {
-           log.push('CompB:ngOnInit', this.inputB);
-         }
-       }
+    @Component({
+      selector: 'comp-b',
+      template: '...',
+    })
+    class CompB {
+      @Input() inputB: string = '';
+      ngOnInit() {
+        log.push('CompB:ngOnInit', this.inputB);
+      }
+    }
 
-       TestBed.configureTestingModule({declarations: [CompA, CompB]});
+    TestBed.configureTestingModule({declarations: [CompA, CompB]});
 
-       log.length = 0;
-       const appA = TestBed.createComponent(CompA);
-       appA.componentInstance.inputA = 'a';
-       appA.autoDetectChanges();
-       expect(log).toEqual(['CompA:ngOnInit', 'a']);
+    log.length = 0;
+    const appA = TestBed.createComponent(CompA);
+    appA.componentInstance.inputA = 'a';
+    appA.autoDetectChanges();
+    expect(log).toEqual(['CompA:ngOnInit', 'a']);
 
-       log.length = 0;
-       const appB = TestBed.createComponent(CompB);
-       appB.componentInstance.inputB = 'b';
-       appB.autoDetectChanges();
-       expect(log).toEqual(['CompB:ngOnInit', 'b']);
-     });
+    log.length = 0;
+    const appB = TestBed.createComponent(CompB);
+    appB.componentInstance.inputB = 'b';
+    appB.autoDetectChanges();
+    expect(log).toEqual(['CompB:ngOnInit', 'b']);
+  });
 
   it('should resolve components without async resources synchronously', (done) => {
-    TestBed
-        .configureTestingModule({
-          declarations: [ComponentWithInlineTemplate],
-        })
-        .compileComponents()
-        .then(done)
-        .catch(error => {
-          // This should not throw any errors. If an error is thrown, the test will fail.
-          // Specifically use `catch` here to mark the test as done and *then* throw the error
-          // so that the test isn't treated as a timeout.
-          done();
-          throw error;
-        });
+    TestBed.configureTestingModule({
+      declarations: [ComponentWithInlineTemplate],
+    })
+      .compileComponents()
+      .then(done)
+      .catch((error) => {
+        // This should not throw any errors. If an error is thrown, the test will fail.
+        // Specifically use `catch` here to mark the test as done and *then* throw the error
+        // so that the test isn't treated as a timeout.
+        done();
+        throw error;
+      });
 
     // Intentionally call `createComponent` before `compileComponents` is resolved. We want this to
     // work for components that don't have any async resources (templateUrl, styleUrls).
@@ -1326,8 +1416,7 @@ describe('TestBed', () => {
     class CustomErrorHandler {}
 
     @NgModule({providers: [{provide: ErrorHandler, useClass: CustomErrorHandler}]})
-    class ProvidesErrorHandler {
-    }
+    class ProvidesErrorHandler {}
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({imports: [ProvidesErrorHandler, HelloWorldModule]});
@@ -1397,28 +1486,24 @@ describe('TestBed', () => {
       selector: 'inner',
       template: 'Inner',
     })
-    class Inner {
-    }
+    class Inner {}
 
     @Component({
       selector: 'outer',
       template: '<inner></inner>',
     })
-    class Outer {
-    }
+    class Outer {}
 
     @NgModule({
       declarations: [Inner, Outer],
     })
-    class Module {
-    }
+    class Module {}
 
     @Component({
       template: '<outer></outer>',
       selector: 'fixture',
     })
-    class Fixture {
-    }
+    class Fixture {}
 
     TestBed.configureTestingModule({
       declarations: [Outer, Fixture],
@@ -1436,12 +1521,10 @@ describe('TestBed', () => {
     @Directive({
       selector: 'my-dir',
     })
-    class MyDir {
-    }
+    class MyDir {}
 
     @NgModule()
-    class MyModule {
-    }
+    class MyModule {}
 
     // [decorator, type, overrideFn]
     const cases: [string, Type<any>, string][] = [
@@ -1474,54 +1557,64 @@ describe('TestBed', () => {
      * class ComponentClass {}
      *
      * This is needed to closer match the behavior of AOT pre-compiled components (compiled
-     * outside of TestBed) for cases when `{#defer}` blocks are used.
+     * outside of TestBed) for cases when defer blocks are used.
      */
-    const getAOTCompiledComponent =
-        (selector: string, dependencies: Array<Type<unknown>> = [],
-         deferrableDependencies: Array<Type<unknown>> = []) => {
-          class ComponentClass {
-            static ɵfac = () => new ComponentClass();
-            static ɵcmp = defineComponent({
-              standalone: true,
-              type: ComponentClass,
-              selectors: [[selector]],
-              decls: 2,
-              vars: 0,
-              dependencies,
-              consts: [['dir']],
-              template:
-                  (rf: any, ctx: any) => {
-                    if (rf & 1) {
-                      elementStart(0, 'div', 0);
-                      text(1, `${selector} cmp!`);
-                      elementEnd();
-                    }
-                  }
-            });
-          }
-          setClassMetadataAsync(
-              ComponentClass,
-              function() {
-                const promises: Array<Promise<Type<unknown>>> = deferrableDependencies.map(
-                    // Emulates a dynamic import, e.g. `import('./cmp-a').then(m => m.CmpA)`
-                    dep => new Promise((resolve) => setTimeout(() => resolve(dep))));
-                return promises;
+    const getAOTCompiledComponent = (
+      selector: string,
+      dependencies: Array<Type<unknown>> = [],
+      deferrableDependencies: Array<Type<unknown>> = [],
+    ) => {
+      class ComponentClass {
+        static ɵfac = () => new ComponentClass();
+        static ɵcmp = defineComponent({
+          standalone: true,
+          type: ComponentClass,
+          selectors: [[selector]],
+          decls: 2,
+          vars: 0,
+          dependencies,
+          consts: [['dir']],
+          template: (rf: any, ctx: any) => {
+            if (rf & 1) {
+              elementStart(0, 'div', 0);
+              text(1, `${selector} cmp!`);
+              elementEnd();
+            }
+          },
+        });
+      }
+      setClassMetadataAsync(
+        ComponentClass,
+        function () {
+          const promises: Array<Promise<Type<unknown>>> = deferrableDependencies.map(
+            // Emulates a dynamic import, e.g. `import('./cmp-a').then(m => m.CmpA)`
+            (dep) => new Promise((resolve) => setTimeout(() => resolve(dep))),
+          );
+          return promises;
+        },
+        function (...deferrableSymbols) {
+          setClassMetadata(
+            ComponentClass,
+            [
+              {
+                type: Component,
+                args: [
+                  {
+                    selector,
+                    standalone: true,
+                    imports: [...dependencies, ...deferrableSymbols],
+                    template: `<div>root cmp!</div>`,
+                  },
+                ],
               },
-              function(...deferrableSymbols) {
-                setClassMetadata(
-                    ComponentClass, [{
-                      type: Component,
-                      args: [{
-                        selector,
-                        standalone: true,
-                        imports: [...dependencies, ...deferrableSymbols],
-                        template: `<div>root cmp!</div>`,
-                      }]
-                    }],
-                    null, null);
-              });
-          return ComponentClass;
-        };
+            ],
+            null,
+            null,
+          );
+        },
+      );
+      return ComponentClass;
+    };
 
     it('should handle async metadata on root and nested components', async () => {
       @Component({
@@ -1529,37 +1622,121 @@ describe('TestBed', () => {
         selector: 'cmp-a',
         template: 'CmpA!',
       })
-      class CmpA {
-      }
+      class CmpA {}
 
       const NestedAotComponent = getAOTCompiledComponent('nested-cmp', [], [CmpA]);
       const RootAotComponent = getAOTCompiledComponent('root', [], [NestedAotComponent]);
 
       TestBed.configureTestingModule({imports: [RootAotComponent]});
 
-      TestBed.overrideComponent(
-          RootAotComponent, {set: {template: `Override of a root template! <nested-cmp />`}});
-      TestBed.overrideComponent(
-          NestedAotComponent, {set: {template: `Override of a nested template! <cmp-a />`}});
+      TestBed.overrideComponent(RootAotComponent, {
+        set: {template: `Override of a root template! <nested-cmp />`},
+      });
+      TestBed.overrideComponent(NestedAotComponent, {
+        set: {template: `Override of a nested template! <cmp-a />`},
+      });
 
       await TestBed.compileComponents();
 
       const fixture = TestBed.createComponent(RootAotComponent);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.textContent)
-          .toBe('Override of a root template! Override of a nested template! CmpA!');
+      expect(fixture.nativeElement.textContent).toBe(
+        'Override of a root template! Override of a nested template! CmpA!',
+      );
+    });
+
+    it('should override providers on dependencies of dynamically loaded components', async () => {
+      function timer(delay: number): Promise<void> {
+        return new Promise<void>((resolve) => {
+          setTimeout(() => resolve(), delay);
+        });
+      }
+
+      @Injectable({providedIn: 'root'})
+      class ImportantService {
+        value = 'original';
+      }
+
+      @NgModule({
+        providers: [ImportantService],
+      })
+      class ThisModuleProvidesService {}
+
+      @Component({
+        standalone: true,
+        selector: 'child',
+        imports: [ThisModuleProvidesService],
+        template: '<h1>{{value}}</h1>',
+      })
+      class ChildCmp {
+        service = inject(ImportantService);
+        value = this.service.value;
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'parent',
+        imports: [ChildCmp],
+        template: `
+          @defer (when true) {
+            <child />
+          }
+        `,
+      })
+      class ParentCmp {}
+
+      const deferrableDependencies = [ChildCmp];
+      setClassMetadataAsync(
+        ParentCmp,
+        function () {
+          const promises: Array<Promise<Type<unknown>>> = deferrableDependencies.map(
+            // Emulates a dynamic import, e.g. `import('./cmp-a').then(m => m.CmpA)`
+            (dep) => new Promise((resolve) => setTimeout(() => resolve(dep))),
+          );
+          return promises;
+        },
+        function (...deferrableSymbols) {
+          setClassMetadata(
+            ParentCmp,
+            [
+              {
+                type: Component,
+                args: [
+                  {
+                    selector: 'parent',
+                    standalone: true,
+                    imports: [...deferrableSymbols],
+                    template: `<div>root cmp!</div>`,
+                  },
+                ],
+              },
+            ],
+            null,
+            null,
+          );
+        },
+      );
+
+      // Set `PLATFORM_ID` to a browser platform value to trigger defer loading
+      // while running tests in Node.
+      const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
+
+      TestBed.configureTestingModule({imports: [ParentCmp], providers: [COMMON_PROVIDERS]});
+      TestBed.overrideProvider(ImportantService, {useValue: {value: 'overridden'}});
+
+      await TestBed.compileComponents();
+
+      const fixture = TestBed.createComponent(ParentCmp);
+      fixture.detectChanges();
+
+      await timer(10);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('overridden');
     });
 
     it('should allow import overrides on components with async metadata', async () => {
-      @Component({
-        standalone: true,
-        selector: 'cmp-a',
-        template: 'CmpA!',
-      })
-      class CmpA {
-      }
-
       const NestedAotComponent = getAOTCompiledComponent('nested-cmp', [], []);
       const RootAotComponent = getAOTCompiledComponent('root', [], []);
 
@@ -1570,7 +1747,7 @@ describe('TestBed', () => {
           // Adding an import that was not present originally
           imports: [NestedAotComponent],
           template: `Override of a root template! <nested-cmp />`,
-        }
+        },
       });
 
       await TestBed.compileComponents();
@@ -1578,8 +1755,9 @@ describe('TestBed', () => {
       const fixture = TestBed.createComponent(RootAotComponent);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.textContent)
-          .toBe('Override of a root template! nested-cmp cmp!');
+      expect(fixture.nativeElement.textContent).toBe(
+        'Override of a root template! nested-cmp cmp!',
+      );
     });
   });
 
@@ -1611,29 +1789,35 @@ describe('TestBed', () => {
           vars: 0,
           dependencies,
           consts: [['dir']],
-          template:
-              (rf: any, ctx: any) => {
-                if (rf & 1) {
-                  elementStart(0, 'div', 0);
-                  text(1, 'Some template');
-                  elementEnd();
-                }
-              },
-          styles: ['body { margin: 0; }']
+          template: (rf: any, ctx: any) => {
+            if (rf & 1) {
+              elementStart(0, 'div', 0);
+              text(1, 'Some template');
+              elementEnd();
+            }
+          },
+          styles: ['body { margin: 0; }'],
         });
       }
       setClassMetadata(
-          ComponentClass, [{
+        ComponentClass,
+        [
+          {
             type: Component,
-            args: [{
-              standalone,
-              imports: dependencies,
-              selector: 'comp',
-              templateUrl: './template.ng.html',
-              styleUrls: ['./style.css'],
-            }]
-          }],
-          null, null);
+            args: [
+              {
+                standalone,
+                imports: dependencies,
+                selector: 'comp',
+                templateUrl: './template.ng.html',
+                styleUrls: ['./style.css'],
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
       return ComponentClass;
     };
 
@@ -1645,7 +1829,10 @@ describe('TestBed', () => {
         providers: [{provide: A, useValue: 'A'}],
       })
       class SomeDir {
-        constructor(@Inject(A) private tokenA: string, private elementRef: ElementRef) {}
+        constructor(
+          @Inject(A) private tokenA: string,
+          private elementRef: ElementRef,
+        ) {}
 
         ngAfterViewInit() {
           this.elementRef.nativeElement.innerHTML = this.tokenA;
@@ -1693,8 +1880,7 @@ describe('TestBed', () => {
 
         selector: 'fixture',
       })
-      class TestFixture {
-      }
+      class TestFixture {}
 
       TestBed.configureTestingModule({
         // Here, SomeComponent is both declared, and then the module which declares it is
@@ -1710,8 +1896,9 @@ describe('TestBed', () => {
       });
       const fixture = TestBed.createComponent(TestFixture);
       // The regex avoids any issues with styling attributes.
-      expect(fixture.nativeElement.innerHTML)
-          .toMatch(/<comp[^>]*><div[^>]*>Some template<\/div><\/comp>/);
+      expect(fixture.nativeElement.innerHTML).toMatch(
+        /<comp[^>]*><div[^>]*>Some template<\/div><\/comp>/,
+      );
     });
   });
 
@@ -1730,30 +1917,29 @@ describe('TestBed', () => {
       }
 
       @Component({selector: 'comp', template: 'someText'})
-      class SomeComponent {
-      }
+      class SomeComponent {}
 
       @NgModule({declarations: [SomeComponent]})
-      class SomeModule {
-      }
+      class SomeModule {}
 
       TestBed.configureTestingModule({imports: [SomeModule]});
 
       // adding Pipe and Directive via metadata override
-      TestBed.overrideModule(
-          SomeModule, {set: {declarations: [SomeComponent, SomePipe, SomeDirective]}});
-      TestBed.overrideComponent(
-          SomeComponent, {set: {template: `<span someDirective>{{'hello' | somePipe}}</span>`}});
+      TestBed.overrideModule(SomeModule, {
+        set: {declarations: [SomeComponent, SomePipe, SomeDirective]},
+      });
+      TestBed.overrideComponent(SomeComponent, {
+        set: {template: `<span someDirective>{{'hello' | somePipe}}</span>`},
+      });
       TestBed.createComponent(SomeComponent);
 
       const cmpDefBeforeReset = (SomeComponent as any).ɵcmp;
       expect(cmpDefBeforeReset.pipeDefs().length).toEqual(1);
-      expect(cmpDefBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
+      expect(cmpDefBeforeReset.directiveDefs().length).toEqual(2); // directive + component
 
-      const modDefBeforeReset = (SomeModule as any).ɵmod;
-      const transitiveScope = modDefBeforeReset.transitiveCompileScopes.compilation;
-      expect(transitiveScope.pipes.size).toEqual(1);
-      expect(transitiveScope.directives.size).toEqual(2);
+      const scopeBeforeReset = depsTracker.getNgModuleScope(SomeModule as NgModuleType);
+      expect(scopeBeforeReset.compilation.pipes.size).toEqual(1);
+      expect(scopeBeforeReset.compilation.directives.size).toEqual(2);
 
       TestBed.resetTestingModule();
 
@@ -1761,32 +1947,42 @@ describe('TestBed', () => {
       expect(cmpDefAfterReset.pipeDefs).toBe(null);
       expect(cmpDefAfterReset.directiveDefs).toBe(null);
 
-      const modDefAfterReset = (SomeModule as any).ɵmod;
-      expect(modDefAfterReset.transitiveCompileScopes).toBe(null);
+      const scopeAfterReset = depsTracker.getNgModuleScope(SomeModule as NgModuleType);
+
+      expect(scopeAfterReset).toEqual({
+        compilation: {
+          pipes: new Set(),
+          directives: new Set([SomeComponent]),
+        },
+        exported: {
+          pipes: new Set(),
+          directives: new Set(),
+        },
+      });
     });
 
     it('should cleanup ng defs for classes with no ng annotations (in case of inheritance)', () => {
       @Component({selector: 'someDirective', template: '...'})
-      class SomeComponent {
-      }
+      class SomeComponent {}
 
       class ComponentWithNoAnnotations extends SomeComponent {}
 
       @Directive({selector: 'some-directive'})
-      class SomeDirective {
-      }
+      class SomeDirective {}
 
       class DirectiveWithNoAnnotations extends SomeDirective {}
 
       @Pipe({name: 'some-pipe'})
-      class SomePipe {
-      }
+      class SomePipe {}
 
       class PipeWithNoAnnotations extends SomePipe {}
 
       TestBed.configureTestingModule({
-        declarations:
-            [ComponentWithNoAnnotations, DirectiveWithNoAnnotations, PipeWithNoAnnotations]
+        declarations: [
+          ComponentWithNoAnnotations,
+          DirectiveWithNoAnnotations,
+          PipeWithNoAnnotations,
+        ],
       });
       TestBed.createComponent(ComponentWithNoAnnotations);
 
@@ -1812,67 +2008,64 @@ describe('TestBed', () => {
       expect(SomePipe.hasOwnProperty('ɵpipe')).toBeTruthy();
     });
 
-    it('should cleanup scopes (configured via `TestBed.configureTestingModule`) between tests',
-       () => {
-         @Component({
-           selector: 'child',
-           template: 'Child comp',
-         })
-         class ChildCmp {
-         }
+    it('should cleanup scopes (configured via `TestBed.configureTestingModule`) between tests', () => {
+      @Component({
+        selector: 'child',
+        template: 'Child comp',
+      })
+      class ChildCmp {}
 
-         @Component({
-           selector: 'root',
-           template: '<child></child>',
-         })
-         class RootCmp {
-         }
+      @Component({
+        selector: 'root',
+        template: '<child></child>',
+      })
+      class RootCmp {}
 
-         // Case #1: `RootCmp` and `ChildCmp` are both included in the `declarations` field of
-         // the testing module, so `ChildCmp` is in the scope of `RootCmp`.
-         TestBed.configureTestingModule({
-           declarations: [RootCmp, ChildCmp],
-         });
+      // Case #1: `RootCmp` and `ChildCmp` are both included in the `declarations` field of
+      // the testing module, so `ChildCmp` is in the scope of `RootCmp`.
+      TestBed.configureTestingModule({
+        declarations: [RootCmp, ChildCmp],
+      });
 
-         let fixture = TestBed.createComponent(RootCmp);
-         fixture.detectChanges();
+      let fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
 
-         let childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
-         expect(childCmpInstance.componentInstance).toBeInstanceOf(ChildCmp);
-         expect(fixture.nativeElement.textContent).toBe('Child comp');
+      let childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+      expect(childCmpInstance.componentInstance).toBeInstanceOf(ChildCmp);
+      expect(fixture.nativeElement.textContent).toBe('Child comp');
 
-         TestBed.resetTestingModule();
+      TestBed.resetTestingModule();
 
-         const spy = spyOn(console, 'error');
+      const spy = spyOn(console, 'error');
 
-         // Case #2: the `TestBed.configureTestingModule` was not invoked, thus the `ChildCmp`
-         // should not be available in the `RootCmp` scope and no child content should be
-         // rendered.
-         fixture = TestBed.createComponent(RootCmp);
-         // also an error should be logged to the user informing them that
-         // the child component is not part of the module
-         expect(spy).toHaveBeenCalledTimes(1);
-         fixture.detectChanges();
+      // Case #2: the `TestBed.configureTestingModule` was not invoked, thus the `ChildCmp`
+      // should not be available in the `RootCmp` scope and no child content should be
+      // rendered.
+      fixture = TestBed.createComponent(RootCmp);
+      // also an error should be logged to the user informing them that
+      // the child component is not part of the module
+      expect(spy).toHaveBeenCalledTimes(1);
+      fixture.detectChanges();
 
-         childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
-         expect(childCmpInstance).toBeNull();
-         expect(fixture.nativeElement.textContent).toBe('');
+      childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+      expect(childCmpInstance).toBeNull();
+      expect(fixture.nativeElement.textContent).toBe('');
 
-         TestBed.resetTestingModule();
+      TestBed.resetTestingModule();
 
-         // Case #3: `ChildCmp` is included in the `declarations` field, but `RootCmp` is not,
-         // so `ChildCmp` is NOT in the scope of `RootCmp` component.
-         TestBed.configureTestingModule({
-           declarations: [ChildCmp],
-         });
+      // Case #3: `ChildCmp` is included in the `declarations` field, but `RootCmp` is not,
+      // so `ChildCmp` is NOT in the scope of `RootCmp` component.
+      TestBed.configureTestingModule({
+        declarations: [ChildCmp],
+      });
 
-         fixture = TestBed.createComponent(RootCmp);
-         fixture.detectChanges();
+      fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
 
-         childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
-         expect(childCmpInstance).toBeNull();
-         expect(fixture.nativeElement.textContent).toBe('');
-       });
+      childCmpInstance = fixture.debugElement.query(By.directive(ChildCmp));
+      expect(childCmpInstance).toBeNull();
+      expect(fixture.nativeElement.textContent).toBe('');
+    });
 
     it('should clean up overridden providers for modules that are imported more than once', () => {
       @Injectable()
@@ -1883,8 +2076,7 @@ describe('TestBed', () => {
       @NgModule({
         providers: [Token],
       })
-      class Module {
-      }
+      class Module {}
 
       TestBed.configureTestingModule({imports: [Module, Module]});
       TestBed.overrideProvider(Token, {useValue: {name: 'fake'}});
@@ -1898,40 +2090,37 @@ describe('TestBed', () => {
       expect((Module as any).ɵinj.providers).toEqual([Token]);
     });
 
-    it('should clean up overridden providers on components whose modules are compiled more than once',
-       async () => {
-         @Injectable()
-         class SomeInjectable {
-           id: string|undefined;
-         }
+    it('should clean up overridden providers on components whose modules are compiled more than once', async () => {
+      @Injectable()
+      class SomeInjectable {
+        id: string | undefined;
+      }
 
-         @Component({providers: [SomeInjectable]})
-         class ComponentWithProvider {
-           constructor(readonly injectable: SomeInjectable) {}
-         }
+      @Component({providers: [SomeInjectable]})
+      class ComponentWithProvider {
+        constructor(readonly injectable: SomeInjectable) {}
+      }
 
-         @NgModule({declarations: [ComponentWithProvider]})
-         class MyModule {
-         }
+      @NgModule({declarations: [ComponentWithProvider]})
+      class MyModule {}
 
-         TestBed.configureTestingModule({imports: [MyModule]});
-         const originalResolver = (ComponentWithProvider as any).ɵcmp.providersResolver;
-         TestBed.overrideProvider(SomeInjectable, {useValue: {id: 'fake'}});
+      TestBed.configureTestingModule({imports: [MyModule]});
+      const originalResolver = (ComponentWithProvider as any).ɵcmp.providersResolver;
+      TestBed.overrideProvider(SomeInjectable, {useValue: {id: 'fake'}});
 
-         const compiler = TestBed.inject(Compiler);
-         await compiler.compileModuleAsync(MyModule);
-         compiler.compileModuleSync(MyModule);
+      const compiler = TestBed.inject(Compiler);
+      await compiler.compileModuleAsync(MyModule);
+      compiler.compileModuleSync(MyModule);
 
-         TestBed.resetTestingModule();
-         expect((ComponentWithProvider as any).ɵcmp.providersResolver).toEqual(originalResolver);
-       });
+      TestBed.resetTestingModule();
+      expect((ComponentWithProvider as any).ɵcmp.providersResolver).toEqual(originalResolver);
+    });
   });
 
   describe('overrides provider', () => {
     it('with empty provider object', () => {
       @Injectable()
-      class Service {
-      }
+      class Service {}
       TestBed.overrideProvider(Service, {});
       // Should be able to get a Service instance because it has no dependencies that can't be
       // resolved
@@ -1950,8 +2139,7 @@ describe('TestBed', () => {
     }
 
     @NgModule({})
-    class DependencyModule {
-    }
+    class DependencyModule {}
 
     // We need to write the compiler output manually here,
     // because it depends on code generated by ngcc.
@@ -1961,13 +2149,11 @@ describe('TestBed', () => {
     }
     setNgModuleScope(TestingModule, {imports: () => [DependencyModule]});
 
-    TestBed
-        .configureTestingModule({
-          imports: [TestingModule],
-          declarations: [AppComponent],
-          providers: [{provide: InjectedString, useValue: {value: 'initial'}}],
-        })
-        .compileComponents();
+    TestBed.configureTestingModule({
+      imports: [TestingModule],
+      declarations: [AppComponent],
+      providers: [{provide: InjectedString, useValue: {value: 'initial'}}],
+    }).compileComponents();
 
     TestBed.overrideProvider(InjectedString, {useValue: {value: 'changed'}}).compileComponents();
 
@@ -2010,8 +2196,9 @@ describe('TestBed', () => {
         expect(TestBed.inject(TOKEN)).toBe('from TestBed');
 
         expect(TestBed.inject(TOKEN, undefined, {skipSelf: true, optional: true})).toBeNull();
-        expect(TestBed.inject(TOKEN, undefined, InjectFlags.SkipSelf | InjectFlags.Optional))
-            .toBeNull();
+        expect(
+          TestBed.inject(TOKEN, undefined, InjectFlags.SkipSelf | InjectFlags.Optional),
+        ).toBeNull();
       });
     });
   });
@@ -2031,6 +2218,27 @@ describe('TestBed', () => {
   });
 });
 
+describe('TestBed defer block behavior', () => {
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+  });
+
+  it('should default defer block behavior to playthrough', () => {
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Playthrough);
+  });
+
+  it('should be able to configure defer block behavior', () => {
+    TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Manual});
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Manual);
+  });
+
+  it('should reset the defer block behavior back to the default when TestBed is reset', () => {
+    TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Manual});
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Manual);
+    TestBed.resetTestingModule();
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Playthrough);
+  });
+});
 
 describe('TestBed module teardown', () => {
   beforeEach(() => {
@@ -2058,9 +2266,22 @@ describe('TestBed module teardown', () => {
     TestBed.configureTestingModule({
       providers: [SimpleService],
       declarations: [GreetingCmp],
-      teardown: {destroyAfterEach: true}
+      teardown: {destroyAfterEach: true},
     });
     TestBed.createComponent(GreetingCmp);
+
+    expect(SimpleService.ngOnDestroyCalls).toBe(0);
+    TestBed.resetTestingModule();
+    expect(SimpleService.ngOnDestroyCalls).toBe(1);
+  });
+
+  it('should not error on mocked and partially-implemented `DOCUMENT`', () => {
+    SimpleService.ngOnDestroyCalls = 0;
+    TestBed.configureTestingModule({
+      providers: [SimpleService, {provide: DOCUMENT, useValue: {}}],
+      teardown: {destroyAfterEach: true},
+    });
+    TestBed.inject(SimpleService);
 
     expect(SimpleService.ngOnDestroyCalls).toBe(0);
     TestBed.resetTestingModule();
@@ -2095,8 +2316,9 @@ describe('TestBed module teardown', () => {
     TestBed.createComponent(ThrowsOnDestroy);
 
     const spy = spyOn(console, 'error');
-    expect(() => TestBed.resetTestingModule())
-        .toThrowError('1 component threw errors during cleanup');
+    expect(() => TestBed.resetTestingModule()).toThrowError(
+      '1 component threw errors during cleanup',
+    );
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
@@ -2118,8 +2340,9 @@ describe('TestBed module teardown', () => {
     }
 
     const spy = spyOn(console, 'error');
-    expect(() => TestBed.resetTestingModule())
-        .toThrowError('3 components threw errors during cleanup');
+    expect(() => TestBed.resetTestingModule()).toThrowError(
+      '3 components threw errors during cleanup',
+    );
     expect(spy).toHaveBeenCalledTimes(3);
   });
 
@@ -2171,43 +2394,36 @@ describe('TestBed module teardown', () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
-  it('should remove the styles associated with a test component when the test module is torn down',
-     () => {
-       @Component({
-         template: '<span>Hello</span>',
-         styles: [`span {color: hotpink;}`],
-       })
-       class StyledComp1 {
-       }
+  it('should remove the styles associated with a test component when the test module is torn down', () => {
+    @Component({
+      template: '<span>Hello</span>',
+      styles: [`span {color: hotpink;}`],
+    })
+    class StyledComp1 {}
 
-       @Component({
-         template: '<div>Hello</div>',
-         styles: [`div {color: red;}`],
-       })
-       class StyledComp2 {
-       }
+    @Component({
+      template: '<div>Hello</div>',
+      styles: [`div {color: red;}`],
+    })
+    class StyledComp2 {}
 
-       TestBed.configureTestingModule({
-         declarations: [StyledComp1, StyledComp2],
-         teardown: {destroyAfterEach: true},
-       });
+    TestBed.configureTestingModule({
+      declarations: [StyledComp1, StyledComp2],
+      teardown: {destroyAfterEach: true},
+    });
 
-       const fixtures = [
-         TestBed.createComponent(StyledComp1),
-         TestBed.createComponent(StyledComp2),
-       ];
-       const fixtureDocument = fixtures[0].nativeElement.ownerDocument;
-       const styleCountBefore = fixtureDocument.querySelectorAll('style').length;
+    const fixtures = [TestBed.createComponent(StyledComp1), TestBed.createComponent(StyledComp2)];
+    const fixtureDocument = fixtures[0].nativeElement.ownerDocument;
+    const styleCountBefore = fixtureDocument.querySelectorAll('style').length;
 
-       // Note that we can only assert that the behavior works as expected by checking that the
-       // number of stylesheets has decreased. We can't expect that they'll be zero, because there
-       // may by stylesheets leaking in from other tests that don't use the module teardown
-       // behavior.
-       expect(styleCountBefore).toBeGreaterThan(0);
-       TestBed.resetTestingModule();
-       expect(fixtureDocument.querySelectorAll('style').length).toBeLessThan(styleCountBefore);
-     });
-
+    // Note that we can only assert that the behavior works as expected by checking that the
+    // number of stylesheets has decreased. We can't expect that they'll be zero, because there
+    // may by stylesheets leaking in from other tests that don't use the module teardown
+    // behavior.
+    expect(styleCountBefore).toBeGreaterThan(0);
+    TestBed.resetTestingModule();
+    expect(fixtureDocument.querySelectorAll('style').length).toBeLessThan(styleCountBefore);
+  });
 
   it('should remove the fixture root element from the DOM when module teardown is enabled', () => {
     TestBed.configureTestingModule({
@@ -2223,8 +2439,9 @@ describe('TestBed module teardown', () => {
   });
 
   it('should rethrow errors based on the default teardown behavior', () => {
-    expect(TestBedImpl.INSTANCE.shouldRethrowTeardownErrors())
-        .toBe(TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT);
+    expect(TestBedImpl.INSTANCE.shouldRethrowTeardownErrors()).toBe(
+      TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT,
+    );
   });
 
   it('should rethrow errors if the option is omitted and test teardown is enabled', () => {
@@ -2254,8 +2471,9 @@ describe('TestBed module `errorOnUnknownElements`', () => {
   });
 
   it('should not throw based on the default behavior', () => {
-    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownElements())
-        .toBe(THROW_ON_UNKNOWN_ELEMENTS_DEFAULT);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownElements()).toBe(
+      THROW_ON_UNKNOWN_ELEMENTS_DEFAULT,
+    );
   });
 
   it('should not throw if the option is omitted', () => {
@@ -2282,8 +2500,9 @@ describe('TestBed module `errorOnUnknownProperties`', () => {
   });
 
   it('should not throw based on the default behavior', () => {
-    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties())
-        .toBe(THROW_ON_UNKNOWN_PROPERTIES_DEFAULT);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(
+      THROW_ON_UNKNOWN_PROPERTIES_DEFAULT,
+    );
   });
 
   it('should not throw if the option is omitted', () => {

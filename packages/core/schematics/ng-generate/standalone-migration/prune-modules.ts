@@ -13,7 +13,14 @@ import {ChangeTracker, ImportRemapper} from '../../utils/change_tracker';
 import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {closestNode} from '../../utils/typescript/nodes';
 
-import {findClassDeclaration, findLiteralProperty, getNodeLookup, offsetsToNodes, ReferenceResolver, UniqueItemTracker} from './util';
+import {
+  findClassDeclaration,
+  findLiteralProperty,
+  getNodeLookup,
+  offsetsToNodes,
+  ReferenceResolver,
+  UniqueItemTracker,
+} from './util';
 
 /** Keeps track of the places from which we need to remove AST nodes. */
 interface RemovalLocations {
@@ -24,20 +31,31 @@ interface RemovalLocations {
 }
 
 export function pruneNgModules(
-    program: NgtscProgram, host: ts.CompilerHost, basePath: string, rootFileNames: string[],
-    sourceFiles: ts.SourceFile[], printer: ts.Printer, importRemapper?: ImportRemapper,
-    referenceLookupExcludedFiles?: RegExp) {
+  program: NgtscProgram,
+  host: ts.CompilerHost,
+  basePath: string,
+  rootFileNames: string[],
+  sourceFiles: ts.SourceFile[],
+  printer: ts.Printer,
+  importRemapper?: ImportRemapper,
+  referenceLookupExcludedFiles?: RegExp,
+) {
   const filesToRemove = new Set<ts.SourceFile>();
   const tracker = new ChangeTracker(printer, importRemapper);
   const tsProgram = program.getTsProgram();
   const typeChecker = tsProgram.getTypeChecker();
-  const referenceResolver =
-      new ReferenceResolver(program, host, rootFileNames, basePath, referenceLookupExcludedFiles);
+  const referenceResolver = new ReferenceResolver(
+    program,
+    host,
+    rootFileNames,
+    basePath,
+    referenceLookupExcludedFiles,
+  );
   const removalLocations: RemovalLocations = {
     arrays: new UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>(),
     imports: new UniqueItemTracker<ts.NamedImports, ts.Node>(),
     exports: new UniqueItemTracker<ts.NamedExports, ts.Node>(),
-    unknown: new Set<ts.Node>()
+    unknown: new Set<ts.Node>(),
   };
   const classesToRemove = new Set<ts.ClassDeclaration>();
   const barrelExports = new UniqueItemTracker<ts.SourceFile, ts.ExportDeclaration>();
@@ -48,10 +66,15 @@ export function pruneNgModules(
       collectRemovalLocations(node, removalLocations, referenceResolver, program);
       classesToRemove.add(node);
     } else if (
-        ts.isExportDeclaration(node) && !node.exportClause && node.moduleSpecifier &&
-        ts.isStringLiteralLike(node.moduleSpecifier) && node.moduleSpecifier.text.startsWith('.')) {
-      const exportedSourceFile =
-          typeChecker.getSymbolAtLocation(node.moduleSpecifier)?.valueDeclaration?.getSourceFile();
+      ts.isExportDeclaration(node) &&
+      !node.exportClause &&
+      node.moduleSpecifier &&
+      ts.isStringLiteralLike(node.moduleSpecifier) &&
+      node.moduleSpecifier.text.startsWith('.')
+    ) {
+      const exportedSourceFile = typeChecker
+        .getSymbolAtLocation(node.moduleSpecifier)
+        ?.valueDeclaration?.getSourceFile();
 
       if (exportedSourceFile) {
         barrelExports.track(exportedSourceFile, node);
@@ -105,8 +128,11 @@ export function pruneNgModules(
  * @param program
  */
 function collectRemovalLocations(
-    ngModule: ts.ClassDeclaration, removalLocations: RemovalLocations,
-    referenceResolver: ReferenceResolver, program: NgtscProgram) {
+  ngModule: ts.ClassDeclaration,
+  removalLocations: RemovalLocations,
+  referenceResolver: ReferenceResolver,
+  program: NgtscProgram,
+) {
   const refsByFile = referenceResolver.findReferencesInProject(ngModule.name!);
   const tsProgram = program.getTsProgram();
   const nodes = new Set<ts.Node>();
@@ -148,14 +174,18 @@ function collectRemovalLocations(
  * @param tracker Tracker in which to register the changes.
  */
 function removeArrayReferences(
-    locations: UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>,
-    tracker: ChangeTracker): void {
+  locations: UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>,
+  tracker: ChangeTracker,
+): void {
   for (const [array, toRemove] of locations.getEntries()) {
     const newElements = filterRemovedElements(array.elements, toRemove);
     tracker.replaceNode(
+      array,
+      ts.factory.updateArrayLiteralExpression(
         array,
-        ts.factory.updateArrayLiteralExpression(
-            array, ts.factory.createNodeArray(newElements, array.elements.hasTrailingComma)));
+        ts.factory.createNodeArray(newElements, array.elements.hasTrailingComma),
+      ),
+    );
   }
 }
 
@@ -165,7 +195,9 @@ function removeArrayReferences(
  * @param tracker Tracker in which to register the changes.
  */
 function removeImportReferences(
-    locations: UniqueItemTracker<ts.NamedImports, ts.Node>, tracker: ChangeTracker) {
+  locations: UniqueItemTracker<ts.NamedImports, ts.Node>,
+  tracker: ChangeTracker,
+) {
   for (const [namedImports, toRemove] of locations.getEntries()) {
     const newElements = filterRemovedElements(namedImports.elements, toRemove);
 
@@ -177,9 +209,14 @@ function removeImportReferences(
       // e.g. `import Foo, {ModuleToRemove} from './foo';` becomes `import Foo from './foo';`.
       if (importClause && importClause.name) {
         tracker.replaceNode(
+          importClause,
+          ts.factory.updateImportClause(
             importClause,
-            ts.factory.updateImportClause(
-                importClause, importClause.isTypeOnly, importClause.name, undefined));
+            importClause.isTypeOnly,
+            importClause.name,
+            undefined,
+          ),
+        );
       } else {
         // Otherwise we can drop the entire declaration.
         const declaration = closestNode(namedImports, ts.isImportDeclaration);
@@ -201,7 +238,9 @@ function removeImportReferences(
  * @param tracker Tracker in which to register the changes.
  */
 function removeExportReferences(
-    locations: UniqueItemTracker<ts.NamedExports, ts.Node>, tracker: ChangeTracker) {
+  locations: UniqueItemTracker<ts.NamedExports, ts.Node>,
+  tracker: ChangeTracker,
+) {
   for (const [namedExports, toRemove] of locations.getEntries()) {
     const newElements = filterRemovedElements(namedExports.elements, toRemove);
 
@@ -238,14 +277,16 @@ function canRemoveClass(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker):
   }
 
   // Unsupported case, e.g. `@NgModule(SOME_VALUE)`.
-  if (decorator.expression.arguments.length > 0 &&
-      !ts.isObjectLiteralExpression(decorator.expression.arguments[0])) {
+  if (
+    decorator.expression.arguments.length > 0 &&
+    !ts.isObjectLiteralExpression(decorator.expression.arguments[0])
+  ) {
     return false;
   }
 
   // We can't remove modules that have class members. We make an exception for an
   // empty constructor which may have been generated by a tool and forgotten.
-  if (node.members.length > 0 && node.members.some(member => !isEmptyConstructor(member))) {
+  if (node.members.length > 0 && node.members.some((member) => !isEmptyConstructor(member))) {
     return false;
   }
 
@@ -266,13 +307,17 @@ function canRemoveClass(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker):
       }
 
       const depDeclaration = findClassDeclaration(dep, typeChecker);
-      const depNgModule =
-          depDeclaration ? findNgModuleDecorator(depDeclaration, typeChecker) : null;
+      const depNgModule = depDeclaration
+        ? findNgModuleDecorator(depDeclaration, typeChecker)
+        : null;
 
       // If any of the dependencies of the class is an `NgModule` that can't be removed, the class
       // itself can't be removed either, because it may be part of a transitive dependency chain.
-      if (depDeclaration !== null && depNgModule !== null &&
-          !canRemoveClass(depDeclaration, typeChecker)) {
+      if (
+        depDeclaration !== null &&
+        depNgModule !== null &&
+        !canRemoveClass(depDeclaration, typeChecker)
+      ) {
         return false;
       }
     }
@@ -282,9 +327,12 @@ function canRemoveClass(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker):
   // Also err on the side of caution and don't remove modules where any of the aforementioned
   // properties aren't initialized to an array literal.
   for (const prop of literal.properties) {
-    if (isNonEmptyNgModuleProperty(prop) &&
-        (prop.name.text === 'declarations' || prop.name.text === 'providers' ||
-         prop.name.text === 'bootstrap')) {
+    if (
+      isNonEmptyNgModuleProperty(prop) &&
+      (prop.name.text === 'declarations' ||
+        prop.name.text === 'providers' ||
+        prop.name.text === 'bootstrap')
+    ) {
       return false;
     }
   }
@@ -298,10 +346,15 @@ function canRemoveClass(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker):
  * element.
  * @param node Node to be checked.
  */
-function isNonEmptyNgModuleProperty(node: ts.Node): node is ts.PropertyAssignment&
-    {name: ts.Identifier, initializer: ts.ArrayLiteralExpression} {
-  return ts.isPropertyAssignment(node) && ts.isIdentifier(node.name) &&
-      ts.isArrayLiteralExpression(node.initializer) && node.initializer.elements.length > 0;
+function isNonEmptyNgModuleProperty(
+  node: ts.Node,
+): node is ts.PropertyAssignment & {name: ts.Identifier; initializer: ts.ArrayLiteralExpression} {
+  return (
+    ts.isPropertyAssignment(node) &&
+    ts.isIdentifier(node.name) &&
+    ts.isArrayLiteralExpression(node.initializer) &&
+    node.initializer.elements.length > 0
+  );
 }
 
 /**
@@ -316,9 +369,11 @@ function canRemoveFile(sourceFile: ts.SourceFile, nodesToBeRemoved: Set<ts.Node>
       continue;
     }
 
-    if (ts.isExportDeclaration(node) ||
-        (ts.canHaveModifiers(node) &&
-         ts.getModifiers(node)?.some(m => m.kind === ts.SyntaxKind.ExportKeyword))) {
+    if (
+      ts.isExportDeclaration(node) ||
+      (ts.canHaveModifiers(node) &&
+        ts.getModifiers(node)?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword))
+    ) {
       return false;
     }
   }
@@ -332,9 +387,12 @@ function canRemoveFile(sourceFile: ts.SourceFile, nodesToBeRemoved: Set<ts.Node>
  * @param child Child node that is being checked.
  */
 function contains(parent: ts.Node, child: ts.Node): boolean {
-  return parent === child ||
-      (parent.getSourceFile().fileName === child.getSourceFile().fileName &&
-       child.getStart() >= parent.getStart() && child.getStart() <= parent.getEnd());
+  return (
+    parent === child ||
+    (parent.getSourceFile().fileName === child.getSourceFile().fileName &&
+      child.getStart() >= parent.getStart() &&
+      child.getStart() <= parent.getEnd())
+  );
 }
 
 /**
@@ -343,8 +401,10 @@ function contains(parent: ts.Node, child: ts.Node): boolean {
  * @param toRemove Nodes that should be removed.
  */
 function filterRemovedElements<T extends ts.Node>(
-    elements: ts.NodeArray<T>, toRemove: Set<ts.Node>): T[] {
-  return elements.filter(el => {
+  elements: ts.NodeArray<T>,
+  toRemove: Set<ts.Node>,
+): T[] {
+  return elements.filter((el) => {
     for (const node of toRemove) {
       // Check that the element contains the node, despite knowing with relative certainty that it
       // does, because this allows us to unwrap some nodes. E.g. if we have `[((toRemove))]`, we
@@ -359,8 +419,11 @@ function filterRemovedElements<T extends ts.Node>(
 
 /** Returns whether a node as an empty constructor. */
 function isEmptyConstructor(node: ts.Node): boolean {
-  return ts.isConstructorDeclaration(node) && node.parameters.length === 0 &&
-      (node.body == null || node.body.statements.length === 0);
+  return (
+    ts.isConstructorDeclaration(node) &&
+    node.parameters.length === 0 &&
+    (node.body == null || node.body.statements.length === 0)
+  );
 }
 
 /**
@@ -376,14 +439,18 @@ function addRemovalTodos(nodes: Set<ts.Node>, tracker: ChangeTracker) {
     // the same node. In practice it is unlikely, because the second time the node won't be picked
     // up by the language service as a reference, because the class won't exist anymore.
     tracker.insertText(
-        node.getSourceFile(), node.getFullStart(),
-        ` /* TODO(standalone-migration): clean up removed NgModule reference manually. */ `);
+      node.getSourceFile(),
+      node.getFullStart(),
+      ` /* TODO(standalone-migration): clean up removed NgModule reference manually. */ `,
+    );
   }
 }
 
 /** Finds the `NgModule` decorator in a class, if it exists. */
-function findNgModuleDecorator(node: ts.ClassDeclaration, typeChecker: ts.TypeChecker): NgDecorator|
-    null {
+function findNgModuleDecorator(
+  node: ts.ClassDeclaration,
+  typeChecker: ts.TypeChecker,
+): NgDecorator | null {
   const decorators = getAngularDecorators(typeChecker, ts.getDecorators(node) || []);
-  return decorators.find(decorator => decorator.name === 'NgModule') || null;
+  return decorators.find((decorator) => decorator.name === 'NgModule') || null;
 }

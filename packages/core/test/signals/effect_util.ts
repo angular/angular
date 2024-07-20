@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Watch, WatchCleanupFn} from '@angular/core/src/signals';
+import {createWatch, Watch, WatchCleanupFn} from '@angular/core/primitives/signals';
 
 let queue = new Set<Watch>();
 
 /**
  * A wrapper around `Watch` that emulates the `effect` API and allows for more streamlined testing.
  */
-export function testingEffect(effectFn: (onCleanup: (cleanupFn: WatchCleanupFn) => void) => void):
-    void {
-  const watch = new Watch(effectFn, queue.add.bind(queue), true);
+export function testingEffect(
+  effectFn: (onCleanup: (cleanupFn: WatchCleanupFn) => void) => void,
+): void {
+  const w = createWatch(effectFn, queue.add.bind(queue), true);
 
   // Effects start dirty.
-  watch.notify();
+  w.notify();
 }
 
 export function flushEffects(): void {

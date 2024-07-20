@@ -36,27 +36,29 @@
   }
 }
 
+.mdc-card {
+  flex-direction: row;
+}
+
 .up-down-buttons {
   display: flex;
 
   button {
-    width: 24px;
-    height: 24px;
-  }
-}
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
 
-:host {
-  ::ng-deep {
-    .up-down-buttons {
-      .mat-icon-button {
-        line-height: 25px;
-      }
+    opacity: 0.5;
 
-      button {
-        mat-icon {
-          opacity: 0.5;
-        }
-      }
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:active {
+      opacity: 1;
     }
   }
 }
@@ -69,5 +71,9 @@
         color: #ffffff;
       }
     }
+  }
+
+  mat-icon {
+    color: #fff;
   }
 }

@@ -46,46 +46,53 @@ import {assertComponentDef} from './errors';
  * const applicationRef = await bootstrapApplication(RootComponent);
  *
  * // Locate a DOM node that would be used as a host.
- * const host = document.getElementById('hello-component-host');
+ * const hostElement = document.getElementById('hello-component-host');
  *
  * // Get an `EnvironmentInjector` instance from the `ApplicationRef`.
  * const environmentInjector = applicationRef.injector;
  *
  * // We can now create a `ComponentRef` instance.
- * const componentRef = createComponent(HelloComponent, {host, environmentInjector});
+ * const componentRef = createComponent(HelloComponent, {hostElement, environmentInjector});
  *
  * // Last step is to register the newly created ref using the `ApplicationRef` instance
  * // to include the component view into change detection cycles.
  * applicationRef.attachView(componentRef.hostView);
+ * componentRef.changeDetectorRef.detectChanges();
  * ```
  *
  * @param component Component class reference.
  * @param options Set of options to use:
- *  * `environmentInjector`: An `EnvironmentInjector` instance to be used for the component, see
- * additional info about it [here](/guide/standalone-components#environment-injectors).
+ *  * `environmentInjector`: An `EnvironmentInjector` instance to be used for the component.
  *  * `hostElement` (optional): A DOM node that should act as a host node for the component. If not
  * provided, Angular creates one based on the tag name used in the component selector (and falls
  * back to using `div` if selector doesn't have tag name info).
  *  * `elementInjector` (optional): An `ElementInjector` instance, see additional info about it
- * [here](/guide/hierarchical-dependency-injection#elementinjector).
+ * [here](guide/di/hierarchical-dependency-injection#elementinjector).
  *  * `projectableNodes` (optional): A list of DOM nodes that should be projected through
  *                      [`<ng-content>`](api/core/ng-content) of the new component instance.
  * @returns ComponentRef instance that represents a given Component.
  *
  * @publicApi
  */
-export function createComponent<C>(component: Type<C>, options: {
-  environmentInjector: EnvironmentInjector,
-  hostElement?: Element,
-  elementInjector?: Injector,
-  projectableNodes?: Node[][],
-}): ComponentRef<C> {
+export function createComponent<C>(
+  component: Type<C>,
+  options: {
+    environmentInjector: EnvironmentInjector;
+    hostElement?: Element;
+    elementInjector?: Injector;
+    projectableNodes?: Node[][];
+  },
+): ComponentRef<C> {
   ngDevMode && assertComponentDef(component);
   const componentDef = getComponentDef(component)!;
   const elementInjector = options.elementInjector || getNullInjector();
   const factory = new ComponentFactory<C>(componentDef);
   return factory.create(
-      elementInjector, options.projectableNodes, options.hostElement, options.environmentInjector);
+    elementInjector,
+    options.projectableNodes,
+    options.hostElement,
+    options.environmentInjector,
+  );
 }
 
 /**
@@ -107,14 +114,15 @@ export interface ComponentMirror<C> {
    * The inputs of the component.
    */
   get inputs(): ReadonlyArray<{
-    readonly propName: string,
-    readonly templateName: string,
-    readonly transform?: (value: any) => any,
+    readonly propName: string;
+    readonly templateName: string;
+    readonly transform?: (value: any) => any;
+    readonly isSignal: boolean;
   }>;
   /**
    * The outputs of the component.
    */
-  get outputs(): ReadonlyArray<{readonly propName: string, readonly templateName: string}>;
+  get outputs(): ReadonlyArray<{readonly propName: string; readonly templateName: string}>;
   /**
    * Selector for all <ng-content> elements in the component.
    */
@@ -170,7 +178,7 @@ export interface ComponentMirror<C> {
  *
  * @publicApi
  */
-export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|null {
+export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> | null {
   const componentDef = getComponentDef(component);
   if (!componentDef) return null;
 
@@ -183,13 +191,14 @@ export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|
       return factory.componentType;
     },
     get inputs(): ReadonlyArray<{
-      propName: string,
-      templateName: string,
-      transform?: (value: any) => any,
+      propName: string;
+      templateName: string;
+      transform?: (value: any) => any;
+      isSignal: boolean;
     }> {
       return factory.inputs;
     },
-    get outputs(): ReadonlyArray<{propName: string, templateName: string}> {
+    get outputs(): ReadonlyArray<{propName: string; templateName: string}> {
       return factory.outputs;
     },
     get ngContentSelectors(): ReadonlyArray<string> {

@@ -5,7 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem,} from '@angular/compiler-cli/private/localize';
+import {
+  AbsoluteFsPath,
+  PathSegment,
+  ReadonlyFileSystem,
+} from '@angular/compiler-cli/private/localize';
 import {MessageId, ɵParsedTranslation} from '@angular/localize';
 
 import {Diagnostics} from '../diagnostics';
@@ -35,7 +39,7 @@ export interface TranslationHandler {
    * @param relativeFilePath A relative path from the sourceRoot to the resource file to handle.
    * @param contents The contents of the file to handle.
    */
-  canTranslate(relativeFilePath: PathSegment|AbsoluteFsPath, contents: Uint8Array): boolean;
+  canTranslate(relativeFilePath: PathSegment | AbsoluteFsPath, contents: Uint8Array): boolean;
 
   /**
    * Translate the file at `relativeFilePath` containing `contents`, using the given `translations`,
@@ -53,9 +57,14 @@ export interface TranslationHandler {
    * stripped out.
    */
   translate(
-      diagnostics: Diagnostics, sourceRoot: AbsoluteFsPath,
-      relativeFilePath: PathSegment|AbsoluteFsPath, contents: Uint8Array,
-      outputPathFn: OutputPathFn, translations: TranslationBundle[], sourceLocale?: string): void;
+    diagnostics: Diagnostics,
+    sourceRoot: AbsoluteFsPath,
+    relativeFilePath: PathSegment | AbsoluteFsPath,
+    contents: Uint8Array,
+    outputPathFn: OutputPathFn,
+    translations: TranslationBundle[],
+    sourceLocale?: string,
+  ): void;
 }
 
 /**
@@ -64,12 +73,18 @@ export interface TranslationHandler {
  */
 export class Translator {
   constructor(
-      private fs: ReadonlyFileSystem, private resourceHandlers: TranslationHandler[],
-      private diagnostics: Diagnostics) {}
+    private fs: ReadonlyFileSystem,
+    private resourceHandlers: TranslationHandler[],
+    private diagnostics: Diagnostics,
+  ) {}
 
   translateFiles(
-      inputPaths: PathSegment[], rootPath: AbsoluteFsPath, outputPathFn: OutputPathFn,
-      translations: TranslationBundle[], sourceLocale?: string): void {
+    inputPaths: PathSegment[],
+    rootPath: AbsoluteFsPath,
+    outputPathFn: OutputPathFn,
+    translations: TranslationBundle[],
+    sourceLocale?: string,
+  ): void {
     inputPaths.forEach((inputPath) => {
       const absInputPath = this.fs.resolve(rootPath, inputPath);
       const contents = this.fs.readFileBuffer(absInputPath);
@@ -77,8 +92,14 @@ export class Translator {
       for (const resourceHandler of this.resourceHandlers) {
         if (resourceHandler.canTranslate(relativePath, contents)) {
           return resourceHandler.translate(
-              this.diagnostics, rootPath, relativePath, contents, outputPathFn, translations,
-              sourceLocale);
+            this.diagnostics,
+            rootPath,
+            relativePath,
+            contents,
+            outputPathFn,
+            translations,
+            sourceLocale,
+          );
         }
       }
       this.diagnostics.error(`Unable to handle resource file: ${inputPath}`);

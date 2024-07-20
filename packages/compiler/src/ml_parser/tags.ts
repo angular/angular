@@ -9,12 +9,12 @@
 export enum TagContentType {
   RAW_TEXT,
   ESCAPABLE_RAW_TEXT,
-  PARSABLE_DATA
+  PARSABLE_DATA,
 }
 
 export interface TagDefinition {
   closedByParent: boolean;
-  implicitNamespacePrefix: string|null;
+  implicitNamespacePrefix: string | null;
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean;
@@ -24,7 +24,7 @@ export interface TagDefinition {
   getContentType(prefix?: string): TagContentType;
 }
 
-export function splitNsName(elementName: string): [string|null, string] {
+export function splitNsName(elementName: string, fatal: boolean = true): [string | null, string] {
   if (elementName[0] != ':') {
     return [null, elementName];
   }
@@ -32,7 +32,11 @@ export function splitNsName(elementName: string): [string|null, string] {
   const colonIndex = elementName.indexOf(':', 1);
 
   if (colonIndex === -1) {
-    throw new Error(`Unsupported format "${elementName}" expecting ":namespace:name"`);
+    if (fatal) {
+      throw new Error(`Unsupported format "${elementName}" expecting ":namespace:name"`);
+    } else {
+      return [null, elementName];
+    }
   }
 
   return [elementName.slice(1, colonIndex), elementName.slice(colonIndex + 1)];
@@ -55,7 +59,7 @@ export function isNgTemplate(tagName: string): boolean {
 
 export function getNsPrefix(fullName: string): string;
 export function getNsPrefix(fullName: null): null;
-export function getNsPrefix(fullName: string|null): string|null {
+export function getNsPrefix(fullName: string | null): string | null {
   return fullName === null ? null : splitNsName(fullName)[0];
 }
 

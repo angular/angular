@@ -6,16 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {
+  Directive,
+  DoCheck,
+  ElementRef,
+  EventEmitter,
+  Injector,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 
-import {IAttributes, IAugmentedJQuery, IDirective, IInjectorService, ILinkFn, IScope, ITranscludeFunction} from '../../src/common/src/angular1';
-import {$SCOPE} from '../../src/common/src/constants';
-import {IBindingDestination, IControllerInstance, UpgradeHelper} from '../../src/common/src/upgrade_helper';
-import {isFunction} from '../../src/common/src/util';
+import {ɵangular1, ɵconstants, ɵupgradeHelper, ɵutil} from '../common';
 
 const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 const INITIAL_VALUE = {
-  __UNINITIALIZED__: true
+  __UNINITIALIZED__: true,
 };
 
 class Bindings {
@@ -69,21 +76,21 @@ class Bindings {
  */
 @Directive()
 export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
-  private helper: UpgradeHelper;
+  private helper: ɵupgradeHelper.UpgradeHelper;
 
-  private $element: IAugmentedJQuery;
-  private $componentScope: IScope;
+  private $element: ɵangular1.IAugmentedJQuery;
+  private $componentScope: ɵangular1.IScope;
 
-  private directive: IDirective;
+  private directive: ɵangular1.IDirective;
   private bindings: Bindings;
 
-  private controllerInstance?: IControllerInstance;
-  private bindingDestination?: IBindingDestination;
+  private controllerInstance?: ɵupgradeHelper.IControllerInstance;
+  private bindingDestination?: ɵupgradeHelper.IBindingDestination;
 
   // We will be instantiating the controller in the `ngOnInit` hook, when the
   // first `ngOnChanges` will have been already triggered. We store the
   // `SimpleChanges` and "play them back" later.
-  private pendingChanges: SimpleChanges|null = null;
+  private pendingChanges: SimpleChanges | null = null;
 
   private unregisterDoCheckWatcher?: Function;
 
@@ -99,7 +106,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
    *   injection into the base class constructor.
    */
   constructor(name: string, elementRef: ElementRef, injector: Injector) {
-    this.helper = new UpgradeHelper(injector, name, elementRef);
+    this.helper = new ɵupgradeHelper.UpgradeHelper(injector, name, elementRef);
 
     this.$element = this.helper.$element;
 
@@ -108,7 +115,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // We ask for the AngularJS scope from the Angular injector, since
     // we will put the new component scope onto the new injector for each component
-    const $parentScope = injector.get($SCOPE);
+    const $parentScope = injector.get(ɵconstants.$SCOPE);
     // QUESTION 1: Should we create an isolated scope if the scope is only true?
     // QUESTION 2: Should we make the scope accessible through `$element.scope()/isolateScope()`?
     this.$componentScope = $parentScope.$new(!!this.directive.scope);
@@ -119,24 +126,25 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   /** @nodoc */
   ngOnInit() {
     // Collect contents, insert and compile template
-    const attachChildNodes: ILinkFn|undefined = this.helper.prepareTransclusion();
+    const attachChildNodes: ɵangular1.ILinkFn | undefined = this.helper.prepareTransclusion();
     const linkFn = this.helper.compileTemplate();
 
     // Instantiate controller
     const controllerType = this.directive.controller;
     const bindToController = this.directive.bindToController;
-    let controllerInstance = controllerType ?
-        this.helper.buildController(controllerType, this.$componentScope) :
-        undefined;
-    let bindingDestination: IBindingDestination;
+    let controllerInstance = controllerType
+      ? this.helper.buildController(controllerType, this.$componentScope)
+      : undefined;
+    let bindingDestination: ɵupgradeHelper.IBindingDestination;
 
     if (!bindToController) {
       bindingDestination = this.$componentScope;
     } else if (controllerType && controllerInstance) {
       bindingDestination = controllerInstance;
     } else {
-      throw new Error(`Upgraded directive '${
-          this.directive.name}' specifies 'bindToController' but no controller.`);
+      throw new Error(
+        `Upgraded directive '${this.directive.name}' specifies 'bindToController' but no controller.`,
+      );
     }
     this.controllerInstance = controllerInstance;
     this.bindingDestination = bindingDestination;
@@ -154,12 +162,12 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     }
 
     // Hook: $onInit
-    if (this.controllerInstance && isFunction(this.controllerInstance.$onInit)) {
+    if (this.controllerInstance && ɵutil.isFunction(this.controllerInstance.$onInit)) {
       this.controllerInstance.$onInit();
     }
 
     // Hook: $doCheck
-    if (controllerInstance && isFunction(controllerInstance.$doCheck)) {
+    if (controllerInstance && ɵutil.isFunction(controllerInstance.$doCheck)) {
       const callDoCheck = () => controllerInstance?.$doCheck?.();
 
       this.unregisterDoCheckWatcher = this.$componentScope.$parent.$watch(callDoCheck);
@@ -170,8 +178,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     const link = this.directive.link;
     const preLink = typeof link == 'object' && link.pre;
     const postLink = typeof link == 'object' ? link.post : link;
-    const attrs: IAttributes = NOT_SUPPORTED;
-    const transcludeFn: ITranscludeFunction = NOT_SUPPORTED;
+    const attrs: ɵangular1.IAttributes = NOT_SUPPORTED;
+    const transcludeFn: ɵangular1.ITranscludeFunction = NOT_SUPPORTED;
     if (preLink) {
       preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
@@ -183,7 +191,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     }
 
     // Hook: $postLink
-    if (this.controllerInstance && isFunction(this.controllerInstance.$postLink)) {
+    if (this.controllerInstance && ɵutil.isFunction(this.controllerInstance.$postLink)) {
       this.controllerInstance.$postLink();
     }
   }
@@ -219,24 +227,25 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   /** @nodoc */
   ngOnDestroy() {
-    if (isFunction(this.unregisterDoCheckWatcher)) {
+    if (ɵutil.isFunction(this.unregisterDoCheckWatcher)) {
       this.unregisterDoCheckWatcher();
     }
     this.helper.onDestroy(this.$componentScope, this.controllerInstance);
   }
 
-  private initializeBindings(directive: IDirective, name: string) {
+  private initializeBindings(directive: ɵangular1.IDirective, name: string) {
     const btcIsObject = typeof directive.bindToController === 'object';
     if (btcIsObject && Object.keys(directive.scope!).length) {
       throw new Error(
-          `Binding definitions on scope and controller at the same time is not supported.`);
+        `Binding definitions on scope and controller at the same time is not supported.`,
+      );
     }
 
     const context = btcIsObject ? directive.bindToController : directive.scope;
     const bindings = new Bindings();
 
     if (typeof context == 'object') {
-      Object.keys(context).forEach(propName => {
+      Object.keys(context).forEach((propName) => {
         const definition = context[propName];
         const bindingType = definition.charAt(0);
 
@@ -261,7 +270,8 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
           default:
             let json = JSON.stringify(context);
             throw new Error(
-                `Unexpected mapping '${bindingType}' in '${json}' in '${name}' directive.`);
+              `Unexpected mapping '${bindingType}' in '${json}' in '${name}' directive.`,
+            );
         }
       });
     }
@@ -271,16 +281,17 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   private initializeOutputs() {
     // Initialize the outputs for `=` and `&` bindings
-    this.bindings.twoWayBoundProperties.concat(this.bindings.expressionBoundProperties)
-        .forEach(propName => {
-          const outputName = this.bindings.propertyToOutputMap[propName];
-          (this as any)[outputName] = new EventEmitter();
-        });
+    this.bindings.twoWayBoundProperties
+      .concat(this.bindings.expressionBoundProperties)
+      .forEach((propName) => {
+        const outputName = this.bindings.propertyToOutputMap[propName];
+        (this as any)[outputName] = new EventEmitter();
+      });
   }
 
-  private bindOutputs(bindingDestination: IBindingDestination) {
+  private bindOutputs(bindingDestination: ɵupgradeHelper.IBindingDestination) {
     // Bind `&` bindings to the corresponding outputs
-    this.bindings.expressionBoundProperties.forEach(propName => {
+    this.bindings.expressionBoundProperties.forEach((propName) => {
       const outputName = this.bindings.propertyToOutputMap[propName];
       const emitter: EventEmitter<any> = (this as any)[outputName];
 
@@ -288,12 +299,16 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     });
   }
 
-  private forwardChanges(changes: SimpleChanges, bindingDestination: IBindingDestination) {
+  private forwardChanges(
+    changes: SimpleChanges,
+    bindingDestination: ɵupgradeHelper.IBindingDestination,
+  ) {
     // Forward input changes to `bindingDestination`
     Object.keys(changes).forEach(
-        propName => bindingDestination[propName] = changes[propName].currentValue);
+      (propName) => (bindingDestination[propName] = changes[propName].currentValue),
+    );
 
-    if (isFunction(bindingDestination.$onChanges)) {
+    if (ɵutil.isFunction(bindingDestination.$onChanges)) {
       bindingDestination.$onChanges(changes);
     }
   }

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, setPostSignalSetFn, signal} from '@angular/core/src/signals';
+import {computed, signal} from '@angular/core';
+import {ReactiveNode, setPostSignalSetFn, SIGNAL} from '@angular/core/primitives/signals';
 
 describe('signals', () => {
   it('should be a getter which reflects the set value', () => {
@@ -20,20 +21,8 @@ describe('signals', () => {
     const counter = signal(0);
     expect(counter()).toEqual(0);
 
-    counter.update(c => c + 1);
+    counter.update((c) => c + 1);
     expect(counter()).toEqual(1);
-  });
-
-  it('should have mutate function for mutable, out of bound updates', () => {
-    const state = signal<string[]>(['a']);
-    const derived = computed(() => state().join(':'));
-
-    expect(derived()).toEqual('a');
-
-    state.mutate((s) => {
-      s.push('b');
-    });
-    expect(derived()).toEqual('a:b');
   });
 
   it('should not update signal when new value is equal to the previous one', () => {
@@ -72,30 +61,49 @@ describe('signals', () => {
     expect(upper()).toEqual('D');
   });
 
-  it('should consider objects as non-equal with the default equality function', () => {
+  it('should consider objects as equal based on their identity with the default equality function', () => {
     let stateValue: unknown = {};
     const state = signal(stateValue);
     let computeCount = 0;
     const derived = computed(() => `${typeof state()}:${++computeCount}`);
     expect(derived()).toEqual('object:1');
 
-    // reset signal value to the same object instance, expect change notification
+    // reset signal value to the same object instance, expect NO change notification
     state.set(stateValue);
-    expect(derived()).toEqual('object:2');
+    expect(derived()).toEqual('object:1');
 
     // reset signal value to a different object instance, expect change notification
     stateValue = {};
     state.set(stateValue);
-    expect(derived()).toEqual('object:3');
+    expect(derived()).toEqual('object:2');
 
     // reset signal value to a different object type, expect change notification
     stateValue = [];
     state.set(stateValue);
-    expect(derived()).toEqual('object:4');
+    expect(derived()).toEqual('object:3');
 
-    // reset signal value to the same array instance, expect change notification
+    // reset signal value to the same array instance, expect NO change notification
     state.set(stateValue);
-    expect(derived()).toEqual('object:5');
+    expect(derived()).toEqual('object:3');
+  });
+
+  it('should invoke custom equality function even if old / new references are the same', () => {
+    const state = {value: 0};
+    const stateSignal = signal(state, {equal: (a, b) => false});
+
+    let computeCount = 0;
+    const derived = computed(() => `${stateSignal().value}:${++computeCount}`);
+
+    // derived is re-computed initially
+    expect(derived()).toBe('0:1');
+
+    // setting signal with the same reference should propagate change due to the custom equality
+    stateSignal.set(state);
+    expect(derived()).toBe('0:2');
+
+    // updating signal with the same reference should propagate change as well
+    stateSignal.update((state) => state);
+    expect(derived()).toBe('0:3');
   });
 
   it('should allow converting writable signals to their readonly counterpart', () => {
@@ -106,8 +114,6 @@ describe('signals', () => {
     expect(readOnlyCounter.set).toBeUndefined();
     // @ts-expect-error
     expect(readOnlyCounter.update).toBeUndefined();
-    // @ts-expect-error
-    expect(readOnlyCounter.mutate).toBeUndefined();
 
     const double = computed(() => readOnlyCounter() * 2);
     expect(double()).toBe(0);
@@ -116,8 +122,46 @@ describe('signals', () => {
     expect(double()).toBe(4);
   });
 
+  it('should have a toString implementation', () => {
+    const state = signal(false);
+    expect(state + '').toBe('[Signal: false]');
+  });
+
+  describe('optimizations', () => {
+    it('should not repeatedly poll status of a non-live node if no signals have changed', () => {
+      const unrelated = signal(0);
+      const source = signal(1);
+      let computations = 0;
+      const derived = computed(() => {
+        computations++;
+        return source() * 2;
+      });
+
+      expect(derived()).toBe(2);
+      expect(computations).toBe(1);
+
+      const sourceNode = source[SIGNAL] as ReactiveNode;
+      // Forcibly increment the version of the source signal. This will cause a mismatch during
+      // polling, and will force the derived signal to recompute if polled (which we should observe
+      // in this test).
+      sourceNode.version++;
+
+      // Read the derived signal again. This should not recompute (even with the forced version
+      // update) as no signals have been set since the last read.
+      expect(derived()).toBe(2);
+      expect(computations).toBe(1);
+
+      // Set the `unrelated` signal, which now means that `derived` should poll if read again.
+      // Because of the forced version, that poll will cause a recomputation which we will observe.
+      unrelated.set(1);
+
+      expect(derived()).toBe(2);
+      expect(computations).toBe(2);
+    });
+  });
+
   describe('post-signal-set functions', () => {
-    let prevPostSignalSetFn: (() => void)|null = null;
+    let prevPostSignalSetFn: (() => void) | null = null;
     let log: number;
     beforeEach(() => {
       log = 0;
@@ -138,18 +182,11 @@ describe('signals', () => {
     it('should call the post-signal-set fn when invoking .update()', () => {
       const counter = signal(0);
 
-      counter.update(c => c + 2);
+      counter.update((c) => c + 2);
       expect(log).toBe(1);
     });
 
-    it('should call the post-signal-set fn when invoking .mutate()', () => {
-      const counter = signal(0);
-
-      counter.mutate(() => {});
-      expect(log).toBe(1);
-    });
-
-    it('should not call the post-signal-set fn when the value doesn\'t change', () => {
+    it("should not call the post-signal-set fn when the value doesn't change", () => {
       const counter = signal(0);
 
       counter.set(0);

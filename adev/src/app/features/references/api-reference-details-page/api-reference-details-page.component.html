@@ -1,0 +1,24 @@
+<div class="adev-header-and-tabs docs-scroll-track-transparent">
+  <docs-viewer [docContent]="headerInnerHtml()" class="docs-reference-header"></docs-viewer>
+
+  <mat-tab-group class="docs-reference-tabs" animationDuration="0ms" mat-stretch-tabs="false" [selectedIndex]="selectedTabIndex()">
+    @for (tab of tabs(); track tab) {
+      <mat-tab [label]="tab.title">
+        <div class="adev-reference-tab-body">
+          <docs-viewer [docContent]="tab.content"></docs-viewer>
+        </div>
+      </mat-tab>
+    }
+  </mat-tab-group>
+</div>
+
+@if (canDisplayCards() && membersMarginTopInPx() > 0) {
+  <docs-viewer
+    class="docs-reference-members-container"
+    [docContent]="membersInnerHtml()"
+    [style.marginTop.px]="membersMarginTopInPx()"
+    (contentLoaded)="membersCardsLoaded()">
+  </docs-viewer>
+}
+
+<div id="jump-msg" class="cdk-visually-hidden">Jump to details</div>

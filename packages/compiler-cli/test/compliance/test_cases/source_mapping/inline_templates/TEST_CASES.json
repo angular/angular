@@ -317,8 +317,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a simple output binding expression (partial compile)",
@@ -352,8 +351,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a complex output binding expression (partial compile)",
@@ -387,8 +385,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a longhand output binding expression (partial compile)",
@@ -422,8 +419,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a two-way binding expression (partial compile)",
@@ -457,8 +453,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a longhand two-way binding expression (partial compile)",
@@ -492,8 +487,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map a class input binding (partial compile)",
@@ -630,8 +624,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map ng-template [ngFor] scenario (partial compile)",
@@ -665,8 +658,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should map default and selected projection (partial compile)",
@@ -700,8 +692,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should create simple i18n message source-mapping (partial compile)",
@@ -735,8 +726,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should create placeholder i18n message source-mappings (partial compile)",
@@ -770,8 +760,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should handle encoded entities in i18n message source-mappings (partial compile)",
@@ -800,6 +789,16 @@
       "inputFiles": [
         "i18n_message_interpolation_whitespace.ts"
       ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "i18n_message_interpolation_whitespace.js",
+              "expected": "i18n_message_interpolation_whitespace_template.pipeline.js"
+            }
+          ]
+        }
+      ],
       "compilationModeFilter": [
         "full compile"
       ],
@@ -818,7 +817,7 @@
           "files": [
             {
               "generated": "i18n_message_interpolation_whitespace.js",
-              "expected": "i18n_message_interpolation_whitespace_partial.js"
+              "expected": "i18n_message_interpolation_whitespace_partial_template.pipeline.js"
             }
           ]
         }
@@ -840,8 +839,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should correctly handle collapsed whitespace in element placeholder i18n message source-mappings (partial compile)",
@@ -875,8 +873,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should create tag (container) placeholder i18n message source-mappings (partial compile)",
@@ -944,8 +941,7 @@
       ],
       "compilerOptions": {
         "sourceMap": true
-      },
-      "skipForTemplatePipeline": true
+      }
     },
     {
       "description": "should create correct inline template source-mapping when the source contains escape sequences (partial compile)",

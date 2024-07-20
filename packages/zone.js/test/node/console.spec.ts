@@ -9,11 +9,15 @@ describe('node console', () => {
   const log: string[] = [];
   const zone = Zone.current.fork({
     name: 'console',
-    onScheduleTask: function(
-        delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task) {
+    onScheduleTask: function (
+      delegate: ZoneDelegate,
+      currentZone: Zone,
+      targetZone: Zone,
+      task: Task,
+    ) {
       log.push(task.source);
       return delegate.scheduleTask(targetZone, task);
-    }
+    },
   });
 
   beforeEach(() => {
@@ -29,8 +33,7 @@ describe('node console', () => {
       console.trace('test');
       try {
         console.assert(false, 'test');
-      } catch (error) {
-      }
+      } catch (error) {}
       console.dir('.');
       console.time('start');
       console.timeEnd('start');

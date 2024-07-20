@@ -38,5 +38,4 @@ export class HelloWorldShadowComponent {
     </footer>`,
   encapsulation: ViewEncapsulation.ShadowDom,
 })
-export class TestCardComponent {
-}
+export class TestCardComponent {}

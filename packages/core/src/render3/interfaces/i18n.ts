@@ -8,7 +8,6 @@
 
 import {SanitizerFn} from './sanitization';
 
-
 /**
  * Stores a list of nodes which need to be removed.
  *
@@ -75,7 +74,6 @@ export const enum IcuCreateOpCode {
   Attr = 0b1,
 }
 
-
 /**
  * Array storing OpCode for dynamically creating `i18n` blocks.
  *
@@ -121,8 +119,9 @@ export const enum IcuCreateOpCode {
  * ];
  * ```
  */
-export interface IcuCreateOpCodes extends Array<number|string|ELEMENT_MARKER|ICU_MARKER|null>,
-                                          I18nDebug {
+export interface IcuCreateOpCodes
+  extends Array<number | string | ELEMENT_MARKER | ICU_MARKER | null>,
+    I18nDebug {
   __brand__: 'I18nCreateOpCodes';
 }
 
@@ -160,7 +159,7 @@ export const enum I18nUpdateOpCode {
  * See `I18nMutateOpCodes` documentation.
  */
 export const ELEMENT_MARKER: ELEMENT_MARKER = {
-  marker: 'element'
+  marker: 'element',
 };
 export interface ELEMENT_MARKER {
   marker: 'element';
@@ -172,7 +171,7 @@ export interface ELEMENT_MARKER {
  * See `I18nMutateOpCodes` documentation.
  */
 export const ICU_MARKER: ICU_MARKER = {
-  marker: 'ICU'
+  marker: 'ICU',
 };
 
 export interface ICU_MARKER {
@@ -223,7 +222,7 @@ export interface I18nDebug {
  * }
  * ```
  */
-export interface I18nCreateOpCodes extends Array<number|string>, I18nDebug {
+export interface I18nCreateOpCodes extends Array<number | string>, I18nDebug {
   __brand__: 'I18nCreateOpCodes';
 }
 
@@ -247,7 +246,6 @@ export enum I18nCreateOpCode {
    */
   COMMENT = 0b10,
 }
-
 
 /**
  * Stores DOM operations which need to be applied to update DOM render tree due to changes in
@@ -321,7 +319,7 @@ export enum I18nCreateOpCode {
  * ```
  *
  */
-export interface I18nUpdateOpCodes extends Array<string|number|SanitizerFn|null>, I18nDebug {
+export interface I18nUpdateOpCodes extends Array<string | number | SanitizerFn | null>, I18nDebug {
   __brand__: 'I18nUpdateOpCodes';
 }
 
@@ -341,6 +339,12 @@ export interface TI18n {
    * DOM are required.
    */
   update: I18nUpdateOpCodes;
+
+  /**
+   * An AST representing the translated message. This is used for hydration (and serialization),
+   * while the Update and Create OpCodes are used at runtime.
+   */
+  ast: Array<I18nNode>;
 }
 
 /**
@@ -399,10 +403,6 @@ export interface TIcu {
   update: I18nUpdateOpCodes[];
 }
 
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;
-
 /**
  * Parsed ICU expression
  */
@@ -410,5 +410,81 @@ export interface IcuExpression {
   type: IcuType;
   mainBinding: number;
   cases: string[];
-  values: (string|IcuExpression)[][];
+  values: (string | IcuExpression)[][];
+}
+
+// A parsed I18n AST Node
+export type I18nNode = I18nTextNode | I18nElementNode | I18nICUNode | I18nPlaceholderNode;
+
+/**
+ * Represents a block of text in a translation, such as `Hello, {{ name }}!`.
+ */
+export interface I18nTextNode {
+  /** The AST node kind */
+  kind: I18nNodeKind.TEXT;
+
+  /** The LView index */
+  index: number;
+}
+
+/**
+ * Represents a simple DOM element in a translation, such as `<div>...</div>`
+ */
+export interface I18nElementNode {
+  /** The AST node kind */
+  kind: I18nNodeKind.ELEMENT;
+
+  /** The LView index */
+  index: number;
+
+  /** The child nodes */
+  children: Array<I18nNode>;
+}
+
+/**
+ * Represents an ICU in a translation.
+ */
+export interface I18nICUNode {
+  /** The AST node kind */
+  kind: I18nNodeKind.ICU;
+
+  /** The LView index */
+  index: number;
+
+  /** The branching cases */
+  cases: Array<Array<I18nNode>>;
+
+  /** The LView index that stores the active case */
+  currentCaseLViewIndex: number;
+}
+
+/**
+ * Represents special content that is embedded into the translation. This can
+ * either be a special built-in element, such as <ng-container> and <ng-content>,
+ * or it can be a sub-template, for example, from a structural directive.
+ */
+export interface I18nPlaceholderNode {
+  /** The AST node kind */
+  kind: I18nNodeKind.PLACEHOLDER;
+
+  /** The LView index */
+  index: number;
+
+  /** The child nodes */
+  children: Array<I18nNode>;
+
+  /** The placeholder type */
+  type: I18nPlaceholderType;
+}
+
+export const enum I18nPlaceholderType {
+  ELEMENT,
+  SUBTEMPLATE,
+}
+
+export const enum I18nNodeKind {
+  TEXT,
+  ELEMENT,
+  PLACEHOLDER,
+  ICU,
 }

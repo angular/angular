@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal} from '@angular/core/src/signals';
+import {computed, signal} from '@angular/core';
 
 describe('glitch-free computations', () => {
   it('should recompute only once for diamond dependency graph', () => {

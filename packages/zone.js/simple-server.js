@@ -31,15 +31,15 @@ function requestHandler(req, res) {
       return;
     }
 
-    fs.readFile(file, function(err, contents) {
+    fs.readFile(file, function (err, contents) {
       if (!err) {
         res.end(contents);
       } else {
         writeNotFound(res);
         return;
-      };
+      }
     });
-  };
-};
+  }
+}
 
 server = http.createServer(requestHandler).listen(8080);

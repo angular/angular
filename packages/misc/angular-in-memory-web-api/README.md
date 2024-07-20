@@ -157,9 +157,9 @@ CLI-based apps can exclude the provider in production builds like this:
 The [tests](https://github.com/angular/angular/blob/main/packages/misc/angular-in-memory-web-api/test)
 are a good place to learn how to setup and use this in-memory web api library.
 
-See also the example source code in the official Angular.io documentation such as the
-[HttpClient](https://angular.io/guide/understanding-communicating-with-http) guide and the
-[Tour of Heroes](https://angular.io/tutorial/tour-of-heroes/toh-pt6).
+See also the example source code in the official Angular.dev documentation such as the
+[HttpClient](https://angular.dev/guide/http) guide and the
+[Tour of Heroes](https://angular.dev/tutorials/first-app/14-http).
 
 # Advanced Features
 Some features are not readily apparent in the basic usage described above.

@@ -26,7 +26,7 @@ describe('takeUntilDestroyed', () => {
       },
       complete() {
         completed = true;
-      }
+      },
     });
 
     source$.next(1);
@@ -52,7 +52,7 @@ describe('takeUntilDestroyed', () => {
       },
       complete() {
         completed = true;
-      }
+      },
     });
 
     source$.next(1);

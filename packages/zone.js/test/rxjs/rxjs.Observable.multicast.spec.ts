@@ -8,7 +8,6 @@
 import {Observable, of, Subject} from 'rxjs';
 import {mapTo, multicast, tap} from 'rxjs/operators';
 
-
 // TODO: @JiaLiPassion, Observable.prototype.multicast return a readonly _subscribe
 // should find another way to patch subscribe
 describe('Observable.multicast', () => {
@@ -30,10 +29,12 @@ describe('Observable.multicast', () => {
     });
 
     observable1 = doZone1.run(() => {
-      return observable1.pipe(tap((v: any) => {
-        expect(Zone.current.name).toEqual(doZone1.name);
-        log.push('do' + v);
-      }));
+      return observable1.pipe(
+        tap((v: any) => {
+          expect(Zone.current.name).toEqual(doZone1.name);
+          log.push('do' + v);
+        }),
+      );
     });
 
     observable1 = mapZone1.run(() => {
@@ -41,10 +42,12 @@ describe('Observable.multicast', () => {
     });
 
     const multi: any = multicastZone1.run(() => {
-      return observable1.pipe(multicast(() => {
-        expect(Zone.current.name).toEqual(multicastZone1.name);
-        return new Subject();
-      }));
+      return observable1.pipe(
+        multicast(() => {
+          expect(Zone.current.name).toEqual(multicastZone1.name);
+          return new Subject();
+        }),
+      );
     });
 
     multi.subscribe((val: any) => {
@@ -59,22 +62,37 @@ describe('Observable.multicast', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            log.push('completed');
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          log.push('completed');
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+      );
     });
 
     expect(log).toEqual([
-      'do1', 'onetest', 'twotest', 'do2', 'onetest', 'twotest', 'do3', 'onetest', 'twotest', 'do1',
-      'test', 'do2', 'test', 'do3', 'test', 'completed'
+      'do1',
+      'onetest',
+      'twotest',
+      'do2',
+      'onetest',
+      'twotest',
+      'do3',
+      'onetest',
+      'twotest',
+      'do1',
+      'test',
+      'do2',
+      'test',
+      'do3',
+      'test',
+      'completed',
     ]);
   });
 });

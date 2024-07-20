@@ -20,6 +20,8 @@ export interface Browser {
  * across the background service and launcher using IPC.
  */
 export function getUniqueId(browser: Browser): string {
-  let result = Object.keys(browser).sort().map(key => `${key}=${browser[key as keyof Browser]}`);
+  let result = Object.keys(browser)
+    .sort()
+    .map((key) => `${key}=${browser[key as keyof Browser]}`);
   return result.join(':');
 }

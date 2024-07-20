@@ -35,7 +35,7 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 
 <!ELEMENT ex (#PCDATA)>
 ]>
-<messagebundle>
+<messagebundle handler="angular">
   <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/basic.html:1</source><source>src/comp2.ts:1</source><source>src/basic.html:1</source>translate me</msg>
   <msg id="9038505069473852515"><source>src/basic.html:3,4</source><source>src/comp2.ts:3,4</source><source>src/comp2.ts:2,3</source><source>src/basic.html:3,4</source>
     Welcome</msg>
@@ -199,7 +199,7 @@ describe('extract_i18n command line', () => {
   let basePath: string;
   let outDir: string;
   let write: (fileName: string, content: string) => void;
-  let errorSpy: jasmine.Spy&((s: string) => void);
+  let errorSpy: jasmine.Spy & ((s: string) => void);
 
   function writeConfig(tsconfig = '{"extends": "./tsconfig-base.json"}') {
     write('tsconfig.json', tsconfig);
@@ -213,7 +213,9 @@ describe('extract_i18n command line', () => {
     };
     basePath = support.basePath;
     outDir = path.join(basePath, 'built');
-    write('tsconfig-base.json', `{
+    write(
+      'tsconfig-base.json',
+      `{
       "compilerOptions": {
         "experimentalDecorators": true,
         "skipLibCheck": true,
@@ -229,7 +231,8 @@ describe('extract_i18n command line', () => {
         "lib": ["es2015", "dom"],
         "typeRoots": ["node_modules/@types"]
       }
-    }`);
+    }`,
+    );
   });
 
   function writeSources() {
@@ -237,19 +240,27 @@ describe('extract_i18n command line', () => {
     <!--i18n-->
     Welcome<!--/i18n-->
     `;
-    write('src/basic.html', `<div title="translate me" i18n-title="meaning|desc"></div>
-         <p id="welcomeMessage">${welcomeMessage}</p>`);
+    write(
+      'src/basic.html',
+      `<div title="translate me" i18n-title="meaning|desc"></div>
+         <p id="welcomeMessage">${welcomeMessage}</p>`,
+    );
 
-    write('src/comp1.ts', `
+    write(
+      'src/comp1.ts',
+      `
     import {Component} from '@angular/core';
 
     @Component({
       selector: 'basic',
       templateUrl: './basic.html',
     })
-    export class BasicCmp1 {}`);
+    export class BasicCmp1 {}`,
+    );
 
-    write('src/comp2.ts', `
+    write(
+      'src/comp2.ts',
+      `
     import {Component} from '@angular/core';
 
     @Component({
@@ -262,47 +273,65 @@ describe('extract_i18n command line', () => {
       selector: 'basic4',
       template: \`<p id="welcomeMessage">${welcomeMessage}</p>\`,
     })
-    export class BasicCmp4 {}`);
+    export class BasicCmp4 {}`,
+    );
 
-    write('src/comp3.ts', `
+    write(
+      'src/comp3.ts',
+      `
     import {Component} from '@angular/core';
 
     @Component({
       selector: 'basic3',
       templateUrl: './basic.html',
     })
-    export class BasicCmp3 {}`);
+    export class BasicCmp3 {}`,
+    );
 
-    write('src/placeholders.html', `<div i18n="with placeholders">Name: <b>{{
+    write(
+      'src/placeholders.html',
+      `<div i18n="with placeholders">Name: <b>{{
       name // i18n(ph="name")
-    }}</b></div>`);
+    }}</b></div>`,
+    );
 
-    write('src/placeholder_cmp.ts', `
+    write(
+      'src/placeholder_cmp.ts',
+      `
     import {Component} from '@angular/core';
 
     @Component({
       selector: 'placeholders',
       templateUrl: './placeholders.html',
     })
-    export class PlaceholderCmp { name = 'whatever'; }`);
+    export class PlaceholderCmp { name = 'whatever'; }`,
+    );
 
-    write('src/icu.html', `<div i18n="with ICU">{
+    write(
+      'src/icu.html',
+      `<div i18n="with ICU">{
       count, plural, =1 {book} other {books}
     }</div>
     <div i18n="with ICU and other things">
      foo { count, plural, =1 {book} other {books} }
-    </div>`);
+    </div>`,
+    );
 
-    write('src/icu_cmp.ts', `
+    write(
+      'src/icu_cmp.ts',
+      `
     import {Component} from '@angular/core';
 
     @Component({
       selector: 'icu',
       templateUrl: './icu.html',
     })
-    export class IcuCmp { count = 3; }`);
+    export class IcuCmp { count = 3; }`,
+    );
 
-    write('src/module.ts', `
+    write(
+      'src/module.ts',
+      `
     import {NgModule} from '@angular/core';
     import {CommonModule} from '@angular/common';
     import {BasicCmp1} from './comp1';
@@ -323,15 +352,18 @@ describe('extract_i18n command line', () => {
       imports: [CommonModule],
     })
     export class I18nModule {}
-    `);
+    `,
+    );
   }
 
   it('should extract xmb', () => {
     writeConfig();
     writeSources();
 
-    const exitCode =
-        mainXi18n(['-p', basePath, '--i18nFormat=xmb', '--outFile=custom_file.xmb'], errorSpy);
+    const exitCode = mainXi18n(
+      ['-p', basePath, '--i18nFormat=xmb', '--outFile=custom_file.xmb'],
+      errorSpy,
+    );
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
 
@@ -359,8 +391,10 @@ describe('extract_i18n command line', () => {
     writeConfig();
     writeSources();
 
-    const exitCode =
-        mainXi18n(['-p', basePath, '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf'], errorSpy);
+    const exitCode = mainXi18n(
+      ['-p', basePath, '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf'],
+      errorSpy,
+    );
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
 
@@ -374,8 +408,10 @@ describe('extract_i18n command line', () => {
     writeConfig();
     writeSources();
 
-    const exitCode =
-        mainXi18n(['-p', basePath, '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf'], errorSpy);
+    const exitCode = mainXi18n(
+      ['-p', basePath, '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf'],
+      errorSpy,
+    );
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
 

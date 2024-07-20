@@ -43,8 +43,10 @@ export interface LocalizeFn {
 
 /** @nodoc */
 export interface TranslateFn {
-  (messageParts: TemplateStringsArray,
-   expressions: readonly any[]): [TemplateStringsArray, readonly any[]];
+  (
+    messageParts: TemplateStringsArray,
+    expressions: readonly any[],
+  ): [TemplateStringsArray, readonly any[]];
 }
 
 /**
@@ -70,7 +72,7 @@ export interface TranslateFn {
  * ```
  *
  * This format is the same as that used for `i18n` markers in Angular templates. See the
- * [Angular i18n guide](guide/i18n-common-prepare#mark-text-in-component-template).
+ * [Angular i18n guide](guide/i18n/prepare#mark-text-in-component-template).
  *
  * **Naming placeholders**
  *
@@ -142,8 +144,10 @@ export interface TranslateFn {
  * @globalApi
  * @publicApi
  */
-export const $localize: LocalizeFn = function(
-    messageParts: TemplateStringsArray, ...expressions: readonly any[]) {
+export const $localize: LocalizeFn = function (
+  messageParts: TemplateStringsArray,
+  ...expressions: readonly any[]
+) {
   if ($localize.translate) {
     // Don't use array expansion here to avoid the compiler adding `__read()` helper unnecessarily.
     const translation = $localize.translate(messageParts, expressions);
@@ -173,7 +177,7 @@ const BLOCK_MARKER = ':';
  * @throws an error if the block is unterminated
  */
 function stripBlock(messagePart: string, rawMessagePart: string) {
-  return rawMessagePart.charAt(0) === BLOCK_MARKER ?
-      messagePart.substring(findEndOfBlock(messagePart, rawMessagePart) + 1) :
-      messagePart;
+  return rawMessagePart.charAt(0) === BLOCK_MARKER
+    ? messagePart.substring(findEndOfBlock(messagePart, rawMessagePart) + 1)
+    : messagePart;
 }

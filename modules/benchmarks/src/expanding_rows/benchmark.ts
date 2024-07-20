@@ -17,8 +17,7 @@ import {BenchmarkableExpandingRowModule} from './benchmarkable_expanding_row_mod
 @Component({
   selector: 'benchmark-root',
   encapsulation: ViewEncapsulation.None,
-  template: `
-    <h2>cfc-expanding-row initialization benchmark</h2>
+  template: ` <h2>cfc-expanding-row initialization benchmark</h2>
 
     <section>
       <button id="reset" (click)="reset()">Reset</button>
@@ -63,17 +62,11 @@ export class InitializationRoot implements AfterViewInit {
 @NgModule({
   declarations: [InitializationRoot],
   exports: [InitializationRoot],
-  imports: [
-    CommonModule,
-    BenchmarkableExpandingRowModule,
-    BenchmarkModule,
-    BrowserModule,
-  ],
+  imports: [CommonModule, BenchmarkableExpandingRowModule, BenchmarkModule, BrowserModule],
   bootstrap: [InitializationRoot],
 })
 // Component benchmarks must export a BenchmarkModule.
-export class ExpandingRowBenchmarkModule {
-}
+export class ExpandingRowBenchmarkModule {}
 
 export async function execTimed(description: string, func: () => Promise<void>) {
   console.time(description);

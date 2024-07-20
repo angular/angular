@@ -7,7 +7,15 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgModule, TemplateRef, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  NgModule,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {newArray} from '../util';
@@ -17,7 +25,7 @@ import {newArray} from '../util';
   template: `
     <ng-container *ngFor="let n of views; template: template; trackBy: trackByIndex"></ng-container>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InsertionComponent {
   @Input() template!: TemplateRef<NgForOfContext<any, any[]>>;
@@ -38,8 +46,8 @@ export class InsertionComponent {
 @Component({
   selector: 'declaration-component',
   template: `
-  <ng-template #template>{{trackTemplateRefresh()}}</ng-template>
-  <insertion-component [template]="template" [viewCount]="viewCount"></insertion-component>
+    <ng-template #template>{{ trackTemplateRefresh() }}</ng-template>
+    <insertion-component [template]="template" [viewCount]="viewCount"></insertion-component>
   `,
 })
 export class DeclarationComponent {
@@ -57,7 +65,6 @@ export class DeclarationComponent {
 @NgModule({
   declarations: [DeclarationComponent, InsertionComponent],
   bootstrap: [DeclarationComponent],
-  imports: [BrowserModule]
+  imports: [BrowserModule],
 })
-export class TransplantedViewsModule {
-}
+export class TransplantedViewsModule {}

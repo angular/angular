@@ -58,7 +58,9 @@ ts_library(
 jasmine_node_test(
     name = "fail_test",
     srcs = ["fail.spec.js"],
-    expected_exit_code = 55,
+    # While we force the termination of the process with an exitCode of 55 in fail.spec.js. Jasmine force it to 4.
+    # see: https://github.com/jasmine/jasmine-npm/blob/eea8b26efe29176ecbb26ce3f1c4990f8bede685/lib/jasmine.js#L213
+    expected_exit_code = 4,
 )
 
 # A test to verify that jasmine_node_test targets fail as expected
@@ -71,5 +73,7 @@ jasmine_node_test(
     name = "fail_bootstrap_test",
     srcs = ["fail.spec.js"],
     bootstrap = ["//tools/testing:node"],
-    expected_exit_code = 55,
+    # While we force the termination of the process with an exitCode of 55 in fail.spec.js. Jasmine force it to 4.
+    # see: https://github.com/jasmine/jasmine-npm/blob/eea8b26efe29176ecbb26ce3f1c4990f8bede685/lib/jasmine.js#L213
+    expected_exit_code = 4,
 )

@@ -34,14 +34,18 @@ export class ChangeTracker {
   private readonly _changes = new Map<ts.SourceFile, PendingChange[]>();
   private readonly _importManager: ImportManager;
 
-  constructor(private _printer: ts.Printer, private _importRemapper?: ImportRemapper) {
+  constructor(
+    private _printer: ts.Printer,
+    private _importRemapper?: ImportRemapper,
+  ) {
     this._importManager = new ImportManager(
-        currentFile => ({
-          addNewImport: (start, text) => this.insertText(currentFile, start, text),
-          updateExistingImport: (namedBindings, text) => this.replaceText(
-              currentFile, namedBindings.getStart(), namedBindings.getWidth(), text),
-        }),
-        this._printer);
+      (currentFile) => ({
+        addNewImport: (start, text) => this.insertText(currentFile, start, text),
+        updateExistingImport: (namedBindings, text) =>
+          this.replaceText(currentFile, namedBindings.getStart(), namedBindings.getWidth(), text),
+      }),
+      this._printer,
+    );
   }
 
   /**
@@ -75,12 +79,18 @@ export class ChangeTracker {
    * without it.
    */
   replaceNode(
-      oldNode: ts.Node, newNode: ts.Node, emitHint = ts.EmitHint.Unspecified,
-      sourceFileWhenPrinting?: ts.SourceFile): void {
+    oldNode: ts.Node,
+    newNode: ts.Node,
+    emitHint = ts.EmitHint.Unspecified,
+    sourceFileWhenPrinting?: ts.SourceFile,
+  ): void {
     const sourceFile = oldNode.getSourceFile();
     this.replaceText(
-        sourceFile, oldNode.getStart(), oldNode.getWidth(),
-        this._printer.printNode(emitHint, newNode, sourceFileWhenPrinting || sourceFile));
+      sourceFile,
+      oldNode.getStart(),
+      oldNode.getWidth(),
+      this._printer.printNode(emitHint, newNode, sourceFileWhenPrinting || sourceFile),
+    );
   }
 
   /**
@@ -88,8 +98,11 @@ export class ChangeTracker {
    * @param node Node whose text should be removed.
    */
   removeNode(node: ts.Node): void {
-    this._trackChange(
-        node.getSourceFile(), {start: node.getStart(), removeLength: node.getWidth(), text: ''});
+    this._trackChange(node.getSourceFile(), {
+      start: node.getStart(),
+      removeLength: node.getWidth(),
+      text: '',
+    });
   }
 
   /**
@@ -97,10 +110,16 @@ export class ChangeTracker {
    * @param sourceFile File to which to add the import.
    * @param symbolName Symbol being imported.
    * @param moduleName Module from which the symbol is imported.
+   * @param alias Alias to use for the import.
+   * @param keepSymbolName Whether to keep the symbol name in the import.
    */
   addImport(
-      sourceFile: ts.SourceFile, symbolName: string, moduleName: string,
-      alias: string|null = null): ts.Expression {
+    sourceFile: ts.SourceFile,
+    symbolName: string,
+    moduleName: string,
+    alias: string | null = null,
+    keepSymbolName = false,
+  ): ts.Expression {
     if (this._importRemapper) {
       moduleName = this._importRemapper(moduleName, sourceFile.fileName);
     }
@@ -110,7 +129,14 @@ export class ChangeTracker {
     // paths will also cause TS to escape the forward slashes.
     moduleName = normalizePath(moduleName);
 
-    return this._importManager.addImportToSourceFile(sourceFile, symbolName, moduleName, alias);
+    return this._importManager.addImportToSourceFile(
+      sourceFile,
+      symbolName,
+      moduleName,
+      alias,
+      false,
+      keepSymbolName,
+    );
   }
 
   /**
@@ -120,6 +146,13 @@ export class ChangeTracker {
   recordChanges(): ChangesByFile {
     this._importManager.recordChanges();
     return this._changes;
+  }
+
+  /**
+   * Clear the tracked changes
+   */
+  clearChanges(): void {
+    this._changes.clear();
   }
 
   /**
@@ -134,7 +167,7 @@ export class ChangeTracker {
       // Insert the changes in reverse so that they're applied in reverse order.
       // This ensures that the offsets of subsequent changes aren't affected by
       // previous changes changing the file's text.
-      const insertIndex = changes.findIndex(current => current.start <= change.start);
+      const insertIndex = changes.findIndex((current) => current.start <= change.start);
 
       if (insertIndex === -1) {
         changes.push(change);

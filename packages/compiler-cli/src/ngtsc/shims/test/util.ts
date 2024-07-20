@@ -15,13 +15,20 @@ export class TestShimGenerator implements PerFileShimGenerator {
   readonly shouldEmit = false;
   readonly extensionPrefix = 'testshim';
 
-  generateShimForFile(sf: ts.SourceFile, genFilePath: AbsoluteFsPath, priorSf: ts.SourceFile|null):
-      ts.SourceFile {
+  generateShimForFile(
+    sf: ts.SourceFile,
+    genFilePath: AbsoluteFsPath,
+    priorSf: ts.SourceFile | null,
+  ): ts.SourceFile {
     if (priorSf !== null) {
       return priorSf;
     }
     const path = absoluteFromSourceFile(sf);
     return ts.createSourceFile(
-        genFilePath, `export const SHIM_FOR_FILE = '${path}';\n`, ts.ScriptTarget.Latest, true);
+      genFilePath,
+      `export const SHIM_FOR_FILE = '${path}';\n`,
+      ts.ScriptTarget.Latest,
+      true,
+    );
   }
 }

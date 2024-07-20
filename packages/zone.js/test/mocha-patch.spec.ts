@@ -21,13 +21,13 @@ declare function after(fn: () => void): void;
 
 import {ifEnvSupports} from './test-util';
 
-ifEnvSupports('Mocha', function() {
+ifEnvSupports('Mocha', function () {
   describe('Mocha BDD-style', () => {
     let throwOnAsync = false;
-    let beforeEachZone: Zone|null = null;
-    let itZone: Zone|null = null;
+    let beforeEachZone: Zone | null = null;
+    let itZone: Zone | null = null;
     const syncZone = Zone.current;
-    let beforeZone: Zone|null = null;
+    let beforeZone: Zone | null = null;
 
     before(() => {
       beforeZone = Zone.current;
@@ -39,7 +39,7 @@ ifEnvSupports('Mocha', function() {
       throwOnAsync = true;
     }
 
-    beforeEach(() => beforeEachZone = Zone.current);
+    beforeEach(() => (beforeEachZone = Zone.current));
 
     it('should throw on async in describe', () => {
       expect(Zone.currentTask).toBeTruthy();
@@ -67,9 +67,9 @@ ifEnvSupports('Mocha', function() {
   });
 
   suite('Mocha TDD-style', () => {
-    let testZone: Zone|null = null;
-    let beforeEachZone: Zone|null = null;
-    let suiteSetupZone: Zone|null = null;
+    let testZone: Zone | null = null;
+    let beforeEachZone: Zone | null = null;
+    let suiteSetupZone: Zone | null = null;
 
     suiteSetup(() => {
       suiteSetupZone = Zone.current;

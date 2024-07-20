@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {initializeOrGetDirectiveForestHooks} from '../hooks';
 import {ComponentInspector} from './component-inspector';
 
 describe('ComponentInspector', () => {
@@ -41,5 +42,9 @@ describe('ComponentInspector', () => {
     inspector.cancelEvent(mouseEventSpy);
     expect(mouseEventSpy.stopImmediatePropagation).toHaveBeenCalledTimes(1);
     expect(mouseEventSpy.preventDefault).toHaveBeenCalledTimes(1);
+  });
+
+  it('should always retrieve the same forest hook', () => {
+    expect(initializeOrGetDirectiveForestHooks()).toBe(initializeOrGetDirectiveForestHooks());
   });
 });

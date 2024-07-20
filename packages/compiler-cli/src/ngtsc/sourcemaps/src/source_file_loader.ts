@@ -29,9 +29,11 @@ export class SourceFileLoader {
   private currentPaths: AbsoluteFsPath[] = [];
 
   constructor(
-      private fs: ReadonlyFileSystem, private logger: Logger,
-      /** A map of URL schemes to base paths. The scheme name should be lowercase. */
-      private schemeMap: Record<string, AbsoluteFsPath>) {}
+    private fs: ReadonlyFileSystem,
+    private logger: Logger,
+    /** A map of URL schemes to base paths. The scheme name should be lowercase. */
+    private schemeMap: Record<string, AbsoluteFsPath>,
+  ) {}
 
   /**
    * Load a source file from the provided content and source map, and recursively load any
@@ -59,13 +61,17 @@ export class SourceFileLoader {
    * @param sourcePath The path to the source file to load.
    * @returns a SourceFile object if its contents could be loaded from disk, or null otherwise.
    */
-  loadSourceFile(sourcePath: AbsoluteFsPath): SourceFile|null;
+  loadSourceFile(sourcePath: AbsoluteFsPath): SourceFile | null;
   loadSourceFile(
-      sourcePath: AbsoluteFsPath, contents: string|null = null,
-      mapAndPath: MapAndPath|null = null): SourceFile|null {
+    sourcePath: AbsoluteFsPath,
+    contents: string | null = null,
+    mapAndPath: MapAndPath | null = null,
+  ): SourceFile | null {
     const contentsOrigin = contents !== null ? ContentOrigin.Provided : ContentOrigin.FileSystem;
-    const sourceMapInfo: SourceMapInfo|null =
-        mapAndPath && {origin: ContentOrigin.Provided, ...mapAndPath};
+    const sourceMapInfo: SourceMapInfo | null = mapAndPath && {
+      origin: ContentOrigin.Provided,
+      ...mapAndPath,
+    };
     return this.loadSourceFileInternal(sourcePath, contents, contentsOrigin, sourceMapInfo);
   }
 
@@ -86,8 +92,11 @@ export class SourceFileLoader {
    * `null` otherwise.
    */
   private loadSourceFileInternal(
-      sourcePath: AbsoluteFsPath, contents: string|null, sourceOrigin: ContentOrigin,
-      sourceMapInfo: SourceMapInfo|null): SourceFile|null {
+    sourcePath: AbsoluteFsPath,
+    contents: string | null,
+    sourceOrigin: ContentOrigin,
+    sourceMapInfo: SourceMapInfo | null,
+  ): SourceFile | null {
     const previousPaths = this.currentPaths.slice();
     try {
       if (contents === null) {
@@ -102,7 +111,7 @@ export class SourceFileLoader {
         sourceMapInfo = this.loadSourceMap(sourcePath, contents, sourceOrigin);
       }
 
-      let sources: (SourceFile|null)[] = [];
+      let sources: (SourceFile | null)[] = [];
       if (sourceMapInfo !== null) {
         const basePath = sourceMapInfo.mapPath || sourcePath;
         sources = this.processSources(basePath, sourceMapInfo);
@@ -111,7 +120,8 @@ export class SourceFileLoader {
       return new SourceFile(sourcePath, contents, sourceMapInfo, sources, this.fs);
     } catch (e) {
       this.logger.warn(
-          `Unable to fully load ${sourcePath} for source-map flattening: ${(e as Error).message}`);
+        `Unable to fully load ${sourcePath} for source-map flattening: ${(e as Error).message}`,
+      );
       return null;
     } finally {
       // We are finished with this recursion so revert the paths being tracked
@@ -133,8 +143,10 @@ export class SourceFileLoader {
    *     otherwise.
    */
   private loadSourceMap(
-      sourcePath: AbsoluteFsPath, sourceContents: string,
-      sourceOrigin: ContentOrigin): SourceMapInfo|null {
+    sourcePath: AbsoluteFsPath,
+    sourceContents: string,
+    sourceOrigin: ContentOrigin,
+  ): SourceMapInfo | null {
     // Only consider a source-map comment from the last non-empty line of the file, in case there
     // are embedded source-map comments elsewhere in the file (as can be the case with bundlers like
     // webpack).
@@ -166,8 +178,9 @@ export class SourceFileLoader {
           origin: ContentOrigin.FileSystem,
         };
       } catch (e) {
-        this.logger.warn(`Unable to fully load ${sourcePath} for source-map flattening: ${
-            (e as Error).message}`);
+        this.logger.warn(
+          `Unable to fully load ${sourcePath} for source-map flattening: ${(e as Error).message}`,
+        );
         return null;
       }
     }
@@ -188,22 +201,27 @@ export class SourceFileLoader {
    * Iterate over each of the "sources" for this source file's source map, recursively loading each
    * source file and its associated source map.
    */
-  private processSources(basePath: AbsoluteFsPath, {map, origin: sourceMapOrigin}: SourceMapInfo):
-      (SourceFile|null)[] {
+  private processSources(
+    basePath: AbsoluteFsPath,
+    {map, origin: sourceMapOrigin}: SourceMapInfo,
+  ): (SourceFile | null)[] {
     const sourceRoot = this.fs.resolve(
-        this.fs.dirname(basePath), this.replaceSchemeWithPath(map.sourceRoot || ''));
+      this.fs.dirname(basePath),
+      this.replaceSchemeWithPath(map.sourceRoot || ''),
+    );
     return map.sources.map((source, index) => {
       const path = this.fs.resolve(sourceRoot, this.replaceSchemeWithPath(source));
-      const content = map.sourcesContent && map.sourcesContent[index] || null;
+      const content = (map.sourcesContent && map.sourcesContent[index]) || null;
       // The origin of this source file is "inline" if we extracted it from the source-map's
       // `sourcesContent`, except when the source-map itself was "provided" in-memory.
       // An inline source file is treated as if it were from the file-system if the source-map that
       // contains it was provided in-memory. The first call to `loadSourceFile()` is special in that
       // if you "provide" the contents of the source-map in-memory then we don't want to block
       // loading sources from the file-system just because this source-map had an inline source.
-      const sourceOrigin = content !== null && sourceMapOrigin !== ContentOrigin.Provided ?
-          ContentOrigin.Inline :
-          ContentOrigin.FileSystem;
+      const sourceOrigin =
+        content !== null && sourceMapOrigin !== ContentOrigin.Provided
+          ? ContentOrigin.Inline
+          : ContentOrigin.FileSystem;
       return this.loadSourceFileInternal(path, content, sourceOrigin, null);
     });
   }
@@ -236,16 +254,18 @@ export class SourceFileLoader {
   private trackPath(path: AbsoluteFsPath): void {
     if (this.currentPaths.includes(path)) {
       throw new Error(
-          `Circular source file mapping dependency: ${this.currentPaths.join(' -> ')} -> ${path}`);
+        `Circular source file mapping dependency: ${this.currentPaths.join(' -> ')} -> ${path}`,
+      );
     }
     this.currentPaths.push(path);
   }
 
   private getLastNonEmptyLine(contents: string): string {
     let trailingWhitespaceIndex = contents.length - 1;
-    while (trailingWhitespaceIndex > 0 &&
-           (contents[trailingWhitespaceIndex] === '\n' ||
-            contents[trailingWhitespaceIndex] === '\r')) {
+    while (
+      trailingWhitespaceIndex > 0 &&
+      (contents[trailingWhitespaceIndex] === '\n' || contents[trailingWhitespaceIndex] === '\r')
+    ) {
       trailingWhitespaceIndex--;
     }
     let lastRealLineIndex = contents.lastIndexOf('\n', trailingWhitespaceIndex - 1);
@@ -265,6 +285,8 @@ export class SourceFileLoader {
    */
   private replaceSchemeWithPath(path: string): string {
     return path.replace(
-        SCHEME_MATCHER, (_: string, scheme: string) => this.schemeMap[scheme.toLowerCase()] || '');
+      SCHEME_MATCHER,
+      (_: string, scheme: string) => this.schemeMap[scheme.toLowerCase()] || '',
+    );
   }
 }

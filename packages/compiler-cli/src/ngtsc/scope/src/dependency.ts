@@ -15,7 +15,7 @@ import {ClassDeclaration} from '../../reflection';
 import {ExportScope} from './api';
 
 export interface DtsModuleScopeResolver {
-  resolve(ref: Reference<ClassDeclaration>): ExportScope|null;
+  resolve(ref: Reference<ClassDeclaration>): ExportScope | null;
 }
 
 /**
@@ -29,12 +29,15 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
   /**
    * Cache which holds fully resolved scopes for NgModule classes from .d.ts files.
    */
-  private cache = new Map<ClassDeclaration, ExportScope|null>();
+  private cache = new Map<ClassDeclaration, ExportScope | null>();
 
   /**
    * @param dtsMetaReader a `MetadataReader` which can read metadata from `.d.ts` files.
    */
-  constructor(private dtsMetaReader: MetadataReader, private aliasingHost: AliasingHost|null) {}
+  constructor(
+    private dtsMetaReader: MetadataReader,
+    private aliasingHost: AliasingHost | null,
+  ) {}
 
   /**
    * Resolve a `Reference`'d NgModule from a .d.ts file and produce a transitive `ExportScope`
@@ -43,12 +46,13 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
    * This operation relies on a `Reference` instead of a direct TypeScript node as the `Reference`s
    * produced depend on how the original NgModule was imported.
    */
-  resolve(ref: Reference<ClassDeclaration>): ExportScope|null {
+  resolve(ref: Reference<ClassDeclaration>): ExportScope | null {
     const clazz = ref.node;
     const sourceFile = clazz.getSourceFile();
     if (!sourceFile.isDeclarationFile) {
-      throw new Error(`Debug error: DtsModuleScopeResolver.read(${ref.debugName} from ${
-          sourceFile.fileName}), but not a .d.ts file`);
+      throw new Error(
+        `Debug error: DtsModuleScopeResolver.read(${ref.debugName} from ${sourceFile.fileName}), but not a .d.ts file`,
+      );
     }
 
     if (this.cache.has(clazz)) {
@@ -56,7 +60,7 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     }
 
     // Build up the export scope - those directives and pipes made visible by this module.
-    const dependencies: Array<DirectiveMeta|PipeMeta> = [];
+    const dependencies: Array<DirectiveMeta | PipeMeta> = [];
 
     const meta = this.dtsMetaReader.getNgModuleMetadata(ref);
     if (meta === null) {
@@ -127,8 +131,11 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     return exportScope;
   }
 
-  private maybeAlias<T extends DirectiveMeta|PipeMeta>(
-      dirOrPipe: T, maybeAliasFrom: ts.SourceFile, isReExport: boolean): T {
+  private maybeAlias<T extends DirectiveMeta | PipeMeta>(
+    dirOrPipe: T,
+    maybeAliasFrom: ts.SourceFile,
+    isReExport: boolean,
+  ): T {
     const ref = dirOrPipe.ref;
     if (this.aliasingHost === null || ref.node.getSourceFile() === maybeAliasFrom) {
       return dirOrPipe;

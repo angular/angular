@@ -5,13 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {types as t} from '@babel/core';
-import {NodePath, Scope} from '@babel/traverse';
+import {NodePath, types as t} from '@babel/core';
 
 import {DeclarationScope} from '../../../linker';
 
 export type ConstantScopePath =
-    NodePath<t.FunctionDeclaration>|NodePath<t.FunctionExpression>|NodePath<t.Program>;
+  | NodePath<t.FunctionDeclaration>
+  | NodePath<t.FunctionExpression>
+  | NodePath<t.Program>;
 
 /**
  * This class represents the lexical scope of a partial declaration in Babel source code.
@@ -25,7 +26,7 @@ export class BabelDeclarationScope implements DeclarationScope<ConstantScopePath
    *
    * @param declarationScope the Babel scope containing the declaration call expression.
    */
-  constructor(private declarationScope: Scope) {}
+  constructor(private declarationScope: NodePath['scope']) {}
 
   /**
    * Compute the Babel `NodePath` that can be used to reference the lexical scope where any
@@ -37,7 +38,7 @@ export class BabelDeclarationScope implements DeclarationScope<ConstantScopePath
    *
    * @param expression the expression that points to the Angular core framework import.
    */
-  getConstantScopeRef(expression: t.Expression): ConstantScopePath|null {
+  getConstantScopeRef(expression: t.Expression): ConstantScopePath | null {
     // If the expression is of the form `a.b.c` then we want to get the far LHS (e.g. `a`).
     let bindingExpression = expression;
     while (t.isMemberExpression(bindingExpression)) {
@@ -59,8 +60,11 @@ export class BabelDeclarationScope implements DeclarationScope<ConstantScopePath
     // within a function) or an ECMASCript module (i.e. declared at the top level of a
     // `t.Program` that is marked as a module).
     const path = binding.scope.path;
-    if (!path.isFunctionDeclaration() && !path.isFunctionExpression() &&
-        !(path.isProgram() && path.node.sourceType === 'module')) {
+    if (
+      !path.isFunctionDeclaration() &&
+      !path.isFunctionExpression() &&
+      !(path.isProgram() && path.node.sourceType === 'module')
+    ) {
       return null;
     }
 

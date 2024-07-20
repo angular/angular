@@ -7,11 +7,25 @@
  */
 
 import {depsTracker} from './deps_tracker/deps_tracker';
-import {ComponentType, DependencyTypeList, RawScopeInfoFromDecorator} from './interfaces/definition';
+import {
+  ComponentType,
+  DependencyTypeList,
+  RawScopeInfoFromDecorator,
+} from './interfaces/definition';
 
 export function ɵɵgetComponentDepsFactory(
-    type: ComponentType<any>, rawImports?: RawScopeInfoFromDecorator[]): () => DependencyTypeList {
+  type: ComponentType<any>,
+  rawImports?: RawScopeInfoFromDecorator[],
+): () => DependencyTypeList {
   return () => {
-    return depsTracker.getComponentDependencies(type, rawImports).dependencies;
+    try {
+      return depsTracker.getComponentDependencies(type, rawImports).dependencies;
+    } catch (e) {
+      console.error(
+        `Computing dependencies in local compilation mode for the component "${type.name}" failed with the exception:`,
+        e,
+      );
+      throw e;
+    }
   };
 }

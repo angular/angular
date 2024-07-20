@@ -12,27 +12,36 @@
           [forest]="forest"
           [currentSelectedElement]="currentSelectedElement"
           [showCommentNodes]="showCommentNodes"
-        ></ng-directive-forest>
+        />
       </as-split-area>
       <as-split-area size="22">
-        <ng-breadcrumbs
-          (mouseLeaveNode)="unhighlight()"
-          (mouseOverNode)="highlight($event)"
-          *ngIf="parents"
-          (handleSelect)="handleSelect($event)"
-          [parents]="parents"
-        >
-        </ng-breadcrumbs>
+        @if (parents) {
+          <ng-breadcrumbs
+            (mouseLeaveNode)="unhighlight()"
+            (mouseOverNode)="highlight($event)"
+            (handleSelect)="handleSelect($event)"
+            [parents]="parents"
+          />
+        }
       </as-split-area>
     </as-split>
   </as-split-area>
-  <as-split-area size="40" minSize="25">
+  <as-split-area size="40" minSize="25" class="prop-split">
     <div class="property-tab-wrapper">
       <ng-property-tab
         [currentSelectedElement]="currentSelectedElement"
         (inspect)="inspect($event)"
         (viewSource)="viewSource($event)"
-      ></ng-property-tab>
+      />
     </div>
+    @if(isHydrationEnabled) {
+      <div class="hydration">
+        <mat-slide-toggle
+          [(ngModel)]="showHydrationNodeHighlights"
+          (change)="showHydrationNodeHighlights ? hightlightHydrationNodes() : removeHydrationNodesHightlights()"
+          >Show hydration overlays</mat-slide-toggle
+        >
+      </div>
+    }
   </as-split-area>
 </as-split>

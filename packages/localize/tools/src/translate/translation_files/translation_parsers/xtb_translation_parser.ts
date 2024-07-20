@@ -13,8 +13,14 @@ import {BaseVisitor} from '../base_visitor';
 
 import {serializeTranslationMessage} from './serialize_translation_message';
 import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAttribute, XmlTranslationParserHint} from './translation_utils';
-
+import {
+  addErrorsToBundle,
+  addParseDiagnostic,
+  addParseError,
+  canParseXml,
+  getAttribute,
+  XmlTranslationParserHint,
+} from './translation_utils';
 
 /**
  * A translation parser that can load XTB files.
@@ -35,8 +41,11 @@ export class XtbTranslationParser implements TranslationParser<XmlTranslationPar
     return canParseXml(filePath, contents, 'translationbundle', {});
   }
 
-  parse(filePath: string, contents: string, hint: XmlTranslationParserHint):
-      ParsedTranslationBundle {
+  parse(
+    filePath: string,
+    contents: string,
+    hint: XmlTranslationParserHint,
+  ): ParsedTranslationBundle {
     return this.extractBundle(hint);
   }
 
@@ -45,9 +54,9 @@ export class XtbTranslationParser implements TranslationParser<XmlTranslationPar
     const bundle: ParsedTranslationBundle = {
       locale: langAttr && langAttr.value,
       translations: {},
-      diagnostics: new Diagnostics()
+      diagnostics: new Diagnostics(),
     };
-    errors.forEach(e => addParseError(bundle.diagnostics, e));
+    errors.forEach((e) => addParseError(bundle.diagnostics, e));
 
     const bundleVisitor = new XtbVisitor();
     visitAll(bundleVisitor, element.children, bundle);
@@ -63,21 +72,29 @@ class XtbVisitor extends BaseVisitor {
         const id = getAttribute(element, 'id');
         if (id === undefined) {
           addParseDiagnostic(
-              bundle.diagnostics, element.sourceSpan,
-              `Missing required "id" attribute on <translation> element.`, ParseErrorLevel.ERROR);
+            bundle.diagnostics,
+            element.sourceSpan,
+            `Missing required "id" attribute on <translation> element.`,
+            ParseErrorLevel.ERROR,
+          );
           return;
         }
 
         // Error if there is already a translation with the same id
         if (bundle.translations[id] !== undefined) {
           addParseDiagnostic(
-              bundle.diagnostics, element.sourceSpan, `Duplicated translations for message "${id}"`,
-              ParseErrorLevel.ERROR);
+            bundle.diagnostics,
+            element.sourceSpan,
+            `Duplicated translations for message "${id}"`,
+            ParseErrorLevel.ERROR,
+          );
           return;
         }
 
-        const {translation, parseErrors, serializeErrors} = serializeTranslationMessage(
-            element, {inlineElements: [], placeholder: {elementName: 'ph', nameAttribute: 'name'}});
+        const {translation, parseErrors, serializeErrors} = serializeTranslationMessage(element, {
+          inlineElements: [],
+          placeholder: {elementName: 'ph', nameAttribute: 'name'},
+        });
         if (parseErrors.length) {
           // We only want to warn (not error) if there were problems parsing the translation for
           // XTB formatted files. See https://github.com/angular/angular/issues/14046.
@@ -91,14 +108,18 @@ class XtbVisitor extends BaseVisitor {
 
       default:
         addParseDiagnostic(
-            bundle.diagnostics, element.sourceSpan, `Unexpected <${element.name}> tag.`,
-            ParseErrorLevel.ERROR);
+          bundle.diagnostics,
+          element.sourceSpan,
+          `Unexpected <${element.name}> tag.`,
+          ParseErrorLevel.ERROR,
+        );
     }
   }
 }
 
 function computeParseWarning(id: string, errors: ParseError[]): string {
-  const msg = errors.map(e => e.toString()).join('\n');
-  return `Could not parse message with id "${id}" - perhaps it has an unrecognised ICU format?\n` +
-      msg;
+  const msg = errors.map((e) => e.toString()).join('\n');
+  return (
+    `Could not parse message with id "${id}" - perhaps it has an unrecognised ICU format?\n` + msg
+  );
 }

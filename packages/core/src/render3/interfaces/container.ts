@@ -10,9 +10,7 @@ import {DehydratedContainerView} from '../../hydration/interfaces';
 
 import {TNode} from './node';
 import {RComment, RElement} from './renderer_dom';
-import {DESCENDANT_VIEWS_TO_REFRESH, HOST, LView, NEXT, PARENT, T_HOST} from './view';
-
-
+import {FLAGS, HOST, LView, NEXT, PARENT, T_HOST} from './view';
 
 /**
  * Special location which allows easy identification of type. If we have an array which was
@@ -27,27 +25,13 @@ export const TYPE = 1;
  * Uglify will inline these when minifying so there shouldn't be a cost.
  */
 
-/**
- * Flag to signify that this `LContainer` may have transplanted views which need to be change
- * detected. (see: `LView[DECLARATION_COMPONENT_VIEW])`.
- *
- * This flag, once set, is never unset for the `LContainer`. This means that when unset we can skip
- * a lot of work in `refreshEmbeddedViews`. But when set we still need to verify
- * that the `MOVED_VIEWS` are transplanted and on-push.
- */
-export const HAS_TRANSPLANTED_VIEWS = 2;
-
-// PARENT, NEXT, DESCENDANT_VIEWS_TO_REFRESH are indices 3, 4, and 5
+// FLAGS, PARENT, NEXT, and T_HOST are indices 2, 3, 4, and 5
 // As we already have these constants in LView, we don't need to re-create them.
 
-// T_HOST is index 6
-// We already have this constants in LView, we don't need to re-create it.
-
+export const DEHYDRATED_VIEWS = 6;
 export const NATIVE = 7;
 export const VIEW_REFS = 8;
 export const MOVED_VIEWS = 9;
-export const DEHYDRATED_VIEWS = 10;
-
 
 /**
  * Size of LContainer's header. Represents the index after which all views in the
@@ -55,7 +39,7 @@ export const DEHYDRATED_VIEWS = 10;
  * which views are already in the DOM (and don't need to be re-added) and so we can
  * remove views from the DOM when they are no longer required.
  */
-export const CONTAINER_HEADER_OFFSET = 11;
+export const CONTAINER_HEADER_OFFSET = 10;
 
 /**
  * The state associated with a container.
@@ -72,7 +56,7 @@ export interface LContainer extends Array<any> {
    * The host could be an LView if this container is on a component node.
    * In that case, the component LView is its HOST.
    */
-  readonly[HOST]: RElement|RComment|LView;
+  readonly [HOST]: RElement | RComment | LView;
 
   /**
    * This is a type field which allows us to differentiate `LContainer` from `StylingContext` in an
@@ -80,13 +64,8 @@ export interface LContainer extends Array<any> {
    */
   [TYPE]: true;
 
-  /**
-   * Flag to signify that this `LContainer` may have transplanted views which need to be change
-   * detected. (see: `LView[DECLARATION_COMPONENT_VIEW])`.
-   *
-   * This flag, once set, is never unset for the `LContainer`.
-   */
-  [HAS_TRANSPLANTED_VIEWS]: boolean;
+  /** Flags for this container. See LContainerFlags for more info. */
+  [FLAGS]: LContainerFlags;
 
   /**
    * Access to the parent view is necessary so we can propagate back
@@ -98,22 +77,14 @@ export interface LContainer extends Array<any> {
    * This allows us to jump from a container to a sibling container or component
    * view with the same parent, so we can remove listeners efficiently.
    */
-  [NEXT]: LView|LContainer|null;
-
-  /**
-   * The number of direct transplanted views which need a refresh or have descendants themselves
-   * that need a refresh but have not marked their ancestors as Dirty. This tells us that during
-   * change detection we should still descend to find those children to refresh, even if the parents
-   * are not `Dirty`/`CheckAlways`.
-   */
-  [DESCENDANT_VIEWS_TO_REFRESH]: number;
+  [NEXT]: LView | LContainer | null;
 
   /**
    * A collection of views created based on the underlying `<ng-template>` element but inserted into
    * a different `LContainer`. We need to track views created from a given declaration point since
    * queries collect matches from the embedded view declaration point and _not_ the insertion point.
    */
-  [MOVED_VIEWS]: LView[]|null;
+  [MOVED_VIEWS]: LView[] | null;
 
   /**
    * Pointer to the `TNode` which represents the host of the container.
@@ -131,7 +102,7 @@ export interface LContainer extends Array<any> {
    * NOTE: This is stored as `any[]` because render3 should really not be aware of `ViewRef` and
    * doing so creates circular dependency.
    */
-  [VIEW_REFS]: unknown[]|null;
+  [VIEW_REFS]: unknown[] | null;
 
   /**
    * Array of dehydrated views within this container.
@@ -143,9 +114,17 @@ export interface LContainer extends Array<any> {
    * "garbage-collected" later on, i.e. removed from the DOM once the hydration
    * logic finishes.
    */
-  [DEHYDRATED_VIEWS]: DehydratedContainerView[]|null;
+  [DEHYDRATED_VIEWS]: DehydratedContainerView[] | null;
 }
 
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;
+/** Flags associated with an LContainer (saved in LContainer[FLAGS]) */
+export enum LContainerFlags {
+  None = 0,
+  /**
+   * Flag to signify that this `LContainer` may have transplanted views which need to be change
+   * detected. (see: `LView[DECLARATION_COMPONENT_VIEW])`.
+   *
+   * This flag, once set, is never unset for the `LContainer`.
+   */
+  HasTransplantedViews = 1 << 1,
+}

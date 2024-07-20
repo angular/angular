@@ -7,7 +7,7 @@ function MyComponent_span_0_Template(rf, ctx) {
   if (rf & 2) {
     const $item$ = ctx.$implicit;
     const $i$ = ctx.index;
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $i0$.ɵɵtextInterpolate2(" ", $i$, " - ", $item$, " ");
   }
 }

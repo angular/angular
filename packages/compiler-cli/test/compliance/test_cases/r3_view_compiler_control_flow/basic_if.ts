@@ -4,7 +4,9 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#if value()}hello{/if}
+      @if (value()) {
+        hello
+      }
     </div>
   `,
 })

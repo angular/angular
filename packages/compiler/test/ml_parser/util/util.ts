@@ -15,8 +15,9 @@ class _SerializerVisitor implements html.Visitor {
       return `<${element.name}${this._visitAll(element.attrs, ' ', ' ')}/>`;
     }
 
-    return `<${element.name}${this._visitAll(element.attrs, ' ', ' ')}>${
-        this._visitAll(element.children)}</${element.name}>`;
+    return `<${element.name}${this._visitAll(element.attrs, ' ', ' ')}>${this._visitAll(
+      element.children,
+    )}</${element.name}>`;
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
@@ -39,35 +40,27 @@ class _SerializerVisitor implements html.Visitor {
     return ` ${expansionCase.value} {${this._visitAll(expansionCase.expression)}}`;
   }
 
-  visitBlockGroup(group: html.BlockGroup, context: any) {
-    if (group.blocks.length === 0) {
-      throw new Error('Block group must have at least one block.');
-    }
-
-    const [primaryBlock, ...remainingBlocks] = group.blocks;
-
-    // The primary block is created implicitly so we need to separate it out when serializing.
-    return `{#${primaryBlock.name}${this._visitAll(primaryBlock.parameters, ';', ' ')}}${
-        this._visitAll(
-            primaryBlock.children)}${this._visitAll(remainingBlocks)}{/${primaryBlock.name}}`;
-  }
-
   visitBlock(block: html.Block, context: any) {
-    return `{:${block.name}${this._visitAll(block.parameters, ';', ' ')}}${
-        this._visitAll(block.children)}`;
+    const params =
+      block.parameters.length === 0 ? ' ' : ` (${this._visitAll(block.parameters, ';', ' ')}) `;
+    return `@${block.name}${params}{${this._visitAll(block.children)}}`;
   }
 
   visitBlockParameter(parameter: html.BlockParameter, context: any) {
     return parameter.expression;
   }
 
+  visitLetDeclaration(decl: html.LetDeclaration, context: any) {
+    return `@let ${decl.name} = ${decl.value};`;
+  }
+
   private _visitAll(nodes: html.Node[], separator = '', prefix = ''): string {
-    return nodes.length > 0 ? prefix + nodes.map(a => a.visit(this, null)).join(separator) : '';
+    return nodes.length > 0 ? prefix + nodes.map((a) => a.visit(this, null)).join(separator) : '';
   }
 }
 
 const serializerVisitor = new _SerializerVisitor();
 
 export function serializeNodes(nodes: html.Node[]): string[] {
-  return nodes.map(node => node.visit(serializerVisitor, null));
+  return nodes.map((node) => node.visit(serializerVisitor, null));
 }

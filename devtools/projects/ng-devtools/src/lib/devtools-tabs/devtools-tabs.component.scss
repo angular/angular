@@ -9,12 +9,39 @@
   display: none;
 }
 
+ng-injector-tree.hidden {
+  display: block;
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+}
+
 .tab-content {
+  position: relative;
   height: calc(100% - 31px);
 }
 
 #nav-buttons {
   display: flex;
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+
+    &:active {
+      opacity: 1
+    }
+  }
+}
+
+:host-context(.dark-theme) {
+  #nav-buttons {
+    button {
+      color: #fff;
+    }
+  }
 }
 
 .inspector-active {
@@ -40,26 +67,20 @@
   -webkit-user-select: text;
   -ms-user-select: text;
   user-select: text;
-}
 
-button.mat-icon-button {
-  height: 30px;
-  width: 30px;
-  line-height: 30px;
-  margin-right: 0px;
-}
-
-mat-icon {
-  font-size: 16px;
-
-  .mat-menu-item & {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
+  &.unsupported-version {
+    color: red;
   }
 }
 
-.mat-tab-link {
+mat-icon {
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mat-mdc-tab-link {
   min-width: unset;
   line-height: 30px;
   height: 30px;
@@ -69,27 +90,13 @@ mat-icon {
   font-weight: 400;
 }
 
-.mat-menu-item {
-  font-size: 0.7em;
-  font-weight: 500;
-  height: 36px;
-  line-height: 36px;
-  overflow: visible; // Avoids clipping of the button toggle ripple.
-  color: #777;
-
-  ::ng-deep .dark-theme & {
-    color: white;
-  }
-
-  mat-slide-toggle {
-    width: 100%;
-    height: 100%;
-  }
-}
-
 :host-context(.dark-theme) {
   #version-number {
     color: #5caace;
+
+    &.unsupported-version {
+      color: red;
+    }
   }
 
   .inspector-active {
@@ -106,5 +113,36 @@ mat-icon {
 @media only screen and (max-width: 420px) {
   #app-angular-version {
     display: none;
+  }
+}
+
+.mat-mdc-tab-header {
+  --mdc-secondary-navigation-tab-container-height: 30px;
+}
+
+.mat-mdc-menu-item.mdc-list-item {
+  ::ng-deep {
+    label {
+      cursor: pointer;
+    }
+  }
+}
+
+.frame-selector {
+  background-color: #e2e2e2;
+  border-radius: 2px;
+  color: #474747;
+  border: none;
+  margin: 4px 4px 2px 4px;
+  padding: 2px;
+  outline-offset: -2px;
+  width: 100px;
+  font-size: 12px;
+}
+
+:host-context(.dark-theme) {
+  .frame-selector {
+    background-color: #464646;
+    color: #fff;
   }
 }

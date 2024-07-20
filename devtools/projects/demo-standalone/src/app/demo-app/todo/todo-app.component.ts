@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyDialog as MatDialog, MatLegacyDialogModule as MatDialogModule} from '@angular/material/legacy-dialog';
-import {MatLegacyFormFieldModule as MatFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule as MatInputModule} from '@angular/material/legacy-input';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 import {RouterLink, RouterOutlet} from '@angular/router';
 
 import {DialogComponent} from './dialog.component';
@@ -19,11 +18,9 @@ import {DialogComponent} from './dialog.component';
 @Component({
   selector: 'app-todo-demo',
   standalone: true,
-  imports: [
-    RouterLink, RouterOutlet, MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule,
-    CommonModule
-  ],
-  styles: [`
+  imports: [RouterLink, RouterOutlet, MatDialogModule, FormsModule],
+  styles: [
+    `
       nav {
         padding-top: 20px;
         padding-bottom: 10px;
@@ -39,7 +36,8 @@ import {DialogComponent} from './dialog.component';
         padding: 10px;
         margin-right: 20px;
       }
-    `],
+    `,
+  ],
   template: `
     <nav>
       <a routerLink="/demo-app/todos/app">Todos</a>
@@ -49,11 +47,11 @@ import {DialogComponent} from './dialog.component';
     <button class="dialog-open-button" (click)="openDialog()">Open dialog</button>
 
     <router-outlet></router-outlet>
-  `
+  `,
 })
 export class TodoAppComponent {
-  name: string;
-  animal: string;
+  name!: string;
+  animal!: string;
 
   constructor(public dialog: MatDialog) {}
 

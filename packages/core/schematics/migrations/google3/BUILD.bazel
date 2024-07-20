@@ -5,21 +5,11 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
-        "//packages/core/schematics/migrations/guard-and-resolve-interfaces",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
         "@npm//typescript",
     ],
-)
-
-esbuild(
-    name = "guard_and_resolve_interfaces_cjs",
-    entry_point = ":guardAndResolveInterfacesRule.ts",
-    format = "cjs",
-    output = "guardAndResolveInterfacesCjsRule.js",
-    platform = "node",
-    deps = [":google3"],
 )
 
 esbuild(
@@ -34,7 +24,6 @@ esbuild(
 filegroup(
     name = "google3_cjs",
     srcs = [
-        ":guard_and_resolve_interfaces_cjs",
         ":wait_for_async_rule_cjs",
     ],
     visibility = ["//packages/core/schematics/test/google3:__pkg__"],

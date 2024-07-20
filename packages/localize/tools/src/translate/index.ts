@@ -45,7 +45,7 @@ export interface TranslateFilesOptions {
    * For example, if the files are `[app.xlf, lib-1.xlf, lib-2.xlif]` then a message that appears in
    * `app.xlf` will override the same message in `lib-1.xlf` or `lib-2.xlf`.
    */
-  translationFilePaths: (string|string[])[];
+  translationFilePaths: (string | string[])[];
   /**
    * A collection of the target locales for the translation files.
    *
@@ -56,7 +56,7 @@ export interface TranslateFilesOptions {
    * If there are both a provided locale and a locale parsed from the file, and they are not the
    * same, then a warning is reported.
    */
-  translationFileLocales: (string|undefined)[];
+  translationFileLocales: (string | undefined)[];
   /**
    * A function that computes the output path of where the translated files will be
    * written. The marker `{{LOCALE}}` will be replaced with the target locale. E.g.
@@ -92,37 +92,43 @@ export function translateFiles({
   diagnostics,
   missingTranslation,
   duplicateTranslation,
-  sourceLocale
+  sourceLocale,
 }: TranslateFilesOptions) {
   const fs = getFileSystem();
   const translationLoader = new TranslationLoader(
-      fs,
-      [
-        new Xliff2TranslationParser(),
-        new Xliff1TranslationParser(),
-        new XtbTranslationParser(),
-        new SimpleJsonTranslationParser(),
-        new ArbTranslationParser(),
-      ],
-      duplicateTranslation, diagnostics);
+    fs,
+    [
+      new Xliff2TranslationParser(),
+      new Xliff1TranslationParser(),
+      new XtbTranslationParser(),
+      new SimpleJsonTranslationParser(),
+      new ArbTranslationParser(),
+    ],
+    duplicateTranslation,
+    diagnostics,
+  );
 
   const resourceProcessor = new Translator(
-      fs,
-      [
-        new SourceFileTranslationHandler(fs, {missingTranslation}),
-        new AssetTranslationHandler(fs),
-      ],
-      diagnostics);
+    fs,
+    [new SourceFileTranslationHandler(fs, {missingTranslation}), new AssetTranslationHandler(fs)],
+    diagnostics,
+  );
 
   // Convert all the `translationFilePaths` elements to arrays.
-  const translationFilePathsArrays = translationFilePaths.map(
-      filePaths =>
-          Array.isArray(filePaths) ? filePaths.map(p => fs.resolve(p)) : [fs.resolve(filePaths)]);
+  const translationFilePathsArrays = translationFilePaths.map((filePaths) =>
+    Array.isArray(filePaths) ? filePaths.map((p) => fs.resolve(p)) : [fs.resolve(filePaths)],
+  );
 
-  const translations =
-      translationLoader.loadBundles(translationFilePathsArrays, translationFileLocales);
+  const translations = translationLoader.loadBundles(
+    translationFilePathsArrays,
+    translationFileLocales,
+  );
   sourceRootPath = fs.resolve(sourceRootPath);
   resourceProcessor.translateFiles(
-      sourceFilePaths.map(relativeFrom), fs.resolve(sourceRootPath), outputPathFn, translations,
-      sourceLocale);
+    sourceFilePaths.map(relativeFrom),
+    fs.resolve(sourceRootPath),
+    outputPathFn,
+    translations,
+    sourceLocale,
+  );
 }

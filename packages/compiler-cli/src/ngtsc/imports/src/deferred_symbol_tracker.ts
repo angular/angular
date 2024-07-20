@@ -8,23 +8,38 @@
 
 import ts from 'typescript';
 
+import {ClassDeclaration} from '../../reflection';
 import {getContainingImportDeclaration} from '../../reflection/src/typescript';
 
 const AssumeEager = 'AssumeEager';
 type AssumeEager = typeof AssumeEager;
 
 /**
+ * Maps imported symbol name to a set of locations where the symbols is used
+ * in a source file.
+ */
+type SymbolMap = Map<string, Set<ts.Identifier> | AssumeEager>;
+
+/**
  * Allows to register a symbol as deferrable and keep track of its usage.
  *
  * This information is later used to determine whether it's safe to drop
  * a regular import of this symbol (actually the entire import declaration)
- * in favor of using a dynamic import for cases when `{#defer}` blocks are used.
+ * in favor of using a dynamic import for cases when defer blocks are used.
  */
 export class DeferredSymbolTracker {
-  private readonly imports =
-      new Map<ts.ImportDeclaration, Map<string, Set<ts.Identifier>|AssumeEager>>();
+  private readonly imports = new Map<ts.ImportDeclaration, SymbolMap>();
 
-  constructor(private readonly typeChecker: ts.TypeChecker) {}
+  /**
+   * Map of a component class -> all import declarations that bring symbols
+   * used within `@Component.deferredImports` field.
+   */
+  private readonly explicitlyDeferredImports = new Map<ClassDeclaration, ts.ImportDeclaration[]>();
+
+  constructor(
+    private readonly typeChecker: ts.TypeChecker,
+    private onlyExplicitDeferDependencyImports: boolean,
+  ) {}
 
   /**
    * Given an import declaration node, extract the names of all imported symbols
@@ -44,12 +59,19 @@ export class DeferredSymbolTracker {
       throw new Error(`Provided import declaration doesn't have any symbols.`);
     }
 
+    // If the entire import is a type-only import, none of the symbols can be eager.
+    if (importDecl.importClause.isTypeOnly) {
+      return symbolMap;
+    }
+
     if (importDecl.importClause.namedBindings !== undefined) {
       const bindings = importDecl.importClause.namedBindings;
       if (ts.isNamedImports(bindings)) {
         // Case 1: `import {a, b as B} from 'a'`
         for (const element of bindings.elements) {
-          symbolMap.set(element.name.text, AssumeEager);
+          if (!element.isTypeOnly) {
+            symbolMap.set(element.name.text, AssumeEager);
+          }
         }
       } else {
         // Case 2: `import X from 'a'`
@@ -65,34 +87,77 @@ export class DeferredSymbolTracker {
   }
 
   /**
+   * Retrieves a list of import declarations that contain symbols used within
+   * `@Component.deferredImports` of a specific component class, but those imports
+   * can not be removed, since there are other symbols imported alongside deferred
+   * components.
+   */
+  getNonRemovableDeferredImports(
+    sourceFile: ts.SourceFile,
+    classDecl: ClassDeclaration,
+  ): ts.ImportDeclaration[] {
+    const affectedImports: ts.ImportDeclaration[] = [];
+    const importDecls = this.explicitlyDeferredImports.get(classDecl) ?? [];
+    for (const importDecl of importDecls) {
+      if (importDecl.getSourceFile() === sourceFile && !this.canDefer(importDecl)) {
+        affectedImports.push(importDecl);
+      }
+    }
+    return affectedImports;
+  }
+
+  /**
    * Marks a given identifier and an associated import declaration as a candidate
    * for defer loading.
    */
-  markAsDeferrableCandidate(identifier: ts.Identifier, importDecl: ts.ImportDeclaration): void {
+  markAsDeferrableCandidate(
+    identifier: ts.Identifier,
+    importDecl: ts.ImportDeclaration,
+    componentClassDecl: ClassDeclaration,
+    isExplicitlyDeferred: boolean,
+  ): void {
+    if (this.onlyExplicitDeferDependencyImports && !isExplicitlyDeferred) {
+      // Ignore deferrable candidates when only explicit deferred imports mode is enabled.
+      // In that mode only dependencies from the `@Component.deferredImports` field are
+      // defer-loadable.
+      return;
+    }
+
+    if (isExplicitlyDeferred) {
+      if (this.explicitlyDeferredImports.has(componentClassDecl)) {
+        this.explicitlyDeferredImports.get(componentClassDecl)!.push(importDecl);
+      } else {
+        this.explicitlyDeferredImports.set(componentClassDecl, [importDecl]);
+      }
+    }
+
+    let symbolMap = this.imports.get(importDecl);
+
     // Do we come across this import for the first time?
-    if (!this.imports.has(importDecl)) {
-      const symbolMap = this.extractImportedSymbols(importDecl);
+    if (!symbolMap) {
+      symbolMap = this.extractImportedSymbols(importDecl);
       this.imports.set(importDecl, symbolMap);
     }
 
-    const symbolMap = this.imports.get(importDecl)!;
-
     if (!symbolMap.has(identifier.text)) {
       throw new Error(
-          `The '${identifier.text}' identifier doesn't belong ` +
-          `to the provided import declaration.`);
+        `The '${identifier.text}' identifier doesn't belong ` +
+          `to the provided import declaration.`,
+      );
     }
 
     if (symbolMap.get(identifier.text) === AssumeEager) {
       // We process this symbol for the first time, populate references.
       symbolMap.set(
-          identifier.text, this.lookupIdentifiersInSourceFile(identifier.text, importDecl));
+        identifier.text,
+        this.lookupIdentifiersInSourceFile(identifier.text, importDecl),
+      );
     }
 
     const identifiers = symbolMap.get(identifier.text) as Set<ts.Identifier>;
 
     // Drop the current identifier, since we are trying to make it deferrable
-    // (it's used as a dependency in one of the `{#defer}` blocks).
+    // (it's used as a dependency in one of the defer blocks).
     identifiers.delete(identifier);
   }
 
@@ -130,8 +195,10 @@ export class DeferredSymbolTracker {
     return deferrableDecls;
   }
 
-  private lookupIdentifiersInSourceFile(name: string, importDecl: ts.ImportDeclaration):
-      Set<ts.Identifier> {
+  private lookupIdentifiersInSourceFile(
+    name: string,
+    importDecl: ts.ImportDeclaration,
+  ): Set<ts.Identifier> {
     const results = new Set<ts.Identifier>();
     const visit = (node: ts.Node): void => {
       if (node === importDecl) {

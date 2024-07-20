@@ -9,7 +9,15 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
-import {ActivatedRoute, provideRouter, Router, RouterLink, RouterLinkActive, RouterOutlet, Routes} from '@angular/router';
+import {
+  ActivatedRoute,
+  provideRouter,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+  Routes,
+} from '@angular/router';
 
 @Component({
   selector: 'app-list',
@@ -23,8 +31,7 @@ import {ActivatedRoute, provideRouter, Router, RouterLink, RouterLinkActive, Rou
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
 })
-class ListComponent {
-}
+class ListComponent {}
 
 @Component({
   selector: 'app-item',
@@ -35,10 +42,13 @@ class ListComponent {
 })
 class ItemComponent implements OnInit {
   id = -1;
-  constructor(private activatedRoute: ActivatedRoute, private router: Router) {}
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   ngOnInit() {
-    this.activatedRoute.paramMap.subscribe(paramsMap => {
+    this.activatedRoute.paramMap.subscribe((paramsMap) => {
       this.id = +paramsMap.get('id')!;
     });
   }
@@ -54,17 +64,14 @@ class ItemComponent implements OnInit {
   standalone: true,
   imports: [RouterOutlet],
 })
-class RootComponent {
-}
+class RootComponent {}
 
 const ROUTES: Routes = [
-  {path: '', redirectTo: '/list', pathMatch: 'full'}, {path: 'list', component: ListComponent},
-  {path: 'item/:id', component: ItemComponent}
+  {path: '', redirectTo: '/list', pathMatch: 'full'},
+  {path: 'list', component: ListComponent},
+  {path: 'item/:id', component: ItemComponent},
 ];
 
 (window as any).waitForApp = bootstrapApplication(RootComponent, {
-  providers: [
-    provideRouter(ROUTES),
-    {provide: APP_BASE_HREF, useValue: ''},
-  ]
+  providers: [provideRouter(ROUTES), {provide: APP_BASE_HREF, useValue: ''}],
 });

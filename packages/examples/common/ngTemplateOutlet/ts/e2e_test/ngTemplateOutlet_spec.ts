@@ -25,7 +25,9 @@ describe('ngTemplateOutlet', () => {
       browser.get(URL);
       waitForElement('ng-template-outlet-example');
       expect(element.all(by.css('ng-template-outlet-example span')).getText()).toEqual([
-        'Hello', 'Hello World!', 'Ahoj Svet!'
+        'Hello',
+        'Hello World!',
+        'Ahoj Svet!',
       ]);
     });
   });

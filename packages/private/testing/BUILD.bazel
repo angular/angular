@@ -1,6 +1,8 @@
 load("//tools:defaults.bzl", "ng_module")
 
 package(default_visibility = [
+    "//adev/src/content/api-examples/forms:__subpackages__",
+    "//adev/src/content/api-examples/upgrade/static/ts:__subpackages__",
     "//modules/playground:__subpackages__",
     "//packages:__subpackages__",
 ])

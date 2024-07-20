@@ -7,7 +7,10 @@
  */
 import {ɵStyleDataMap} from '@angular/animations';
 
-import {AnimationEngineInstruction, AnimationTransitionInstructionType} from '../render/animation_engine_instruction';
+import {
+  AnimationEngineInstruction,
+  AnimationTransitionInstructionType,
+} from '../render/animation_engine_instruction';
 
 export interface AnimationTimelineInstruction extends AnimationEngineInstruction {
   element: any;
@@ -17,15 +20,21 @@ export interface AnimationTimelineInstruction extends AnimationEngineInstruction
   duration: number;
   delay: number;
   totalTime: number;
-  easing: string|null;
+  easing: string | null;
   stretchStartingKeyframe?: boolean;
   subTimeline: boolean;
 }
 
 export function createTimelineInstruction(
-    element: any, keyframes: Array<ɵStyleDataMap>, preStyleProps: string[],
-    postStyleProps: string[], duration: number, delay: number, easing: string|null = null,
-    subTimeline: boolean = false): AnimationTimelineInstruction {
+  element: any,
+  keyframes: Array<ɵStyleDataMap>,
+  preStyleProps: string[],
+  postStyleProps: string[],
+  duration: number,
+  delay: number,
+  easing: string | null = null,
+  subTimeline: boolean = false,
+): AnimationTimelineInstruction {
   return {
     type: AnimationTransitionInstructionType.TimelineAnimation,
     element,
@@ -36,6 +45,6 @@ export function createTimelineInstruction(
     delay,
     totalTime: duration + delay,
     easing,
-    subTimeline
+    subTimeline,
   };
 }

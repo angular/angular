@@ -63,8 +63,7 @@ import {Component} from '@angular/core';
      <br>
     `,
 })
-export class ImageDistortionPassingComponent {
-}
+export class ImageDistortionPassingComponent {}
 @Component({
   selector: 'image-distortion-failing',
   standalone: true,
@@ -105,5 +104,4 @@ export class ImageDistortionPassingComponent {
        style="width: 400px; height: 400px; padding-left: 200px; box-sizing: border-box">
      `,
 })
-export class ImageDistortionFailingComponent {
-}
+export class ImageDistortionFailingComponent {}

@@ -18,13 +18,20 @@ import {getSourceFileOrNull, resolveModuleName} from '../../util/src/typescript'
  */
 export class ModuleResolver {
   constructor(
-      private program: ts.Program, private compilerOptions: ts.CompilerOptions,
-      private host: ts.ModuleResolutionHost&Pick<ts.CompilerHost, 'resolveModuleNames'>,
-      private moduleResolutionCache: ts.ModuleResolutionCache|null) {}
+    private program: ts.Program,
+    private compilerOptions: ts.CompilerOptions,
+    private host: ts.ModuleResolutionHost & Pick<ts.CompilerHost, 'resolveModuleNames'>,
+    private moduleResolutionCache: ts.ModuleResolutionCache | null,
+  ) {}
 
-  resolveModule(moduleName: string, containingFile: string): ts.SourceFile|null {
+  resolveModule(moduleName: string, containingFile: string): ts.SourceFile | null {
     const resolved = resolveModuleName(
-        moduleName, containingFile, this.compilerOptions, this.host, this.moduleResolutionCache);
+      moduleName,
+      containingFile,
+      this.compilerOptions,
+      this.host,
+      this.moduleResolutionCache,
+    );
     if (resolved === undefined) {
       return null;
     }

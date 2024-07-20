@@ -6,13 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, destroyPlatform, DoBootstrap, EventEmitter, Injector, Input, NgModule, Output} from '@angular/core';
+import {
+  Component,
+  destroyPlatform,
+  DoBootstrap,
+  EventEmitter,
+  Injector,
+  Input,
+  NgModule,
+  Output,
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {Subject} from 'rxjs';
 
 import {createCustomElement, NgElementConstructor} from '../src/create-custom-element';
-import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
+import {
+  NgElementStrategy,
+  NgElementStrategyEvent,
+  NgElementStrategyFactory,
+} from '../src/element-strategy';
 
 interface WithFooBar {
   fooFoo: string;
@@ -28,20 +41,20 @@ describe('createCustomElement', () => {
   let strategyFactory: TestStrategyFactory;
   let injector: Injector;
 
-  beforeAll(done => {
+  beforeAll((done) => {
     testContainer = document.createElement('div');
     document.body.appendChild(testContainer);
     destroyPlatform();
     platformBrowserDynamic()
-        .bootstrapModule(TestModule)
-        .then(ref => {
-          injector = ref.injector;
-          strategyFactory = new TestStrategyFactory();
-          strategy = strategyFactory.testStrategy;
+      .bootstrapModule(TestModule)
+      .then((ref) => {
+        injector = ref.injector;
+        strategyFactory = new TestStrategyFactory();
+        strategy = strategyFactory.testStrategy;
 
-          NgElementCtor = createAndRegisterTestCustomElement(strategyFactory);
-        })
-        .then(done, done.fail);
+        NgElementCtor = createAndRegisterTestCustomElement(strategyFactory);
+      })
+      .then(done, done.fail);
   });
 
   afterEach(() => strategy.reset());
@@ -95,7 +108,7 @@ describe('createCustomElement', () => {
     element.connectedCallback();
 
     let eventValue: any = null;
-    element.addEventListener('some-event', (e: Event) => eventValue = (e as CustomEvent).detail);
+    element.addEventListener('some-event', (e: Event) => (eventValue = (e as CustomEvent).detail));
     strategy.events.next({name: 'some-event', value: 'event-value'});
 
     expect(eventValue).toEqual('event-value');
@@ -108,7 +121,7 @@ describe('createCustomElement', () => {
     expect(strategy.disconnectCalled).toBe(true);
 
     let eventValue: any = null;
-    element.addEventListener('some-event', (e: Event) => eventValue = (e as CustomEvent).detail);
+    element.addEventListener('some-event', (e: Event) => (eventValue = (e as CustomEvent).detail));
     strategy.events.next({name: 'some-event', value: 'event-value'});
 
     expect(eventValue).toEqual(null);
@@ -118,42 +131,43 @@ describe('createCustomElement', () => {
     const events: string[] = [];
 
     const element = new NgElementCtor(injector);
-    element.addEventListener('strategy-event', evt => events.push((evt as CustomEvent).detail));
+    element.addEventListener('strategy-event', (evt) => events.push((evt as CustomEvent).detail));
     element.connectedCallback();
 
     expect(events).toEqual(['connect']);
   });
 
-  it('should not break if `NgElementStrategy#events` is not available before calling `NgElementStrategy#connect()`',
-     () => {
-       class TestStrategyWithLateEvents extends TestStrategy {
-         override events: Subject<NgElementStrategyEvent> = undefined!;
+  it('should not break if `NgElementStrategy#events` is not available before calling `NgElementStrategy#connect()`', () => {
+    class TestStrategyWithLateEvents extends TestStrategy {
+      override events: Subject<NgElementStrategyEvent> = undefined!;
 
-         override connect(element: HTMLElement): void {
-           this.connectedElement = element;
-           this.events = new Subject<NgElementStrategyEvent>();
-           this.events.next({name: 'strategy-event', value: 'connect'});
-         }
-       }
+      override connect(element: HTMLElement): void {
+        this.connectedElement = element;
+        this.events = new Subject<NgElementStrategyEvent>();
+        this.events.next({name: 'strategy-event', value: 'connect'});
+      }
+    }
 
-       const strategyWithLateEvents = new TestStrategyWithLateEvents();
-       const capturedEvents: string[] = [];
+    const strategyWithLateEvents = new TestStrategyWithLateEvents();
+    const capturedEvents: string[] = [];
 
-       const NgElementCtorWithLateEventsStrategy =
-           createAndRegisterTestCustomElement({create: () => strategyWithLateEvents});
+    const NgElementCtorWithLateEventsStrategy = createAndRegisterTestCustomElement({
+      create: () => strategyWithLateEvents,
+    });
 
-       const element = new NgElementCtorWithLateEventsStrategy(injector);
-       element.addEventListener(
-           'strategy-event', evt => capturedEvents.push((evt as CustomEvent).detail));
-       element.connectedCallback();
+    const element = new NgElementCtorWithLateEventsStrategy(injector);
+    element.addEventListener('strategy-event', (evt) =>
+      capturedEvents.push((evt as CustomEvent).detail),
+    );
+    element.connectedCallback();
 
-       // The "connect" event (emitted during initialization) was missed, but things didn't break.
-       expect(capturedEvents).toEqual([]);
+    // The "connect" event (emitted during initialization) was missed, but things didn't break.
+    expect(capturedEvents).toEqual([]);
 
-       // Subsequent events are still captured.
-       strategyWithLateEvents.events.next({name: 'strategy-event', value: 'after-connect'});
-       expect(capturedEvents).toEqual(['after-connect']);
-     });
+    // Subsequent events are still captured.
+    strategyWithLateEvents.events.next({name: 'strategy-event', value: 'after-connect'});
+    expect(capturedEvents).toEqual(['after-connect']);
+  });
 
   it('should properly set getters/setters on the element', () => {
     const element = new NgElementCtor(injector);
@@ -166,23 +180,22 @@ describe('createCustomElement', () => {
     expect(strategy.inputs.get('fooTransformed')).toBe(true);
   });
 
-  it('should properly handle getting/setting properties on the element even if the constructor is not called',
-     () => {
-       // Create a custom element while ensuring that the `NgElementStrategy` is not created
-       // inside the constructor. This is done to emulate the behavior of some polyfills that do
-       // not call the constructor.
-       strategyFactory.create = () => undefined as unknown as NgElementStrategy;
-       const element = new NgElementCtor(injector);
-       strategyFactory.create = TestStrategyFactory.prototype.create;
+  it('should properly handle getting/setting properties on the element even if the constructor is not called', () => {
+    // Create a custom element while ensuring that the `NgElementStrategy` is not created
+    // inside the constructor. This is done to emulate the behavior of some polyfills that do
+    // not call the constructor.
+    strategyFactory.create = () => undefined as unknown as NgElementStrategy;
+    const element = new NgElementCtor(injector);
+    strategyFactory.create = TestStrategyFactory.prototype.create;
 
-       element.fooFoo = 'foo-foo-value';
-       element.barBar = 'barBar-value';
-       element.fooTransformed = 'truthy';
+    element.fooFoo = 'foo-foo-value';
+    element.barBar = 'barBar-value';
+    element.fooTransformed = 'truthy';
 
-       expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
-       expect(strategy.inputs.get('barBar')).toBe('barBar-value');
-       expect(strategy.inputs.get('fooTransformed')).toBe(true);
-     });
+    expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
+    expect(strategy.inputs.get('barBar')).toBe('barBar-value');
+    expect(strategy.inputs.get('fooTransformed')).toBe(true);
+  });
 
   it('should capture properties set before upgrading the element', () => {
     // Create a regular element and set properties on it.
@@ -208,73 +221,71 @@ describe('createCustomElement', () => {
     expect(strategy.inputs.get('fooTransformed')).toBe(true);
   });
 
-  it('should capture properties set after upgrading the element but before inserting it into the DOM',
-     () => {
-       // Create a regular element and set properties on it.
-       const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
-       const element = Object.assign(document.createElement(selector), {
-         fooFoo: 'foo-prop-value',
-         barBar: 'bar-prop-value',
-         fooTransformed: 'truthy' as unknown,
-       });
-       expect(element.fooFoo).toBe('foo-prop-value');
-       expect(element.barBar).toBe('bar-prop-value');
-       expect(element.fooTransformed).toBe('truthy');
+  it('should capture properties set after upgrading the element but before inserting it into the DOM', () => {
+    // Create a regular element and set properties on it.
+    const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
+    const element = Object.assign(document.createElement(selector), {
+      fooFoo: 'foo-prop-value',
+      barBar: 'bar-prop-value',
+      fooTransformed: 'truthy' as unknown,
+    });
+    expect(element.fooFoo).toBe('foo-prop-value');
+    expect(element.barBar).toBe('bar-prop-value');
+    expect(element.fooTransformed).toBe('truthy');
 
-       // Upgrade the element to a Custom Element (without inserting it into the DOM) and update a
-       // property.
-       customElements.define(selector, ElementCtor);
-       customElements.upgrade(element);
-       element.barBar = 'bar-prop-value-2';
-       element.fooTransformed = '';
-       expect(element.fooFoo).toBe('foo-prop-value');
-       expect(element.barBar).toBe('bar-prop-value-2');
-       expect(element.fooTransformed).toBe('');
+    // Upgrade the element to a Custom Element (without inserting it into the DOM) and update a
+    // property.
+    customElements.define(selector, ElementCtor);
+    customElements.upgrade(element);
+    element.barBar = 'bar-prop-value-2';
+    element.fooTransformed = '';
+    expect(element.fooFoo).toBe('foo-prop-value');
+    expect(element.barBar).toBe('bar-prop-value-2');
+    expect(element.fooTransformed).toBe('');
 
-       // Insert the element into the DOM.
-       testContainer.appendChild(element);
-       expect(element.fooFoo).toBe('foo-prop-value');
-       expect(element.barBar).toBe('bar-prop-value-2');
-       expect(element.fooTransformed).toBe(false);
+    // Insert the element into the DOM.
+    testContainer.appendChild(element);
+    expect(element.fooFoo).toBe('foo-prop-value');
+    expect(element.barBar).toBe('bar-prop-value-2');
+    expect(element.fooTransformed).toBe(false);
 
-       expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
-       expect(strategy.inputs.get('barBar')).toBe('bar-prop-value-2');
-       expect(strategy.inputs.get('fooTransformed')).toBe(false);
-     });
+    expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
+    expect(strategy.inputs.get('barBar')).toBe('bar-prop-value-2');
+    expect(strategy.inputs.get('fooTransformed')).toBe(false);
+  });
 
-  it('should allow overwriting properties with attributes after upgrading the element but before inserting it into the DOM',
-     () => {
-       // Create a regular element and set properties on it.
-       const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
-       const element = Object.assign(document.createElement(selector), {
-         fooFoo: 'foo-prop-value',
-         barBar: 'bar-prop-value',
-         fooTransformed: 'truthy' as unknown,
-       });
-       expect(element.fooFoo).toBe('foo-prop-value');
-       expect(element.barBar).toBe('bar-prop-value');
-       expect(element.fooTransformed).toBe('truthy');
+  it('should allow overwriting properties with attributes after upgrading the element but before inserting it into the DOM', () => {
+    // Create a regular element and set properties on it.
+    const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
+    const element = Object.assign(document.createElement(selector), {
+      fooFoo: 'foo-prop-value',
+      barBar: 'bar-prop-value',
+      fooTransformed: 'truthy' as unknown,
+    });
+    expect(element.fooFoo).toBe('foo-prop-value');
+    expect(element.barBar).toBe('bar-prop-value');
+    expect(element.fooTransformed).toBe('truthy');
 
-       // Upgrade the element to a Custom Element (without inserting it into the DOM) and set an
-       // attribute.
-       customElements.define(selector, ElementCtor);
-       customElements.upgrade(element);
-       element.setAttribute('barbar', 'bar-attr-value');
-       element.setAttribute('foo-transformed', '');
-       expect(element.fooFoo).toBe('foo-prop-value');
-       expect(element.barBar).toBe('bar-attr-value');
-       expect(element.fooTransformed).toBe(false);
+    // Upgrade the element to a Custom Element (without inserting it into the DOM) and set an
+    // attribute.
+    customElements.define(selector, ElementCtor);
+    customElements.upgrade(element);
+    element.setAttribute('barbar', 'bar-attr-value');
+    element.setAttribute('foo-transformed', '');
+    expect(element.fooFoo).toBe('foo-prop-value');
+    expect(element.barBar).toBe('bar-attr-value');
+    expect(element.fooTransformed).toBe(false);
 
-       // Insert the element into the DOM.
-       testContainer.appendChild(element);
-       expect(element.fooFoo).toBe('foo-prop-value');
-       expect(element.barBar).toBe('bar-attr-value');
-       expect(element.fooTransformed).toBe(false);
+    // Insert the element into the DOM.
+    testContainer.appendChild(element);
+    expect(element.fooFoo).toBe('foo-prop-value');
+    expect(element.barBar).toBe('bar-attr-value');
+    expect(element.fooTransformed).toBe(false);
 
-       expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
-       expect(strategy.inputs.get('barBar')).toBe('bar-attr-value');
-       expect(strategy.inputs.get('fooTransformed')).toBe(false);
-     });
+    expect(strategy.inputs.get('fooFoo')).toBe('foo-prop-value');
+    expect(strategy.inputs.get('barBar')).toBe('bar-attr-value');
+    expect(strategy.inputs.get('fooTransformed')).toBe(false);
+  });
 
   // Helpers
   function createAndRegisterTestCustomElement(strategyFactory: NgElementStrategyFactory) {
@@ -313,7 +324,7 @@ describe('createCustomElement', () => {
   }
 
   class TestStrategy implements NgElementStrategy {
-    connectedElement: HTMLElement|null = null;
+    connectedElement: HTMLElement | null = null;
     disconnectCalled = false;
     inputs = new Map<string, any>();
 
@@ -350,8 +361,9 @@ describe('createCustomElement', () => {
       // Although not used by the `TestStrategy`, verify that the injector is provided.
       if (!injector) {
         throw new Error(
-            'Expected injector to be passed to `TestStrategyFactory#create()`, but received ' +
-            `value of type ${typeof injector}: ${injector}`);
+          'Expected injector to be passed to `TestStrategyFactory#create()`, but received ' +
+            `value of type ${typeof injector}: ${injector}`,
+        );
       }
 
       return this.testStrategy;

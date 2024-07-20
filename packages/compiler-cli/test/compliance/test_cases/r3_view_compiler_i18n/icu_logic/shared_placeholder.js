@@ -6,7 +6,7 @@ function MyComponent_div_3_Template(rf, ctx) {
   }
   if (rf & 2) {
     const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵi18nExp($ctx_r0$.gender);
     $r3$.ɵɵi18nApply(0);
   }
@@ -14,7 +14,7 @@ function MyComponent_div_3_Template(rf, ctx) {
 …
 decls: 4,
 vars: 3,
-consts: function() {
+consts: () => {
   // NOTE: Keeping raw content here to illustrate the difference in placeholders generated for goog.getMsg and $localize calls (see last i18n block).
   let $I18N_1$;
   if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -67,16 +67,16 @@ consts: function() {
        * @suppress {msgDescriptions}
        */
       const $MSG_APP_SPEC_TS_0$ = goog.getMsg(" {$icu} {$startTagDiv} {$icu} {$closeTagDiv}{$startTagDiv_1} {$icu} {$closeTagDiv}", {
-        "startTagDiv": "\uFFFD#2\uFFFD",
         "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
-        "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
-        "icu": "\uFFFDI18N_EXP_ICU\uFFFD"
+        "icu": "\uFFFDI18N_EXP_ICU\uFFFD",
+        "startTagDiv": "\uFFFD#2\uFFFD",
+        "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD"
       }, {
         original_code: {
-          "startTagDiv": "<div>",
           "closeTagDiv": "</div>",
-          "startTagDiv_1": "<div *ngIf=\"visible\">",
-          "icu": "{gender, select, male {male} female {female} other {other}}"
+          "icu": "{gender, select, male {male} female {female} other {other}}",
+          "startTagDiv": "<div>",
+          "startTagDiv_1": "<div *ngIf=\"visible\">"
         }
       });
       $I18N_0$ = $MSG_APP_SPEC_TS_0$;

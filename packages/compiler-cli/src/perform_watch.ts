@@ -10,7 +10,13 @@ import * as chokidar from 'chokidar';
 import * as path from 'path';
 import ts from 'typescript';
 
-import {exitCodeFromResult, ParsedConfiguration, performCompilation, PerformCompilationResult, readConfiguration} from './perform_compile';
+import {
+  exitCodeFromResult,
+  ParsedConfiguration,
+  performCompilation,
+  PerformCompilationResult,
+  readConfiguration,
+} from './perform_compile';
 import * as api from './transformers/api';
 import {createCompilerHost} from './transformers/entry_points';
 import {createMessageDiagnostic} from './transformers/util';
@@ -43,35 +49,40 @@ export interface PerformWatchHost<CbEmitRes extends ts.EmitResult = ts.EmitResul
   reportDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic>): void;
   readConfiguration(): ParsedConfiguration;
   createCompilerHost(options: api.CompilerOptions): api.CompilerHost;
-  createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback<CbEmitRes>|undefined;
+  createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback<CbEmitRes> | undefined;
   onFileChange(
-      options: api.CompilerOptions, listener: (event: FileChangeEvent, fileName: string) => void,
-      ready: () => void): {close: () => void};
+    options: api.CompilerOptions,
+    listener: (event: FileChangeEvent, fileName: string) => void,
+    ready: () => void,
+  ): {close: () => void};
   setTimeout(callback: () => void, ms: number): any;
   clearTimeout(timeoutId: any): void;
 }
 
 export function createPerformWatchHost<CbEmitRes extends ts.EmitResult = ts.EmitResult>(
-    configFileName: string, reportDiagnostics: (diagnostics: ReadonlyArray<ts.Diagnostic>) => void,
-    existingOptions?: ts.CompilerOptions,
-    createEmitCallback?: (options: api.CompilerOptions) =>
-        api.TsEmitCallback<CbEmitRes>| undefined): PerformWatchHost {
+  configFileName: string,
+  reportDiagnostics: (diagnostics: ReadonlyArray<ts.Diagnostic>) => void,
+  existingOptions?: ts.CompilerOptions,
+  createEmitCallback?: (options: api.CompilerOptions) => api.TsEmitCallback<CbEmitRes> | undefined,
+): PerformWatchHost {
   return {
     reportDiagnostics: reportDiagnostics,
-    createCompilerHost: options => createCompilerHost({options}),
+    createCompilerHost: (options) => createCompilerHost({options}),
     readConfiguration: () => readConfiguration(configFileName, existingOptions),
-    createEmitCallback: options => createEmitCallback ? createEmitCallback(options) : undefined,
+    createEmitCallback: (options) => (createEmitCallback ? createEmitCallback(options) : undefined),
     onFileChange: (options, listener, ready: () => void) => {
       if (!options.basePath) {
-        reportDiagnostics([{
-          category: ts.DiagnosticCategory.Error,
-          messageText: 'Invalid configuration option. baseDir not specified',
-          source: api.SOURCE,
-          code: api.DEFAULT_ERROR_CODE,
-          file: undefined,
-          start: undefined,
-          length: undefined,
-        }]);
+        reportDiagnostics([
+          {
+            category: ts.DiagnosticCategory.Error,
+            messageText: 'Invalid configuration option. baseDir not specified',
+            source: api.SOURCE,
+            code: api.DEFAULT_ERROR_CODE,
+            file: undefined,
+            start: undefined,
+            length: undefined,
+          },
+        ]);
         return {close: () => {}};
       }
       const watcher = chokidar.watch(options.basePath, {
@@ -119,15 +130,14 @@ interface QueuedCompilationInfo {
  * The logic in this function is adapted from `tsc.ts` from TypeScript.
  */
 export function performWatchCompilation(host: PerformWatchHost): {
-  close: () => void,
-  ready: (cb: () => void) => void,
-  firstCompileResult: ReadonlyArray<ts.Diagnostic>
+  close: () => void;
+  ready: (cb: () => void) => void;
+  firstCompileResult: ReadonlyArray<ts.Diagnostic>;
 } {
-  let cachedProgram: api.Program|undefined;            // Program cached from last compilation
-  let cachedCompilerHost: api.CompilerHost|undefined;  // CompilerHost cached from last compilation
-  let cachedOptions: ParsedConfiguration|undefined;  // CompilerOptions cached from last compilation
-  let timerHandleForRecompilation: QueuedCompilationInfo|
-      undefined;  // Handle for 0.25s wait timer to trigger recompilation
+  let cachedProgram: api.Program | undefined; // Program cached from last compilation
+  let cachedCompilerHost: api.CompilerHost | undefined; // CompilerHost cached from last compilation
+  let cachedOptions: ParsedConfiguration | undefined; // CompilerOptions cached from last compilation
+  let timerHandleForRecompilation: QueuedCompilationInfo | undefined; // Handle for 0.25s wait timer to trigger recompilation
 
   const ignoreFilesForWatch = new Set<string>();
   const fileCache = new Map<string, CacheEntry>();
@@ -136,13 +146,16 @@ export function performWatchCompilation(host: PerformWatchHost): {
 
   // Watch basePath, ignoring .dotfiles
   let resolveReadyPromise: () => void;
-  const readyPromise = new Promise<void>(resolve => resolveReadyPromise = resolve);
+  const readyPromise = new Promise<void>((resolve) => (resolveReadyPromise = resolve));
   // Note: ! is ok as options are filled after the first compilation
   // Note: ! is ok as resolvedReadyPromise is filled by the previous call
-  const fileWatcher =
-      host.onFileChange(cachedOptions!.options, watchedFileChanged, resolveReadyPromise!);
+  const fileWatcher = host.onFileChange(
+    cachedOptions!.options,
+    watchedFileChanged,
+    resolveReadyPromise!,
+  );
 
-  return {close, ready: cb => readyPromise.then(cb), firstCompileResult};
+  return {close, ready: (cb) => readyPromise.then(cb), firstCompileResult};
 
   function cacheEntry(fileName: string): CacheEntry {
     fileName = path.normalize(fileName);
@@ -175,14 +188,18 @@ export function performWatchCompilation(host: PerformWatchHost): {
     if (!cachedCompilerHost) {
       cachedCompilerHost = host.createCompilerHost(cachedOptions.options);
       const originalWriteFileCallback = cachedCompilerHost.writeFile;
-      cachedCompilerHost.writeFile = function(
-          fileName: string, data: string, writeByteOrderMark: boolean,
-          onError?: (message: string) => void, sourceFiles: ReadonlyArray<ts.SourceFile> = []) {
+      cachedCompilerHost.writeFile = function (
+        fileName: string,
+        data: string,
+        writeByteOrderMark: boolean,
+        onError?: (message: string) => void,
+        sourceFiles: ReadonlyArray<ts.SourceFile> = [],
+      ) {
         ignoreFilesForWatch.add(path.normalize(fileName));
         return originalWriteFileCallback(fileName, data, writeByteOrderMark, onError, sourceFiles);
       };
       const originalFileExists = cachedCompilerHost.fileExists;
-      cachedCompilerHost.fileExists = function(fileName: string) {
+      cachedCompilerHost.fileExists = function (fileName: string) {
         const ce = cacheEntry(fileName);
         if (ce.exists == null) {
           ce.exists = originalFileExists.call(this, fileName);
@@ -190,8 +207,10 @@ export function performWatchCompilation(host: PerformWatchHost): {
         return ce.exists!;
       };
       const originalGetSourceFile = cachedCompilerHost.getSourceFile;
-      cachedCompilerHost.getSourceFile = function(
-          fileName: string, languageVersion: ts.ScriptTarget) {
+      cachedCompilerHost.getSourceFile = function (
+        fileName: string,
+        languageVersion: ts.ScriptTarget,
+      ) {
         const ce = cacheEntry(fileName);
         if (!ce.sf) {
           ce.sf = originalGetSourceFile.call(this, fileName, languageVersion);
@@ -199,7 +218,7 @@ export function performWatchCompilation(host: PerformWatchHost): {
         return ce.sf!;
       };
       const originalReadFile = cachedCompilerHost.readFile;
-      cachedCompilerHost.readFile = function(fileName: string) {
+      cachedCompilerHost.readFile = function (fileName: string) {
         const ce = cacheEntry(fileName);
         if (ce.content == null) {
           ce.content = originalReadFile.call(this, fileName);
@@ -207,7 +226,7 @@ export function performWatchCompilation(host: PerformWatchHost): {
         return ce.content!;
       };
       // Provide access to the file paths that triggered this rebuild
-      cachedCompilerHost.getModifiedResourceFiles = function() {
+      cachedCompilerHost.getModifiedResourceFiles = function () {
         if (timerHandleForRecompilation === undefined) {
           return undefined;
         }
@@ -224,7 +243,7 @@ export function performWatchCompilation(host: PerformWatchHost): {
       options: cachedOptions.options,
       host: cachedCompilerHost,
       oldProgram: oldProgram,
-      emitCallback: host.createEmitCallback(cachedOptions.options)
+      emitCallback: host.createEmitCallback(cachedOptions.options),
     });
 
     if (compileResult.diagnostics.length) {
@@ -239,11 +258,13 @@ export function performWatchCompilation(host: PerformWatchHost): {
     const exitCode = exitCodeFromResult(compileResult.diagnostics);
     if (exitCode == 0) {
       cachedProgram = compileResult.program;
-      host.reportDiagnostics(
-          [createMessageDiagnostic('Compilation complete. Watching for file changes.')]);
+      host.reportDiagnostics([
+        createMessageDiagnostic('Compilation complete. Watching for file changes.'),
+      ]);
     } else {
-      host.reportDiagnostics(
-          [createMessageDiagnostic('Compilation failed. Watching for file changes.')]);
+      host.reportDiagnostics([
+        createMessageDiagnostic('Compilation failed. Watching for file changes.'),
+      ]);
     }
 
     return compileResult.diagnostics;
@@ -258,15 +279,20 @@ export function performWatchCompilation(host: PerformWatchHost): {
   function watchedFileChanged(event: FileChangeEvent, fileName: string) {
     const normalizedPath = path.normalize(fileName);
 
-    if (cachedOptions && event === FileChangeEvent.Change &&
-        // TODO(chuckj): validate that this is sufficient to skip files that were written.
-        // This assumes that the file path we write is the same file path we will receive in the
-        // change notification.
-        normalizedPath === path.normalize(cachedOptions.project)) {
+    if (
+      cachedOptions &&
+      event === FileChangeEvent.Change &&
+      // TODO(chuckj): validate that this is sufficient to skip files that were written.
+      // This assumes that the file path we write is the same file path we will receive in the
+      // change notification.
+      normalizedPath === path.normalize(cachedOptions.project)
+    ) {
       // If the configuration file changes, forget everything and start the recompilation timer
       resetOptions();
     } else if (
-        event === FileChangeEvent.CreateDelete || event === FileChangeEvent.CreateDeleteDir) {
+      event === FileChangeEvent.CreateDelete ||
+      event === FileChangeEvent.CreateDeleteDir
+    ) {
       // If a file was added or removed, reread the configuration
       // to determine the new list of root files.
       cachedOptions = undefined;
@@ -293,7 +319,7 @@ export function performWatchCompilation(host: PerformWatchHost): {
     } else {
       timerHandleForRecompilation = {
         modifiedResourceFiles: new Set<string>(),
-        timerHandle: undefined
+        timerHandle: undefined,
       };
     }
     timerHandleForRecompilation.timerHandle = host.setTimeout(recompile, 250);
@@ -301,8 +327,9 @@ export function performWatchCompilation(host: PerformWatchHost): {
   }
 
   function recompile() {
-    host.reportDiagnostics(
-        [createMessageDiagnostic('File change detected. Starting incremental compilation.')]);
+    host.reportDiagnostics([
+      createMessageDiagnostic('File change detected. Starting incremental compilation.'),
+    ]);
     doCompilation();
     timerHandleForRecompilation = undefined;
   }

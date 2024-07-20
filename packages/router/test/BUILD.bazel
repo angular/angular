@@ -23,6 +23,7 @@ ts_library(
         "//packages/common",
         "//packages/common/testing",
         "//packages/core",
+        "//packages/core/rxjs-interop",
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",

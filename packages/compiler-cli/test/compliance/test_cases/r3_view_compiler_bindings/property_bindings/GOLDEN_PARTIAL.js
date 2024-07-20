@@ -633,3 +633,156 @@ export declare class MyMod {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyMod>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: synthetic_bindings_and_listeners_on_structural.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-cmp", ngImport: i0, template: `
+    <button
+      *ngIf="true"
+      [@anim]="field"
+      (@anim.start)="fn($event)">
+    </button>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-cmp',
+                    standalone: true,
+                    template: `
+    <button
+      *ngIf="true"
+      [@anim]="field"
+      (@anim.start)="fn($event)">
+    </button>
+  `
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: synthetic_bindings_and_listeners_on_structural.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    field: any;
+    fn: any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-cmp", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: sanitization.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+    constructor() {
+        this.evil = 'evil';
+    }
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", ngImport: i0, template: `
+    <div [innerHtml]="evil"></div>
+    <link [href]="evil" />
+    <div [attr.style]="evil"></div>
+    <img [src]="evil" />
+    <iframe [sandbox]="evil"></iframe>
+    <a href="{{evil}}{{evil}}"></a>
+    <div attr.style="{{evil}}{{evil}}"></div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-component',
+                    standalone: true,
+                    template: `
+    <div [innerHtml]="evil"></div>
+    <link [href]="evil" />
+    <div [attr.style]="evil"></div>
+    <img [src]="evil" />
+    <iframe [sandbox]="evil"></iframe>
+    <a href="{{evil}}{{evil}}"></a>
+    <div attr.style="{{evil}}{{evil}}"></div>
+  `
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: sanitization.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: mixed_one_way_two_way_property_order.js
+ ****************************************************************************************************/
+import { Component, Directive, Input, Output } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Dir {
+}
+Dir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+Dir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Dir, isStandalone: true, selector: "[dir]", inputs: { a: "a", b: "b", c: "c", d: "d" }, outputs: { aChange: "aChange", cChange: "cChange" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dir, decorators: [{
+            type: Directive,
+            args: [{ standalone: true, selector: '[dir]' }]
+        }], propDecorators: { a: [{
+                type: Input
+            }], aChange: [{
+                type: Output
+            }], b: [{
+                type: Input
+            }], c: [{
+                type: Input
+            }], cChange: [{
+                type: Output
+            }], d: [{
+                type: Input
+            }] } });
+export class App {
+    constructor() {
+        this.value = 'hi';
+    }
+}
+App.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, deps: [], target: i0.ɵɵFactoryTarget.Component });
+App.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: App, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div dir [(a)]="value" [b]="value" [(c)]="value" [d]="value"></div>
+  `, isInline: true, dependencies: [{ kind: "directive", type: Dir, selector: "[dir]", inputs: ["a", "b", "c", "d"], outputs: ["aChange", "cChange"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, decorators: [{
+            type: Component,
+            args: [{
+                    standalone: true,
+                    imports: [Dir],
+                    template: `
+    <div dir [(a)]="value" [b]="value" [(c)]="value" [d]="value"></div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: mixed_one_way_two_way_property_order.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Dir {
+    a: unknown;
+    aChange: unknown;
+    b: unknown;
+    c: unknown;
+    cChange: unknown;
+    d: unknown;
+    static ɵfac: i0.ɵɵFactoryDeclaration<Dir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Dir, "[dir]", never, { "a": { "alias": "a"; "required": false; }; "b": { "alias": "b"; "required": false; }; "c": { "alias": "c"; "required": false; }; "d": { "alias": "d"; "required": false; }; }, { "aChange": "aChange"; "cChange": "cChange"; }, never, never, true, never>;
+}
+export declare class App {
+    value: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<App, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<App, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

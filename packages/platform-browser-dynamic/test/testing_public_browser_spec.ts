@@ -42,37 +42,40 @@ if (isBrowser) {
       });
 
       it('should run async tests with ResourceLoaders', waitForAsync(() => {
-           const resourceLoader = new ResourceLoaderImpl();
-           resourceLoader
-               .get('/base/angular/packages/platform-browser/test/static_assets/test.html')
-               .then(() => {
-                 actuallyDone = true;
-               });
-         }),
-         10000);  // Long timeout here because this test makes an actual ResourceLoader.
+        const resourceLoader = new ResourceLoaderImpl();
+        resourceLoader
+          .get('/base/angular/packages/platform-browser/test/static_assets/test.html')
+          .then(() => {
+            actuallyDone = true;
+          });
+      }), 10000); // Long timeout here because this test makes an actual ResourceLoader.
     });
 
     describe('using the test injector with the inject helper', () => {
       describe('setting up Providers', () => {
         beforeEach(() => {
-          TestBed.configureTestingModule(
-              {providers: [{provide: FancyService, useValue: new FancyService()}]});
+          TestBed.configureTestingModule({
+            providers: [{provide: FancyService, useValue: new FancyService()}],
+          });
         });
 
-        it('provides a real ResourceLoader instance',
-           inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
-             expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
-           }));
+        it('provides a real ResourceLoader instance', inject(
+          [ResourceLoader],
+          (resourceLoader: ResourceLoader) => {
+            expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
+          },
+        ));
 
-        it('should allow the use of fakeAsync',
-           fakeAsync(inject([FancyService], (service: FancyService) => {
-             let value: string|undefined;
-             service.getAsyncValue().then(function(val: string) {
-               value = val;
-             });
-             tick();
-             expect(value).toEqual('async value');
-           })));
+        it('should allow the use of fakeAsync', fakeAsync(
+          inject([FancyService], (service: FancyService) => {
+            let value: string | undefined;
+            service.getAsyncValue().then(function (val: string) {
+              value = val;
+            });
+            tick();
+            expect(value).toEqual('async value');
+          }),
+        ));
       });
     });
 
@@ -81,8 +84,7 @@ if (isBrowser) {
         @NgModule({
           id: 'test-module',
         })
-        class TestModule {
-        }
+        class TestModule {}
 
         TestBed.configureTestingModule({
           imports: [TestModule],
@@ -97,35 +99,33 @@ if (isBrowser) {
         // TODO(alxhub): figure out why this is failing on saucelabs
         xit('should fail with an error from a promise', async () => {
           @Component({selector: 'bad-template-comp', templateUrl: 'non-existent.html'})
-          class BadTemplateUrl {
-          }
+          class BadTemplateUrl {}
 
           TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
-          await expectAsync(TestBed.compileComponents())
-              .toBeRejectedWith('Failed to load non-existent.html');
+          await expectAsync(TestBed.compileComponents()).toBeRejectedWith(
+            'Failed to load non-existent.html',
+          );
         }, 10000);
       });
     });
 
-    describe('TestBed createComponent', function() {
+    describe('TestBed createComponent', function () {
       // TODO(alxhub): disable while we figure out how this should work
       xit('should allow an external templateUrl', waitForAsync(() => {
-            @Component({
-              selector: 'external-template-comp',
-              templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
-            })
-            class ExternalTemplateComp {
-            }
+        @Component({
+          selector: 'external-template-comp',
+          templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html',
+        })
+        class ExternalTemplateComp {}
 
-            TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
-            TestBed.compileComponents().then(() => {
-              const componentFixture = TestBed.createComponent(ExternalTemplateComp);
-              componentFixture.detectChanges();
-              expect(componentFixture.nativeElement.textContent).toEqual('from external template');
-            });
-          }),
-          10000);  // Long timeout here because this test makes an actual ResourceLoader
-                   // request, and is slow on Edge.
+        TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
+        TestBed.compileComponents().then(() => {
+          const componentFixture = TestBed.createComponent(ExternalTemplateComp);
+          componentFixture.detectChanges();
+          expect(componentFixture.nativeElement.textContent).toEqual('from external template');
+        });
+      }), 10000); // Long timeout here because this test makes an actual ResourceLoader
+      // request, and is slow on Edge.
     });
   });
 }

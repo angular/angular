@@ -14,6 +14,6 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./zippy.component.scss'],
 })
 export class ZippyComponent {
-  @Input() title: string;
+  @Input() title!: string;
   visible = false;
 }

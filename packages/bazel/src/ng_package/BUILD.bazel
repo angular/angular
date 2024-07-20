@@ -14,15 +14,16 @@ ts_library(
     tsconfig = ":tsconfig.json",
     deps = [
         "@npm//@types/node",
+        "@npm//typescript",
     ],
 )
 
 filegroup(
     name = "package_assets",
     srcs = glob(["*.bzl"]) + [
-        "//packages/bazel/src/ng_package/rollup:package_assets",
         "BUILD.bazel",
         "rollup.config.js",
+        "//packages/bazel/src/ng_package/rollup:package_assets",
     ],
 )
 

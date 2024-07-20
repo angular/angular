@@ -11,8 +11,9 @@ import {FatalLinkerError, isFatalLinkerError} from '../src/fatal_linker_error';
 describe('FatalLinkerError', () => {
   it('should expose the `node` and `message`', () => {
     const node = {};
-    expect(new FatalLinkerError(node, 'Some message'))
-        .toEqual(jasmine.objectContaining({node, message: 'Some message'}));
+    expect(new FatalLinkerError(node, 'Some message')).toEqual(
+      jasmine.objectContaining({node, message: 'Some message'}),
+    );
   });
 });
 

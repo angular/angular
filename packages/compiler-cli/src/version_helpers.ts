@@ -14,15 +14,18 @@
 export function toNumbers(value: string): number[] {
   // Drop any suffixes starting with `-` so that versions like `1.2.3-rc.5` are treated as `1.2.3`.
   const suffixIndex = value.lastIndexOf('-');
-  return value.slice(0, suffixIndex === -1 ? value.length : suffixIndex).split('.').map(segment => {
-    const parsed = parseInt(segment, 10);
+  return value
+    .slice(0, suffixIndex === -1 ? value.length : suffixIndex)
+    .split('.')
+    .map((segment) => {
+      const parsed = parseInt(segment, 10);
 
-    if (isNaN(parsed)) {
-      throw Error(`Unable to parse version string ${value}.`);
-    }
+      if (isNaN(parsed)) {
+        throw Error(`Unable to parse version string ${value}.`);
+      }
 
-    return parsed;
-  });
+      return parsed;
+    });
 }
 
 /**
@@ -36,7 +39,7 @@ export function toNumbers(value: string): number[] {
  * @returns {-1|0|1} The comparison result: 1 if a is greater, -1 if b is greater, 0 is the two
  * arrays are equals
  */
-export function compareNumbers(a: number[], b: number[]): -1|0|1 {
+export function compareNumbers(a: number[], b: number[]): -1 | 0 | 1 {
   const max = Math.max(a.length, b.length);
   const min = Math.min(a.length, b.length);
 
@@ -76,8 +79,10 @@ export function compareNumbers(a: number[], b: number[]): -1|0|1 {
 export function isVersionBetween(version: string, low: string, high?: string): boolean {
   const tsNumbers = toNumbers(version);
   if (high !== undefined) {
-    return compareNumbers(toNumbers(low), tsNumbers) <= 0 &&
-        compareNumbers(toNumbers(high), tsNumbers) >= 0;
+    return (
+      compareNumbers(toNumbers(low), tsNumbers) <= 0 &&
+      compareNumbers(toNumbers(high), tsNumbers) >= 0
+    );
   }
   return compareNumbers(toNumbers(low), tsNumbers) <= 0;
 }
@@ -90,6 +95,6 @@ export function isVersionBetween(version: string, low: string, high?: string): b
  * @returns {-1|0|1} The comparison result: 1 if v1 is greater, -1 if v2 is greater, 0 is the two
  * versions are equals
  */
-export function compareVersions(v1: string, v2: string): -1|0|1 {
+export function compareVersions(v1: string, v2: string): -1 | 0 | 1 {
   return compareNumbers(toNumbers(v1), toNumbers(v2));
 }

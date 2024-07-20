@@ -20,7 +20,10 @@ export class PropertyBinding {
   bindAttr: string;
   bindonAttr: string;
 
-  constructor(public prop: string, public attr: string) {
+  constructor(
+    public prop: string,
+    public attr: string,
+  ) {
     this.bracketAttr = `[${this.attr}]`;
     this.parenAttr = `(${this.attr})`;
     this.bracketParenAttr = `[(${this.attr})]`;

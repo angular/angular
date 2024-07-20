@@ -2,7 +2,7 @@ import {Component, Pipe} from '@angular/core';
 
 @Pipe({standalone: true, name: 'test'})
 export class TestPipe {
-  tranform(value: unknown) {
+  transform(value: unknown) {
     return value;
   }
 }
@@ -11,11 +11,17 @@ export class TestPipe {
   template: `
     <div>
       {{message}}
-      {#switch value() | test}
-        {:case 0} case 0
-        {:case 1} case 1
-        {:default} default
-      {/switch}
+      @switch (value() | test) {
+        @case (0 | test) {
+          case 0
+        }
+        @case (1 | test) {
+          case 1
+        }
+        @default {
+          default
+        }
+      }
     </div>
   `,
   standalone: true,

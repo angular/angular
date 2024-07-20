@@ -31,7 +31,8 @@ export interface ResolvedTemplate {
    * character are based on the full source file content.
    */
   getCharacterAndLineOfPosition: (pos: number) => {
-    character: number, line: number
+    character: number;
+    line: number;
   };
 }
 
@@ -42,14 +43,18 @@ export interface ResolvedTemplate {
 export class NgComponentTemplateVisitor {
   resolvedTemplates: ResolvedTemplate[] = [];
 
-  constructor(public typeChecker: ts.TypeChecker, private _basePath: string, private _tree: Tree) {}
+  constructor(
+    public typeChecker: ts.TypeChecker,
+    private _basePath: string,
+    private _tree: Tree,
+  ) {}
 
   visitNode(node: ts.Node) {
     if (node.kind === ts.SyntaxKind.ClassDeclaration) {
       this.visitClassDeclaration(node as ts.ClassDeclaration);
     }
 
-    ts.forEachChild(node, n => this.visitNode(n));
+    ts.forEachChild(node, (n) => this.visitNode(n));
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {
@@ -63,7 +68,7 @@ export class NgComponentTemplateVisitor {
 
     // Walk through all component metadata properties and determine the referenced
     // HTML templates (either external or inline)
-    metadata.node.properties.forEach(property => {
+    metadata.node.properties.forEach((property) => {
       if (!ts.isPropertyAssignment(property)) {
         return;
       }
@@ -90,8 +95,8 @@ export class NgComponentTemplateVisitor {
           content,
           inline: true,
           start: start,
-          getCharacterAndLineOfPosition: pos =>
-              ts.getLineAndCharacterOfPosition(sourceFile, pos + start)
+          getCharacterAndLineOfPosition: (pos) =>
+            ts.getLineAndCharacterOfPosition(sourceFile, pos + start),
         });
       }
       if (propertyName === 'templateUrl' && ts.isStringLiteralLike(property.initializer)) {
@@ -118,7 +123,8 @@ export class NgComponentTemplateVisitor {
           content: fileContent,
           inline: false,
           start: 0,
-          getCharacterAndLineOfPosition: pos => getLineAndCharacterFromPosition(lineStartsMap, pos),
+          getCharacterAndLineOfPosition: (pos) =>
+            getLineAndCharacterFromPosition(lineStartsMap, pos),
         });
       }
     });

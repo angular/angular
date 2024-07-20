@@ -15,13 +15,28 @@ export {SimpleChange, SimpleChanges} from '../interface/simple_change';
 export {devModeEqual} from '../util/comparison';
 export {ChangeDetectorRef} from './change_detector_ref';
 export {ChangeDetectionStrategy} from './constants';
-export {DefaultIterableDiffer, DefaultIterableDifferFactory} from './differs/default_iterable_differ';
+export {
+  DefaultIterableDiffer,
+  DefaultIterableDifferFactory,
+} from './differs/default_iterable_differ';
 export {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
-export {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, IterableDiffers, NgIterable, TrackByFunction} from './differs/iterable_differs';
-export {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs';
+export {
+  IterableChangeRecord,
+  IterableChanges,
+  IterableDiffer,
+  IterableDifferFactory,
+  IterableDiffers,
+  NgIterable,
+  TrackByFunction,
+} from './differs/iterable_differs';
+export {
+  KeyValueChangeRecord,
+  KeyValueChanges,
+  KeyValueDiffer,
+  KeyValueDifferFactory,
+  KeyValueDiffers,
+} from './differs/keyvalue_differs';
 export {PipeTransform} from './pipe_transform';
-
-
 
 /**
  * Structural diffing for `Object`s and `Map`s.

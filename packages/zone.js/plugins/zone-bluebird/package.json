@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/zone-bluebird",
-  "main": "../../bundles/zone-bluebird.umd.js",
-  "fesm2015": "../../fesm2015/zone-bluebird.js",
-  "es2015": "../../fesm2015/zone-bluebird.js",
-  "module": "../../fesm2015/zone-bluebird.js"
-}

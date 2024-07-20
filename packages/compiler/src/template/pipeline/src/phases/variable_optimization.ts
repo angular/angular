@@ -28,13 +28,22 @@ import {CompilationJob} from '../compilation';
  * To guarantee correctness, analysis of "fences" in the instruction lists is used to determine
  * which optimizations are safe to perform.
  */
-export function phaseVariableOptimization(job: CompilationJob): void {
+export function optimizeVariables(job: CompilationJob): void {
   for (const unit of job.units) {
+    inlineAlwaysInlineVariables(unit.create);
+    inlineAlwaysInlineVariables(unit.update);
+
+    for (const op of unit.create) {
+      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
+        inlineAlwaysInlineVariables(op.handlerOps);
+      }
+    }
+
     optimizeVariablesInOpList(unit.create, job.compatibility);
     optimizeVariablesInOpList(unit.update, job.compatibility);
 
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Listener) {
+      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
         optimizeVariablesInOpList(op.handlerOps, job.compatibility);
       }
     }
@@ -66,7 +75,7 @@ enum Fence {
    * Note that all `ContextWrite` fences are implicitly `ContextRead` fences as operations which
    * change the view context do so based on the current one.
    */
-  ViewContextWrite = 0b011,
+  ViewContextWrite = 0b010,
 
   /**
    * Indicates that a call is required for its side-effects, even if nothing reads its result.
@@ -95,18 +104,51 @@ interface OpInfo {
   fences: Fence;
 }
 
+function inlineAlwaysInlineVariables(ops: ir.OpList<ir.CreateOp | ir.UpdateOp>): void {
+  const vars = new Map<ir.XrefId, ir.VariableOp<ir.CreateOp | ir.UpdateOp>>();
+  for (const op of ops) {
+    if (op.kind === ir.OpKind.Variable && op.flags & ir.VariableFlags.AlwaysInline) {
+      ir.visitExpressionsInOp(op, (expr) => {
+        if (ir.isIrExpression(expr) && fencesForIrExpression(expr) !== Fence.None) {
+          throw new Error(`AssertionError: A context-sensitive variable was marked AlwaysInline`);
+        }
+      });
+      vars.set(op.xref, op);
+    }
+
+    ir.transformExpressionsInOp(
+      op,
+      (expr) => {
+        if (expr instanceof ir.ReadVariableExpr && vars.has(expr.xref)) {
+          const varOp = vars.get(expr.xref)!;
+          // Inline by cloning, because we might inline into multiple places.
+          return varOp.initializer.clone();
+        }
+        return expr;
+      },
+      ir.VisitorContextFlag.None,
+    );
+  }
+
+  for (const op of vars.values()) {
+    ir.OpList.remove(op as ir.CreateOp | ir.UpdateOp);
+  }
+}
+
 /**
  * Process a list of operations and optimize variables within that list.
  */
 function optimizeVariablesInOpList(
-    ops: ir.OpList<ir.CreateOp|ir.UpdateOp>, compatibility: ir.CompatibilityMode): void {
-  const varDecls = new Map<ir.XrefId, ir.VariableOp<ir.CreateOp|ir.UpdateOp>>();
+  ops: ir.OpList<ir.CreateOp | ir.UpdateOp>,
+  compatibility: ir.CompatibilityMode,
+): void {
+  const varDecls = new Map<ir.XrefId, ir.VariableOp<ir.CreateOp | ir.UpdateOp>>();
   const varUsages = new Map<ir.XrefId, number>();
 
   // Track variables that are used outside of the immediate operation list. For example, within
   // `ListenerOp` handler operations of listeners in the current operation list.
   const varRemoteUsages = new Set<ir.XrefId>();
-  const opMap = new Map<ir.CreateOp|ir.UpdateOp, OpInfo>();
+  const opMap = new Map<ir.CreateOp | ir.UpdateOp, OpInfo>();
 
   // First, extract information about variables declared or used within the whole list.
   for (const op of ops) {
@@ -138,8 +180,10 @@ function optimizeVariablesInOpList(
     if (op.kind === ir.OpKind.Variable && varUsages.get(op.xref)! === 0) {
       // This variable is unused and can be removed. We might need to keep the initializer around,
       // though, if something depends on it running.
-      if ((contextIsUsed && opInfo.fences & Fence.ViewContextWrite) ||
-          (opInfo.fences & Fence.SideEffectful)) {
+      if (
+        (contextIsUsed && opInfo.fences & Fence.ViewContextWrite) ||
+        opInfo.fences & Fence.SideEffectful
+      ) {
         // This variable initializer has a side effect which must be retained. Either:
         //  * it writes to the view context, and we know there is a future operation which depends
         //    on that write, or
@@ -174,10 +218,14 @@ function optimizeVariablesInOpList(
   // Next, inline any remaining variables with exactly one usage.
   const toInline: ir.XrefId[] = [];
   for (const [id, count] of varUsages) {
+    const decl = varDecls.get(id)!;
     // We can inline variables that:
-    //  - are used once
+    //  - are used exactly once, and
     //  - are not used remotely
-    if (count !== 1) {
+    // OR
+    //  - are marked for always inlining
+    const isAlwaysInline = !!(decl.flags & ir.VariableFlags.AlwaysInline);
+    if (count !== 1 || isAlwaysInline) {
       // We can't inline this variable as it's used more than once.
       continue;
     }
@@ -190,23 +238,35 @@ function optimizeVariablesInOpList(
     toInline.push(id);
   }
 
-  let candidate: ir.XrefId|undefined;
-  while (candidate = toInline.pop()) {
+  let candidate: ir.XrefId | undefined;
+  while ((candidate = toInline.pop())) {
     // We will attempt to inline this variable. If inlining fails (due to fences for example),
     // no future operation will make inlining legal.
     const decl = varDecls.get(candidate)!;
     const varInfo = opMap.get(decl as ir.CreateOp | ir.UpdateOp)!;
+    const isAlwaysInline = !!(decl.flags & ir.VariableFlags.AlwaysInline);
+
+    if (isAlwaysInline) {
+      throw new Error(
+        `AssertionError: Found an 'AlwaysInline' variable after the always inlining pass.`,
+      );
+    }
 
     // Scan operations following the variable declaration and look for the point where that variable
     // is used. There should only be one usage given the precondition above.
-    for (let targetOp = decl.next!; targetOp.kind !== ir.OpKind.ListEnd;
-         targetOp = targetOp.next!) {
+    for (
+      let targetOp = decl.next!;
+      targetOp.kind !== ir.OpKind.ListEnd;
+      targetOp = targetOp.next!
+    ) {
       const opInfo = opMap.get(targetOp)!;
 
       // Is the variable used in this operation?
       if (opInfo.variablesUsed.has(candidate)) {
-        if (compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-            !allowConservativeInlining(decl, targetOp)) {
+        if (
+          compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+          !allowConservativeInlining(decl, targetOp)
+        ) {
           // We're in conservative mode, and this variable is not eligible for inlining into the
           // target operation in this mode.
           break;
@@ -257,10 +317,13 @@ function optimizeVariablesInOpList(
 function fencesForIrExpression(expr: ir.Expression): Fence {
   switch (expr.kind) {
     case ir.ExpressionKind.NextContext:
-      return Fence.ViewContextWrite;
+      return Fence.ViewContextRead | Fence.ViewContextWrite;
     case ir.ExpressionKind.RestoreView:
-      return Fence.ViewContextWrite | Fence.SideEffectful;
+      return Fence.ViewContextRead | Fence.ViewContextWrite | Fence.SideEffectful;
+    case ir.ExpressionKind.StoreLet:
+      return Fence.SideEffectful;
     case ir.ExpressionKind.Reference:
+    case ir.ExpressionKind.ContextLetReference:
       return Fence.ViewContextRead;
     default:
       return Fence.None;
@@ -273,10 +336,10 @@ function fencesForIrExpression(expr: ir.Expression): Fence {
  *  * It tracks which variables are used in the operation's expressions.
  *  * It rolls up fence flags for expressions within the operation.
  */
-function collectOpInfo(op: ir.CreateOp|ir.UpdateOp): OpInfo {
+function collectOpInfo(op: ir.CreateOp | ir.UpdateOp): OpInfo {
   let fences = Fence.None;
   const variablesUsed = new Set<ir.XrefId>();
-  ir.visitExpressionsInOp(op, expr => {
+  ir.visitExpressionsInOp(op, (expr) => {
     if (!ir.isIrExpression(expr)) {
       return;
     }
@@ -297,8 +360,10 @@ function collectOpInfo(op: ir.CreateOp|ir.UpdateOp): OpInfo {
  * local or remote.
  */
 function countVariableUsages(
-    op: ir.CreateOp|ir.UpdateOp, varUsages: Map<ir.XrefId, number>,
-    varRemoteUsage: Set<ir.XrefId>): void {
+  op: ir.CreateOp | ir.UpdateOp,
+  varUsages: Map<ir.XrefId, number>,
+  varRemoteUsage: Set<ir.XrefId>,
+): void {
   ir.visitExpressionsInOp(op, (expr, flags) => {
     if (!ir.isIrExpression(expr)) {
       return;
@@ -325,8 +390,10 @@ function countVariableUsages(
  * Remove usages of a variable in `op` from the `varUsages` tracking.
  */
 function uncountVariableUsages(
-    op: ir.CreateOp|ir.UpdateOp, varUsages: Map<ir.XrefId, number>): void {
-  ir.visitExpressionsInOp(op, expr => {
+  op: ir.CreateOp | ir.UpdateOp,
+  varUsages: Map<ir.XrefId, number>,
+): void {
+  ir.visitExpressionsInOp(op, (expr) => {
     if (!ir.isIrExpression(expr)) {
       return;
     }
@@ -341,7 +408,8 @@ function uncountVariableUsages(
       return;
     } else if (count === 0) {
       throw new Error(
-          `Inaccurate variable count: ${expr.xref} - found another read but count is already 0`);
+        `Inaccurate variable count: ${expr.xref} - found another read but count is already 0`,
+      );
     }
     varUsages.set(expr.xref, count - 1);
   });
@@ -375,8 +443,11 @@ function safeToInlinePastFences(fences: Fence, declFences: Fence): boolean {
  * execution of an expression with fences that don't permit the variable to be inlined across them.
  */
 function tryInlineVariableInitializer(
-    id: ir.XrefId, initializer: o.Expression, target: ir.CreateOp|ir.UpdateOp,
-    declFences: Fence): boolean {
+  id: ir.XrefId,
+  initializer: o.Expression,
+  target: ir.CreateOp | ir.UpdateOp,
+  declFences: Fence,
+): boolean {
   // We use `ir.transformExpressionsInOp` to walk the expressions and inline the variable if
   // possible. Since this operation is callback-based, once inlining succeeds or fails we can't
   // "stop" the expression processing, and have to keep track of whether inlining has succeeded or
@@ -384,39 +455,45 @@ function tryInlineVariableInitializer(
   let inlined = false;
   let inliningAllowed = true;
 
-  ir.transformExpressionsInOp(target, (expr, flags) => {
-    if (!ir.isIrExpression(expr)) {
-      return expr;
-    }
+  ir.transformExpressionsInOp(
+    target,
+    (expr, flags) => {
+      if (!ir.isIrExpression(expr)) {
+        return expr;
+      }
 
-    if (inlined || !inliningAllowed) {
-      // Either the inlining has already succeeded, or we've passed a fence that disallows inlining
-      // at this point, so don't try.
-      return expr;
-    } else if (
-        (flags & ir.VisitorContextFlag.InChildOperation) && (declFences & Fence.ViewContextRead)) {
-      // We cannot inline variables that are sensitive to the current context across operation
-      // boundaries.
-      return expr;
-    }
+      if (inlined || !inliningAllowed) {
+        // Either the inlining has already succeeded, or we've passed a fence that disallows inlining
+        // at this point, so don't try.
+        return expr;
+      } else if (
+        flags & ir.VisitorContextFlag.InChildOperation &&
+        declFences & Fence.ViewContextRead
+      ) {
+        // We cannot inline variables that are sensitive to the current context across operation
+        // boundaries.
+        return expr;
+      }
 
-    switch (expr.kind) {
-      case ir.ExpressionKind.ReadVariable:
-        if (expr.xref === id) {
-          // This is the usage site of the variable. Since nothing has disallowed inlining, it's
-          // safe to inline the initializer here.
-          inlined = true;
-          return initializer;
-        }
-        break;
-      default:
-        // For other types of `ir.Expression`s, whether inlining is allowed depends on their fences.
-        const exprFences = fencesForIrExpression(expr);
-        inliningAllowed = inliningAllowed && safeToInlinePastFences(exprFences, declFences);
-        break;
-    }
-    return expr;
-  }, ir.VisitorContextFlag.None);
+      switch (expr.kind) {
+        case ir.ExpressionKind.ReadVariable:
+          if (expr.xref === id) {
+            // This is the usage site of the variable. Since nothing has disallowed inlining, it's
+            // safe to inline the initializer here.
+            inlined = true;
+            return initializer;
+          }
+          break;
+        default:
+          // For other types of `ir.Expression`s, whether inlining is allowed depends on their fences.
+          const exprFences = fencesForIrExpression(expr);
+          inliningAllowed = inliningAllowed && safeToInlinePastFences(exprFences, declFences);
+          break;
+      }
+      return expr;
+    },
+    ir.VisitorContextFlag.None,
+  );
   return inlined;
 }
 
@@ -427,11 +504,20 @@ function tryInlineVariableInitializer(
  * `TemplateDefinitionBuilder` supported, with the goal of producing equivalent output.
  */
 function allowConservativeInlining(
-    decl: ir.VariableOp<ir.CreateOp|ir.UpdateOp>, target: ir.Op<ir.CreateOp|ir.UpdateOp>): boolean {
+  decl: ir.VariableOp<ir.CreateOp | ir.UpdateOp>,
+  target: ir.Op<ir.CreateOp | ir.UpdateOp>,
+): boolean {
   // TODO(alxhub): understand exactly how TemplateDefinitionBuilder approaches inlining, and record
   // that behavior here.
   switch (decl.variable.kind) {
     case ir.SemanticVariableKind.Identifier:
+      if (decl.initializer instanceof o.ReadVarExpr && decl.initializer.name === 'ctx') {
+        // Although TemplateDefinitionBuilder is cautious about inlining, we still want to do so
+        // when the variable is the context, to imitate its behavior with aliases in control flow
+        // blocks. This quirky behavior will become dead code once compatibility mode is no longer
+        // supported.
+        return true;
+      }
       return false;
     case ir.SemanticVariableKind.Context:
       // Context can only be inlined into other variables.

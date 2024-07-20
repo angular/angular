@@ -11,21 +11,17 @@ import {NgModule} from '@angular/core';
 
 import {provideHttpClientTesting} from './provider';
 
-
 /**
  * Configures `HttpClientTestingBackend` as the `HttpBackend` used by `HttpClient`.
  *
  * Inject `HttpTestingController` to expect and flush requests in your tests.
  *
  * @publicApi
+ *
+ * @deprecated Add `provideHttpClientTesting()` to your providers instead.
  */
 @NgModule({
-  imports: [
-    HttpClientModule,
-  ],
-  providers: [
-    provideHttpClientTesting(),
-  ],
+  imports: [HttpClientModule],
+  providers: [provideHttpClientTesting()],
 })
-export class HttpClientTestingModule {
-}
+export class HttpClientTestingModule {}

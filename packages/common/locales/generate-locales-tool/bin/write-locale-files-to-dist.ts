@@ -21,7 +21,7 @@ import {BASE_LOCALE} from './base-locale';
  * Generates locale files for each available CLDR locale and writes it to the
  * specified directory.
  */
-async function main(outputDir: string|undefined) {
+async function main(outputDir: string | undefined) {
   if (outputDir === undefined) {
     throw Error('No output directory specified.');
   }
@@ -33,21 +33,23 @@ async function main(outputDir: string|undefined) {
   const globalLocaleDir = join(outputDir, 'global');
 
   // Generate locale files for all locales we have data for.
-  await Promise.all(cldrData.availableLocales.flatMap(async (localeData) => {
-    const locale = localeData.locale;
-    const localeFile = generateLocale(locale, localeData, baseCurrencies);
-    const localeExtraFile = generateLocaleExtra(locale, localeData);
-    const localeGlobalFile = generateLocaleGlobalFile(locale, localeData, baseCurrencies);
+  await Promise.all(
+    cldrData.availableLocales.flatMap(async (localeData) => {
+      const locale = localeData.locale;
+      const localeFile = generateLocale(locale, localeData, baseCurrencies);
+      const localeExtraFile = generateLocaleExtra(locale, localeData);
+      const localeGlobalFile = generateLocaleGlobalFile(locale, localeData, baseCurrencies);
 
-    return [
-      fs.promises.writeFile(join(outputDir, `${locale}.ts`), localeFile),
-      fs.promises.writeFile(join(extraLocaleDir, `${locale}.ts`), localeExtraFile),
-      fs.promises.writeFile(join(globalLocaleDir, `${locale}.js`), localeGlobalFile),
-    ];
-  }));
+      return [
+        fs.promises.writeFile(join(outputDir, `${locale}.ts`), localeFile),
+        fs.promises.writeFile(join(extraLocaleDir, `${locale}.ts`), localeExtraFile),
+        fs.promises.writeFile(join(globalLocaleDir, `${locale}.js`), localeGlobalFile),
+      ];
+    }),
+  );
 }
 
-main(process.argv[2]).catch(err => {
+main(process.argv[2]).catch((err) => {
   console.error(err);
   process.exitCode = 1;
 });

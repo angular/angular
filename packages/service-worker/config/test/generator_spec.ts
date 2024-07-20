@@ -29,35 +29,26 @@ describe('Generator', () => {
         test: true,
       },
       index: '/index.html',
-      assetGroups: [{
-        name: 'test',
-        resources: {
-          files: [
-            '/**/*.html',
-            '/**/*.?s',
-            '!/ignored/**',
-            '/**/*.txt',
-          ],
-          urls: [
-            '/absolute/**',
-            '/some/url?with+escaped+chars',
-            'relative/*.txt',
-          ],
+      assetGroups: [
+        {
+          name: 'test',
+          resources: {
+            files: ['/**/*.html', '/**/*.?s', '!/ignored/**', '/**/*.txt'],
+            urls: ['/absolute/**', '/some/url?with+escaped+chars', 'relative/*.txt'],
+          },
         },
-      }],
-      dataGroups: [{
-        name: 'other',
-        urls: [
-          '/api/**',
-          'relapi/**',
-          'https://example.com/**/*?with+escaped+chars',
-        ],
-        cacheConfig: {
-          maxSize: 100,
-          maxAge: '3d',
-          timeout: '1m',
+      ],
+      dataGroups: [
+        {
+          name: 'other',
+          urls: ['/api/**', 'relapi/**', 'https://example.com/**/*?with+escaped+chars'],
+          cacheConfig: {
+            maxSize: 100,
+            maxAge: '3d',
+            timeout: '1m',
+          },
         },
-      }],
+      ],
       navigationUrls: [
         '/included/absolute/**',
         '!/excluded/absolute/**',
@@ -76,39 +67,43 @@ describe('Generator', () => {
         test: true,
       },
       index: '/test/index.html',
-      assetGroups: [{
-        name: 'test',
-        installMode: 'prefetch',
-        updateMode: 'prefetch',
-        urls: [
-          '/test/foo/test.html',
-          '/test/index.html',
-          '/test/main.js',
-          '/test/main.ts',
-          '/test/test.txt',
-        ],
-        patterns: [
-          '\\/absolute\\/.*',
-          '\\/some\\/url\\?with\\+escaped\\+chars',
-          '\\/test\\/relative\\/[^/]*\\.txt',
-        ],
-        cacheQueryOptions: {ignoreVary: true}
-      }],
-      dataGroups: [{
-        name: 'other',
-        patterns: [
-          '\\/api\\/.*',
-          '\\/test\\/relapi\\/.*',
-          'https:\\/\\/example\\.com\\/(?:.+\\/)?[^/]*\\?with\\+escaped\\+chars',
-        ],
-        strategy: 'performance',
-        maxSize: 100,
-        maxAge: 259200000,
-        timeoutMs: 60000,
-        version: 1,
-        cacheOpaqueResponses: undefined,
-        cacheQueryOptions: {ignoreVary: true}
-      }],
+      assetGroups: [
+        {
+          name: 'test',
+          installMode: 'prefetch',
+          updateMode: 'prefetch',
+          urls: [
+            '/test/foo/test.html',
+            '/test/index.html',
+            '/test/main.js',
+            '/test/main.ts',
+            '/test/test.txt',
+          ],
+          patterns: [
+            '\\/absolute\\/.*',
+            '\\/some\\/url\\?with\\+escaped\\+chars',
+            '\\/test\\/relative\\/[^/]*\\.txt',
+          ],
+          cacheQueryOptions: {ignoreVary: true},
+        },
+      ],
+      dataGroups: [
+        {
+          name: 'other',
+          patterns: [
+            '\\/api\\/.*',
+            '\\/test\\/relapi\\/.*',
+            'https:\\/\\/example\\.com\\/(?:.+\\/)?[^/]*\\?with\\+escaped\\+chars',
+          ],
+          strategy: 'performance',
+          maxSize: 100,
+          maxAge: 259200000,
+          timeoutMs: 60000,
+          version: 1,
+          cacheOpaqueResponses: undefined,
+          cacheQueryOptions: {ignoreVary: true},
+        },
+      ],
       navigationUrls: [
         {positive: true, regex: '^\\/included\\/absolute\\/.*$'},
         {positive: false, regex: '^\\/excluded\\/absolute\\/.*$'},
@@ -129,101 +124,91 @@ describe('Generator', () => {
     });
   });
 
-  it('assigns files to the first matching asset-group (unaffected by file-system access delays)',
-     async () => {
-       const fs = new MockFilesystem({
-         '/index.html': 'This is a test',
-         '/foo/script-1.js': 'This is script 1',
-         '/foo/script-2.js': 'This is script 2',
-         '/bar/script-3.js': 'This is script 3',
-         '/bar/script-4.js': 'This is script 4',
-         '/qux/script-5.js': 'This is script 5',
-       });
+  it('assigns files to the first matching asset-group (unaffected by file-system access delays)', async () => {
+    const fs = new MockFilesystem({
+      '/index.html': 'This is a test',
+      '/foo/script-1.js': 'This is script 1',
+      '/foo/script-2.js': 'This is script 2',
+      '/bar/script-3.js': 'This is script 3',
+      '/bar/script-4.js': 'This is script 4',
+      '/qux/script-5.js': 'This is script 5',
+    });
 
-       // Simulate fluctuating file-system access delays.
-       const allFiles = await fs.list('/');
-       spyOn(fs, 'list')
-           .and.returnValues(
-               new Promise(resolve => setTimeout(resolve, 2000, allFiles.slice())),
-               new Promise(resolve => setTimeout(resolve, 3000, allFiles.slice())),
-               new Promise(resolve => setTimeout(resolve, 1000, allFiles.slice())),
-           );
+    // Simulate fluctuating file-system access delays.
+    const allFiles = await fs.list('/');
+    spyOn(fs, 'list').and.returnValues(
+      new Promise((resolve) => setTimeout(resolve, 2000, allFiles.slice())),
+      new Promise((resolve) => setTimeout(resolve, 3000, allFiles.slice())),
+      new Promise((resolve) => setTimeout(resolve, 1000, allFiles.slice())),
+    );
 
-       const gen = new Generator(fs, '');
-       const config = await gen.process({
-         index: '/index.html',
-         assetGroups: [
-           {
-             name: 'group-foo',
-             resources: {files: ['/foo/**/*.js']},
-           },
-           {
-             name: 'group-bar',
-             resources: {files: ['/bar/**/*.js']},
-           },
-           {
-             name: 'group-fallback',
-             resources: {files: ['/**/*.js']},
-           },
-         ],
-       });
+    const gen = new Generator(fs, '');
+    const config = await gen.process({
+      index: '/index.html',
+      assetGroups: [
+        {
+          name: 'group-foo',
+          resources: {files: ['/foo/**/*.js']},
+        },
+        {
+          name: 'group-bar',
+          resources: {files: ['/bar/**/*.js']},
+        },
+        {
+          name: 'group-fallback',
+          resources: {files: ['/**/*.js']},
+        },
+      ],
+    });
 
-       expect(config).toEqual({
-         configVersion: 1,
-         timestamp: 1234567890123,
-         appData: undefined,
-         index: '/index.html',
-         assetGroups: [
-           {
-             name: 'group-foo',
-             installMode: 'prefetch',
-             updateMode: 'prefetch',
-             cacheQueryOptions: {ignoreVary: true},
-             urls: [
-               '/foo/script-1.js',
-               '/foo/script-2.js',
-             ],
-             patterns: [],
-           },
-           {
-             name: 'group-bar',
-             installMode: 'prefetch',
-             updateMode: 'prefetch',
-             cacheQueryOptions: {ignoreVary: true},
-             urls: [
-               '/bar/script-3.js',
-               '/bar/script-4.js',
-             ],
-             patterns: [],
-           },
-           {
-             name: 'group-fallback',
-             installMode: 'prefetch',
-             updateMode: 'prefetch',
-             cacheQueryOptions: {ignoreVary: true},
-             urls: [
-               '/qux/script-5.js',
-             ],
-             patterns: [],
-           },
-         ],
-         dataGroups: [],
-         hashTable: {
-           '/bar/script-3.js': 'bc0a9b488b5707757c491ddac66f56304310b6b1',
-           '/bar/script-4.js': 'b7782e97a285f1f6e62feca842384babaa209040',
-           '/foo/script-1.js': '3cf257d7ef7e991898f8506fd408cab4f0c2de91',
-           '/foo/script-2.js': '9de2ba54065bb9d610bce51beec62e35bea870a7',
-           '/qux/script-5.js': '3dceafdc0a1b429718e45fbf8e3005dd767892de'
-         },
-         navigationUrls: [
-           {positive: true, regex: '^\\/.*$'},
-           {positive: false, regex: '^\\/(?:.+\\/)?[^/]*\\.[^/]*$'},
-           {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*$'},
-           {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
-         ],
-         navigationRequestStrategy: 'performance',
-       });
-     });
+    expect(config).toEqual({
+      configVersion: 1,
+      timestamp: 1234567890123,
+      appData: undefined,
+      index: '/index.html',
+      assetGroups: [
+        {
+          name: 'group-foo',
+          installMode: 'prefetch',
+          updateMode: 'prefetch',
+          cacheQueryOptions: {ignoreVary: true},
+          urls: ['/foo/script-1.js', '/foo/script-2.js'],
+          patterns: [],
+        },
+        {
+          name: 'group-bar',
+          installMode: 'prefetch',
+          updateMode: 'prefetch',
+          cacheQueryOptions: {ignoreVary: true},
+          urls: ['/bar/script-3.js', '/bar/script-4.js'],
+          patterns: [],
+        },
+        {
+          name: 'group-fallback',
+          installMode: 'prefetch',
+          updateMode: 'prefetch',
+          cacheQueryOptions: {ignoreVary: true},
+          urls: ['/qux/script-5.js'],
+          patterns: [],
+        },
+      ],
+      dataGroups: [],
+      hashTable: {
+        '/bar/script-3.js': 'bc0a9b488b5707757c491ddac66f56304310b6b1',
+        '/bar/script-4.js': 'b7782e97a285f1f6e62feca842384babaa209040',
+        '/foo/script-1.js': '3cf257d7ef7e991898f8506fd408cab4f0c2de91',
+        '/foo/script-2.js': '9de2ba54065bb9d610bce51beec62e35bea870a7',
+        '/qux/script-5.js': '3dceafdc0a1b429718e45fbf8e3005dd767892de',
+      },
+      navigationUrls: [
+        {positive: true, regex: '^\\/.*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*\\.[^/]*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*$'},
+        {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
+      ],
+      navigationRequestStrategy: 'performance',
+    });
+  });
 
   it('uses default `navigationUrls` if not provided', async () => {
     const fs = new MockFilesystem({
@@ -262,24 +247,24 @@ describe('Generator', () => {
     try {
       await gen.process({
         index: '/index.html',
-        assetGroups: [{
-          name: 'test',
-          resources: {
-            files: [
-              '/*.html',
-            ],
-            versionedFiles: [
-              '/*.js',
-            ],
-          } as AssetGroup['resources'] &
-              {versionedFiles: string[]},
-        }],
+        assetGroups: [
+          {
+            name: 'test',
+            resources: {
+              files: ['/*.html'],
+              versionedFiles: ['/*.js'],
+            } as AssetGroup['resources'] & {versionedFiles: string[]},
+          },
+        ],
       });
-      throw new Error('Processing should have failed due to \'versionedFiles\'.');
+      throw new Error("Processing should have failed due to 'versionedFiles'.");
     } catch (err) {
-      expect(err).toEqual(new Error(
-          'Asset-group \'test\' in \'ngsw-config.json\' uses the \'versionedFiles\' option, ' +
-          'which is no longer supported. Use \'files\' instead.'));
+      expect(err).toEqual(
+        new Error(
+          "Asset-group 'test' in 'ngsw-config.json' uses the 'versionedFiles' option, " +
+            "which is no longer supported. Use 'files' instead.",
+        ),
+      );
     }
   });
 
@@ -361,9 +346,7 @@ describe('Generator', () => {
       dataGroups: [
         {
           name: 'freshness-undefined',
-          patterns: [
-            '\\/api\\/1\\/.*',
-          ],
+          patterns: ['\\/api\\/1\\/.*'],
           strategy: 'freshness',
           maxSize: 100,
           maxAge: 259200000,
@@ -374,9 +357,7 @@ describe('Generator', () => {
         },
         {
           name: 'freshness-false',
-          patterns: [
-            '\\/api\\/2\\/.*',
-          ],
+          patterns: ['\\/api\\/2\\/.*'],
           strategy: 'freshness',
           maxSize: 100,
           maxAge: 259200000,
@@ -387,9 +368,7 @@ describe('Generator', () => {
         },
         {
           name: 'freshness-true',
-          patterns: [
-            '\\/api\\/3\\/.*',
-          ],
+          patterns: ['\\/api\\/3\\/.*'],
           strategy: 'freshness',
           maxSize: 100,
           maxAge: 259200000,
@@ -400,9 +379,7 @@ describe('Generator', () => {
         },
         {
           name: 'performance-undefined',
-          patterns: [
-            '\\/api\\/4\\/.*',
-          ],
+          patterns: ['\\/api\\/4\\/.*'],
           strategy: 'performance',
           maxSize: 100,
           maxAge: 259200000,
@@ -413,9 +390,7 @@ describe('Generator', () => {
         },
         {
           name: 'performance-false',
-          patterns: [
-            '\\/api\\/5\\/.*',
-          ],
+          patterns: ['\\/api\\/5\\/.*'],
           strategy: 'performance',
           maxSize: 100,
           maxAge: 259200000,
@@ -426,9 +401,7 @@ describe('Generator', () => {
         },
         {
           name: 'performance-true',
-          patterns: [
-            '\\/api\\/6\\/.*',
-          ],
+          patterns: ['\\/api\\/6\\/.*'],
           strategy: 'performance',
           maxSize: 100,
           maxAge: 259200000,
@@ -457,27 +430,28 @@ describe('Generator', () => {
     const gen = new Generator(fs, '/');
     const config = await gen.process({
       index: '/index.html',
-      assetGroups: [{
-        name: 'test',
-        resources: {
-          files: [
-            '/**/*.html',
-            '/**/*.?s',
-          ]
+      assetGroups: [
+        {
+          name: 'test',
+          resources: {
+            files: ['/**/*.html', '/**/*.?s'],
+          },
+          cacheQueryOptions: {ignoreSearch: true},
         },
-        cacheQueryOptions: {ignoreSearch: true},
-      }],
-      dataGroups: [{
-        name: 'other',
-        urls: ['/api/**'],
-        cacheConfig: {
-          maxAge: '3d',
-          maxSize: 100,
-          strategy: 'performance',
-          timeout: '1m',
+      ],
+      dataGroups: [
+        {
+          name: 'other',
+          urls: ['/api/**'],
+          cacheConfig: {
+            maxAge: '3d',
+            maxSize: 100,
+            strategy: 'performance',
+            timeout: '1m',
+          },
+          cacheQueryOptions: {ignoreSearch: false},
         },
-        cacheQueryOptions: {ignoreSearch: false},
-      }]
+      ],
     });
 
     expect(config).toEqual({
@@ -485,30 +459,29 @@ describe('Generator', () => {
       appData: undefined,
       timestamp: 1234567890123,
       index: '/index.html',
-      assetGroups: [{
-        name: 'test',
-        installMode: 'prefetch',
-        updateMode: 'prefetch',
-        urls: [
-          '/index.html',
-          '/main.js',
-        ],
-        patterns: [],
-        cacheQueryOptions: {ignoreSearch: true, ignoreVary: true}
-      }],
-      dataGroups: [{
-        name: 'other',
-        patterns: [
-          '\\/api\\/.*',
-        ],
-        strategy: 'performance',
-        maxSize: 100,
-        maxAge: 259200000,
-        timeoutMs: 60000,
-        version: 1,
-        cacheOpaqueResponses: undefined,
-        cacheQueryOptions: {ignoreSearch: false, ignoreVary: true}
-      }],
+      assetGroups: [
+        {
+          name: 'test',
+          installMode: 'prefetch',
+          updateMode: 'prefetch',
+          urls: ['/index.html', '/main.js'],
+          patterns: [],
+          cacheQueryOptions: {ignoreSearch: true, ignoreVary: true},
+        },
+      ],
+      dataGroups: [
+        {
+          name: 'other',
+          patterns: ['\\/api\\/.*'],
+          strategy: 'performance',
+          maxSize: 100,
+          maxAge: 259200000,
+          timeoutMs: 60000,
+          version: 1,
+          cacheOpaqueResponses: undefined,
+          cacheQueryOptions: {ignoreSearch: false, ignoreVary: true},
+        },
+      ],
       navigationUrls: [
         {positive: true, regex: '^\\/.*$'},
         {positive: false, regex: '^\\/(?:.+\\/)?[^/]*\\.[^/]*$'},
@@ -523,20 +496,25 @@ describe('Generator', () => {
     });
   });
 
-  it('doesn\'t exceed concurrency limit', async () => {
+  it("doesn't exceed concurrency limit", async () => {
     const fileCount = 600;
-    const files = [...Array(fileCount).keys()].reduce((acc: Record<string, string>, _, i) => {
-      acc[`/test${i}.js`] = `This is a test ${i}`;
-      return acc;
-    }, {'/index.html': 'This is a test'});
+    const files = [...Array(fileCount).keys()].reduce(
+      (acc: Record<string, string>, _, i) => {
+        acc[`/test${i}.js`] = `This is a test ${i}`;
+        return acc;
+      },
+      {'/index.html': 'This is a test'},
+    );
     const fs = new HashTrackingMockFilesystem(files);
     const gen = new Generator(fs, '/');
     const config = await gen.process({
       index: '/index.html',
-      assetGroups: [{
-        name: 'test',
-        resources: {files: ['/*.js']},
-      }],
+      assetGroups: [
+        {
+          name: 'test',
+          resources: {files: ['/*.js']},
+        },
+      ],
     });
     expect(fs.maxConcurrentHashings).toBeLessThanOrEqual(500);
     expect(fs.maxConcurrentHashings).toBeGreaterThan(1);

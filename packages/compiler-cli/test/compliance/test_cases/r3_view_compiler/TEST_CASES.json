@@ -17,6 +17,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle binary and unary operators",
+      "inputFiles": [
+        "operators.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "operators_template.js",
+              "generated": "operators.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

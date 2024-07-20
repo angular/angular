@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +25,7 @@ import { Component } from '@angular/core';
     </ul>
 
   `,
-  styles: []
+  styles: [],
 })
 export class AppComponent {
   title = $localize`ng-add-localize`;

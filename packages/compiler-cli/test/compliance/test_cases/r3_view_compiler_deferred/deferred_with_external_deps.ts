@@ -8,10 +8,11 @@ import {LoadingDep} from './deferred_with_external_deps_loading';
   template: `
     <div>
       <eager-dep/>
-      {#defer}
+      @defer {
         <lazy-dep/>
-        {:loading} <loading-dep/>
-      {/defer}
+      } @loading {
+        <loading-dep/>
+      }
     </div>
   `,
   standalone: true,

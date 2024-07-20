@@ -7,8 +7,52 @@
  */
 
 import {AST} from '../../expression_parser/ast';
-import {BoundAttribute, BoundEvent, DeferredBlock, Element, Node, Reference, Template, TextAttribute, Variable} from '../r3_ast';
+import {
+  BoundAttribute,
+  BoundEvent,
+  Content,
+  DeferredBlock,
+  DeferredBlockError,
+  DeferredBlockLoading,
+  DeferredBlockPlaceholder,
+  DeferredTrigger,
+  Element,
+  ForLoopBlock,
+  ForLoopBlockEmpty,
+  IfBlockBranch,
+  LetDeclaration,
+  Node,
+  Reference,
+  SwitchBlockCase,
+  Template,
+  TextAttribute,
+  Variable,
+} from '../r3_ast';
 
+/** Node that has a `Scope` associated with it. */
+export type ScopedNode =
+  | Template
+  | SwitchBlockCase
+  | IfBlockBranch
+  | ForLoopBlock
+  | ForLoopBlockEmpty
+  | DeferredBlock
+  | DeferredBlockError
+  | DeferredBlockLoading
+  | DeferredBlockPlaceholder
+  | Content;
+
+/** Possible values that a reference can be resolved to. */
+export type ReferenceTarget<DirectiveT> =
+  | {
+      directive: DirectiveT;
+      node: Element | Template;
+    }
+  | Element
+  | Template;
+
+/** Entity that is local to the template and defined within the template. */
+export type TemplateEntity = Reference | Variable | LetDeclaration;
 
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of
@@ -56,7 +100,7 @@ export interface DirectiveMeta {
   name: string;
 
   /** The selector for the directive or `null` if there isn't one. */
-  selector: string|null;
+  selector: string | null;
 
   /**
    * Whether the directive is a component.
@@ -82,15 +126,28 @@ export interface DirectiveMeta {
    *
    * Null otherwise
    */
-  exportAs: string[]|null;
+  exportAs: string[] | null;
 
+  /**
+   * Whether the directive is a structural directive (e.g. `<div *ngIf></div>`).
+   */
   isStructural: boolean;
+
+  /**
+   * If the directive is a component, includes the selectors of its `ng-content` elements.
+   */
+  ngContentSelectors: string[] | null;
+
+  /**
+   * Whether the template of the component preserves whitespaces.
+   */
+  preserveWhitespaces: boolean;
 
   /**
    * The name of animations that the user defines in the component.
    * Only includes the animation names.
    */
-  animationTriggerNames: AnimationTriggerNames|null;
+  animationTriggerNames: AnimationTriggerNames | null;
 }
 
 /**
@@ -121,22 +178,22 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * For a given template node (either an `Element` or a `Template`), get the set of directives
    * which matched the node, if any.
    */
-  getDirectivesOfNode(node: Element|Template): DirectiveT[]|null;
+  getDirectivesOfNode(node: Element | Template): DirectiveT[] | null;
 
   /**
    * For a given `Reference`, get the reference's target - either an `Element`, a `Template`, or
    * a directive on a particular node.
    */
-  getReferenceTarget(ref: Reference): {directive: DirectiveT, node: Element|Template}|Element
-      |Template|null;
+  getReferenceTarget(ref: Reference): ReferenceTarget<DirectiveT> | null;
 
   /**
    * For a given binding, get the entity to which the binding is being made.
    *
    * This will either be a directive or the node itself.
    */
-  getConsumerOfBinding(binding: BoundAttribute|BoundEvent|TextAttribute): DirectiveT|Element
-      |Template|null;
+  getConsumerOfBinding(
+    binding: BoundAttribute | BoundEvent | TextAttribute,
+  ): DirectiveT | Element | Template | null;
 
   /**
    * If the given `AST` expression refers to a `Reference` or `Variable` within the `Target`, then
@@ -147,57 +204,68 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * This is only defined for `AST` expressions that read or write to a property of an
    * `ImplicitReceiver`.
    */
-  getExpressionTarget(expr: AST): Reference|Variable|null;
+  getExpressionTarget(expr: AST): TemplateEntity | null;
 
   /**
-   * Given a particular `Reference` or `Variable`, get the `Template` which created it.
+   * Given a particular `Reference` or `Variable`, get the `ScopedNode` which created it.
    *
-   * All `Variable`s are defined on templates, so this will always return a value for a `Variable`
-   * from the `Target`. For `Reference`s this only returns a value if the `Reference` points to a
-   * `Template`. Returns `null` otherwise.
+   * All `Variable`s are defined on node, so this will always return a value for a `Variable`
+   * from the `Target`. Returns `null` otherwise.
    */
-  getTemplateOfSymbol(symbol: Reference|Variable): Template|null;
+  getDefinitionNodeOfSymbol(symbol: TemplateEntity): ScopedNode | null;
 
   /**
-   * Get the nesting level of a particular `Template`.
+   * Get the nesting level of a particular `ScopedNode`.
    *
-   * This starts at 1 for top-level `Template`s within the `Target` and increases for `Template`s
+   * This starts at 1 for top-level nodes within the `Target` and increases for nodes
    * nested at deeper levels.
    */
-  getNestingLevel(template: Template): number;
+  getNestingLevel(node: ScopedNode): number;
 
   /**
-   * Get all `Reference`s and `Variables` visible within the given `Template` (or at the top level,
-   * if `null` is passed).
+   * Get all `Reference`s and `Variables` visible within the given `ScopedNode` (or at the top
+   * level, if `null` is passed).
    */
-  getEntitiesInTemplateScope(template: Template|null): ReadonlySet<Reference|Variable>;
+  getEntitiesInScope(node: ScopedNode | null): ReadonlySet<TemplateEntity>;
 
   /**
    * Get a list of all the directives used by the target,
-   * including directives from `{#defer}` blocks.
+   * including directives from `@defer` blocks.
    */
   getUsedDirectives(): DirectiveT[];
 
   /**
    * Get a list of eagerly used directives from the target.
-   * Note: this list *excludes* directives from `{#defer}` blocks.
+   * Note: this list *excludes* directives from `@defer` blocks.
    */
   getEagerlyUsedDirectives(): DirectiveT[];
 
   /**
    * Get a list of all the pipes used by the target,
-   * including pipes from `{#defer}` blocks.
+   * including pipes from `@defer` blocks.
    */
   getUsedPipes(): string[];
 
   /**
    * Get a list of eagerly used pipes from the target.
-   * Note: this list *excludes* pipes from `{#defer}` blocks.
+   * Note: this list *excludes* pipes from `@defer` blocks.
    */
   getEagerlyUsedPipes(): string[];
 
   /**
-   * Get a list of all {#defer} blocks used by the target.
+   * Get a list of all `@defer` blocks used by the target.
    */
   getDeferBlocks(): DeferredBlock[];
+
+  /**
+   * Gets the element that a specific deferred block trigger is targeting.
+   * @param block Block that the trigger belongs to.
+   * @param trigger Trigger whose target is being looked up.
+   */
+  getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element | null;
+
+  /**
+   * Whether a given node is located in a `@defer` block.
+   */
+  isDeferred(node: Element): boolean;
 }

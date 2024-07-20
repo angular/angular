@@ -28,7 +28,9 @@ runInEachFileSystem(() => {
     });
 
     it('should compile a project with a reference above the current dir', () => {
-      env.write('/app/index.ts', `
+      env.write(
+        '/app/index.ts',
+        `
         import {Component, NgModule} from '@angular/core';
         import {LibModule} from '../lib/module';
 
@@ -43,8 +45,11 @@ runInEachFileSystem(() => {
           imports: [LibModule],
         })
         export class AppModule {}
-      `);
-      env.write('/lib/module.ts', `
+      `,
+      );
+      env.write(
+        '/lib/module.ts',
+        `
         import {NgModule} from '@angular/core';
         import {LibCmp} from './cmp';
 
@@ -53,8 +58,11 @@ runInEachFileSystem(() => {
           exports: [LibCmp],
         })
         export class LibModule {}
-      `);
-      env.write('/lib/cmp.ts', `
+      `,
+      );
+      env.write(
+        '/lib/cmp.ts',
+        `
         import {Component} from '@angular/core';
 
         @Component({
@@ -62,7 +70,8 @@ runInEachFileSystem(() => {
           template: '...',
         })
         export class LibCmp {}
-      `);
+      `,
+      );
 
       env.driveMain();
 
@@ -71,7 +80,9 @@ runInEachFileSystem(() => {
     });
 
     it('should compile a project with a reference into the same dir', () => {
-      env.write('/app/index.ts', `
+      env.write(
+        '/app/index.ts',
+        `
         import {Component, NgModule} from '@angular/core';
         import {TargetModule} from './target';
 
@@ -86,9 +97,12 @@ runInEachFileSystem(() => {
           imports: [TargetModule],
         })
         export class AppModule {}
-      `);
+      `,
+      );
 
-      env.write('/app/target.ts', `
+      env.write(
+        '/app/target.ts',
+        `
         import {Component, NgModule} from '@angular/core';
 
         @Component({
@@ -102,7 +116,8 @@ runInEachFileSystem(() => {
           exports: [TargetCmp],
         })
         export class TargetModule {}
-      `);
+      `,
+      );
 
       env.driveMain();
 

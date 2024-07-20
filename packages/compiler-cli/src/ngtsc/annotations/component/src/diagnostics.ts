@@ -12,25 +12,28 @@ import {Cycle} from '../../../cycles';
 import {makeRelatedInformation} from '../../../diagnostics';
 import {Reference} from '../../../imports';
 
-
 /**
  * Generate a diagnostic related information object that describes a potential cyclic import path.
  */
 export function makeCyclicImportInfo(
-    ref: Reference, type: string, cycle: Cycle): ts.DiagnosticRelatedInformation {
+  ref: Reference,
+  type: string,
+  cycle: Cycle,
+): ts.DiagnosticRelatedInformation {
   const name = ref.debugName || '(unknown)';
-  const path = cycle.getPath().map(sf => sf.fileName).join(' -> ');
-  const message =
-      `The ${type} '${name}' is used in the template but importing it would create a cycle: `;
+  const path = cycle
+    .getPath()
+    .map((sf) => sf.fileName)
+    .join(' -> ');
+  const message = `The ${type} '${name}' is used in the template but importing it would create a cycle: `;
   return makeRelatedInformation(ref.node, message + path);
 }
-
 
 /**
  * Checks whether a selector is a valid custom element tag name.
  * Based loosely on https://github.com/sindresorhus/validate-element-name.
  */
-export function checkCustomElementSelectorForErrors(selector: string): string|null {
+export function checkCustomElementSelectorForErrors(selector: string): string | null {
   // Avoid flagging components with an attribute or class selector. This isn't bulletproof since it
   // won't catch cases like `foo[]bar`, but we don't need it to be. This is mainly to avoid flagging
   // something like `foo-bar[baz]` incorrectly.
@@ -38,7 +41,7 @@ export function checkCustomElementSelectorForErrors(selector: string): string|nu
     return null;
   }
 
-  if (!(/^[a-z]/.test(selector))) {
+  if (!/^[a-z]/.test(selector)) {
     return 'Selector of a ShadowDom-encapsulated component must start with a lower case letter.';
   }
 

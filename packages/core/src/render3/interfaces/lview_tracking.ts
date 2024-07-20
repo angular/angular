@@ -28,7 +28,7 @@ export function registerLView(lView: LView): void {
 }
 
 /** Gets an LView by its unique ID. */
-export function getLViewById(id: number): LView|null {
+export function getLViewById(id: number): LView | null {
   ngDevMode && assertNumber(id, 'ID used for LView lookup must be a number');
   return TRACKED_LVIEWS.get(id) || null;
 }

@@ -10,6 +10,7 @@ OtherCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: OtherCmp, decorators: [{
             type: Component,
             args: [{
+                    // @ts-ignore
                     signals: true,
                     standalone: true,
                     selector: 'other-cmp',
@@ -23,6 +24,7 @@ SignalCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SignalCmp, decorators: [{
             type: Component,
             args: [{
+                    // @ts-ignore
                     signals: true,
                     standalone: true,
                     template: '<other-cmp></other-cmp>',
@@ -55,6 +57,7 @@ SignalDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SignalDir, decorators: [{
             type: Directive,
             args: [{
+                    // @ts-ignore
                     signals: true,
                 }]
         }] });

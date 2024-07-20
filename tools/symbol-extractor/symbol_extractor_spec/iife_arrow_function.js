@@ -7,5 +7,6 @@
  */
 
 (() => {
-  var Class = function() {}, fn = function() {};
+  var Class = function () {},
+    fn = function () {};
 })();

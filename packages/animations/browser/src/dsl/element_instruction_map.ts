@@ -17,7 +17,7 @@ export class ElementInstructionMap {
   append(element: any, instructions: AnimationTimelineInstruction[]) {
     let existingInstructions = this._map.get(element);
     if (!existingInstructions) {
-      this._map.set(element, existingInstructions = []);
+      this._map.set(element, (existingInstructions = []));
     }
     existingInstructions.push(...instructions);
   }

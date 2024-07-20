@@ -9,24 +9,40 @@
 import * as o from '@angular/compiler';
 import ts from 'typescript';
 
-import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
-import {ReflectionHost} from '../../reflection';
+import {
+  assertSuccessfulReferenceEmit,
+  ImportFlags,
+  OwningModule,
+  Reference,
+  ReferenceEmitter,
+} from '../../imports';
+import {AmbientImport, ReflectionHost} from '../../reflection';
 
 import {Context} from './context';
-import {ImportManager} from './import_manager';
-
+import {ImportManager} from './import_manager/import_manager';
+import {tsNumericExpression} from './ts_util';
+import {TypeEmitter} from './type_emitter';
 
 export function translateType(
-    type: o.Type, contextFile: ts.SourceFile, reflector: ReflectionHost,
-    refEmitter: ReferenceEmitter, imports: ImportManager): ts.TypeNode {
+  type: o.Type,
+  contextFile: ts.SourceFile,
+  reflector: ReflectionHost,
+  refEmitter: ReferenceEmitter,
+  imports: ImportManager,
+): ts.TypeNode {
   return type.visitType(
-      new TypeTranslatorVisitor(imports, contextFile, reflector, refEmitter), new Context(false));
+    new TypeTranslatorVisitor(imports, contextFile, reflector, refEmitter),
+    new Context(false),
+  );
 }
 
 class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
   constructor(
-      private imports: ImportManager, private contextFile: ts.SourceFile,
-      private reflector: ReflectionHost, private refEmitter: ReferenceEmitter) {}
+    private imports: ImportManager,
+    private contextFile: ts.SourceFile,
+    private reflector: ReflectionHost,
+    private refEmitter: ReferenceEmitter,
+  ) {}
 
   visitBuiltinType(type: o.BuiltinType, context: Context): ts.KeywordTypeNode {
     switch (type.name) {
@@ -54,13 +70,15 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
 
     if (!ts.isTypeReferenceNode(typeNode)) {
       throw new Error(
-          'An ExpressionType with type arguments must translate into a TypeReferenceNode');
+        'An ExpressionType with type arguments must translate into a TypeReferenceNode',
+      );
     } else if (typeNode.typeArguments !== undefined) {
       throw new Error(
-          `An ExpressionType with type arguments cannot have multiple levels of type arguments`);
+        `An ExpressionType with type arguments cannot have multiple levels of type arguments`,
+      );
     }
 
-    const typeArgs = type.typeParams.map(param => this.translateType(param, context));
+    const typeArgs = type.typeParams.map((param) => this.translateType(param, context));
     return ts.factory.createTypeReferenceNode(typeNode.typeName, typeArgs);
   }
 
@@ -70,21 +88,32 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
 
   visitMapType(type: o.MapType, context: Context): ts.TypeLiteralNode {
     const parameter = ts.factory.createParameterDeclaration(
-        undefined, undefined, 'key', undefined,
-        ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword));
-    const typeArgs = type.valueType !== null ?
-        this.translateType(type.valueType, context) :
-        ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword);
+      undefined,
+      undefined,
+      'key',
+      undefined,
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+    );
+    const typeArgs =
+      type.valueType !== null
+        ? this.translateType(type.valueType, context)
+        : ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword);
     const indexSignature = ts.factory.createIndexSignature(undefined, [parameter], typeArgs);
     return ts.factory.createTypeLiteralNode([indexSignature]);
   }
 
-  visitTransplantedType(ast: o.TransplantedType<ts.Node>, context: any) {
-    if (!ts.isTypeNode(ast.type)) {
+  visitTransplantedType(ast: o.TransplantedType<unknown>, context: Context) {
+    const node = ast.type instanceof Reference ? ast.type.node : ast.type;
+    if (!ts.isTypeNode(node)) {
       throw new Error(`A TransplantedType must wrap a TypeNode`);
     }
 
-    return this.translateTransplantedTypeNode(ast.type, context);
+    const viaModule = ast.type instanceof Reference ? ast.type.bestGuessOwningModule : null;
+
+    const emitter = new TypeEmitter((typeRef) =>
+      this.translateTypeReference(typeRef, context, viaModule),
+    );
+    return emitter.emitType(node);
   }
 
   visitReadVarExpr(ast: o.ReadVarExpr, context: Context): ts.TypeQueryNode {
@@ -125,9 +154,10 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
       return ts.factory.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword);
     } else if (typeof ast.value === 'boolean') {
       return ts.factory.createLiteralTypeNode(
-          ast.value ? ts.factory.createTrue() : ts.factory.createFalse());
+        ast.value ? ts.factory.createTrue() : ts.factory.createFalse(),
+      );
     } else if (typeof ast.value === 'number') {
-      return ts.factory.createLiteralTypeNode(ts.factory.createNumericLiteral(ast.value));
+      return ts.factory.createLiteralTypeNode(tsNumericExpression(ast.value));
     } else {
       return ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(ast.value));
     }
@@ -137,20 +167,21 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
-  visitExternalExpr(ast: o.ExternalExpr, context: Context): ts.EntityName|ts.TypeReferenceNode {
+  visitExternalExpr(ast: o.ExternalExpr, context: Context): ts.EntityName | ts.TypeReferenceNode {
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol`);
     }
-    const {moduleImport, symbol} =
-        this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
-    const symbolIdentifier = ts.factory.createIdentifier(symbol);
+    const typeName = this.imports.addImport({
+      exportModuleSpecifier: ast.value.moduleName,
+      exportSymbolName: ast.value.name,
+      requestedFile: this.contextFile,
+      asTypeReference: true,
+    });
 
-    const typeName = moduleImport ? ts.factory.createQualifiedName(moduleImport, symbolIdentifier) :
-                                    symbolIdentifier;
-
-    const typeArguments = ast.typeParams !== null ?
-        ast.typeParams.map(type => this.translateType(type, context)) :
-        undefined;
+    const typeArguments =
+      ast.typeParams !== null
+        ? ast.typeParams.map((type) => this.translateType(type, context))
+        : undefined;
     return ts.factory.createTypeReferenceNode(typeName, typeArguments);
   }
 
@@ -167,6 +198,10 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
   }
 
   visitFunctionExpr(ast: o.FunctionExpr, context: Context) {
+    throw new Error('Method not implemented.');
+  }
+
+  visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, context: any) {
     throw new Error('Method not implemented.');
   }
 
@@ -187,19 +222,20 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
   }
 
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, context: Context): ts.TupleTypeNode {
-    const values = ast.entries.map(expr => this.translateExpression(expr, context));
+    const values = ast.entries.map((expr) => this.translateExpression(expr, context));
     return ts.factory.createTupleTypeNode(values);
   }
 
   visitLiteralMapExpr(ast: o.LiteralMapExpr, context: Context): ts.TypeLiteralNode {
-    const entries = ast.entries.map(entry => {
+    const entries = ast.entries.map((entry) => {
       const {key, quoted} = entry;
       const type = this.translateExpression(entry.value, context);
       return ts.factory.createPropertySignature(
-          /* modifiers */ undefined,
-          /* name */ quoted ? ts.factory.createStringLiteral(key) : key,
-          /* questionToken */ undefined,
-          /* type */ type);
+        /* modifiers */ undefined,
+        /* name */ quoted ? ts.factory.createStringLiteral(key) : key,
+        /* questionToken */ undefined,
+        /* type */ type,
+      );
     });
     return ts.factory.createTypeLiteralNode(entries);
   }
@@ -218,7 +254,8 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
       return ts.factory.createLiteralTypeNode(node);
     } else {
       throw new Error(
-          `Unsupported WrappedNodeExpr in TypeTranslatorVisitor: ${ts.SyntaxKind[node.kind]}`);
+        `Unsupported WrappedNodeExpr in TypeTranslatorVisitor: ${ts.SyntaxKind[node.kind]}`,
+      );
     }
   }
 
@@ -235,7 +272,8 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     const typeNode = type.visitType(this, context);
     if (!ts.isTypeNode(typeNode)) {
       throw new Error(
-          `A Type must translate to a TypeNode, but was ${ts.SyntaxKind[typeNode.kind]}`);
+        `A Type must translate to a TypeNode, but was ${ts.SyntaxKind[typeNode.kind]}`,
+      );
     }
     return typeNode;
   }
@@ -244,75 +282,52 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     const typeNode = expr.visitExpression(this, context);
     if (!ts.isTypeNode(typeNode)) {
       throw new Error(
-          `An Expression must translate to a TypeNode, but was ${ts.SyntaxKind[typeNode.kind]}`);
+        `An Expression must translate to a TypeNode, but was ${ts.SyntaxKind[typeNode.kind]}`,
+      );
     }
     return typeNode;
   }
 
-  /**
-   * Translates a type reference node so that all of its references
-   * are imported into the context file.
-   */
-  private translateTransplantedTypeReferenceNode(
-      node: ts.TypeReferenceNode&{typeName: ts.Identifier}, context: any): ts.TypeReferenceNode {
-    const declaration = this.reflector.getDeclarationOfIdentifier(node.typeName);
-
+  private translateTypeReference(
+    type: ts.TypeReferenceNode,
+    context: Context,
+    viaModule: OwningModule | null,
+  ): ts.TypeReferenceNode | null {
+    const target = ts.isIdentifier(type.typeName) ? type.typeName : type.typeName.right;
+    const declaration = this.reflector.getDeclarationOfIdentifier(target);
     if (declaration === null) {
       throw new Error(
-          `Unable to statically determine the declaration file of type node ${node.typeName.text}`);
+        `Unable to statically determine the declaration file of type node ${target.text}`,
+      );
     }
 
-    const emittedType = this.refEmitter.emit(
-        new Reference(declaration.node), this.contextFile,
-        ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
-            ImportFlags.AllowRelativeDtsImports);
-
-    assertSuccessfulReferenceEmit(emittedType, node, 'type');
-
-    const result = emittedType.expression.visitExpression(this, context);
-
-    if (!ts.isTypeReferenceNode(result)) {
-      throw new Error(`Expected TypeReferenceNode when referencing the type for ${
-          node.typeName.text}, but received ${ts.SyntaxKind[result.kind]}`);
-    }
-
-    // If the original node doesn't have any generic parameters we return the results.
-    if (node.typeArguments === undefined || node.typeArguments.length === 0) {
-      return result;
-    }
-
-    // If there are any generics, we have to reflect them as well.
-    const translatedArgs =
-        node.typeArguments.map(arg => this.translateTransplantedTypeNode(arg, context));
-
-    return ts.factory.updateTypeReferenceNode(
-        result, result.typeName, ts.factory.createNodeArray(translatedArgs));
-  }
-
-  /**
-   * Translates a type node so that all of the type references it
-   * contains are imported and can be referenced in the context file.
-   */
-  private translateTransplantedTypeNode(rootNode: ts.TypeNode, context: any): ts.TypeNode {
-    const factory: ts.TransformerFactory<ts.Node> = transformContext => root => {
-      const walk = (node: ts.Node): ts.Node => {
-        if (ts.isTypeReferenceNode(node) && ts.isIdentifier(node.typeName)) {
-          const translated =
-              this.translateTransplantedTypeReferenceNode(node as ts.TypeReferenceNode & {
-                typeName: ts.Identifier;
-              }, context);
-
-          if (translated !== node) {
-            return translated;
-          }
-        }
-
-        return ts.visitEachChild(node, walk, transformContext);
+    let owningModule = viaModule;
+    if (typeof declaration.viaModule === 'string') {
+      owningModule = {
+        specifier: declaration.viaModule,
+        resolutionContext: type.getSourceFile().fileName,
       };
+    }
 
-      return ts.visitNode(root, walk);
-    };
+    const reference = new Reference(
+      declaration.node,
+      declaration.viaModule === AmbientImport ? AmbientImport : owningModule,
+    );
+    const emittedType = this.refEmitter.emit(
+      reference,
+      this.contextFile,
+      ImportFlags.NoAliasing | ImportFlags.AllowTypeImports | ImportFlags.AllowAmbientReferences,
+    );
 
-    return ts.transform(rootNode, [factory]).transformed[0] as ts.TypeNode;
+    assertSuccessfulReferenceEmit(emittedType, target, 'type');
+
+    const typeNode = this.translateExpression(emittedType.expression, context);
+
+    if (!ts.isTypeReferenceNode(typeNode)) {
+      throw new Error(
+        `Expected TypeReferenceNode for emitted reference, got ${ts.SyntaxKind[typeNode.kind]}.`,
+      );
+    }
+    return typeNode;
   }
 }

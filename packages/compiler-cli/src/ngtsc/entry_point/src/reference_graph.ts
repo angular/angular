@@ -24,11 +24,11 @@ export class ReferenceGraph<T = DeclarationNode> {
     return set;
   }
 
-  pathFrom(source: T, target: T): T[]|null {
+  pathFrom(source: T, target: T): T[] | null {
     return this.collectPathFrom(source, target, new Set());
   }
 
-  private collectPathFrom(source: T, target: T, seen: Set<T>): T[]|null {
+  private collectPathFrom(source: T, target: T, seen: Set<T>): T[] | null {
     if (source === target) {
       // Looking for a path from the target to itself - that path is just the target. This is the
       // "base case" of the search.
@@ -46,8 +46,8 @@ export class ReferenceGraph<T = DeclarationNode> {
     } else {
       // Look through the outgoing edges of `source`.
       // TODO(alxhub): use proper iteration when the legacy build is removed. (#27762)
-      let candidatePath: T[]|null = null;
-      this.references.get(source)!.forEach(edge => {
+      let candidatePath: T[] | null = null;
+      this.references.get(source)!.forEach((edge) => {
         // Early exit if a path has already been found.
         if (candidatePath !== null) {
           return;
@@ -67,7 +67,7 @@ export class ReferenceGraph<T = DeclarationNode> {
   private collectTransitiveReferences(set: Set<T>, decl: T): void {
     if (this.references.has(decl)) {
       // TODO(alxhub): use proper iteration when the legacy build is removed. (#27762)
-      this.references.get(decl)!.forEach(ref => {
+      this.references.get(decl)!.forEach((ref) => {
         if (!set.has(ref)) {
           set.add(ref);
           this.collectTransitiveReferences(set, ref);

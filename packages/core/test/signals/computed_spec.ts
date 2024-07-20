@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal, Watch} from '@angular/core/src/signals';
+import {computed, signal} from '@angular/core';
+import {createWatch} from '@angular/core/primitives/signals';
 
 describe('computed', () => {
   it('should create computed', () => {
@@ -34,18 +35,17 @@ describe('computed', () => {
     expect(c()).toEqual(1);
   });
 
-  it('should not re-compute if the dependency is a primitive value and the value did not change',
-     () => {
-       const counter = signal(0);
+  it('should not re-compute if the dependency is a primitive value and the value did not change', () => {
+    const counter = signal(0);
 
-       let computedRunCount = 0;
-       const double = computed(() => `${counter() * 2}:${++computedRunCount}`);
+    let computedRunCount = 0;
+    const double = computed(() => `${counter() * 2}:${++computedRunCount}`);
 
-       expect(double()).toEqual('0:1');
+    expect(double()).toEqual('0:1');
 
-       counter.set(0);
-       expect(double()).toEqual('0:1');
-     });
+    counter.set(0);
+    expect(double()).toEqual('0:1');
+  });
 
   it('should chain computed', () => {
     const name = signal('abc');
@@ -60,12 +60,15 @@ describe('computed', () => {
 
   it('should evaluate computed only when subscribing', () => {
     const name = signal('John');
+    const age = signal(25);
     const show = signal(true);
 
     let computeCount = 0;
-    const displayName = computed(() => `${show() ? name() : 'anonymous'}:${++computeCount}`);
+    const displayName = computed(
+      () => `${show() ? `${name()} aged ${age()}` : 'anonymous'}:${++computeCount}`,
+    );
 
-    expect(displayName()).toEqual('John:1');
+    expect(displayName()).toEqual('John aged 25:1');
 
     show.set(false);
     expect(displayName()).toEqual('anonymous:2');
@@ -105,7 +108,7 @@ describe('computed', () => {
     expect(c()).toEqual('OK');
   });
 
-  it('should not update dependencies of computations when dependencies don\'t change', () => {
+  it("should not update dependencies of computations when dependencies don't change", () => {
     const source = signal(0);
     const isEven = computed(() => source() % 2 === 0);
     let updateCounter = 0;
@@ -136,16 +139,17 @@ describe('computed', () => {
     const derived = computed(() => source().toUpperCase());
 
     let watchCount = 0;
-    const watch = new Watch(
-        () => {
-          derived();
-        },
-        () => {
-          watchCount++;
-        },
-        false);
+    const w = createWatch(
+      () => {
+        derived();
+      },
+      () => {
+        watchCount++;
+      },
+      false,
+    );
 
-    watch.run();
+    w.run();
     expect(watchCount).toEqual(0);
 
     // change signal, mark downstream dependencies dirty
@@ -157,7 +161,7 @@ describe('computed', () => {
     expect(watchCount).toEqual(1);
 
     // resetting dependencies back to clean
-    watch.run();
+    w.run();
     expect(watchCount).toEqual(1);
 
     // expecting another notification at this point
@@ -165,7 +169,16 @@ describe('computed', () => {
     expect(watchCount).toEqual(2);
   });
 
-  it('should disallow writing to signals within computeds', () => {
+  it('should allow signal creation within computed', () => {
+    const doubleCounter = computed(() => {
+      const counter = signal(1);
+      return counter() * 2;
+    });
+
+    expect(doubleCounter()).toBe(2);
+  });
+
+  it('should disallow writing to signals within computed', () => {
     const source = signal(0);
     const illegal = computed(() => {
       source.set(1);
@@ -173,5 +186,11 @@ describe('computed', () => {
     });
 
     expect(illegal).toThrow();
+  });
+
+  it('should have a toString implementation', () => {
+    const counter = signal(1);
+    const double = computed(() => counter() * 2);
+    expect(double + '').toBe('[Computed: 2]');
   });
 });

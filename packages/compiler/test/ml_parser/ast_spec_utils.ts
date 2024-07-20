@@ -54,14 +54,21 @@ class _Humanizer implements html.Visitor {
   visitAttribute(attribute: html.Attribute, context: any): any {
     const valueTokens = attribute.valueTokens ?? [];
     const res = this._appendContext(attribute, [
-      html.Attribute, attribute.name, attribute.value, ...valueTokens.map(token => token.parts)
+      html.Attribute,
+      attribute.name,
+      attribute.value,
+      ...valueTokens.map((token) => token.parts),
     ]);
     this.result.push(res);
   }
 
   visitText(text: html.Text, context: any): any {
-    const res = this._appendContext(
-        text, [html.Text, text.value, this.elDepth, ...text.tokens.map(token => token.parts)]);
+    const res = this._appendContext(text, [
+      html.Text,
+      text.value,
+      this.elDepth,
+      ...text.tokens.map((token) => token.parts),
+    ]);
     this.result.push(res);
   }
 
@@ -71,28 +78,24 @@ class _Humanizer implements html.Visitor {
   }
 
   visitExpansion(expansion: html.Expansion, context: any): any {
-    const res = this._appendContext(
-        expansion, [html.Expansion, expansion.switchValue, expansion.type, this.elDepth++]);
+    const res = this._appendContext(expansion, [
+      html.Expansion,
+      expansion.switchValue,
+      expansion.type,
+      this.elDepth++,
+    ]);
     this.result.push(res);
     html.visitAll(this, expansion.cases);
     this.elDepth--;
   }
 
   visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
-    const res =
-        this._appendContext(expansionCase, [html.ExpansionCase, expansionCase.value, this.elDepth]);
+    const res = this._appendContext(expansionCase, [
+      html.ExpansionCase,
+      expansionCase.value,
+      this.elDepth,
+    ]);
     this.result.push(res);
-  }
-
-  visitBlockGroup(group: html.BlockGroup, context: any) {
-    const res = this._appendContext(group, [html.BlockGroup, this.elDepth++]);
-    if (this.includeSourceSpan) {
-      res.push(group.startSourceSpan.toString() ?? null);
-      res.push(group.endSourceSpan?.toString() ?? null);
-    }
-    this.result.push(res);
-    html.visitAll(this, group.blocks);
-    this.elDepth--;
   }
 
   visitBlock(block: html.Block, context: any) {
@@ -111,12 +114,27 @@ class _Humanizer implements html.Visitor {
     this.result.push(this._appendContext(parameter, [html.BlockParameter, parameter.expression]));
   }
 
+  visitLetDeclaration(decl: html.LetDeclaration, context: any) {
+    const res = this._appendContext(decl, [html.LetDeclaration, decl.name, decl.value]);
+
+    if (this.includeSourceSpan) {
+      res.push(decl.nameSpan?.toString() ?? null);
+      res.push(decl.valueSpan?.toString() ?? null);
+    }
+
+    this.result.push(res);
+  }
+
   private _appendContext(ast: html.Node, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
     input.push(ast.sourceSpan.toString());
     if (ast.sourceSpan.fullStart.offset !== ast.sourceSpan.start.offset) {
-      input.push(ast.sourceSpan.fullStart.file.content.substring(
-          ast.sourceSpan.fullStart.offset, ast.sourceSpan.end.offset));
+      input.push(
+        ast.sourceSpan.fullStart.file.content.substring(
+          ast.sourceSpan.fullStart.offset,
+          ast.sourceSpan.end.offset,
+        ),
+      );
     }
     return input;
   }

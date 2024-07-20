@@ -9,6 +9,7 @@ ts_library(
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/docs",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/indexer",
@@ -29,11 +30,8 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node_no_angular"],
     data = [
         "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
-        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
+        "//packages/core:npm_package",
     ],
-    # TODO: This target is flaky on Windows due to the global FS sometimes not being set/reset.
-    # See: https://app.circleci.com/pipelines/github/angular/angular/62261/workflows/6a4e952c-3d0b-44ab-b3db-c0a639af6bdc/jobs/1348755.
-    flaky = True,
     shard_count = 4,
     deps = [
         ":ngtsc_lib",

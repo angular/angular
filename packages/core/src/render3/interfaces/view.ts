@@ -6,36 +6,49 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../../di/injector';
+import type {ChangeDetectionScheduler} from '../../change_detection/scheduling/zoneless_scheduling';
+import {TDeferBlockDetails} from '../../defer/interfaces';
+import type {Injector} from '../../di/injector';
 import {ProviderToken} from '../../di/provider_token';
 import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
-import type {EffectManager} from '../reactivity/effect';
 import type {AfterRenderEventManager} from '../after_render_hooks';
+import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
+import type {EffectScheduler} from '../reactivity/effect';
 
 import {LContainer} from './container';
-import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
+import {
+  ComponentDef,
+  ComponentTemplate,
+  DirectiveDef,
+  DirectiveDefList,
+  HostBindingsFunction,
+  PipeDef,
+  PipeDefList,
+  ViewQueriesFunction,
+} from './definition';
 import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode} from './node';
-import {LQueries, TQueries} from './query';
+import type {LQueries, TQueries} from './query';
 import {Renderer, RendererFactory} from './renderer';
 import {RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
-
-
 
 // Below are constants for LView indices to help us look up LView members
 // without having to remember the specific indices.
 // Uglify will inline these when minifying so there shouldn't be a cost.
 export const HOST = 0;
 export const TVIEW = 1;
+
+// Shared with LContainer
 export const FLAGS = 2;
 export const PARENT = 3;
 export const NEXT = 4;
-export const DESCENDANT_VIEWS_TO_REFRESH = 5;
-export const T_HOST = 6;
+export const T_HOST = 5;
+// End shared with LContainer
+
+export const HYDRATION = 6;
 export const CLEANUP = 7;
 export const CONTEXT = 8;
 export const INJECTOR = 9;
@@ -52,9 +65,9 @@ export const QUERIES = 18;
 export const ID = 19;
 export const EMBEDDED_VIEW_INJECTOR = 20;
 export const ON_DESTROY_HOOKS = 21;
-export const HYDRATION = 22;
+export const EFFECTS_TO_SCHEDULE = 22;
 export const REACTIVE_TEMPLATE_CONSUMER = 23;
-export const REACTIVE_HOST_BINDING_CONSUMER = 24;
+
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
  *
@@ -64,14 +77,12 @@ export const REACTIVE_HOST_BINDING_CONSUMER = 24;
  */
 export const HEADER_OFFSET = 25;
 
-
 // This interface replaces the real LView interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
 // the actual interface, which should be kept private.
 export interface OpaqueViewState {
   '__brand__': 'Brand for OpaqueViewState that nothing will match';
 }
-
 
 /**
  * `LView` stores all of the information needed to process the instructions as
@@ -87,14 +98,14 @@ export interface LView<T = unknown> extends Array<any> {
   /**
    * The node into which this `LView` is inserted.
    */
-  [HOST]: RElement|null;
+  [HOST]: RElement | null;
 
   /**
    * The static data for this view. We need a reference to this so we can easily walk up the
    * node tree in DI and get the TView.data array associated with a node (where the
    * directive defs are stored).
    */
-  readonly[TVIEW]: TView;
+  readonly [TVIEW]: TView;
 
   /** Flags for this view. See LViewFlags for more info. */
   [FLAGS]: LViewFlags;
@@ -108,7 +119,7 @@ export interface LView<T = unknown> extends Array<any> {
    *
    * `LContainer` - The current view is part of a container, and is an embedded view.
    */
-  [PARENT]: LView|LContainer|null;
+  [PARENT]: LView | LContainer | null;
 
   /**
    *
@@ -119,10 +130,10 @@ export interface LView<T = unknown> extends Array<any> {
    * views in the same container. We need a way to link component views and views
    * across containers as well.
    */
-  [NEXT]: LView|LContainer|null;
+  [NEXT]: LView | LContainer | null;
 
   /** Queries active for this view - nodes from a view are reported to those queries. */
-  [QUERIES]: LQueries|null;
+  [QUERIES]: LQueries | null;
 
   /**
    * Store the `TNode` of the location where the current `LView` is inserted into.
@@ -153,7 +164,7 @@ export interface LView<T = unknown> extends Array<any> {
    * If `null`, this is the root view of an application (root component is in this view) and it has
    * no parents.
    */
-  [T_HOST]: TNode|null;
+  [T_HOST]: TNode | null;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
@@ -167,7 +178,7 @@ export interface LView<T = unknown> extends Array<any> {
    * end of the `lView[CLEANUP]` because we know that no more `T` level cleanup functions will be
    * added here.
    */
-  [CLEANUP]: any[]|null;
+  [CLEANUP]: any[] | null;
 
   /**
    * - For dynamic views, this is the context with which to render the template (e.g.
@@ -179,7 +190,7 @@ export interface LView<T = unknown> extends Array<any> {
   [CONTEXT]: T;
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
-  readonly[INJECTOR]: Injector|null;
+  readonly [INJECTOR]: Injector | null;
 
   /**
    * Contextual data that is shared across multiple instances of `LView` in the same application.
@@ -196,7 +207,7 @@ export interface LView<T = unknown> extends Array<any> {
    * Necessary to store this so views can traverse through their nested views
    * to remove listeners and call onDestroy callbacks.
    */
-  [CHILD_HEAD]: LView|LContainer|null;
+  [CHILD_HEAD]: LView | LContainer | null;
 
   /**
    * The last LView or LContainer beneath this LView in the hierarchy.
@@ -204,7 +215,7 @@ export interface LView<T = unknown> extends Array<any> {
    * The tail allows us to quickly add a new state to the end of the view list
    * without having to propagate starting from the first child.
    */
-  [CHILD_TAIL]: LView|LContainer|null;
+  [CHILD_TAIL]: LView | LContainer | null;
 
   /**
    * View where this view's template was declared.
@@ -228,8 +239,7 @@ export interface LView<T = unknown> extends Array<any> {
    * template function during change detection, we need the declaration view to get inherited
    * context.
    */
-  [DECLARATION_VIEW]: LView|null;
-
+  [DECLARATION_VIEW]: LView | null;
 
   /**
    * Points to the declaration component view, used to track transplanted `LView`s.
@@ -310,20 +320,12 @@ export interface LView<T = unknown> extends Array<any> {
    * query matches in a proper order (query matches are ordered based on their declaration point and
    * _not_ the insertion point).
    */
-  [DECLARATION_LCONTAINER]: LContainer|null;
+  [DECLARATION_LCONTAINER]: LContainer | null;
 
   /**
    * More flags for this view. See PreOrderHookFlags for more info.
    */
   [PREORDER_HOOK_FLAGS]: PreOrderHookFlags;
-
-  /**
-   * The number of direct transplanted views which need a refresh or have descendants themselves
-   * that need a refresh but have not marked their ancestors as Dirty. This tells us that during
-   * change detection we should still descend to find those children to refresh, even if the parents
-   * are not `Dirty`/`CheckAlways`.
-   */
-  [DESCENDANT_VIEWS_TO_REFRESH]: number;
 
   /** Unique ID of the view. Used for `__ngContext__` lookups in the `LView` registry. */
   [ID]: number;
@@ -331,20 +333,25 @@ export interface LView<T = unknown> extends Array<any> {
   /**
    * A container related to hydration annotation information that's associated with this LView.
    */
-  [HYDRATION]: DehydratedView|null;
+  [HYDRATION]: DehydratedView | null;
 
   /**
    * Optional injector assigned to embedded views that takes
    * precedence over the element and module injectors.
    */
-  readonly[EMBEDDED_VIEW_INJECTOR]: Injector|null;
+  readonly [EMBEDDED_VIEW_INJECTOR]: Injector | null;
+
+  /**
+   * Effect scheduling operations that need to run during this views's update pass.
+   */
+  [EFFECTS_TO_SCHEDULE]: Array<() => void> | null;
 
   /**
    * A collection of callbacks functions that are executed when a given LView is destroyed. Those
    * are user defined, LView-specific destroy callbacks that don't have any corresponding TView
    * entries.
    */
-  [ON_DESTROY_HOOKS]: Array<() => void>|null;
+  [ON_DESTROY_HOOKS]: Array<() => void> | null;
 
   /**
    * The `Consumer` for this `LView`'s template so that signal reads can be tracked.
@@ -352,12 +359,7 @@ export interface LView<T = unknown> extends Array<any> {
    * This is initially `null` and gets assigned a consumer after template execution
    * if any signals were read.
    */
-  [REACTIVE_TEMPLATE_CONSUMER]: ReactiveLViewConsumer|null;
-
-  /**
-   * Same as REACTIVE_TEMPLATE_CONSUMER, but for the host bindings of the LView.
-   */
-  [REACTIVE_HOST_BINDING_CONSUMER]: ReactiveLViewConsumer|null;
+  [REACTIVE_TEMPLATE_CONSUMER]: ReactiveLViewConsumer | null;
 }
 
 /**
@@ -368,13 +370,16 @@ export interface LViewEnvironment {
   rendererFactory: RendererFactory;
 
   /** An optional custom sanitizer. */
-  sanitizer: Sanitizer|null;
+  sanitizer: Sanitizer | null;
 
   /** Container for reactivity system `effect`s. */
-  effectManager: EffectManager|null;
+  inlineEffectRunner: EffectScheduler | null;
 
   /** Container for after render hooks */
-  afterRenderEventManager: AfterRenderEventManager|null;
+  afterRenderEventManager: AfterRenderEventManager | null;
+
+  /** Scheduler for change detection to notify when application state changes. */
+  changeDetectionScheduler: ChangeDetectionScheduler | null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
@@ -423,8 +428,8 @@ export const enum LViewFlags {
   /**
    * Whether this moved LView was needs to be refreshed. Similar to the Dirty flag, but used for
    * transplanted and signal views where the parent/ancestor views are not marked dirty as well.
-   * i.e. "Refresh just this view". Used in conjunction with the DESCENDANT_VIEWS_TO_REFRESH
-   * counter.
+   * i.e. "Refresh just this view". Used in conjunction with the HAS_CHILD_VIEWS_TO_REFRESH
+   * flag.
    */
   RefreshView = 1 << 10,
 
@@ -435,17 +440,25 @@ export const enum LViewFlags {
   SignalView = 1 << 12,
 
   /**
-   * Index of the current init phase on last 21 bits
+   * Indicates that this LView has a view underneath it that needs to be refreshed during change
+   * detection. This flag indicates that even if this view is not dirty itself, we still need to
+   * traverse its children during change detection.
    */
-  IndexWithinInitPhaseIncrementer = 1 << 13,
+  HasChildViewsToRefresh = 1 << 13,
+
   /**
    * This is the count of the bits the 1 was shifted above (base 10)
    */
-  IndexWithinInitPhaseShift = 13,
+  IndexWithinInitPhaseShift = 14,
+
+  /**
+   * Index of the current init phase on last 21 bits
+   */
+  IndexWithinInitPhaseIncrementer = 1 << IndexWithinInitPhaseShift,
 
   // Subtracting 1 gives all 1s to the right of the initial shift
   // So `(1 << 3) - 1` would give 3 1s: 1 << 3 = 0b01000, subtract 1 = 0b00111
-  IndexWithinInitPhaseReset = (1 << 13) - 1,
+  IndexWithinInitPhaseReset = (1 << IndexWithinInitPhaseShift) - 1,
 }
 
 /**
@@ -538,7 +551,7 @@ export const enum PreOrderHookFlags {
  * ```
  *
  */
-export interface HostBindingOpCodes extends Array<number|HostBindingsFunction<any>> {
+export interface HostBindingOpCodes extends Array<number | HostBindingsFunction<any>> {
   __brand__: 'HostBindingOpCodes';
   debug?: string[];
 }
@@ -594,17 +607,17 @@ export interface TView {
    * The template function used to refresh the view of dynamically created views
    * and components. Will be null for inline views.
    */
-  template: ComponentTemplate<{}>|null;
+  template: ComponentTemplate<{}> | null;
 
   /**
    * A function containing query-related instructions.
    */
-  viewQuery: ViewQueriesFunction<{}>|null;
+  viewQuery: ViewQueriesFunction<{}> | null;
 
   /**
    * A `TNode` representing the declaration location of this `TView` (not part of this TView).
    */
-  declTNode: TNode|null;
+  declTNode: TNode | null;
 
   // FIXME(misko): Why does `TView` not have `declarationTView` property?
 
@@ -668,14 +681,14 @@ export interface TView {
   /**
    * A reference to the first child node located in the view.
    */
-  firstChild: TNode|null;
+  firstChild: TNode | null;
 
   /**
    * Stores the OpCodes to be replayed during change-detection to process the `HostBindings`
    *
    * See `HostBindingOpCodes` for encoding details.
    */
-  hostBindingOpCodes: HostBindingOpCodes|null;
+  hostBindingOpCodes: HostBindingOpCodes | null;
 
   /**
    * Full registry of directives and components that may be found in this view.
@@ -683,7 +696,7 @@ export interface TView {
    * It's necessary to keep a copy of the full def list on the TView so it's possible
    * to render template functions without a host component.
    */
-  directiveRegistry: DirectiveDefList|null;
+  directiveRegistry: DirectiveDefList | null;
 
   /**
    * Full registry of pipes that may be found in this view.
@@ -694,7 +707,7 @@ export interface TView {
    * It's necessary to keep a copy of the full def list on the TView so it's possible
    * to render template functions without a host component.
    */
-  pipeRegistry: PipeDefList|null;
+  pipeRegistry: PipeDefList | null;
 
   /**
    * Array of ngOnInit, ngOnChanges and ngDoCheck hooks that should be executed for this view in
@@ -707,14 +720,14 @@ export interface TView {
    * function. This is done so that at runtime the system can efficiently iterate over all of the
    * functions to invoke without having to make any decisions/lookups.
    */
-  preOrderHooks: HookData|null;
+  preOrderHooks: HookData | null;
 
   /**
    * Array of ngOnChanges and ngDoCheck hooks that should be executed for this view in update mode.
    *
    * This array has the same structure as the `preOrderHooks` one.
    */
-  preOrderCheckHooks: HookData|null;
+  preOrderCheckHooks: HookData | null;
 
   /**
    * Array of ngAfterContentInit and ngAfterContentChecked hooks that should be executed
@@ -723,7 +736,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  contentHooks: HookData|null;
+  contentHooks: HookData | null;
 
   /**
    * Array of ngAfterContentChecked hooks that should be executed for this view in update
@@ -732,7 +745,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  contentCheckHooks: HookData|null;
+  contentCheckHooks: HookData | null;
 
   /**
    * Array of ngAfterViewInit and ngAfterViewChecked hooks that should be executed for
@@ -741,7 +754,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  viewHooks: HookData|null;
+  viewHooks: HookData | null;
 
   /**
    * Array of ngAfterViewChecked hooks that should be executed for this view in
@@ -750,7 +763,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  viewCheckHooks: HookData|null;
+  viewCheckHooks: HookData | null;
 
   /**
    * Array of ngOnDestroy hooks that should be executed when this view is destroyed.
@@ -758,7 +771,7 @@ export interface TView {
    * Even indices: Directive index
    * Odd indices: Hook function
    */
-  destroyHooks: DestroyHookData|null;
+  destroyHooks: DestroyHookData | null;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
@@ -786,7 +799,7 @@ export interface TView {
    * 2nd index is: index of function context in LView.cleanupInstances[]
    *               `tView.cleanup[i+0].call(lView[CLEANUP][tView.cleanup[i+1]])`
    */
-  cleanup: any[]|null;
+  cleanup: any[] | null;
 
   /**
    * A list of element indices for child components that will need to be
@@ -794,12 +807,12 @@ export interface TView {
    * already been adjusted for the HEADER_OFFSET.
    *
    */
-  components: number[]|null;
+  components: number[] | null;
 
   /**
    * A collection of queries tracked in a given view.
    */
-  queries: TQueries|null;
+  queries: TQueries | null;
 
   /**
    * An array of indices pointing to directives with content queries alongside with the
@@ -810,18 +823,18 @@ export interface TView {
    * We are storing those indexes so we can refresh content queries as part of a view refresh
    * process.
    */
-  contentQueries: number[]|null;
+  contentQueries: number[] | null;
 
   /**
    * Set of schemas that declare elements to be allowed inside the view.
    */
-  schemas: SchemaMetadata[]|null;
+  schemas: SchemaMetadata[] | null;
 
   /**
    * Array of constants for the view. Includes attribute arrays, local definition arrays etc.
    * Used for directive matching, attribute bindings, local definitions and more.
    */
-  consts: TConstants|null;
+  consts: TConstants | null;
 
   /**
    * Indicates that there was an error before we managed to complete the first create pass of the
@@ -835,7 +848,7 @@ export interface TView {
    * - TViewType.Component: an id generated based on component properties
    *                        (see `getComponentId` function for details)
    */
-  ssrId: string|null;
+  ssrId: string | null;
 }
 
 /** Single hook callback function. */
@@ -845,7 +858,7 @@ export type HookFn = () => void;
  * Information necessary to call a hook. E.g. the callback that
  * needs to invoked and the index at which to find its context.
  */
-export type HookEntry = number|HookFn;
+export type HookEntry = number | HookFn;
 
 /**
  * Array of hooks that should be executed for a view and their directive indices.
@@ -879,7 +892,7 @@ export type HookData = HookEntry[];
  * `CService` and `DService` are part of a `multi` provider where only `BService` and `DService`
  * have an `ngOnDestroy` hook.
  */
-export type DestroyHookData = (HookEntry|HookData)[];
+export type DestroyHookData = (HookEntry | HookData)[];
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.
@@ -908,9 +921,19 @@ export type DestroyHookData = (HookEntry|HookData)[];
  *
  * Injector bloom filters are also stored here.
  */
-export type TData = (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|
-                     TStylingKey|ProviderToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string)[];
-
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;
+export type TData = (
+  | TNode
+  | PipeDef<any>
+  | DirectiveDef<any>
+  | ComponentDef<any>
+  | number
+  | TStylingRange
+  | TStylingKey
+  | ProviderToken<any>
+  | TI18n
+  | I18nUpdateOpCodes
+  | TIcu
+  | null
+  | string
+  | TDeferBlockDetails
+)[];

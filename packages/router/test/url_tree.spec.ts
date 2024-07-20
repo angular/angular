@@ -254,13 +254,15 @@ describe('UrlTree', () => {
           expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
         });
 
-        it('should return true when matrix params match on subset of urlTree match ' +
-               'with container paths split into multiple segments',
-           () => {
-             const t1 = serializer.parse('/one;a=1/(two;b=2//left:three)');
-             const t2 = serializer.parse('/one;a=1/two;b=2');
-             expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
-           });
+        it(
+          'should return true when matrix params match on subset of urlTree match ' +
+            'with container paths split into multiple segments',
+          () => {
+            const t1 = serializer.parse('/one;a=1/(two;b=2//left:three)');
+            const t2 = serializer.parse('/one;a=1/two;b=2');
+            expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
+          },
+        );
       });
 
       describe('subset match', () => {
@@ -290,13 +292,15 @@ describe('UrlTree', () => {
           expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
         });
 
-        it('should return true when matrix params match on subset of urlTree match ' +
-               'with container paths split into multiple segments',
-           () => {
-             const t1 = serializer.parse('/one;a=1/(two;b=2//left:three)');
-             const t2 = serializer.parse('/one;a=1/two');
-             expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
-           });
+        it(
+          'should return true when matrix params match on subset of urlTree match ' +
+            'with container paths split into multiple segments',
+          () => {
+            const t1 = serializer.parse('/one;a=1/(two;b=2//left:three)');
+            const t2 = serializer.parse('/one;a=1/two');
+            expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
+          },
+        );
       });
     });
   });

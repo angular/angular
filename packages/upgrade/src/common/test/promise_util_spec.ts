@@ -23,14 +23,14 @@ describe('isThenable()', () => {
   it('should return false if `.then` is not a function', () => {
     expect(isThenable([])).toBe(false);
     expect(isThenable(['then'])).toBe(false);
-    expect(isThenable(function() {})).toBe(false);
+    expect(isThenable(function () {})).toBe(false);
     expect(isThenable({})).toBe(false);
     expect(isThenable({then: true})).toBe(false);
     expect(isThenable({then: 'not a function'})).toBe(false);
   });
 
   it('should return true if `.then` is a function', () => {
-    expect(isThenable({then: function() {}})).toBe(true);
+    expect(isThenable({then: function () {}})).toBe(true);
     expect(isThenable({then: () => {}})).toBe(true);
     expect(isThenable(Object.assign('thenable', {then: () => {}}))).toBe(true);
   });

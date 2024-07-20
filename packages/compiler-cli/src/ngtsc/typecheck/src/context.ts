@@ -6,22 +6,41 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, ParseError, ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
+import {
+  BoundTarget,
+  ParseError,
+  ParseSourceFile,
+  R3TargetBinder,
+  SchemaMetadata,
+  TmplAstNode,
+} from '@angular/compiler';
+import MagicString from 'magic-string';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../../../src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
-import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
+import {Reference, ReferenceEmitter} from '../../imports';
+import {PipeMeta} from '../../metadata';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {FileUpdate} from '../../program_driver';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {TemplateDiagnostic, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
+import {
+  TemplateDiagnostic,
+  TemplateId,
+  TemplateSourceMapping,
+  TypeCheckableDirectiveMeta,
+  TypeCheckBlockMetadata,
+  TypeCheckContext,
+  TypeCheckingConfig,
+  TypeCtorMetadata,
+} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
+import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
@@ -112,7 +131,6 @@ export interface PendingShimData {
    */
   file: TypeCheckFile;
 
-
   /**
    * Map of `TemplateId` to information collected about the template as it's ingested.
    */
@@ -178,10 +196,14 @@ export class TypeCheckContextImpl implements TypeCheckContext {
   private fileMap = new Map<AbsoluteFsPath, PendingFileTypeCheckingData>();
 
   constructor(
-      private config: TypeCheckingConfig,
-      private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
-      private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
-      private host: TypeCheckingHost, private inlining: InliningMode, private perf: PerfRecorder) {
+    private config: TypeCheckingConfig,
+    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
+    private refEmitter: ReferenceEmitter,
+    private reflector: ReflectionHost,
+    private host: TypeCheckingHost,
+    private inlining: InliningMode,
+    private perf: PerfRecorder,
+  ) {
     if (inlining === InliningMode.Error && config.useInlineTypeConstructors) {
       // We cannot use inlining for type checking since this environment does not support it.
       throw new Error(`AssertionError: invalid inlining configuration.`);
@@ -206,11 +228,17 @@ export class TypeCheckContextImpl implements TypeCheckContext {
    * Implements `TypeCheckContext.addTemplate`.
    */
   addTemplate(
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
-      pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
-      parseErrors: ParseError[]|null, isStandalone: boolean): void {
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    binder: R3TargetBinder<TypeCheckableDirectiveMeta>,
+    template: TmplAstNode[],
+    pipes: Map<string, PipeMeta>,
+    schemas: SchemaMetadata[],
+    sourceMapping: TemplateSourceMapping,
+    file: ParseSourceFile,
+    parseErrors: ParseError[] | null,
+    isStandalone: boolean,
+    preserveWhitespaces: boolean,
+  ): void {
     if (!this.host.shouldCheckComponent(ref.node)) {
       return;
     }
@@ -222,8 +250,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const templateDiagnostics: TemplateDiagnostic[] = [];
 
     if (parseErrors !== null) {
-      templateDiagnostics.push(
-          ...this.getTemplateDiagnostics(parseErrors, templateId, sourceMapping));
+      templateDiagnostics.push(...getTemplateDiagnostics(parseErrors, templateId, sourceMapping));
     }
 
     const boundTarget = binder.bind({template});
@@ -267,16 +294,22 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       if (!pipes.has(name)) {
         continue;
       }
-      usedPipes.push(pipes.get(name)!);
+      usedPipes.push(pipes.get(name)!.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
     }
 
-    const inliningRequirement =
-        requiresInlineTypeCheckBlock(ref, shimData.file, usedPipes, this.reflector);
+    const inliningRequirement = requiresInlineTypeCheckBlock(
+      ref,
+      shimData.file,
+      usedPipes,
+      this.reflector,
+    );
 
     // If inlining is not supported, but is required for either the TCB or one of its directive
     // dependencies, then exit here with an error.
-    if (this.inlining === InliningMode.Error &&
-        inliningRequirement === TcbInliningRequirement.MustInline) {
+    if (
+      this.inlining === InliningMode.Error &&
+      inliningRequirement === TcbInliningRequirement.MustInline
+    ) {
       // This template cannot be supported because the underlying strategy does not support inlining
       // and inlining would be required.
 
@@ -293,29 +326,41 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       boundTarget,
       pipes,
       schemas,
-      isStandalone
+      isStandalone,
+      preserveWhitespaces,
     };
     this.perf.eventCount(PerfEvent.GenerateTcb);
-    if (inliningRequirement !== TcbInliningRequirement.None &&
-        this.inlining === InliningMode.InlineOps) {
+    if (
+      inliningRequirement !== TcbInliningRequirement.None &&
+      this.inlining === InliningMode.InlineOps
+    ) {
       // This class didn't meet the requirements for external type checking, so generate an inline
       // TCB for the class.
       this.addInlineTypeCheckBlock(fileData, shimData, ref, meta);
     } else if (
-        inliningRequirement === TcbInliningRequirement.ShouldInlineForGenericBounds &&
-        this.inlining === InliningMode.Error) {
+      inliningRequirement === TcbInliningRequirement.ShouldInlineForGenericBounds &&
+      this.inlining === InliningMode.Error
+    ) {
       // It's suggested that this TCB should be generated inline due to the component's generic
       // bounds, but inlining is not supported by the current environment. Use a non-inline type
       // check block, but fall back to `any` generic parameters since the generic bounds can't be
       // referenced in that context. This will infer a less useful type for the component, but allow
       // for type-checking it in an environment where that would not be possible otherwise.
       shimData.file.addTypeCheckBlock(
-          ref, meta, shimData.domSchemaChecker, shimData.oobRecorder,
-          TcbGenericContextBehavior.FallbackToAny);
+        ref,
+        meta,
+        shimData.domSchemaChecker,
+        shimData.oobRecorder,
+        TcbGenericContextBehavior.FallbackToAny,
+      );
     } else {
       shimData.file.addTypeCheckBlock(
-          ref, meta, shimData.domSchemaChecker, shimData.oobRecorder,
-          TcbGenericContextBehavior.UseEmitter);
+        ref,
+        meta,
+        shimData.domSchemaChecker,
+        shimData.oobRecorder,
+        TcbGenericContextBehavior.UseEmitter,
+      );
     }
   }
 
@@ -323,8 +368,11 @@ export class TypeCheckContextImpl implements TypeCheckContext {
    * Record a type constructor for the given `node` with the given `ctorMetadata`.
    */
   addInlineTypeCtor(
-      fileData: PendingFileTypeCheckingData, sf: ts.SourceFile,
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, ctorMeta: TypeCtorMetadata): void {
+    fileData: PendingFileTypeCheckingData,
+    sf: ts.SourceFile,
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    ctorMeta: TypeCtorMetadata,
+  ): void {
     if (this.typeCtorPending.has(ref.node)) {
       return;
     }
@@ -337,7 +385,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const ops = this.opMap.get(sf)!;
 
     // Push a `TypeCtorOp` into the operation queue for the source file.
-    ops.push(new TypeCtorOp(ref, ctorMeta));
+    ops.push(new TypeCtorOp(ref, this.reflector, ctorMeta));
     fileData.hasInlines = true;
   }
 
@@ -347,43 +395,69 @@ export class TypeCheckContextImpl implements TypeCheckContext {
    * If this particular `ts.SourceFile` requires changes, the text representing its new contents
    * will be returned. Otherwise, a `null` return indicates no changes were necessary.
    */
-  transform(sf: ts.SourceFile): string|null {
+  transform(sf: ts.SourceFile): string | null {
     // If there are no operations pending for this particular file, return `null` to indicate no
     // changes.
     if (!this.opMap.has(sf)) {
       return null;
     }
 
-    // Imports may need to be added to the file to support type-checking of directives used in the
-    // template within it.
-    const importManager = new ImportManager(new NoopImportRewriter(), '_i');
-
-    // Each Op has a splitPoint index into the text where it needs to be inserted. Split the
-    // original source text into chunks at these split points, where code will be inserted between
-    // the chunks.
-    const ops = this.opMap.get(sf)!.sort(orderOps);
-    const textParts = splitStringAtPoints(sf.text, ops.map(op => op.splitPoint));
-
     // Use a `ts.Printer` to generate source code.
     const printer = ts.createPrinter({omitTrailingSemicolon: true});
 
-    // Begin with the initial section of the code text.
-    let code = textParts[0];
-
-    // Process each operation and use the printer to generate source code for it, inserting it into
-    // the source code in between the original chunks.
-    ops.forEach((op, idx) => {
-      const text = op.execute(importManager, sf, this.refEmitter, printer);
-      code += '\n\n' + text + textParts[idx + 1];
+    // Imports may need to be added to the file to support type-checking of directives
+    // used in the template within it.
+    const importManager = new ImportManager({
+      // This minimizes noticeable changes with older versions of `ImportManager`.
+      forceGenerateNamespacesForNewImports: true,
+      // Type check block code affects code completion and fix suggestions.
+      // We want to encourage single quotes for now, like we always did.
+      shouldUseSingleQuotes: () => true,
     });
 
-    // Write out the imports that need to be added to the beginning of the file.
-    let imports = importManager.getAllImports(sf.fileName)
-                      .map(i => `import * as ${i.qualifier.text} from '${i.specifier}';`)
-                      .join('\n');
-    code = imports + '\n' + code;
+    // Execute ops.
+    // Each Op has a splitPoint index into the text where it needs to be inserted.
+    const updates: {pos: number; deletePos?: number; text: string}[] = this.opMap
+      .get(sf)!
+      .map((op) => {
+        return {
+          pos: op.splitPoint,
+          text: op.execute(importManager, sf, this.refEmitter, printer),
+        };
+      });
 
-    return code;
+    const {newImports, updatedImports} = importManager.finalize();
+
+    // Capture new imports
+    if (newImports.has(sf.fileName)) {
+      newImports.get(sf.fileName)!.forEach((newImport) => {
+        updates.push({
+          pos: 0,
+          text: printer.printNode(ts.EmitHint.Unspecified, newImport, sf),
+        });
+      });
+    }
+
+    // Capture updated imports
+    for (const [oldBindings, newBindings] of updatedImports.entries()) {
+      if (oldBindings.getSourceFile() !== sf) {
+        throw new Error('Unexpected updates to unrelated source files.');
+      }
+      updates.push({
+        pos: oldBindings.getStart(),
+        deletePos: oldBindings.getEnd(),
+        text: printer.printNode(ts.EmitHint.Unspecified, newBindings, sf),
+      });
+    }
+
+    const result = new MagicString(sf.text, {filename: sf.fileName});
+    for (const update of updates) {
+      if (update.deletePos !== undefined) {
+        result.remove(update.pos, update.deletePos);
+      }
+      result.appendLeft(update.pos, update.text);
+    }
+    return result.toString();
   }
 
   finalize(): Map<AbsoluteFsPath, FileUpdate> {
@@ -426,17 +500,26 @@ export class TypeCheckContextImpl implements TypeCheckContext {
   }
 
   private addInlineTypeCheckBlock(
-      fileData: PendingFileTypeCheckingData, shimData: PendingShimData,
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      tcbMeta: TypeCheckBlockMetadata): void {
+    fileData: PendingFileTypeCheckingData,
+    shimData: PendingShimData,
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    tcbMeta: TypeCheckBlockMetadata,
+  ): void {
     const sf = ref.node.getSourceFile();
     if (!this.opMap.has(sf)) {
       this.opMap.set(sf, []);
     }
     const ops = this.opMap.get(sf)!;
-    ops.push(new InlineTcbOp(
-        ref, tcbMeta, this.config, this.reflector, shimData.domSchemaChecker,
-        shimData.oobRecorder));
+    ops.push(
+      new InlineTcbOp(
+        ref,
+        tcbMeta,
+        this.config,
+        this.reflector,
+        shimData.domSchemaChecker,
+        shimData.oobRecorder,
+      ),
+    );
     fileData.hasInlines = true;
   }
 
@@ -448,7 +531,12 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),
         oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager),
         file: new TypeCheckFile(
-            shimPath, this.config, this.refEmitter, this.reflector, this.compilerHost),
+          shimPath,
+          this.config,
+          this.refEmitter,
+          this.reflector,
+          this.compilerHost,
+        ),
         templates: new Map<TemplateId, TemplateData>(),
       });
     }
@@ -469,26 +557,33 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
     return this.fileMap.get(sfPath)!;
   }
+}
 
-  private getTemplateDiagnostics(
-      parseErrors: ParseError[], templateId: TemplateId,
-      sourceMapping: TemplateSourceMapping): TemplateDiagnostic[] {
-    return parseErrors.map(error => {
-      const span = error.span;
+export function getTemplateDiagnostics(
+  parseErrors: ParseError[],
+  templateId: TemplateId,
+  sourceMapping: TemplateSourceMapping,
+): TemplateDiagnostic[] {
+  return parseErrors.map((error) => {
+    const span = error.span;
 
-      if (span.start.offset === span.end.offset) {
-        // Template errors can contain zero-length spans, if the error occurs at a single point.
-        // However, TypeScript does not handle displaying a zero-length diagnostic very well, so
-        // increase the ending offset by 1 for such errors, to ensure the position is shown in the
-        // diagnostic.
-        span.end.offset++;
-      }
+    if (span.start.offset === span.end.offset) {
+      // Template errors can contain zero-length spans, if the error occurs at a single point.
+      // However, TypeScript does not handle displaying a zero-length diagnostic very well, so
+      // increase the ending offset by 1 for such errors, to ensure the position is shown in the
+      // diagnostic.
+      span.end.offset++;
+    }
 
-      return makeTemplateDiagnostic(
-          templateId, sourceMapping, span, ts.DiagnosticCategory.Error,
-          ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR), error.msg);
-    });
-  }
+    return makeTemplateDiagnostic(
+      templateId,
+      sourceMapping,
+      span,
+      ts.DiagnosticCategory.Error,
+      ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR),
+      error.msg,
+    );
+  });
 }
 
 /**
@@ -508,8 +603,12 @@ interface Op {
   /**
    * Execute the operation and return the generated code as text.
    */
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
-      string;
+  execute(
+    im: ImportManager,
+    sf: ts.SourceFile,
+    refEmitter: ReferenceEmitter,
+    printer: ts.Printer,
+  ): string;
 }
 
 /**
@@ -517,10 +616,13 @@ interface Op {
  */
 class InlineTcbOp implements Op {
   constructor(
-      readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      readonly meta: TypeCheckBlockMetadata, readonly config: TypeCheckingConfig,
-      readonly reflector: ReflectionHost, readonly domSchemaChecker: DomSchemaChecker,
-      readonly oobRecorder: OutOfBandDiagnosticRecorder) {}
+    readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    readonly meta: TypeCheckBlockMetadata,
+    readonly config: TypeCheckingConfig,
+    readonly reflector: ReflectionHost,
+    readonly domSchemaChecker: DomSchemaChecker,
+    readonly oobRecorder: OutOfBandDiagnosticRecorder,
+  ) {}
 
   /**
    * Type check blocks are inserted immediately after the end of the component class.
@@ -529,16 +631,27 @@ class InlineTcbOp implements Op {
     return this.ref.node.end + 1;
   }
 
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
-      string {
+  execute(
+    im: ImportManager,
+    sf: ts.SourceFile,
+    refEmitter: ReferenceEmitter,
+    printer: ts.Printer,
+  ): string {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
     const fnName = ts.factory.createIdentifier(`_tcb_${this.ref.node.pos}`);
 
-    // Inline TCBs should copy any generic type parameter nodes directly, as the TCB code is inlined
-    // into the class in a context where that will always be legal.
+    // Inline TCBs should copy any generic type parameter nodes directly, as the TCB code is
+    // inlined into the class in a context where that will always be legal.
     const fn = generateTypeCheckBlock(
-        env, this.ref, fnName, this.meta, this.domSchemaChecker, this.oobRecorder,
-        TcbGenericContextBehavior.CopyClassNodes);
+      env,
+      this.ref,
+      fnName,
+      this.meta,
+      this.domSchemaChecker,
+      this.oobRecorder,
+      TcbGenericContextBehavior.CopyClassNodes,
+    );
+
     return printer.printNode(ts.EmitHint.Unspecified, fn, sf);
   }
 }
@@ -548,8 +661,10 @@ class InlineTcbOp implements Op {
  */
 class TypeCtorOp implements Op {
   constructor(
-      readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      readonly meta: TypeCtorMetadata) {}
+    readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    readonly reflector: ReflectionHost,
+    readonly meta: TypeCtorMetadata,
+  ) {}
 
   /**
    * Type constructor operations are inserted immediately before the end of the directive class.
@@ -558,9 +673,14 @@ class TypeCtorOp implements Op {
     return this.ref.node.end - 1;
   }
 
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
-      string {
-    const tcb = generateInlineTypeCtor(this.ref.node, this.meta);
+  execute(
+    im: ImportManager,
+    sf: ts.SourceFile,
+    refEmitter: ReferenceEmitter,
+    printer: ts.Printer,
+  ): string {
+    const emitEnv = new ReferenceEmitEnvironment(im, refEmitter, this.reflector, sf);
+    const tcb = generateInlineTypeCtor(emitEnv, this.ref.node, this.meta);
     return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);
   }
 }

@@ -8,32 +8,38 @@
 
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {join} from 'path';
-import ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript';
 
 import {isTypeScriptFile} from '../../src/utils';
 
 const logger: ts.server.Logger = {
-  close(): void{},
+  close(): void {},
   hasLevel(level: ts.server.LogLevel): boolean {
     return false;
   },
   loggingEnabled(): boolean {
     return false;
   },
-  perftrc(s: string): void{},
-  info(s: string): void{},
-  startGroup(): void{},
-  endGroup(): void{},
-  msg(s: string, type?: ts.server.Msg): void{},
-  getLogFileName(): string |
-      undefined {
-        return;
-      },
+  perftrc(s: string): void {},
+  info(s: string): void {},
+  startGroup(): void {},
+  endGroup(): void {},
+  msg(s: string, type?: ts.server.Msg): void {},
+  getLogFileName(): string | undefined {
+    return;
+  },
 };
 
-export const TEST_SRCDIR = process.env.TEST_SRCDIR!;
-export const PROJECT_DIR =
-    join(TEST_SRCDIR, 'angular', 'packages', 'language-service', 'test', 'legacy', 'project');
+export const TEST_SRCDIR = process.env['TEST_SRCDIR']!;
+export const PROJECT_DIR = join(
+  TEST_SRCDIR,
+  'angular',
+  'packages',
+  'language-service',
+  'test',
+  'legacy',
+  'project',
+);
 export const TSCONFIG = join(PROJECT_DIR, 'tsconfig.json');
 export const APP_COMPONENT = join(PROJECT_DIR, 'app', 'app.component.ts');
 export const APP_MAIN = join(PROJECT_DIR, 'app', 'main.ts');
@@ -41,14 +47,14 @@ export const PARSING_CASES = join(PROJECT_DIR, 'app', 'parsing-cases.ts');
 export const TEST_TEMPLATE = join(PROJECT_DIR, 'app', 'test.ng');
 
 const NOOP_FILE_WATCHER: ts.FileWatcher = {
-  close() {}
+  close() {},
 };
 
 class MockWatcher implements ts.FileWatcher {
   constructor(
-      private readonly fileName: string,
-      private readonly cb: ts.FileWatcherCallback,
-      readonly close: () => void,
+    private readonly fileName: string,
+    private readonly cb: ts.FileWatcherCallback,
+    readonly close: () => void,
   ) {}
 
   changed() {
@@ -64,8 +70,9 @@ class MockWatcher implements ts.FileWatcher {
  * A mock file system impacting configuration files.
  * Queries for all other files are deferred to the underlying filesystem.
  */
-export class MockConfigFileFs implements
-    Pick<ts.server.ServerHost, 'readFile'|'fileExists'|'watchFile'> {
+export class MockConfigFileFs
+  implements Pick<ts.server.ServerHost, 'readFile' | 'fileExists' | 'watchFile'>
+{
   private configOverwrites = new Map<string, string>();
   private configFileWatchers = new Map<string, MockWatcher>();
 
@@ -77,7 +84,7 @@ export class MockConfigFileFs implements
     this.configFileWatchers.get(configFile)?.changed();
   }
 
-  readFile(file: string, encoding?: string): string|undefined {
+  readFile(file: string, encoding?: string): string | undefined {
     const read = this.configOverwrites.get(file) ?? ts.sys.readFile(file, encoding);
     return read;
   }
@@ -113,21 +120,20 @@ function createHost(configFileFs: MockConfigFileFs): ts.server.ServerHost {
     fileExists(absPath: string): boolean {
       return configFileFs.fileExists(absPath);
     },
-    readFile(absPath: string, encoding?: string): string |
-        undefined {
-          return configFileFs.readFile(absPath, encoding);
-        },
+    readFile(absPath: string, encoding?: string): string | undefined {
+      return configFileFs.readFile(absPath, encoding);
+    },
     watchFile(path: string, callback: ts.FileWatcherCallback): ts.FileWatcher {
       return configFileFs.watchFile(path, callback);
     },
     watchDirectory(path: string, callback: ts.DirectoryWatcherCallback): ts.FileWatcher {
       return NOOP_FILE_WATCHER;
     },
-    setTimeout() {
-      throw new Error('setTimeout is not implemented');
+    setTimeout(callback: (...args: any[]) => void, delay: number, ...args: any[]) {
+      return setTimeout(callback, delay, ...args);
     },
-    clearTimeout() {
-      throw new Error('clearTimeout is not implemented');
+    clearTimeout(id: any) {
+      clearTimeout(id);
     },
     setImmediate() {
       throw new Error('setImmediate is not implemented');
@@ -137,7 +143,6 @@ function createHost(configFileFs: MockConfigFileFs): ts.server.ServerHost {
     },
   };
 }
-
 
 /**
  * Create a ConfiguredProject and an actual program for the test project located
@@ -154,7 +159,7 @@ export function setup() {
     useSingleInferredProject: true,
     useInferredProjectPerProjectRoot: true,
     typingsInstaller: ts.server.nullTypingsInstaller,
-    session: undefined
+    session: undefined,
   });
   // Opening APP_COMPONENT forces a new ConfiguredProject to be created based
   // on the tsconfig.json in the test project.
@@ -188,8 +193,8 @@ export class MockService {
   private readonly overwritten = new Set<ts.server.NormalizedPath>();
 
   constructor(
-      private readonly project: ts.server.Project,
-      private readonly ps: ts.server.ProjectService,
+    private readonly project: ts.server.Project,
+    private readonly ps: ts.server.ProjectService,
   ) {}
 
   /**
@@ -212,8 +217,11 @@ export class MockService {
     const scriptInfo = this.getScriptInfo(fileName);
     const snapshot = scriptInfo.getSnapshot();
     const originalText = snapshot.getText(0, snapshot.getLength());
-    const {position, text} =
-        replaceOnce(originalText, /template: `([\s\S]+?)`/, `template: \`${newTemplate}\``);
+    const {position, text} = replaceOnce(
+      originalText,
+      /template: `([\s\S]+?)`/,
+      `template: \`${newTemplate}\``,
+    );
     if (position === -1) {
       throw new Error(`${fileName} does not contain a component with template`);
     }
@@ -247,10 +255,10 @@ export class MockService {
       throw new Error(`No existing script info for ${fileName}`);
     }
     const newScriptInfo = this.ps.getOrCreateScriptInfoForNormalizedPath(
-        ts.server.toNormalizedPath(fileName),
-        true,                   // openedByClient
-        '',                     // fileContent
-        ts.ScriptKind.Unknown,  // scriptKind
+      ts.server.toNormalizedPath(fileName),
+      true, // openedByClient
+      '', // fileContent
+      ts.ScriptKind.Unknown, // scriptKind
     );
     if (!newScriptInfo) {
       throw new Error(`Failed to create new script info for ${fileName}`);
@@ -275,7 +283,7 @@ export class MockService {
 }
 
 /**
- * Replace at most one occurence that matches `regex` in the specified
+ * Replace at most one occurrence that matches `regex` in the specified
  * `searchText` with the specified `replaceText`. Throw an error if there is
  * more than one occurrence.
  */
@@ -286,7 +294,7 @@ function replaceOnce(searchText: string, regex: RegExp, replaceText: string): Ov
     if (position !== -1) {
       throw new Error(`${regex} matches more than one occurrence in text: ${searchText}`);
     }
-    position = args[args.length - 2];  // second last argument is always the index
+    position = args[args.length - 2]; // second last argument is always the index
     return replaceText;
   });
   return {position, text};

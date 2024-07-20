@@ -27,7 +27,7 @@ describe('language-service/compiler integration', () => {
           })
           export class TestCmp {}
       `,
-      'test.html': `<other-cmp>Test</other-cmp>`
+      'test.html': `<other-cmp>Test</other-cmp>`,
     });
 
     expect(project.getDiagnosticsForFile('test.html').length).toBeGreaterThan(0);
@@ -115,7 +115,7 @@ describe('language-service/compiler integration', () => {
       `,
     });
 
-    const diags = project.getDiagnosticsForFile('test.ts').map(diag => diag.messageText);
+    const diags = project.getDiagnosticsForFile('test.ts').map((diag) => diag.messageText);
     expect(diags).toContain(`Type 'number' is not assignable to type 'string'.`);
   });
 

@@ -6,49 +6,139 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
+import {SecurityContext} from '../../../../core';
 import * as ir from '../../ir';
-import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
-import {getElementsByXrefId} from '../util/elements';
+import {CompilationJobKind, type CompilationJob, type CompilationUnit} from '../compilation';
+import {createOpXrefMap} from '../util/elements';
 
 /**
  * Find all extractable attribute and binding ops, and create ExtractedAttributeOps for them.
  * In cases where no instruction needs to be generated for the attribute or binding, it is removed.
  */
-export function phaseAttributeExtraction(cpl: ComponentCompilationJob): void {
-  for (const [_, view] of cpl.views) {
-    const elements = getElementsByXrefId(view);
-    for (const op of view.ops()) {
+export function extractAttributes(job: CompilationJob): void {
+  for (const unit of job.units) {
+    const elements = createOpXrefMap(unit);
+    for (const op of unit.ops()) {
       switch (op.kind) {
         case ir.OpKind.Attribute:
-          extractAttributeOp(view, op, elements);
+          extractAttributeOp(unit, op, elements);
           break;
         case ir.OpKind.Property:
           if (!op.isAnimationTrigger) {
+            let bindingKind: ir.BindingKind;
+            if (op.i18nMessage !== null && op.templateKind === null) {
+              // If the binding has an i18n context, it is an i18n attribute, and should have that
+              // kind in the consts array.
+              bindingKind = ir.BindingKind.I18n;
+            } else if (op.isStructuralTemplateAttribute) {
+              bindingKind = ir.BindingKind.Template;
+            } else {
+              bindingKind = ir.BindingKind.Property;
+            }
+
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(
-                    op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Property,
-                    op.name, null),
-                lookupElement(elements, op.target));
+              // Deliberately null i18nMessage value
+              ir.createExtractedAttributeOp(
+                op.target,
+                bindingKind,
+                null,
+                op.name,
+                /* expression */ null,
+                /* i18nContext */ null,
+                /* i18nMessage */ null,
+                op.securityContext,
+              ),
+              lookupElement(elements, op.target),
+            );
           }
+          break;
+        case ir.OpKind.TwoWayProperty:
+          ir.OpList.insertBefore<ir.CreateOp>(
+            ir.createExtractedAttributeOp(
+              op.target,
+              ir.BindingKind.TwoWayProperty,
+              null,
+              op.name,
+              /* expression */ null,
+              /* i18nContext */ null,
+              /* i18nMessage */ null,
+              op.securityContext,
+            ),
+            lookupElement(elements, op.target),
+          );
           break;
         case ir.OpKind.StyleProp:
         case ir.OpKind.ClassProp:
+          // TODO: Can style or class bindings be i18n attributes?
+
           // The old compiler treated empty style bindings as regular bindings for the purpose of
           // directive matching. That behavior is incorrect, but we emulate it in compatibility
           // mode.
-          if (view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-              op.expression instanceof ir.EmptyExpr) {
+          if (
+            unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+            op.expression instanceof ir.EmptyExpr
+          ) {
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null),
-                lookupElement(elements, op.target));
+              ir.createExtractedAttributeOp(
+                op.target,
+                ir.BindingKind.Property,
+                null,
+                op.name,
+                /* expression */ null,
+                /* i18nContext */ null,
+                /* i18nMessage */ null,
+                SecurityContext.STYLE,
+              ),
+              lookupElement(elements, op.target),
+            );
           }
           break;
         case ir.OpKind.Listener:
           if (!op.isAnimationListener) {
+            const extractedAttributeOp = ir.createExtractedAttributeOp(
+              op.target,
+              ir.BindingKind.Property,
+              null,
+              op.name,
+              /* expression */ null,
+              /* i18nContext */ null,
+              /* i18nMessage */ null,
+              SecurityContext.NONE,
+            );
+            if (job.kind === CompilationJobKind.Host) {
+              if (job.compatibility) {
+                // TemplateDefinitionBuilder does not extract listener bindings to the const array
+                // (which is honestly pretty inconsistent).
+                break;
+              }
+              // This attribute will apply to the enclosing host binding compilation unit, so order
+              // doesn't matter.
+              unit.create.push(extractedAttributeOp);
+            } else {
+              ir.OpList.insertBefore<ir.CreateOp>(
+                extractedAttributeOp,
+                lookupElement(elements, op.target),
+              );
+            }
+          }
+          break;
+        case ir.OpKind.TwoWayListener:
+          // Two-way listeners aren't supported in host bindings.
+          if (job.kind !== CompilationJobKind.Host) {
+            const extractedAttributeOp = ir.createExtractedAttributeOp(
+              op.target,
+              ir.BindingKind.Property,
+              null,
+              op.name,
+              /* expression */ null,
+              /* i18nContext */ null,
+              /* i18nMessage */ null,
+              SecurityContext.NONE,
+            );
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null),
-                lookupElement(elements, op.target));
+              extractedAttributeOp,
+              lookupElement(elements, op.target),
+            );
           }
           break;
       }
@@ -60,7 +150,9 @@ export function phaseAttributeExtraction(cpl: ComponentCompilationJob): void {
  * Looks up an element in the given map by xref ID.
  */
 function lookupElement(
-    elements: Map<ir.XrefId, ir.ElementOrContainerOps>, xref: ir.XrefId): ir.ElementOrContainerOps {
+  elements: Map<ir.XrefId, ir.ConsumesSlotOpTrait & ir.CreateOp>,
+  xref: ir.XrefId,
+): ir.ConsumesSlotOpTrait & ir.CreateOp {
   const el = elements.get(xref);
   if (el === undefined) {
     throw new Error('All attributes should have an element-like target.');
@@ -72,31 +164,40 @@ function lookupElement(
  * Extracts an attribute binding.
  */
 function extractAttributeOp(
-    view: ViewCompilationUnit, op: ir.AttributeOp,
-    elements: Map<ir.XrefId, ir.ElementOrContainerOps>) {
+  unit: CompilationUnit,
+  op: ir.AttributeOp,
+  elements: Map<ir.XrefId, ir.ConsumesSlotOpTrait & ir.CreateOp>,
+) {
   if (op.expression instanceof ir.Interpolation) {
     return;
   }
-  const ownerOp = lookupElement(elements, op.target);
 
-  let extractable = op.expression.isConstant();
-  if (view.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
-    // TemplateDefinitionBuilder only extracted attributes that were string literals.
-    extractable = ir.isStringLiteral(op.expression);
-    if (op.name === 'style' || op.name === 'class') {
-      // For style and class attributes, TemplateDefinitionBuilder only extracted them if they were
-      // text attributes. For example, `[attr.class]="'my-class'"` was not extracted despite being a
-      // string literal, because it is not a text attribute.
-      extractable &&= op.isTextAttribute;
-    }
+  let extractable = op.isTextAttribute || op.expression.isConstant();
+  if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
+    // TemplateDefinitionBuilder only extracts text attributes. It does not extract attriibute
+    // bindings, even if they are constants.
+    extractable &&= op.isTextAttribute;
   }
 
   if (extractable) {
-    ir.OpList.insertBefore<ir.CreateOp>(
-        ir.createExtractedAttributeOp(
-            op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute, op.name,
-            op.expression),
-        ownerOp);
+    const extractedAttributeOp = ir.createExtractedAttributeOp(
+      op.target,
+      op.isStructuralTemplateAttribute ? ir.BindingKind.Template : ir.BindingKind.Attribute,
+      op.namespace,
+      op.name,
+      op.expression,
+      op.i18nContext,
+      op.i18nMessage,
+      op.securityContext,
+    );
+    if (unit.job.kind === CompilationJobKind.Host) {
+      // This attribute will apply to the enclosing host binding compilation unit, so order doesn't
+      // matter.
+      unit.create.push(extractedAttributeOp);
+    } else {
+      const ownerOp = lookupElement(elements, op.target);
+      ir.OpList.insertBefore<ir.CreateOp>(extractedAttributeOp, ownerOp);
+    }
     ir.OpList.remove<ir.UpdateOp>(op);
   }
 }

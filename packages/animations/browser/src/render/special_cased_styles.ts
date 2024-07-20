@@ -21,9 +21,11 @@ import {eraseStyles, setStyles} from '../util';
  * @returns an instance of `SpecialCasedStyles` if any special styles are detected otherwise `null`
  */
 export function packageNonAnimatableStyles(
-    element: any, styles: ɵStyleDataMap|Array<ɵStyleDataMap>): SpecialCasedStyles|null {
-  let startStyles: ɵStyleDataMap|null = null;
-  let endStyles: ɵStyleDataMap|null = null;
+  element: any,
+  styles: ɵStyleDataMap | Array<ɵStyleDataMap>,
+): SpecialCasedStyles | null {
+  let startStyles: ɵStyleDataMap | null = null;
+  let endStyles: ɵStyleDataMap | null = null;
   if (Array.isArray(styles) && styles.length) {
     startStyles = filterNonAnimatableStyles(styles[0]);
     if (styles.length > 1) {
@@ -33,8 +35,7 @@ export function packageNonAnimatableStyles(
     startStyles = filterNonAnimatableStyles(styles);
   }
 
-  return (startStyles || endStyles) ? new SpecialCasedStyles(element, startStyles, endStyles) :
-                                      null;
+  return startStyles || endStyles ? new SpecialCasedStyles(element, startStyles, endStyles) : null;
 }
 
 /**
@@ -46,17 +47,19 @@ export function packageNonAnimatableStyles(
  * `destroy()` is called then all styles will be removed.
  */
 export class SpecialCasedStyles {
-  static initialStylesByElement = (/* @__PURE__ */ new WeakMap<any, ɵStyleDataMap>());
+  static initialStylesByElement = /* @__PURE__ */ new WeakMap<any, ɵStyleDataMap>();
 
   private _state = SpecialCasedStylesState.Pending;
   private _initialStyles!: ɵStyleDataMap;
 
   constructor(
-      private _element: any, private _startStyles: ɵStyleDataMap|null,
-      private _endStyles: ɵStyleDataMap|null) {
+    private _element: any,
+    private _startStyles: ɵStyleDataMap | null,
+    private _endStyles: ɵStyleDataMap | null,
+  ) {
     let initialStyles = SpecialCasedStyles.initialStylesByElement.get(_element);
     if (!initialStyles) {
-      SpecialCasedStyles.initialStylesByElement.set(_element, initialStyles = new Map());
+      SpecialCasedStyles.initialStylesByElement.set(_element, (initialStyles = new Map()));
     }
     this._initialStyles = initialStyles;
   }
@@ -117,8 +120,8 @@ const enum SpecialCasedStylesState {
   Destroyed = 3,
 }
 
-function filterNonAnimatableStyles(styles: ɵStyleDataMap): ɵStyleDataMap|null {
-  let result: ɵStyleDataMap|null = null;
+function filterNonAnimatableStyles(styles: ɵStyleDataMap): ɵStyleDataMap | null {
+  let result: ɵStyleDataMap | null = null;
   styles.forEach((val, prop) => {
     if (isNonAnimatableStyle(prop)) {
       result = result || new Map();

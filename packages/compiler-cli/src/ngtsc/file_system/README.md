@@ -47,9 +47,9 @@ wrapped tests in each of the mock file-systems, it calls `initMockFileSystem()`
 for each OS to emulate.
 * `loadTestFiles()` - use this to add files and their contents
 to the mock file system for testing.
-* `loadStandardTestFiles()` - use this to load a mirror image of files on
-disk into the in-memory mock file-system.
-* `loadFakeCore()` - use this to load a fake version of `@angular/core`
+* `loadStandardTestFiles()` - use this to load a mirror image of Angular test
+files on disk into the in-memory mock file-system.
+* `loadAngularCore()` - use this to load the npm package of `@angular/core`
 into the mock file-system.
 
 All ngtsc source and tests now use this virtual file-system setup.

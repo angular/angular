@@ -6,14 +6,35 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HashLocationStrategy, LOCATION_INITIALIZED, LocationStrategy, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Component, ComponentRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EnvironmentProviders, inject, InjectFlags, InjectionToken, Injector, makeEnvironmentProviders, NgZone, Provider, Type} from '@angular/core';
+import {
+  HashLocationStrategy,
+  LOCATION_INITIALIZED,
+  LocationStrategy,
+  ViewportScroller,
+} from '@angular/common';
+import {
+  APP_BOOTSTRAP_LISTENER,
+  APP_INITIALIZER,
+  ApplicationRef,
+  ComponentRef,
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentProviders,
+  inject,
+  InjectFlags,
+  InjectionToken,
+  Injector,
+  makeEnvironmentProviders,
+  NgZone,
+  Provider,
+  runInInjectionContext,
+  Type,
+} from '@angular/core';
 import {of, Subject} from 'rxjs';
 
 import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outlet';
 import {Event, NavigationError, stringifyEvent} from './events';
-import {Routes} from './models';
-import {NavigationTransitions} from './navigation_transition';
+import {RedirectCommand, Routes} from './models';
+import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
 import {Router} from './router';
 import {InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
 import {ROUTES} from './router_config_loader';
@@ -22,7 +43,12 @@ import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlSerializer} from './url_tree';
 import {afterNextNavigation} from './utils/navigations';
-
+import {
+  CREATE_VIEW_TRANSITION,
+  createViewTransition,
+  VIEW_TRANSITION_OPTIONS,
+  ViewTransitionsFeatureOptions,
+} from './utils/view_transition';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -63,12 +89,12 @@ import {afterNextNavigation} from './utils/navigations';
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
   return makeEnvironmentProviders([
     {provide: ROUTES, multi: true, useValue: routes},
-    (typeof ngDevMode === 'undefined' || ngDevMode) ?
-        {provide: ROUTER_IS_PROVIDED, useValue: true} :
-        [],
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? {provide: ROUTER_IS_PROVIDED, useValue: true}
+      : [],
     {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
-    features.map(feature => feature.ɵproviders),
+    features.map((feature) => feature.ɵproviders),
   ]);
 }
 
@@ -90,17 +116,20 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
  * Helper function to create an object that represents a Router feature.
  */
 function routerFeature<FeatureKind extends RouterFeatureKind>(
-    kind: FeatureKind, providers: Provider[]): RouterFeature<FeatureKind> {
+  kind: FeatureKind,
+  providers: Provider[],
+): RouterFeature<FeatureKind> {
   return {ɵkind: kind, ɵproviders: providers};
 }
-
 
 /**
  * An Injection token used to indicate whether `provideRouter` or `RouterModule.forRoot` was ever
  * called.
  */
-export const ROUTER_IS_PROVIDED =
-    new InjectionToken<boolean>('', {providedIn: 'root', factory: () => false});
+export const ROUTER_IS_PROVIDED = new InjectionToken<boolean>('', {
+  providedIn: 'root',
+  factory: () => false,
+});
 
 const routerIsProvidedDevModeCheck = {
   provide: ENVIRONMENT_INITIALIZER,
@@ -109,15 +138,16 @@ const routerIsProvidedDevModeCheck = {
     return () => {
       if (!inject(ROUTER_IS_PROVIDED)) {
         console.warn(
-            '`provideRoutes` was called without `provideRouter` or `RouterModule.forRoot`. ' +
-            'This is likely a mistake.');
+          '`provideRoutes` was called without `provideRouter` or `RouterModule.forRoot`. ' +
+            'This is likely a mistake.',
+        );
       }
     };
-  }
+  },
 };
 
 /**
- * Registers a [DI provider](guide/glossary#provider) for a set of routes.
+ * Registers a DI provider for a set of routes.
  * @param routes The route configuration to provide.
  *
  * @usageNotes
@@ -136,7 +166,7 @@ const routerIsProvidedDevModeCheck = {
 export function provideRoutes(routes: Routes): Provider[] {
   return [
     {provide: ROUTES, multi: true, useValue: routes},
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? routerIsProvidedDevModeCheck : [],
+    typeof ngDevMode === 'undefined' || ngDevMode ? routerIsProvidedDevModeCheck : [],
   ];
 }
 
@@ -175,18 +205,21 @@ export type InMemoryScrollingFeature = RouterFeature<RouterFeatureKind.InMemoryS
  *     `InMemoryScrollingOptions` for additional information.
  * @returns A set of providers for use with `provideRouter`.
  */
-export function withInMemoryScrolling(options: InMemoryScrollingOptions = {}):
-    InMemoryScrollingFeature {
-  const providers = [{
-    provide: ROUTER_SCROLLER,
-    useFactory: () => {
-      const viewportScroller = inject(ViewportScroller);
-      const zone = inject(NgZone);
-      const transitions = inject(NavigationTransitions);
-      const urlSerializer = inject(UrlSerializer);
-      return new RouterScroller(urlSerializer, transitions, viewportScroller, zone, options);
+export function withInMemoryScrolling(
+  options: InMemoryScrollingOptions = {},
+): InMemoryScrollingFeature {
+  const providers = [
+    {
+      provide: ROUTER_SCROLLER,
+      useFactory: () => {
+        const viewportScroller = inject(ViewportScroller);
+        const zone = inject(NgZone);
+        const transitions = inject(NavigationTransitions);
+        const urlSerializer = inject(UrlSerializer);
+        return new RouterScroller(urlSerializer, transitions, viewportScroller, zone, options);
+      },
     },
-  }];
+  ];
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
 }
 
@@ -223,11 +256,13 @@ export function getBootstrapListener() {
  * to the activation phase.
  */
 const BOOTSTRAP_DONE = new InjectionToken<Subject<void>>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'bootstrap done indicator' : '', {
-      factory: () => {
-        return new Subject<void>();
-      }
-    });
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'bootstrap done indicator' : '',
+  {
+    factory: () => {
+      return new Subject<void>();
+    },
+  },
+);
 
 /**
  * This and the INITIAL_NAVIGATION token are used internally only. The public API side of this is
@@ -235,7 +270,7 @@ const BOOTSTRAP_DONE = new InjectionToken<Subject<void>>(
  *
  * When set to `EnabledBlocking`, the initial navigation starts before the root
  * component is created. The bootstrap is blocked until the initial navigation is complete. This
- * value is required for [server-side rendering](guide/universal) to work.
+ * value is required for [server-side rendering](guide/ssr) to work.
  *
  * When set to `EnabledNonBlocking`, the initial navigation starts after the root component has been
  * created. The bootstrap is not blocked on the completion of the initial navigation.
@@ -253,8 +288,9 @@ const enum InitialNavigation {
 }
 
 const INITIAL_NAVIGATION = new InjectionToken<InitialNavigation>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'initial navigation' : '',
-    {providedIn: 'root', factory: () => InitialNavigation.EnabledNonBlocking});
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'initial navigation' : '',
+  {providedIn: 'root', factory: () => InitialNavigation.EnabledNonBlocking},
+);
 
 /**
  * A type alias for providers returned by `withEnabledBlockingInitialNavigation` for use with
@@ -266,7 +302,7 @@ const INITIAL_NAVIGATION = new InjectionToken<InitialNavigation>(
  * @publicApi
  */
 export type EnabledBlockingInitialNavigationFeature =
-    RouterFeature<RouterFeatureKind.EnabledBlockingInitialNavigationFeature>;
+  RouterFeature<RouterFeatureKind.EnabledBlockingInitialNavigationFeature>;
 
 /**
  * A type alias for providers returned by `withEnabledBlockingInitialNavigation` or
@@ -279,13 +315,14 @@ export type EnabledBlockingInitialNavigationFeature =
  * @publicApi
  */
 export type InitialNavigationFeature =
-    EnabledBlockingInitialNavigationFeature|DisabledInitialNavigationFeature;
+  | EnabledBlockingInitialNavigationFeature
+  | DisabledInitialNavigationFeature;
 
 /**
  * Configures initial navigation to start before the root component is created.
  *
  * The bootstrap is blocked until the initial navigation is complete. This value is required for
- * [server-side rendering](guide/universal) to work.
+ * [server-side rendering](guide/ssr) to work.
  *
  * @usageNotes
  *
@@ -314,12 +351,14 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
       multi: true,
       deps: [Injector],
       useFactory: (injector: Injector) => {
-        const locationInitialized: Promise<any> =
-            injector.get(LOCATION_INITIALIZED, Promise.resolve());
+        const locationInitialized: Promise<any> = injector.get(
+          LOCATION_INITIALIZED,
+          Promise.resolve(),
+        );
 
         return () => {
           return locationInitialized.then(() => {
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
               const router = injector.get(Router);
               const bootstrapDone = injector.get(BOOTSTRAP_DONE);
               afterNextNavigation(router, () => {
@@ -339,7 +378,7 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
             });
           });
         };
-      }
+      },
     },
   ];
   return routerFeature(RouterFeatureKind.EnabledBlockingInitialNavigationFeature, providers);
@@ -355,7 +394,7 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
  * @publicApi
  */
 export type DisabledInitialNavigationFeature =
-    RouterFeature<RouterFeatureKind.DisabledInitialNavigationFeature>;
+  RouterFeature<RouterFeatureKind.DisabledInitialNavigationFeature>;
 
 /**
  * Disables initial navigation.
@@ -393,9 +432,9 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
         return () => {
           router.setUpLocationChangeListener();
         };
-      }
+      },
     },
-    {provide: INITIAL_NAVIGATION, useValue: InitialNavigation.Disabled}
+    {provide: INITIAL_NAVIGATION, useValue: InitialNavigation.Disabled},
   ];
   return routerFeature(RouterFeatureKind.DisabledInitialNavigationFeature, providers);
 }
@@ -437,21 +476,24 @@ export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFe
 export function withDebugTracing(): DebugTracingFeature {
   let providers: Provider[] = [];
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    providers = [{
-      provide: ENVIRONMENT_INITIALIZER,
-      multi: true,
-      useFactory: () => {
-        const router = inject(Router);
-        return () => router.events.subscribe((e: Event) => {
-          // tslint:disable:no-console
-          console.group?.(`Router Event: ${(<any>e.constructor).name}`);
-          console.log(stringifyEvent(e));
-          console.log(e);
-          console.groupEnd?.();
-          // tslint:enable:no-console
-        });
-      }
-    }];
+    providers = [
+      {
+        provide: ENVIRONMENT_INITIALIZER,
+        multi: true,
+        useFactory: () => {
+          const router = inject(Router);
+          return () =>
+            router.events.subscribe((e: Event) => {
+              // tslint:disable:no-console
+              console.group?.(`Router Event: ${(<any>e.constructor).name}`);
+              console.log(stringifyEvent(e));
+              console.log(e);
+              console.groupEnd?.();
+              // tslint:enable:no-console
+            });
+        },
+      },
+    ];
   } else {
     providers = [];
   }
@@ -459,7 +501,8 @@ export function withDebugTracing(): DebugTracingFeature {
 }
 
 const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'router preloader' : '');
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'router preloader' : '',
+);
 
 /**
  * A type alias that represents a feature which enables preloading in Router.
@@ -515,7 +558,7 @@ export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): Pr
  * @publicApi
  */
 export type RouterConfigurationFeature =
-    RouterFeature<RouterFeatureKind.RouterConfigurationFeature>;
+  RouterFeature<RouterFeatureKind.RouterConfigurationFeature>;
 
 /**
  * Allows to provide extra parameters to configure Router.
@@ -545,9 +588,7 @@ export type RouterConfigurationFeature =
  * @publicApi
  */
 export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature {
-  const providers = [
-    {provide: ROUTER_CONFIGURATION, useValue: options},
-  ];
+  const providers = [{provide: ROUTER_CONFIGURATION, useValue: options}];
   return routerFeature(RouterFeatureKind.RouterConfigurationFeature, providers);
 }
 
@@ -585,11 +626,9 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
  *
  * @publicApi
  */
-export function withHashLocation(): RouterConfigurationFeature {
-  const providers = [
-    {provide: LocationStrategy, useClass: HashLocationStrategy},
-  ];
-  return routerFeature(RouterFeatureKind.RouterConfigurationFeature, providers);
+export function withHashLocation(): RouterHashLocationFeature {
+  const providers = [{provide: LocationStrategy, useClass: HashLocationStrategy}];
+  return routerFeature(RouterFeatureKind.RouterHashLocationFeature, providers);
 }
 
 /**
@@ -601,14 +640,19 @@ export function withHashLocation(): RouterConfigurationFeature {
  * @publicApi
  */
 export type NavigationErrorHandlerFeature =
-    RouterFeature<RouterFeatureKind.NavigationErrorHandlerFeature>;
+  RouterFeature<RouterFeatureKind.NavigationErrorHandlerFeature>;
 
 /**
- * Subscribes to the Router's navigation events and calls the given function when a
- * `NavigationError` happens.
+ * Provides a function which is called when a navigation error occurs.
  *
- * This function is run inside application's [injection context](guide/dependency-injection-context)
+ * This function is run inside application's [injection context](guide/di/dependency-injection-context)
  * so you can use the [`inject`](api/core/inject) function.
+ *
+ * This function can return a `RedirectCommand` to convert the error to a redirect, similar to returning
+ * a `UrlTree` or `RedirectCommand` from a guard. This will also prevent the `Router` from emitting
+ * `NavigationError`; it will instead emit `NavigationCancel` with code NavigationCancellationCode.Redirect.
+ * Return values other than `RedirectCommand` are ignored and do not change any behavior with respect to
+ * how the `Router` handles the error.
  *
  * @usageNotes
  *
@@ -633,20 +677,15 @@ export type NavigationErrorHandlerFeature =
  *
  * @publicApi
  */
-export function withNavigationErrorHandler(fn: (error: NavigationError) => void):
-    NavigationErrorHandlerFeature {
-  const providers = [{
-    provide: ENVIRONMENT_INITIALIZER,
-    multi: true,
-    useValue: () => {
-      const injector = inject(EnvironmentInjector);
-      inject(Router).events.subscribe((e) => {
-        if (e instanceof NavigationError) {
-          injector.runInContext(() => fn(e));
-        }
-      });
-    }
-  }];
+export function withNavigationErrorHandler(
+  handler: (error: NavigationError) => unknown | RedirectCommand,
+): NavigationErrorHandlerFeature {
+  const providers = [
+    {
+      provide: NAVIGATION_ERROR_HANDLER,
+      useValue: handler,
+    },
+  ];
   return routerFeature(RouterFeatureKind.NavigationErrorHandlerFeature, providers);
 }
 
@@ -659,7 +698,17 @@ export function withNavigationErrorHandler(fn: (error: NavigationError) => void)
  * @publicApi
  */
 export type ComponentInputBindingFeature =
-    RouterFeature<RouterFeatureKind.ComponentInputBindingFeature>;
+  RouterFeature<RouterFeatureKind.ComponentInputBindingFeature>;
+
+/**
+ * A type alias for providers returned by `withViewTransitions` for use with `provideRouter`.
+ *
+ * @see {@link withViewTransitions}
+ * @see {@link provideRouter}
+ *
+ * @publicApi
+ */
+export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
 
 /**
  * Enables binding information from the `Router` state directly to the inputs of the component in
@@ -691,6 +740,46 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
 }
 
 /**
+ * Enables view transitions in the Router by running the route activation and deactivation inside of
+ * `document.startViewTransition`.
+ *
+ * Note: The View Transitions API is not available in all browsers. If the browser does not support
+ * view transitions, the Router will not attempt to start a view transition and continue processing
+ * the navigation as usual.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable the feature:
+ * ```
+ * const appRoutes: Routes = [];
+ * bootstrapApplication(AppComponent,
+ *   {
+ *     providers: [
+ *       provideRouter(appRoutes, withViewTransitions())
+ *     ]
+ *   }
+ * );
+ * ```
+ *
+ * @returns A set of providers for use with `provideRouter`.
+ * @see https://developer.chrome.com/docs/web-platform/view-transitions/
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
+ * @experimental
+ */
+export function withViewTransitions(
+  options?: ViewTransitionsFeatureOptions,
+): ViewTransitionsFeature {
+  const providers = [
+    {provide: CREATE_VIEW_TRANSITION, useValue: createViewTransition},
+    {
+      provide: VIEW_TRANSITION_OPTIONS,
+      useValue: {skipNextTransition: !!options?.skipInitialTransition, ...options},
+    },
+  ];
+  return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
+}
+
+/**
  * A type alias that represents all Router features available for use with `provideRouter`.
  * Features can be enabled by adding special functions to the `provideRouter` call.
  * See documentation for each symbol to find corresponding function name. See also `provideRouter`
@@ -701,8 +790,15 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
  * @publicApi
  */
 export type RouterFeatures =
-    PreloadingFeature|DebugTracingFeature|InitialNavigationFeature|InMemoryScrollingFeature|
-    RouterConfigurationFeature|NavigationErrorHandlerFeature|ComponentInputBindingFeature;
+  | PreloadingFeature
+  | DebugTracingFeature
+  | InitialNavigationFeature
+  | InMemoryScrollingFeature
+  | RouterConfigurationFeature
+  | NavigationErrorHandlerFeature
+  | ComponentInputBindingFeature
+  | ViewTransitionsFeature
+  | RouterHashLocationFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -717,4 +813,5 @@ export const enum RouterFeatureKind {
   RouterHashLocationFeature,
   NavigationErrorHandlerFeature,
   ComponentInputBindingFeature,
+  ViewTransitionsFeature,
 }

@@ -19,7 +19,7 @@ jobs:
           exit: true
 
       # Indicate that the benchmark command was received.
-      - uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3
+      - uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
         with:
           comment-id: ${{github.event.comment.id}}
           token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
@@ -28,7 +28,7 @@ jobs:
       - uses: alessbell/pull-request-comment-branch@aad01d65d6982b8eacabed5e9a684cd8ceb98da6 # v1.1
         id: comment-branch
 
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           # Specify repository as the PR branch might be from a fork.
           repository: ${{steps.comment-branch.outputs.head_owner}}/${{steps.comment-branch.outputs.head_repo}}
@@ -38,7 +38,7 @@ jobs:
 
       - uses: ./.github/actions/yarn-install
 
-      - uses: angular/dev-infra/github-actions/bazel/configure-remote@0109d498b0f6aae418ed4924a5e5c65695f0ac61
+      - uses: angular/dev-infra/github-actions/bazel/configure-remote@03b8a7dffd1205e061f0bee949024ebefc2a6592
         with:
           bazelrc: ./.bazelrc.user
 
@@ -53,7 +53,7 @@ jobs:
         id: benchmark
         name: Running benchmark
 
-      - uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3
+      - uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
         with:
           issue-number: ${{github.event.issue.number}}
           token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'

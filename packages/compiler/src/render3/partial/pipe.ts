@@ -37,8 +37,9 @@ export function compileDeclarePipeFromMetadata(meta: R3PipeMetadata): R3Compiled
 /**
  * Gathers the declaration fields for a Pipe into a `DefinitionMap`.
  */
-export function createPipeDefinitionMap(meta: R3PipeMetadata):
-    DefinitionMap<R3DeclarePipeMetadata> {
+export function createPipeDefinitionMap(
+  meta: R3PipeMetadata,
+): DefinitionMap<R3DeclarePipeMetadata> {
   const definitionMap = new DefinitionMap<R3DeclarePipeMetadata>();
 
   definitionMap.set('minVersion', o.literal(MINIMUM_PARTIAL_LINKER_VERSION));

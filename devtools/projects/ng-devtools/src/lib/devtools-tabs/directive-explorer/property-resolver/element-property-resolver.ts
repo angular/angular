@@ -7,7 +7,14 @@
  */
 
 import {Injectable} from '@angular/core';
-import {ComponentExplorerViewProperties, Descriptor, DirectivePosition, DirectivesProperties, Events, MessageBus,} from 'protocol';
+import {
+  ComponentExplorerViewProperties,
+  Descriptor,
+  DirectivePosition,
+  DirectivesProperties,
+  Events,
+  MessageBus,
+} from 'protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
 
@@ -22,7 +29,7 @@ export interface FlatNode {
 export interface Property {
   name: string;
   descriptor: Descriptor;
-  parent: Property|null;
+  parent: Property | null;
 }
 
 @Injectable()
@@ -52,7 +59,9 @@ export class ElementPropertyResolver {
         position.directive = indexedNode.directives.findIndex((d) => d.name === key);
       }
       this._directivePropertiesController.set(
-          key, new DirectivePropertyResolver(this._messageBus, data[key], position));
+        key,
+        new DirectivePropertyResolver(this._messageBus, data[key], position),
+      );
     });
   }
 
@@ -79,7 +88,7 @@ export class ElementPropertyResolver {
     return result;
   }
 
-  getDirectiveController(directive: string): DirectivePropertyResolver|undefined {
+  getDirectiveController(directive: string): DirectivePropertyResolver | undefined {
     return this._directivePropertiesController.get(directive);
   }
 }

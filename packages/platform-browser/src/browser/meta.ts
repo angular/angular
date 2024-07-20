@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, ɵDomAdapter as DomAdapter, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable, ɵɵinject} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 
 /**
  * Represents the attributes of an HTML `<meta>` element. The element itself is
@@ -28,17 +28,10 @@ export type MetaDefinition = {
   property?: string;
   scheme?: string;
   url?: string;
-}&{
+} & {
   // TODO(IgorMinar): this type looks wrong
   [prop: string]: string;
 };
-
-/**
- * Factory to create a `Meta` service instance for the current DOM document.
- */
-export function createMeta() {
-  return new Meta(ɵɵinject(DOCUMENT));
-}
 
 /**
  * A service for managing HTML `<meta>` tags.
@@ -62,7 +55,7 @@ export function createMeta() {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useFactory: createMeta, deps: []})
+@Injectable({providedIn: 'root'})
 export class Meta {
   private _dom: DomAdapter;
   constructor(@Inject(DOCUMENT) private _doc: any) {
@@ -78,7 +71,7 @@ export class Meta {
    * @returns The existing element with the same attributes and values if found,
    * the new element if no match is found, or `null` if the tag parameter is not defined.
    */
-  addTag(tag: MetaDefinition, forceCreation: boolean = false): HTMLMetaElement|null {
+  addTag(tag: MetaDefinition, forceCreation: boolean = false): HTMLMetaElement | null {
     if (!tag) return null;
     return this._getOrCreateElement(tag, forceCreation);
   }
@@ -107,7 +100,7 @@ export class Meta {
    * `"tag_attribute='value string'"`.
    * @returns The matching element, if any.
    */
-  getTag(attrSelector: string): HTMLMetaElement|null {
+  getTag(attrSelector: string): HTMLMetaElement | null {
     if (!attrSelector) return null;
     return this._doc.querySelector(`meta[${attrSelector}]`) || null;
   }
@@ -133,7 +126,7 @@ export class Meta {
    * replacement tag.
    * @return The modified element.
    */
-  updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement|null {
+  updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement | null {
     if (!tag) return null;
     selector = selector || this._parseSelector(tag);
     const meta: HTMLMetaElement = this.getTag(selector)!;
@@ -162,14 +155,16 @@ export class Meta {
     }
   }
 
-  private _getOrCreateElement(meta: MetaDefinition, forceCreation: boolean = false):
-      HTMLMetaElement {
+  private _getOrCreateElement(
+    meta: MetaDefinition,
+    forceCreation: boolean = false,
+  ): HTMLMetaElement {
     if (!forceCreation) {
       const selector: string = this._parseSelector(meta);
       // It's allowed to have multiple elements with the same name so it's not enough to
       // just check that element with the same name already present on the page. We also need to
       // check if element has tag attributes
-      const elem = this.getTags(selector).filter(elem => this._containsAttributes(meta, elem))[0];
+      const elem = this.getTags(selector).filter((elem) => this._containsAttributes(meta, elem))[0];
       if (elem !== undefined) return elem;
     }
     const element: HTMLMetaElement = this._dom.createElement('meta') as HTMLMetaElement;
@@ -180,8 +175,9 @@ export class Meta {
   }
 
   private _setMetaElementAttributes(tag: MetaDefinition, el: HTMLMetaElement): HTMLMetaElement {
-    Object.keys(tag).forEach(
-        (prop: string) => el.setAttribute(this._getMetaKeyMap(prop), tag[prop]));
+    Object.keys(tag).forEach((prop: string) =>
+      el.setAttribute(this._getMetaKeyMap(prop), tag[prop]),
+    );
     return el;
   }
 
@@ -192,7 +188,8 @@ export class Meta {
 
   private _containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {
     return Object.keys(tag).every(
-        (key: string) => elem.getAttribute(this._getMetaKeyMap(key)) === tag[key]);
+      (key: string) => elem.getAttribute(this._getMetaKeyMap(key)) === tag[key],
+    );
   }
 
   private _getMetaKeyMap(prop: string): string {
@@ -203,6 +200,6 @@ export class Meta {
 /**
  * Mapping for MetaDefinition properties with their correct meta attribute names
  */
-const META_KEYS_MAP: {[prop: string]: string;} = {
-  httpEquiv: 'http-equiv'
+const META_KEYS_MAP: {[prop: string]: string} = {
+  httpEquiv: 'http-equiv',
 };

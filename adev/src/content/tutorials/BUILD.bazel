@@ -1,0 +1,18 @@
+load("@npm//@angular/docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "tutorials",
+    srcs = glob(
+        [
+            "*.md",
+        ],
+        exclude = [
+            "README.md",
+        ],
+    ),
+    data = [
+        "//adev/src/assets/images:learn-angular-browser.svg",
+        "//adev/src/assets/images:learn-angular-local.svg",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)

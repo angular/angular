@@ -1,5 +1,7 @@
 load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -12,13 +14,18 @@ ng_module(
     name = "lib",
     srcs = glob(
         include = ["*.ts"],
-        exclude = ["theme-service.ts"],
+        exclude = [
+            "theme-service.ts",
+            "frame_manager.ts",
+            "*_spec.ts",
+        ],
     ),
     angular_assets = [
         "devtools.component.html",
         ":devtools_component_styles",
     ],
     deps = [
+        ":frame_manager",
         ":theme",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs",
         "//devtools/projects/protocol",
@@ -31,6 +38,58 @@ ng_module(
         "@npm//@angular/material",
         "@npm//@types",
         "@npm//rxjs",
+    ],
+)
+
+ts_test_library(
+    name = "devtools_test",
+    srcs = ["devtools_spec.ts"],
+    deps = [
+        ":frame_manager",
+        ":lib",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs",
+        "//devtools/projects/protocol",
+        "//packages/core",
+        "//packages/core/testing",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":devtools_test",
+    ],
+)
+
+ng_module(
+    name = "frame_manager",
+    srcs = glob(
+        include = ["frame_manager.ts"],
+    ),
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/protocol",
+        "//packages/core",
+    ],
+)
+
+ts_test_library(
+    name = "test_frame_manager_lib",
+    srcs = [
+        "frame_manager_spec.ts",
+    ],
+    deps = [
+        ":frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/protocol",
+        "//packages/core/testing",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test_frame_manager",
+    deps = [
+        ":test_frame_manager_lib",
     ],
 )
 

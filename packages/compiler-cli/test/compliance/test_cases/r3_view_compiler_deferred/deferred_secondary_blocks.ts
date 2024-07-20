@@ -4,12 +4,15 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#defer}
-        <calendar-cmp/>
-        {:loading} {{loadingMessage}}
-        {:placeholder} <img src="loading.gif">
-        {:error} Calendar failed to load <icon>sad</icon>
-      {/defer}
+      @defer {
+        <button></button>
+      } @loading {
+        {{loadingMessage}}
+      } @placeholder {
+        <img src="loading.gif">
+      } @error {
+        Calendar failed to load <i>sad</i>
+      }
     </div>
   `,
 })

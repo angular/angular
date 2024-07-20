@@ -18,8 +18,7 @@ function createTreeComponent(level: number, isLeaf: boolean) {
   const nextTreeEl = `tree${level + 1}`;
   let template = `<span [style.backgroundColor]="bgColor"> {{data.value}} </span>`;
   if (!isLeaf) {
-    template += `<${nextTreeEl} [data]='data.right'></${nextTreeEl}><${
-        nextTreeEl} [data]='data.left'></${nextTreeEl}>`;
+    template += `<${nextTreeEl} [data]='data.right'></${nextTreeEl}><${nextTreeEl} [data]='data.left'></${nextTreeEl}>`;
   }
 
   @Component({selector: `tree${level}`, template: template})
@@ -35,7 +34,7 @@ function createTreeComponent(level: number, isLeaf: boolean) {
 
 @Component({
   selector: 'tree',
-  template: `<tree0 *ngIf="data.left != null" [data]='data'></tree0>`,
+  template: `<tree0 *ngIf="data.left != null" [data]="data"></tree0>`,
 })
 export class RootTreeComponent {
   @Input() data: TreeNode = emptyTree;

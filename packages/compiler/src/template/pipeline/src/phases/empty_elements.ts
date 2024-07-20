@@ -7,29 +7,44 @@
  */
 
 import * as ir from '../../ir';
-import {ComponentCompilationJob} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 const REPLACEMENTS = new Map<ir.OpKind, [ir.OpKind, ir.OpKind]>([
   [ir.OpKind.ElementEnd, [ir.OpKind.ElementStart, ir.OpKind.Element]],
   [ir.OpKind.ContainerEnd, [ir.OpKind.ContainerStart, ir.OpKind.Container]],
+  [ir.OpKind.I18nEnd, [ir.OpKind.I18nStart, ir.OpKind.I18n]],
 ]);
 
 /**
- * Replace sequences of mergable elements (e.g. `ElementStart` and `ElementEnd`) with a consolidated
- * element (e.g. `Element`).
+ * Op kinds that should not prevent merging of start/end ops.
  */
-export function phaseEmptyElements(cpl: ComponentCompilationJob): void {
-  for (const [_, view] of cpl.views) {
-    for (const op of view.create) {
+const IGNORED_OP_KINDS = new Set([ir.OpKind.Pipe]);
+
+/**
+ * Replace sequences of mergable instructions (e.g. `ElementStart` and `ElementEnd`) with a
+ * consolidated instruction (e.g. `Element`).
+ */
+export function collapseEmptyInstructions(job: CompilationJob): void {
+  for (const unit of job.units) {
+    for (const op of unit.create) {
+      // Find end ops that may be able to be merged.
       const opReplacements = REPLACEMENTS.get(op.kind);
       if (opReplacements === undefined) {
         continue;
       }
       const [startKind, mergedKind] = opReplacements;
-      if (op.prev !== null && op.prev.kind === startKind) {
+
+      // Locate the previous (non-ignored) op.
+      let prevOp: ir.CreateOp | null = op.prev;
+      while (prevOp !== null && IGNORED_OP_KINDS.has(prevOp.kind)) {
+        prevOp = prevOp.prev;
+      }
+
+      // If the previous op is the corresponding start op, we can megre.
+      if (prevOp !== null && prevOp.kind === startKind) {
         // Transmute the start instruction to the merged version. This is safe as they're designed
         // to be identical apart from the `kind`.
-        (op.prev as ir.Op<ir.CreateOp>).kind = mergedKind;
+        (prevOp as ir.Op<ir.CreateOp>).kind = mergedKind;
 
         // Remove the end instruction.
         ir.OpList.remove<ir.CreateOp>(op);

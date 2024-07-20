@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {getLViewById} from './lview_tracking';
 import {RNode} from './renderer_dom';
 import {LView} from './view';
-
 
 /**
  * The internal view context which is specific to a given DOM element, directive or
@@ -26,37 +24,38 @@ export class LContext {
   /**
    * The instance of the Component node.
    */
-  public component: {}|null|undefined;
+  public component: {} | null | undefined;
 
   /**
    * The list of active directives that exist on this element.
    */
-  public directives: any[]|null|undefined;
+  public directives: any[] | null | undefined;
 
   /**
    * The map of local references (local reference name => element or directive instance) that
    * exist on this element.
    */
-  public localRefs: {[key: string]: any}|null|undefined;
+  public localRefs: {[key: string]: any} | null | undefined;
 
   /** Component's parent view data. */
-  get lView(): LView|null {
+  get lView(): LView | null {
     return getLViewById(this.lViewId);
   }
 
   constructor(
-      /**
-       * ID of the component's parent view data.
-       */
-      private lViewId: number,
+    /**
+     * ID of the component's parent view data.
+     */
+    private lViewId: number,
 
-      /**
-       * The index instance of the node.
-       */
-      public nodeIndex: number,
+    /**
+     * The index instance of the node.
+     */
+    public nodeIndex: number,
 
-      /**
-       * The instance of the DOM node that is attached to the lNode.
-       */
-      public native: RNode) {}
+    /**
+     * The instance of the DOM node that is attached to the lNode.
+     */
+    public native: RNode,
+  ) {}
 }

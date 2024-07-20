@@ -8,7 +8,6 @@
 
 import {ViewEncapsulation} from '../metadata/view';
 
-
 /**
  * Used by `RendererFactory2` to associate custom rendering data and styles
  * with a rendering implementation.
@@ -42,7 +41,6 @@ export interface RendererType2 {
   data: {[kind: string]: any};
 }
 
-
 /**
  * Flags for renderer-specific style modifiers.
  * @publicApi
@@ -58,5 +56,5 @@ export enum RendererStyleFlags2 {
   /**
    * Marks a style as using dash case naming (this-is-dash-case).
    */
-  DashCase = 1 << 1
+  DashCase = 1 << 1,
 }

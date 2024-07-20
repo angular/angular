@@ -6,16 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef} from '../application_ref';
-import {CONTAINER_HEADER_OFFSET, DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
+import {ApplicationRef} from '../application/application_ref';
+import {
+  CONTAINER_HEADER_OFFSET,
+  DEHYDRATED_VIEWS,
+  LContainer,
+} from '../render3/interfaces/container';
 import {Renderer} from '../render3/interfaces/renderer';
 import {RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer, isLView} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TVIEW} from '../render3/interfaces/view';
+import {
+  HEADER_OFFSET,
+  HOST,
+  HYDRATION,
+  LView,
+  PARENT,
+  RENDERER,
+  TVIEW,
+} from '../render3/interfaces/view';
 import {nativeRemoveNode} from '../render3/node_manipulation';
 import {EMPTY_ARRAY} from '../util/empty';
 
 import {validateSiblingNodeExists} from './error_handling';
+import {cleanupI18nHydrationData} from './i18n';
 import {DehydratedContainerView, NUM_ROOT_NODES} from './interfaces';
 import {getLNodeForHydration} from './utils';
 
@@ -73,12 +86,14 @@ function cleanupLContainer(lContainer: LContainer) {
  * this LView and invokes dehydrated views cleanup function for each one.
  */
 function cleanupLView(lView: LView) {
+  cleanupI18nHydrationData(lView);
+
   const tView = lView[TVIEW];
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
     if (isLContainer(lView[i])) {
       const lContainer = lView[i];
       cleanupLContainer(lContainer);
-    } else if (Array.isArray(lView[i])) {
+    } else if (isLView(lView[i])) {
       // This is a component, enter the `cleanupLView` recursively.
       cleanupLView(lView[i]);
     }

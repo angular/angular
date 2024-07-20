@@ -22,9 +22,9 @@ ifEnvSupports(supportJasmineSpec, () => {
 
   describe('jasmine', () => {
     let throwOnAsync = false;
-    let beforeEachZone: Zone|null = null;
-    let beforeAllZone: Zone|null = null;
-    let itZone: Zone|null = null;
+    let beforeEachZone: Zone | null = null;
+    let beforeAllZone: Zone | null = null;
+    let itZone: Zone | null = null;
     const syncZone = Zone.current;
     try {
       Zone.current.scheduleMicroTask('dontallow', (): any => null);
@@ -32,9 +32,9 @@ ifEnvSupports(supportJasmineSpec, () => {
       throwOnAsync = true;
     }
 
-    beforeAll(() => beforeAllZone = Zone.current);
+    beforeAll(() => (beforeAllZone = Zone.current));
 
-    beforeEach(() => beforeEachZone = Zone.current);
+    beforeEach(() => (beforeEachZone = Zone.current));
 
     it('should throw on async in describe', () => {
       expect(throwOnAsync).toBe(true);

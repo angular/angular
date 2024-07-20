@@ -10,10 +10,13 @@ import {destroyPlatform, NgModule, NgZone} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import {getAngularJSGlobal, IAngularBootstrapConfig, module_} from '../../../src/common/src/angular1';
+import {
+  getAngularJSGlobal,
+  IAngularBootstrapConfig,
+  module_,
+} from '../../../src/common/src/angular1';
 import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
 import {UpgradeModule} from '../../index';
-
 
 withEachNg1Version(() => {
   describe('UpgradeModule', () => {
@@ -146,7 +149,7 @@ withEachNg1Version(() => {
         const retValue = upgrade.bootstrap(html(`<ng2></ng2>`), []);
 
         expect(retValue).toBe(bootstrapSpy.calls.mostRecent().returnValue);
-        expect(retValue).toBe(upgrade.$injector);  // In most cases, it will be the ng1 injector.
+        expect(retValue).toBe(upgrade.$injector); // In most cases, it will be the ng1 injector.
       });
     });
   });

@@ -1,6 +1,6 @@
 function MyApp_Conditional_2_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtext(0, "hello");
+    $r3$.ɵɵtext(0, " hello ");
   }
 }
 …
@@ -12,9 +12,9 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
-    $r3$.ɵɵadvance(1);
-    $r3$.ɵɵconditional(2, ctx.value() ? 2 : -1);
+    $r3$.ɵɵadvance();
+    $r3$.ɵɵconditional(ctx.value() ? 2 : -1);
   }
 }

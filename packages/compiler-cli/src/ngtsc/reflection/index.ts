@@ -7,6 +7,17 @@
  */
 
 export * from './src/host';
-export {typeNodeToValueExpr} from './src/type_to_value';
-export {TypeScriptReflectionHost, filterToMembersWithDecorator, reflectIdentifierOfDeclaration, reflectNameOfDeclaration, reflectObjectLiteral, reflectTypeEntityToDeclaration} from './src/typescript';
-export {isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from './src/util';
+export {typeNodeToValueExpr, entityNameToValue} from './src/type_to_value';
+export {
+  TypeScriptReflectionHost,
+  filterToMembersWithDecorator,
+  reflectIdentifierOfDeclaration,
+  reflectNameOfDeclaration,
+  reflectObjectLiteral,
+  reflectTypeEntityToDeclaration,
+} from './src/typescript';
+export {
+  isNamedClassDeclaration,
+  isNamedFunctionDeclaration,
+  isNamedVariableDeclaration,
+} from './src/util';

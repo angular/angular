@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../di/injection_token';
 import {ProviderToken} from '../di/provider_token';
 import {makePropDecorator} from '../util/decorators';
 
@@ -36,9 +35,8 @@ export interface AttributeDecorator {
    * @publicApi
    */
   (name: string): any;
-  new(name: string): Attribute;
+  new (name: string): Attribute;
 }
-
 
 /**
  * Type of the Attribute metadata.
@@ -65,12 +63,25 @@ export interface Query {
   isViewQuery: boolean;
   selector: any;
   static?: boolean;
+
+  /**
+   * @internal
+   *
+   * Whether the query is a signal query.
+   *
+   * This option exists for JIT compatibility. Users are not expected to use this.
+   * Angular needs a way to capture queries from classes so that the internal query
+   * functions can be generated. This needs to happen before the component is instantiated.
+   * Due to this, for JIT compilation, signal queries need an additional decorator
+   * declaring the query. Angular provides a TS transformer to automatically handle this
+   * for JIT usage (e.g. in tests).
+   */
+  isSignal?: boolean;
 }
 
 // Stores the default value of `emitDistinctChangesOnly` when the `emitDistinctChangesOnly` is not
 // explicitly set.
 export const emitDistinctChangesOnlyDefaultValue = true;
-
 
 /**
  * Base class for query metadata.
@@ -152,13 +163,18 @@ export interface ContentChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string, opts?: {
-    descendants?: boolean,
-    emitDistinctChangesOnly?: boolean,
-    read?: any,
-  }): any;
-  new(selector: ProviderToken<unknown>|Function|string,
-      opts?: {descendants?: boolean, emitDistinctChangesOnly?: boolean, read?: any}): Query;
+  (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {
+      descendants?: boolean;
+      emitDistinctChangesOnly?: boolean;
+      read?: any;
+    },
+  ): any;
+  new (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {descendants?: boolean; emitDistinctChangesOnly?: boolean; read?: any},
+  ): Query;
 }
 
 /**
@@ -178,15 +194,17 @@ export type ContentChildren = Query;
  * @publicApi
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
-    'ContentChildren', (selector?: any, data: any = {}) => ({
-                         selector,
-                         first: false,
-                         isViewQuery: false,
-                         descendants: false,
-                         emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
-                         ...data
-                       }),
-    Query);
+  'ContentChildren',
+  (selector?: any, opts: any = {}) => ({
+    selector,
+    first: false,
+    isViewQuery: false,
+    descendants: false,
+    emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+    ...opts,
+  }),
+  Query,
+);
 
 /**
  * Type of the ContentChild decorator / constructor function.
@@ -253,10 +271,14 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string,
-   opts?: {descendants?: boolean, read?: any, static?: boolean}): any;
-  new(selector: ProviderToken<unknown>|Function|string,
-      opts?: {descendants?: boolean, read?: any, static?: boolean}): ContentChild;
+  (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {descendants?: boolean; read?: any; static?: boolean},
+  ): any;
+  new (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {descendants?: boolean; read?: any; static?: boolean},
+  ): ContentChild;
 }
 
 /**
@@ -275,10 +297,16 @@ export type ContentChild = Query;
  * @publicApi
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
-    'ContentChild',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
-    Query);
+  'ContentChild',
+  (selector?: any, opts: any = {}) => ({
+    selector,
+    first: true,
+    isViewQuery: false,
+    descendants: true,
+    ...opts,
+  }),
+  Query,
+);
 
 /**
  * Type of the ViewChildren decorator / constructor function.
@@ -339,10 +367,14 @@ export interface ViewChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string,
-   opts?: {read?: any, emitDistinctChangesOnly?: boolean}): any;
-  new(selector: ProviderToken<unknown>|Function|string,
-      opts?: {read?: any, emitDistinctChangesOnly?: boolean}): ViewChildren;
+  (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {read?: any; emitDistinctChangesOnly?: boolean},
+  ): any;
+  new (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {read?: any; emitDistinctChangesOnly?: boolean},
+  ): ViewChildren;
 }
 
 /**
@@ -359,15 +391,17 @@ export type ViewChildren = Query;
  * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren', (selector?: any, data: any = {}) => ({
-                      selector,
-                      first: false,
-                      isViewQuery: true,
-                      descendants: true,
-                      emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
-                      ...data
-                    }),
-    Query);
+  'ViewChildren',
+  (selector?: any, opts: any = {}) => ({
+    selector,
+    first: false,
+    isViewQuery: true,
+    descendants: true,
+    emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+    ...opts,
+  }),
+  Query,
+);
 
 /**
  * Type of the ViewChild decorator / constructor function.
@@ -409,18 +443,18 @@ export interface ViewChildDecorator {
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
    *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
    *
-   * Difference between dynamic and static queries**:
-   *
-   * | Queries                             | Details |
-   * |:---                                 |:---     |
-   * | Dynamic queries \(`static: false`\) | The query resolves before the `ngAfterViewInit()`
+   * Difference between dynamic and static queries:
+   *   * Dynamic queries \(`static: false`\) - The query resolves before the `ngAfterViewInit()`
    * callback is called. The result will be updated for changes to your view, such as changes to
-   * `ngIf` and `ngFor` blocks. | | Static queries \(`static: true`\)   | The query resolves once
+   * `ngIf` and `ngFor` blocks.
+   *   * Static queries \(`static: true`\) - The query resolves once
    * the view has been created, but before change detection runs (before the `ngOnInit()` callback
    * is called). The result, though, will never be updated to reflect changes to your view, such as
-   * changes to `ngIf` and `ngFor` blocks. |
+   * changes to `ngIf` and `ngFor` blocks.
    *
    * @usageNotes
+   *
+   * ### Example 1
    *
    * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
    *
@@ -430,9 +464,14 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new(selector: ProviderToken<unknown>|Function|string,
-      opts?: {read?: any, static?: boolean}): ViewChild;
+  (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {read?: any; static?: boolean},
+  ): any;
+  new (
+    selector: ProviderToken<unknown> | Function | string,
+    opts?: {read?: any; static?: boolean},
+  ): ViewChild;
 }
 
 /**
@@ -449,7 +488,13 @@ export type ViewChild = Query;
  * @publicApi
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
-    'ViewChild',
-    (selector: any, data: any) =>
-        ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
-    Query);
+  'ViewChild',
+  (selector: any, opts: any) => ({
+    selector,
+    first: true,
+    isViewQuery: true,
+    descendants: true,
+    ...opts,
+  }),
+  Query,
+);

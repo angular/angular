@@ -6,22 +6,43 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, Directive, HostBinding, InjectionToken, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Directive,
+  InjectionToken,
+  Input,
+  Output,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import {EventEmitter} from '@angular/core/src/event_emitter';
 import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
 import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {getElementStyles} from '@angular/core/testing/src/styling';
 
 import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement} from '../../src/render3/index';
-import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
+import {
+  ComponentDebugMetadata,
+  getComponent,
+  getComponentLView,
+  getContext,
+  getDirectiveMetadata,
+  getDirectives,
+  getInjectionTokens,
+  getInjector,
+  getListeners,
+  getLocalRefs,
+  getOwningComponent,
+  getRootComponents,
+} from '../../src/render3/util/discovery_utils';
 
 describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
   let myApp: MyApp;
   let dirA: DirectiveA[];
-  let childComponent: (DirectiveA|Child)[];
+  let childComponent: (DirectiveA | Child)[];
   let child: NodeListOf<Element>;
   let span: NodeListOf<Element>;
   let div: NodeListOf<Element>;
@@ -35,7 +56,7 @@ describe('discovery utils', () => {
     TestBed.configureTestingModule({
       imports: [CommonModule],
       declarations: [MyApp, DirectiveA, Child],
-      providers: [{provide: String, useValue: 'Module'}]
+      providers: [{provide: String, useValue: 'Module'}],
     });
     fixture = TestBed.createComponent(MyApp);
     fixture.detectChanges();
@@ -45,8 +66,11 @@ describe('discovery utils', () => {
     p = fixture.nativeElement.querySelectorAll('p');
   });
 
-  @Component(
-      {selector: 'child', template: '<p></p>', providers: [{provide: String, useValue: 'Child'}]})
+  @Component({
+    selector: 'child',
+    template: '<p></p>',
+    providers: [{provide: String, useValue: 'Child'}],
+  })
   class Child {
     constructor() {
       childComponent.push(this);
@@ -72,7 +96,7 @@ describe('discovery utils', () => {
       <child dirA *ngIf="conditionalChildVisible"></child>
       <ng-container><p></p></ng-container>
       <b *ngIf="visible">Bold</b>
-    `
+    `,
   })
   class MyApp {
     text: string = 'INIT';
@@ -158,7 +182,7 @@ describe('discovery utils', () => {
       expect(getHostElement(dirA[1])).toEqual(child[1]);
     });
     it('should throw on unknown target', () => {
-      expect(() => getHostElement({})).toThrowError();  //
+      expect(() => getHostElement({})).toThrowError(); //
     });
     it('should return element for destroyed node', () => {
       expect(getHostElement(span[0])).toEqual(span[0]);
@@ -332,18 +356,19 @@ describe('discovery utils', () => {
     });
 
     it('should work on templates', () => {
-      const templateComment = Array.from((fixture.nativeElement as HTMLElement).childNodes)
-                                  .find((node: ChildNode) => node.nodeType === Node.COMMENT_NODE)!;
+      const templateComment = Array.from((fixture.nativeElement as HTMLElement).childNodes).find(
+        (node: ChildNode) => node.nodeType === Node.COMMENT_NODE,
+      )!;
       const lContext = getLContext(templateComment)!;
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(templateComment);
     });
 
     it('should work on ng-container', () => {
-      const ngContainerComment = Array.from((fixture.nativeElement as HTMLElement).childNodes)
-                                     .find(
-                                         (node: ChildNode) => node.nodeType === Node.COMMENT_NODE &&
-                                             node.textContent === `ng-container`)!;
+      const ngContainerComment = Array.from((fixture.nativeElement as HTMLElement).childNodes).find(
+        (node: ChildNode) =>
+          node.nodeType === Node.COMMENT_NODE && node.textContent === `ng-container`,
+      )!;
       const lContext = getLContext(ngContainerComment)!;
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(ngContainerComment);
@@ -355,8 +380,9 @@ describe('discovery utils', () => {
       const metadata = getDirectiveMetadata(myApp);
       expect(metadata!.inputs).toEqual({a: 'b'});
       expect(metadata!.outputs).toEqual({c: 'd'});
-      expect((metadata as ComponentDebugMetadata).changeDetection)
-          .toBe(ChangeDetectionStrategy.Default);
+      expect((metadata as ComponentDebugMetadata).changeDetection).toBe(
+        ChangeDetectionStrategy.Default,
+      );
       expect((metadata as ComponentDebugMetadata).encapsulation).toBe(ViewEncapsulation.None);
     });
 
@@ -372,12 +398,10 @@ describe('discovery utils deprecated', () => {
   describe('getRootComponents()', () => {
     it('should return a list of the root components of the application from an element', () => {
       @Component({selector: 'inner-comp', template: '<div></div>'})
-      class InnerComp {
-      }
+      class InnerComp {}
 
       @Component({selector: 'comp', template: '<inner-comp></inner-comp>'})
-      class Comp {
-      }
+      class Comp {}
 
       TestBed.configureTestingModule({declarations: [Comp, InnerComp]});
       const fixture = TestBed.createComponent(Comp);
@@ -397,23 +421,20 @@ describe('discovery utils deprecated', () => {
   describe('getDirectives()', () => {
     it('should return a list of the directives that are on the given element', () => {
       @Directive({selector: '[my-dir-1]'})
-      class MyDir1 {
-      }
+      class MyDir1 {}
 
       @Directive({selector: '[my-dir-2]'})
-      class MyDir2 {
-      }
+      class MyDir2 {}
 
       @Directive({selector: '[my-dir-3]'})
-      class MyDir3 {
-      }
+      class MyDir3 {}
 
       @Component({
         selector: 'comp',
         template: `
           <div my-dir-1 my-dir-2></div>
           <div my-dir-3></div>
-        `
+        `,
       })
       class Comp {
         @ViewChild(MyDir1) myDir1Instance!: MyDir1;
@@ -452,8 +473,7 @@ describe('discovery utils deprecated', () => {
   describe('getInjector', () => {
     it('should return an injector that can return directive instances', () => {
       @Component({template: ''})
-      class Comp {
-      }
+      class Comp {}
 
       TestBed.configureTestingModule({declarations: [Comp]});
       const fixture = TestBed.createComponent(Comp);
@@ -463,14 +483,15 @@ describe('discovery utils deprecated', () => {
 
     it('should return an injector that falls-back to a module injector', () => {
       @Component({template: ''})
-      class Comp {
-      }
+      class Comp {}
 
       class TestToken {}
       const token = new InjectionToken<TestToken>('test token');
 
-      TestBed.configureTestingModule(
-          {declarations: [Comp], providers: [{provide: token, useValue: new TestToken()}]});
+      TestBed.configureTestingModule({
+        declarations: [Comp],
+        providers: [{provide: token, useValue: new TestToken()}],
+      });
       const fixture = TestBed.createComponent(Comp);
       const nodeInjector = getInjector(fixture.nativeElement);
       expect(nodeInjector.get(token)).toEqual(jasmine.any(TestToken));
@@ -480,12 +501,10 @@ describe('discovery utils deprecated', () => {
   describe('getLocalRefs', () => {
     it('should return a map of local refs for an element', () => {
       @Directive({selector: '[myDir]', exportAs: 'myDir'})
-      class MyDir {
-      }
+      class MyDir {}
 
       @Component({template: '<div myDir #elRef #dirRef="myDir"></div>'})
-      class Comp {
-      }
+      class Comp {}
 
       TestBed.configureTestingModule({declarations: [Comp, MyDir]});
       const fixture = TestBed.createComponent(Comp);
@@ -494,8 +513,8 @@ describe('discovery utils deprecated', () => {
       const divEl = fixture.nativeElement.querySelector('div')!;
       const localRefs = getLocalRefs(divEl);
 
-      expect(localRefs.elRef.tagName.toLowerCase()).toBe('div');
-      expect(localRefs.dirRef.constructor).toBe(MyDir);
+      expect(localRefs['elRef'].tagName.toLowerCase()).toBe('div');
+      expect(localRefs['dirRef'].constructor).toBe(MyDir);
     });
 
     it('should return a map of local refs for an element with styling context', () => {
@@ -511,7 +530,7 @@ describe('discovery utils deprecated', () => {
       const divEl = fixture.nativeElement.querySelector('div')!;
       const localRefs = getLocalRefs(divEl);
 
-      expect(localRefs.elRef.tagName.toLowerCase()).toBe('div');
+      expect(localRefs['elRef'].tagName.toLowerCase()).toBe('div');
     });
   });
 });

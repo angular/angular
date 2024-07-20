@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {PLACEHOLDER_QUALITY} from './constants';
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
@@ -20,14 +21,21 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @publicApi
  */
 export const provideCloudflareLoader = createImageLoader(
-    createCloudflareUrl,
-    ngDevMode ? ['https://<ZONE>/cdn-cgi/image/<OPTIONS>/<SOURCE-IMAGE>'] : undefined);
+  createCloudflareUrl,
+  ngDevMode ? ['https://<ZONE>/cdn-cgi/image/<OPTIONS>/<SOURCE-IMAGE>'] : undefined,
+);
 
 function createCloudflareUrl(path: string, config: ImageLoaderConfig) {
   let params = `format=auto`;
   if (config.width) {
     params += `,width=${config.width}`;
   }
+
+  // When requesting a placeholder image we ask for a low quality image to reduce the load time.
+  if (config.isPlaceholder) {
+    params += `,quality=${PLACEHOLDER_QUALITY}`;
+  }
+
   // Cloudflare image URLs format:
   // https://developers.cloudflare.com/images/image-resizing/url-format/
   return `${path}/cdn-cgi/image/${params}/${config.src}`;

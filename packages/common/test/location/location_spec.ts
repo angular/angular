@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, CommonModule, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
+import {
+  APP_BASE_HREF,
+  CommonModule,
+  Location,
+  LocationStrategy,
+  PathLocationStrategy,
+  PlatformLocation,
+} from '@angular/common';
 import {MockLocationStrategy, MockPlatformLocation} from '@angular/common/testing';
 import {TestBed} from '@angular/core/testing';
 
@@ -53,10 +60,10 @@ describe('Location Class', () => {
             provide: PlatformLocation,
             useFactory: () => {
               return new MockPlatformLocation();
-            }
+            },
           },
           {provide: Location, useClass: Location, deps: [LocationStrategy]},
-        ]
+        ],
       });
 
       location = TestBed.inject(Location);
@@ -145,10 +152,10 @@ describe('Location Class', () => {
             provide: PlatformLocation,
             useFactory: () => {
               return new MockPlatformLocation();
-            }
+            },
           },
           {provide: Location, useClass: Location, deps: [LocationStrategy]},
-        ]
+        ],
       });
 
       location = TestBed.inject(Location);
@@ -172,25 +179,23 @@ describe('Location Class', () => {
       expect((location as any)._urlChangeListeners[0]).toEqual(changeListener);
     });
 
-    it('should unregister a URL change listener and unsubscribe from URL changes when the root view is removed',
-       () => {
-         const changeListener = jasmine.createSpy('changeListener');
+    it('should unregister a URL change listener and unsubscribe from URL changes when the root view is removed', () => {
+      const changeListener = jasmine.createSpy('changeListener');
 
-         const removeUrlChangeFn = location.onUrlChange(changeListener);
-         location.go('x');
-         expect(changeListener).toHaveBeenCalledTimes(1);
+      const removeUrlChangeFn = location.onUrlChange(changeListener);
+      location.go('x');
+      expect(changeListener).toHaveBeenCalledTimes(1);
 
-         removeUrlChangeFn();
-         expect(changeListener).toHaveBeenCalledTimes(1);
+      removeUrlChangeFn();
+      expect(changeListener).toHaveBeenCalledTimes(1);
 
-         location.onUrlChange((url: string, state: unknown) => {});
-         TestBed.resetTestingModule();
-         // Let's ensure that URL change listeners are unregistered when the root view is removed,
-         // tho the last returned `onUrlChange` function hasn't been invoked.
-         expect((location as any)._urlChangeListeners.length).toEqual(0);
-         expect((location as any)._urlChangeSubscription.closed).toEqual(true);
-       });
-
+      location.onUrlChange((url: string, state: unknown) => {});
+      TestBed.resetTestingModule();
+      // Let's ensure that URL change listeners are unregistered when the root view is removed,
+      // tho the last returned `onUrlChange` function hasn't been invoked.
+      expect((location as any)._urlChangeListeners.length).toEqual(0);
+      expect((location as any)._urlChangeSubscription.closed).toEqual(true);
+    });
 
     it('should only notify listeners once when multiple listeners are registered', () => {
       let notificationCount = 0;

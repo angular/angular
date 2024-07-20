@@ -32,7 +32,6 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/testing",
-        "@npm//base64-js",
         "@npm//source-map",
     ],
 )
@@ -58,7 +57,6 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         ":test_node_only_lib",
-        "@npm//base64-js",
         "@npm//source-map",
     ],
 )

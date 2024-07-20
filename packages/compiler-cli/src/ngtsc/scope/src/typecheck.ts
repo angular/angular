@@ -10,7 +10,14 @@ import {CssSelector, SchemaMetadata, SelectorMatcher} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectivesResolver, MetadataReader, MetaKind} from '../../metadata';
+import {
+  DirectiveMeta,
+  flattenInheritedDirectiveMetadata,
+  HostDirectivesResolver,
+  MetadataReader,
+  MetaKind,
+  PipeMeta,
+} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 import {ComponentScopeKind, ComponentScopeReader} from './api';
@@ -33,7 +40,7 @@ export interface TypeCheckScope {
   /**
    * The pipes that are available in the compilation scope.
    */
-  pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>;
+  pipes: Map<string, PipeMeta>;
 
   /**
    * The schemas that are used in this scope.
@@ -63,8 +70,10 @@ export class TypeCheckScopeRegistry {
   private scopeCache = new Map<ClassDeclaration, TypeCheckScope>();
 
   constructor(
-      private scopeReader: ComponentScopeReader, private metaReader: MetadataReader,
-      private hostDirectivesResolver: HostDirectivesResolver) {}
+    private scopeReader: ComponentScopeReader,
+    private metaReader: MetadataReader,
+    private hostDirectivesResolver: HostDirectivesResolver,
+  ) {}
 
   /**
    * Computes the type-check scope information for the component declaration. If the NgModule
@@ -74,7 +83,7 @@ export class TypeCheckScopeRegistry {
   getTypeCheckScope(node: ClassDeclaration): TypeCheckScope {
     const matcher = new SelectorMatcher<DirectiveMeta[]>();
     const directives: DirectiveMeta[] = [];
-    const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
+    const pipes = new Map<string, PipeMeta>();
 
     const scope = this.scopeReader.getScopeForComponent(node);
     if (scope === null) {
@@ -87,31 +96,46 @@ export class TypeCheckScopeRegistry {
       };
     }
 
-    const cacheKey = scope.kind === ComponentScopeKind.NgModule ? scope.ngModule : scope.component;
-    const dependencies = scope.kind === ComponentScopeKind.NgModule ?
-        scope.compilation.dependencies :
-        scope.dependencies;
+    const isNgModuleScope = scope.kind === ComponentScopeKind.NgModule;
+    const cacheKey = isNgModuleScope ? scope.ngModule : scope.component;
+    const dependencies = isNgModuleScope ? scope.compilation.dependencies : scope.dependencies;
 
     if (this.scopeCache.has(cacheKey)) {
       return this.scopeCache.get(cacheKey)!;
     }
 
-    for (const meta of dependencies) {
+    let allDependencies = dependencies;
+    if (
+      !isNgModuleScope &&
+      Array.isArray(scope.deferredDependencies) &&
+      scope.deferredDependencies.length > 0
+    ) {
+      allDependencies = [...allDependencies, ...scope.deferredDependencies];
+    }
+    for (const meta of allDependencies) {
       if (meta.kind === MetaKind.Directive && meta.selector !== null) {
         const extMeta = this.getTypeCheckDirectiveMetadata(meta.ref);
         if (extMeta === null) {
           continue;
         }
-        matcher.addSelectables(
-            CssSelector.parse(meta.selector),
-            [...this.hostDirectivesResolver.resolve(extMeta), extMeta]);
-        directives.push(extMeta);
+
+        // Carry over the `isExplicitlyDeferred` flag from the dependency info.
+        const directiveMeta = this.applyExplicitlyDeferredFlag(extMeta, meta.isExplicitlyDeferred);
+        matcher.addSelectables(CssSelector.parse(meta.selector), [
+          ...this.hostDirectivesResolver.resolve(directiveMeta),
+          directiveMeta,
+        ]);
+
+        directives.push(directiveMeta);
       } else if (meta.kind === MetaKind.Pipe) {
         if (!ts.isClassDeclaration(meta.ref.node)) {
-          throw new Error(`Unexpected non-class declaration ${
-              ts.SyntaxKind[meta.ref.node.kind]} for pipe ${meta.ref.debugName}`);
+          throw new Error(
+            `Unexpected non-class declaration ${
+              ts.SyntaxKind[meta.ref.node.kind]
+            } for pipe ${meta.ref.debugName}`,
+          );
         }
-        pipes.set(meta.name, meta.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
+        pipes.set(meta.name, meta);
       }
     }
 
@@ -120,15 +144,16 @@ export class TypeCheckScopeRegistry {
       directives,
       pipes,
       schemas: scope.schemas,
-      isPoisoned: scope.kind === ComponentScopeKind.NgModule ?
-          scope.compilation.isPoisoned || scope.exported.isPoisoned :
-          scope.isPoisoned,
+      isPoisoned:
+        scope.kind === ComponentScopeKind.NgModule
+          ? scope.compilation.isPoisoned || scope.exported.isPoisoned
+          : scope.isPoisoned,
     };
     this.scopeCache.set(cacheKey, typeCheckScope);
     return typeCheckScope;
   }
 
-  getTypeCheckDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
+  getTypeCheckDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta | null {
     const clazz = ref.node;
     if (this.flattenedDirectiveMetaCache.has(clazz)) {
       return this.flattenedDirectiveMetaCache.get(clazz)!;
@@ -140,5 +165,12 @@ export class TypeCheckScopeRegistry {
     }
     this.flattenedDirectiveMetaCache.set(clazz, meta);
     return meta;
+  }
+
+  private applyExplicitlyDeferredFlag<T extends DirectiveMeta | PipeMeta>(
+    meta: T,
+    isExplicitlyDeferred: boolean,
+  ): T {
+    return isExplicitlyDeferred === true ? {...meta, isExplicitlyDeferred} : meta;
   }
 }

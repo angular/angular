@@ -9,8 +9,6 @@
 import {LocationStrategy} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
 
-
-
 /**
  * A mock implementation of {@link LocationStrategy} that allows tests to fire simulated
  * location events.
@@ -52,7 +50,7 @@ export class MockLocationStrategy extends LocationStrategy {
 
     this.internalTitle = title;
 
-    const url = path + (query.length > 0 ? ('?' + query) : '');
+    const url = path + (query.length > 0 ? '?' + query : '');
     this.internalPath = url;
 
     const externalUrl = this.prepareExternalUrl(url);
@@ -65,7 +63,7 @@ export class MockLocationStrategy extends LocationStrategy {
 
     this.internalTitle = title;
 
-    const url = path + (query.length > 0 ? ('?' + query) : '');
+    const url = path + (query.length > 0 ? '?' + query : '');
     this.internalPath = url;
 
     const externalUrl = this.prepareExternalUrl(url);

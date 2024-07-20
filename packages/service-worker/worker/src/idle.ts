@@ -20,16 +20,19 @@ interface ScheduledRun {
 
 export class IdleScheduler {
   private queue: IdleTask[] = [];
-  private scheduled: ScheduledRun|null = null;
+  private scheduled: ScheduledRun | null = null;
   empty: Promise<void> = Promise.resolve();
-  private emptyResolve: Function|null = null;
-  lastTrigger: number|null = null;
-  lastRun: number|null = null;
-  oldestScheduledAt: number|null = null;
+  private emptyResolve: Function | null = null;
+  lastTrigger: number | null = null;
+  lastRun: number | null = null;
+  oldestScheduledAt: number | null = null;
 
   constructor(
-      private adapter: Adapter, private delay: number, private maxDelay: number,
-      private debug: DebugLogger) {}
+    private adapter: Adapter,
+    private delay: number,
+    private maxDelay: number,
+    private debug: DebugLogger,
+  ) {}
 
   async trigger(): Promise<void> {
     this.lastTrigger = this.adapter.time;
@@ -90,7 +93,7 @@ export class IdleScheduler {
     this.queue.push({desc, run});
 
     if (this.emptyResolve === null) {
-      this.empty = new Promise(resolve => {
+      this.empty = new Promise((resolve) => {
         this.emptyResolve = resolve;
       });
     }
@@ -105,6 +108,6 @@ export class IdleScheduler {
   }
 
   get taskDescriptions(): string[] {
-    return this.queue.map(task => task.desc);
+    return this.queue.map((task) => task.desc);
   }
 }

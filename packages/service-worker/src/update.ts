@@ -8,17 +8,19 @@
 
 import {Injectable} from '@angular/core';
 import {NEVER, Observable} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
 
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent, VersionEvent, VersionReadyEvent} from './low_level';
-
-
+import {
+  ERR_SW_NOT_SUPPORTED,
+  NgswCommChannel,
+  UnrecoverableStateEvent,
+  VersionEvent,
+} from './low_level';
 
 /**
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -34,27 +36,6 @@ export class SwUpdate {
    * activation.
    */
   readonly versionUpdates: Observable<VersionEvent>;
-
-  /**
-   * Emits an `UpdateAvailableEvent` event whenever a new app version is available.
-   *
-   * @deprecated Use {@link versionUpdates} instead.
-   *
-   * The behavior of `available` can be replicated by using `versionUpdates` by filtering for the
-   * `VersionReadyEvent`:
-   *
-   * {@example service-worker-getting-started/src/app/prompt-update.service.ts
-   * region='sw-replicate-available'}
-   */
-  readonly available: Observable<UpdateAvailableEvent>;
-
-  /**
-   * Emits an `UpdateActivatedEvent` event whenever the app has been updated to a new version.
-   *
-   * @deprecated Use the return value of {@link SwUpdate#activateUpdate} instead.
-   *
-   */
-  readonly activated: Observable<UpdateActivatedEvent>;
 
   /**
    * Emits an `UnrecoverableStateEvent` event whenever the version of the app used by the service
@@ -74,8 +55,6 @@ export class SwUpdate {
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
       this.versionUpdates = NEVER;
-      this.available = NEVER;
-      this.activated = NEVER;
       this.unrecoverable = NEVER;
       return;
     }
@@ -85,14 +64,6 @@ export class SwUpdate {
       'VERSION_READY',
       'NO_NEW_VERSION_DETECTED',
     ]);
-    this.available = this.versionUpdates.pipe(
-        filter((evt: VersionEvent): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
-        map(evt => ({
-              type: 'UPDATE_AVAILABLE',
-              current: evt.currentVersion,
-              available: evt.latestVersion,
-            })));
-    this.activated = this.sw.eventsOfType<UpdateActivatedEvent>('UPDATE_ACTIVATED');
     this.unrecoverable = this.sw.eventsOfType<UnrecoverableStateEvent>('UNRECOVERABLE_STATE');
   }
 
@@ -123,8 +94,8 @@ export class SwUpdate {
    * <div class="alert is-important">
    *
    * Updating a client without reloading can easily result in a broken application due to a version
-   * mismatch between the [application shell](guide/glossary#app-shell) and other page resources,
-   * such as [lazy-loaded chunks](guide/glossary#lazy-loading), whose filenames may change between
+   * mismatch between the application shell and other page resources,
+   * such as lazy-loaded chunks, whose filenames may change between
    * versions.
    *
    * Only use this method, if you are certain it is safe for your specific use case.

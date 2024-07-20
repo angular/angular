@@ -27,10 +27,6 @@ const semver = require('semver');
 const ignoreCommitPatterns = [
   'release:',
   'docs: release notes',
-  // These commits are created to update cli command docs sources with the most recent sha (stored
-  // in `aio/package.json`). Separate commits are generated for main and patch branches and since
-  // it's purely an infrastructure-related change, we ignore these commits while comparing main
-  // and patch diffs to look for delta.
   'build(docs-infra): upgrade cli command docs sources',
 ];
 
@@ -38,7 +34,7 @@ const ignoreCommitPatterns = [
 // to be present in patch branch.
 const ignoreFeatureCheckPatterns = [
   // It is ok and in fact desirable for dev-infra features to be on the patch branch.
-  'feat(dev-infra):'
+  'feat(dev-infra):',
 ];
 
 // String to be displayed as a version for initial commits in a branch
@@ -68,7 +64,7 @@ function maybeExtractReleaseVersion(commit) {
 
 // Checks whether commit message matches any patterns in ignore list.
 function shouldIgnoreCommit(commitMessage, ignorePatterns) {
-  return ignorePatterns.some(pattern => commitMessage.indexOf(pattern) > -1);
+  return ignorePatterns.some((pattern) => commitMessage.indexOf(pattern) > -1);
 }
 
 /**
@@ -92,7 +88,10 @@ function collectCommitsAsMap(rawGitCommits) {
       //
       // we extract only "feat: update the locale files" part and use it as a key, since commit SHA
       // and PR number may be different for the same commit in main and patch branches.
-      const key = commit.slice(11).replace(/\(\#\d+\)/g, '').trim();
+      const key = commit
+        .slice(11)
+        .replace(/\(\#\d+\)/g, '')
+        .trim();
       commitsMap.set(key, [commit, version]);
     }
   });
@@ -135,16 +134,17 @@ function listFeatures(commitsMap) {
 
 function getBranchByTag(tag) {
   const version = semver.parse(tag);
-  return `${version.major}.${version.minor}.x`;  // e.g. 9.0.x
+  return `${version.major}.${version.minor}.x`; // e.g. 9.0.x
 }
 
 function getLatestTag(tags) {
   // Exclude Next releases, since we cut them from main, so there is nothing to compare.
-  const isNotNextVersion = version => version.indexOf('-next') === -1;
-  return tags.filter(semver.valid)
-      .filter(isNotNextVersion)
-      .map(semver.clean)
-      .sort(semver.rcompare)[0];
+  const isNotNextVersion = (version) => version.indexOf('-next') === -1;
+  return tags
+    .filter(semver.valid)
+    .filter(isNotNextVersion)
+    .map(semver.clean)
+    .sort(semver.rcompare)[0];
 }
 
 // Main program
@@ -161,9 +161,11 @@ function main() {
 
   // Extract main-only and patch-only commits using `git log` command.
   const mainCommits = execGitCommand(
-      `git log --cherry-pick --oneline --right-only upstream/${branch}...upstream/main`);
+    `git log --cherry-pick --oneline --right-only upstream/${branch}...upstream/main`,
+  );
   const patchCommits = execGitCommand(
-      `git log --cherry-pick --oneline --left-only upstream/${branch}...upstream/main`);
+    `git log --cherry-pick --oneline --left-only upstream/${branch}...upstream/main`,
+  );
 
   // Post-process commits and convert raw data into a Map, so that we can diff it easier.
   const mainCommitsMap = collectCommitsAsMap(mainCommits);

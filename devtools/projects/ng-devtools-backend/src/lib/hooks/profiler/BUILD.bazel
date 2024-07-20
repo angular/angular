@@ -12,6 +12,7 @@ ts_library(
         "//devtools/projects/ng-devtools-backend/src/lib:utils",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
         "//devtools/projects/ng-devtools-backend/src/lib/hooks:identity_tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/protocol",
         "//packages/core",
         "@npm//rxjs",

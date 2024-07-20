@@ -15,7 +15,10 @@ import {isNamedDeclaration} from '../../util/src/typescript';
  * Find the name, if any, by which a node is exported from a given file.
  */
 export function findExportedNameOfNode(
-    target: ts.Node, file: ts.SourceFile, reflector: ReflectionHost): string|null {
+  target: ts.Node,
+  file: ts.SourceFile,
+  reflector: ReflectionHost,
+): string | null {
   const exports = reflector.getExportsOfModule(file);
   if (exports === null) {
     return null;
@@ -24,7 +27,7 @@ export function findExportedNameOfNode(
   const declaredName = isNamedDeclaration(target) ? target.name.text : null;
 
   // Look for the export which declares the node.
-  let foundExportName: string|null = null;
+  let foundExportName: string | null = null;
   for (const [exportName, declaration] of exports) {
     if (declaration.node !== target) {
       continue;

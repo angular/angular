@@ -42,11 +42,7 @@ ALL_PACKAGES = [
 # Packages used by integration tests
 INTEGRATION_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "angular-in-memory-web-api")
 
-# Packages used by example e2e tests
-AIO_EXAMPLE_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "@angular/benchpress")
-
 # Package names under //packages that have `files_for_docgen` targets
-# including files needed for AIO doc generation.
 DOCS_ENTRYPOINTS = [
     "animations",
     "animations/browser",
@@ -63,7 +59,6 @@ DOCS_ENTRYPOINTS = [
     "core/src/di/interface",
     "core/src/interface",
     "core/src/reflection",
-    "core/src/signals",
     "core/src/util",
     "core/testing",
     "elements",
@@ -93,6 +88,7 @@ DOCS_ENTRYPOINTS = [
     "platform-browser-dynamic",
     "platform-browser-dynamic/testing",
     "platform-browser/animations",
+    "platform-browser/animations/async",
     "platform-browser/testing",
     "platform-server",
     "platform-server/init",

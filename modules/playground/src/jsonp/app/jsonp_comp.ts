@@ -14,15 +14,13 @@ import {Component} from '@angular/core';
   template: `
     <h1>people</h1>
     <ul class="people">
-      <li *ngFor="let person of people">
-        hello, {{person.name}}
-      </li>
+      <li *ngFor="let person of people">hello, {{ person.name }}</li>
     </ul>
-  `
+  `,
 })
 export class JsonpCmp {
   people: Object;
   constructor(http: HttpClient) {
-    http.jsonp<Object>('./people.json', 'callback').subscribe((res: Object) => this.people = res);
+    http.jsonp<Object>('./people.json', 'callback').subscribe((res: Object) => (this.people = res));
   }
 }

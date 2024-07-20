@@ -13,8 +13,9 @@ import {Tree} from '@angular-devkit/schematics';
  * Gets all tsconfig paths from a CLI project by reading the workspace configuration
  * and looking for common tsconfig locations.
  */
-export async function getProjectTsConfigPaths(tree: Tree):
-    Promise<{buildPaths: string[]; testPaths: string[];}> {
+export async function getProjectTsConfigPaths(
+  tree: Tree,
+): Promise<{buildPaths: string[]; testPaths: string[]}> {
   // Start with some tsconfig paths that are generally used within CLI projects. Note
   // that we are not interested in IDE-specific tsconfig files (e.g. /tsconfig.json)
   const buildPaths = new Set<string>();
@@ -28,7 +29,7 @@ export async function getProjectTsConfigPaths(tree: Tree):
       }
 
       for (const [, options] of allTargetOptions(target)) {
-        const tsConfig = options.tsConfig;
+        const tsConfig = options['tsConfig'];
         // Filter out tsconfig files that don't exist in the CLI project.
         if (typeof tsConfig !== 'string' || !tree.exists(tsConfig)) {
           continue;
@@ -50,9 +51,9 @@ export async function getProjectTsConfigPaths(tree: Tree):
 }
 
 /** Get options for all configurations for the passed builder target. */
-function*
-    allTargetOptions(target: workspaces.TargetDefinition):
-        Iterable<[string | undefined, Record<string, json.JsonValue|undefined>]> {
+function* allTargetOptions(
+  target: workspaces.TargetDefinition,
+): Iterable<[string | undefined, Record<string, json.JsonValue | undefined>]> {
   if (target.options) {
     yield [undefined, target.options];
   }
@@ -85,7 +86,7 @@ function createHost(tree: Tree): workspaces.WorkspaceHost {
       // Approximate a directory check.
       // We don't need to consider empty directories and hence this is a good enough approach.
       // This is also per documentation, see:
-      // https://angular.io/guide/schematics-for-libraries#get-the-project-configuration
+      // https://angular.dev/tools/cli/schematics-for-libraries#get-the-project-configuration
       return !tree.exists(path) && tree.getDir(path).subfiles.length > 0;
     },
     async isFile(path: string): Promise<boolean> {

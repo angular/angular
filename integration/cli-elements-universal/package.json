@@ -9,8 +9,9 @@
     "test": "ng test && yarn e2e --configuration production && yarn test-ssr",
     "lint": "ng lint",
     "e2e": "ng e2e --port 0",
-    "pretest-ssr": "yarn ng run cli-elements-universal:app-shell:production",
-    "test-ssr": "node --eval \"assert(fs.readFileSync('dist/cli-elements-universal/browser/index.html', 'utf8').includes('<app-title-ce>'), 'Expected \\'index.html\\' to contain \\'<app-title-ce>\\'.');\""
+    "pretest-ssr": "yarn build",
+    "test-ssr": "node --eval \"assert(fs.readFileSync('dist/cli-elements-universal/browser/index.html', 'utf8').includes('<app-title-ce>'), 'Expected \\'index.html\\' to contain \\'<app-title-ce>\\'.');\"",
+    "serve:ssr:cli-elements-universal": "node dist/cli-elements-universal/server/server.mjs"
   },
   "private": true,
   "dependencies": {
@@ -31,9 +32,9 @@
     "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
     "@angular/cli": "file:../../node_modules/@angular/cli",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@types/express": "^4.17.17",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/node": "file:../../node_modules/@types/node",
-    "codelyzer": "^6.0.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~5.2.0",
@@ -43,7 +44,6 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "file:../../node_modules/protractor",
     "ts-node": "~8.3.0",
-    "tslint": "~6.1.0",
     "typescript": "file:../../node_modules/typescript"
   }
 }

@@ -30,7 +30,7 @@ export class MockFileSystemNative extends MockFileSystem {
   override join<T extends string>(basePath: T, ...paths: string[]): T {
     return NodeJSFileSystem.prototype.join.call(this, basePath, ...paths) as T;
   }
-  override relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath {
+  override relative<T extends PathString>(from: T, to: T): PathSegment | AbsoluteFsPath {
     return NodeJSFileSystem.prototype.relative.call(this, from, to);
   }
 

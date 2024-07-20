@@ -61,10 +61,6 @@
                             "title": "A path (relative to the test case) where a file containing expected output can be found",
                             "type": "string"
                           },
-                          "templatePipelineExpected": {
-                            "title": "A path (relative to the test case) where a file containing alternate expected output for the template pipeline can be found",
-                            "type": "string"
-                          },
                           "generated": {
                             "title": "A path (relative to the build output directory) where the compiled file can be found.",
                             "type": "string"
@@ -126,10 +122,6 @@
           },
           "skipForTemplatePipeline": {
             "title": "Set to true to skip this test when running with use_template_pipeline",
-            "type": "boolean"
-          },
-          "onlyForTemplatePipeline": {
-            "title": "If set to `true`, this test will only execute when the template pipeline is used",
             "type": "boolean"
           },
           "focusTest": {

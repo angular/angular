@@ -7,7 +7,7 @@
  */
 
 import * as o from '../../../../../output/output_ast';
-import {OpKind} from '../enums';
+import {OpKind, VariableFlags} from '../enums';
 import {Op, XrefId} from '../operations';
 import {SemanticVariable} from '../variable';
 
@@ -68,18 +68,25 @@ export interface VariableOp<OpT extends Op<OpT>> extends Op<OpT> {
    * Expression representing the value of the variable.
    */
   initializer: o.Expression;
+
+  flags: VariableFlags;
 }
 
 /**
  * Create a `VariableOp`.
  */
 export function createVariableOp<OpT extends Op<OpT>>(
-    xref: XrefId, variable: SemanticVariable, initializer: o.Expression): VariableOp<OpT> {
+  xref: XrefId,
+  variable: SemanticVariable,
+  initializer: o.Expression,
+  flags: VariableFlags,
+): VariableOp<OpT> {
   return {
     kind: OpKind.Variable,
     xref,
     variable,
     initializer,
+    flags,
     ...NEW_OP,
   };
 }
@@ -90,7 +97,7 @@ export function createVariableOp<OpT extends Op<OpT>>(
  * Used as a convenience via the spread operator (`...NEW_OP`) when creating new operations, and
  * ensures the fields are always in the same order.
  */
-export const NEW_OP: Pick<Op<any>, 'debugListId'|'prev'|'next'> = {
+export const NEW_OP: Pick<Op<any>, 'debugListId' | 'prev' | 'next'> = {
   debugListId: null,
   prev: null,
   next: null,

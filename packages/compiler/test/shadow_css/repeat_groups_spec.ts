@@ -10,15 +10,27 @@ import {repeatGroups} from '@angular/compiler/src/shadow_css';
 
 describe('ShadowCss, repeatGroups()', () => {
   it('should do nothing if `multiples` is 0', () => {
-    const groups = [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']];
+    const groups = [
+      ['a1', 'b1', 'c1'],
+      ['a2', 'b2', 'c2'],
+    ];
     repeatGroups(groups, 0);
-    expect(groups).toEqual([['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']]);
+    expect(groups).toEqual([
+      ['a1', 'b1', 'c1'],
+      ['a2', 'b2', 'c2'],
+    ]);
   });
 
   it('should do nothing if `multiples` is 1', () => {
-    const groups = [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']];
+    const groups = [
+      ['a1', 'b1', 'c1'],
+      ['a2', 'b2', 'c2'],
+    ];
     repeatGroups(groups, 1);
-    expect(groups).toEqual([['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']]);
+    expect(groups).toEqual([
+      ['a1', 'b1', 'c1'],
+      ['a2', 'b2', 'c2'],
+    ]);
   });
 
   it('should add clones of the original groups if `multiples` is greater than 1', () => {

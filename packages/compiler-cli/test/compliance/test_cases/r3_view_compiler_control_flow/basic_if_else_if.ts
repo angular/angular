@@ -4,12 +4,15 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#if value() === 1}
+      @if (value() === 1) {
         one
-        {:else if otherValue() === 2} two
-        {:else if message} three
-        {:else} four
-      {/if}
+      } @else if (otherValue() === 2) {
+        two
+      } @else if (message) {
+        three
+      } @else {
+        four
+      }
     </div>
   `,
 })

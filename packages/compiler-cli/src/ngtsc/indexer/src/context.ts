@@ -16,7 +16,7 @@ export interface ComponentMeta extends DirectiveMeta {
   /**
    * Unparsed selector of the directive, or null if the directive does not have a selector.
    */
-  selector: string|null;
+  selector: string | null;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface ComponentInfo {
   declaration: ClassDeclaration;
 
   /** Component template selector if it exists, otherwise null. */
-  selector: string|null;
+  selector: string | null;
 
   /**
    * BoundTarget containing the parsed template. Can also be used to query for directives used in

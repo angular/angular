@@ -8,13 +8,12 @@
 
 import {Byte} from '../util';
 
-import {BigIntExponentiation} from './big_integer';
 import * as i18n from './i18n_ast';
 
 /**
  * A lazily created TextEncoder instance for converting strings into UTF-8 bytes
  */
-let textEncoder: TextEncoder|undefined;
+let textEncoder: TextEncoder | undefined;
 
 /**
  * Return the message id or compute it using the XLIFF1 digest.
@@ -42,7 +41,7 @@ export function decimalDigest(message: i18n.Message): string {
  */
 export function computeDecimalDigest(message: i18n.Message): string {
   const visitor = new _SerializerIgnoreIcuExpVisitor();
-  const parts = message.nodes.map(a => a.visit(visitor, null));
+  const parts = message.nodes.map((a) => a.visit(visitor, null));
   return computeMsgId(parts.join(''), message.meaning);
 }
 
@@ -59,20 +58,22 @@ class _SerializerVisitor implements i18n.Visitor {
   }
 
   visitContainer(container: i18n.Container, context: any): any {
-    return `[${container.children.map(child => child.visit(this)).join(', ')}]`;
+    return `[${container.children.map((child) => child.visit(this)).join(', ')}]`;
   }
 
   visitIcu(icu: i18n.Icu, context: any): any {
-    const strCases =
-        Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
+    const strCases = Object.keys(icu.cases).map(
+      (k: string) => `${k} {${icu.cases[k].visit(this)}}`,
+    );
     return `{${icu.expression}, ${icu.type}, ${strCases.join(', ')}}`;
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context: any): any {
-    return ph.isVoid ?
-        `<ph tag name="${ph.startName}"/>` :
-        `<ph tag name="${ph.startName}">${
-            ph.children.map(child => child.visit(this)).join(', ')}</ph name="${ph.closeName}">`;
+    return ph.isVoid
+      ? `<ph tag name="${ph.startName}"/>`
+      : `<ph tag name="${ph.startName}">${ph.children
+          .map((child) => child.visit(this))
+          .join(', ')}</ph name="${ph.closeName}">`;
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context: any): any {
@@ -82,12 +83,18 @@ class _SerializerVisitor implements i18n.Visitor {
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     return `<ph icu name="${ph.name}">${ph.value.visit(this)}</ph>`;
   }
+
+  visitBlockPlaceholder(ph: i18n.BlockPlaceholder, context: any): any {
+    return `<ph block name="${ph.startName}">${ph.children
+      .map((child) => child.visit(this))
+      .join(', ')}</ph name="${ph.closeName}">`;
+  }
 }
 
 const serializerVisitor = new _SerializerVisitor();
 
 export function serializeNodes(nodes: i18n.Node[]): string[] {
-  return nodes.map(a => a.visit(serializerVisitor, null));
+  return nodes.map((a) => a.visit(serializerVisitor, null));
 }
 
 /**
@@ -120,13 +127,21 @@ export function sha1(str: string): string {
   const len = utf8.length * 8;
 
   const w = new Uint32Array(80);
-  let a = 0x67452301, b = 0xefcdab89, c = 0x98badcfe, d = 0x10325476, e = 0xc3d2e1f0;
+  let a = 0x67452301,
+    b = 0xefcdab89,
+    c = 0x98badcfe,
+    d = 0x10325476,
+    e = 0xc3d2e1f0;
 
-  words32[len >> 5] |= 0x80 << (24 - len % 32);
-  words32[((len + 64 >> 9) << 4) + 15] = len;
+  words32[len >> 5] |= 0x80 << (24 - (len % 32));
+  words32[(((len + 64) >> 9) << 4) + 15] = len;
 
   for (let i = 0; i < words32.length; i += 16) {
-    const h0 = a, h1 = b, h2 = c, h3 = d, h4 = e;
+    const h0 = a,
+      h1 = b,
+      h2 = c,
+      h3 = d,
+      h4 = e;
 
     for (let j = 0; j < 80; j++) {
       if (j < 16) {
@@ -190,7 +205,7 @@ function fk(index: number, b: number, c: number, d: number): [number, number] {
  * based on:
  * https://github.com/google/closure-compiler/blob/master/src/com/google/javascript/jscomp/GoogleJsMessageIdGenerator.java
  */
-export function fingerprint(str: string): [number, number] {
+export function fingerprint(str: string): bigint {
   textEncoder ??= new TextEncoder();
   const utf8 = textEncoder.encode(str);
   const view = new DataView(utf8.buffer, utf8.byteOffset, utf8.byteLength);
@@ -203,25 +218,27 @@ export function fingerprint(str: string): [number, number] {
     lo = lo ^ -0x6b5f56d8;
   }
 
-  return [hi, lo];
+  return (BigInt.asUintN(32, BigInt(hi)) << BigInt(32)) | BigInt.asUintN(32, BigInt(lo));
 }
 
 export function computeMsgId(msg: string, meaning: string = ''): string {
   let msgFingerprint = fingerprint(msg);
 
   if (meaning) {
-    const meaningFingerprint = fingerprint(meaning);
-    msgFingerprint = add64(rol64(msgFingerprint, 1), meaningFingerprint);
+    // Rotate the 64-bit message fingerprint one bit to the left and then add the meaning
+    // fingerprint.
+    msgFingerprint =
+      BigInt.asUintN(64, msgFingerprint << BigInt(1)) |
+      ((msgFingerprint >> BigInt(63)) & BigInt(1));
+    msgFingerprint += fingerprint(meaning);
   }
 
-  const hi = msgFingerprint[0];
-  const lo = msgFingerprint[1];
-
-  return wordsToDecimalString(hi & 0x7fffffff, lo);
+  return BigInt.asUintN(63, msgFingerprint).toString();
 }
 
 function hash32(view: DataView, length: number, c: number): number {
-  let a = 0x9e3779b9, b = 0x9e3779b9;
+  let a = 0x9e3779b9,
+    b = 0x9e3779b9;
   let index = 0;
 
   const end = length - 12;
@@ -230,7 +247,7 @@ function hash32(view: DataView, length: number, c: number): number {
     b += view.getUint32(index + 4, true);
     c += view.getUint32(index + 8, true);
     const res = mix(a, b, c);
-    a = res[0], b = res[1], c = res[2];
+    (a = res[0]), (b = res[1]), (c = res[2]);
   }
 
   const remainder = length - index;
@@ -284,20 +301,36 @@ function hash32(view: DataView, length: number, c: number): number {
   return mix(a, b, c)[2];
 }
 
-// clang-format off
 function mix(a: number, b: number, c: number): [number, number, number] {
-  a -= b; a -= c; a ^= c >>> 13;
-  b -= c; b -= a; b ^= a << 8;
-  c -= a; c -= b; c ^= b >>> 13;
-  a -= b; a -= c; a ^= c >>> 12;
-  b -= c; b -= a; b ^= a << 16;
-  c -= a; c -= b; c ^= b >>> 5;
-  a -= b; a -= c; a ^= c >>> 3;
-  b -= c; b -= a; b ^= a << 10;
-  c -= a; c -= b; c ^= b >>> 15;
+  a -= b;
+  a -= c;
+  a ^= c >>> 13;
+  b -= c;
+  b -= a;
+  b ^= a << 8;
+  c -= a;
+  c -= b;
+  c ^= b >>> 13;
+  a -= b;
+  a -= c;
+  a ^= c >>> 12;
+  b -= c;
+  b -= a;
+  b ^= a << 16;
+  c -= a;
+  c -= b;
+  c ^= b >>> 5;
+  a -= b;
+  a -= c;
+  a ^= c >>> 3;
+  b -= c;
+  b -= a;
+  b ^= a << 10;
+  c -= a;
+  c -= b;
+  c ^= b >>> 15;
   return [a, b, c];
 }
-// clang-format on
 
 // Utils
 
@@ -316,27 +349,9 @@ function add32to64(a: number, b: number): [number, number] {
   return [high >>> 16, (high << 16) | (low & 0xffff)];
 }
 
-function add64(a: [number, number], b: [number, number]): [number, number] {
-  const ah = a[0], al = a[1];
-  const bh = b[0], bl = b[1];
-  const result = add32to64(al, bl);
-  const carry = result[0];
-  const l = result[1];
-  const h = add32(add32(ah, bh), carry);
-  return [h, l];
-}
-
 // Rotate a 32b number left `count` position
 function rol32(a: number, count: number): number {
   return (a << count) | (a >>> (32 - count));
-}
-
-// Rotate a 64b number left `count` position
-function rol64(num: [number, number], count: number): [number, number] {
-  const hi = num[0], lo = num[1];
-  const h = (hi << count) | (lo >>> (32 - count));
-  const l = (lo << count) | (hi >>> (32 - count));
-  return [h, l];
 }
 
 function bytesToWords32(bytes: Byte[], endian: Endian): number[] {
@@ -362,37 +377,8 @@ function wordAt(bytes: Byte[], index: number, endian: Endian): number {
     }
   } else {
     for (let i = 0; i < 4; i++) {
-      word += byteAt(bytes, index + i) << 8 * i;
+      word += byteAt(bytes, index + i) << (8 * i);
     }
   }
   return word;
-}
-
-/**
- * Create a shared exponentiation pool for base-256 computations. This shared pool provides memoized
- * power-of-256 results with memoized power-of-two computations for efficient multiplication.
- *
- * For our purposes, this can be safely stored as a global without memory concerns. The reason is
- * that we encode two words, so only need the 0th (for the low word) and 4th (for the high word)
- * exponent.
- */
-const base256 = new BigIntExponentiation(256);
-
-/**
- * Represents two 32-bit words as a single decimal number. This requires a big integer storage
- * model as JS numbers are not accurate enough to represent the 64-bit number.
- *
- * Based on https://www.danvk.org/hex2dec.html
- */
-function wordsToDecimalString(hi: number, lo: number): string {
-  // Encode the four bytes in lo in the lower digits of the decimal number.
-  // Note: the multiplication results in lo itself but represented by a big integer using its
-  // decimal digits.
-  const decimal = base256.toThePowerOf(0).multiplyBy(lo);
-
-  // Encode the four bytes in hi above the four lo bytes. lo is a maximum of (2^8)^4, which is why
-  // this multiplication factor is applied.
-  base256.toThePowerOf(4).multiplyByAndAddTo(hi, decimal);
-
-  return decimal.toString();
 }

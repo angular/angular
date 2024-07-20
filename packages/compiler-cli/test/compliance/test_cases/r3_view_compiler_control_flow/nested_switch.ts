@@ -4,16 +4,27 @@ import {Component} from '@angular/core';
   template: `
     <div>
       {{message}}
-      {#switch value()}
-        {:case 0} case 0
-        {:case 1}
-          {#switch nestedValue()}
-            {:case 0} nested case 0
-            {:case 1} nested case 1
-            {:case 2} nested case 2
-          {/switch}
-        {:case 2} case 2
-      {/switch}
+      @switch (value()) {
+        @case (0) {
+          case 0
+        }
+        @case (1) {
+          @switch (nestedValue()) {
+            @case (0) {
+              nested case 0
+            }
+            @case (1) {
+              nested case 1
+            }
+            @case (2) {
+              nested case 2
+            }
+          }
+        }
+        @case (2) {
+          case 2
+        }
+      }
     </div>
   `,
 })

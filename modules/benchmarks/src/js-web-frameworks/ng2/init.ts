@@ -12,7 +12,6 @@ import {bindAction} from '../../util';
 
 import {JsWebFrameworksComponent, JsWebFrameworksModule, RowData} from './rows';
 
-
 function _random(max: number) {
   return Math.round(Math.random() * 1000) % max;
 }
@@ -22,25 +21,71 @@ function buildData(count: number): Array<RowData> {
   for (let i = 0; i < count; i++) {
     data.push({
       id: i,
-      label: ADJECTIVES[_random(ADJECTIVES.length)] + ' ' + COLOURS[_random(COLOURS.length)] + ' ' +
-          NOUNS[_random(NOUNS.length)]
+      label:
+        ADJECTIVES[_random(ADJECTIVES.length)] +
+        ' ' +
+        COLOURS[_random(COLOURS.length)] +
+        ' ' +
+        NOUNS[_random(NOUNS.length)],
     });
   }
   return data;
 }
 
 const ADJECTIVES = [
-  'pretty',      'large',   'big',       'small', 'tall',      'short',    'long',
-  'handsome',    'plain',   'quaint',    'clean', 'elegant',   'easy',     'angry',
-  'crazy',       'helpful', 'mushy',     'odd',   'unsightly', 'adorable', 'important',
-  'inexpensive', 'cheap',   'expensive', 'fancy'
+  'pretty',
+  'large',
+  'big',
+  'small',
+  'tall',
+  'short',
+  'long',
+  'handsome',
+  'plain',
+  'quaint',
+  'clean',
+  'elegant',
+  'easy',
+  'angry',
+  'crazy',
+  'helpful',
+  'mushy',
+  'odd',
+  'unsightly',
+  'adorable',
+  'important',
+  'inexpensive',
+  'cheap',
+  'expensive',
+  'fancy',
 ];
 const COLOURS = [
-  'red', 'yellow', 'blue', 'green', 'pink', 'brown', 'purple', 'brown', 'white', 'black', 'orange'
+  'red',
+  'yellow',
+  'blue',
+  'green',
+  'pink',
+  'brown',
+  'purple',
+  'brown',
+  'white',
+  'black',
+  'orange',
 ];
 const NOUNS = [
-  'table', 'chair', 'house', 'bbq', 'desk', 'car', 'pony', 'cookie', 'sandwich', 'burger', 'pizza',
-  'mouse', 'keyboard'
+  'table',
+  'chair',
+  'house',
+  'bbq',
+  'desk',
+  'car',
+  'pony',
+  'cookie',
+  'sandwich',
+  'burger',
+  'pizza',
+  'mouse',
+  'keyboard',
 ];
 
 export function init(moduleRef: NgModuleRef<JsWebFrameworksModule>) {

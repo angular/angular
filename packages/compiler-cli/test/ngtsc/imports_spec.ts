@@ -33,7 +33,9 @@ runInEachFileSystem(() => {
     });
 
     it('should report an error when using a directive outside of rootDirs', () => {
-      env.write('/app/module.ts', `
+      env.write(
+        '/app/module.ts',
+        `
         import {NgModule} from '@angular/core';
         import {ExternalDir} from '../lib/dir';
         import {MyComponent} from './comp';
@@ -42,33 +44,42 @@ runInEachFileSystem(() => {
           declarations: [ExternalDir, MyComponent],
         })
         export class MyModule {}
-      `);
-      env.write('/app/comp.ts', `
+      `,
+      );
+      env.write(
+        '/app/comp.ts',
+        `
         import {Component} from '@angular/core';
 
         @Component({
           template: '<div external></div>',
         })
         export class MyComponent {}
-      `);
-      env.write('/lib/dir.ts', `
+      `,
+      );
+      env.write(
+        '/lib/dir.ts',
+        `
         import {Directive} from '@angular/core';
 
         @Directive({selector: '[external]'})
         export class ExternalDir {}
-      `);
+      `,
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
-          .toEqual(`Unable to import class ExternalDir.
+        .toEqual(`Unable to import class ExternalDir.
   The file ${absoluteFrom('/lib/dir.ts')} is outside of the configured 'rootDir'.`);
       expect(diags[0].file!.fileName).toEqual(absoluteFrom('/app/module.ts'));
       expect(getDiagnosticSourceCode(diags[0])).toEqual('ExternalDir');
     });
 
     it('should report an error when a library entry-point does not export the symbol', () => {
-      env.write('/app/module.ts', `
+      env.write(
+        '/app/module.ts',
+        `
         import {NgModule} from '@angular/core';
         import {ExternalModule} from 'lib';
         import {MyComponent} from './comp';
@@ -78,35 +89,45 @@ runInEachFileSystem(() => {
           declarations: [MyComponent],
         })
         export class MyModule {}
-      `);
-      env.write('/app/comp.ts', `
+      `,
+      );
+      env.write(
+        '/app/comp.ts',
+        `
         import {Component} from '@angular/core';
 
         @Component({
           template: '<div external></div>',
         })
         export class MyComponent {}
-      `);
-      env.write('/node_modules/lib/index.d.ts', `
+      `,
+      );
+      env.write(
+        '/node_modules/lib/index.d.ts',
+        `
         import {ɵɵNgModuleDeclaration} from '@angular/core';
         import {ExternalDir} from './dir';
 
         export class ExternalModule {
           static ɵmod: ɵɵNgModuleDeclaration<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
         }
-      `);
-      env.write('/node_modules/lib/dir.d.ts', `
+      `,
+      );
+      env.write(
+        '/node_modules/lib/dir.d.ts',
+        `
         import {ɵɵDirectiveDeclaration} from '@angular/core';
 
         export class ExternalDir {
           static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[external]', never, never, never, never>;
         }
-      `);
+      `,
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
-          .toEqual(`Unable to import directive ExternalDir.
+        .toEqual(`Unable to import directive ExternalDir.
   The symbol is not exported from ${absoluteFrom('/node_modules/lib/index.d.ts')} (module 'lib').`);
       expect(diags[0].file!.fileName).toEqual(absoluteFrom('/app/comp.ts'));
       expect(getDiagnosticSourceCode(diags[0])).toEqual('MyComponent');

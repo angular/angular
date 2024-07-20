@@ -8,14 +8,20 @@
 
 import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
-import {ComponentType, DependencyTypeList, DirectiveType, NgModuleScopeInfoFromDecorator, PipeType} from '../interfaces/definition';
+import {
+  ComponentType,
+  DependencyTypeList,
+  DirectiveType,
+  NgModuleScopeInfoFromDecorator,
+  PipeType,
+} from '../interfaces/definition';
 
 /**
  * Represents the set of dependencies of a type in a certain context.
  */
 interface ScopeData {
   pipes: Set<PipeType<any>>;
-  directives: Set<DirectiveType<any>|ComponentType<any>|Type<any>>;
+  directives: Set<DirectiveType<any> | ComponentType<any> | Type<any>>;
 
   /**
    * If true it indicates that calculating this scope somehow was not successful. The consumers
@@ -29,6 +35,16 @@ interface ScopeData {
   isPoisoned?: boolean;
 }
 
+/**
+ * Represents scope data for standalone components as calculated during runtime by the deps
+ * tracker.
+ */
+interface StandaloneCompScopeData extends ScopeData {
+  // Standalone components include the imported NgModules in their dependencies in order to
+  // determine their injector info. The following field stores the set of such NgModules.
+  ngModules: Set<NgModuleType<any>>;
+}
+
 /** Represents scope data for NgModule as calculated during runtime by the deps tracker. */
 export interface NgModuleScope {
   compilation: ScopeData;
@@ -39,7 +55,7 @@ export interface NgModuleScope {
  * Represents scope data for standalone component as calculated during runtime by the deps tracker.
  */
 export interface StandaloneComponentScope {
-  compilation: ScopeData;
+  compilation: StandaloneCompScopeData;
 }
 
 /** Component dependencies info as calculated during runtime by the deps tracker. */
@@ -65,8 +81,10 @@ export interface DepsTrackerApi {
    * The implementation is expected to use some caching mechanism in order to optimize the resources
    * needed to do this computation.
    */
-  getComponentDependencies(cmp: ComponentType<any>, rawImports?: (Type<any>|(() => Type<any>))[]):
-      ComponentDependencies;
+  getComponentDependencies(
+    cmp: ComponentType<any>,
+    rawImports?: (Type<any> | (() => Type<any>))[],
+  ): ComponentDependencies;
 
   /**
    * Registers an NgModule into the tracker with the given scope info.
@@ -105,6 +123,13 @@ export interface DepsTrackerApi {
    * `clearScopeCacheFor` method.
    */
   getStandaloneComponentScope(
-      type: ComponentType<any>,
-      rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope;
+    type: ComponentType<any>,
+    rawImports: (Type<any> | (() => Type<any>))[],
+  ): StandaloneComponentScope;
+
+  /**
+   * Checks if the NgModule declaring the component is not loaded into the browser yet. Always
+   * returns false for standalone components.
+   */
+  isOrphanComponent(cmp: ComponentType<any>): boolean;
 }

@@ -6,7 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, createComponent, createEnvironmentInjector, DestroyRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectFlags, InjectionToken, INJECTOR, Injector, NgModuleRef, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  createComponent,
+  createEnvironmentInjector,
+  DestroyRef,
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentInjector,
+  inject,
+  InjectFlags,
+  InjectionToken,
+  INJECTOR,
+  Injector,
+  NgModuleRef,
+  ViewContainerRef,
+} from '@angular/core';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {TestBed} from '@angular/core/testing';
@@ -18,7 +32,7 @@ describe('environment injector', () => {
     let destroyed = false;
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
     const envInjector = createEnvironmentInjector([Service], parentEnvInjector) as R3Injector;
-    envInjector.onDestroy(() => destroyed = true);
+    envInjector.onDestroy(() => (destroyed = true));
 
     const service = envInjector.get(Service);
     expect(service).toBeInstanceOf(Service);
@@ -52,8 +66,10 @@ describe('environment injector', () => {
     class Service {}
 
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
-    const envInjector =
-        createEnvironmentInjector([], createEnvironmentInjector([Service], parentEnvInjector));
+    const envInjector = createEnvironmentInjector(
+      [],
+      createEnvironmentInjector([Service], parentEnvInjector),
+    );
     expect(envInjector.get(Service)).toBeInstanceOf(Service);
   });
 
@@ -62,8 +78,9 @@ describe('environment injector', () => {
 
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
     const envInjector = createEnvironmentInjector(
-        [{provide: token, useValue: 'child'}],
-        createEnvironmentInjector([{provide: token, useValue: 'parent'}], parentEnvInjector));
+      [{provide: token, useValue: 'child'}],
+      createEnvironmentInjector([{provide: token, useValue: 'parent'}], parentEnvInjector),
+    );
     expect(envInjector.get(token)).toBe('child');
   });
 
@@ -100,44 +117,49 @@ describe('environment injector', () => {
     expect(ngModuleRef.instance).toBeNull();
   });
 
-  it('should expose the ComponentFactoryResolver token bound to env injector with specified providers',
-     () => {
-       class Service {}
+  it('should expose the ComponentFactoryResolver token bound to env injector with specified providers', () => {
+    class Service {}
 
-       @Component({selector: 'test-cmp'})
-       class TestComponent {
-         constructor(readonly service: Service) {}
-       }
+    @Component({selector: 'test-cmp'})
+    class TestComponent {
+      constructor(readonly service: Service) {}
+    }
 
-       const parentEnvInjector = TestBed.inject(EnvironmentInjector);
-       const environmentInjector = createEnvironmentInjector([Service], parentEnvInjector);
-       const cRef = createComponent(TestComponent, {environmentInjector});
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const environmentInjector = createEnvironmentInjector([Service], parentEnvInjector);
+    const cRef = createComponent(TestComponent, {environmentInjector});
 
-       expect(cRef.instance.service).toBeInstanceOf(Service);
-     });
+    expect(cRef.instance.service).toBeInstanceOf(Service);
+  });
 
   it('should support the ENVIRONMENT_INITIALIZER multi-token', () => {
     let initialized = false;
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
     createEnvironmentInjector(
-        [{
+      [
+        {
           provide: ENVIRONMENT_INITIALIZER,
-          useValue: () => initialized = true,
+          useValue: () => (initialized = true),
           multi: true,
-        }],
-        parentEnvInjector);
+        },
+      ],
+      parentEnvInjector,
+    );
 
     expect(initialized).toBeTrue();
   });
 
   it('should throw when the ENVIRONMENT_INITIALIZER is not a multi-token', () => {
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
-    const providers = [{
-      provide: ENVIRONMENT_INITIALIZER,
-      useValue: () => {},
-    }];
-    expect(() => createEnvironmentInjector(providers, parentEnvInjector))
-        .toThrowMatching((e: RuntimeError) => e.code === RuntimeErrorCode.INVALID_MULTI_PROVIDER);
+    const providers = [
+      {
+        provide: ENVIRONMENT_INITIALIZER,
+        useValue: () => {},
+      },
+    ];
+    expect(() => createEnvironmentInjector(providers, parentEnvInjector)).toThrowMatching(
+      (e: RuntimeError) => e.code === RuntimeErrorCode.INVALID_MULTI_PROVIDER,
+    );
   });
 
   it('should adopt environment-scoped providers', () => {
@@ -151,7 +173,7 @@ describe('environment injector', () => {
   });
 
   describe('runInContext()', () => {
-    it('should return the function\'s return value', () => {
+    it("should return the function's return value", () => {
       const injector = TestBed.inject(EnvironmentInjector);
       const returnValue = injector.runInContext(() => 3);
       expect(returnValue).toBe(3);
@@ -173,7 +195,9 @@ describe('environment injector', () => {
     it('should make inject() available', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
       const injector = createEnvironmentInjector(
-          [{provide: TOKEN, useValue: 'from injector'}], TestBed.inject(EnvironmentInjector));
+        [{provide: TOKEN, useValue: 'from injector'}],
+        TestBed.inject(EnvironmentInjector),
+      );
 
       const result = injector.runInContext(() => inject(TOKEN));
       expect(result).toEqual('from injector');
@@ -189,9 +213,11 @@ describe('environment injector', () => {
     it('should properly clean up after the function throws', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
       const injector = TestBed.inject(EnvironmentInjector);
-      expect(() => injector.runInContext(() => {
-        throw new Error('crashes!');
-      })).toThrow();
+      expect(() =>
+        injector.runInContext(() => {
+          throw new Error('crashes!');
+        }),
+      ).toThrow();
       expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
     });
 
@@ -214,8 +240,9 @@ describe('environment injector', () => {
 
         // Attempt to inject ViewContainerRef within the environment injector's context. This should
         // not be available, so the result should be `null`.
-        vcrFromEnvContext =
-            this.envInjector.runInContext(() => inject(ViewContainerRef, InjectFlags.Optional));
+        vcrFromEnvContext = this.envInjector.runInContext(() =>
+          inject(ViewContainerRef, InjectFlags.Optional),
+        );
       }
 
       const instance = TestBed.createComponent(TestCmp).componentInstance;
@@ -231,8 +258,10 @@ describe('environment injector', () => {
       });
 
       const parentInjector = TestBed.inject(EnvironmentInjector);
-      const childInjector =
-          createEnvironmentInjector([{provide: TOKEN, useValue: 'from child'}], parentInjector);
+      const childInjector = createEnvironmentInjector(
+        [{provide: TOKEN, useValue: 'from child'}],
+        parentInjector,
+      );
 
       const results = parentInjector.runInContext(() => {
         const fromParentBefore = inject(TOKEN);

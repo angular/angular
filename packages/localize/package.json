@@ -16,7 +16,7 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^16.14.0 || >=18.10.0"
+    "node": "^18.19.1 || ^20.11.1 || >=22.0.0"
   },
   "repository": {
     "type": "git",
@@ -34,8 +34,9 @@
     "./fesm2022/init.mjs"
   ],
   "dependencies": {
-    "@babel/core": "7.22.5",
-    "fast-glob": "3.3.1",
+    "@babel/core": "7.24.9",
+    "@types/babel__core": "7.20.5",
+    "fast-glob": "3.3.2",
     "yargs": "^17.2.1"
   },
   "peerDependencies": {

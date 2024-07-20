@@ -11,25 +11,32 @@ describe('messages utils', () => {
   describe('parseMessage', () => {
     it('should use the custom id parsed from the metadata for the message id, if available', () => {
       const message = parseMessage(
-          makeTemplateObject(
-              [':@@custom-message-id:a', ':one:b', ':two:c'],
-              [':@@custom-message-id:a', ':one:b', ':two:c']),
-          [1, 2]);
+        makeTemplateObject(
+          [':@@custom-message-id:a', ':one:b', ':two:c'],
+          [':@@custom-message-id:a', ':one:b', ':two:c'],
+        ),
+        [1, 2],
+      );
       expect(message.customId).toEqual('custom-message-id');
       expect(message.id).toEqual(message.customId!);
     });
 
     it('should compute the translation key if no metadata', () => {
       const message = parseMessage(
-          makeTemplateObject(['a', ':one:b', ':two:c'], ['a', ':one:b', ':two:c']), [1, 2]);
+        makeTemplateObject(['a', ':one:b', ':two:c'], ['a', ':one:b', ':two:c']),
+        [1, 2],
+      );
       expect(message.id).toEqual('8865273085679272414');
     });
 
     it('should compute the translation key if no custom id in the metadata', () => {
       const message = parseMessage(
-          makeTemplateObject(
-              [':description:a', ':one:b', ':two:c'], [':description:a', ':one:b', ':two:c']),
-          [1, 2]);
+        makeTemplateObject(
+          [':description:a', ':one:b', ':two:c'],
+          [':description:a', ':one:b', ':two:c'],
+        ),
+        [1, 2],
+      );
       expect(message.id).toEqual('8865273085679272414');
     });
 
@@ -44,26 +51,32 @@ describe('messages utils', () => {
 
     it('should capture legacy ids if available', () => {
       const message1 = parseMessage(
-          makeTemplateObject(
-              [':␟legacy-1␟legacy-2␟legacy-3:a', ':one:b', ':two:c'],
-              [':␟legacy-1␟legacy-2␟legacy-3:a', ':one:b', ':two:c']),
-          [1, 2]);
+        makeTemplateObject(
+          [':␟legacy-1␟legacy-2␟legacy-3:a', ':one:b', ':two:c'],
+          [':␟legacy-1␟legacy-2␟legacy-3:a', ':one:b', ':two:c'],
+        ),
+        [1, 2],
+      );
       expect(message1.id).toEqual('8865273085679272414');
       expect(message1.legacyIds).toEqual(['legacy-1', 'legacy-2', 'legacy-3']);
 
       const message2 = parseMessage(
-          makeTemplateObject(
-              [':@@custom-message-id␟legacy-message-id:a', ':one:b', ':two:c'],
-              [':@@custom-message-id␟legacy-message-id:a', ':one:b', ':two:c']),
-          [1, 2]);
+        makeTemplateObject(
+          [':@@custom-message-id␟legacy-message-id:a', ':one:b', ':two:c'],
+          [':@@custom-message-id␟legacy-message-id:a', ':one:b', ':two:c'],
+        ),
+        [1, 2],
+      );
       expect(message2.id).toEqual('custom-message-id');
       expect(message2.legacyIds).toEqual(['legacy-message-id']);
 
       const message3 = parseMessage(
-          makeTemplateObject(
-              [':@@custom-message-id:a', ':one:b', ':two:c'],
-              [':@@custom-message-id:a', ':one:b', ':two:c']),
-          [1, 2]);
+        makeTemplateObject(
+          [':@@custom-message-id:a', ':one:b', ':two:c'],
+          [':@@custom-message-id:a', ':one:b', ':two:c'],
+        ),
+        [1, 2],
+      );
       expect(message3.id).toEqual('custom-message-id');
       expect(message3.legacyIds).toEqual([]);
     });
@@ -84,7 +97,9 @@ describe('messages utils', () => {
 
     it('should ignore placeholder blocks whose markers have been escaped', () => {
       const message = parseMessage(
-          makeTemplateObject(['a', ':one:b', ':two:c'], ['a', '\\:one:b', '\\:two:c']), [1, 2]);
+        makeTemplateObject(['a', ':one:b', ':two:c'], ['a', '\\:one:b', '\\:two:c']),
+        [1, 2],
+      );
       expect(message.id).toEqual('2623373088949454037');
     });
 
@@ -96,14 +111,18 @@ describe('messages utils', () => {
       expect(message1.placeholderNames).toEqual([]);
 
       const message2 = parseMessage(
-          makeTemplateObject([':meaning|description:abc'], [':meaning|description:abc']), []);
+        makeTemplateObject([':meaning|description:abc'], [':meaning|description:abc']),
+        [],
+      );
       expect(message2.messageParts).toEqual(['abc']);
       expect(message2.meaning).toEqual('meaning');
       expect(message2.description).toEqual('description');
       expect(message2.placeholderNames).toEqual([]);
 
       const message3 = parseMessage(
-          makeTemplateObject(['a', ':custom:b', 'c'], ['a', ':custom:b', 'c']), [0, 1]);
+        makeTemplateObject(['a', ':custom:b', 'c'], ['a', ':custom:b', 'c']),
+        [0, 1],
+      );
       expect(message3.messageParts).toEqual(['a', 'b', 'c']);
       expect(message3.meaning).toEqual('');
       expect(message3.description).toEqual('');
@@ -112,7 +131,9 @@ describe('messages utils', () => {
 
     it('should build a map of named placeholders to expressions', () => {
       const message = parseMessage(
-          makeTemplateObject(['a', ':one:b', ':two:c'], ['a', ':one:b', ':two:c']), [1, 2]);
+        makeTemplateObject(['a', ':one:b', ':two:c'], ['a', ':one:b', ':two:c']),
+        [1, 2],
+      );
       expect(message.substitutions).toEqual({one: 1, two: 2});
     });
 
@@ -128,8 +149,10 @@ describe('messages utils', () => {
     });
 
     it('should return just the text and block if there is one', () => {
-      expect(splitBlock(':block info:abc def', ':block info:abc def'))
-          .toEqual({text: 'abc def', block: 'block info'});
+      expect(splitBlock(':block info:abc def', ':block info:abc def')).toEqual({
+        text: 'abc def',
+        block: 'block info',
+      });
     });
 
     it('should handle an empty block if there is one', () => {
@@ -137,26 +160,29 @@ describe('messages utils', () => {
     });
 
     it('should error on an unterminated block', () => {
-      expect(() => splitBlock(':abc def', ':abc def'))
-          .toThrowError('Unterminated $localize metadata block in ":abc def".');
+      expect(() => splitBlock(':abc def', ':abc def')).toThrowError(
+        'Unterminated $localize metadata block in ":abc def".',
+      );
     });
 
     it('should handle escaped block markers', () => {
       expect(splitBlock(':part of the message:abc def', '\\:part of the message:abc def')).toEqual({
-        text: ':part of the message:abc def'
+        text: ':part of the message:abc def',
       });
-      expect(splitBlock(
-                 ':block with escaped : in it:abc def', ':block with escaped \\: in it:abc def'))
-          .toEqual({text: 'abc def', block: 'block with escaped : in it'});
+      expect(
+        splitBlock(':block with escaped : in it:abc def', ':block with escaped \\: in it:abc def'),
+      ).toEqual({text: 'abc def', block: 'block with escaped : in it'});
     });
   });
 
   describe('findEndOfBlock()', () => {
     it('should throw error if there is no end of block marker', () => {
-      expect(() => findEndOfBlock(':some text', ':some text'))
-          .toThrowError('Unterminated $localize metadata block in ":some text".');
-      expect(() => findEndOfBlock(':escaped colon:', ':escaped colon\\:'))
-          .toThrowError('Unterminated $localize metadata block in ":escaped colon\\:".');
+      expect(() => findEndOfBlock(':some text', ':some text')).toThrowError(
+        'Unterminated $localize metadata block in ":some text".',
+      );
+      expect(() => findEndOfBlock(':escaped colon:', ':escaped colon\\:')).toThrowError(
+        'Unterminated $localize metadata block in ":escaped colon\\:".',
+      );
     });
 
     it('should return index of the end of block marker', () => {
@@ -167,8 +193,9 @@ describe('messages utils', () => {
       expect(findEndOfBlock('::::', ':\\:\\::')).toEqual(3);
       expect(findEndOfBlock(':block::', ':block\\::')).toEqual(7);
       expect(findEndOfBlock(':block:more:some text', ':block\\:more:some text')).toEqual(11);
-      expect(findEndOfBlock(':block:more:and-more:some text', ':block\\:more\\:and-more:some text'))
-          .toEqual(20);
+      expect(
+        findEndOfBlock(':block:more:and-more:some text', ':block\\:more\\:and-more:some text'),
+      ).toEqual(20);
     });
   });
 
@@ -183,82 +210,89 @@ describe('messages utils', () => {
         description: 'description',
         meaning: undefined,
         customId: undefined,
-        legacyIds: []
+        legacyIds: [],
       });
       expect(parseMetadata(':meaning|:abc def', ':meaning|:abc def')).toEqual({
         text: 'abc def',
         description: undefined,
         meaning: 'meaning',
         customId: undefined,
-        legacyIds: []
+        legacyIds: [],
       });
       expect(parseMetadata(':@@message-id:abc def', ':@@message-id:abc def')).toEqual({
         text: 'abc def',
         description: undefined,
         meaning: undefined,
         customId: 'message-id',
-        legacyIds: []
+        legacyIds: [],
       });
-      expect(parseMetadata(':meaning|description:abc def', ':meaning|description:abc def'))
-          .toEqual({
-            text: 'abc def',
-            description: 'description',
-            meaning: 'meaning',
-            customId: undefined,
-            legacyIds: []
-          });
-      expect(parseMetadata(':description@@message-id:abc def', ':description@@message-id:abc def'))
-          .toEqual({
-            text: 'abc def',
-            description: 'description',
-            meaning: undefined,
-            customId: 'message-id',
-            legacyIds: []
-          });
-      expect(parseMetadata(':meaning|@@message-id:abc def', ':meaning|@@message-id:abc def'))
-          .toEqual({
-            text: 'abc def',
-            description: undefined,
-            meaning: 'meaning',
-            customId: 'message-id',
-            legacyIds: []
-          });
-      expect(parseMetadata(
-                 ':description@@message-id␟legacy-1␟legacy-2␟legacy-3:abc def',
-                 ':description@@message-id␟legacy-1␟legacy-2␟legacy-3:abc def'))
-          .toEqual({
-            text: 'abc def',
-            description: 'description',
-            meaning: undefined,
-            customId: 'message-id',
-            legacyIds: ['legacy-1', 'legacy-2', 'legacy-3']
-          });
-      expect(parseMetadata(
-                 ':meaning|@@message-id␟legacy-message-id:abc def',
-                 ':meaning|@@message-id␟legacy-message-id:abc def'))
-          .toEqual({
-            text: 'abc def',
-            description: undefined,
-            meaning: 'meaning',
-            customId: 'message-id',
-            legacyIds: ['legacy-message-id']
-          });
-      expect(parseMetadata(
-                 ':meaning|␟legacy-message-id:abc def', ':meaning|␟legacy-message-id:abc def'))
-          .toEqual({
-            text: 'abc def',
-            description: undefined,
-            meaning: 'meaning',
-            customId: undefined,
-            legacyIds: ['legacy-message-id']
-          });
+      expect(parseMetadata(':meaning|description:abc def', ':meaning|description:abc def')).toEqual(
+        {
+          text: 'abc def',
+          description: 'description',
+          meaning: 'meaning',
+          customId: undefined,
+          legacyIds: [],
+        },
+      );
+      expect(
+        parseMetadata(':description@@message-id:abc def', ':description@@message-id:abc def'),
+      ).toEqual({
+        text: 'abc def',
+        description: 'description',
+        meaning: undefined,
+        customId: 'message-id',
+        legacyIds: [],
+      });
+      expect(
+        parseMetadata(':meaning|@@message-id:abc def', ':meaning|@@message-id:abc def'),
+      ).toEqual({
+        text: 'abc def',
+        description: undefined,
+        meaning: 'meaning',
+        customId: 'message-id',
+        legacyIds: [],
+      });
+      expect(
+        parseMetadata(
+          ':description@@message-id␟legacy-1␟legacy-2␟legacy-3:abc def',
+          ':description@@message-id␟legacy-1␟legacy-2␟legacy-3:abc def',
+        ),
+      ).toEqual({
+        text: 'abc def',
+        description: 'description',
+        meaning: undefined,
+        customId: 'message-id',
+        legacyIds: ['legacy-1', 'legacy-2', 'legacy-3'],
+      });
+      expect(
+        parseMetadata(
+          ':meaning|@@message-id␟legacy-message-id:abc def',
+          ':meaning|@@message-id␟legacy-message-id:abc def',
+        ),
+      ).toEqual({
+        text: 'abc def',
+        description: undefined,
+        meaning: 'meaning',
+        customId: 'message-id',
+        legacyIds: ['legacy-message-id'],
+      });
+      expect(
+        parseMetadata(':meaning|␟legacy-message-id:abc def', ':meaning|␟legacy-message-id:abc def'),
+      ).toEqual({
+        text: 'abc def',
+        description: undefined,
+        meaning: 'meaning',
+        customId: undefined,
+        legacyIds: ['legacy-message-id'],
+      });
 
       expect(parseMetadata(':␟legacy-message-id:abc def', ':␟legacy-message-id:abc def')).toEqual({
         text: 'abc def',
         description: undefined,
         meaning: undefined,
         customId: undefined,
-        legacyIds: ['legacy-message-id']
+        legacyIds: ['legacy-message-id'],
       });
     });
 
@@ -268,13 +302,14 @@ describe('messages utils', () => {
         meaning: undefined,
         description: undefined,
         customId: undefined,
-        legacyIds: []
+        legacyIds: [],
       });
     });
 
     it('should handle escaped block markers', () => {
-      expect(parseMetadata(':part of the message:abc def', '\\:part of the message:abc def'))
-          .toEqual({text: ':part of the message:abc def'});
+      expect(
+        parseMetadata(':part of the message:abc def', '\\:part of the message:abc def'),
+      ).toEqual({text: ':part of the message:abc def'});
     });
   });
 });

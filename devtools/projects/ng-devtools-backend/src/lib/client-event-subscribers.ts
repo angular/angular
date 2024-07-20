@@ -6,25 +6,66 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentExplorerViewQuery, ComponentType, DevToolsNode, DirectivePosition, DirectiveType, ElementPosition, Events, MessageBus, ProfilerFrame,} from 'protocol';
+import {
+  ComponentExplorerViewQuery,
+  ComponentType,
+  DevToolsNode,
+  DirectivePosition,
+  DirectiveType,
+  ElementPosition,
+  Events,
+  MessageBus,
+  ProfilerFrame,
+  SerializedInjector,
+  SerializedProviderRecord,
+} from 'protocol';
 import {debounceTime} from 'rxjs/operators';
+import {
+  appIsAngularInDevMode,
+  appIsAngularIvy,
+  appIsSupportedAngularVersion,
+  getAngularVersion,
+  isHydrationEnabled,
+} from 'shared-utils';
 
-import {appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from './angular-check';
 import {ComponentInspector} from './component-inspector/component-inspector';
-import {getLatestComponentState, queryDirectiveForest, updateState} from './component-tree';
+import {
+  getElementInjectorElement,
+  getInjectorFromElementNode,
+  getInjectorProviders,
+  getInjectorResolutionPath,
+  getLatestComponentState,
+  idToInjector,
+  injectorsSeen,
+  isElementInjector,
+  nodeInjectorToResolutionPath,
+  queryDirectiveForest,
+  serializeProviderRecord,
+  serializeResolutionPath,
+  updateState,
+} from './component-tree';
 import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
+import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
-import {runOutsideAngular} from './utils';
+import {runOutsideAngular, unwrapSignal} from './utils';
+import {DirectiveForestHooks} from './hooks/hooks';
 
-export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
+export const subscribeToClientEvents = (
+  messageBus: MessageBus<Events>,
+  depsForTestOnly?: {
+    directiveForestHooks?: typeof DirectiveForestHooks;
+  },
+): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
   messageBus.on(
-      'getLatestComponentExplorerView', getLatestComponentExplorerViewCallback(messageBus));
+    'getLatestComponentExplorerView',
+    getLatestComponentExplorerViewCallback(messageBus),
+  );
 
   messageBus.on('queryNgAvailability', checkForAngularCallback(messageBus));
 
@@ -41,6 +82,14 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
   messageBus.on('enableTimingAPI', enableTimingAPI);
   messageBus.on('disableTimingAPI', disableTimingAPI);
 
+  messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
+
+  messageBus.on('logProvider', logProvider);
+
+  messageBus.on('log', ({message, level}) => {
+    console[level](`[Angular DevTools]: ${message}`);
+  });
+
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     setupInspector(messageBus);
     // Often websites have `scroll` event listener which triggers
@@ -48,9 +97,9 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
     // update requests, instead we want to request an update at most
     // once every 250ms
     runOutsideAngular(() => {
-      initializeOrGetDirectiveForestHooks()
-          .profiler.changeDetection$.pipe(debounceTime(250))
-          .subscribe(() => messageBus.emit('componentTreeDirty'));
+      initializeOrGetDirectiveForestHooks(depsForTestOnly)
+        .profiler.changeDetection$.pipe(debounceTime(250))
+        .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
   }
 };
@@ -63,40 +112,58 @@ const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.destroy();
 };
 
-const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) =>
-    (query?: ComponentExplorerViewQuery) => {
-      // We want to force re-indexing of the component tree.
-      // Pressing the refresh button means the user saw stuck UI.
+const getLatestComponentExplorerViewCallback =
+  (messageBus: MessageBus<Events>) => (query?: ComponentExplorerViewQuery) => {
+    // We want to force re-indexing of the component tree.
+    // Pressing the refresh button means the user saw stuck UI.
 
-      initializeOrGetDirectiveForestHooks().indexForest();
+    initializeOrGetDirectiveForestHooks().indexForest();
 
-      if (!query) {
-        messageBus.emit('latestComponentExplorerView', [
-          {
-            forest: prepareForestForSerialization(
-                initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
-          },
-        ]);
-        return;
+    const forest = prepareForestForSerialization(
+      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+      ngDebugDependencyInjectionApiIsSupported(),
+    );
+
+    // cleanup injector id mappings
+    for (const injectorId of idToInjector.keys()) {
+      if (!injectorsSeen.has(injectorId)) {
+        const injector = idToInjector.get(injectorId)!;
+        if (isElementInjector(injector)) {
+          const element = getElementInjectorElement(injector);
+          if (element) {
+            nodeInjectorToResolutionPath.delete(element);
+          }
+        }
+
+        idToInjector.delete(injectorId);
       }
-      messageBus.emit('latestComponentExplorerView', [
-        {
-          forest: prepareForestForSerialization(
-              initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest()),
-          properties: getLatestComponentState(
-              query, initializeOrGetDirectiveForestHooks().getDirectiveForest()),
-        },
-      ]);
-    };
+    }
+    injectorsSeen.clear();
+
+    if (!query) {
+      messageBus.emit('latestComponentExplorerView', [{forest}]);
+      return;
+    }
+
+    const state = getLatestComponentState(
+      query,
+      initializeOrGetDirectiveForestHooks().getDirectiveForest(),
+    );
+
+    if (state) {
+      const {directiveProperties} = state;
+      messageBus.emit('latestComponentExplorerView', [{forest, properties: directiveProperties}]);
+    }
+  };
 
 const checkForAngularCallback = (messageBus: MessageBus<Events>) => () =>
-    checkForAngular(messageBus);
+  checkForAngular(messageBus);
 const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(messageBus);
 
 const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>
-    startProfiling((frame: ProfilerFrame) => {
-      messageBus.emit('sendProfilerChunk', [frame]);
-    });
+  startProfiling((frame: ProfilerFrame) => {
+    messageBus.emit('sendProfilerChunk', [frame]);
+  });
 
 const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
@@ -104,32 +171,41 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
 
 const selectedComponentCallback = (position: ElementPosition) => {
   const node = queryDirectiveForest(
-      position, initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
+    position,
+    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+  );
   setConsoleReference({node, position});
 };
 
-const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
-    position: DirectivePosition, propPath: string[]) => {
-  const emitEmpty = () => messageBus.emit('nestedProperties', [position, {props: {}}, propPath]);
-  const node = queryDirectiveForest(
-      position.element, initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
-  if (!node) {
-    return emitEmpty();
-  }
-  const current =
-      position.directive === undefined ? node.component : node.directives[position.directive];
-  if (!current) {
-    return emitEmpty();
-  }
-  let data = current.instance;
-  for (const prop of propPath) {
-    data = data[prop];
-    if (!data) {
-      console.error('Cannot access the properties', propPath, 'of', node);
+const getNestedPropertiesCallback =
+  (messageBus: MessageBus<Events>) => (position: DirectivePosition, propPath: string[]) => {
+    const emitEmpty = () => messageBus.emit('nestedProperties', [position, {props: {}}, propPath]);
+    const node = queryDirectiveForest(
+      position.element,
+      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    );
+    if (!node) {
+      return emitEmpty();
     }
-  }
-  messageBus.emit('nestedProperties', [position, {props: serializeDirectiveState(data)}, propPath]);
-};
+    const current =
+      position.directive === undefined ? node.component : node.directives[position.directive];
+    if (!current) {
+      return emitEmpty();
+    }
+    let data = current.instance;
+    for (const prop of propPath) {
+      data = unwrapSignal(data[prop]);
+      if (!data) {
+        console.error('Cannot access the properties', propPath, 'of', node);
+      }
+    }
+    messageBus.emit('nestedProperties', [
+      position,
+      {props: serializeDirectiveState(data)},
+      propPath,
+    ]);
+    return;
+  };
 
 //
 // Subscribe Helpers
@@ -144,8 +220,8 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
 const checkForAngular = (messageBus: MessageBus<Events>): void => {
   const ngVersion = getAngularVersion();
   const appIsIvy = appIsAngularIvy();
+
   if (!ngVersion) {
-    setTimeout(() => checkForAngular(messageBus), 500);
     return;
   }
 
@@ -154,7 +230,12 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
   }
 
   messageBus.emit('ngAvailability', [
-    {version: ngVersion.toString(), devMode: appIsAngularInDevMode(), ivy: appIsIvy},
+    {
+      version: ngVersion.toString(),
+      devMode: appIsAngularInDevMode(),
+      ivy: appIsIvy,
+      hydration: isHydrationEnabled(),
+    },
   ]);
 };
 
@@ -178,6 +259,9 @@ const setupInspector = (messageBus: MessageBus<Events>) => {
     inspector.highlightByPosition(position);
   });
   messageBus.on('removeHighlightOverlay', unHighlight);
+
+  messageBus.on('createHydrationOverlay', inspector.highlightHydrationNodes);
+  messageBus.on('removeHydrationOverlay', inspector.removeHydrationHighlights);
 };
 
 export interface SerializableDirectiveInstanceType extends DirectiveType {
@@ -188,31 +272,163 @@ export interface SerializableComponentInstanceType extends ComponentType {
   id: number;
 }
 
-export interface SerializableComponentTreeNode extends
-    DevToolsNode<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
+export interface SerializableComponentTreeNode
+  extends DevToolsNode<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
   children: SerializableComponentTreeNode[];
 }
 
 // Here we drop properties to prepare the tree for serialization.
 // We don't need the component instance, so we just traverse the tree
 // and leave the component name.
-const prepareForestForSerialization =
-    (roots: ComponentTreeNode[]): SerializableComponentTreeNode[] => {
-      return roots.map((node) => {
-        return {
-          element: node.element,
-          component: node.component ? {
+const prepareForestForSerialization = (
+  roots: ComponentTreeNode[],
+  includeResolutionPath = false,
+): SerializableComponentTreeNode[] => {
+  const serializedNodes: SerializableComponentTreeNode[] = [];
+  for (const node of roots) {
+    const serializedNode: SerializableComponentTreeNode = {
+      element: node.element,
+      component: node.component
+        ? {
             name: node.component.name,
             isElement: node.component.isElement,
-            id: initializeOrGetDirectiveForestHooks().getDirectiveId(node.component.instance),
-          } :
-                                      null,
-          directives: node.directives.map(
-              (d) => ({
-                name: d.name,
-                id: initializeOrGetDirectiveForestHooks().getDirectiveId(d.instance),
-              })),
-          children: prepareForestForSerialization(node.children),
-        } as SerializableComponentTreeNode;
-      });
+            id: initializeOrGetDirectiveForestHooks().getDirectiveId(node.component.instance)!,
+          }
+        : null,
+      directives: node.directives.map((d) => ({
+        name: d.name,
+        id: initializeOrGetDirectiveForestHooks().getDirectiveId(d.instance)!,
+      })),
+      children: prepareForestForSerialization(node.children, includeResolutionPath),
+      hydration: node.hydration,
     };
+    serializedNodes.push(serializedNode);
+
+    if (includeResolutionPath) {
+      serializedNode.resolutionPath = getNodeDIResolutionPath(node);
+    }
+  }
+
+  return serializedNodes;
+};
+
+function getNodeDIResolutionPath(node: ComponentTreeNode): SerializedInjector[] | undefined {
+  const nodeInjector = getInjectorFromElementNode(node.nativeElement!);
+  if (!nodeInjector) {
+    return [];
+  }
+  // There are legit cases where an angular node will have non-ElementInjector injectors.
+  // For example, components created with createComponent require the API consumer to
+  // pass in an element injector, else it sets the element injector of the component
+  // to the NullInjector
+  if (!isElementInjector(nodeInjector)) {
+    return [];
+  }
+
+  const element = getElementInjectorElement(nodeInjector);
+
+  if (!nodeInjectorToResolutionPath.has(element)) {
+    const resolutionPaths = getInjectorResolutionPath(nodeInjector);
+    nodeInjectorToResolutionPath.set(element, serializeResolutionPath(resolutionPaths));
+  }
+
+  const serializedPath = nodeInjectorToResolutionPath.get(element)!;
+  for (const injector of serializedPath) {
+    injectorsSeen.add(injector.id);
+  }
+
+  return serializedPath;
+}
+
+const getInjectorProvidersCallback =
+  (messageBus: MessageBus<Events>) => (injector: SerializedInjector) => {
+    if (!idToInjector.has(injector.id)) {
+      return;
+    }
+
+    const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
+    const allProviderRecords: SerializedProviderRecord[] = [];
+
+    const tokenToRecords: Map<any, SerializedProviderRecord[]> = new Map();
+
+    for (const [index, providerRecord] of providerRecords.entries()) {
+      const record = serializeProviderRecord(
+        providerRecord,
+        index,
+        injector.type === 'environment',
+      );
+
+      allProviderRecords.push(record);
+
+      const records = tokenToRecords.get(providerRecord.token) ?? [];
+      records.push(record);
+      tokenToRecords.set(providerRecord.token, records);
+    }
+
+    const serializedProviderRecords: SerializedProviderRecord[] = [];
+
+    for (const [token, records] of tokenToRecords.entries()) {
+      const multiRecords = records.filter((record) => record.multi);
+      const nonMultiRecords = records.filter((record) => !record.multi);
+
+      for (const record of nonMultiRecords) {
+        serializedProviderRecords.push(record);
+      }
+
+      const [firstMultiRecord] = multiRecords;
+      if (firstMultiRecord !== undefined) {
+        // All multi providers will have the same token, so we can just use the first one.
+        serializedProviderRecords.push({
+          token: firstMultiRecord.token,
+          type: 'multi',
+          multi: true,
+          // todo(aleksanderbodurri): implememnt way to differentiate multi providers that
+          // provided as viewProviders
+          isViewProvider: firstMultiRecord.isViewProvider,
+          index: records.map((record) => record.index as number),
+        });
+      }
+    }
+
+    messageBus.emit('latestInjectorProviders', [injector, serializedProviderRecords]);
+  };
+
+const logProvider = (
+  serializedInjector: SerializedInjector,
+  serializedProvider: SerializedProviderRecord,
+): void => {
+  if (!idToInjector.has(serializedInjector.id)) {
+    return;
+  }
+
+  const injector = idToInjector.get(serializedInjector.id)!;
+
+  const providerRecords = getInjectorProviders(injector);
+
+  console.group(
+    `%c${serializedInjector.name}`,
+    `color: ${
+      serializedInjector.type === 'element' ? '#a7d5a9' : '#f05057'
+    }; font-size: 1.25rem; font-weight: bold;`,
+  );
+  // tslint:disable-next-line:no-console
+  console.log('injector: ', injector);
+
+  if (typeof serializedProvider.index === 'number') {
+    const provider = providerRecords[serializedProvider.index];
+
+    // tslint:disable-next-line:no-console
+    console.log('provider: ', provider);
+    // tslint:disable-next-line:no-console
+    console.log(`value: `, injector.get(provider.token, null, {optional: true}));
+  } else if (Array.isArray(serializedProvider.index)) {
+    const providers = serializedProvider.index.map((index) => providerRecords[index]);
+
+    // tslint:disable-next-line:no-console
+    console.log('providers: ', providers);
+    // tslint:disable-next-line:no-console
+    console.log(`value: `, injector.get(providers[0].token, null, {optional: true}));
+  }
+
+  console.groupEnd();
+};

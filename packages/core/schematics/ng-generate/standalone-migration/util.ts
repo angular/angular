@@ -18,7 +18,7 @@ import {closestNode} from '../../utils/typescript/nodes';
 export type NodeLookup = Map<number, ts.Node[]>;
 
 /** Utility to type a class declaration with a name. */
-export type NamedClassDeclaration = ts.ClassDeclaration&{name: ts.Identifier};
+export type NamedClassDeclaration = ts.ClassDeclaration & {name: ts.Identifier};
 
 /** Text span of an AST node. */
 export type ReferenceSpan = [start: number, end: number];
@@ -40,7 +40,7 @@ export class UniqueItemTracker<K, V> {
     }
   }
 
-  get(key: K): Set<V>|undefined {
+  get(key: K): Set<V> | undefined {
     return this._nodes.get(key);
   }
 
@@ -51,18 +51,21 @@ export class UniqueItemTracker<K, V> {
 
 /** Resolves references to nodes. */
 export class ReferenceResolver {
-  private _languageService: ts.LanguageService|undefined;
+  private _languageService: ts.LanguageService | undefined;
 
   /**
    * If set, allows the language service to *only* read a specific file.
    * Used to speed up single-file lookups.
    */
-  private _tempOnlyFile: string|null = null;
+  private _tempOnlyFile: string | null = null;
 
   constructor(
-      private _program: NgtscProgram, private _host: ts.CompilerHost,
-      private _rootFileNames: string[], private _basePath: string,
-      private _excludedFiles?: RegExp) {}
+    private _program: NgtscProgram,
+    private _host: ts.CompilerHost,
+    private _rootFileNames: string[],
+    private _basePath: string,
+    private _excludedFiles?: RegExp,
+  ) {}
 
   /** Finds all references to a node within the entire project. */
   findReferencesInProject(node: ts.Node): ReferencesByFile {
@@ -89,8 +92,9 @@ export class ReferenceResolver {
             results.set(ref.fileName, []);
           }
 
-          results.get(ref.fileName)!.push(
-              [ref.textSpan.start, ref.textSpan.start + ref.textSpan.length]);
+          results
+            .get(ref.fileName)!
+            .push([ref.textSpan.start, ref.textSpan.start + ref.textSpan.length]);
         }
       }
     }
@@ -108,13 +112,14 @@ export class ReferenceResolver {
 
     const nodeStart = node.getStart();
     const results: ReferenceSpan[] = [];
-    let highlights: ts.DocumentHighlights[]|undefined;
+    let highlights: ts.DocumentHighlights[] | undefined;
 
     // The language service can throw if it fails to read a file.
     // Silently continue since we're making the lookup on a best effort basis.
     try {
-      highlights =
-          this._getLanguageService().getDocumentHighlights(fileName, nodeStart, [fileName]);
+      highlights = this._getLanguageService().getDocumentHighlights(fileName, nodeStart, [
+        fileName,
+      ]);
     } catch (e: any) {
       console.error('Failed reference lookup for node ' + node.getText(), e.message);
     }
@@ -124,7 +129,10 @@ export class ReferenceResolver {
         // We are pretty much guaranteed to only have one match from the current file since it is
         // the only one being passed in `getDocumentHighlight`, but we check here just in case.
         if (file.fileName === fileName) {
-          for (const {textSpan: {start, length}, kind} of file.highlightSpans) {
+          for (const {
+            textSpan: {start, length},
+            kind,
+          } of file.highlightSpans) {
             if (kind !== ts.HighlightSpanKind.none) {
               results.push([start, start + length]);
             }
@@ -140,8 +148,10 @@ export class ReferenceResolver {
 
   /** Used by the language service  */
   private _readFile(path: string) {
-    if ((this._tempOnlyFile !== null && path !== this._tempOnlyFile) ||
-        this._excludedFiles?.test(path)) {
+    if (
+      (this._tempOnlyFile !== null && path !== this._tempOnlyFile) ||
+      this._excludedFiles?.test(path)
+    ) {
       return '';
     }
     return this._host.readFile(path);
@@ -152,28 +162,33 @@ export class ReferenceResolver {
     if (!this._languageService) {
       const rootFileNames = this._rootFileNames.slice();
 
-      this._program.getTsProgram().getSourceFiles().forEach(({fileName}) => {
-        if (!this._excludedFiles?.test(fileName) && !rootFileNames.includes(fileName)) {
-          rootFileNames.push(fileName);
-        }
-      });
+      this._program
+        .getTsProgram()
+        .getSourceFiles()
+        .forEach(({fileName}) => {
+          if (!this._excludedFiles?.test(fileName) && !rootFileNames.includes(fileName)) {
+            rootFileNames.push(fileName);
+          }
+        });
 
       this._languageService = ts.createLanguageService(
-          {
-            getCompilationSettings: () => this._program.getTsProgram().getCompilerOptions(),
-            getScriptFileNames: () => rootFileNames,
-            // The files won't change so we can return the same version.
-            getScriptVersion: () => '0',
-            getScriptSnapshot: (path: string) => {
-              const content = this._readFile(path);
-              return content ? ts.ScriptSnapshot.fromString(content) : undefined;
-            },
-            getCurrentDirectory: () => this._basePath,
-            getDefaultLibFileName: options => ts.getDefaultLibFilePath(options),
-            readFile: path => this._readFile(path),
-            fileExists: (path: string) => this._host.fileExists(path)
+        {
+          getCompilationSettings: () => this._program.getTsProgram().getCompilerOptions(),
+          getScriptFileNames: () => rootFileNames,
+          // The files won't change so we can return the same version.
+          getScriptVersion: () => '0',
+          getScriptSnapshot: (path: string) => {
+            const content = this._readFile(path);
+            return content ? ts.ScriptSnapshot.fromString(content) : undefined;
           },
-          ts.createDocumentRegistry(), ts.LanguageServiceMode.PartialSemantic);
+          getCurrentDirectory: () => this._basePath,
+          getDefaultLibFileName: (options) => ts.getDefaultLibFilePath(options),
+          readFile: (path) => this._readFile(path),
+          fileExists: (path: string) => this._host.fileExists(path),
+        },
+        ts.createDocumentRegistry(),
+        ts.LanguageServiceMode.PartialSemantic,
+      );
     }
 
     return this._languageService;
@@ -206,9 +221,12 @@ export function getNodeLookup(sourceFile: ts.SourceFile): NodeLookup {
  * @param results Set in which to store the results.
  */
 export function offsetsToNodes(
-    lookup: NodeLookup, offsets: ReferenceSpan[], results: Set<ts.Node>): Set<ts.Node> {
+  lookup: NodeLookup,
+  offsets: ReferenceSpan[],
+  results: Set<ts.Node>,
+): Set<ts.Node> {
   for (const [start, end] of offsets) {
-    const match = lookup.get(start)?.find(node => node.getEnd() === end);
+    const match = lookup.get(start)?.find((node) => node.getEnd() === end);
 
     if (match) {
       results.add(match);
@@ -224,16 +242,22 @@ export function offsetsToNodes(
  * @param typeChecker
  */
 export function findClassDeclaration(
-    reference: ts.Node, typeChecker: ts.TypeChecker): ts.ClassDeclaration|null {
-  return typeChecker.getTypeAtLocation(reference).getSymbol()?.declarations?.find(
-             ts.isClassDeclaration) ||
-      null;
+  reference: ts.Node,
+  typeChecker: ts.TypeChecker,
+): ts.ClassDeclaration | null {
+  return (
+    typeChecker
+      .getTypeAtLocation(reference)
+      .getSymbol()
+      ?.declarations?.find(ts.isClassDeclaration) || null
+  );
 }
 
 /** Finds a property with a specific name in an object literal expression. */
 export function findLiteralProperty(literal: ts.ObjectLiteralExpression, name: string) {
   return literal.properties.find(
-      prop => prop.name && ts.isIdentifier(prop.name) && prop.name.text === name);
+    (prop) => prop.name && ts.isIdentifier(prop.name) && prop.name.text === name,
+  );
 }
 
 /** Gets a relative path between two files that can be used inside a TypeScript import. */
@@ -251,10 +275,11 @@ export function getRelativeImportPath(fromFile: string, toFile: string): string 
 
 /** Function used to remap the generated `imports` for a component to known shorter aliases. */
 export function knownInternalAliasRemapper(imports: PotentialImport[]) {
-  return imports.map(
-      current => current.moduleSpecifier === '@angular/common' && current.symbolName === 'NgForOf' ?
-          {...current, symbolName: 'NgFor'} :
-          current);
+  return imports.map((current) =>
+    current.moduleSpecifier === '@angular/common' && current.symbolName === 'NgForOf'
+      ? {...current, symbolName: 'NgFor'}
+      : current,
+  );
 }
 
 /**
@@ -263,7 +288,9 @@ export function knownInternalAliasRemapper(imports: PotentialImport[]) {
  * @param predicate Predicate that the result needs to pass.
  */
 export function closestOrSelf<T extends ts.Node>(
-    node: ts.Node, predicate: (n: ts.Node) => n is T): T|null {
+  node: ts.Node,
+  predicate: (n: ts.Node) => n is T,
+): T | null {
   return predicate(node) ? node : closestNode(node, predicate);
 }
 
@@ -275,24 +302,31 @@ export function closestOrSelf<T extends ts.Node>(
  * @param typeChecker
  */
 export function isClassReferenceInAngularModule(
-    node: ts.Node, className: string|RegExp, moduleName: string,
-    typeChecker: ts.TypeChecker): boolean {
+  node: ts.Node,
+  className: string | RegExp,
+  moduleName: string,
+  typeChecker: ts.TypeChecker,
+): boolean {
   const symbol = typeChecker.getTypeAtLocation(node).getSymbol();
   const externalName = `@angular/${moduleName}`;
   const internalName = `angular2/rc/packages/${moduleName}`;
 
-  return !!symbol?.declarations?.some(decl => {
+  return !!symbol?.declarations?.some((decl) => {
     const closestClass = closestOrSelf(decl, ts.isClassDeclaration);
     const closestClassFileName = closestClass?.getSourceFile().fileName;
 
-    if (!closestClass || !closestClassFileName || !closestClass.name ||
-        !ts.isIdentifier(closestClass.name) ||
-        (!closestClassFileName.includes(externalName) &&
-         !closestClassFileName.includes(internalName))) {
+    if (
+      !closestClass ||
+      !closestClassFileName ||
+      !closestClass.name ||
+      !ts.isIdentifier(closestClass.name) ||
+      (!closestClassFileName.includes(externalName) && !closestClassFileName.includes(internalName))
+    ) {
       return false;
     }
 
-    return typeof className === 'string' ? closestClass.name.text === className :
-                                           className.test(closestClass.name.text);
+    return typeof className === 'string'
+      ? closestClass.name.text === className
+      : className.test(closestClass.name.text);
   });
 }

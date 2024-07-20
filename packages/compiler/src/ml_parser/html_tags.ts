@@ -12,11 +12,12 @@ import {getNsPrefix, TagContentType, TagDefinition} from './tags';
 
 export class HtmlTagDefinition implements TagDefinition {
   private closedByChildren: {[key: string]: boolean} = {};
-  private contentType: TagContentType|
-      {default: TagContentType, [namespace: string]: TagContentType};
+  private contentType:
+    | TagContentType
+    | {default: TagContentType; [namespace: string]: TagContentType};
 
   closedByParent = false;
-  implicitNamespacePrefix: string|null;
+  implicitNamespacePrefix: string | null;
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean;
@@ -32,17 +33,17 @@ export class HtmlTagDefinition implements TagDefinition {
     preventNamespaceInheritance = false,
     canSelfClose = false,
   }: {
-    closedByChildren?: string[],
-    closedByParent?: boolean,
-    implicitNamespacePrefix?: string,
-    contentType?: TagContentType|{default: TagContentType, [namespace: string]: TagContentType},
-    isVoid?: boolean,
-    ignoreFirstLf?: boolean,
-    preventNamespaceInheritance?: boolean,
-    canSelfClose?: boolean
+    closedByChildren?: string[];
+    closedByParent?: boolean;
+    implicitNamespacePrefix?: string;
+    contentType?: TagContentType | {default: TagContentType; [namespace: string]: TagContentType};
+    isVoid?: boolean;
+    ignoreFirstLf?: boolean;
+    preventNamespaceInheritance?: boolean;
+    canSelfClose?: boolean;
   } = {}) {
     if (closedByChildren && closedByChildren.length > 0) {
-      closedByChildren.forEach(tagName => this.closedByChildren[tagName] = true);
+      closedByChildren.forEach((tagName) => (this.closedByChildren[tagName] = true));
     }
     this.isVoid = isVoid;
     this.closedByParent = closedByParent || isVoid;
@@ -75,7 +76,7 @@ let TAG_DEFINITIONS!: {[key: string]: HtmlTagDefinition};
 export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
   if (!TAG_DEFINITIONS) {
     DEFAULT_TAG_DEFINITION = new HtmlTagDefinition({canSelfClose: true});
-    TAG_DEFINITIONS = {
+    TAG_DEFINITIONS = Object.assign(Object.create(null), {
       'base': new HtmlTagDefinition({isVoid: true}),
       'meta': new HtmlTagDefinition({isVoid: true}),
       'area': new HtmlTagDefinition({isVoid: true}),
@@ -91,12 +92,34 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
       'wbr': new HtmlTagDefinition({isVoid: true}),
       'p': new HtmlTagDefinition({
         closedByChildren: [
-          'address', 'article', 'aside',   'blockquote', 'div',  'dl',  'fieldset',
-          'footer',  'form',    'h1',      'h2',         'h3',   'h4',  'h5',
-          'h6',      'header',  'hgroup',  'hr',         'main', 'nav', 'ol',
-          'p',       'pre',     'section', 'table',      'ul'
+          'address',
+          'article',
+          'aside',
+          'blockquote',
+          'div',
+          'dl',
+          'fieldset',
+          'footer',
+          'form',
+          'h1',
+          'h2',
+          'h3',
+          'h4',
+          'h5',
+          'h6',
+          'header',
+          'hgroup',
+          'hr',
+          'main',
+          'nav',
+          'ol',
+          'p',
+          'pre',
+          'section',
+          'table',
+          'ul',
         ],
-        closedByParent: true
+        closedByParent: true,
       }),
       'thead': new HtmlTagDefinition({closedByChildren: ['tbody', 'tfoot']}),
       'tbody': new HtmlTagDefinition({closedByChildren: ['tbody', 'tfoot'], closedByParent: true}),
@@ -121,16 +144,24 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
       'li': new HtmlTagDefinition({closedByChildren: ['li'], closedByParent: true}),
       'dt': new HtmlTagDefinition({closedByChildren: ['dt', 'dd']}),
       'dd': new HtmlTagDefinition({closedByChildren: ['dt', 'dd'], closedByParent: true}),
-      'rb': new HtmlTagDefinition(
-          {closedByChildren: ['rb', 'rt', 'rtc', 'rp'], closedByParent: true}),
-      'rt': new HtmlTagDefinition(
-          {closedByChildren: ['rb', 'rt', 'rtc', 'rp'], closedByParent: true}),
+      'rb': new HtmlTagDefinition({
+        closedByChildren: ['rb', 'rt', 'rtc', 'rp'],
+        closedByParent: true,
+      }),
+      'rt': new HtmlTagDefinition({
+        closedByChildren: ['rb', 'rt', 'rtc', 'rp'],
+        closedByParent: true,
+      }),
       'rtc': new HtmlTagDefinition({closedByChildren: ['rb', 'rtc', 'rp'], closedByParent: true}),
-      'rp': new HtmlTagDefinition(
-          {closedByChildren: ['rb', 'rt', 'rtc', 'rp'], closedByParent: true}),
+      'rp': new HtmlTagDefinition({
+        closedByChildren: ['rb', 'rt', 'rtc', 'rp'],
+        closedByParent: true,
+      }),
       'optgroup': new HtmlTagDefinition({closedByChildren: ['optgroup'], closedByParent: true}),
-      'option':
-          new HtmlTagDefinition({closedByChildren: ['option', 'optgroup'], closedByParent: true}),
+      'option': new HtmlTagDefinition({
+        closedByChildren: ['option', 'optgroup'],
+        closedByParent: true,
+      }),
       'pre': new HtmlTagDefinition({ignoreFirstLf: true}),
       'listing': new HtmlTagDefinition({ignoreFirstLf: true}),
       'style': new HtmlTagDefinition({contentType: TagContentType.RAW_TEXT}),
@@ -138,20 +169,26 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
       'title': new HtmlTagDefinition({
         // The browser supports two separate `title` tags which have to use
         // a different content type: `HTMLTitleElement` and `SVGTitleElement`
-        contentType: {default: TagContentType.ESCAPABLE_RAW_TEXT, svg: TagContentType.PARSABLE_DATA}
+        contentType: {
+          default: TagContentType.ESCAPABLE_RAW_TEXT,
+          svg: TagContentType.PARSABLE_DATA,
+        },
       }),
-      'textarea': new HtmlTagDefinition(
-          {contentType: TagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true}),
-    };
+      'textarea': new HtmlTagDefinition({
+        contentType: TagContentType.ESCAPABLE_RAW_TEXT,
+        ignoreFirstLf: true,
+      }),
+    });
 
-    new DomElementSchemaRegistry().allKnownElementNames().forEach(knownTagName => {
-      if (!TAG_DEFINITIONS.hasOwnProperty(knownTagName) && getNsPrefix(knownTagName) === null) {
+    new DomElementSchemaRegistry().allKnownElementNames().forEach((knownTagName) => {
+      if (!TAG_DEFINITIONS[knownTagName] && getNsPrefix(knownTagName) === null) {
         TAG_DEFINITIONS[knownTagName] = new HtmlTagDefinition({canSelfClose: false});
       }
     });
   }
   // We have to make both a case-sensitive and a case-insensitive lookup, because
   // HTML tag names are case insensitive, whereas some SVG tags are case sensitive.
-  return TAG_DEFINITIONS[tagName] ?? TAG_DEFINITIONS[tagName.toLowerCase()] ??
-      DEFAULT_TAG_DEFINITION;
+  return (
+    TAG_DEFINITIONS[tagName] ?? TAG_DEFINITIONS[tagName.toLowerCase()] ?? DEFAULT_TAG_DEFINITION
+  );
 }

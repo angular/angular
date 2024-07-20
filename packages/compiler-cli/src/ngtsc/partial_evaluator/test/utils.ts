@@ -16,20 +16,28 @@ import {getDeclaration, makeProgram} from '../../testing';
 import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
 import {ResolvedValue} from '../src/result';
 
-export function makeExpression(code: string, expr: string, supportingFiles: TestFile[] = []): {
-  expression: ts.Expression,
-  host: ts.CompilerHost,
-  checker: ts.TypeChecker,
-  program: ts.Program,
-  options: ts.CompilerOptions
+export function makeExpression(
+  code: string,
+  expr: string,
+  supportingFiles: TestFile[] = [],
+): {
+  expression: ts.Expression;
+  host: ts.CompilerHost;
+  checker: ts.TypeChecker;
+  program: ts.Program;
+  options: ts.CompilerOptions;
 } {
   const {program, options, host} = makeProgram([
     {name: absoluteFrom('/entry.ts'), contents: `${code}; const target$ = ${expr};`},
-    ...supportingFiles
+    ...supportingFiles,
   ]);
   const checker = program.getTypeChecker();
-  const decl =
-      getDeclaration(program, absoluteFrom('/entry.ts'), 'target$', ts.isVariableDeclaration);
+  const decl = getDeclaration(
+    program,
+    absoluteFrom('/entry.ts'),
+    'target$',
+    ts.isVariableDeclaration,
+  );
   return {
     expression: decl.initializer!,
     host,
@@ -40,26 +48,33 @@ export function makeExpression(code: string, expr: string, supportingFiles: Test
 }
 
 export function makeEvaluator(
-    checker: ts.TypeChecker, tracker?: DependencyTracker): PartialEvaluator {
+  checker: ts.TypeChecker,
+  tracker?: DependencyTracker,
+): PartialEvaluator {
   const reflectionHost = new TypeScriptReflectionHost(checker);
   return new PartialEvaluator(reflectionHost, checker, tracker !== undefined ? tracker : null);
 }
 
 export function evaluate<T extends ResolvedValue>(
-    code: string, expr: string, supportingFiles: TestFile[] = [],
-    foreignFunctionResolver?: ForeignFunctionResolver): T {
+  code: string,
+  expr: string,
+  supportingFiles: TestFile[] = [],
+  foreignFunctionResolver?: ForeignFunctionResolver,
+): T {
   const {expression, checker} = makeExpression(code, expr, supportingFiles);
   const evaluator = makeEvaluator(checker);
   return evaluator.evaluate(expression, foreignFunctionResolver) as T;
 }
 
-export function owningModuleOf(ref: Reference): string|null {
+export function owningModuleOf(ref: Reference): string | null {
   return ref.bestGuessOwningModule !== null ? ref.bestGuessOwningModule.specifier : null;
 }
 
 export function firstArgFfr(
-    fn: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-    expr: ts.CallExpression, resolve: (expr: ts.Expression) => ResolvedValue): ResolvedValue {
+  fn: Reference<ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression>,
+  expr: ts.CallExpression,
+  resolve: (expr: ts.Expression) => ResolvedValue,
+): ResolvedValue {
   return resolve(expr.arguments[0]);
 }
 
@@ -71,5 +86,6 @@ export const arrowReturnValueFfr: ForeignFunctionResolver = (_fn, node, resolve)
 export const returnTypeFfr: ForeignFunctionResolver = (fn, node, resolve) => {
   // Extract the `Foo` from the return type of the `external` function declaration.
   return resolve(
-      ((fn.node as ts.FunctionDeclaration).type as ts.TypeReferenceNode).typeName as ts.Identifier);
+    ((fn.node as ts.FunctionDeclaration).type as ts.TypeReferenceNode).typeName as ts.Identifier,
+  );
 };

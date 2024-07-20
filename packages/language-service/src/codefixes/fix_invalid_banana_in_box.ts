@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {TmplAstBoundEvent} from '@angular/compiler';
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import {BoundEvent} from '@angular/compiler/src/render3/r3_ast';
-import tss from 'typescript/lib/tsserverlibrary';
+import tss from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
 import {getTemplateInfoAtPosition, TemplateInfo} from '../utils';
@@ -26,16 +26,20 @@ export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
       return [];
     }
     const textChanges = convertBoundEventToTsTextChange(boundEvent);
-    return [{
-      fixName: FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX,
-      fixId: FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX,
-      fixAllDescription: 'fix all invalid banana-in-box',
-      description: `fix invalid banana-in-box for '${boundEvent.sourceSpan.toString()}'`,
-      changes: [{
-        fileName,
-        textChanges,
-      }],
-    }];
+    return [
+      {
+        fixName: FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX,
+        fixId: FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX,
+        fixAllDescription: 'fix all invalid banana-in-box',
+        description: `fix invalid banana-in-box for '${boundEvent.sourceSpan.toString()}'`,
+        changes: [
+          {
+            fileName,
+            textChanges,
+          },
+        ],
+      },
+    ];
   },
   fixIds: [FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX],
   getAllCodeActions({diagnostics, compiler}) {
@@ -85,7 +89,10 @@ export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
   },
 };
 
-function getTheBoundEventAtPosition(templateInfo: TemplateInfo, start: number): BoundEvent|null {
+function getTheBoundEventAtPosition(
+  templateInfo: TemplateInfo,
+  start: number,
+): TmplAstBoundEvent | null {
   // It's safe to get the bound event at the position `start + 1` because the `start` is at the
   // start of the diagnostic, and the node outside the attribute key and value spans are skipped by
   // the function `getTargetAtPosition`.
@@ -96,8 +103,10 @@ function getTheBoundEventAtPosition(templateInfo: TemplateInfo, start: number): 
     return null;
   }
 
-  if (positionDetail.context.kind !== TargetNodeKind.AttributeInKeyContext ||
-      !(positionDetail.context.node instanceof BoundEvent)) {
+  if (
+    positionDetail.context.kind !== TargetNodeKind.AttributeInKeyContext ||
+    !(positionDetail.context.node instanceof TmplAstBoundEvent)
+  ) {
     return null;
   }
 
@@ -107,7 +116,7 @@ function getTheBoundEventAtPosition(templateInfo: TemplateInfo, start: number): 
 /**
  * Flip the invalid "box in a banana" `([thing])` to the correct "banana in a box" `[(thing)]`.
  */
-function convertBoundEventToTsTextChange(node: BoundEvent): readonly tss.TextChange[] {
+function convertBoundEventToTsTextChange(node: TmplAstBoundEvent): readonly tss.TextChange[] {
   const name = node.name;
   const boundSyntax = node.sourceSpan.toString();
   const expectedBoundSyntax = boundSyntax.replace(`(${name})`, `[(${name.slice(1, -1)})]`);

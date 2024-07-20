@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript';
 
 function isAngularCore(path: string): boolean {
   return isExternalAngularCore(path) || isInternalAngularCore(path);
@@ -51,7 +51,7 @@ const factory: ts.server.PluginModuleFactory = (): ts.server.PluginModule => {
           }
         },
       };
-    }
+    },
   };
 };
 

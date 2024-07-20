@@ -21,12 +21,12 @@ export function propertyPatch() {
   zoneSymbol = Zone.__symbol__;
   _defineProperty = (Object as any)[zoneSymbol('defineProperty')] = Object.defineProperty;
   _getOwnPropertyDescriptor = (Object as any)[zoneSymbol('getOwnPropertyDescriptor')] =
-      Object.getOwnPropertyDescriptor;
+    Object.getOwnPropertyDescriptor;
   _create = Object.create;
   unconfigurablesKey = zoneSymbol('unconfigurables');
-  Object.defineProperty = function(obj: any, prop: string, desc: any) {
+  Object.defineProperty = function (obj: any, prop: string, desc: any) {
     if (isUnconfigurable(obj, prop)) {
-      throw new TypeError('Cannot assign to read only property \'' + prop + '\' of ' + obj);
+      throw new TypeError("Cannot assign to read only property '" + prop + "' of " + obj);
     }
     const originalConfigurableFlag = desc.configurable;
     if (prop !== 'prototype') {
@@ -35,10 +35,14 @@ export function propertyPatch() {
     return _tryDefineProperty(obj, prop, desc, originalConfigurableFlag);
   };
 
-  Object.defineProperties = function<T>(obj: T, props: PropertyDescriptorMap&ThisType<any>&{
-    [s: symbol]: PropertyDescriptor;
-  }): T {
-    Object.keys(props).forEach(function(prop) {
+  Object.defineProperties = function <T>(
+    obj: T,
+    props: PropertyDescriptorMap &
+      ThisType<any> & {
+        [s: symbol]: PropertyDescriptor;
+      },
+  ): T {
+    Object.keys(props).forEach(function (prop) {
       Object.defineProperty(obj, prop, props[prop]);
     });
     for (const sym of Object.getOwnPropertySymbols(props)) {
@@ -55,18 +59,18 @@ export function propertyPatch() {
       }
     }
     return obj;
-  }
+  };
 
-  Object.create = <any>function(proto: any, propertiesObject: any) {
+  Object.create = <any>function (proto: any, propertiesObject: any) {
     if (typeof propertiesObject === 'object' && !Object.isFrozen(propertiesObject)) {
-      Object.keys(propertiesObject).forEach(function(prop) {
+      Object.keys(propertiesObject).forEach(function (prop) {
         propertiesObject[prop] = rewriteDescriptor(proto, prop, propertiesObject[prop]);
       });
     }
     return _create(proto, propertiesObject);
   };
 
-  Object.getOwnPropertyDescriptor = function(obj, prop) {
+  Object.getOwnPropertyDescriptor = function (obj, prop) {
     const desc = _getOwnPropertyDescriptor(obj, prop);
     if (desc && isUnconfigurable(obj, prop)) {
       desc.configurable = false;
@@ -118,8 +122,12 @@ function _tryDefineProperty(obj: any, prop: string, desc: any, originalConfigura
         return _defineProperty(obj, prop, desc);
       } catch (error) {
         let swallowError = false;
-        if (prop === 'createdCallback' || prop === 'attachedCallback' ||
-            prop === 'detachedCallback' || prop === 'attributeChangedCallback') {
+        if (
+          prop === 'createdCallback' ||
+          prop === 'attachedCallback' ||
+          prop === 'detachedCallback' ||
+          prop === 'attributeChangedCallback'
+        ) {
           // We only swallow the error in registerElement patch
           // this is the work around since some applications
           // fail if we throw the error
@@ -131,14 +139,15 @@ function _tryDefineProperty(obj: any, prop: string, desc: any, originalConfigura
         // TODO: @JiaLiPassion, Some application such as `registerElement` patch
         // still need to swallow the error, in the future after these applications
         // are updated, the following logic can be removed.
-        let descJson: string|null = null;
+        let descJson: string | null = null;
         try {
           descJson = JSON.stringify(desc);
         } catch (error) {
           descJson = desc.toString();
         }
-        console.log(`Attempting to configure '${prop}' with descriptor '${descJson}' on object '${
-            obj}' and got error, giving up: ${error}`);
+        console.log(
+          `Attempting to configure '${prop}' with descriptor '${descJson}' on object '${obj}' and got error, giving up: ${error}`,
+        );
       }
     } else {
       throw error;

@@ -12,13 +12,13 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'slice-string-pipe',
   template: `<div>
-    <p>{{str}}[0:4]: '{{str | slice:0:4}}' - output is expected to be 'abcd'</p>
-    <p>{{str}}[4:0]: '{{str | slice:4:0}}' - output is expected to be ''</p>
-    <p>{{str}}[-4]: '{{str | slice:-4}}' - output is expected to be 'ghij'</p>
-    <p>{{str}}[-4:-2]: '{{str | slice:-4:-2}}' - output is expected to be 'gh'</p>
-    <p>{{str}}[-100]: '{{str | slice:-100}}' - output is expected to be 'abcdefghij'</p>
-    <p>{{str}}[100]: '{{str | slice:100}}' - output is expected to be ''</p>
-  </div>`
+    <p>{{ str }}[0:4]: '{{ str | slice: 0 : 4 }}' - output is expected to be 'abcd'</p>
+    <p>{{ str }}[4:0]: '{{ str | slice: 4 : 0 }}' - output is expected to be ''</p>
+    <p>{{ str }}[-4]: '{{ str | slice: -4 }}' - output is expected to be 'ghij'</p>
+    <p>{{ str }}[-4:-2]: '{{ str | slice: -4 : -2 }}' - output is expected to be 'gh'</p>
+    <p>{{ str }}[-100]: '{{ str | slice: -100 }}' - output is expected to be 'abcdefghij'</p>
+    <p>{{ str }}[100]: '{{ str | slice: 100 }}' - output is expected to be ''</p>
+  </div>`,
 })
 export class SlicePipeStringComponent {
   str: string = 'abcdefghij';
@@ -29,8 +29,8 @@ export class SlicePipeStringComponent {
 @Component({
   selector: 'slice-list-pipe',
   template: `<ul>
-    <li *ngFor="let i of collection | slice:1:3">{{i}}</li>
-  </ul>`
+    <li *ngFor="let i of collection | slice: 1 : 3">{{ i }}</li>
+  </ul>`,
 })
 export class SlicePipeListComponent {
   collection: string[] = ['a', 'b', 'c', 'd'];

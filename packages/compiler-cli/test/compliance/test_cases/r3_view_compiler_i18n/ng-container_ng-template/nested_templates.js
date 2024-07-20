@@ -16,7 +16,7 @@ function MyComponent_ng_template_2_ng_template_2_Template(rf, ctx) {
   }
   if (rf & 2) {
     const $ctx_r1$ = $r3$.ɵɵnextContext(2);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵi18nExp($ctx_r1$.valueB);
     $r3$.ɵɵi18nApply(0);
   }
@@ -39,8 +39,8 @@ function MyComponent_ng_template_2_Template(rf, ctx) {
 …
 decls: 3,
 vars: 0,
-consts: function() {
-  __i18nMsgWithPostprocess__('{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}', [['startTagNgTemplate', String.raw`[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]`], ['closeTagNgTemplate', String.raw`[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]`], ['interpolation', String.raw`\uFFFD0:1\uFFFD`], ['interpolation_1', String.raw`\uFFFD0:2\uFFFD`], ['interpolation_2', String.raw`\uFFFD0:3\uFFFD`]], {original_code: {'startTagNgTemplate': '<ng-template>', 'closeTagNgTemplate': '</ng-template>', 'interpolation': '{{ valueA | uppercase }}', 'interpolation_1': '{{ valueB }}', 'interpolation_2': '{{ valueC }}'}}, {}, [])
+consts: () => {
+  __i18nMsgWithPostprocess__('{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}', [['closeTagNgTemplate', String.raw`[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]`], ['interpolation', String.raw`\uFFFD0:1\uFFFD`], ['interpolation_1', String.raw`\uFFFD0:2\uFFFD`], ['interpolation_2', String.raw`\uFFFD0:3\uFFFD`], ['startTagNgTemplate', String.raw`[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]`]], {original_code: {'closeTagNgTemplate': '</ng-template>', 'interpolation': '{{ valueA | uppercase }}', 'interpolation_1': '{{ valueB }}', 'interpolation_2': '{{ valueC }}', 'startTagNgTemplate': '<ng-template>'}}, {}, [])
   return [
     $i18n_0$
   ];

@@ -30,7 +30,6 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  */
 @Pipe({
   name: 'i18nPlural',
-  pure: true,
   standalone: true,
 })
 export class I18nPluralPipe implements PipeTransform {
@@ -43,8 +42,11 @@ export class I18nPluralPipe implements PipeTransform {
    * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
    * default).
    */
-  transform(value: number|null|undefined, pluralMap: {[count: string]: string}, locale?: string):
-      string {
+  transform(
+    value: number | null | undefined,
+    pluralMap: {[count: string]: string},
+    locale?: string,
+  ): string {
     if (value == null) return '';
 
     if (typeof pluralMap !== 'object' || pluralMap === null) {

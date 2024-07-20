@@ -18,11 +18,18 @@ describe('node interfaces', () => {
       expect(toTNodeTypeAsString(TNodeType.ElementContainer)).toEqual('ElementContainer');
       expect(toTNodeTypeAsString(TNodeType.Icu)).toEqual('IcuContainer');
       expect(toTNodeTypeAsString(TNodeType.Placeholder)).toEqual('Placeholder');
+      expect(toTNodeTypeAsString(TNodeType.LetDeclaration)).toEqual('LetDeclaration');
 
-      expect(toTNodeTypeAsString(
-                 TNodeType.Container | TNodeType.Projection | TNodeType.Element |
-                 TNodeType.ElementContainer | TNodeType.Icu))
-          .toEqual('Element|Container|ElementContainer|Projection|IcuContainer');
+      expect(
+        toTNodeTypeAsString(
+          TNodeType.Container |
+            TNodeType.Projection |
+            TNodeType.Element |
+            TNodeType.ElementContainer |
+            TNodeType.Icu |
+            TNodeType.LetDeclaration,
+        ),
+      ).toEqual('Element|Container|ElementContainer|Projection|IcuContainer|LetDeclaration');
     });
   });
 });

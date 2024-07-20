@@ -16,8 +16,10 @@ import {InMemoryBackendConfig, InMemoryBackendConfigArgs, InMemoryDbService} fro
 // Internal - Creates the in-mem backend for the HttpClient module
 // AoT requires factory to be exported
 export function httpClientInMemBackendServiceFactory(
-    dbService: InMemoryDbService, options: InMemoryBackendConfig,
-    xhrFactory: XhrFactory): HttpBackend {
+  dbService: InMemoryDbService,
+  options: InMemoryBackendConfig,
+  xhrFactory: XhrFactory,
+): HttpBackend {
   return new HttpClientBackendService(dbService, options, xhrFactory) as HttpBackend;
 }
 
@@ -31,6 +33,8 @@ export class HttpClientInMemoryWebApiModule {
    *  Usually imported in the root application module.
    *  Can import in a lazy feature module too, which will shadow modules loaded earlier
    *
+   *  Note: If you use the `FetchBackend`, make sure forRoot is invoked after in the providers list
+   *
    * @param dbCreator - Class that creates seed data for in-memory database. Must implement
    *     InMemoryDbService.
    * @param [options]
@@ -39,18 +43,21 @@ export class HttpClientInMemoryWebApiModule {
    * HttpInMemoryWebApiModule.forRoot(dbCreator);
    * HttpInMemoryWebApiModule.forRoot(dbCreator, {useValue: {delay:600}});
    */
-  static forRoot(dbCreator: Type<InMemoryDbService>, options?: InMemoryBackendConfigArgs):
-      ModuleWithProviders<HttpClientInMemoryWebApiModule> {
+  static forRoot(
+    dbCreator: Type<InMemoryDbService>,
+    options?: InMemoryBackendConfigArgs,
+  ): ModuleWithProviders<HttpClientInMemoryWebApiModule> {
     return {
       ngModule: HttpClientInMemoryWebApiModule,
       providers: [
         {provide: InMemoryDbService, useClass: dbCreator},
-        {provide: InMemoryBackendConfig, useValue: options}, {
+        {provide: InMemoryBackendConfig, useValue: options},
+        {
           provide: HttpBackend,
           useFactory: httpClientInMemBackendServiceFactory,
-          deps: [InMemoryDbService, InMemoryBackendConfig, XhrFactory]
-        }
-      ]
+          deps: [InMemoryDbService, InMemoryBackendConfig, XhrFactory],
+        },
+      ],
     };
   }
   /**
@@ -59,8 +66,10 @@ export class HttpClientInMemoryWebApiModule {
    * Same as `forRoot`.
    * This is a feel-good method so you can follow the Angular style guide for lazy-loaded modules.
    */
-  static forFeature(dbCreator: Type<InMemoryDbService>, options?: InMemoryBackendConfigArgs):
-      ModuleWithProviders<HttpClientInMemoryWebApiModule> {
+  static forFeature(
+    dbCreator: Type<InMemoryDbService>,
+    options?: InMemoryBackendConfigArgs,
+  ): ModuleWithProviders<HttpClientInMemoryWebApiModule> {
     return HttpClientInMemoryWebApiModule.forRoot(dbCreator, options);
   }
 }

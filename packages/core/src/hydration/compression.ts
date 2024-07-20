@@ -15,8 +15,9 @@ import {NodeNavigationStep, REFERENCE_NODE_BODY, REFERENCE_NODE_HOST} from './in
  *  - the `b` char which indicates that the lookup should start from the `document.body`
  *  - the `h` char to start lookup from the component host node (`lView[HOST]`)
  */
-const REF_EXTRACTOR_REGEXP =
-    new RegExp(`^(\\d+)*(${REFERENCE_NODE_BODY}|${REFERENCE_NODE_HOST})*(.*)`);
+const REF_EXTRACTOR_REGEXP = new RegExp(
+  `^(\\d+)*(${REFERENCE_NODE_BODY}|${REFERENCE_NODE_HOST})*(.*)`,
+);
 
 /**
  * Helper function that takes a reference node location and a set of navigation steps
@@ -27,7 +28,7 @@ const REF_EXTRACTOR_REGEXP =
  * 'nextSibling'], the function returns: `bf2n`.
  */
 export function compressNodeLocation(referenceNode: string, path: NodeNavigationStep[]): string {
-  const result: Array<string|number> = [referenceNode];
+  const result: Array<string | number> = [referenceNode];
   for (const segment of path) {
     const lastIdx = result.length - 1;
     if (lastIdx > 0 && result[lastIdx - 1] === segment) {
@@ -57,13 +58,14 @@ export function compressNodeLocation(referenceNode: string, path: NodeNavigation
  * This information is later consumed by the code that navigates the DOM to find
  * a given node by its location.
  */
-export function decompressNodeLocation(path: string):
-    [string|number, ...(number | NodeNavigationStep)[]] {
+export function decompressNodeLocation(
+  path: string,
+): [string | number, ...(number | NodeNavigationStep)[]] {
   const matches = path.match(REF_EXTRACTOR_REGEXP)!;
   const [_, refNodeId, refNodeName, rest] = matches;
   // If a reference node is represented by an index, transform it to a number.
   const ref = refNodeId ? parseInt(refNodeId, 10) : refNodeName;
-  const steps: (number|NodeNavigationStep)[] = [];
+  const steps: (number | NodeNavigationStep)[] = [];
   // Match all segments in a path.
   for (const [_, step, count] of rest.matchAll(/(f|n)(\d*)/g)) {
     const repeat = parseInt(count, 10) || 1;

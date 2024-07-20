@@ -27,8 +27,5 @@ import {PLATFORM_SERVER_PROVIDERS} from './server';
  * @returns A set of providers to setup the server.
  */
 export function provideServerRendering(): EnvironmentProviders {
-  return makeEnvironmentProviders([
-    provideNoopAnimations(),
-    ...PLATFORM_SERVER_PROVIDERS,
-  ]);
+  return makeEnvironmentProviders([provideNoopAnimations(), ...PLATFORM_SERVER_PROVIDERS]);
 }

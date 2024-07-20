@@ -12,15 +12,18 @@ declare const global: any;
 
 function supportMediaQuery() {
   const _global =
-      typeof window === 'object' && window || typeof self === 'object' && self || global;
+    (typeof window === 'object' && window) || (typeof self === 'object' && self) || global;
   return _global['MediaQueryList'] && _global['matchMedia'];
 }
 
-describe('test mediaQuery patch', ifEnvSupports(supportMediaQuery, () => {
-           it('test whether addListener is patched', () => {
-             const mqList = window.matchMedia('min-width:500px');
-             if (mqList && mqList['addListener']) {
-               expect((mqList as any)[zoneSymbol('addListener')]).toBeTruthy();
-             }
-           });
-         }));
+describe(
+  'test mediaQuery patch',
+  ifEnvSupports(supportMediaQuery, () => {
+    it('test whether addListener is patched', () => {
+      const mqList = window.matchMedia('min-width:500px');
+      if (mqList && mqList['addListener']) {
+        expect((mqList as any)[zoneSymbol('addListener')]).toBeTruthy();
+      }
+    });
+  }),
+);

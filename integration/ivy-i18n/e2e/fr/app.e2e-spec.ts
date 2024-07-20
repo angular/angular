@@ -12,7 +12,7 @@ describe('cli-hello-world-ivy App', () => {
   });
 
   it('should display welcome message', () => {
-    expect(page.getParagraph('message')).toEqual('Bienvenue sur l\'application i18n. (inline)');
+    expect(page.getParagraph('message')).toEqual("Bienvenue sur l'application i18n. (inline)");
   });
 
   it('should display extra message', () => {

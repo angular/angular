@@ -6,7 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, OnDestroy, Optional, Output, Provider, Self, SimpleChanges} from '@angular/core';
+import {
+  computed,
+  Directive,
+  EventEmitter,
+  forwardRef,
+  Inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Optional,
+  Output,
+  Provider,
+  Self,
+  signal,
+  SimpleChanges,
+  untracked,
+  ɵWritable as Writable,
+} from '@angular/core';
 
 import {FormArray} from '../../model/form_array';
 import {FormControl, isFormControl} from '../../model/form_control';
@@ -15,15 +32,27 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {missingFormException} from '../reactive_errors';
-import {CALL_SET_DISABLED_STATE, cleanUpControl, cleanUpFormContainer, cleanUpValidators, removeListItem, SetDisabledStateOption, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
+import {
+  CALL_SET_DISABLED_STATE,
+  cleanUpControl,
+  cleanUpFormContainer,
+  cleanUpValidators,
+  removeListItem,
+  SetDisabledStateOption,
+  setUpControl,
+  setUpFormContainer,
+  setUpValidators,
+  syncPendingControls,
+} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
+import {FormResetEvent, FormSubmittedEvent} from '../../model/abstract_model';
 
 const formDirectiveProvider: Provider = {
   provide: ControlContainer,
-  useExisting: forwardRef(() => FormGroupDirective)
+  useExisting: forwardRef(() => FormGroupDirective),
 };
 
 /**
@@ -36,7 +65,7 @@ const formDirectiveProvider: Provider = {
  * and `FormArray` instances to child `FormControlName`, `FormGroupName`,
  * and `FormArrayName` directives.
  *
- * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see [Reactive Forms Guide](guide/forms/reactive-forms)
  * @see {@link AbstractControl}
  *
  * @usageNotes
@@ -54,20 +83,29 @@ const formDirectiveProvider: Provider = {
   selector: '[formGroup]',
   providers: [formDirectiveProvider],
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
-  exportAs: 'ngForm'
+  exportAs: 'ngForm',
 })
 export class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
   /**
    * @description
    * Reports whether the form submission has been triggered.
    */
-  public readonly submitted: boolean = false;
+  get submitted() {
+    return untracked(this._submittedReactive);
+  }
+  // TODO(atscott): Remove once invalid API usage is cleaned up internally
+  private set submitted(value: boolean) {
+    this._submittedReactive.set(value);
+  }
+  /** @internal */
+  readonly _submitted = computed(() => this._submittedReactive());
+  private readonly _submittedReactive = signal(false);
 
   /**
-   * Reference to an old form group input value, which is needed to cleanup old instance in case it
-   * was replaced with a new one.
+   * Reference to an old form group input value, which is needed to cleanup
+   * old instance in case it was replaced with a new one.
    */
-  private _oldForm: FormGroup|undefined;
+  private _oldForm: FormGroup | undefined;
 
   /**
    * Callback that should be invoked when controls in FormGroup or FormArray collection change
@@ -94,11 +132,15 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   @Output() ngSubmit = new EventEmitter();
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
-          (AsyncValidator|AsyncValidatorFn)[],
-      @Optional() @Inject(CALL_SET_DISABLED_STATE) private callSetDisabledState?:
-          SetDisabledStateOption) {
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator | ValidatorFn)[],
+    @Optional()
+    @Self()
+    @Inject(NG_ASYNC_VALIDATORS)
+    asyncValidators: (AsyncValidator | AsyncValidatorFn)[],
+    @Optional()
+    @Inject(CALL_SET_DISABLED_STATE)
+    private callSetDisabledState?: SetDisabledStateOption,
+  ) {
     super();
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
@@ -270,9 +312,11 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @param $event The "submit" event object
    */
   onSubmit($event: Event): boolean {
-    (this as {submitted: boolean}).submitted = true;
+    this._submittedReactive.set(true);
     syncPendingControls(this.form, this.directives);
     this.ngSubmit.emit($event);
+    this.form._events.next(new FormSubmittedEvent(this.control));
+
     // Forms with `method="dialog"` have some special behavior that won't reload the page and that
     // shouldn't be prevented. Note that we need to null check the `event` and the `target`, because
     // some internal apps call this method directly with the wrong arguments.
@@ -295,12 +339,13 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    */
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    (this as {submitted: boolean}).submitted = false;
+    this._submittedReactive.set(false);
+    this.form._events.next(new FormResetEvent(this.form));
   }
 
   /** @internal */
   _updateDomValue() {
-    this.directives.forEach(dir => {
+    this.directives.forEach((dir) => {
       const oldCtrl = dir.control;
       const newCtrl = this.form.get(dir.path);
       if (oldCtrl !== newCtrl) {
@@ -315,7 +360,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
         // directive instance is being removed (invoked from `FormControlName.ngOnDestroy`).
         if (isFormControl(newCtrl)) {
           setUpControl(newCtrl, dir, this.callSetDisabledState);
-          (dir as {control: FormControl}).control = newCtrl;
+          (dir as Writable<FormControlName>).control = newCtrl;
         }
       }
     });
@@ -323,7 +368,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     this.form._updateTreeValidity({emitEvent: false});
   }
 
-  private _setUpFormContainer(dir: FormArrayName|FormGroupName): void {
+  private _setUpFormContainer(dir: FormArrayName | FormGroupName): void {
     const ctrl: any = this.form.get(dir.path);
     setUpFormContainer(ctrl, dir);
     // NOTE: this operation looks unnecessary in case no new validators were added in
@@ -332,7 +377,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     ctrl.updateValueAndValidity({emitEvent: false});
   }
 
-  private _cleanUpFormContainer(dir: FormArrayName|FormGroupName): void {
+  private _cleanUpFormContainer(dir: FormArrayName | FormGroupName): void {
     if (this.form) {
       const ctrl: any = this.form.get(dir.path);
       if (ctrl) {

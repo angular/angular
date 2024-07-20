@@ -32,18 +32,19 @@ export class Options {
     {provide: Options.SAMPLE_DESCRIPTION, useValue: {}},
     {provide: Options.FORCE_GC, useValue: false},
     {provide: Options.PREPARE, useValue: Options.NO_PREPARE},
-    {provide: Options.MICRO_METRICS, useValue: {}}, {provide: Options.USER_METRICS, useValue: {}},
+    {provide: Options.MICRO_METRICS, useValue: {}},
+    {provide: Options.USER_METRICS, useValue: {}},
     {provide: Options.NOW, useValue: () => new Date()},
     {provide: Options.RECEIVED_DATA, useValue: false},
     {provide: Options.REQUEST_COUNT, useValue: false},
     {provide: Options.CAPTURE_FRAMES, useValue: false},
     {provide: Options.WRITE_FILE, useValue: writeFile},
-    {provide: Options.RAW_PERFLOG_PATH, useValue: null}
+    {provide: Options.RAW_PERFLOG_PATH, useValue: null},
   ];
 }
 
 function writeFile(filename: string, content: string): Promise<any> {
-  return new Promise<void>(function(resolve, reject) {
+  return new Promise<void>(function (resolve, reject) {
     fs.writeFile(filename, content, (error) => {
       if (error) {
         reject(error);

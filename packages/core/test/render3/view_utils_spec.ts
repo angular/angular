@@ -14,8 +14,12 @@ describe('view_utils', () => {
   it('should verify unwrap methods (isLView and isLContainer)', () => {
     const viewFixture = new ViewFixture();
     const tNode = createTNode(null!, null, 3, 0, 'div', []);
-    const lContainer =
-        createLContainer(viewFixture.lView, viewFixture.lView, viewFixture.host, tNode);
+    const lContainer = createLContainer(
+      viewFixture.lView,
+      viewFixture.lView,
+      viewFixture.host,
+      tNode,
+    );
 
     expect(isLView(viewFixture.lView)).toBe(true);
     expect(isLView(lContainer)).toBe(false);

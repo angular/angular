@@ -6,9 +6,9 @@ const MagicString = require('magic-string');
 let version = '<unknown>';
 if (bazel_version_file) {
   const versionTag = require('fs')
-                         .readFileSync(bazel_version_file, {encoding: 'utf-8'})
-                         .split('\n')
-                         .find((s) => s.startsWith('STABLE_PROJECT_VERSION'));
+    .readFileSync(bazel_version_file, {encoding: 'utf-8'})
+    .split('\n')
+    .find((s) => s.startsWith('STABLE_PROJECT_VERSION'));
   // Don't assume STABLE_PROJECT_VERSION exists
   if (versionTag) {
     version = versionTag.split(' ')[1].trim();
@@ -49,11 +49,24 @@ const stripBannerPlugin = {
 const banner = `'use strict';
 /**
  * @license Angular v${version}
- * (c) 2010-2022 Google LLC. https://angular.io/
+ * (c) 2010-2024 Google LLC. https://angular.io/
  * License: MIT
  */`;
 
 module.exports = {
+  external: (id) => {
+    if (id[0] === '.') {
+      // Relative paths are always non external.
+      return false;
+    }
+
+    if (/zone\.js[\\/]lib/.test(id)) {
+      return false;
+    }
+
+    return /rxjs|electron/.test(id);
+  },
+
   plugins: [
     node({
       mainFields: ['es2015', 'module', 'jsnext:main', 'main'],
@@ -61,13 +74,6 @@ module.exports = {
     commonjs(),
     stripBannerPlugin,
   ],
-  external: (id) => {
-    if (/zone\.js[\\/]lib/.test(id)) {
-      return false;
-    }
-
-    return /rxjs|electron/.test(id);
-  },
   output: {
     globals: {
       electron: 'electron',

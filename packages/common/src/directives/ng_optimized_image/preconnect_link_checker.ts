@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable, InjectionToken, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  inject,
+  Injectable,
+  InjectionToken,
+  ɵformatRuntimeError as formatRuntimeError,
+  PLATFORM_ID,
+} from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
@@ -14,6 +20,7 @@ import {RuntimeErrorCode} from '../../errors';
 import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';
 import {extractHostname, getUrl} from './url';
+import {isPlatformServer} from '../../platform_id';
 
 // Set of origins that are always excluded from the preconnect checks.
 const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
@@ -36,8 +43,9 @@ const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '
  *
  * @publicApi
  */
-export const PRECONNECT_CHECK_BLOCKLIST =
-    new InjectionToken<Array<string|string[]>>('PRECONNECT_CHECK_BLOCKLIST');
+export const PRECONNECT_CHECK_BLOCKLIST = new InjectionToken<Array<string | string[]>>(
+  ngDevMode ? 'PRECONNECT_CHECK_BLOCKLIST' : '',
+);
 
 /**
  * Contains the logic to detect whether an image, marked with the "priority" attribute
@@ -49,19 +57,20 @@ export const PRECONNECT_CHECK_BLOCKLIST =
 @Injectable({providedIn: 'root'})
 export class PreconnectLinkChecker {
   private document = inject(DOCUMENT);
+  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 
   /**
    * Set of <link rel="preconnect"> tags found on this page.
    * The `null` value indicates that there was no DOM query operation performed.
    */
-  private preconnectLinks: Set<string>|null = null;
+  private preconnectLinks: Set<string> | null = null;
 
   /*
    * Keep track of all already seen origin URLs to avoid repeating the same check.
    */
   private alreadySeen = new Set<string>();
 
-  private window: Window|null = null;
+  private window: Window | null = null;
 
   private blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
 
@@ -77,9 +86,9 @@ export class PreconnectLinkChecker {
     }
   }
 
-  private populateBlocklist(origins: Array<string|string[]>|string) {
+  private populateBlocklist(origins: Array<string | string[]> | string) {
     if (Array.isArray(origins)) {
-      deepForEach(origins, origin => {
+      deepForEach(origins, (origin) => {
         this.blocklist.add(extractHostname(origin));
       });
     } else {
@@ -95,30 +104,31 @@ export class PreconnectLinkChecker {
    * @param originalNgSrc ngSrc value
    */
   assertPreconnect(rewrittenSrc: string, originalNgSrc: string): void {
-    if (!this.window) return;
+    if (this.isServer) return;
 
-    const imgUrl = getUrl(rewrittenSrc, this.window);
+    const imgUrl = getUrl(rewrittenSrc, this.window!);
     if (this.blocklist.has(imgUrl.hostname) || this.alreadySeen.has(imgUrl.origin)) return;
 
     // Register this origin as seen, so we don't check it again later.
     this.alreadySeen.add(imgUrl.origin);
 
-    if (!this.preconnectLinks) {
-      // Note: we query for preconnect links only *once* and cache the results
-      // for the entire lifespan of an application, since it's unlikely that the
-      // list would change frequently. This allows to make sure there are no
-      // performance implications of making extra DOM lookups for each image.
-      this.preconnectLinks = this.queryPreconnectLinks();
-    }
+    // Note: we query for preconnect links only *once* and cache the results
+    // for the entire lifespan of an application, since it's unlikely that the
+    // list would change frequently. This allows to make sure there are no
+    // performance implications of making extra DOM lookups for each image.
+    this.preconnectLinks ??= this.queryPreconnectLinks();
 
     if (!this.preconnectLinks.has(imgUrl.origin)) {
-      console.warn(formatRuntimeError(
+      console.warn(
+        formatRuntimeError(
           RuntimeErrorCode.PRIORITY_IMG_MISSING_PRECONNECT_TAG,
           `${imgDirectiveDetails(originalNgSrc)} there is no preconnect tag present for this ` +
-              `image. Preconnecting to the origin(s) that serve priority images ensures that these ` +
-              `images are delivered as soon as possible. To fix this, please add the following ` +
-              `element into the <head> of the document:\n` +
-              `  <link rel="preconnect" href="${imgUrl.origin}">`));
+            `image. Preconnecting to the origin(s) that serve priority images ensures that these ` +
+            `images are delivered as soon as possible. To fix this, please add the following ` +
+            `element into the <head> of the document:\n` +
+            `  <link rel="preconnect" href="${imgUrl.origin}">`,
+        ),
+      );
     }
   }
 
@@ -143,7 +153,7 @@ export class PreconnectLinkChecker {
  * Invokes a callback for each element in the array. Also invokes a callback
  * recursively for each nested array.
  */
-function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
+function deepForEach<T>(input: (T | any[])[], fn: (value: T) => void): void {
   for (let value of input) {
     Array.isArray(value) ? deepForEach(value, fn) : fn(value);
   }

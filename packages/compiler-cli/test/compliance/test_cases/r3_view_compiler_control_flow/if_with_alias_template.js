@@ -4,7 +4,7 @@ function MyApp_Conditional_2_Template(rf, ctx) {
   }
   if (rf & 2) {
     const $ctx0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate2("", $ctx0$.value(), " as ", ctx, "");
+    $r3$.ɵɵtextInterpolate2(" ", $ctx0$.value(), " as ", ctx, " ");
   }
 }
 …
@@ -16,10 +16,10 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    let MyApp_contFlowTmp;
-    $r3$.ɵɵadvance(1);
+    let $MyApp_contFlowTmp$;
+    $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
-    $r3$.ɵɵadvance(1);
-    $r3$.ɵɵconditional(2, (MyApp_contFlowTmp = ctx.value()) ? 2 : -1, MyApp_contFlowTmp);
+    $r3$.ɵɵadvance();
+    $r3$.ɵɵconditional(($MyApp_contFlowTmp$ = ctx.value()) ? 2 : -1, $MyApp_contFlowTmp$);
   }
 }

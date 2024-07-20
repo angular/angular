@@ -21,7 +21,7 @@ describe('Observable.defer', () => {
   it('defer func callback should run in the correct zone', () => {
     observable1 = constructorZone1.run(() => {
       return defer(() => {
-        return new Observable<number>(subscribe => {
+        return new Observable<number>((subscribe) => {
           log.push('setup');
           expect(Zone.current.name).toEqual(constructorZone1.name);
           subscribe.next(1);

@@ -7,7 +7,7 @@
  */
 export const enum AnimationTransitionInstructionType {
   TransitionAnimation,
-  TimelineAnimation
+  TimelineAnimation,
 }
 
 export interface AnimationEngineInstruction {

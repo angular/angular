@@ -7,7 +7,14 @@
  */
 
 import {NgIf} from '@angular/common';
-import {Component, createEnvironmentInjector, DestroyRef, Directive, EnvironmentInjector, inject} from '@angular/core';
+import {
+  Component,
+  createEnvironmentInjector,
+  DestroyRef,
+  Directive,
+  EnvironmentInjector,
+  inject,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('DestroyRef', () => {
@@ -16,7 +23,7 @@ describe('DestroyRef', () => {
       let destroyed = false;
       const envInjector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
 
-      envInjector.get(DestroyRef).onDestroy(() => destroyed = true);
+      envInjector.get(DestroyRef).onDestroy(() => (destroyed = true));
       expect(destroyed).toBe(false);
 
       envInjector.destroy();
@@ -27,7 +34,7 @@ describe('DestroyRef', () => {
       let destroyed = false;
       const envInjector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
 
-      const unRegFn = envInjector.get(DestroyRef).onDestroy(() => destroyed = true);
+      const unRegFn = envInjector.get(DestroyRef).onDestroy(() => (destroyed = true));
       expect(destroyed).toBe(false);
 
       // explicitly unregister before destroy
@@ -80,7 +87,7 @@ describe('DestroyRef', () => {
       })
       class TestCmp {
         constructor(destroyCtx: DestroyRef) {
-          destroyCtx.onDestroy(() => destroyed = true);
+          destroyCtx.onDestroy(() => (destroyed = true));
         }
       }
 
@@ -100,7 +107,7 @@ describe('DestroyRef', () => {
       })
       class WithCleanupDirective {
         constructor() {
-          inject(DestroyRef).onDestroy(() => destroyed = true);
+          inject(DestroyRef).onDestroy(() => (destroyed = true));
         }
       }
 
@@ -133,7 +140,7 @@ describe('DestroyRef', () => {
       })
       class WithCleanupDirective {
         constructor() {
-          inject(DestroyRef).onDestroy(() => destroyed = true);
+          inject(DestroyRef).onDestroy(() => (destroyed = true));
         }
       }
 
@@ -196,7 +203,7 @@ describe('DestroyRef', () => {
     class TestCmp {
       unRegFn: () => void;
       constructor(destroyCtx: DestroyRef) {
-        this.unRegFn = destroyCtx.onDestroy(() => destroyed = true);
+        this.unRegFn = destroyCtx.onDestroy(() => (destroyed = true));
       }
     }
 
@@ -250,7 +257,6 @@ describe('DestroyRef', () => {
     class TestCmp {
       constructor(public destroyRef: DestroyRef) {}
     }
-
 
     const fixture = TestBed.createComponent(TestCmp);
     const destroyRef = fixture.componentRef.instance.destroyRef;

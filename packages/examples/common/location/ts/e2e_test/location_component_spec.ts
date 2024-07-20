@@ -10,7 +10,6 @@ import {$, browser, by, element, protractor} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
-
 function waitForElement(selector: string) {
   const EC = (<any>protractor).ExpectedConditions;
   // Waits for the element with id 'abc' to be present on the dom.

@@ -9,24 +9,37 @@
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 
-import type {ComponentCompilationJob} from '../compilation';
+import type {CompilationJob, ComponentCompilationJob} from '../compilation';
 
-export function phasePipeVariadic(cpl: ComponentCompilationJob): void {
-  for (const view of cpl.views.values()) {
-    for (const op of view.update) {
-      ir.transformExpressionsInOp(op, expr => {
-        if (!(expr instanceof ir.PipeBindingExpr)) {
-          return expr;
-        }
+/**
+ * Pipes that accept more than 4 arguments are variadic, and are handled with a different runtime
+ * instruction.
+ */
+export function createVariadicPipes(job: CompilationJob): void {
+  for (const unit of job.units) {
+    for (const op of unit.update) {
+      ir.transformExpressionsInOp(
+        op,
+        (expr) => {
+          if (!(expr instanceof ir.PipeBindingExpr)) {
+            return expr;
+          }
 
-        // Pipes are variadic if they have more than 4 arguments.
-        if (expr.args.length <= 4) {
-          return expr;
-        }
+          // Pipes are variadic if they have more than 4 arguments.
+          if (expr.args.length <= 4) {
+            return expr;
+          }
 
-        return new ir.PipeBindingVariadicExpr(
-            expr.target, expr.name, o.literalArr(expr.args), expr.args.length);
-      }, ir.VisitorContextFlag.None);
+          return new ir.PipeBindingVariadicExpr(
+            expr.target,
+            expr.targetSlot,
+            expr.name,
+            o.literalArr(expr.args),
+            expr.args.length,
+          );
+        },
+        ir.VisitorContextFlag.None,
+      );
     }
   }
 }

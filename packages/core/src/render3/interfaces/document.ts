@@ -24,7 +24,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
  * Angular does this for us in each of the standard platforms (`Browser` and `Server`)
  * by calling `setDocument()` when providing the `DOCUMENT` token.
  */
-let DOCUMENT: Document|undefined = undefined;
+let DOCUMENT: Document | undefined = undefined;
 
 /**
  * Tell ivy what the `document` is for this platform.
@@ -33,7 +33,7 @@ let DOCUMENT: Document|undefined = undefined;
  *
  * @param document The object representing the global `document` in this environment.
  */
-export function setDocument(document: Document|undefined): void {
+export function setDocument(document: Document | undefined): void {
   DOCUMENT = document;
 }
 
@@ -51,9 +51,10 @@ export function getDocument(): Document {
   }
 
   throw new RuntimeError(
-      RuntimeErrorCode.MISSING_DOCUMENT,
-      (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          `The document object is not available in this context. Make sure the DOCUMENT injection token is provided.`);
+    RuntimeErrorCode.MISSING_DOCUMENT,
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      `The document object is not available in this context. Make sure the DOCUMENT injection token is provided.`,
+  );
 
   // No "document" can be found. This should only happen if we are running ivy outside Angular and
   // the current platform is not a browser. Since this is not a supported scenario at the moment

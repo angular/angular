@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/mocha-patch.min",
-  "main": "../../bundles/mocha-patch.umd.min.js",
-  "fesm2015": "../../fesm2015/mocha-patch.min.js",
-  "es2015": "../../fesm2015/mocha-patch.min.js",
-  "module": "../../fesm2015/mocha-patch.min.js"
-}

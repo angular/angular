@@ -6,17 +6,40 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, ElementRef, EventEmitter, Inject, Injector, OnChanges, OnDestroy, OnInit, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {
+  Directive,
+  DoCheck,
+  ElementRef,
+  EventEmitter,
+  Inject,
+  Injector,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChange,
+  SimpleChanges,
+  Type,
+} from '@angular/core';
 
-import {IAttributes, IDirective, IInjectorService, ILinkFn, IScope, ITranscludeFunction} from '../../common/src/angular1';
+import {
+  IAttributes,
+  IDirective,
+  IInjectorService,
+  ILinkFn,
+  IScope,
+  ITranscludeFunction,
+} from '../../common/src/angular1';
 import {$SCOPE} from '../../common/src/constants';
-import {IBindingDestination, IControllerInstance, UpgradeHelper} from '../../common/src/upgrade_helper';
+import {
+  IBindingDestination,
+  IControllerInstance,
+  UpgradeHelper,
+} from '../../common/src/upgrade_helper';
 import {isFunction, strictEquals} from '../../common/src/util';
-
 
 const CAMEL_CASE = /([A-Z])/g;
 const INITIAL_VALUE = {
-  __UNINITIALIZED__: true
+  __UNINITIALIZED__: true,
 };
 const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 
@@ -37,23 +60,37 @@ export class UpgradeNg1ComponentAdapterBuilder {
   propertyOutputs: string[] = [];
   checkProperties: string[] = [];
   propertyMap: {[name: string]: string} = {};
-  directive: IDirective|null = null;
+  directive: IDirective | null = null;
   template!: string;
 
   constructor(public name: string) {
-    const selector =
-        name.replace(CAMEL_CASE, (all: string, next: string) => '-' + next.toLowerCase());
+    const selector = name.replace(
+      CAMEL_CASE,
+      (all: string, next: string) => '-' + next.toLowerCase(),
+    );
     const self = this;
 
-    @Directive(
-        {jit: true, selector: selector, inputs: this.inputsRename, outputs: this.outputsRename})
-    class MyClass extends UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck,
-                                                                OnDestroy {
+    @Directive({
+      jit: true,
+      selector: selector,
+      inputs: this.inputsRename,
+      outputs: this.outputsRename,
+    })
+    class MyClass
+      extends UpgradeNg1ComponentAdapter
+      implements OnInit, OnChanges, DoCheck, OnDestroy
+    {
       constructor(@Inject($SCOPE) scope: IScope, injector: Injector, elementRef: ElementRef) {
         super(
-            new UpgradeHelper(injector, name, elementRef, self.directive || undefined), scope,
-            self.template, self.inputs, self.outputs, self.propertyOutputs, self.checkProperties,
-            self.propertyMap) as any;
+          new UpgradeHelper(injector, name, elementRef, self.directive || undefined),
+          scope,
+          self.template,
+          self.inputs,
+          self.outputs,
+          self.propertyOutputs,
+          self.checkProperties,
+          self.propertyMap,
+        ) as any;
       }
     }
     this.type = MyClass;
@@ -63,13 +100,14 @@ export class UpgradeNg1ComponentAdapterBuilder {
     const btcIsObject = typeof this.directive!.bindToController === 'object';
     if (btcIsObject && Object.keys(this.directive!.scope!).length) {
       throw new Error(
-          `Binding definitions on scope and controller at the same time are not supported.`);
+        `Binding definitions on scope and controller at the same time are not supported.`,
+      );
     }
 
-    const context = (btcIsObject) ? this.directive!.bindToController : this.directive!.scope;
+    const context = btcIsObject ? this.directive!.bindToController : this.directive!.scope;
 
     if (typeof context == 'object') {
-      Object.keys(context).forEach(propName => {
+      Object.keys(context).forEach((propName) => {
         const definition = context[propName];
         const bindingType = definition.charAt(0);
         const bindingOptions = definition.charAt(1);
@@ -110,7 +148,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
           default:
             let json = JSON.stringify(context);
             throw new Error(
-                `Unexpected mapping '${bindingType}' in '${json}' in '${this.name}' directive.`);
+              `Unexpected mapping '${bindingType}' in '${json}' in '${this.name}' directive.`,
+            );
         }
       });
     }
@@ -120,15 +159,16 @@ export class UpgradeNg1ComponentAdapterBuilder {
    * Upgrade ng1 components into Angular.
    */
   static resolve(
-      exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
-      $injector: IInjectorService): Promise<string[]> {
+    exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
+    $injector: IInjectorService,
+  ): Promise<string[]> {
     const promises = Object.entries(exportedComponents).map(([name, exportedComponent]) => {
       exportedComponent.directive = UpgradeHelper.getDirective($injector, name);
       exportedComponent.extractBindings();
 
-      return Promise
-          .resolve(UpgradeHelper.getTemplate($injector, exportedComponent.directive, true))
-          .then(template => exportedComponent.template = template);
+      return Promise.resolve(
+        UpgradeHelper.getTemplate($injector, exportedComponent.directive, true),
+      ).then((template) => (exportedComponent.template = template));
     });
 
     return Promise.all(promises);
@@ -137,8 +177,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
 
 @Directive()
 class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
-  private controllerInstance: IControllerInstance|null = null;
-  destinationObj: IBindingDestination|null = null;
+  private controllerInstance: IControllerInstance | null = null;
+  destinationObj: IBindingDestination | null = null;
   checkLastValues: any[] = [];
   directive: IDirective;
   element: Element;
@@ -146,9 +186,15 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   componentScope: IScope;
 
   constructor(
-      private helper: UpgradeHelper, scope: IScope, private template: string,
-      private inputs: string[], private outputs: string[], private propOuts: string[],
-      private checkProperties: string[], private propertyMap: {[key: string]: string}) {
+    private helper: UpgradeHelper,
+    scope: IScope,
+    private template: string,
+    private inputs: string[],
+    private outputs: string[],
+    private propOuts: string[],
+    private checkProperties: string[],
+    private propertyMap: {[key: string]: string},
+  ) {
     this.directive = helper.directive;
     this.element = helper.element;
     this.$element = helper.$element;
@@ -167,10 +213,15 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       (this as any)[input] = null;
     }
     for (const output of this.outputs) {
-      const emitter = (this as any)[output] = new EventEmitter();
+      const emitter = ((this as any)[output] = new EventEmitter());
       if (this.propOuts.indexOf(output) === -1) {
         this.setComponentProperty(
-            output, (emitter => (value: any) => emitter.emit(value))(emitter));
+          output,
+          (
+            (emitter) => (value: any) =>
+              emitter.emit(value)
+          )(emitter),
+        );
       }
     }
     this.checkLastValues.push(...Array(propOuts.length).fill(INITIAL_VALUE));
@@ -178,7 +229,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
 
   ngOnInit() {
     // Collect contents, insert and compile template
-    const attachChildNodes: ILinkFn|undefined = this.helper.prepareTransclusion();
+    const attachChildNodes: ILinkFn | undefined = this.helper.prepareTransclusion();
     const linkFn = this.helper.compileTemplate(this.template);
 
     // Instantiate controller (if not already done so)
@@ -189,8 +240,9 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
 
     // Require other controllers
-    const requiredControllers =
-        this.helper.resolveAndBindRequiredControllers(this.controllerInstance);
+    const requiredControllers = this.helper.resolveAndBindRequiredControllers(
+      this.controllerInstance,
+    );
 
     // Hook: $onInit
     if (this.controllerInstance && isFunction(this.controllerInstance.$onInit)) {
@@ -221,7 +273,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
 
   ngOnChanges(changes: SimpleChanges) {
     const ng1Changes: any = {};
-    Object.keys(changes).forEach(propertyMapName => {
+    Object.keys(changes).forEach((propertyMapName) => {
       const change: SimpleChange = changes[propertyMapName];
       this.setComponentProperty(propertyMapName, change.currentValue);
       ng1Changes[this.propertyMap[propertyMapName]] = change;
@@ -242,7 +294,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
       const last = lastValues[i];
       if (!strictEquals(last, value)) {
         const eventEmitter: EventEmitter<any> = (this as any)[propOuts[i]];
-        eventEmitter.emit(lastValues[i] = value);
+        eventEmitter.emit((lastValues[i] = value));
       }
     });
 

@@ -1,5 +1,12 @@
 {
-  "syncedFilePatterns": ["LICENSE", "modules/benchmarks/**", "packages/**"],
+  "syncedFilePatterns": [
+    "LICENSE",
+    "modules/benchmarks/**",
+    "packages/**"
+  ],
+  "separateFilePatterns": [
+    "packages/core/primitives/**"
+  ],
   "alwaysExternalFilePatterns": [
     "packages/*",
     "packages/bazel/*",
@@ -22,7 +29,6 @@
     "packages/docs/**",
     "packages/elements/schematics/**",
     "packages/examples/**",
-    "packages/language-service/**",
     "packages/localize/**",
     "packages/private/**",
     "packages/service-worker/**",
@@ -31,8 +37,6 @@
     "packages/http/**",
     "**/.gitignore",
     "**/.gitkeep",
-    "**/yarn.lock",
-    "**/package.json",
     "**/third_party/**",
     "**/tsconfig-build.json",
     "**/tsconfig-tsec.json",

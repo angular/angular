@@ -36,6 +36,7 @@ ts_test_library(
     ],
     deps = [
         ":property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/protocol",
         "@npm//@angular/cdk",
         "@npm//@angular/material",

@@ -32,9 +32,11 @@ export function propertyDescriptorLegacyPatch(api: _ZonePrivate, _global: any) {
 
 function canPatchViaPropertyDescriptor(api: _ZonePrivate, _global: any) {
   const {isBrowser, isMix} = api.getGlobalObjects()!;
-  if ((isBrowser || isMix) &&
-      !api.ObjectGetOwnPropertyDescriptor(HTMLElement.prototype, 'onclick') &&
-      typeof Element !== 'undefined') {
+  if (
+    (isBrowser || isMix) &&
+    !api.ObjectGetOwnPropertyDescriptor(HTMLElement.prototype, 'onclick') &&
+    typeof Element !== 'undefined'
+  ) {
     // WebKit https://bugs.webkit.org/show_bug.cgi?id=134364
     // IDL interface attributes are not configurable
     const desc = api.ObjectGetOwnPropertyDescriptor(Element.prototype, 'onclick');
@@ -45,9 +47,9 @@ function canPatchViaPropertyDescriptor(api: _ZonePrivate, _global: any) {
       api.ObjectDefineProperty(Element.prototype, 'onclick', {
         enumerable: true,
         configurable: true,
-        get: function() {
+        get: function () {
           return true;
-        }
+        },
       });
       const div = document.createElement('div');
       const result = !!div.onclick;
@@ -64,8 +66,10 @@ function canPatchViaPropertyDescriptor(api: _ZonePrivate, _global: any) {
   const ON_READY_STATE_CHANGE = 'onreadystatechange';
   const XMLHttpRequestPrototype = XMLHttpRequest.prototype;
 
-  const xhrDesc =
-      api.ObjectGetOwnPropertyDescriptor(XMLHttpRequestPrototype, ON_READY_STATE_CHANGE);
+  const xhrDesc = api.ObjectGetOwnPropertyDescriptor(
+    XMLHttpRequestPrototype,
+    ON_READY_STATE_CHANGE,
+  );
 
   // add enumerable and configurable here because in opera
   // by default XMLHttpRequest.prototype.onreadystatechange is undefined
@@ -77,9 +81,9 @@ function canPatchViaPropertyDescriptor(api: _ZonePrivate, _global: any) {
     api.ObjectDefineProperty(XMLHttpRequestPrototype, ON_READY_STATE_CHANGE, {
       enumerable: true,
       configurable: true,
-      get: function() {
+      get: function () {
         return true;
-      }
+      },
     });
     const req = new XMLHttpRequest();
     const result = !!req.onreadystatechange;
@@ -91,12 +95,12 @@ function canPatchViaPropertyDescriptor(api: _ZonePrivate, _global: any) {
     api.ObjectDefineProperty(XMLHttpRequestPrototype, ON_READY_STATE_CHANGE, {
       enumerable: true,
       configurable: true,
-      get: function() {
+      get: function () {
         return this[SYMBOL_FAKE_ONREADYSTATECHANGE];
       },
-      set: function(value) {
+      set: function (value) {
         this[SYMBOL_FAKE_ONREADYSTATECHANGE] = value;
-      }
+      },
     });
     const req = new XMLHttpRequest();
     const detectFunc = () => {};
@@ -203,13 +207,24 @@ const globalEventHandlersEventNames = [
   'transitioncancel',
   'transitionend',
   'waiting',
-  'wheel'
+  'wheel',
 ];
 const documentEventNames = [
-  'afterscriptexecute', 'beforescriptexecute', 'DOMContentLoaded', 'freeze', 'fullscreenchange',
-  'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange', 'fullscreenerror',
-  'mozfullscreenerror', 'webkitfullscreenerror', 'msfullscreenerror', 'readystatechange',
-  'visibilitychange', 'resume'
+  'afterscriptexecute',
+  'beforescriptexecute',
+  'DOMContentLoaded',
+  'freeze',
+  'fullscreenchange',
+  'mozfullscreenchange',
+  'webkitfullscreenchange',
+  'msfullscreenchange',
+  'fullscreenerror',
+  'mozfullscreenerror',
+  'webkitfullscreenerror',
+  'msfullscreenerror',
+  'readystatechange',
+  'visibilitychange',
+  'resume',
 ];
 const windowEventNames = [
   'absolutedeviceorientation',
@@ -241,15 +256,33 @@ const windowEventNames = [
   'userproximity',
   'vrdisplayconnected',
   'vrdisplaydisconnected',
-  'vrdisplaypresentchange'
+  'vrdisplaypresentchange',
 ];
 const htmlElementEventNames = [
-  'beforecopy', 'beforecut', 'beforepaste', 'copy', 'cut', 'paste', 'dragstart', 'loadend',
-  'animationstart', 'search', 'transitionrun', 'transitionstart', 'webkitanimationend',
-  'webkitanimationiteration', 'webkitanimationstart', 'webkittransitionend'
+  'beforecopy',
+  'beforecut',
+  'beforepaste',
+  'copy',
+  'cut',
+  'paste',
+  'dragstart',
+  'loadend',
+  'animationstart',
+  'search',
+  'transitionrun',
+  'transitionstart',
+  'webkitanimationend',
+  'webkitanimationiteration',
+  'webkitanimationstart',
+  'webkittransitionend',
 ];
-const mediaElementEventNames =
-    ['encrypted', 'waitingforkey', 'msneedkey', 'mozinterruptbegin', 'mozinterruptend'];
+const mediaElementEventNames = [
+  'encrypted',
+  'waitingforkey',
+  'msneedkey',
+  'mozinterruptbegin',
+  'mozinterruptend',
+];
 const ieElementEventNames = [
   'activate',
   'afterupdate',
@@ -305,15 +338,21 @@ const ieElementEventNames = [
   'mssitemodejumplistitemremoved',
   'msthumbnailclick',
   'stop',
-  'storagecommit'
+  'storagecommit',
 ];
 const webglEventNames = ['webglcontextrestored', 'webglcontextlost', 'webglcontextcreationerror'];
 const formEventNames = ['autocomplete', 'autocompleteerror'];
 const detailEventNames = ['toggle'];
 
 const eventNames = [
-  ...globalEventHandlersEventNames, ...webglEventNames, ...formEventNames, ...detailEventNames,
-  ...documentEventNames, ...windowEventNames, ...htmlElementEventNames, ...ieElementEventNames
+  ...globalEventHandlersEventNames,
+  ...webglEventNames,
+  ...formEventNames,
+  ...detailEventNames,
+  ...documentEventNames,
+  ...windowEventNames,
+  ...htmlElementEventNames,
+  ...ieElementEventNames,
 ];
 
 // Whenever any eventListener fires, we check the eventListener target and all parents
@@ -324,21 +363,27 @@ function patchViaCapturingAllTheEvents(api: _ZonePrivate) {
   for (let i = 0; i < eventNames.length; i++) {
     const property = eventNames[i];
     const onproperty = 'on' + property;
-    self.addEventListener(property, function(event) {
-      let elt: any = <Node>event.target, bound, source;
-      if (elt) {
-        source = elt.constructor['name'] + '.' + onproperty;
-      } else {
-        source = 'unknown.' + onproperty;
-      }
-      while (elt) {
-        if (elt[onproperty] && !elt[onproperty][unboundKey]) {
-          bound = api.wrapWithCurrentZone(elt[onproperty], source);
-          bound[unboundKey] = elt[onproperty];
-          elt[onproperty] = bound;
+    self.addEventListener(
+      property,
+      function (event) {
+        let elt: any = <Node>event.target,
+          bound,
+          source;
+        if (elt) {
+          source = elt.constructor['name'] + '.' + onproperty;
+        } else {
+          source = 'unknown.' + onproperty;
         }
-        elt = elt.parentElement;
-      }
-    }, true);
+        while (elt) {
+          if (elt[onproperty] && !elt[onproperty][unboundKey]) {
+            bound = api.wrapWithCurrentZone(elt[onproperty], source);
+            bound[unboundKey] = elt[onproperty];
+            elt[onproperty] = bound;
+          }
+          elt = elt.parentElement;
+        }
+      },
+      true,
+    );
   }
 }

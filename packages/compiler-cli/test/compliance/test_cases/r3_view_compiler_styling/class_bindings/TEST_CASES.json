@@ -56,6 +56,37 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support class bindings on structural elements",
+      "inputFiles": [
+        "class_binding_on_structural.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "class_binding_on_structural.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle class that shares its name with other const array items",
+      "inputFiles": [
+        "shared_name_with_consts.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "shared_name_with_consts_template.pipeline.js",
+              "generated": "shared_name_with_consts.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

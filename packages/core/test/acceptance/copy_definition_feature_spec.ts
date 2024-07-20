@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, NgModule, ɵɵCopyDefinitionFeature as CopyDefinitionFeature, ɵɵdefineComponent as defineComponent, ɵɵInheritDefinitionFeature as InheritDefinitionFeature} from '@angular/core';
+import {
+  Component,
+  NgModule,
+  ɵɵCopyDefinitionFeature as CopyDefinitionFeature,
+  ɵɵdefineComponent as defineComponent,
+  ɵɵInheritDefinitionFeature as InheritDefinitionFeature,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('CopyDefinitionFeature', () => {
@@ -23,11 +29,10 @@ describe('CopyDefinitionFeature', () => {
         decls: 0,
         vars: 0,
         inputs: {name: 'name'},
-        template:
-            function BaseComponent_Template(rf, ctx) {
-              ctx.rendered = true;
-            },
-        encapsulation: 2
+        template: function BaseComponent_Template(rf, ctx) {
+          ctx.rendered = true;
+        },
+        encapsulation: 2,
       });
       static ɵfac = function BaseComponent_Factory(t: any) {
         return new (t || BaseComponent)();
@@ -44,7 +49,7 @@ describe('CopyDefinitionFeature', () => {
         decls: 0,
         vars: 0,
         template: function ChildComponent_Template(rf, ctx) {},
-        encapsulation: 2
+        encapsulation: 2,
       });
       static override ɵfac = function ChildComponent_Factory(t: any) {
         return new (t || ChildComponent)();
@@ -55,15 +60,13 @@ describe('CopyDefinitionFeature', () => {
       declarations: [ChildComponent],
       exports: [ChildComponent],
     })
-    class Module {
-    }
+    class Module {}
 
     @Component({
       selector: 'test-cmp',
       template: '<some-cmp name="Success!"></some-cmp>',
     })
-    class TestCmp {
-    }
+    class TestCmp {}
 
     TestBed.configureTestingModule({
       declarations: [TestCmp],

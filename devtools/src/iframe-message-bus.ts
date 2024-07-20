@@ -14,7 +14,10 @@ export class IFrameMessageBus extends MessageBus<Events> {
   private _listeners: any[] = [];
 
   constructor(
-      private _source: string, private _destination: string, private _docWindow: () => Window) {
+    private _source: string,
+    private _destination: string,
+    private _docWindow: () => Window,
+  ) {
     super();
   }
 
@@ -33,13 +36,13 @@ export class IFrameMessageBus extends MessageBus<Events> {
     };
   }
 
-  on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
+  override on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
     const listener = (e: MessageEvent) => {
       if (!e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
       }
       if (e.data.topic === topic) {
-        cb.apply(null, e.data.args);
+        (cb as () => void).apply(null, e.data.args);
       }
     };
     window.addEventListener('message', listener);
@@ -50,31 +53,38 @@ export class IFrameMessageBus extends MessageBus<Events> {
     };
   }
 
-  once<E extends keyof Events>(topic: E, cb: Events[E]): void {
+  override once<E extends keyof Events>(topic: E, cb: Events[E]): void {
     const listener = (e: MessageEvent) => {
       if (!e.data || e.data.source !== this._destination || !e.data.topic) {
         return;
       }
       if (e.data.topic === topic) {
-        cb.apply(null, e.data.args);
+        (cb as any).apply(null, e.data.args);
         window.removeEventListener('message', listener);
       }
     };
     window.addEventListener('message', listener);
   }
 
-  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
+  override emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
     this._docWindow().postMessage(
-        {
-          source: this._source,
-          topic,
-          args,
-        },
-        '*');
+      {
+        source: this._source,
+        topic,
+        args,
+        // Since both the devtools app and the demo app use IframeMessageBus,
+        // we want to only ignore the ngZone for the demo app. This will let us
+        // prevent infinite change detection loops triggered by message
+        // event listeners but also not prevent the NgZone in the devtools app
+        // from updating its UI.
+        __ignore_ng_zone__: this._source === 'angular-devtools',
+      },
+      '*',
+    );
     return true;
   }
 
-  destroy(): void {
+  override destroy(): void {
     this._listeners.forEach((l) => window.removeEventListener('message', l));
     this._listeners = [];
   }

@@ -34,16 +34,17 @@ export interface InertBodyHelper {
 class DOMParserHelper implements InertBodyHelper {
   constructor(private inertDocumentHelper: InertBodyHelper) {}
 
-  getInertBodyElement(html: string): HTMLElement|null {
+  getInertBodyElement(html: string): HTMLElement | null {
     // We add these extra elements to ensure that the rest of the content is parsed as expected
     // e.g. leading whitespace is maintained and tags like `<meta>` do not get hoisted to the
     // `<head>` tag. Note that the `<body>` tag is closed implicitly to prevent unclosed tags
     // in `html` from consuming the otherwise explicit `</body>` tag.
     html = '<body><remove></remove>' + html;
     try {
-      const body = new window.DOMParser()
-                       .parseFromString(trustedHTMLFromString(html) as string, 'text/html')
-                       .body as HTMLBodyElement;
+      const body = new window.DOMParser().parseFromString(
+        trustedHTMLFromString(html) as string,
+        'text/html',
+      ).body as HTMLBodyElement;
       if (body === null) {
         // In some browsers (e.g. Mozilla/5.0 iPad AppleWebKit Mobile) the `body` property only
         // becomes available in the following tick of the JS engine. In that case we fall back to
@@ -69,7 +70,7 @@ class InertDocumentHelper implements InertBodyHelper {
     this.inertDocument = this.defaultDoc.implementation.createHTMLDocument('sanitization-inert');
   }
 
-  getInertBodyElement(html: string): HTMLElement|null {
+  getInertBodyElement(html: string): HTMLElement | null {
     const templateEl = this.inertDocument.createElement('template');
     templateEl.innerHTML = trustedHTMLFromString(html) as string;
     return templateEl;
@@ -86,7 +87,9 @@ class InertDocumentHelper implements InertBodyHelper {
 export function isDOMParserAvailable() {
   try {
     return !!new window.DOMParser().parseFromString(
-        trustedHTMLFromString('') as string, 'text/html');
+      trustedHTMLFromString('') as string,
+      'text/html',
+    );
   } catch {
     return false;
   }

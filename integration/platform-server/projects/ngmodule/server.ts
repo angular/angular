@@ -6,25 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 /* tslint:disable:no-console  */
-import 'zone.js/node';
 import {APP_BASE_HREF} from '@angular/common';
 import {renderModule} from '@angular/platform-server';
-import * as express from 'express';
+import express from 'express';
 import {AppServerModule} from './src/main.server';
-import {join} from 'path';
-import {readFileSync} from 'fs';
+import {fileURLToPath} from 'node:url';
+import {dirname, join, resolve} from 'node:path';
+import {readFileSync} from 'node:fs';
 import './prerender';
 
 const app = express();
-const distFolder = join(process.cwd(), 'dist/ngmodule/browser');
-const indexHtml = readFileSync(join(distFolder, 'index.html'), 'utf-8');
+const serverDistFolder = dirname(fileURLToPath(import.meta.url));
+const browserDistFolder = resolve(serverDistFolder, '../browser');
+const indexHtml = readFileSync(join(browserDistFolder, 'index.csr.html'), 'utf-8');
 
 // Serve static files from /browser
 app.get(
   '*.*',
-  express.static(distFolder, {
+  express.static(browserDistFolder, {
     maxAge: '1y',
-  })
+  }),
 );
 
 // Mock API
@@ -38,10 +39,12 @@ app.get('/api-2', (req, res) => {
 
 // All regular routes use the Universal engine
 app.get('*', (req, res) => {
+  const {protocol, originalUrl, baseUrl, headers} = req;
+
   renderModule(AppServerModule, {
     document: indexHtml,
-    url: req.url,
-    extraProviders: [{provide: APP_BASE_HREF, useValue: req.baseUrl}],
+    url: `${protocol}://${headers.host}${originalUrl}`,
+    extraProviders: [{provide: APP_BASE_HREF, useValue: baseUrl}],
   }).then((response: string) => {
     res.send(response);
   });

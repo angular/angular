@@ -10,7 +10,6 @@ import {browser, by, element} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
-
 describe('upgrade/static (lite with multiple downgraded modules)', () => {
   const navButtons = element.all(by.css('nav button'));
   const mainContent = element(by.css('main'));

@@ -18,13 +18,8 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/compiler-cli/src/ngtsc/translator",
         "@npm//@babel/generator",
-        "@npm//@babel/parser",
-        "@npm//@babel/template",
-        "@npm//@babel/traverse",
         "@npm//@types/babel__core",
         "@npm//@types/babel__generator",
-        "@npm//@types/babel__template",
-        "@npm//@types/babel__traverse",
     ],
 )
 

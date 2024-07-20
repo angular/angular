@@ -21,6 +21,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/template_semantics/api",
         "//packages/compiler-cli/src/ngtsc/util",
         "//packages/compiler-cli/src/ngtsc/xi18n",
         "@npm//typescript",

@@ -20,5 +20,5 @@ export const enum InjectorMarkers {
   /**
    * Marks that the current type is `Injector`
    */
-  Injector = -1
+  Injector = -1,
 }

@@ -21,8 +21,12 @@ declare const $localize: {locale?: string};
  * * Ivy enabled: use `$localize.locale`
  */
 export function getGlobalLocale(): string {
-  if (typeof ngI18nClosureMode !== 'undefined' && ngI18nClosureMode &&
-      typeof goog !== 'undefined' && goog.LOCALE !== 'en') {
+  if (
+    typeof ngI18nClosureMode !== 'undefined' &&
+    ngI18nClosureMode &&
+    typeof goog !== 'undefined' &&
+    goog.LOCALE !== 'en'
+  ) {
     // * The default `goog.LOCALE` value is `en`, while Angular used `en-US`.
     // * In order to preserve backwards compatibility, we use Angular default value over
     //   Closure Compiler's one.
@@ -46,7 +50,7 @@ export function getGlobalLocale(): string {
  * It is used for i18n extraction, by i18n pipes (DatePipe, I18nPluralPipe, CurrencyPipe,
  * DecimalPipe and PercentPipe) and by ICU expressions.
  *
- * See the [i18n guide](guide/i18n-common-locale-id) for more information.
+ * See the [i18n guide](guide/i18n/locale-id) for more information.
  *
  * @usageNotes
  * ### Example
@@ -63,10 +67,10 @@ export function getGlobalLocale(): string {
  *
  * @publicApi
  */
-export const LOCALE_ID: InjectionToken<string> = new InjectionToken('LocaleId', {
+export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 'LocaleId' : '', {
   providedIn: 'root',
   factory: () =>
-      inject(LOCALE_ID, InjectFlags.Optional | InjectFlags.SkipSelf) || getGlobalLocale(),
+    inject(LOCALE_ID, InjectFlags.Optional | InjectFlags.SkipSelf) || getGlobalLocale(),
 });
 
 /**
@@ -74,7 +78,7 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken('LocaleId', 
  * CurrencyPipe when there is no currency code passed into it. This is only used by
  * CurrencyPipe and has no relation to locale currency. Defaults to USD if not configured.
  *
- * See the [i18n guide](guide/i18n-common-locale-id) for more information.
+ * See the [i18n guide](guide/i18n/locale-id) for more information.
  *
  * <div class="alert is-helpful">
  *
@@ -107,16 +111,19 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken('LocaleId', 
  *
  * @publicApi
  */
-export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>('DefaultCurrencyCode', {
-  providedIn: 'root',
-  factory: () => USD_CURRENCY_CODE,
-});
+export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>(
+  ngDevMode ? 'DefaultCurrencyCode' : '',
+  {
+    providedIn: 'root',
+    factory: () => USD_CURRENCY_CODE,
+  },
+);
 
 /**
  * Use this token at bootstrap to provide the content of your translation file (`xtb`,
  * `xlf` or `xlf2`) when you want to translate your application in another language.
  *
- * See the [i18n guide](guide/i18n-common-merge) for more information.
+ * See the [i18n guide](guide/i18n/merge) for more information.
  *
  * @usageNotes
  * ### Example
@@ -136,13 +143,13 @@ export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>('DefaultCurrency
  *
  * @publicApi
  */
-export const TRANSLATIONS = new InjectionToken<string>('Translations');
+export const TRANSLATIONS = new InjectionToken<string>(ngDevMode ? 'Translations' : '');
 
 /**
  * Provide this token at bootstrap to set the format of your {@link TRANSLATIONS}: `xtb`,
  * `xlf` or `xlf2`.
  *
- * See the [i18n guide](guide/i18n-common-merge) for more information.
+ * See the [i18n guide](guide/i18n/merge) for more information.
  *
  * @usageNotes
  * ### Example
@@ -159,7 +166,9 @@ export const TRANSLATIONS = new InjectionToken<string>('Translations');
  *
  * @publicApi
  */
-export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsFormat');
+export const TRANSLATIONS_FORMAT = new InjectionToken<string>(
+  ngDevMode ? 'TranslationsFormat' : '',
+);
 
 /**
  * Use this enum at bootstrap as an option of `bootstrapModule` to define the strategy
@@ -168,7 +177,7 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsForma
  * - Warning (default): show a warning in the console and/or shell.
  * - Ignore: do nothing.
  *
- * See the [i18n guide](guide/i18n-common-merge#report-missing-translations) for more information.
+ * See the [i18n guide](guide/i18n/merge#report-missing-translations) for more information.
  *
  * @usageNotes
  * ### Example

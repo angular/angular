@@ -6,9 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="rxjs" />
-
+import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {PartialObserver, Subject, Subscription} from 'rxjs';
+
+import {OutputRef} from './authoring/output/output_ref';
+import {isInInjectionContext} from './di/contextual';
+import {inject} from './di/injector_compatibility';
+import {DestroyRef} from './linker/destroy_ref';
+import {PendingTasks} from './pending_tasks';
 
 /**
  * Use in components with the `@Output` directive to emit custom events
@@ -58,10 +63,9 @@ import {PartialObserver, Subject, Subscription} from 'rxjs';
  * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
  * ```
  *
- * @see [Observables in Angular](guide/observables-in-angular)
  * @publicApi
  */
-export interface EventEmitter<T> extends Subject<T> {
+export interface EventEmitter<T> extends Subject<T>, OutputRef<T> {
   /**
    * @internal
    */
@@ -74,7 +78,7 @@ export interface EventEmitter<T> extends Subject<T> {
    * @param [isAsync=false] When true, deliver events asynchronously.
    *
    */
-  new(isAsync?: boolean): EventEmitter<T>;
+  new (isAsync?: boolean): EventEmitter<T>;
 
   /**
    * Emits an event containing a given value.
@@ -89,8 +93,11 @@ export interface EventEmitter<T> extends Subject<T> {
    * @param complete When supplied, a custom handler for a completion notification from this
    *     emitter.
    */
-  subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void):
-      Subscription;
+  subscribe(
+    next?: (value: T) => void,
+    error?: (error: any) => void,
+    complete?: () => void,
+  ): Subscription;
   /**
    * Registers handlers for events emitted by this instance.
    * @param observerOrNext When supplied, a custom handler for emitted events, or an observer
@@ -102,16 +109,30 @@ export interface EventEmitter<T> extends Subject<T> {
   subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription;
 }
 
-class EventEmitter_ extends Subject<any> {
-  __isAsync: boolean;  // tslint:disable-line
+class EventEmitter_ extends Subject<any> implements OutputRef<any> {
+  __isAsync: boolean; // tslint:disable-line
+  destroyRef: DestroyRef | undefined = undefined;
+  private readonly pendingTasks: PendingTasks | undefined = undefined;
 
   constructor(isAsync: boolean = false) {
     super();
     this.__isAsync = isAsync;
+
+    // Attempt to retrieve a `DestroyRef` and `PendingTasks` optionally.
+    // For backwards compatibility reasons, this cannot be required.
+    if (isInInjectionContext()) {
+      this.destroyRef = inject(DestroyRef, {optional: true}) ?? undefined;
+      this.pendingTasks = inject(PendingTasks, {optional: true}) ?? undefined;
+    }
   }
 
   emit(value?: any) {
-    super.next(value);
+    const prevConsumer = setActiveConsumer(null);
+    try {
+      super.next(value);
+    } finally {
+      setActiveConsumer(prevConsumer);
+    }
   }
 
   override subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription {
@@ -127,14 +148,14 @@ class EventEmitter_ extends Subject<any> {
     }
 
     if (this.__isAsync) {
-      errorFn = _wrapInTimeout(errorFn);
+      errorFn = this.wrapInTimeout(errorFn);
 
       if (nextFn) {
-        nextFn = _wrapInTimeout(nextFn);
+        nextFn = this.wrapInTimeout(nextFn);
       }
 
       if (completeFn) {
-        completeFn = _wrapInTimeout(completeFn);
+        completeFn = this.wrapInTimeout(completeFn);
       }
     }
 
@@ -146,18 +167,25 @@ class EventEmitter_ extends Subject<any> {
 
     return sink;
   }
-}
 
-function _wrapInTimeout(fn: (value: unknown) => any) {
-  return (value: unknown) => {
-    setTimeout(fn, undefined, value);
-  };
+  private wrapInTimeout(fn: (value: unknown) => any) {
+    return (value: unknown) => {
+      const taskId = this.pendingTasks?.add();
+      setTimeout(() => {
+        fn(value);
+        if (taskId !== undefined) {
+          this.pendingTasks?.remove(taskId);
+        }
+      });
+    };
+  }
 }
 
 /**
  * @publicApi
  */
 export const EventEmitter: {
-  new (isAsync?: boolean): EventEmitter<any>; new<T>(isAsync?: boolean): EventEmitter<T>;
+  new (isAsync?: boolean): EventEmitter<any>;
+  new <T>(isAsync?: boolean): EventEmitter<T>;
   readonly prototype: EventEmitter<any>;
 } = EventEmitter_ as any;

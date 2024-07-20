@@ -11,7 +11,6 @@ import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-
 describe('ShadowDOM Support', () => {
   if (isNode) {
     // Jasmine will throw if there are no tests.
@@ -83,36 +82,35 @@ describe('ShadowDOM Support', () => {
   });
 });
 
-@Component(
-    {selector: 'shadow-comp', template: 'Hello World', encapsulation: ViewEncapsulation.ShadowDom})
-class ShadowComponent {
-}
+@Component({
+  selector: 'shadow-comp',
+  template: 'Hello World',
+  encapsulation: ViewEncapsulation.ShadowDom,
+})
+class ShadowComponent {}
 
 @Component({
   selector: 'styled-shadow-comp',
   template: '<div class="red"></div>',
   encapsulation: ViewEncapsulation.ShadowDom,
-  styles: [`:host { background: black; } .red { background: red; }`]
+  styles: [`:host { background: black; } .red { background: red; }`],
 })
-class StyledShadowComponent {
-}
+class StyledShadowComponent {}
 
 @Component({
   selector: 'shadow-slot-comp',
   template: '<slot></slot>',
-  encapsulation: ViewEncapsulation.ShadowDom
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
-class ShadowSlotComponent {
-}
+class ShadowSlotComponent {}
 
 @Component({
   selector: 'shadow-slots-comp',
   template:
-      '<header><slot name="header"></slot></header><article><slot name="article"></slot></article>',
-  encapsulation: ViewEncapsulation.ShadowDom
+    '<header><slot name="header"></slot></header><article><slot name="article"></slot></article>',
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
-class ShadowSlotsComponent {
-}
+class ShadowSlotsComponent {}
 
 @NgModule({
   imports: [BrowserModule],

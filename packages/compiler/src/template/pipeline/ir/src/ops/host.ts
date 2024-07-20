@@ -8,14 +8,14 @@
 
 import * as o from '../../../../../../src/output/output_ast';
 import {ParseSourceSpan} from '../../../../../../src/parse_util';
+import {SecurityContext} from '../../../../../core';
 import {OpKind} from '../enums';
-import {Op} from '../operations';
+import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, TRAIT_CONSUMES_VARS} from '../traits';
 
 import {NEW_OP} from './shared';
 
 import type {Interpolation, UpdateOp} from './update';
-
 
 /**
  * Logical operation representing a host binding to a property.
@@ -23,18 +23,34 @@ import type {Interpolation, UpdateOp} from './update';
 export interface HostPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
   kind: OpKind.HostProperty;
   name: string;
-  expression: o.Expression|Interpolation;
+  expression: o.Expression | Interpolation;
+  isAnimationTrigger: boolean;
 
-  sourceSpan: ParseSourceSpan|null;
+  i18nContext: XrefId | null;
+
+  securityContext: SecurityContext | SecurityContext[];
+
+  sanitizer: o.Expression | null;
+
+  sourceSpan: ParseSourceSpan | null;
 }
 
 export function createHostPropertyOp(
-    name: string, expression: o.Expression|Interpolation,
-    sourceSpan: ParseSourceSpan|null): HostPropertyOp {
+  name: string,
+  expression: o.Expression | Interpolation,
+  isAnimationTrigger: boolean,
+  i18nContext: XrefId | null,
+  securityContext: SecurityContext | SecurityContext[],
+  sourceSpan: ParseSourceSpan | null,
+): HostPropertyOp {
   return {
     kind: OpKind.HostProperty,
     name,
     expression,
+    isAnimationTrigger,
+    i18nContext,
+    securityContext,
+    sanitizer: null,
     sourceSpan,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,

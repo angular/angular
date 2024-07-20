@@ -9,7 +9,7 @@
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-import {DirectiveMeta, InputMapping, MetadataReader} from './api';
+import {DirectiveMeta, HostDirectiveMeta, InputMapping, MetadataReader} from './api';
 import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 /**
@@ -21,7 +21,9 @@ import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
  * followed.
  */
 export function flattenInheritedDirectiveMetadata(
-    reader: MetadataReader, dir: Reference<ClassDeclaration>): DirectiveMeta|null {
+  reader: MetadataReader,
+  dir: Reference<ClassDeclaration>,
+): DirectiveMeta | null {
   const topMeta = reader.getDirectiveMetadata(dir);
   if (topMeta === null) {
     return null;
@@ -34,6 +36,7 @@ export function flattenInheritedDirectiveMetadata(
   const undeclaredInputFields = new Set<ClassPropertyName>();
   const restrictedInputFields = new Set<ClassPropertyName>();
   const stringLiteralInputFields = new Set<ClassPropertyName>();
+  let hostDirectives: HostDirectiveMeta[] | null = null;
   let isDynamic = false;
   let inputs = ClassPropertyMapping.empty<InputMapping>();
   let outputs = ClassPropertyMapping.empty();
@@ -69,6 +72,10 @@ export function flattenInheritedDirectiveMetadata(
     for (const field of meta.stringLiteralInputFields) {
       stringLiteralInputFields.add(field);
     }
+    if (meta.hostDirectives !== null && meta.hostDirectives.length > 0) {
+      hostDirectives ??= [];
+      hostDirectives.push(...meta.hostDirectives);
+    }
   };
 
   addMetadata(topMeta);
@@ -83,5 +90,6 @@ export function flattenInheritedDirectiveMetadata(
     stringLiteralInputFields,
     baseClass: isDynamic ? 'dynamic' : null,
     isStructural,
+    hostDirectives,
   };
 }

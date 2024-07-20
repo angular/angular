@@ -15,12 +15,13 @@ import {DirectiveForestHooks} from './hooks';
 const markName = (s: string, method: Method) => `🅰️ ${s}#${method}`;
 
 const supportsPerformance =
-    globalThis.performance && typeof globalThis.performance.getEntriesByName === 'function';
+  globalThis.performance && typeof globalThis.performance.getEntriesByName === 'function';
 
-type Method = keyof LifecycleProfile|'changeDetection'|string;
+type Method = keyof LifecycleProfile | 'changeDetection' | string;
 
 const recordMark = (s: string, method: Method) => {
   if (supportsPerformance) {
+    // tslint:disable-next-line:ban
     performance.mark(`${markName(s, method)}_start`);
   }
 };
@@ -31,6 +32,7 @@ const endMark = (nodeName: string, method: Method) => {
     const start = `${name}_start`;
     const end = `${name}_end`;
     if (performance.getEntriesByName(start).length > 0) {
+      // tslint:disable-next-line:ban
       performance.mark(end);
       performance.measure(name, start, end);
     }
@@ -48,11 +50,23 @@ export const disableTimingAPI = () => (timingAPIFlag = false);
 const timingAPIEnabled = () => timingAPIFlag;
 
 let directiveForestHooks: DirectiveForestHooks;
-export const initializeOrGetDirectiveForestHooks = () => {
+
+export const initializeOrGetDirectiveForestHooks = (
+  depsForTestOnly: {
+    directiveForestHooks?: typeof DirectiveForestHooks;
+  } = {},
+) => {
+  // Allow for overriding the DirectiveForestHooks implementation for testing purposes.
+  if (depsForTestOnly.directiveForestHooks) {
+    directiveForestHooks = new depsForTestOnly.directiveForestHooks();
+  }
+
   if (directiveForestHooks) {
     return directiveForestHooks;
+  } else {
+    directiveForestHooks = new DirectiveForestHooks();
   }
-  directiveForestHooks = new DirectiveForestHooks();
+
   directiveForestHooks.profiler.subscribe({
     onChangeDetectionStart(component: any): void {
       if (!timingAPIEnabled()) {

@@ -1,7 +1,7 @@
 decls: 2,
 vars: 4,
-consts: function() {
-  __i18nIcuMsg__('{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_WITH_SPACES}}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['PH_A', String.raw`\uFFFD1\uFFFD`], ['PH_B', String.raw`\uFFFD2\uFFFD`], ['PH_WITH_SPACES', String.raw`\uFFFD3\uFFFD`]], {})
+consts: () => {
+  __i18nIcuMsg__('{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_WITH_SPACES}}}', [['PH_WITH_SPACES', String.raw`\uFFFD3\uFFFD`], ['PH_A', String.raw`\uFFFD1\uFFFD`], ['PH_B', String.raw`\uFFFD2\uFFFD`], ['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]], {})
   return [
     $i18n_0$
   ];
@@ -13,7 +13,7 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵi18nExp(ctx.gender)(ctx.weight)(ctx.height)(ctx.age);
     $r3$.ɵɵi18nApply(1);
   }

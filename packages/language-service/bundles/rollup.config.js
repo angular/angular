@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
+const commonJs = require('@rollup/plugin-commonjs');
 
 // This is a custom AMD file header that patches the AMD `define` call generated
 // by rollup so that the bundle exposes a CJS-exported function which takes an
@@ -33,7 +33,7 @@ module.exports = function(provided) {
     if (m === 'exports') {
       return results;
     }
-    if (m === 'typescript' || m === 'typescript/lib/tsserverlibrary') {
+    if (m === 'typescript') {
       return ts;
     }
     return require(m);
@@ -43,18 +43,14 @@ module.exports = function(provided) {
 };
 `;
 
-const external = [
-  'os',
-  'fs',
-  'path',
-  'typescript',
-  'typescript/lib/tsserverlibrary',
-];
+const external = ['os', 'fs', 'path', 'typescript'];
 
-module.exports = {
+const config = {
   external,
-  plugins: [nodeResolve({preferBuiltins: true})],
+  plugins: [nodeResolve({preferBuiltins: true}), commonJs()],
   output: {
     banner: amdFileHeader,
-  }
+  },
 };
+
+module.exports = config;

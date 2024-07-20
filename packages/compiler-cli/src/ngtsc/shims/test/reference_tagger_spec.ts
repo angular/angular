@@ -58,8 +58,13 @@ runInEachFileSystem(() => {
       const {host} = makeProgram([
         {name: fileName, contents: 'export declare const UNIMPORTANT = true;'},
       ]);
-      const shimAdapter =
-          new ShimAdapter(host, [], [], [new TestShimGenerator()], /* oldProgram */ null);
+      const shimAdapter = new ShimAdapter(
+        host,
+        [],
+        [],
+        [new TestShimGenerator()],
+        /* oldProgram */ null,
+      );
 
       const shimSf = shimAdapter.maybeGenerate(_('/file.testshim.ts'))!;
       expect(shimSf.referencedFiles).toEqual([]);
@@ -84,11 +89,13 @@ runInEachFileSystem(() => {
 
       const fileName = _('/file.ts');
       const sf = makeArbitrarySf(fileName);
-      sf.referencedFiles = [{
-        fileName: _('/other.ts'),
-        pos: 0,
-        end: 0,
-      }];
+      sf.referencedFiles = [
+        {
+          fileName: _('/other.ts'),
+          pos: 0,
+          end: 0,
+        },
+      ];
 
       tagger.tag(sf);
       expectReferencedFiles(sf, ['/other.ts', '/file.test.ts']);
@@ -112,11 +119,13 @@ runInEachFileSystem(() => {
 
         const fileName = _('/file.ts');
         const sf = makeArbitrarySf(fileName);
-        sf.referencedFiles = [{
-          fileName: _('/other.ts'),
-          pos: 0,
-          end: 0,
-        }];
+        sf.referencedFiles = [
+          {
+            fileName: _('/other.ts'),
+            pos: 0,
+            end: 0,
+          },
+        ];
 
         tagger.tag(sf);
         expectReferencedFiles(sf, ['/other.ts', '/file.test.ts']);
@@ -141,7 +150,7 @@ function makeArbitrarySf(fileName: AbsoluteFsPath): ts.SourceFile {
 }
 
 function expectReferencedFiles(sf: ts.SourceFile, files: string[]): void {
-  const actual = sf.referencedFiles.map(f => _(f.fileName)).sort();
-  const expected = files.map(fileName => _(fileName)).sort();
+  const actual = sf.referencedFiles.map((f) => _(f.fileName)).sort();
+  const expected = files.map((fileName) => _(fileName)).sort();
   expect(actual).toEqual(expected);
 }

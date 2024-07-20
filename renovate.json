@@ -2,7 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "baseBranches": ["main"],
   "enabledManagers": ["npm", "bazel", "github-actions"],
-  "stopUpdatingLabel": "action: merge",
   "rangeStrategy": "replace",
   "pinDigests": true,
   "semanticCommits": "enabled",
@@ -14,8 +13,7 @@
   "prHourlyLimit": 3,
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {"enabled": true},
-  "labels": ["target: patch", "area: build & ci", "action: review"],
-  "ignorePaths": ["aio/content/demos/first-app/package.json"],
+  "labels": ["target: patch", "area: build & ci", "action: merge"],
   "ignoreDeps": [
     "@types/node",
     "@types/selenium-webdriver",
@@ -51,14 +49,14 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": ["*"],
+      "matchDepPatterns": ["*"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
       "schedule": ["after 10:00pm on monday", "before 04:00am on tuesday"]
     },
 
     {
-      "matchPackagePatterns": ["^@bazel/.*", "^build_bazel.*"],
+      "matchDepPatterns": ["^@bazel/.*", "^build_bazel.*"],
       "groupName": "bazel setup",
       "schedule": ["at any time"]
     },
@@ -72,7 +70,10 @@
 
     {
       "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
-      "matchPaths": ["packages/**", "aio/tools/examples/shared/**"],
+      "matchPaths": [
+        "packages/**",
+        "adev/src/content/tutorials/**"
+      ],
       "followTag": null
     },
 
@@ -96,17 +97,12 @@
       "groupName": "scorecard action dependencies",
       "groupSlug": "scorecard-action"
     },
-    
-    {
-      "matchPaths": ["aio/tools/examples/shared/*"],
-      "postUpgradeTasks": {
-        "commands": ["yarn --cwd=aio/tools/examples/shared run sync-deps"],
-        "fileFilters": ["aio/tools/examples/shared/boilerplate/**"]
-      }
-    },
 
     {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},
 
-    {"matchPaths": ["integration/**"], "enabled": false}
+    {
+      "matchPaths": ["integration/**", "packages/zone.js/test/typings/package.json"],
+      "enabled": false
+    }
   ]
 }

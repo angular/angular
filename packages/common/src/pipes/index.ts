@@ -42,7 +42,6 @@ export {
   UpperCasePipe,
 };
 
-
 /**
  * A collection of Angular pipes that are likely to be used in each and every application.
  */

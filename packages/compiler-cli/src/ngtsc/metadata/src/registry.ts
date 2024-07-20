@@ -9,7 +9,14 @@
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
-import {DirectiveMeta, MetadataReaderWithIndex, MetadataRegistry, MetaKind, NgModuleMeta, PipeMeta} from './api';
+import {
+  DirectiveMeta,
+  MetadataReaderWithIndex,
+  MetadataRegistry,
+  MetaKind,
+  NgModuleMeta,
+  PipeMeta,
+} from './api';
 
 /**
  * A registry of directive, pipe, and module metadata for types defined in the current compilation
@@ -20,13 +27,13 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReaderWi
   private ngModules = new Map<ClassDeclaration, NgModuleMeta>();
   private pipes = new Map<ClassDeclaration, PipeMeta>();
 
-  getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
+  getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta | null {
     return this.directives.has(ref.node) ? this.directives.get(ref.node)! : null;
   }
-  getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta|null {
+  getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta | null {
     return this.ngModules.has(ref.node) ? this.ngModules.get(ref.node)! : null;
   }
-  getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta|null {
+  getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta | null {
     return this.pipes.has(ref.node) ? this.pipes.get(ref.node)! : null;
   }
 
@@ -43,11 +50,11 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReaderWi
   getKnown(kind: MetaKind): Array<ClassDeclaration> {
     switch (kind) {
       case MetaKind.Directive:
-        return Array.from(this.directives.values()).map(v => v.ref.node);
+        return Array.from(this.directives.values()).map((v) => v.ref.node);
       case MetaKind.Pipe:
-        return Array.from(this.pipes.values()).map(v => v.ref.node);
+        return Array.from(this.pipes.values()).map((v) => v.ref.node);
       case MetaKind.NgModule:
-        return Array.from(this.ngModules.values()).map(v => v.ref.node);
+        return Array.from(this.ngModules.values()).map((v) => v.ref.node);
     }
   }
 }

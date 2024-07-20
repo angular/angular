@@ -206,7 +206,7 @@ BaseService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 BaseService.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseService });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseService, decorators: [{
             type: Injectable
-        }], ctorParameters: function () { return [{ type: Thing }]; } });
+        }], ctorParameters: () => [{ type: Thing }] });
 export class ChildService extends BaseService {
 }
 ChildService.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ChildService, deps: null, target: i0.ɵɵFactoryTarget.Injectable });
@@ -509,7 +509,7 @@ BaseModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseModule, decorators: [{
             type: NgModule,
             args: [{ providers: [Service] }]
-        }], ctorParameters: function () { return [{ type: Service }]; } });
+        }], ctorParameters: () => [{ type: Service }] });
 export class BasicModule extends BaseModule {
 }
 BasicModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicModule, deps: null, target: i0.ɵɵFactoryTarget.NgModule });
@@ -552,7 +552,7 @@ export function provideModule() {
 export class TestModule {
 }
 TestModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-TestModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestModule, imports: function () { return [ForwardModule]; } });
+TestModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestModule, imports: () => [ForwardModule] });
 TestModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestModule, imports: [provideModule()] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestModule, decorators: [{
             type: NgModule,

@@ -9,7 +9,6 @@
 import {AbstractControlDirective} from './abstract_control_directive';
 import {Form} from './form_interface';
 
-
 /**
  * @description
  * A base class for directives that contain multiple registered instances of `NgControl`.
@@ -23,13 +22,13 @@ export abstract class ControlContainer extends AbstractControlDirective {
    * The name for the control
    */
   // TODO(issue/24571): remove '!'.
-  name!: string|number|null;
+  name!: string | number | null;
 
   /**
    * @description
    * The top-level form directive for the control.
    */
-  get formDirective(): Form|null {
+  get formDirective(): Form | null {
     return null;
   }
 
@@ -37,7 +36,7 @@ export abstract class ControlContainer extends AbstractControlDirective {
    * @description
    * The path to this group.
    */
-  override get path(): string[]|null {
+  override get path(): string[] | null {
     return null;
   }
 }

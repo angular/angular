@@ -1,14 +1,14 @@
-import {TestBed, waitForAsync} from '@angular/core/testing';
-import {AppComponent} from './app.component';
+import {TestBed} from '@angular/core/testing';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {AppComponent, ReactiveFormsComponent, TemplateFormsComponent} from './app.component';
 
 describe('AppComponent', () => {
-  beforeEach(waitForAsync(() => {
-    TestBed
-        .configureTestingModule({
-          declarations: [AppComponent],
-        })
-        .compileComponents();
-  }));
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AppComponent, TemplateFormsComponent, ReactiveFormsComponent],
+      imports: [FormsModule, ReactiveFormsModule],
+    }).compileComponents();
+  });
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);

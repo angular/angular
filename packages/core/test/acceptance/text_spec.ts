@@ -23,7 +23,7 @@ describe('text instructions', () => {
         <div>a{{one}}b{{two}}c</div>
         <div>a{{one}}b</div>
         <div>{{one}}</div>
-      `
+      `,
     })
     class App {
       one = 1;
@@ -41,9 +41,9 @@ describe('text instructions', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    const allTextContent =
-        Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('div'))
-            .map((div: HTMLDivElement) => div.textContent);
+    const allTextContent = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll('div'),
+    ).map((div: HTMLDivElement) => div.textContent);
 
     expect(allTextContent).toEqual([
       'a1b2c3d4e5f6g7h8i9j',
@@ -63,7 +63,7 @@ describe('text instructions', () => {
     @Component({
       template: `
         <p>{{who | async}} sells {{(item | async)?.what}} down by the {{(item | async)?.where}}.</p>
-      `
+      `,
     })
     class App {
       who = of('Sally');
@@ -94,8 +94,9 @@ describe('text instructions', () => {
     fixture.detectChanges();
     const p = fixture.nativeElement.querySelector('p');
 
-    expect(p.textContent)
-        .toBe('javascript:alert("image_of_dog_with_coffee_in_burning_building.gif")');
+    expect(p.textContent).toBe(
+      'javascript:alert("image_of_dog_with_coffee_in_burning_building.gif")',
+    );
   });
 
   it('should not allow writing HTML in interpolated text', () => {
@@ -177,8 +178,7 @@ describe('text instructions', () => {
     @Component({
       template: `{{'Interpolations look like {{this}}'}}`,
     })
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);

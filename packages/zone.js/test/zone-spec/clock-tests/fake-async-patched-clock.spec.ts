@@ -64,4 +64,4 @@ describe('fake async unpatched clock tests', () => {
     jasmine.clock().tick(100);
     expect(spy).toHaveBeenCalled();
   });
-})
+});

@@ -25,18 +25,23 @@ runInEachFileSystem(() => {
 
     it('should produce missing ngforof let warning', () => {
       const fileName = absoluteFrom('/main.ts');
-      const {program, templateTypeChecker} = setup([{
-        fileName,
-        templates: {
-          'TestCmp': '<ul><li *ngFor="thing of items">{{thing["name"]}}</li></ul>',
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': '<ul><li *ngFor="thing of items">{{thing["name"]}}</li></ul>',
+          },
+          source: "export class TestCmp { items: [] = [{'name': 'diana'}, {'name': 'prince'}] }",
         },
-        source:
-            'export class TestCmp { items: [] = [{\'name\': \'diana\'}, {\'name\': \'prince\'}] }'
-      }]);
+      ]);
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [missingNgForOfLet], {} /* options */);
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [missingNgForOfLet],
+        {} /* options */,
+      );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
@@ -46,36 +51,47 @@ runInEachFileSystem(() => {
 
     it('should not produce missing ngforof let warning if written correctly', () => {
       const fileName = absoluteFrom('/main.ts');
-      const {program, templateTypeChecker} = setup([{
-        fileName,
-        templates: {
-          'TestCmp': '<ul><li *ngFor="let item of items">{{item["name"]}};</li></ul>',
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': '<ul><li *ngFor="let item of items">{{item["name"]}};</li></ul>',
+          },
+          source: "export class TestCmp { items: [] = [{'name': 'diana'}, {'name': 'prince'}] }",
         },
-        source:
-            'export class TestCmp { items: [] = [{\'name\': \'diana\'}, {\'name\': \'prince\'}] }'
-      }]);
+      ]);
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [missingNgForOfLet], {} /* options */);
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [missingNgForOfLet],
+        {} /* options */,
+      );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
 
     it('should not produce missing ngforof let warning if written correctly in longhand', () => {
       const fileName = absoluteFrom('/main.ts');
-      const {program, templateTypeChecker} = setup([{
-        fileName,
-        templates: {
-          'TestCmp': '<ng-template ngFor let-item [ngForOf]="items">{{item["name"]}}</ng-template>',
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp':
+              '<ng-template ngFor let-item [ngForOf]="items">{{item["name"]}}</ng-template>',
+          },
+          source: "export class TestCmp { items: [] = [{'name': 'diana'}, {'name': 'prince'}] }",
         },
-        source:
-            'export class TestCmp { items: [] = [{\'name\': \'diana\'}, {\'name\': \'prince\'}] }'
-      }]);
+      ]);
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [missingNgForOfLet], {} /* options */);
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [missingNgForOfLet],
+        {} /* options */,
+      );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
