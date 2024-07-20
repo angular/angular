@@ -3,7 +3,7 @@
     @if (group.isFeatured) {
       <docs-icon aria-hidden>star</docs-icon>
     }
-    <a routerLink="/api" [fragment]="group.id" class="adev-api-anchor" tabindex="-1">{{ group.title }}</a>
+    <a routerLink="/api" [fragment]="group.id" queryParamsHandling="preserve" class="adev-api-anchor" tabindex="-1">{{ group.title }}</a>
   </h3>
 </header>
 
