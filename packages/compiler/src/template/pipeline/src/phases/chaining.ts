@@ -44,6 +44,13 @@ const CHAINABLE = new Set([
 ]);
 
 /**
+ * Chaining results in repeated call expressions, causing a deep AST of receiver expressions. To prevent running out of
+ * stack depth the maximum number of chained instructions is limited to this threshold, which has been selected
+ * arbitrarily.
+ */
+const MAX_CHAIN_LENGTH = 256;
+
+/**
  * Post-process a reified view compilation and convert sequential calls to chainable instructions
  * into chain calls.
  *
@@ -93,7 +100,7 @@ function chainOperationsInList(opList: ir.OpList<ir.CreateOp | ir.UpdateOp>): vo
 
     // This instruction can be chained. It can either be added on to the previous chain (if
     // compatible) or it can be the start of a new chain.
-    if (chain !== null && chain.instruction === instruction) {
+    if (chain !== null && chain.instruction === instruction && chain.length < MAX_CHAIN_LENGTH) {
       // This instruction can be added onto the previous chain.
       const expression = chain.expression.callFn(
         op.statement.expr.args,
@@ -102,6 +109,7 @@ function chainOperationsInList(opList: ir.OpList<ir.CreateOp | ir.UpdateOp>): vo
       );
       chain.expression = expression;
       chain.op.statement = expression.toStmt();
+      chain.length++;
       ir.OpList.remove(op as ir.Op<ir.CreateOp | ir.UpdateOp>);
     } else {
       // Leave this instruction alone for now, but consider it the start of a new chain.
@@ -109,6 +117,7 @@ function chainOperationsInList(opList: ir.OpList<ir.CreateOp | ir.UpdateOp>): vo
         op,
         instruction,
         expression: op.statement.expr,
+        length: 1,
       };
     }
   }
@@ -135,4 +144,9 @@ interface Chain {
    * The instruction that is being chained.
    */
   instruction: o.ExternalReference;
+
+  /**
+   * The number of instructions that have been collected into this chain.
+   */
+  length: number;
 }
