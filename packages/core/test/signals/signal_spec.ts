@@ -127,6 +127,11 @@ describe('signals', () => {
     expect(state + '').toBe('[Signal: false]');
   });
 
+  it('should set debugName when a debugName is provided', () => {
+    const node = signal(false, {debugName: 'falseSignal'})[SIGNAL] as ReactiveNode;
+    expect(node.debugName).toBe('falseSignal');
+  });
+
   describe('optimizations', () => {
     it('should not repeatedly poll status of a non-live node if no signals have changed', () => {
       const unrelated = signal(0);

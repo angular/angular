@@ -32,6 +32,11 @@ export interface InputOptions<T, TransformT> {
    * handle such string values and convert them to `boolean`. See: {@link booleanAttribute}.
    */
   transform?: (v: TransformT) => T;
+
+  /**
+   * A debug name for the input signal. Used in Angular DevTools to identify the signal.
+   */
+  debugName?: string;
 }
 
 /**
@@ -135,6 +140,7 @@ export function createInputSignal<T, TransformT>(
 
   if (ngDevMode) {
     inputValueFn.toString = () => `[Input Signal: ${inputValueFn()}]`;
+    node.debugName = options?.debugName;
   }
 
   return inputValueFn as InputSignalWithTransform<T, TransformT>;

@@ -11,16 +11,19 @@ import {REQUIRED_UNSET_VALUE} from '../input/input_signal_node';
 
 import {createModelSignal, ModelOptions, ModelSignal} from './model_signal';
 
-export function modelFunction<T>(initialValue?: T): ModelSignal<T | undefined> {
+export function modelFunction<T>(
+  initialValue?: T,
+  opts?: ModelOptions,
+): ModelSignal<T | undefined> {
   ngDevMode && assertInInjectionContext(model);
 
-  return createModelSignal(initialValue);
+  return createModelSignal(initialValue, opts);
 }
 
-export function modelRequiredFunction<T>(): ModelSignal<T> {
+export function modelRequiredFunction<T>(opts?: ModelOptions): ModelSignal<T> {
   ngDevMode && assertInInjectionContext(model);
 
-  return createModelSignal(REQUIRED_UNSET_VALUE as T);
+  return createModelSignal(REQUIRED_UNSET_VALUE as T, opts);
 }
 
 /**
