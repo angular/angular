@@ -101,7 +101,7 @@ const linksMap = new Map<string, string>([
   ['guide/typed-forms', 'guide/forms/typed-forms'],
   ['guide/form-validation', 'guide/forms/form-validation'],
   ['guide/dynamic-form', 'guide/forms/dynamic-forms'],
-  ['guide/esbuild', 'tools/cli/esbuild'],
+  ['guide/esbuild', 'tools/cli/build-system-migration'],
   ['guide/understanding-communicating-with-http', 'guide/http'],
   ['guide/http-setup-server-communication', 'guide/http/setup'],
   ['guide/http-request-data-from-server', 'guide/http/making-requests'],
