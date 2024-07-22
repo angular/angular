@@ -24,7 +24,7 @@ export class TodoListItem {
 
 When Angular renders the component you'll see the output:
 
-```html
+```angular-html
 <p>Title: Read cup of coffee</p>
 ```
 
@@ -52,7 +52,7 @@ export class SignUpForm {
 
 In this example, because `formIsInvalid` is true, the rendered HTML would be:
 
-```html
+```angular-html
 <button type="submit" disabled>Submit</button>
 ```
 

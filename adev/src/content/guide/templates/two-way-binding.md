@@ -15,7 +15,7 @@ Two-way binding combines [property binding](guide/templates/property-binding) wi
 Angular's two-way binding syntax is a combination of square brackets and parentheses, `[()]`.
 The `[()]` syntax combines the brackets of property binding, `[]`, with the parentheses of event binding, `()`, as follows.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/two-way-binding/src/app/app.component.html" visibleRegion="two-way-syntax"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/two-way-binding/src/app/app.component.html" visibleRegion="two-way-syntax" language="angular-html"/>
 
 ## How two-way binding works
 
@@ -29,7 +29,7 @@ The `sizeChange` event is an `@Output()`, which lets data flow out of the `sizer
 Next, there are two methods, `dec()` to decrease the font size and `inc()` to increase the font size.
 These two methods use `resize()` to change the value of the `size` property within min/max value constraints, and to emit an event that conveys the new `size` value.
 
-<docs-code header="src/app/sizer.component.ts" path="adev/src/content/examples/two-way-binding/src/app/sizer/sizer.component.ts" visibleRegion="sizer-component"/>
+<docs-code header="src/app/sizer.component.ts" path="adev/src/content/examples/two-way-binding/src/app/sizer/sizer.component.ts" visibleRegion="sizer-component" language="angular-ts"/>
 
 The `sizerComponent` template has two buttons that each bind the click event to the `inc()` and `dec()` methods.
 When the user clicks one of the buttons, the `sizerComponent` calls the corresponding method.

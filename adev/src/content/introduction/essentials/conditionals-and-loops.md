@@ -68,7 +68,7 @@ Another common scenario developers encounter is the need to render a list of ite
 
 Similar to JavaScript’s `for...of` loops, Angular provides the `@for` block for rendering repeated elements.
 
-```html
+```angular-html
 <!-- ingredient-list.component.html -->
 <ul>
   @for (ingredient of ingredientList; track ingredient.name) {
