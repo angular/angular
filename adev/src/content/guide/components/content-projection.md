@@ -43,14 +43,14 @@ rendered, or **projected**, at the location of that `<ng-content>`:
 export class CustomCard {/* ... */}
 ```
 
-```html
+```angular-html
 <!-- Using the component -->
 <custom-card>
   <p>This is the projected content</p>
 </custom-card>
 ```
 
-```html
+```angular-html
 <!-- The rendered DOM -->
 <custom-card>
   <div class="card-shadow">
@@ -78,7 +78,7 @@ Angular supports projecting multiple different elements into different `<ng-cont
 based on CSS selector. Expanding the card example from above, you could create two placeholders for
 a card title and a card body by using the `select` attribute:
 
-```html
+```angular-html
 <!-- Component template -->
 <div class="card-shadow">
   <ng-content select="card-title"></ng-content>
@@ -87,7 +87,7 @@ a card title and a card body by using the `select` attribute:
 </div>
 ```
 
-```html
+```angular-html
 <!-- Using the component -->
 <custom-card>
   <card-title>Hello</card-title>
@@ -95,7 +95,7 @@ a card title and a card body by using the `select` attribute:
 </custom-card>
 ```
 
-```html
+```angular-html
 <!-- Rendered DOM -->
 <custom-card>
   <div class="card-shadow">
@@ -113,7 +113,7 @@ If you include one or more `<ng-content>` placeholders with a `select` attribute
 one `<ng-content>` placeholder without a `select` attribute, the latter captures all elements that
 did not match a `select` attribute:
 
-```html
+```angular-html
 <!-- Component template -->
 <div class="card-shadow">
   <ng-content select="card-title"></ng-content>
@@ -123,7 +123,7 @@ did not match a `select` attribute:
 </div>
 ```
 
-```html
+```angular-html
 <!-- Using the component -->
 <custom-card>
   <card-title>Hello</card-title>
@@ -132,7 +132,7 @@ did not match a `select` attribute:
 </custom-card>
 ```
 
-```html
+```angular-html
 <!-- Rendered DOM -->
 <custom-card>
   <div class="card-shadow">
@@ -153,7 +153,7 @@ Angular supports a special attribute, `ngProjectAs`, that allows you to specify 
 any element. Whenever an element with `ngProjectAs` is checked against an `<ng-content>`
 placeholder, Angular compares against the `ngProjectAs` value instead of the element's identity:
 
-```html
+```angular-html
 <!-- Component template -->
 <div class="card-shadow">
   <ng-content select="card-title"></ng-content>
@@ -162,7 +162,7 @@ placeholder, Angular compares against the `ngProjectAs` value instead of the ele
 </div>
 ```
 
-```html
+```angular-html
 <!-- Using the component -->
 <custom-card>
   <h3 ngProjectAs="card-title">Hello</h3>
@@ -171,7 +171,7 @@ placeholder, Angular compares against the `ngProjectAs` value instead of the ele
 </custom-card>
 ```
 
-```html
+```angular-html
 <!-- Rendered DOM -->
 <custom-card>
   <div class="card-shadow">

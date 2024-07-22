@@ -7,7 +7,7 @@ index 23efd35..37927ad 100755
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
  load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild")
  load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
-
+ 
 @@ -17,7 +17,7 @@ esbuild(
      target = "es2022",
      deps = [
@@ -51,7 +51,7 @@ index 89e23a0..971c87a 100755
 +        "@angular//packages/compiler-cli",
      ],
  )
-
+ 
 @@ -25,7 +25,7 @@ ts_library(
      devmode_module = "commonjs",
      tsconfig = "@npm//@angular/build-tooling:tsconfig.json",
@@ -71,16 +71,16 @@ index 89e23a0..971c87a 100755
      entry_point = "bin.mjs",
      # Note: Using the linker here as we need it for ESM. The linker is not
 diff --git a/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
-index 2d4dc78..e51e065 100755
+index 02d6529..5abd053 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
 +++ b/node_modules/@angular/build-tooling/bazel/api-gen/rendering/BUILD.bazel
 @@ -1,5 +1,5 @@
  load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
 -load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
-
+ load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild_esm_bundle")
+ 
  package(default_visibility = ["@npm//@angular/build-tooling/bazel/api-gen:__subpackages__"])
-
 diff --git a/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl b/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl
 index 6cee158..815a55d 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl
@@ -89,7 +89,7 @@ index 6cee158..815a55d 100755
  load("@npm//@angular/build-tooling/bazel:extract_types.bzl", "extract_types")
 -load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_binary", "nodejs_test")
-
+ 
  nodejs_test_args = [
      # Needed so that node doesn't walk back to the source directory.
 diff --git a/node_modules/@angular/build-tooling/bazel/app-bundling/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/app-bundling/BUILD.bazel
@@ -99,21 +99,21 @@ index 1c27a95..c239203 100755
 @@ -1,4 +1,4 @@
 -load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
-
+ 
  package(default_visibility = ["//visibility:public"])
-
+ 
 diff --git a/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs b/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
 index 81e67de..d1c1ac0 100755
 --- a/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
 +++ b/node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs
 @@ -7,7 +7,7 @@
   */
-
+ 
  import {createEsbuildAngularOptimizePlugin} from '@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs';
 -import {GLOBAL_DEFS_FOR_TERSER_WITH_AOT} from '@angular/compiler-cli/private/tooling';
 +import {GLOBAL_DEFS_FOR_TERSER_WITH_AOT} from '@angular/compiler-cli/private/tooling.mjs';
  import * as path from 'path';
-
+ 
  /** Root path pointing to the app bundle source entry-point file. */
 diff --git a/node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl b/node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl
 index d6249b8..761d50a 100755
@@ -129,25 +129,26 @@ index d6249b8..761d50a 100755
          ],
          **common_base_attributes
 diff --git a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl
-index 8bfab84..175cc9d 100755
+index 8bfab84..e52327d 100755
 --- a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl
-@@ -1,4 +1,4 @@
+@@ -1,5 +1,4 @@
 -load("@npm//@bazel/protractor:index.bzl", "protractor_web_test_suite")
+-
 +load("@angular//tools:defaults.bzl", "protractor_web_test_suite")
-
  """
    Macro that can be used to define a benchmark test. This differentiates from
-@@ -7,7 +7,7 @@ load("@npm//@bazel/protractor:index.bzl", "protractor_web_test_suite")
+   a normal Protractor test suite because we specify a custom "perf" configuration
+@@ -7,7 +6,7 @@ load("@npm//@bazel/protractor:index.bzl", "protractor_web_test_suite")
    unless explicitly requested.
  """
-
+ 
 -def benchmark_test(name, server, tags = [], **kwargs):
 +def benchmark_test(name, server, tags = [], data = [], **kwargs):
      protractor_web_test_suite(
          name = name,
          browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
-@@ -20,6 +20,7 @@ def benchmark_test(name, server, tags = [], **kwargs):
+@@ -20,6 +19,7 @@ def benchmark_test(name, server, tags = [], **kwargs):
              "manual",
              "no-remote-exec",
          ],
@@ -156,7 +157,7 @@ index 8bfab84..175cc9d 100755
              "manual",
              "no-remote-exec",
 diff --git a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
-index a8d1947..be769eb 100755
+index a8d1947..5a5e37f 100755
 --- a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
 @@ -1,7 +1,7 @@
@@ -167,15 +168,15 @@ index a8d1947..be769eb 100755
 +load("@angular//tools:defaults.bzl", "ng_module")
  load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
  load(":benchmark_test.bzl", "benchmark_test")
-
+ 
 @@ -37,8 +37,8 @@ def component_benchmark(
          driver_deps,
          ng_srcs,
          ng_deps = [
 -            "@npm//@angular/core",
 -            "@npm//@angular/platform-browser",
-+            "@angular//packages/core",
-+            "@angular//packages/platform-browser",
++           "@angular//packages/core",
++           "@angular//packages/platform-browser",
          ],
          ng_assets = [],
          assets = None,
@@ -185,7 +186,7 @@ index a8d1947..be769eb 100755
          # repository with its corresponding source target that does not come with any typings.
 -        ng_bundle_deps.append("@npm//zone.js")
 +        ng_bundle_deps.append("@angular//packages/zone.js:npm_package")
-
+ 
      if not assets:
          html = prefix + "index.html"
 diff --git a/node_modules/@angular/build-tooling/bazel/http-server/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/http-server/BUILD.bazel
@@ -196,7 +197,7 @@ index 3a85025..12a2c55 100755
 -load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
  load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
-
+ 
  package(default_visibility = ["//visibility:public"])
 diff --git a/node_modules/@angular/build-tooling/bazel/integration/index.bzl b/node_modules/@angular/build-tooling/bazel/integration/index.bzl
 index 6f99d65..1bd5183 100755
@@ -205,7 +206,7 @@ index 6f99d65..1bd5183 100755
 @@ -1,4 +1,4 @@
 -load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_test")
-
+ 
  def _serialize_file(file):
      """Serializes a file into a struct that matches the `BazelFileInfo` type in the
 diff --git a/node_modules/@angular/build-tooling/bazel/map-size-tracking/index.bzl b/node_modules/@angular/build-tooling/bazel/map-size-tracking/index.bzl
@@ -215,12 +216,12 @@ index af0f305..ce46302 100755
 @@ -3,7 +3,7 @@
  # Use of this source code is governed by an MIT-style license that can be
  # found in the LICENSE file at https://angular.io/license
-
+ 
 -load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_binary", "nodejs_test")
-
+ 
  nodejs_args = ["--nobazel_run_linker"]
-
+ 
 diff --git a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel
 index b2729ad..80ab926 100755
 --- a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel
@@ -240,7 +241,7 @@ index e79184b..da9e479 100755
 --- a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs
 +++ b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs
 @@ -29,8 +29,8 @@ export async function createEsbuildAngularOptimizePlugin(opts, additionalBabelPl
-
+ 
    if (opts.enableLinker) {
      linkerCreator = {
 -      compiler: await import('@angular/compiler-cli'),
@@ -249,4 +250,4 @@ index e79184b..da9e479 100755
 +      babel: await import('@angular/compiler-cli/linker/babel/index.mjs'),
      };
    }
-
+ 

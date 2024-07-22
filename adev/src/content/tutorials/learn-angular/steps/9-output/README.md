@@ -55,7 +55,7 @@ addItem() {
 <docs-step title="Update the `AppComponent` template">
 In `app.component.ts` update the template to listen to the emitted event by adding the following code:
 
-```html
+```angular-html
 <app-child (addItemEvent)="addItem($event)" />
 ```
 

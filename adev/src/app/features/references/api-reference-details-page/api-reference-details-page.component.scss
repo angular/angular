@@ -70,7 +70,6 @@
   .docs-code {
     pre {
       margin-block: 0;
-      padding-block: 1rem;
     }
   }
 
@@ -120,13 +119,13 @@
         transition: background-color 0.3s ease;
         font-family: monospace;
 
-        &.hljs-ln-line {
+        &.line {
           font-weight: 400;
           text-align: left;
           padding-block: 0.25rem;
         }
 
-        &.hljs-ln-line-highlighted {
+        &.shiki-ln-line-highlighted {
           background-color: var(--senary-contrast);
         }
         &:hover {

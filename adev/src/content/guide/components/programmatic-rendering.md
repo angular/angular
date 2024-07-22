@@ -82,7 +82,7 @@ export class InnerItem {
 
 In the example above, clicking the "Load content" button results in the following DOM structure
 
-```html
+```angular-html
 <outer-container>
   <p>This is the start of the outer container</p>
   <inner-item>

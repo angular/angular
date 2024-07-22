@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {fromEvent} from 'rxjs';
-import {auditTime} from 'rxjs/operators';
+import {auditTime, skipWhile} from 'rxjs/operators';
 import {
   API_REFERENCE_DETAILS_PAGE_MEMBERS_CLASS_NAME,
   API_REFERENCE_MEMBER_CARD_CLASS_NAME,
@@ -114,7 +114,10 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
     this.getAllMemberCards().forEach((card) => {
       this.cardOffsetTop.set(card.id, card.offsetTop);
       fromEvent(card, 'click')
-        .pipe(takeUntilDestroyed(this.destroyRef))
+        .pipe(
+          skipWhile((event) => event.target instanceof HTMLAnchorElement),
+          takeUntilDestroyed(this.destroyRef),
+        )
         .subscribe(() => {
           this.router.navigate([], {fragment: card.id, replaceUrl: true});
         });

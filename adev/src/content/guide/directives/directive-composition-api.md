@@ -59,7 +59,7 @@ export class AdminMenu { }
 By explicitly specifying the inputs and outputs, consumers of the component with `hostDirective` can
 bind them in a template:
 
-```html
+```angular-html
 
 <admin-menu menuId="top-menu" (menuClosed)="logMenuClosed()">
 ```
@@ -81,7 +81,7 @@ component:
 export class AdminMenu { }
 ```
 
-```html
+```angular-html
 
 <admin-menu id="top-menu" (closed)="logMenuClosed()">
 ```

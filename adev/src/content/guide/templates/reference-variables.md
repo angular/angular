@@ -72,7 +72,7 @@ In this case, the `*ngIf` on `<span>` creates a new template scope, which includ
 
 However, accessing a template variable from a child scope in the parent template doesn't work:
 
-```html
+```angular-html
   <input *ngIf="true" #ref2 type="text" [(ngModel)]="secondExample" />
   <span>Value: {{ ref2?.value }}</span> <!-- doesn't work -->
 ```
@@ -85,7 +85,7 @@ A _template input variable_ is a variable with a value that is set when an insta
 
 Template input variables can be seen in action in the long-form usage of `NgFor`:
 
-```html
+```angular-html
 <ul>
   <ng-template ngFor let-hero [ngForOf]="heroes">
     <li>{{hero.name}}
@@ -99,7 +99,7 @@ When an `<ng-template>` is instantiated, multiple named values can be passed whi
 
 `NgFor` for example also provides access to the `index` of each hero in the array:
 
-```html
+```angular-html
 <ul>
   <ng-template ngFor let-hero let-i="index" [ngForOf]="heroes">
     <li>Hero number {{i}}: {{hero.name}}
