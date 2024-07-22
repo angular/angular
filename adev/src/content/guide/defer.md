@@ -6,7 +6,7 @@ Deferrable views can be used in component template to defer the loading of selec
 
 Deferrable views support a series of [triggers](guide/defer#triggers), [prefetching](guide/defer#prefetching), and several sub blocks used for [placeholder](guide/defer#placeholder), [loading](guide/defer#loading), and [error](guide/defer#error) state management. You can also create custom conditions with [`when`](guide/defer#when) and [`prefetch when`](guide/defer#prefetching).
 
-```html
+```angular-html
 @defer {
   <large-component />
 }
@@ -44,7 +44,7 @@ Note: For the best user experience, you should always specify a `@placeholder` b
 
 The `@placeholder` block accepts an optional parameter to specify the `minimum` amount of time that this placeholder should be shown. This `minimum` parameter is specified in time increments of milliseconds (ms) or seconds (s). This parameter exists to prevent fast flickering of placeholder content in the case that the deferred dependencies are fetched quickly. The `minimum` timer for the `@placeholder` block begins after the initial render of this `@placeholder` block completes.
 
-```html
+```angular-html
 @defer {
   <large-component />
 } @placeholder (minimum 500ms) {
@@ -62,7 +62,7 @@ For example, you could show a loading spinner. Once loading has been triggered, 
 
 The `@loading` block accepts two optional parameters to specify the `minimum` amount of time that this placeholder should be shown and amount of time to wait `after` loading begins before showing the loading template. `minimum` and `after` parameters are specified in time increments of milliseconds (ms) or seconds (s). Just like `@placeholder`, these parameters exist to prevent fast flickering of content in the case that the deferred dependencies are fetched quickly. Both the `minimum` and `after` timers for the `@loading` block begins immediately after the loading has been triggered.
 
-```html
+```angular-html
 @defer {
   <large-component />
 } @loading (after 100ms; minimum 1s) {
@@ -74,7 +74,7 @@ The `@loading` block accepts two optional parameters to specify the `minimum` am
 
 The `@error` block allows you to declare content that will be shown if deferred loading fails. Similar to `@placeholder` and `@loading`, the dependencies of the `@error` block are eagerly loaded. The `@error` block is optional.
 
-```html
+```angular-html
 @defer {
   <calendar-cmp />
 } @error {
@@ -93,7 +93,7 @@ Multiple event triggers can be defined at once. For example: `on interaction; on
 
 Note: Multiple `on` triggers are always OR conditions. Similarly, `on` mixed with `when` conditions are also OR conditions.
 
-```html
+```angular-html
 @defer (on viewport; on timer(5s)) {
   <calendar-cmp />
 } @placeholder {
@@ -106,7 +106,7 @@ Note: Multiple `on` triggers are always OR conditions. Similarly, `on` mixed wit
 
 Note: if the `when` condition switches back to `false`, the defer block is not reverted back to the placeholder. The swap is a one-time operation. If the content within the block should be conditionally rendered, an `if` condition can be used within the block itself.
 
-```html
+```angular-html
 @defer (when cond) {
   <calendar-cmp />
 }
@@ -114,7 +114,7 @@ Note: if the `when` condition switches back to `false`, the defer block is not r
 
 You could also use both `when` and `on` together in one statement, and the swap will be triggered if either condition is met.
 
-```html
+```angular-html
 @defer (on viewport; when cond) {
   <calendar-cmp />
 } @placeholder {
@@ -132,7 +132,7 @@ You could also use both `when` and `on` together in one statement, and the swap 
 
 By default, the placeholder will act as the element watched for entering viewport as long as it is a single root element node.
 
-```html
+```angular-html
 @defer (on viewport) {
   <calendar-cmp />
 } @placeholder {
@@ -142,7 +142,7 @@ By default, the placeholder will act as the element watched for entering viewpor
 
 Alternatively, you can specify a [template reference variable](guide/templates/reference-variables) in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.
 
-```html
+```angular-html
 <div #greeting>Hello!</div>
 
 @defer (on viewport(greeting)) {
@@ -156,7 +156,7 @@ Alternatively, you can specify a [template reference variable](guide/templates/r
 
 By default, the placeholder will act as the interaction element as long as it is a single root element node.
 
-```html
+```angular-html
 @defer (on interaction) {
   <calendar-cmp />
 } @placeholder {
@@ -166,7 +166,7 @@ By default, the placeholder will act as the interaction element as long as it is
 
 Alternatively, you can specify a [template reference variable](guide/templates/reference-variables) as the element that triggers interaction. This variable is passed in as a parameter on the interaction trigger.
 
-```html
+```angular-html
 <button type="button" #greeting>Hello!</button>
 
 @defer (on interaction(greeting)) {
@@ -182,7 +182,7 @@ Alternatively, you can specify a [template reference variable](guide/templates/r
 
 By default, the placeholder will act as the hover element as long as it is a single root element node.
 
-```html
+```angular-html
 @defer (on hover) {
   <calendar-cmp />
 } @placeholder {
@@ -192,7 +192,7 @@ By default, the placeholder will act as the hover element as long as it is a sin
 
 Alternatively, you can specify a [template reference variable](guide/templates/reference-variables) as the hover element. This variable is passed in as a parameter on the hover trigger.
 
-```html
+```angular-html
 <div #greeting>Hello!</div>
 
 @defer (on hover(greeting)) {
@@ -206,7 +206,7 @@ Alternatively, you can specify a [template reference variable](guide/templates/r
 
 `immediate` triggers the deferred load immediately, meaning once the client has finished rendering, the defer chunk would then start fetching right away.
 
-```html
+```angular-html
 @defer (on immediate) {
   <calendar-cmp />
 } @placeholder {
@@ -218,7 +218,7 @@ Alternatively, you can specify a [template reference variable](guide/templates/r
 
 `timer(x)` would trigger after a specified duration. The duration is required and can be specified in `ms` or `s`.
 
-```html
+```angular-html
 @defer (on timer(500ms)) {
   <calendar-cmp />
 }
@@ -232,7 +232,7 @@ In this case, `when` and `on` associated with defer controls when to render, and
 
 In the example below, the prefetching starts when a browser becomes idle and the contents of the block is rendered on interaction.
 
-```html
+```angular-html
 @defer (on interaction; prefetch on idle) {
   <calendar-cmp />
 } @placeholder {

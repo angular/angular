@@ -89,7 +89,7 @@ The heroes list gradually re-enters the page as you delete each letter in the fi
 
 The HTML template contains a trigger called `filterAnimation`.
 
-<docs-code header="src/app/hero-list-page.component.html" path="adev/src/content/examples/animations/src/app/hero-list-page.component.html" visibleRegion="filter-animations"/>
+<docs-code header="src/app/hero-list-page.component.html" path="adev/src/content/examples/animations/src/app/hero-list-page.component.html" visibleRegion="filter-animations" language="angular-html"/>
 
 The `filterAnimation` in the component's decorator contains three transitions.
 

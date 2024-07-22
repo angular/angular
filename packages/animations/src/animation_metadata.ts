@@ -993,7 +993,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *  - Transition animations applied based on
  *    the trigger's expression value
  *
- *   ```HTML
+ *   ```html
  *   <div [@myAnimationTrigger]="myStatusExp">
  *    ...
  *   </div>
@@ -1010,7 +1010,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *  - Transition animations applied based on custom logic dependent
  *    on the trigger's expression value and provided parameters
  *
- *    ```HTML
+ *    ```html
  *    <div [@myAnimationTrigger]="{
  *     value: stepName,
  *     params: { target: currentTarget }

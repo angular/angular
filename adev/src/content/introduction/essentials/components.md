@@ -87,7 +87,7 @@ export class TodoListItem {
 }
 ```
 
-```html
+```angular-html
 <!-- todo-list-item.component.html -->
 <li>(TODO) Read Angular Essentials Guide</li>
 ```

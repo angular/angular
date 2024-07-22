@@ -6,7 +6,7 @@ Angular templates support _control flow blocks_ that let you conditionally show,
 
 The `@if` block conditionally displays its content when its condition expression is truthy:
 
-```html
+```angular-html
 @if (a > b) {
   {{a}} is greater than {{b}}
 }
@@ -15,7 +15,7 @@ The `@if` block conditionally displays its content when its condition expression
 The `@if` block might have one or more associated `@else` blocks. Immediately after an `@if` block, you can optionally
 specify any number of `@else if` blocks and one `@else` block:
 
-```html
+```angular-html
 @if (a > b) {
   {{a}} is greater than {{b}}
 } @else if (b > a) {
@@ -30,7 +30,7 @@ specify any number of `@else if` blocks and one `@else` block:
 The new built-in `@if` conditional supports referencing of expression results to keep a solution for common coding
 patterns:
 
-```html
+```angular-html
 @if (users$ | async; as users) {
   {{ users.length }}
 }
@@ -42,7 +42,7 @@ The `@for` repeatedly renders content of a block for each item in a collection. 
 JavaScript [iterable](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Iteration_protocols) but there
 are performance advantages of using a regular `Array`. A basic `@for` loop looks like:
 
-```html
+```angular-html
 @for (item of items; track item.id) {
   {{ item.name }}
 }
@@ -79,7 +79,7 @@ Inside `@for` contents, several implicit variables are always available:
 
 These variables are always available with these names, but can be aliased via a `let` segment:
 
-```html
+```angular-html
 @for (item of items; track item.id; let idx = $index, e = $even) {
 Item #{{ idx }}: {{ item.name }}
 }
@@ -92,7 +92,7 @@ The aliasing is especially useful in case of using nested `@for` blocks where co
 You can optionally include an `@empty` section immediately after the `@for` block content. The content of the `@empty`
 block displays when there are no items:
 
-```html
+```angular-html
 @for (item of items; track item.name) {
   <li> {{ item.name }}</li>
 } @empty {
@@ -104,7 +104,7 @@ block displays when there are no items:
 
 The syntax for `switch` is very similar to `if`, and is inspired by the JavaScript `switch` statement:
 
-```html
+```angular-html
 @switch (condition) {
   @case (caseA) {
     Case A.
@@ -147,7 +147,7 @@ The `track` setting replaces `NgFor`'s concept of a `trackBy` function. Because 
 better experience than passing a `trackBy` function, and directly use an expression representing the key instead.
 Migrating from `trackBy` to `track` is possible by invoking the `trackBy` function:
 
-```html
+```angular-html
 @for (item of items; track itemId($index, item)) {
   {{ item.name }}
 }
