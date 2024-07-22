@@ -58,6 +58,8 @@ export interface ComponentAnalysisData {
   classDebugInfo: R3ClassDebugInfo | null;
 
   inputs: ClassPropertyMapping<InputMapping>;
+  inputFieldNamesFromMetadataArray: Set<string>;
+
   outputs: ClassPropertyMapping;
 
   /**

@@ -125,6 +125,7 @@ export function extractDirectiveMetadata(
       isStructural: boolean;
       hostDirectives: HostDirectiveMeta[] | null;
       rawHostDirectives: ts.Expression | null;
+      inputFieldNamesFromMetadataArray: Set<string>;
     }
   | {jitForced: true} {
   let directive: Map<string, ts.Expression>;
@@ -416,6 +417,10 @@ export function extractDirectiveMetadata(
     isStructural,
     hostDirectives,
     rawHostDirectives,
+    // Track inputs from class metadata. This is useful for migration efforts.
+    inputFieldNamesFromMetadataArray: new Set(
+      Object.values(inputsFromMeta).map((i) => i.classPropertyName),
+    ),
   };
 }
 

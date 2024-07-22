@@ -955,6 +955,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         ngContentSelectors: decl.ngContentSelectors || null,
         preserveWhitespaces: decl.preserveWhitespaces ?? false,
         isExplicitlyDeferred: false,
+        inputFieldNamesFromMetadataArray: null,
         hostDirectives:
           decl.hostDirectives === undefined
             ? null

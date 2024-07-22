@@ -200,6 +200,12 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   inputs: ClassPropertyMapping<InputMapping>;
 
   /**
+   * List of input fields that were defined in the class decorator
+   * metadata. Null for directives extracted from `.d.ts`
+   */
+  inputFieldNamesFromMetadataArray: Set<string> | null;
+
+  /**
    * A mapping of output field names to the property names.
    */
   outputs: ClassPropertyMapping;
