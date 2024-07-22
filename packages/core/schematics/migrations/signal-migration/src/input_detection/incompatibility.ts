@@ -13,7 +13,7 @@ export enum InputIncompatibilityReason {
   Accessor,
   WriteAssignment,
   OverriddenByDerivedClass,
-  RedeclaredViaDerivedClassDecorator,
+  RedeclaredViaDerivedClassInputsArray,
   TypeConflictWithBaseClass,
   ParentIsIncompatible,
   SpyOnThatOverwritesField,
