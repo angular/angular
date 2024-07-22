@@ -16,7 +16,7 @@ In your app, the blog post page has a comment component after the post details.
 
 Wrap the comment component with a `@defer` block to defer load it.
 
-```html
+```angular-html
 @defer {
   <comments />
 }

@@ -21,7 +21,7 @@ export class MyComp {
 An output is automatically recognized by Angular whenever you use the `output` function as an initializer of a class member.
 Parent components can listen to outputs in templates by using the event binding syntax.
 
-```html
+```angular-html
 <my-comp (onNameChange)="showNewName($event)" />
 ```
 
