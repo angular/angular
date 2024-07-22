@@ -6611,18 +6611,7 @@ suppress
     });
 
     describe('@let declarations', () => {
-      beforeEach(() =>
-        env.tsconfig({
-          strictTemplates: true,
-          extendedDiagnostics: {
-            checks: {
-              // Suppress the diagnostic for unused @let since some of the error cases
-              // we're checking for here also qualify as being unused which adds noise.
-              unusedLetDeclaration: 'suppress',
-            },
-          },
-        }),
-      );
+      beforeEach(() => env.tsconfig({strictTemplates: true}));
 
       it('should infer the type of a let declaration', () => {
         env.write(
