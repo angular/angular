@@ -17,6 +17,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
+import {SIGNAL} from '@angular/core/primitives/signals';
 import {TestBed} from '@angular/core/testing';
 
 describe('signal inputs', () => {
@@ -286,5 +287,49 @@ describe('signal inputs', () => {
     fixture.detectChanges();
     expect(host.value).toBe(3);
     expect(host.dir.value()).toBe(3);
+  });
+
+  it('should assign a debugName to the input signal node when a debugName is provided', () => {
+    @Directive({selector: '[dir]', standalone: true})
+    class Dir {
+      value = input(0, {debugName: 'TEST_DEBUG_NAME'});
+    }
+
+    @Component({
+      template: '<div [value]="1" dir></div>',
+      standalone: true,
+      imports: [Dir],
+    })
+    class App {
+      @ViewChild(Dir) dir!: Dir;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    const host = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(host.dir.value[SIGNAL].debugName).toBe('TEST_DEBUG_NAME');
+  });
+
+  it('should assign a debugName to the input signal node when a debugName is provided to a required input', () => {
+    @Directive({selector: '[dir]', standalone: true})
+    class Dir {
+      value = input.required({debugName: 'TEST_DEBUG_NAME'});
+    }
+
+    @Component({
+      template: '<div [value]="1" dir></div>',
+      standalone: true,
+      imports: [Dir],
+    })
+    class App {
+      @ViewChild(Dir) dir!: Dir;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    const host = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(host.dir.value[SIGNAL].debugName).toBe('TEST_DEBUG_NAME');
   });
 });

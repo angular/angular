@@ -36,9 +36,13 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
+import {SIGNAL} from '@angular/core/primitives/signals';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {createInjector} from '@angular/core/src/di/create_injector';
-import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
+import {
+  EffectNode,
+  setUseMicrotaskEffectsByDefault,
+} from '@angular/core/src/render3/reactivity/effect';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
@@ -677,6 +681,23 @@ describe('reactivity', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('0');
+    });
+
+    it('should assign a debugName to the underlying node for an effect', async () => {
+      @Component({
+        selector: 'test-cmp',
+        standalone: true,
+        template: '',
+      })
+      class Cmp {
+        effectRef = effect(() => {}, {debugName: 'TEST_DEBUG_NAME'});
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      const component = fixture.componentInstance;
+      const effectRef = component.effectRef as unknown as {[SIGNAL]: EffectNode};
+      expect(effectRef[SIGNAL].debugName).toBe('TEST_DEBUG_NAME');
     });
 
     describe('effects created in components should first run after ngOnInit', () => {

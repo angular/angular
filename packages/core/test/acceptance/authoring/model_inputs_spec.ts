@@ -19,6 +19,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
+import {SIGNAL} from '@angular/core/primitives/signals';
 import {TestBed} from '@angular/core/testing';
 
 describe('model inputs', () => {
@@ -643,5 +644,51 @@ describe('model inputs', () => {
     fixture.detectChanges();
     expect(host.values[0]()).toBe(3);
     expect(host.dir.value()).toBe(3);
+  });
+
+  it('should assign a debugName to the underlying watcher node when a debugName is provided', () => {
+    @Directive({selector: '[dir]', standalone: true})
+    class Dir {
+      value = model(0, {debugName: 'TEST_DEBUG_NAME'});
+    }
+
+    @Component({
+      template: '<div [(value)]="value" dir></div>',
+      standalone: true,
+      imports: [Dir],
+    })
+    class App {
+      @ViewChild(Dir) dir!: Dir;
+      value = signal(1);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    const host = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(host.dir.value[SIGNAL].debugName).toBe('TEST_DEBUG_NAME');
+  });
+
+  it('should assign a debugName to the underlying watcher node when a debugName is provided to a required model', () => {
+    @Directive({selector: '[dir]', standalone: true})
+    class Dir {
+      value = model.required({debugName: 'TEST_DEBUG_NAME'});
+    }
+
+    @Component({
+      template: '<div [(value)]="value" dir></div>',
+      standalone: true,
+      imports: [Dir],
+    })
+    class App {
+      @ViewChild(Dir) dir!: Dir;
+      value = signal(1);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    const host = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(host.dir.value[SIGNAL].debugName).toBe('TEST_DEBUG_NAME');
   });
 });
