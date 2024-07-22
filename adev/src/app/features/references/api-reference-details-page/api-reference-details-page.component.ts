@@ -44,6 +44,7 @@ import {AppScroller} from '../../../app-scroller';
   imports: [DocViewer, NgIf, NgFor, MatTabsModule, RouterLink],
   templateUrl: './api-reference-details-page.component.html',
   styleUrls: ['./api-reference-details-page.component.scss'],
+  providers: [ReferenceScrollHandler],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
