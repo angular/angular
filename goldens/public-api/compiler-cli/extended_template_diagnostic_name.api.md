@@ -27,9 +27,7 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     TEXT_ATTRIBUTE_NOT_BINDING = "textAttributeNotBinding",
     // (undocumented)
-    UNINVOKED_FUNCTION_IN_EVENT_BINDING = "uninvokedFunctionInEventBinding",
-    // (undocumented)
-    UNUSED_LET_DECLARATION = "unusedLetDeclaration"
+    UNINVOKED_FUNCTION_IN_EVENT_BINDING = "uninvokedFunctionInEventBinding"
 }
 
 // (No @packageDocumentation comment for this package)
