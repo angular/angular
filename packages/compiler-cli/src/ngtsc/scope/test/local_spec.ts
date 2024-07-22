@@ -354,6 +354,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     preserveWhitespaces: false,
     isExplicitlyDeferred: false,
     deferredImports: null,
+    inputFieldNamesFromMetadataArray: null,
   };
 }
 
