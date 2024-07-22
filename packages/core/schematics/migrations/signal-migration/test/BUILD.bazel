@@ -1,0 +1,82 @@
+load("@npm//@angular/build-tooling/bazel/integration:index.bzl", "integration_test")
+load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
+
+ts_library(
+    name = "test_runners_lib",
+    testonly = True,
+    srcs = [
+        "batch_runner.ts",
+        "golden_test_runner.ts",
+    ],
+    deps = [
+        "@npm//@types/diff",
+        "@npm//chalk",
+        "@npm//diff",
+        "@npm//fast-glob",
+    ],
+)
+
+nodejs_binary(
+    name = "golden_test_runner",
+    testonly = True,
+    data = [":test_runners_lib"],
+    entry_point = ":golden_test_runner.ts",
+)
+
+nodejs_binary(
+    name = "batch_runner",
+    testonly = True,
+    data = [":test_runners_lib"],
+    entry_point = ":batch_runner.ts",
+)
+
+integration_test(
+    name = "test",
+    srcs = [
+        "golden.txt",
+        "//packages/core/schematics/migrations/signal-migration/test/golden-test:test_files",
+    ],
+    commands = [
+        "$(rootpath //packages/core/schematics/migrations/signal-migration/src:bin) ./golden-test/tsconfig.json",
+        "$(rootpath :golden_test_runner) ./golden-test ./golden.txt",
+    ],
+    data = [
+        ":golden_test_runner",
+        "//packages/core/schematics/migrations/signal-migration/src:bin",
+    ],
+    environment = {
+        "FORCE_COLOR": "3",
+    },
+)
+
+integration_test(
+    name = "test_batch",
+    size = "large",
+    srcs = [
+        "golden.txt",
+        "//packages/core/schematics/migrations/signal-migration/test/golden-test:test_files",
+    ],
+    commands = [
+        "$(rootpath :batch_runner) analyze ./golden-test",
+        "$(rootpath :batch_runner) merge ./golden-test",
+        "$(rootpath :batch_runner) migrate ./golden-test",
+        "$(rootpath :golden_test_runner) ./golden-test ./golden.txt",
+    ],
+    data = [
+        ":batch_runner",
+        ":golden_test_runner",
+        "//packages/core/schematics/migrations/signal-migration/src:bin",
+        "//packages/core/schematics/migrations/signal-migration/src/batch:bin",
+    ],
+    environment = {
+        "FORCE_COLOR": "3",
+    },
+    tags = [
+        # Only used for manual verification at this point.
+        # The test is extremely expensive due to no caching between units.
+        "manual",
+    ],
+    tool_mappings = {
+        "//packages/core/schematics/migrations/signal-migration/src/batch:bin": "migration",
+    },
+)
