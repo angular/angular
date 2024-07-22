@@ -423,7 +423,7 @@ Clicking that hero tells the `DashboardComponent` that the user has selected the
 
 The `DashboardHeroComponent` is embedded in the `DashboardComponent` template like this:
 
-<docs-code header="app/dashboard/dashboard.component.html (excerpt)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard.component.html" visibleRegion="dashboard-hero"/>
+<docs-code header="app/dashboard/dashboard.component.html (excerpt)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard.component.html" language="angular-html" visibleRegion="dashboard-hero"/>
 
 The `DashboardHeroComponent` appears in an `*ngFor` repeater, which sets each component's `hero` input property to the looping value and listens for the component's `selected` event.
 
@@ -628,7 +628,7 @@ The component tree can be very deep and, most of the time, the nested components
 
 The `AppComponent`, for example, displays a navigation bar with anchors and their `RouterLink` directives.
 
-<docs-code header="app/app.component.html" path="adev/src/content/examples/testing/src/app/app.component.html"/>
+<docs-code header="app/app.component.html" path="adev/src/content/examples/testing/src/app/app.component.html" language="angular-html"/>
 
 To validate the links, you don't need the `Router` to navigate and you don't need the `<router-outlet>` to mark where the `Router` inserts *routed components*.
 
@@ -709,7 +709,7 @@ Three points of special interest:
 
 The `AppComponent` links to validate are as follows:
 
-<docs-code header="app/app.component.html (navigation links)" path="adev/src/content/examples/testing/src/app/app.component.html" visibleRegion="links"/>
+<docs-code header="app/app.component.html (navigation links)" path="adev/src/content/examples/testing/src/app/app.component.html" language="angular-html" visibleRegion="links"/>
 
 Here are some tests that confirm those links are wired to the `routerLink` directives as expected:
 

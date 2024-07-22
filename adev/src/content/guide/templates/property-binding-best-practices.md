@@ -30,7 +30,7 @@ For example, return:
 
 In the following example, the `childItem` property of the `ItemDetailComponent` expects a string.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/property-binding/src/app/app.component.html" visibleRegion="model-property-binding"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/property-binding/src/app/app.component.html" language="angular-html" visibleRegion="model-property-binding"/>
 
 Confirm this expectation by looking in the `ItemDetailComponent` where the `@Input()` type is `string`:
 
@@ -46,7 +46,7 @@ If `parentItem` were some other type, you would need to specify `childItem`  `@I
 
 In this example, `ItemListComponent` is a child component of `AppComponent` and the `items` property expects an array of objects.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/property-binding/src/app/app.component.html" visibleRegion="pass-object"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/property-binding/src/app/app.component.html" language="angular-html" visibleRegion="pass-object"/>
 
 In the `ItemListComponent` the `@Input()`, `items`, has a type of `Item[]`.
 

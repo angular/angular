@@ -35,11 +35,11 @@ The `sizerComponent` template has two buttons that each bind the click event to 
 When the user clicks one of the buttons, the `sizerComponent` calls the corresponding method.
 Both methods, `inc()` and `dec()`, call the `resize()` method with a `+1` or `-1`, which in turn raises the `sizeChange` event with the new size value.
 
-<docs-code header="src/app/sizer.component.html" path="adev/src/content/examples/two-way-binding/src/app/sizer/sizer.component.html"/>
+<docs-code header="src/app/sizer.component.html" path="adev/src/content/examples/two-way-binding/src/app/sizer/sizer.component.html" language="angular-html"/>
 
 In the `AppComponent` template, `fontSizePx` is two-way bound to the `SizerComponent`.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/two-way-binding/src/app/app.component.html" visibleRegion="two-way-1"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/two-way-binding/src/app/app.component.html" language="angular-html" visibleRegion="two-way-1"/>
 
 In the `AppComponent`, `fontSizePx` establishes the initial `SizerComponent.size` value by setting the value to `16`.
 
@@ -51,7 +51,7 @@ The revised `AppComponent.fontSizePx` value updates the style binding, which mak
 The two-way binding syntax is shorthand for a combination of property binding and event binding.
 The `SizerComponent` binding as separate property binding and event binding is as follows.
 
-<docs-code header="src/app/app.component.html (expanded)" path="adev/src/content/examples/two-way-binding/src/app/app.component.html" visibleRegion="two-way-2"/>
+<docs-code header="src/app/app.component.html (expanded)" path="adev/src/content/examples/two-way-binding/src/app/app.component.html" language="angular-html" visibleRegion="two-way-2"/>
 
 The `$event` variable contains the data of the `SizerComponent.sizeChange` event.
 Angular assigns the `$event` value to the `AppComponent.fontSizePx` when the user clicks the buttons.

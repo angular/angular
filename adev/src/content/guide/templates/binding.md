@@ -34,17 +34,17 @@ Interpolated expressions have a context—a particular part of the application t
 
 In the following snippet, the expression `recommended` and the expression `itemImageUrl2` refer to properties of the `AppComponent`.
 
-<docs-code path="adev/src/content/examples/interpolation/src/app/app.component.html" visibleRegion="component-context" header="src/app/app.component.html"/>
+<docs-code path="adev/src/content/examples/interpolation/src/app/app.component.html" language="angular-html" visibleRegion="component-context" header="src/app/app.component.html"/>
 
 An expression can also refer to properties of the _template's_ context such as a [template input variable](guide/directives/structural-directives#shorthand) or a [template reference variable](guide/templates/reference-variables).
 
 The following example uses a template input variable of `customer`.
 
-<docs-code path="adev/src/content/examples/interpolation/src/app/app.component.html" visibleRegion="template-input-variable" header="src/app/app.component.html (template input variable)"/>
+<docs-code path="adev/src/content/examples/interpolation/src/app/app.component.html" language="angular-html" visibleRegion="template-input-variable" header="src/app/app.component.html (template input variable)"/>
 
 This next example features a template reference variable, `#customerInput`.
 
-<docs-code path="adev/src/content/examples/interpolation/src/app/app.component.html" visibleRegion="template-reference-variable" header="src/app/app.component.html (template reference variable)"/>
+<docs-code path="adev/src/content/examples/interpolation/src/app/app.component.html" language="angular-html" visibleRegion="template-reference-variable" header="src/app/app.component.html (template reference variable)"/>
 
 HELPFUL: Template expressions cannot refer to anything in the global namespace, except `undefined`.  They can't refer to `window` or `document`.  Additionally, they can't call `console.log()` or `Math.max()` and are restricted to referencing members of the expression context.
 

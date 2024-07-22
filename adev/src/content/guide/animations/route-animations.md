@@ -65,7 +65,7 @@ The `<router-outlet>` directive tells the Angular router where to render the vie
 The `ChildrenOutletContexts` holds information about outlets and activated routes.
 The `data` property of each `Route` can be used to animate routing transitions.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/animations/src/app/app.component.html" visibleRegion="route-animations-outlet"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/animations/src/app/app.component.html" language="angular-html" visibleRegion="route-animations-outlet"/>
 
 `AppComponent` defines a method that can detect when a view changes.
 The method assigns an animation state value to the animation trigger \(`@routeAnimation`\) based on the route configuration `data` property value.

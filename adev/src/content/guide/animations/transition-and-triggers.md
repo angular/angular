@@ -103,7 +103,7 @@ As a rule of thumb consider that any element being added to the DOM by Angular p
 This example has a special trigger for the enter and leave animation called `myInsertRemoveTrigger`.
 The HTML template contains the following code.
 
-<docs-code header="src/app/insert-remove.component.html" path="adev/src/content/examples/animations/src/app/insert-remove.component.html" visibleRegion="insert-remove"/>
+<docs-code header="src/app/insert-remove.component.html" path="adev/src/content/examples/animations/src/app/insert-remove.component.html" language="angular-html" visibleRegion="insert-remove"/>
 
 In the component file, the `:enter` transition sets an initial opacity of 0. It then animates it to change that opacity to 1 as the element is inserted into the view.
 
@@ -125,7 +125,7 @@ For more information on these methods, see the [complex sequences](guide/animati
 
 If a trigger contains a Boolean value as a binding value, then this value can be matched using a `transition()` expression that compares `true` and `false`, or `1` and `0`.
 
-<docs-code header="src/app/open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.2.html" visibleRegion="trigger-boolean"/>
+<docs-code header="src/app/open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.2.html" language="angular-html" visibleRegion="trigger-boolean"/>
 
 In the code snippet above, the HTML template binds a `<div>` element to a trigger named `openClose` with a status expression of `isOpen`, and with possible values of `true` and `false`.
 This pattern is an alternative to the practice of creating two named states like `open` and `close`.
@@ -154,7 +154,7 @@ When true, the `@.disabled` binding prevents all animations from rendering.
 The following code sample shows how to use this feature.
 
 <docs-code-multifile>
-    <docs-code header="src/app/open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.4.html" visibleRegion="toggle-animation"/>
+    <docs-code header="src/app/open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.4.html" language="angular-html" visibleRegion="toggle-animation"/>
     <docs-code header="src/app/open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.4.ts" visibleRegion="toggle-animation" language="typescript"/>
 </docs-code-multifile>
 
@@ -189,7 +189,7 @@ The following example features a component that contains an `openClose` trigger.
 In the HTML template, the animation event is passed back via `$event`, as `@triggerName.start` and `@triggerName.done`, where `triggerName` is the name of the trigger being used.
 In this example, the trigger `openClose` appears as follows.
 
-<docs-code header="src/app/open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.3.html" visibleRegion="callbacks"/>
+<docs-code header="src/app/open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.3.html" language="angular-html" visibleRegion="callbacks"/>
 
 A potential use for animation callbacks could be to cover for a slow API call, such as a database lookup.
 For example, an **InProgress** button can be set up to have its own looping animation while the backend system operation finishes.

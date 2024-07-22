@@ -46,7 +46,7 @@ On the element you'd like to style, add `[ngClass]` and set it equal to an expre
 In this case, `isSpecial` is a boolean set to `true` in `app.component.ts`.
 Because `isSpecial` is true, `ngClass` applies the class of `special` to the `<div>`.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="special-div"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="special-div"/>
 
 ### Using `NgClass` with a method
 
@@ -61,7 +61,7 @@ Because `isSpecial` is true, `ngClass` applies the class of `special` to the `<d
 
 1. In the template, add the `ngClass` property binding to `currentClasses` to set the element's classes:
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgClass-1"/>
+    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgClass-1"/>
 
 For this use case, Angular applies the classes on initialization and in case of changes caused by reassigning the `currentClasses` object.
 The full example calls `setCurrentClasses()` initially with `ngOnInit()` when the user clicks on the `Refresh currentClasses` button.
@@ -85,7 +85,7 @@ Use `NgStyle` to set multiple inline styles simultaneously, based on the state o
 
 1. To set the element's styles, add an `ngStyle` property binding to `currentStyles`.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgStyle-2"/>
+    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgStyle-2"/>
 
 For this use case, Angular applies the styles upon initialization and in case of changes.
 To do this, the full example calls `setCurrentStyles()` initially with `ngOnInit()` and when the dependent properties change through a button click.
@@ -101,7 +101,7 @@ Use the `NgModel` directive to display a data property and update that property 
 
 1. Add an `[(ngModel)]` binding on an HTML `<form>` element and set it equal to the property, here `name`.
 
-    <docs-code header="src/app/app.component.html (NgModel example)" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgModel-1"/>
+    <docs-code header="src/app/app.component.html (NgModel example)" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgModel-1"/>
 
     This `[(ngModel)]` syntax can only set a data-bound property.
 
@@ -109,7 +109,7 @@ To customize your configuration, write the expanded form, which separates the pr
 Use [property binding](guide/templates/property-binding) to set the property and [event binding](guide/templates/event-binding) to respond to changes.
 The following example changes the `<input>` value to uppercase:
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="uppercase"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="uppercase"/>
 
 Here are all variations in action, including the uppercase version:
 
@@ -158,7 +158,7 @@ To use `NgIf`, add it to the component's `imports` list.
 
 To add or remove an element, bind `*ngIf` to a condition expression such as `isActive` in the following example.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgIf-1"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgIf-1"/>
 
 When the `isActive` expression returns a truthy value, `NgIf` adds the `ItemDetailComponent` to the DOM.
 When the expression is falsy, `NgIf` removes the `ItemDetailComponent` from the DOM and disposes of the component and all of its subcomponents.
@@ -172,12 +172,12 @@ By default, `NgIf` prevents display of an element bound to a null value.
 To use `NgIf` to guard a `<div>`, add `*ngIf="yourProperty"` to the `<div>`.
 In the following example, the `currentCustomer` name appears because there is a `currentCustomer`.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgIf-2"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgIf-2"/>
 
 However, if the property is `null`, Angular does not display the `<div>`.
 In this example, Angular does not display the `nullCustomer` because it is `null`.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgIf-2b"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgIf-2b"/>
 
 ## Listing items with `NgFor`
 
@@ -196,7 +196,7 @@ To use `NgFor`, you have to:
 1. Define a block of HTML that determines how Angular renders a single item.
 1. To list your items, assign the shorthand `let item of items` to `*ngFor`.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgFor-1"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgFor-1"/>
 
 The string `"let item of items"` instructs Angular to do the following:
 
@@ -212,7 +212,7 @@ For more information see the [Structural directive shorthand](guide/directives/s
 To repeat a component element, apply `*ngFor` to the selector.
 In the following example, the selector is `<app-item-detail>`.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgFor-2"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgFor-2"/>
 
 Reference a template input variable, such as `item`, in the following locations:
 
@@ -221,7 +221,7 @@ Reference a template input variable, such as `item`, in the following locations:
 
 The following example references `item` first in an interpolation and then passes in a binding to the `item` property of the `<app-item-detail>` component.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgFor-1-2"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgFor-1-2"/>
 
 For more information about template input variables, see [Structural directive shorthand](guide/directives/structural-directives#structural-directive-shorthand).
 
@@ -232,7 +232,7 @@ Get the `index` of `*ngFor` in a template input variable and use it in the templ
 In the `*ngFor`, add a semicolon and `let i=index` to the shorthand.
 The following example gets the `index` in a variable named `i` and displays it with the item name.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgFor-3"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgFor-3"/>
 
 The index property of the `NgFor` directive context returns the zero-based index of the item in each iteration.
 
@@ -260,7 +260,7 @@ With the `*ngFor` `trackBy` property, Angular can change and re-render only thos
 
 1. In the shorthand expression, set `trackBy` to the `trackByItems()` method.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="trackBy"/>
+    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="trackBy"/>
 
 **Change ids** creates new items with new `item.id`s.
 In the following illustration of the `trackBy` effect, **Reset items** creates new items with the same `item.id`s.
@@ -278,7 +278,7 @@ Use `<ng-container>` when there's no single element to host the directive.
 
 Here's a conditional paragraph using `<ng-container>`.
 
-<docs-code header="src/app/app.component.html (ngif-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" visibleRegion="ngif-ngcontainer"/>
+<docs-code header="src/app/app.component.html (ngif-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" language="angular-html" visibleRegion="ngif-ngcontainer"/>
 
 <img alt="ngcontainer paragraph with proper style" src="assets/images/guide/structural-directives/good-paragraph.png">
 
@@ -288,7 +288,7 @@ Here's a conditional paragraph using `<ng-container>`.
 
 1. To conditionally exclude an `<option>`, wrap the `<option>` in an `<ng-container>`.
 
-    <docs-code header="src/app/app.component.html (select-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" visibleRegion="select-ngcontainer"/>
+    <docs-code header="src/app/app.component.html (select-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" language="angular-html" visibleRegion="select-ngcontainer"/>
 
     <img alt="ngcontainer options work properly" src="assets/images/guide/structural-directives/select-ngcontainer-anim.gif">
 
@@ -318,7 +318,7 @@ To use the directives, add the `NgSwitch`, `NgSwitchCase` and `NgSwitchDefault` 
 
 1. Bind to `*ngSwitchCase` and `*ngSwitchDefault` on the elements for the cases.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgSwitch"/>
+    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgSwitch"/>
 
 1. In the parent component, define `currentItem`, to use it in the `[ngSwitch]` expression.
 
@@ -335,7 +335,7 @@ To use the directives, add the `NgSwitch`, `NgSwitchCase` and `NgSwitchDefault` 
 Switch directives also work with built-in HTML elements and web components.
 For example, you could replace the `<app-best-item>` switch case with a `<div>` as follows.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgSwitch-div"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" language="angular-html" visibleRegion="NgSwitch-div"/>
 
 ## What's next
 

@@ -27,7 +27,7 @@ The example tabs show the following:
 | `flying-heroes.component.ts (v1)`   | Provides heroes, adds heroes into the array, and resets the array. |
 
 <docs-code-multifile>
-    <docs-code header="src/app/flying-heroes.component.html (v1)" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.html" visibleRegion="template-1"/>
+    <docs-code header="src/app/flying-heroes.component.html (v1)" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.html" language="angular-html" visibleRegion="template-1"/>
     <docs-code header="src/app/flying-heroes.component.ts (v1)" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.ts" visibleRegion="v1"/>
 </docs-code-multifile>
 
@@ -61,7 +61,7 @@ The tabs for the example show the following:
 | flying-heroes.pipe.ts          | File with custom pipe that filters flying heroes. |
 
 <docs-code-multifile>
-    <docs-code header="src/app/flying-heroes.component.html" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.html" visibleRegion="template-flying-heroes"/>
+    <docs-code header="src/app/flying-heroes.component.html" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.html" language="angular-html" visibleRegion="template-flying-heroes"/>
     <docs-code header="src/app/flying-heroes.pipe.ts" path="adev/src/content/examples/pipes/src/app/flying-heroes.pipe.ts" visibleRegion="pure"/>
 </docs-code-multifile>
 
@@ -111,4 +111,4 @@ The example shows that you don't have to change anything else—the only differe
 You can derive a `FlyingHeroesImpureComponent` from `FlyingHeroesComponent`.
 As shown in the following code, only the pipe in the template changes.
 
-<docs-code header="src/app/flying-heroes-impure.component.html (excerpt)" path="adev/src/content/examples/pipes/src/app/flying-heroes-impure.component.html" visibleRegion="template-flying-heroes"/>
+<docs-code header="src/app/flying-heroes-impure.component.html (excerpt)" path="adev/src/content/examples/pipes/src/app/flying-heroes-impure.component.html" language="angular-html" visibleRegion="template-flying-heroes"/>

@@ -179,7 +179,7 @@ Angular also extracts alternate `select` ICU expressions as separate translation
 
 The following example displays a `select` ICU expression in the component template.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" visibleRegion="i18n-select"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" language="angular-html" visibleRegion="i18n-select"/>
 
 In this example, Angular extracts the expression into two translation units.
 The first contains the text outside of the `select` clause, and uses a placeholder for `select` \(`<x id="ICU">`\):

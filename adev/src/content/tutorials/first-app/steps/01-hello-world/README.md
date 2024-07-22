@@ -87,7 +87,7 @@ In your IDE:
 
 1. In `index.html`, replace the `<title>` element with this code to update the title of the app.
 
-    <docs-code header="Replace in src/index.html" path="adev/src/content/tutorials/first-app/steps/02-HomeComponent/src/index.html" visibleLines="[5]"/>
+    <docs-code header="Replace in src/index.html" path="adev/src/content/tutorials/first-app/steps/02-HomeComponent/src/index.html" language="angular-html" visibleLines="[5]"/>
 
     Then, save the changes you just made to `index.html`.
 
