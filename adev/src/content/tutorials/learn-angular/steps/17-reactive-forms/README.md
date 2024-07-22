@@ -60,7 +60,7 @@ Each `FormGroup` should be attached to a form using the `[formGroup]` directive.
 
 In addition, each `FormControl` can be attached with the `formControlName` directive and assigned to the corresponding property. Update the template with the following form code:
 
-```html
+```angular-html
 <form [formGroup]="profileForm">
   <label>
     Name
@@ -80,7 +80,7 @@ In addition, each `FormControl` can be attached with the `formControlName` direc
 
 When you want to access data from the `FormGroup`, it can be done by accessing the value of the `FormGroup`. Update the `template` to display the form values:
 
-```html
+```angular-html
 ...
 <h2>Profile Form</h2>
 <p>Name: {{ profileForm.value.name }}</p>

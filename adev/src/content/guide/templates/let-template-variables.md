@@ -10,7 +10,7 @@ IMPORTANT: the `@let` syntax is currently in [Developer Preview](/reference/rele
 their values can be any valid Angular expression. The expressions will be re-evaluated any time the
 template is executed.
 
-```html
+```angular-html
 @let name = user.name;
 @let greeting = 'Hello, ' + name;
 @let data = data$ | async;
@@ -25,7 +25,8 @@ template is executed.
 
 Once you've declared the `@let`, you can reuse it anywhere in the template:
 
-```html
+
+```angular-html
 @let user = user$ | async;
 
 @if (user) {
@@ -47,7 +48,7 @@ Once you've declared the `@let`, you can reuse it anywhere in the template:
 A key difference between `@let` and JavaScript's `let` is that `@let` cannot be re-assigned
 within the template, however its value will be recomputed when Angular runs change detection.
 
-```html
+```angular-html
 @let value = 1;
 
 <!-- Invalid -->
@@ -59,7 +60,7 @@ within the template, however its value will be recomputed when Angular runs chan
 `@let` declarations are scoped to the current view and its descendants. Since they are not
 hoisted, they **cannot** be accessed by parent views or siblings:
 
-```html
+```angular-html
 @let topLevel = value;
 
 <div>

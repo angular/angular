@@ -153,7 +153,7 @@ You should see only the application title.
 To view the `crisis-list` component, add `crisis-list` to the end of the path in your browser's address bar.
 For example:
 
-<docs-code language="https">
+<docs-code language="text">
 http://localhost:4200/crisis-list
 </docs-code>
 
@@ -161,7 +161,7 @@ Notice that the `crisis-list` component displays.
 Angular is using the route you defined to dynamically load the component.
 You can load the `heroes-list` component the same way:
 
-<docs-code language="https">
+<docs-code language="text">
 http://localhost:4200/heroes-list
 </docs-code>
 

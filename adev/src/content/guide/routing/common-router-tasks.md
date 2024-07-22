@@ -93,7 +93,7 @@ const routes: Routes = [
 
 Now that you have defined your routes, add them to your application. First, add links to the two components. Assign the anchor tag that you want to add the route to the `routerLink` attribute. Set the value of the attribute to the component to show when a user clicks on each link. Next, update your component template to include `<router-outlet>`. This element informs Angular to update the application view with the component for the selected route.
 
-```html
+```angular-html
 <h1>Angular Router App</h1>
 <nav>
   <ul>
@@ -260,7 +260,7 @@ This means you're adding a second `<router-outlet>` to your app, because it is i
 In this example, there are two additional child components, `child-a`, and `child-b`.
 Here, `FirstComponent` has its own `<nav>` and a second `<router-outlet>` in addition to the one in `AppComponent`.
 
-```html
+```angular-html
 <h2>First Component</h2>
 
 <nav>
@@ -358,7 +358,7 @@ The following example shows a relative route to another component, `second-compo
 `FirstComponent` and `SecondComponent` are at the same level in the tree, however, the link to `SecondComponent` is situated within the `FirstComponent`, meaning that the router has to go up a level and then into the second directory to find the `SecondComponent`.
 Rather than writing out the whole path to get to `SecondComponent`, use the `../` notation to go up a level.
 
-```html
+```angular-html
 <h2>First Component</h2>
 
 <nav>
@@ -516,13 +516,13 @@ A link parameters array holds the following ingredients for router navigation:
 
 Bind the `RouterLink` directive to such an array like this:
 
-```html
+```angular-html
 <a [routerLink]="['/heroes']">Heroes</a>
 ```
 
 The following is a two-element array when specifying a route parameter:
 
-```html
+```angular-html
 <a [routerLink]="['/hero', hero.id]">
   <span class="badge">{{ hero.id }}</span>{{ hero.name }}
 </a>
@@ -530,7 +530,7 @@ The following is a two-element array when specifying a route parameter:
 
 Provide optional route parameters in an object, as in `{ foo: 'foo' }`:
 
-```html
+```angular-html
 <a [routerLink]="['/crisis-center', { foo: 'foo' }]">Crisis Center</a>
 ```
 
@@ -539,7 +539,7 @@ However, with a child router, such as in the crisis center, you create new link 
 
 The following minimal `RouterLink` example builds upon a specified default child route for the crisis center.
 
-```html
+```angular-html
 <a [routerLink]="['/crisis-center']">Crisis Center</a>
 ```
 
@@ -552,7 +552,7 @@ Review the following:
 
 Consider the following router link that navigates from the root of the application down to the Dragon Crisis:
 
-```html
+```angular-html
 <a [routerLink]="['/crisis-center', 1]">Dragon Crisis</a>
 ```
 
@@ -589,7 +589,7 @@ The router can compose a "natural" URL that is indistinguishable from one that w
 
 Here's the Crisis Center URL in this "HTML5 pushState" style:
 
-```http
+```text
 localhost:3002/crisis-center
 ```
 
@@ -597,7 +597,7 @@ Older browsers send page requests to the server when the location URL changes un
 Routers can take advantage of this exception by composing in-application route URLs with hashes.
 Here's a "hash URL" that routes to the Crisis Center.
 
-```http
+```text
 localhost:3002/src/#/crisis-center
 ```
 
@@ -660,7 +660,7 @@ While the router uses the [HTML5 pushState](https://developer.mozilla.org/docs/W
 
 The preferred way to configure the strategy is to add a [`<base href>` element](https://developer.mozilla.org/docs/Web/HTML/Element/base 'base href') tag in the `<head>` of the `index.html`.
 
-```html
+```angular-html
 <base href="/">
 ```
 

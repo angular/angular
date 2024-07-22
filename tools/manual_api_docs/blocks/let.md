@@ -4,7 +4,7 @@
 
 ## Syntax
 
-```html
+```angular-html
 @let name = user.name;
 @let data = data$ | async;
 ```
@@ -18,7 +18,7 @@ Similarly to javascript variables, variables declared `@let`, can be used:
 * After they have been declared
 * Within the bound of the same scope and nested scopes
 
-```html
+```angular-html
 @let user = user$ | async;
 
 @if (user) {

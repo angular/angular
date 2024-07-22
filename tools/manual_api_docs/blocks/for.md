@@ -2,7 +2,7 @@ The `@for` block repeatedly renders content of a block for each item in a collec
 
 ## Syntax
 
-```html
+```angular-html
 @for (item of items; track item.name) {
 <li>{{ item.name }}</li>
 } @empty {
@@ -48,7 +48,7 @@ Inside `@for` contents, several implicit variables are always available:
 
 These variables are always available with these names, but can be aliased via a `let` segment:
 
-```html
+```angular-html
 @for (item of items; track item.id; let idx = $index, e = $even) {
 Item #{{ idx }}: {{ item.name }}
 }

@@ -10,7 +10,7 @@ In this guide you'll build a structural directive which fetches data from a give
 
 The following is an example of using this directive directly on an `<ng-template>` would look like:
 
-```html
+```angular-html
 <ng-template select let-data [selectFrom]="source">
   <p>The data is: {{ data }}</p>
 </ng-template>
@@ -30,7 +30,7 @@ Structural directives can be applied directly on an element by prefixing the dir
 
 You can use this with `SelectDirective` as follows:
 
-```html
+```angular-html
 <p *select="let data from source">The data is: {{data}}</p>
 ```
 
@@ -38,7 +38,7 @@ This example shows the flexibility of structural directive shorthand syntax, whi
 
 When used in this way, only the structural directive and its bindings are applied to the `<ng-template>`. Any other attributes or bindings on the `<p>` tag are left alone. For example, these two forms are equivalent:
 
-```html
+```angular-html
 <!-- Shorthand syntax: -->
 <p class="data-view" *select="let data from source">The data is: {{data}}</p>
 
