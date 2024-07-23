@@ -30,6 +30,17 @@ export interface ImportRequest<TFile> {
    * imports are never re-used. E.g. in the linker generator.
    */
   requestedFile: TFile;
+
+  /**
+   * Specifies an alias under which the symbol can be referenced within
+   * the file (e.g. `import { symbol as alias } from 'module'`).
+   *
+   * !!!Warning!!! passing in this alias is considered unsafe, because the import manager won't
+   * try to avoid conflicts with existing identifiers in the file if it is specified. As such,
+   * this option should only be used if the caller has verified that the alias won't conflict
+   * with anything in the file.
+   */
+  unsafeAliasOverride?: string;
 }
 
 /**

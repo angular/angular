@@ -212,12 +212,23 @@ export class ImportManager
     }
 
     const exportSymbolName = ts.factory.createIdentifier(request.exportSymbolName);
-    const fileUniqueName = this.config.generateUniqueIdentifier(
-      sourceFile,
-      request.exportSymbolName,
-    );
-    const needsAlias = fileUniqueName !== null;
-    const specifierName = needsAlias ? fileUniqueName : exportSymbolName;
+    const fileUniqueName = request.unsafeAliasOverride
+      ? null
+      : this.config.generateUniqueIdentifier(sourceFile, request.exportSymbolName);
+
+    let needsAlias: boolean;
+    let specifierName: ts.Identifier;
+
+    if (request.unsafeAliasOverride) {
+      needsAlias = true;
+      specifierName = ts.factory.createIdentifier(request.unsafeAliasOverride);
+    } else if (fileUniqueName !== null) {
+      needsAlias = true;
+      specifierName = fileUniqueName;
+    } else {
+      needsAlias = false;
+      specifierName = exportSymbolName;
+    }
 
     namedImports
       .get(request.exportModuleSpecifier as ModuleName)!
