@@ -44,7 +44,9 @@ def link_local_packages(all_deps):
     # dependencies on external npm packages. This help the rules_nodejs linker,
     # which fails to link local packages into transitive dependencies of npm deps.
     for dep in all_deps:
-        target = dep
+        # Ignore deps that are not coming from npm.
+        if not dep.startswith("@npm//"):
+            continue
         if dep in local_angular_deps:
             pkg_name = _angular_dep_to_pkg_name(dep)
 
@@ -58,7 +60,7 @@ def link_local_packages(all_deps):
         else:
             filter_external_npm_deps(
                 name = _filtered_transitives_name(dep),
-                target = target,
+                target = dep,
                 testonly = True if dep in testonly_deps else False,
                 angular_packages = local_angular_package_names,
                 tags = ["manual"],

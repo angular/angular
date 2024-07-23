@@ -11,7 +11,7 @@ import {FileSystemTree} from '@webcontainer/api';
 import {BehaviorSubject} from 'rxjs';
 
 import {TutorialMetadata} from '@angular/docs';
-import {TUTORIALS_COMMON_DIRECTORY, TUTORIALS_ASSETS_WEB_PATH} from './constants';
+import {TUTORIALS_ASSETS_WEB_PATH} from './constants';
 
 /**
  * A service responsible for the current tutorial, retrieving and providing
