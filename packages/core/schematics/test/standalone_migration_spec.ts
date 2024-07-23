@@ -3370,9 +3370,9 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(
       stripWhitespace(`
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {importProvidersFrom} from '@angular/core';
-      import {AppComponent} from './app/app.component';
       import {CommonModule} from '@angular/common';
+      import {AppComponent} from './app/app.component';
+      import {importProvidersFrom} from '@angular/core';
 
       bootstrapApplication(AppComponent, {
         providers: [importProvidersFrom(CommonModule)]
@@ -3383,8 +3383,8 @@ describe('standalone migration', () => {
     expect(stripWhitespace(tree.readContent('./app/app.component.ts'))).toBe(
       stripWhitespace(`
       import {Component} from '@angular/core';
-      import {Dir} from './dir';
       import {NgIf} from '@angular/common';
+      import {Dir} from './dir';
 
       @Component({
         template: '<div *ngIf="show" dir>hello</div>',
@@ -3545,11 +3545,11 @@ describe('standalone migration', () => {
       stripWhitespace(`
       import {exportedToken, exportedExtraProviders, ExportedClass, exportedFactory, AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {ExternalInterface} from '@external/interfaces';
-      import {externalToken as aliasedExternalToken} from './app/externals/other-token';
-      import {externalToken} from './app/externals/token';
-      import {InternalInterface} from './app/interfaces/internal-interface';
       import {InjectionToken} from '@angular/core';
+      import {InternalInterface} from './app/interfaces/internal-interface';
+      import {externalToken} from './app/externals/token';
+      import {externalToken as aliasedExternalToken} from './app/externals/other-token';
+      import {ExternalInterface} from '@external/interfaces';
 
       const internalToken = new InjectionToken<string>('internalToken');
       const unexportedExtraProviders = [
@@ -3774,10 +3774,10 @@ describe('standalone migration', () => {
       stripWhitespace(`
         import {SameFileModule, AppComponent} from './app/app.module';
         import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-        import {token} from './token';
-        import {NgModule, importProvidersFrom} from '@angular/core';
-        import {InternalModule} from './modules/internal.module';
         import {CommonModule} from '@angular/common';
+        import {InternalModule} from './modules/internal.module';
+        import {NgModule, importProvidersFrom} from '@angular/core';
+        import {token} from './token';
 
         bootstrapApplication(AppComponent, {
           providers: [importProvidersFrom(CommonModule, InternalModule, SameFileModule)]
@@ -3874,8 +3874,8 @@ describe('standalone migration', () => {
       stripWhitespace(`
       import {AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {APP_ROUTES} from './app/routes';
       import {provideRouter} from '@angular/router';
+      import {APP_ROUTES} from './app/routes';
 
       bootstrapApplication(AppComponent, {
         providers: [provideRouter(APP_ROUTES)]
@@ -3922,8 +3922,8 @@ describe('standalone migration', () => {
       stripWhitespace(`
       import {AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {of} from 'rxjs';
       import {withPreloading, provideRouter} from '@angular/router';
+      import {of} from 'rxjs';
 
       bootstrapApplication(AppComponent, {
         providers: [provideRouter([], withPreloading(() => of(true)))]
@@ -4349,8 +4349,8 @@ describe('standalone migration', () => {
       stripWhitespace(`
         import {AppComponent} from './app/app.module';
         import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-        import {importProvidersFrom} from '@angular/core';
         import {RouterModule} from '@angular/router';
+        import {importProvidersFrom} from '@angular/core';
 
         const extraOptions = {useHash: true};
 
@@ -4443,8 +4443,8 @@ describe('standalone migration', () => {
       stripWhitespace(`
       import {AppComponent} from './app/app.module';
       import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-      import {importProvidersFrom} from '@angular/core';
       import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+      import {importProvidersFrom} from '@angular/core';
 
       bootstrapApplication(AppComponent, {
         providers: [importProvidersFrom(BrowserAnimationsModule.withConfig({disableAnimations: true}))]
@@ -4575,8 +4575,8 @@ describe('standalone migration', () => {
       stripWhitespace(`
         import {AppComponent} from './app/app.module';
         import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-        import {importProvidersFrom} from '@angular/core';
         import {CommonModule} from '@angular/common';
+        import {importProvidersFrom} from '@angular/core';
 
         bootstrapApplication(AppComponent, {
           providers: [importProvidersFrom(CommonModule)]
@@ -4596,44 +4596,44 @@ describe('standalone migration', () => {
     writeFile(
       'main.ts',
       `
-          import {AppModule} from './app/app.module';
-          import {platformBrowser} from '@angular/platform-browser';
+        import {AppModule} from './app/app.module';
+        import {platformBrowser} from '@angular/platform-browser';
 
-          platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
-        `,
+        platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+      `,
     );
 
     writeFile(
       './app/root.module.ts',
       `
-          import {NgModule, Component, InjectionToken} from '@angular/core';
+        import {NgModule, Component, InjectionToken} from '@angular/core';
 
-          const token = new InjectionToken<string>('token');
+        const token = new InjectionToken<string>('token');
 
-          @Component({selector: 'root-comp', template: '', standalone: true})
-          export class Root {}
+        @Component({selector: 'root-comp', template: '', standalone: true})
+        export class Root {}
 
-          @NgModule({
-            imports: [Root],
-            exports: [Root],
-            providers: [{provide: token, useValue: 'hello'}]
-          })
-          export class RootModule {}
-        `,
+        @NgModule({
+          imports: [Root],
+          exports: [Root],
+          providers: [{provide: token, useValue: 'hello'}]
+        })
+        export class RootModule {}
+      `,
     );
 
     writeFile(
       './app/app.module.ts',
       `
-          import {NgModule, Component} from '@angular/core';
-          import {RootModule, Root} from './root.module';
+        import {NgModule, Component} from '@angular/core';
+        import {RootModule, Root} from './root.module';
 
-          @NgModule({
-            imports: [RootModule],
-            bootstrap: [Root]
-          })
-          export class AppModule {}
-        `,
+        @NgModule({
+          imports: [RootModule],
+          bootstrap: [Root]
+        })
+        export class AppModule {}
+      `,
     );
 
     await runMigration('standalone-bootstrap');
@@ -4641,14 +4641,14 @@ describe('standalone migration', () => {
     expect(tree.exists('./app/app.module.ts')).toBe(false);
     expect(stripWhitespace(tree.readContent('main.ts'))).toBe(
       stripWhitespace(`
-          import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
-          import {importProvidersFrom} from '@angular/core';
-          import {RootModule, Root} from './app/root.module';
+        import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+        import {RootModule, Root} from './app/root.module';
+        import {importProvidersFrom} from '@angular/core';
 
-          bootstrapApplication(Root, {
-            providers: [importProvidersFrom(RootModule)]
-          }).catch(e => console.error(e));
-        `),
+        bootstrapApplication(Root, {
+          providers: [importProvidersFrom(RootModule)]
+        }).catch(e => console.error(e));
+      `),
     );
   });
 
