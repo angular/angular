@@ -186,3 +186,34 @@
     }
   }
 }
+
+.adev-editor-dropdown {
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  padding: 0;
+  transform: translateY(-0.7rem);
+
+  button {
+    background: var(--page-background);
+    font-size: 0.875rem;
+    width: 100%;
+    text-align: left;
+    padding-block: 0.5rem;
+    color: var(--quaternary-contrast);
+    transition: color 0.3s ease, background 0.3s ease;
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &:hover {
+      background: var(--senary-contrast);
+      color: var(--primary-contrast);
+    }
+    .icon {
+      margin: initial;
+      padding: initial;
+      width: auto;
+    }
+  }
+}

@@ -80,6 +80,7 @@ APPLICATION_DEPS = [
     "@npm//@lezer/javascript",
     "@npm//@lezer/common",
     "@npm//@stackblitz/sdk",
+    "@npm//open-in-idx",
     "@npm//@xterm/xterm",
     "@npm//@xterm/addon-fit",
     "@npm//algoliasearch",
