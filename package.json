@@ -126,6 +126,7 @@
     "memo-decorator": "^2.0.1",
     "ngx-flamegraph": "0.0.12",
     "ngx-progressbar": "^11.1.0",
+    "open-in-idx": "^0.1.1",
     "protractor": "^7.0.0",
     "reflect-metadata": "^0.2.0",
     "requirejs": "^2.3.6",
