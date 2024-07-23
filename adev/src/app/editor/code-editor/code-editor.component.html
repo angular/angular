@@ -68,11 +68,23 @@
   <button
     class="adev-editor-download-button"
     type="button"
-    (click)="openCurrentCodeInStackBlitz()"
-    aria-label="Open current code in editor in StackBlitz"
+    aria-label="Open current code in editor in an online editor"
+    [cdkMenuTriggerFor]="launcherMenu"
   >
     <docs-icon>launch</docs-icon>
   </button>
+  <!-- launcher dropdown window -->
+  <ng-template #launcherMenu>
+    <div class="adev-editor-dropdown" cdkMenu>
+        <button cdkMenuItem (click)="openCurrentSolutionInIDX()">
+          <span>Open in IDX </span>
+          <img class="icon" src="assets/images/tutorials/common/idx_logo.svg" height="32">
+        </button>
+        <button cdkMenuItem (click)="openCurrentCodeInStackBlitz()">
+          Open in StackBlitz
+        </button>
+    </div>
+  </ng-template>
   <button
     class="adev-editor-download-button"
     type="button"

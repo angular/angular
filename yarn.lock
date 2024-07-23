@@ -13260,6 +13260,11 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
+open-in-idx@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/open-in-idx/-/open-in-idx-0.1.1.tgz#390cb0985146a461f5a662ed1fd0db3fce55b2f0"
+  integrity sha512-4Cks2eY4bnWpBP/fEj1deRrVYbHME36g0w4/IFDG4iwnkD7CwmK9HrF3A3LR/RKHs5AXUMj49YxnwdIxEizDpA==
+
 open@8.4.2:
   version "8.4.2"
   resolved "https://registry.yarnpkg.com/open/-/open-8.4.2.tgz#5b5ffe2a8f793dcd2aad73e550cb87b59cb084f9"
