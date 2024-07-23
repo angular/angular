@@ -670,7 +670,7 @@ function addNodesToCopy(
       const symbolName = importSpecifier.propertyName
         ? importSpecifier.propertyName.text
         : importSpecifier.name.text;
-      const alias = importSpecifier.propertyName ? importSpecifier.name.text : null;
+      const alias = importSpecifier.propertyName ? importSpecifier.name.text : undefined;
       tracker.addImport(targetFile, symbolName, moduleName, alias);
       continue;
     }
