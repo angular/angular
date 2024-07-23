@@ -1,0 +1,42 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module", "ts_library")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_module(
+    name = "external-link",
+    srcs = [
+        "external-link.directive.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs/directives:__pkg__",
+    ],
+    deps = [
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/utils",
+        "//packages/common",
+        "//packages/core",
+        "//packages/router",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":external-link",
+        "//adev/shared-docs/providers",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/router",
+        "//packages/router/testing",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

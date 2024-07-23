@@ -9,6 +9,9 @@ def to_package_label(package_name):
     if package_name == "angular-in-memory-web-api":
         return "//packages/misc/angular-in-memory-web-api:npm_package"
 
+    if package_name == "@angular/docs":
+        return "//adev/shared-docs:npm_package"
+
     return "//packages/{package_name}:npm_package".format(package_name = package_name.replace("@angular/", ""))
 
 def _exclude_pkgs(packages, *args):
