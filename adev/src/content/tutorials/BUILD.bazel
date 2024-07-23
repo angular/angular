@@ -1,4 +1,4 @@
-load("@npm//@angular/docs:index.bzl", "generate_guides")
+load("//adev/shared-docs:index.bzl", "generate_guides")
 
 generate_guides(
     name = "tutorials",

@@ -1,0 +1,32 @@
+{
+  "name": "@angular/docs",
+  "version": "0.0.0-{SCM_HEAD_SHA}",
+  "peerDependencies": {
+    "@angular/cdk": "^18.0.0-next.6 || ^18.1.0-next || ^18.2.0-next",
+    "@angular/common": "^18.0.0-next.6 || ^18.1.0-next || ^18.2.0-next",
+    "@angular/core": "^18.0.0-next.6 || ^18.1.0-next || ^18.2.0-next",
+    "@angular/forms": "^18.0.0-next.6 || ^18.1.0-next || ^18.2.0-next",
+    "@angular/material": "^18.0.0-next.6 || ^18.1.0-next || ^18.2.0-next",
+    "@angular/platform-browser": "^18.0.0-next.6 || ^18.1.0-next || ^18.2.0-next",
+    "@angular/router": "^18.0.0-next.6 || ^18.1.0-next || ^18.2.0-next",
+    "algoliasearch": "^4.20.0",
+    "rxjs": "^7.8.1"
+  },
+  "dependencies": {
+    "@webcontainer/api": "^1.1.8",
+    "diff": "~5.2.0",
+    "emoji-regex": "~10.3.0",
+    "fast-glob": "~3.3.2",
+    "fflate": "^0.8.2",
+    "html-entities": "~2.5.2",
+    "jsdom": "~24.1.0",
+    "marked": "~12.0.2",
+    "mermaid": "^10.8.0",
+    "shiki": "^1.10.3"
+  },
+  "exports": {
+    "./styles/*": {
+      "sass": "./styles/*"
+    }
+  }
+}

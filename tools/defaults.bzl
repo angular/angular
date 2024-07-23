@@ -14,7 +14,7 @@ load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "ka
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
-load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild_esm_bundle", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
+load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config", _esbuild_esm_bundle = "esbuild_esm_bundle")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
@@ -30,6 +30,7 @@ _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL = "//packages/bazel/src/ng_packa
 _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package/rollup"
 
 esbuild_config = _esbuild_config
+esbuild_esm_bundle = _esbuild_esm_bundle
 http_server = _http_server
 extract_types = _extract_types
 
