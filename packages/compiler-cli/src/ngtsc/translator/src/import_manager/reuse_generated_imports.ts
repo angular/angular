@@ -76,5 +76,5 @@ export function captureGeneratedImport(
 
 /** Generates a unique hash for the given import request. */
 function hashImportRequest(req: ImportRequest<ts.SourceFile>): ImportRequestHash {
-  return `${req.requestedFile.fileName}:${req.exportModuleSpecifier}:${req.exportSymbolName}` as ImportRequestHash;
+  return `${req.requestedFile.fileName}:${req.exportModuleSpecifier}:${req.exportSymbolName}${req.unsafeAliasOverride ? ':' + req.unsafeAliasOverride : ''}` as ImportRequestHash;
 }
