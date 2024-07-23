@@ -26,6 +26,7 @@ APPLICATION_FILES = [
 
 TEST_FILES = APPLICATION_FILES + [
     "karma.conf.js",
+    "test-main.ts",
     "tsconfig.spec.json",
 ] + glob(
     ["**/*.spec.ts"],
