@@ -20,8 +20,8 @@ bootstrapApplication(MyApp, {providers: [
   provideExperimentalZonelessChangeDetection(),
 ]});
 
-// NgModule bootstrap requires the provider and `ngZone: 'noop'`
-platformBrowser().bootstrapModule(AppModule, {ngZone: 'noop'});
+// NgModule bootstrap
+platformBrowser().bootstrapModule(AppModule);
 @NgModule({
   providers: [provideExperimentalZonelessChangeDetection()]
 })
