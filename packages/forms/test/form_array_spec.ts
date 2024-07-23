@@ -41,6 +41,12 @@ import {asyncValidator} from './util';
         expect(a.controls).toEqual([c1]);
       });
 
+      it('should support pushing an array', () => {
+        a.push([c1, c2]);
+        expect(a.length).toEqual(2);
+        expect(a.controls).toEqual([c1, c2]);
+      });
+
       it('should support removing', () => {
         a.push(c1);
         a.push(c2);
@@ -970,6 +976,18 @@ import {asyncValidator} from './util';
         });
 
         a.push(c2);
+      });
+
+      it('should fire an event once when calling `FormArray.push` with an array of controls', (done) => {
+        a = new FormArray<any>([]);
+        a.valueChanges.subscribe({
+          next: (value: any) => {
+            expect(value).toEqual(['old1', 'old2']);
+            done();
+          },
+        });
+
+        a.push([c1, c2]);
       });
     });
 
