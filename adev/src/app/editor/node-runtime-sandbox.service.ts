@@ -107,7 +107,10 @@ export class NodeRuntimeSandbox {
 
       console.timeEnd('Load time');
     } catch (error: any) {
-      this.setErrorState(error.message);
+      // If we're already in an error state, throw away the most recent error which may have happened because
+      // we were in the error state already and tried to do more things after terminating.
+      const message = this.nodeRuntimeState.error()?.message ?? error.message;
+      this.setErrorState(message);
     }
   }
 
