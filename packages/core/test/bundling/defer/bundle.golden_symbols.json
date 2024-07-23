@@ -207,9 +207,6 @@
     "name": "EventManagerPlugin"
   },
   {
-    "name": "EventType"
-  },
-  {
     "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
