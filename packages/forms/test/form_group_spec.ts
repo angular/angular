@@ -11,13 +11,14 @@ import {
   AbstractControl,
   ControlEvent,
   FormArray,
+  FormBuilder,
   FormControl,
   FormGroup,
   ValidationErrors,
   Validators,
   ValueChangeEvent,
 } from '@angular/forms';
-import {of} from 'rxjs';
+import {delay, filter, map, of, startWith, timer} from 'rxjs';
 
 import {
   asyncValidator,
@@ -25,7 +26,7 @@ import {
   currentStateOf,
   simpleAsyncValidator,
 } from './util';
-import {StatusChangeEvent} from '../src/model/abstract_model';
+import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model';
 
 (function () {
   function simpleValidator(c: AbstractControl): ValidationErrors | null {
@@ -2219,6 +2220,40 @@ import {StatusChangeEvent} from '../src/model/abstract_model';
           // Because we are calling `setValue` with `emitEvent: false`, nothing is emitted
           // and our logger remains empty
           expect(logger).toEqual([]);
+        }));
+
+        it('should emit status change despite updating the value with emitEvent: false multiple times', fakeAsync(() => {
+          const c = new FormControl(
+            '',
+            null,
+            simpleAsyncValidator({timeout: 1, shouldFail: false}),
+          );
+
+          const statusChange$ = c.events.pipe(
+            filter((event): event is StatusChangeEvent => event instanceof StatusChangeEvent),
+            map((event) => event.status),
+          );
+
+          c.setValue('foo', {emitEvent: false});
+          // This will still emit as the status will be updated because of the initial validator run
+          c.setValue('foo', {emitEvent: false});
+
+          const events: FormControlStatus[] = [];
+          statusChange$.subscribe((e) => events.push(e));
+          tick(1);
+
+          expect(c.status).toBe('VALID');
+          expect(events.length).toBe(1);
+          expect(events.at(-1)).toBe('VALID');
+
+          c.setValue('foo', {emitEvent: false});
+          c.setValue('foo', {emitEvent: false});
+          tick(1);
+
+          // We make sure that we're still not emitting if none of the updates requested an emit
+          expect(c.status).toBe('VALID');
+          expect(events.length).toBe(1);
+          expect(events.at(-1)).toBe('VALID');
         }));
 
         it('should cancel initial run of the async validator and emit on the event Observable', fakeAsync(() => {
