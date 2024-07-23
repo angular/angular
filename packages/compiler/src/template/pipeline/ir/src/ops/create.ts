@@ -1055,7 +1055,7 @@ export interface DeferOnOp extends Op<CreateOp> {
   prefetch: boolean;
 
   /**
-   * Whether to emit the prefetch version of the instruction.
+   * Whether to emit the hydrate version of the instruction.
    */
   hydrate: boolean;
 

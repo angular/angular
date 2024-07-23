@@ -123,7 +123,7 @@ export interface TDeferBlockDetails {
   taskId: number | null;
 
   /**
-   * Id of the pending task, indicating that dependencies are being loaded.
+   * A flag to indicate if hydration should happen.
    */
   hydrate: boolean;
 }

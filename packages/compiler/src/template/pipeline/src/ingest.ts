@@ -672,6 +672,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   // make it easier to refactor prefetch behavior in the future.
   let deferOnOps: ir.DeferOnOp[] = [];
   let deferWhenOps: ir.DeferWhenOp[] = [];
+
   const triggerSet: Array<{
     triggers: Readonly<t.DeferredBlockTriggers>;
     hydrate: boolean;
@@ -683,6 +684,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
     {triggers: deferBlock.triggers, hydrate: false, prefetch: false},
     {triggers: deferBlock.prefetchTriggers, hydrate: false, prefetch: true},
   ];
+
   for (const {triggers, prefetch, hydrate} of triggerSet) {
     if (triggers.idle !== undefined) {
       const deferOnOp = ir.createDeferOnOp(
@@ -781,8 +783,8 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
       deferWhenOps.push(deferOnOp);
     }
 
-    // If no (non-prefetching) defer triggers were provided, default to `idle`.
-    if (deferOnOps.length === 0 && deferWhenOps.length === 0) {
+    // If no (non-prefetching or hydrating) defer triggers were provided, default to `idle`.
+    if (deferOnOps.length === 0 && deferWhenOps.length === 0 && !hydrate && !prefetch) {
       deferOnOps.push(
         ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, false, null!),
       );
