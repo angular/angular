@@ -372,7 +372,7 @@ export const isCaptureEventType = (eventType: string) =>
   CAPTURE_EVENT_TYPES.indexOf(eventType) >= 0;
 
 /** All event types that are registered early.  */
-const EARLY_EVENT_TYPES = [...BUBBLE_EVENT_TYPES, ...CAPTURE_EVENT_TYPES];
+const EARLY_EVENT_TYPES = BUBBLE_EVENT_TYPES.concat(CAPTURE_EVENT_TYPES);
 
 /**
  * Whether or not an event type is registered in the early contract.
