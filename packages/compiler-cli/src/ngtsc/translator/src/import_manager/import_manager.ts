@@ -84,16 +84,15 @@ export class ImportManager
     namespaceImportReuseCache: new Map(),
   };
 
-  constructor(private _config: Partial<ImportManagerConfig> = {}) {
+  constructor(config: Partial<ImportManagerConfig> = {}) {
     this.config = {
-      shouldUseSingleQuotes: () => false,
-      rewriter: null,
-      disableOriginalSourceFileReuse: false,
-      forceGenerateNamespacesForNewImports: false,
-      namespaceImportPrefix: 'i',
+      shouldUseSingleQuotes: config.shouldUseSingleQuotes ?? (() => false),
+      rewriter: config.rewriter ?? null,
+      disableOriginalSourceFileReuse: config.disableOriginalSourceFileReuse ?? false,
+      forceGenerateNamespacesForNewImports: config.forceGenerateNamespacesForNewImports ?? false,
+      namespaceImportPrefix: config.namespaceImportPrefix ?? 'i',
       generateUniqueIdentifier:
-        this._config.generateUniqueIdentifier ?? createGenerateUniqueIdentifierHelper(),
-      ...this._config,
+        config.generateUniqueIdentifier ?? createGenerateUniqueIdentifierHelper(),
     };
     this.reuseSourceFileImportsTracker = {
       generateUniqueIdentifier: this.config.generateUniqueIdentifier,
