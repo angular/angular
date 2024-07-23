@@ -708,7 +708,7 @@ describe('quick info', () => {
     describe('let declarations', () => {
       it('should get quick info for a let declaration', () => {
         expectQuickInfo({
-          templateOverride: `@let na¦me = 'Frodo';`,
+          templateOverride: `@let na¦me = 'Frodo'; {{name}}`,
           expectedSpanText: `@let name = 'Frodo'`,
           expectedDisplayString: `(let) name: "Frodo"`,
         });
