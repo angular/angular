@@ -7,8 +7,7 @@
  */
 
 import ts from 'typescript';
-
-import {ImportManager} from './import_manager';
+import {ImportManager} from '@angular/compiler-cli/private/migrations';
 
 /** Function that can be used to remap a generated import. */
 export type ImportRemapper = (moduleName: string, inFile: string) => string;
@@ -29,23 +28,25 @@ export interface PendingChange {
   text: string;
 }
 
+/** Supported quotes for generated imports. */
+const enum QuoteKind {
+  SINGLE,
+  DOUBLE,
+}
+
 /** Tracks changes that have to be made for specific files. */
 export class ChangeTracker {
   private readonly _changes = new Map<ts.SourceFile, PendingChange[]>();
   private readonly _importManager: ImportManager;
+  private readonly _quotesCache = new WeakMap<ts.SourceFile, QuoteKind>();
 
   constructor(
     private _printer: ts.Printer,
     private _importRemapper?: ImportRemapper,
   ) {
-    this._importManager = new ImportManager(
-      (currentFile) => ({
-        addNewImport: (start, text) => this.insertText(currentFile, start, text),
-        updateExistingImport: (namedBindings, text) =>
-          this.replaceText(currentFile, namedBindings.getStart(), namedBindings.getWidth(), text),
-      }),
-      this._printer,
-    );
+    this._importManager = new ImportManager({
+      shouldUseSingleQuotes: (file) => this._getQuoteKind(file) === QuoteKind.SINGLE,
+    });
   }
 
   /**
@@ -111,14 +112,12 @@ export class ChangeTracker {
    * @param symbolName Symbol being imported.
    * @param moduleName Module from which the symbol is imported.
    * @param alias Alias to use for the import.
-   * @param keepSymbolName Whether to keep the symbol name in the import.
    */
   addImport(
     sourceFile: ts.SourceFile,
     symbolName: string,
     moduleName: string,
-    alias: string | null = null,
-    keepSymbolName = false,
+    alias?: string,
   ): ts.Expression {
     if (this._importRemapper) {
       moduleName = this._importRemapper(moduleName, sourceFile.fileName);
@@ -129,14 +128,16 @@ export class ChangeTracker {
     // paths will also cause TS to escape the forward slashes.
     moduleName = normalizePath(moduleName);
 
-    return this._importManager.addImportToSourceFile(
-      sourceFile,
-      symbolName,
-      moduleName,
-      alias,
-      false,
-      keepSymbolName,
-    );
+    if (!this._changes.has(sourceFile)) {
+      this._changes.set(sourceFile, []);
+    }
+
+    return this._importManager.addImport({
+      requestedFile: sourceFile,
+      exportSymbolName: symbolName,
+      exportModuleSpecifier: moduleName,
+      unsafeAliasOverride: alias,
+    });
   }
 
   /**
@@ -144,7 +145,7 @@ export class ChangeTracker {
    * The changes are sorted in the order in which they should be applied.
    */
   recordChanges(): ChangesByFile {
-    this._importManager.recordChanges();
+    this._recordImports();
     return this._changes;
   }
 
@@ -176,6 +177,61 @@ export class ChangeTracker {
       }
     } else {
       this._changes.set(file, [change]);
+    }
+  }
+
+  /** Determines what kind of quotes to use for a specific file. */
+  private _getQuoteKind(sourceFile: ts.SourceFile): QuoteKind {
+    if (this._quotesCache.has(sourceFile)) {
+      return this._quotesCache.get(sourceFile)!;
+    }
+
+    let kind = QuoteKind.SINGLE;
+
+    for (const statement of sourceFile.statements) {
+      if (ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier)) {
+        kind = statement.moduleSpecifier.getText()[0] === '"' ? QuoteKind.DOUBLE : QuoteKind.SINGLE;
+        this._quotesCache.set(sourceFile, kind);
+        break;
+      }
+    }
+
+    return kind;
+  }
+
+  /** Records the pending import changes from the import manager. */
+  private _recordImports(): void {
+    const {newImports, updatedImports} = this._importManager.finalize();
+
+    for (const [original, replacement] of updatedImports) {
+      this.replaceNode(original, replacement);
+    }
+
+    for (const [sourceFile] of this._changes) {
+      const importsToAdd = newImports.get(sourceFile.fileName);
+
+      if (!importsToAdd) {
+        continue;
+      }
+
+      const importLines: string[] = [];
+      let lastImport: ts.ImportDeclaration | null = null;
+
+      for (const statement of sourceFile.statements) {
+        if (ts.isImportDeclaration(statement)) {
+          lastImport = statement;
+        }
+      }
+
+      for (const decl of importsToAdd) {
+        importLines.push(this._printer.printNode(ts.EmitHint.Unspecified, decl, sourceFile));
+      }
+
+      this.insertText(
+        sourceFile,
+        lastImport ? lastImport.getEnd() : 0,
+        (lastImport ? '\n' : '') + importLines.join('\n'),
+      );
     }
   }
 }
