@@ -22,11 +22,9 @@ import {MockPlatformLocation} from '@angular/common/testing';
 import {computeMsgId} from '@angular/compiler';
 import {
   afterRender,
-  APP_ID,
   ApplicationRef,
   ChangeDetectorRef,
   Component,
-  ComponentRef,
   ContentChildren,
   createComponent,
   destroyPlatform,
@@ -36,7 +34,6 @@ import {
   ErrorHandler,
   getPlatform,
   inject,
-  Injectable,
   Input,
   NgZone,
   Pipe,
@@ -45,34 +42,16 @@ import {
   Provider,
   QueryList,
   TemplateRef,
-  Type,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
   ɵwhenStable as whenStable,
 } from '@angular/core';
-import {Console} from '@angular/core/src/console';
-import {
-  HydrationStatus,
-  readHydrationInfo,
-  SSR_CONTENT_INTEGRITY_MARKER,
-} from '@angular/core/src/hydration/utils';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {
-  bootstrapApplication,
-  HydrationFeature,
-  provideClientHydration,
-  withI18nSupport,
-  withEventReplay,
-  withPartialHydration,
-} from '@angular/platform-browser';
-import {HydrationFeatureKind} from '@angular/platform-browser/src/hydration';
+import {HydrationFeature, withI18nSupport} from '@angular/platform-browser';
 import {provideRouter, RouterOutlet, Routes} from '@angular/router';
-
-import {provideServerRendering} from '../public_api';
-import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
 
 import {
   getAppContents,
@@ -80,194 +59,30 @@ import {
   resetTViewsFor,
   stripUtilAttributes,
 } from './dom_utils';
+import {
+  EMPTY_TEXT_NODE_COMMENT,
+  getComponentRef,
+  getHydrationInfoFromTransferState,
+  NGH_ATTR_NAME,
+  ssr,
+  stripExcessiveSpaces,
+  stripSsrIntegrityMarker,
+  stripTransferDataScript,
+  TEXT_NODE_SEPARATOR_COMMENT,
+  TRANSFER_STATE_TOKEN_ID,
+  verifyAllChildNodesClaimedForHydration,
+  verifyAllNodesClaimedForHydration,
+  verifyClientAndSSRContentsMatch,
+  verifyHasLog,
+  verifyHasNoLog,
+  verifyNodeHasMismatchInfo,
+  verifyNodeHasSkipHydrationMarker,
+  verifyNoNodesWereClaimedForHydration,
+  withDebugConsole,
+  withNoopErrorHandler,
+} from './hydration_utils';
 
-/**
- * The name of the attribute that contains a slot index
- * inside the TransferState storage where hydration info
- * could be found.
- */
-const NGH_ATTR_NAME = 'ngh';
-const EMPTY_TEXT_NODE_COMMENT = 'ngetn';
-const TEXT_NODE_SEPARATOR_COMMENT = 'ngtns';
-
-const SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
-const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
-
-const TRANSFER_STATE_TOKEN_ID = '__nghData__';
-
-/**
- * Represents the <script> tag added by the build process to inject
- * event dispatch (JSAction) logic.
- */
-const EVENT_DISPATCH_SCRIPT = `<script type="text/javascript" id="${EVENT_DISPATCH_SCRIPT_ID}"></script>`;
-const DEFAULT_DOCUMENT = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
-
-function getComponentRef<T>(appRef: ApplicationRef): ComponentRef<T> {
-  return appRef.components[0];
-}
-
-function stripSsrIntegrityMarker(input: string): string {
-  return input.replace(`<!--${SSR_CONTENT_INTEGRITY_MARKER}-->`, '');
-}
-
-function stripTransferDataScript(input: string): string {
-  return input.replace(/<script (.*?)<\/script>/s, '');
-}
-
-function stripExcessiveSpaces(html: string): string {
-  return html.replace(/\s+/g, ' ');
-}
-
-function verifyClientAndSSRContentsMatch(ssrContents: string, clientAppRootElement: HTMLElement) {
-  const clientContents = stripSsrIntegrityMarker(
-    stripTransferDataScript(stripUtilAttributes(clientAppRootElement.outerHTML, false)),
-  );
-  ssrContents = stripSsrIntegrityMarker(
-    stripTransferDataScript(stripUtilAttributes(ssrContents, false)),
-  );
-  expect(getAppContents(clientContents)).toBe(ssrContents, 'Client and server contents mismatch');
-}
-
-function verifyNodeHasMismatchInfo(doc: Document, selector = 'app'): void {
-  expect(readHydrationInfo(doc.querySelector(selector)!)?.status).toBe(HydrationStatus.Mismatched);
-}
-
-function verifyNodeHasSkipHydrationMarker(element: HTMLElement): void {
-  expect(readHydrationInfo(element)?.status).toBe(HydrationStatus.Skipped);
-}
-
-/** Checks whether a given element is a <script> that contains transfer state data. */
-function isTransferStateScript(el: HTMLElement): boolean {
-  return (
-    el.nodeType === Node.ELEMENT_NODE &&
-    el.tagName.toLowerCase() === 'script' &&
-    el.getAttribute('id') === 'ng-state'
-  );
-}
-
-function isSsrContentsIntegrityMarker(el: Node): boolean {
-  return (
-    el.nodeType === Node.COMMENT_NODE && el.textContent?.trim() === SSR_CONTENT_INTEGRITY_MARKER
-  );
-}
-
-/**
- * Walks over DOM nodes starting from a given node and checks
- * whether all nodes were claimed for hydration, i.e. annotated
- * with a special monkey-patched flag (which is added in dev mode
- * only). It skips any nodes with the skip hydration attribute.
- */
-function verifyAllNodesClaimedForHydration(el: HTMLElement, exceptions: HTMLElement[] = []) {
-  if (
-    (el.nodeType === Node.ELEMENT_NODE && el.hasAttribute(SKIP_HYDRATION_ATTR_NAME_LOWER_CASE)) ||
-    exceptions.includes(el) ||
-    isTransferStateScript(el) ||
-    isSsrContentsIntegrityMarker(el)
-  ) {
-    return;
-  }
-
-  if (readHydrationInfo(el)?.status !== HydrationStatus.Hydrated) {
-    fail('Hydration error: the node is *not* hydrated: ' + el.outerHTML);
-  }
-  verifyAllChildNodesClaimedForHydration(el, exceptions);
-}
-
-function verifyAllChildNodesClaimedForHydration(el: HTMLElement, exceptions: HTMLElement[] = []) {
-  let current = el.firstChild;
-  while (current) {
-    verifyAllNodesClaimedForHydration(current as HTMLElement, exceptions);
-    current = current.nextSibling;
-  }
-}
-
-/**
- * Walks over DOM nodes starting from a given node and make sure
- * those nodes were not annotated as "claimed" by hydration.
- * This helper function is needed to verify that the non-destructive
- * hydration feature can be turned off.
- */
-function verifyNoNodesWereClaimedForHydration(el: HTMLElement) {
-  if (readHydrationInfo(el)?.status === HydrationStatus.Hydrated) {
-    fail(
-      'Unexpected state: the following node was hydrated, when the test ' +
-        'expects the node to be re-created instead: ' +
-        el.outerHTML,
-    );
-  }
-  let current = el.firstChild;
-  while (current) {
-    verifyNoNodesWereClaimedForHydration(current as HTMLElement);
-    current = current.nextSibling;
-  }
-}
-
-/**
- * Verifies whether a console has a log entry that contains a given message.
- */
-function verifyHasLog(appRef: ApplicationRef, message: string) {
-  const console = appRef.injector.get(Console) as DebugConsole;
-  const context =
-    `Expected '${message}' to be present in the log, but it was not found. ` +
-    `Logs content: ${JSON.stringify(console.logs)}`;
-  expect(console.logs.some((log) => log.includes(message)))
-    .withContext(context)
-    .toBe(true);
-}
-
-/**
- * Verifies that there is no message with a particular content in a console.
- */
-function verifyHasNoLog(appRef: ApplicationRef, message: string) {
-  const console = appRef.injector.get(Console) as DebugConsole;
-  const context =
-    `Expected '${message}' to be present in the log, but it was not found. ` +
-    `Logs content: ${JSON.stringify(console.logs)}`;
-  expect(console.logs.some((log) => log.includes(message)))
-    .withContext(context)
-    .toBe(false);
-}
-
-function timeout(delay: number): Promise<void> {
-  return new Promise<void>((resolve) => {
-    setTimeout(resolve, delay);
-  });
-}
-
-function getHydrationInfoFromTransferState(input: string): string | undefined {
-  return input.match(/<script[^>]+>(.*?)<\/script>/)?.[1];
-}
-
-function withNoopErrorHandler() {
-  class NoopErrorHandler extends ErrorHandler {
-    override handleError(error: any): void {
-      // noop
-    }
-  }
-  return [
-    {
-      provide: ErrorHandler,
-      useClass: NoopErrorHandler,
-    },
-  ];
-}
-
-@Injectable()
-class DebugConsole extends Console {
-  logs: string[] = [];
-  override log(message: string) {
-    this.logs.push(message);
-  }
-  override warn(message: string) {
-    this.logs.push(message);
-  }
-}
-
-function withDebugConsole() {
-  return [{provide: Console, useClass: DebugConsole}];
-}
-
-describe('platform-server hydration integration', () => {
+describe('platform-server full application hydration integration', () => {
   beforeEach(() => {
     if (typeof ngDevMode === 'object') {
       // Reset all ngDevMode counters.
@@ -294,40 +109,6 @@ describe('platform-server hydration integration', () => {
     afterEach(() => {
       doc.body.textContent = '';
     });
-
-    /**
-     * This renders the application with server side rendering logic.
-     *
-     * @param component the test component to be rendered
-     * @param doc the document
-     * @param envProviders the environment providers
-     * @returns a promise containing the server rendered app as a string
-     */
-    async function ssr(
-      component: Type<unknown>,
-      options?: {
-        doc?: string;
-        envProviders?: Provider[];
-        hydrationFeatures?: HydrationFeature<HydrationFeatureKind>[];
-        enableHydration?: boolean;
-      },
-    ): Promise<string> {
-      const defaultHtml = DEFAULT_DOCUMENT;
-      const enableHydration = options?.enableHydration ?? true;
-      const envProviders = options?.envProviders ?? [];
-      const hydrationFeatures = options?.hydrationFeatures ?? [];
-      const providers = [
-        ...envProviders,
-        provideServerRendering(),
-        enableHydration ? provideClientHydration(...hydrationFeatures) : [],
-      ];
-
-      const bootstrap = () => bootstrapApplication(component, {providers});
-
-      return renderApplication(bootstrap, {
-        document: options?.doc ?? defaultHtml,
-      });
-    }
 
     describe('annotations', () => {
       it('should add hydration annotations to component host nodes during ssr', async () => {
@@ -2887,7 +2668,7 @@ describe('platform-server hydration integration', () => {
 
             resetTViewsFor(SimpleComponent);
 
-            const appRef = await renderAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+            const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
             const compRef = getComponentRef<SimpleComponent>(appRef);
             appRef.tick();
 
@@ -2931,7 +2712,7 @@ describe('platform-server hydration integration', () => {
 
             resetTViewsFor(SimpleComponent);
 
-            const appRef = await renderAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+            const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
             const compRef = getComponentRef<SimpleComponent>(appRef);
             appRef.tick();
 
@@ -7931,7 +7712,7 @@ describe('platform-server hydration integration', () => {
 
         resetTViewsFor(SimpleComponent);
 
-        const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 
@@ -7965,7 +7746,7 @@ describe('platform-server hydration integration', () => {
 
         resetTViewsFor(SimpleComponent);
 
-        const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 
@@ -8087,7 +7868,7 @@ describe('platform-server hydration integration', () => {
 
         resetTViewsFor(SimpleComponent, CmpA);
 
-        const appRef = await renderAndHydrate(doc, html, SimpleComponent, {envProviders});
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {envProviders});
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 
@@ -8104,316 +7885,5 @@ describe('platform-server hydration integration', () => {
         expect(clientRootNode.innerHTML).toContain('Client view');
       });
     });
-
-    describe('partial hydration', () => {
-      const originalDocument = globalThis.document;
-      const originalWindow = globalThis.window;
-
-      beforeAll(async () => {
-        globalThis.window = globalThis as unknown as Window & typeof globalThis;
-        await import('@angular/core/primitives/event-dispatch/contract_bundle_min.js' as string);
-      });
-
-      beforeEach(() => {
-        if (getPlatform()) destroyPlatform();
-        doc = TestBed.inject(DOCUMENT);
-      });
-
-      afterAll(() => {
-        globalThis.window = originalWindow;
-        globalThis.document = originalDocument;
-        destroyPlatform();
-      });
-
-      afterEach(() => {
-        doc.body.outerHTML = '<body></body>';
-      });
-
-      it('should SSR and hydrate top-level `@defer` blocks', async () => {
-        @Component({
-          standalone: true,
-          selector: 'app',
-          template: `
-            <main (click)="fnA()">
-              @defer (on viewport; hydrate on interaction) {
-                <article (click)="fnA()">
-                  Main defer block rendered!
-                  @if (visible) {
-                    Defer events work!
-                  }
-                  <aside id="outer-trigger" (mouseover)="showMessage()"></aside>
-                  @defer (on viewport; hydrate on interaction) {
-                    <p (click)="fnA()">Nested defer block</p>
-                  } @placeholder {
-                    <span>Inner block placeholder</span>
-                  }
-                </article>
-              } @placeholder {
-                <span>Outer block placeholder</span>
-              }
-            </main>
-          `,
-        })
-        class SimpleComponent {
-          items = [1, 2, 3];
-          visible = false;
-          fnA() {}
-          showMessage() {
-            this.visible = true;
-          }
-        }
-
-        const appId = 'custom-app-id';
-        const providers = [{provide: APP_ID, useValue: appId}];
-        const hydrationFeatures = [withPartialHydration()];
-
-        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
-        const ssrContents = getAppContents(html);
-
-        // Assert that we have `jsaction` annotations and
-        // defer blocks are triggered and rendered.
-
-        // <main> uses "eager" `custom-app-id` namespace.
-        expect(ssrContents).toContain('<main jsaction="click:;');
-        // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<article jsaction="click:;" ngb="d0');
-        expect(ssrContents).toContain('<aside id="outer-trigger" jsaction="mouseover:;" ngb="d0');
-        // <p> is inside a nested defer block -> different namespace.
-        expect(ssrContents).toContain('<p jsaction="click:;" ngb="d1');
-        // There is an extra annotation in the TransferState data.
-        expect(ssrContents).toContain('"__nghDeferBlocks__":{"d0":null,"d1":"d0"}');
-        // Outer defer block is rendered.
-        expect(ssrContents).toContain('Main defer block rendered');
-        // Inner defer block is rendered as well.
-        expect(ssrContents).toContain('Nested defer block');
-
-        // Internal cleanup before we do server->client transition in this test.
-        resetTViewsFor(SimpleComponent);
-
-        ////////////////////////////////
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
-          hydrationFeatures,
-        });
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-        await whenStable(appRef);
-
-        const appHostNode = compRef.location.nativeElement;
-
-        // At this point an eager part of an app is hydrated,
-        // but defer blocks are still in dehydrated state.
-
-        // <main> no longer has `jsaction` attribute.
-        expect(appHostNode.outerHTML).toContain('<main>');
-
-        // Elements from @defer blocks still have `jsaction` annotations,
-        // since they were not triggered yet.
-        expect(appHostNode.outerHTML).toContain('<article jsaction="click:;" ngb="d0');
-        expect(appHostNode.outerHTML).toContain(
-          '<aside id="outer-trigger" jsaction="mouseover:;" ngb="d0',
-        );
-        expect(appHostNode.outerHTML).toContain('<p jsaction="click:;" ngb="d1');
-
-        // Emit an event inside of a defer block, which should result
-        // in triggering the defer block (start loading deps, etc) and
-        // subsequent hydration.
-        const inner = doc.getElementById('outer-trigger')!;
-        const clickEvent2 = new CustomEvent('mouseover', {bubbles: true});
-        inner.dispatchEvent(clickEvent2);
-        await timeout(1000); // wait for defer blocks to resolve
-
-        appRef.tick();
-
-        // An event was replayed after hydration, which resulted in
-        // an `@if` block becoming active and its inner content got
-        // rendered/
-        expect(appHostNode.outerHTML).toContain('Defer events work');
-
-        // All outer defer block elements no longer have `jsaction` annotations.
-        expect(appHostNode.outerHTML).not.toContain('<div jsaction="click:;" ngb="d0');
-        expect(appHostNode.outerHTML).not.toContain(
-          '<div id="outer-trigger" jsaction="mouseover:;" ngb="d0',
-        );
-
-        // Inner defer block was not triggered, thus it retains `jsaction` attributes.
-        expect(appHostNode.outerHTML).toContain('<p jsaction="click:;" ngb="d1');
-      }, 100_000);
-
-      it('should SSR and hydrate nested `@defer` blocks', async () => {
-        @Component({
-          standalone: true,
-          selector: 'app',
-          template: `
-            <main (click)="fnA()">
-              @defer (on viewport; hydrate on interaction) {
-                <div (click)="fnA()">
-                  Main defer block rendered!
-                  @if (visible) {
-                    Defer events work!
-                  }
-                  <div id="outer-trigger" (mouseover)="showMessage()"></div>
-                  @defer (on viewport; hydrate on interaction) {
-                    <p (click)="showMessage()">Nested defer block</p>
-                  } @placeholder {
-                    <span>Inner block placeholder</span>
-                  }
-                </div>
-              } @placeholder {
-                <span>Outer block placeholder</span>
-              }
-            </main>
-          `,
-        })
-        class SimpleComponent {
-          items = [1, 2, 3];
-          visible = false;
-          fnA() {}
-          showMessage() {
-            this.visible = true;
-          }
-        }
-
-        const appId = 'custom-app-id';
-        const providers = [{provide: APP_ID, useValue: appId}];
-        const hydrationFeatures = [withPartialHydration()];
-
-        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
-        const ssrContents = getAppContents(html);
-
-        // Assert that we have `jsaction` annotations and
-        // defer blocks are triggered and rendered.
-
-        // <main> uses "eager" `custom-app-id` namespace.
-        expect(ssrContents).toContain('<main jsaction="click:;');
-        // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<div jsaction="click:;" ngb="d0"');
-        expect(ssrContents).toContain('<div id="outer-trigger" jsaction="mouseover:;" ngb="d0"');
-        // <p> is inside a nested defer block -> different namespace.
-        expect(ssrContents).toContain('<p jsaction="click:;" ngb="d1');
-        // There is an extra annotation in the TransferState data.
-        expect(ssrContents).toContain('"__nghDeferBlocks__":{"d0":null,"d1":"d0"}');
-        // Outer defer block is rendered.
-        expect(ssrContents).toContain('Main defer block rendered');
-        // Inner defer block is rendered as well.
-        expect(ssrContents).toContain('Nested defer block');
-
-        // Internal cleanup before we do server->client transition in this test.
-        resetTViewsFor(SimpleComponent);
-
-        ////////////////////////////////
-
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
-          hydrationFeatures,
-        });
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-        await whenStable(appRef);
-
-        const appHostNode = compRef.location.nativeElement;
-
-        // At this point an eager part of an app is hydrated,
-        // but defer blocks are still in dehydrated state.
-
-        // <main> no longer has `jsaction` attribute.
-        expect(appHostNode.outerHTML).toContain('<main>');
-
-        // Elements from @defer blocks still have `jsaction` annotations,
-        // since they were not triggered yet.
-        expect(appHostNode.outerHTML).toContain('<div jsaction="click:;" ngb="d0"');
-        expect(appHostNode.outerHTML).toContain(
-          '<div id="outer-trigger" jsaction="mouseover:;" ngb="d0',
-        );
-        expect(appHostNode.outerHTML).toContain('<p jsaction="click:;" ngb="d1"');
-
-        // Emit an event inside of a defer block, which should result
-        // in triggering the defer block (start loading deps, etc) and
-        // subsequent hydration.
-        const inner = doc.body.querySelector('p')!;
-        const clickEvent = new CustomEvent('click', {bubbles: true});
-        inner.dispatchEvent(clickEvent);
-
-        await timeout(1000); // wait for defer blocks to resolve
-
-        appRef.tick();
-
-        // An event was replayed after hydration, which resulted in
-        // an `@if` block becoming active and its inner content got
-        // rendered/
-        expect(appHostNode.outerHTML).toContain('Defer events work');
-
-        // Since inner `@defer` block was triggered, all parent blocks
-        // were hydrated as well, so all `jsaction` attributes are removed.
-        expect(appHostNode.outerHTML).not.toContain('jsaction="');
-      }, 100_000);
-    });
-
-    it('should annotate inner components with defer block id', async () => {
-      @Component({
-        standalone: true,
-        selector: 'dep-a',
-        template: '<button (click)="null">Click A</button>',
-      })
-      class DepA {}
-
-      @Component({
-        standalone: true,
-        selector: 'dep-b',
-        imports: [DepA],
-        template: `
-          <dep-a />
-          <button (click)="null">Click B</button>
-        `,
-      })
-      class DepB {}
-
-      @Component({
-        standalone: true,
-        selector: 'app',
-        imports: [DepB],
-        template: `
-          <main (click)="fnA()">
-            @defer (on viewport; hydrate on interaction) {
-              <div (click)="fnA()">
-                Main defer block rendered!
-                @if (visible) {
-                  Defer events work!
-                }
-                <div id="outer-trigger" (mouseover)="showMessage()"></div>
-                @defer (on viewport; hydrate on interaction) {
-                  <p (click)="fnA()">Nested defer block</p>
-                  <dep-b />
-                } @placeholder {
-                  <span>Inner block placeholder</span>
-                }
-              </div>
-            } @placeholder {
-              <span>Outer block placeholder</span>
-            }
-          </main>
-        `,
-      })
-      class SimpleComponent {
-        items = [1, 2, 3];
-        visible = false;
-        fnA() {}
-        showMessage() {
-          this.visible = true;
-        }
-      }
-
-      const appId = 'custom-app-id';
-      const providers = [{provide: APP_ID, useValue: appId}];
-      const hydrationFeatures = [withPartialHydration()];
-
-      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
-      const ssrContents = getAppContents(html);
-
-      expect(ssrContents).toContain('<main jsaction="click:;">');
-      // Buttons inside nested components inherit parent defer block namespace.
-      expect(ssrContents).toContain('<button jsaction="click:;" ngb="d1">Click A</button>');
-      expect(ssrContents).toContain('<button jsaction="click:;" ngb="d1">Click B</button>');
-    }, 100_000);
   });
 });

@@ -564,15 +564,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     onDestroy(): void;
 }
 
-// @public (undocumented)
-export const DEFER_BLOCK_CONFIG: InjectionToken<DeferBlockConfig>;
-
-// @public (undocumented)
-export interface DeferBlockConfig {
-    // (undocumented)
-    enableOnServer: boolean;
-}
-
 // @public @deprecated (undocumented)
 export const defineInjectable: typeof ɵɵdefineInjectable;
 
