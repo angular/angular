@@ -1,3 +1,24 @@
+<a name="18.2.0-next.2"></a>
+# 18.2.0-next.2 (2024-07-24)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [08c5977bd5](https://github.com/angular/angular/commit/08c5977bd53caf7911e48f39fa4f60e5afd813de) | fix | limit the number of chained instructions ([#57069](https://github.com/angular/angular/pull/57069)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d4ff6bc0b2](https://github.com/angular/angular/commit/d4ff6bc0b200f0a6bb095ea4a13e52b79e254cca) | fix | add warning for unused let declarations ([#57033](https://github.com/angular/angular/pull/57033)) |
+| [6c2fbda694](https://github.com/angular/angular/commit/6c2fbda6942adbc7b21f3dfc1db0a42638223a1a) | fix | extended diagnostic visitor not visiting template attributes ([#57033](https://github.com/angular/angular/pull/57033)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fab673a1dd](https://github.com/angular/angular/commit/fab673a1ddbca19ff9734f92a5ef0cc16be5708c) | feat | add ng generate schematic to convert to inject ([#57056](https://github.com/angular/angular/pull/57056)) |
+| [7d4b2d2413](https://github.com/angular/angular/commit/7d4b2d2413935ca0869e659fc67dd88e00228593) | fix | `afterNextRender` hooks return that callback value. ([#57031](https://github.com/angular/angular/pull/57031)) |
+| [8718abce90](https://github.com/angular/angular/commit/8718abce900617275d80ca56141d4e4436481b69) | fix | Deprecate ignoreChangesOutsideZone option ([#57029](https://github.com/angular/angular/pull/57029)) |
+| [fe41b11434](https://github.com/angular/angular/commit/fe41b11434ad7bdff1c308fc31a6671e67c5ee29) | fix | tree shake dev mode error message ([#57035](https://github.com/angular/angular/pull/57035)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.1.2"></a>
 # 18.1.2 (2024-07-24)
 ### compiler
