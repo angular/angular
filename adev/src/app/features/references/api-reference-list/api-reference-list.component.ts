@@ -9,9 +9,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  EnvironmentInjector,
+  afterNextRender,
   computed,
   effect,
-  ElementRef,
   inject,
   model,
   signal,
@@ -49,16 +51,27 @@ export const ALL_STATUSES_KEY = 'All';
 export default class ApiReferenceList {
   private readonly apiReferenceManager = inject(ApiReferenceManager);
   filterInput = viewChild.required(TextField, {read: ElementRef});
+  private readonly injector = inject(EnvironmentInjector);
 
   private readonly allGroups = this.apiReferenceManager.apiGroups;
 
-  private filterEffect = effect(() => {
-    if (matchMedia('(hover: hover) and (pointer:fine)').matches) {
-      // Lord forgive me for I have sinned
-      // Use the CVA to focus when https://github.com/angular/angular/issues/31133 is implemented
-      this.filterInput().nativeElement.querySelector('input').focus();
-    }
-  });
+  constructor() {
+    effect(() => {
+      const filterInput = this.filterInput();
+      afterNextRender(
+        {
+          write: () => {
+            // Lord forgive me for I have sinned
+            // Use the CVA to focus when https://github.com/angular/angular/issues/31133 is implemented
+            if (matchMedia('(hover: hover) and (pointer:fine)').matches) {
+              filterInput.nativeElement.querySelector('input').focus();
+            }
+          },
+        },
+        {injector: this.injector},
+      );
+    });
+  }
 
   query = signal('');
   includeDeprecated = signal(false);
