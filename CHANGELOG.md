@@ -1,3 +1,21 @@
+<a name="18.1.2"></a>
+# 18.1.2 (2024-07-24)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [463945003d](https://github.com/angular/angular/commit/463945003dcf253c64809ffdcddabedb87e78e06) | fix | limit the number of chained instructions ([#57069](https://github.com/angular/angular/pull/57069)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e904f34020](https://github.com/angular/angular/commit/e904f3402053ce9098854a31f2652020dd79e8f9) | fix | add warning for unused let declarations ([#57033](https://github.com/angular/angular/pull/57033)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9e52c1c840](https://github.com/angular/angular/commit/9e52c1c8402dd5a54cf73caafff4a5b81d73fabd) | fix | `afterNextRender` hooks return that callback value. ([#57031](https://github.com/angular/angular/pull/57031)) |
+| [b9fb98c67c](https://github.com/angular/angular/commit/b9fb98c67c29d8e5697b72788f09f1263e8130f4) | fix | tree shake dev mode error message ([#57035](https://github.com/angular/angular/pull/57035)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.1.1"></a>
 # 18.1.1 (2024-07-17)
 ### common
