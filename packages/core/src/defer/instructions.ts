@@ -110,6 +110,9 @@ export class DeferBlockRegistry {
   remove(id: string) {
     this.registry.delete(id);
   }
+  get size(): number {
+    return this.registry.size;
+  }
 
   // Blocks that are being hydrated.
   // TODO: come up with a nicer API
@@ -233,6 +236,8 @@ export function ɵɵdefer(
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
   const tNode = declareTemplate(lView, tView, index, null, 0, 0);
+  const registry = lView[INJECTOR]!.get(DeferBlockRegistry);
+  let uniqueId = `d${registry.size}`;
 
   if (tView.firstCreatePass) {
     performanceMarkFeature('NgDefer');
@@ -250,6 +255,7 @@ export function ɵɵdefer(
       providers: null,
       taskId: null,
       hydrate: false,
+      uniqueId: uniqueId,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
     setTDeferBlockDetails(tView, adjustedIndex, tDetails);
@@ -262,13 +268,12 @@ export function ɵɵdefer(
   // In client-only mode, this function is a noop.
   populateDehydratedViewsInLContainer(lContainer, tNode, lView);
 
-  let ssrId = null;
   let ssrState = null;
   if (lContainer[DEHYDRATED_VIEWS]?.length > 0) {
     // NOTE: this is a hack, we should serialize defer
     // block info at a higher level (not at a view level).
     const info = lContainer[DEHYDRATED_VIEWS][0].data;
-    ssrId = info[DEFER_BLOCK_ID];
+    uniqueId = info[DEFER_BLOCK_ID];
     ssrState = info[SERIALIZED_DEFER_BLOCK_STATE];
   }
 
@@ -280,7 +285,7 @@ export function ɵɵdefer(
     null, // LOADING_AFTER_CLEANUP_FN
     null, // TRIGGER_CLEANUP_FNS
     null, // PREFETCH_TRIGGER_CLEANUP_FNS
-    ssrId, // UNIQUE_SSR_ID
+    uniqueId, // UNIQUE_ID
     ssrState, // SSR_STATE
     null,
   ];
@@ -294,10 +299,9 @@ export function ɵɵdefer(
   );
   storeLViewOnDestroy(lView, cleanupTriggersFn);
 
-  if (ssrId !== null) {
-    // Also store this defer block in teh registry.
-    const registry = lView[INJECTOR]!.get(DeferBlockRegistry);
-    registry.add(ssrId, {lView, tNode});
+  if (uniqueId !== null) {
+    // Also store this defer block in the registry.
+    registry.add(uniqueId, {lView, tNode});
   }
 }
 
