@@ -503,6 +503,37 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should declare a variable if an injected parameter with modifiers is referenced in the constructor via shorthand assignment', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Inject, LOCALE_ID } from '@angular/core';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Inject(LOCALE_ID) locale: string) {`,
+        `    console.log({ locale });`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, Inject, LOCALE_ID, inject } from '@angular/core';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  constructor() {`,
+      `    const locale = inject(LOCALE_ID);`,
+      ``,
+      `    console.log({ locale });`,
+      `  }`,
+      `}`,
+    ]);
+  });
+
   it('should not declare a variable in the constructor if the only references to the parameter are shadowed', async () => {
     writeFile(
       '/dir.ts',
@@ -824,7 +855,7 @@ describe('inject migration', () => {
     ]);
   });
 
-  it('should be able to opt into generating backwads-compatible constructors for a class with existing members', async () => {
+  it('should be able to opt into generating backwards-compatible constructors for a class with existing members', async () => {
     writeFile(
       '/dir.ts',
       [
@@ -870,7 +901,7 @@ describe('inject migration', () => {
     ]);
   });
 
-  it('should be able to opt into generating backwads-compatible constructors for a class that only has a constructor', async () => {
+  it('should be able to opt into generating backwards-compatible constructors for a class that only has a constructor', async () => {
     writeFile(
       '/dir.ts',
       [
