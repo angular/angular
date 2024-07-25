@@ -20,7 +20,7 @@ export class MyComp {
 
 **After:**
 ```typescript
-import { Component, Inject, Optional, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MyService } from './service';
 import { DI_TOKEN } from './token';
 

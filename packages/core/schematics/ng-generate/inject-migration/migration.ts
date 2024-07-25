@@ -18,6 +18,7 @@ import {
   parameterDeclaresProperty,
 } from './analysis';
 import {getAngularDecorators} from '../../utils/ng_decorators';
+import {getNamedImports} from '../../utils/typescript/imports';
 
 /**
  * Placeholder used to represent expressions inside the AST.
@@ -312,6 +313,7 @@ function createInjectReplacementCall(
   let injectedType = param.type?.getText() || '';
   let typeArguments = param.type && hasGenerics(param.type) ? [param.type] : undefined;
   let hasOptionalDecorator = false;
+  const importsToAdd: ts.ImportSpecifier[] = [];
 
   for (const decorator of decorators) {
     if (decorator.moduleName !== moduleName) {
@@ -338,10 +340,18 @@ function createInjectReplacementCall(
 
       case 'Attribute':
         if (firstArg) {
-          const constructorRef = tracker.addImport(sourceFile, 'HostAttributeToken', moduleName);
-          const expression = ts.factory.createNewExpression(constructorRef, undefined, [firstArg]);
+          const hostAttributeTokenRef = ts.factory.createIdentifier('HostAttributeToken');
+          const expression = ts.factory.createNewExpression(hostAttributeTokenRef, undefined, [
+            firstArg,
+          ]);
           injectedType = printer.printNode(ts.EmitHint.Unspecified, expression, sourceFile);
           typeArguments = undefined;
+          const hostAttributeTokenImport = ts.factory.createImportSpecifier(
+            false,
+            undefined,
+            hostAttributeTokenRef,
+          );
+          importsToAdd.push(hostAttributeTokenImport);
         }
         break;
 
@@ -367,7 +377,7 @@ function createInjectReplacementCall(
   // The injected type might be a `TypeNode` which we can't easily convert into an `Expression`.
   // Since the value gets passed through directly anyway, we generate the call using a placeholder
   // which we then replace with the raw text of the `TypeNode`.
-  const injectRef = tracker.addImport(param.getSourceFile(), 'inject', moduleName);
+  const injectRef = ts.factory.createIdentifier('inject');
   const args: ts.Expression[] = [ts.factory.createIdentifier(PLACEHOLDER)];
 
   if (literalProps.length > 0) {
@@ -386,6 +396,17 @@ function createInjectReplacementCall(
       expression = ts.factory.createNonNullExpression(expression);
     }
   }
+
+  // update imports
+  const injectImport = ts.factory.createImportSpecifier(false, undefined, injectRef);
+  importsToAdd.push(injectImport);
+  const coreImports = getNamedImports(sourceFile, moduleName)!;
+  const decoratorsToRemove = ['Inject', 'Attribute', 'Optional', 'SkipSelf', 'Self', 'Host'];
+  const newCoreImports = ts.factory.updateNamedImports(coreImports, [
+    ...coreImports.elements.filter((current) => !decoratorsToRemove.includes(current.getText())),
+    ...importsToAdd,
+  ]);
+  tracker.replaceNode(coreImports, newCoreImports);
 
   return replaceNodePlaceholder(param.getSourceFile(), expression, injectedType, printer);
 }
