@@ -126,6 +126,11 @@ export interface TDeferBlockDetails {
    * A flag to indicate if hydration should happen.
    */
   hydrate: boolean;
+
+  /**
+   * A unique identifier.
+   */
+  uniqueId: string;
 }
 
 /**

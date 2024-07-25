@@ -11,6 +11,7 @@ import {APP_ID} from '../application/application_tokens';
 import {
   DEFER_BLOCK_STATE as CURRENT_DEFER_BLOCK_STATE,
   TDeferBlockDetails,
+  UNIQUE_SSR_ID,
 } from '../defer/interfaces';
 import {
   getDeferBlockDataIndex,
@@ -26,7 +27,7 @@ import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/col
 import {getComponentDef} from '../render3/definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
 import {isTNodeShape, TNode, TNodeType} from '../render3/interfaces/node';
-import {RElement} from '../render3/interfaces/renderer_dom';
+import {RComment, RElement} from '../render3/interfaces/renderer_dom';
 import {
   hasI18n,
   isComponentHost,
@@ -74,7 +75,11 @@ import {
 } from './interfaces';
 import {calcPathForNode, isDisconnectedNode} from './node_lookup_utils';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
-import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './tokens';
+import {
+  EVENT_REPLAY_ENABLED_DEFAULT,
+  IS_EVENT_REPLAY_ENABLED,
+  IS_PARTIAL_HYDRATION_ENABLED,
+} from './tokens';
 import {
   getLNodeForHydration,
   NGH_ATTR_NAME,
@@ -145,6 +150,7 @@ export interface HydrationContext {
   serializedViewCollection: SerializedViewCollection;
   corruptedTextNodes: Map<HTMLElement, TextNodeMarker>;
   isI18nHydrationEnabled: boolean;
+  isPartialHydrationEnabled: boolean;
   i18nChildren: Map<TView, Set<number> | null>;
   eventTypesToReplay: {regular: Set<string>; capture: Set<string>};
   shouldReplayEvents: boolean;
@@ -241,6 +247,7 @@ function annotateLContainerForHydration(lContainer: LContainer, context: Hydrati
 export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const injector = appRef.injector;
   const isI18nHydrationEnabledVal = isI18nHydrationEnabled(injector);
+  const isPartialHydrationEnabledVal = injector.get(IS_PARTIAL_HYDRATION_ENABLED, false);
   const serializedViewCollection = new SerializedViewCollection();
   const corruptedTextNodes = new Map<HTMLElement, TextNodeMarker>();
   const viewRefs = appRef._views;
@@ -261,6 +268,7 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
         serializedViewCollection,
         corruptedTextNodes,
         isI18nHydrationEnabled: isI18nHydrationEnabledVal,
+        isPartialHydrationEnabled: isPartialHydrationEnabledVal,
         i18nChildren: new Map(),
         eventTypesToReplay,
         shouldReplayEvents,
@@ -310,6 +318,13 @@ function isDeferBlock(tView: TView, tNode: TNode): boolean {
     tDetails = getTDeferBlockDetails(tView, tNode);
   }
   return !!tDetails && isTDeferBlockDetails(tDetails);
+}
+
+/**
+ * Retrives the Defer Block unique SSR ID, if it exists
+ */
+function getDeferBlockId(tNode: TNode, lView: LView): string | null {
+  return getLDeferBlockDetails(lView, tNode)?.[UNIQUE_SSR_ID] ?? null;
 }
 
 /**
@@ -392,7 +407,8 @@ function serializeLContainer(
         const deferBlockInfo: DeferBlockInfo = {
           parentDeferBlockId,
         };
-        const deferBlockId = `d${context.deferBlocks.size}`;
+
+        const deferBlockId = getDeferBlockId(tNode, lView)!;
         context.deferBlocks.set(deferBlockId, deferBlockInfo);
 
         // Use current block id as parent for nested routes.
@@ -400,6 +416,16 @@ function serializeLContainer(
 
         const lDetails = getLDeferBlockDetails(lView, tNode);
 
+        // We need to annotate defer blocks with their unique id for partial hydration
+        if (context.isPartialHydrationEnabled) {
+          debugger;
+          const node = unwrapRNode(lContainer);
+          if (node !== undefined) {
+            if ((node as Node).nodeType === Node.COMMENT_NODE) {
+              annotateDeferBlockAnchorForHydration(node as RComment, deferBlockId);
+            }
+          }
+        }
         // Serialize extra info into the view object.
         // TODO: this should be serialized and included at a different level
         // (not at the view level).
@@ -760,6 +786,19 @@ function annotateHostElementForHydration(
     renderer.setAttribute(element, NGH_ATTR_NAME, index.toString());
     return index;
   }
+}
+
+/**
+ * Annotates defer block comment node for hydration:
+ *
+ * @param comment The Host element to be annotated
+ * @param deferBlockId the id of the target defer block
+ */
+function annotateDeferBlockAnchorForHydration(
+  comment: RComment,
+  deferBlockId: string | null,
+): void {
+  comment.textContent = `ngh=${deferBlockId}`;
 }
 
 /**
