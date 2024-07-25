@@ -319,6 +319,8 @@ function createInjectReplacementCall(
     // they'll be specified as type arguments to `inject()`.
     if (ts.isTypeReferenceNode(type) && type.typeArguments && type.typeArguments.length > 0) {
       injectedType = type.typeName.getText();
+    } else if (ts.isUnionTypeNode(type)) {
+      injectedType = (type.types.find((t) => !ts.isLiteralTypeNode(t)) || type.types[0]).getText();
     } else {
       injectedType = type.getText();
     }
