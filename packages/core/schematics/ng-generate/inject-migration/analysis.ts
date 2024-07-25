@@ -64,11 +64,11 @@ export function detectClassesUsingDI(sourceFile: ts.SourceFile, localTypeChecker
 export function getConstructorUnusedParameters(
   declaration: ts.ConstructorDeclaration,
   localTypeChecker: ts.TypeChecker,
-): Set<ts.ParameterDeclaration> {
-  const accessedTopLevelParameters = new Set<ts.ParameterDeclaration>();
-  const topLevelParameters = new Set<ts.ParameterDeclaration>();
+): Set<ts.Declaration> {
+  const accessedTopLevelParameters = new Set<ts.Declaration>();
+  const topLevelParameters = new Set<ts.Declaration>();
   const topLevelParameterNames = new Set<string>();
-  const unusedParams = new Set<ts.ParameterDeclaration>();
+  const unusedParams = new Set<ts.Declaration>();
 
   // Prepare the parameters for quicker checks further down.
   for (const param of declaration.parameters) {
@@ -102,6 +102,12 @@ export function getConstructorUnusedParameters(
       if (ts.isParameter(decl) && topLevelParameters.has(decl)) {
         accessedTopLevelParameters.add(decl);
       }
+      if (ts.isShorthandPropertyAssignment(decl)) {
+        const symbol = localTypeChecker.getShorthandAssignmentValueSymbol(decl);
+        if (symbol && symbol.valueDeclaration && ts.isParameter(symbol.valueDeclaration)) {
+          accessedTopLevelParameters.add(symbol.valueDeclaration);
+        }
+      }
     });
   });
 
@@ -110,7 +116,6 @@ export function getConstructorUnusedParameters(
       unusedParams.add(param);
     }
   }
-
   return unusedParams;
 }
 
