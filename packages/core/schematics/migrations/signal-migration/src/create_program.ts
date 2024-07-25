@@ -69,7 +69,7 @@ export function createAndPrepareAnalysisProgram(
     {
       ...tsconfig.options,
       _enableTemplateTypeChecker: true,
-      _compilePoisedComponents: true,
+      _compilePoisonedComponents: true,
       // We want to migrate non-exported classes too.
       compileNonExportedClasses: true,
       // Avoid checking libraries to speed up the migration.
