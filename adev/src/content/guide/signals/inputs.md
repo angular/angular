@@ -56,6 +56,15 @@ As with signals declared via `signal()`, you access the current value of the inp
 
 This access to the value is captured in reactive contexts and can notify active consumers, like Angular itself, whenever the input value changes.
 
+Using a signal to pass a value to your component you have to access the value in the same way.
+```angular-html
+<my-component [firstName]="firstName()"/>
+```
+
+IMPORTANT: If you use a signal in combination with the @if controlflow, make sure to also add the parentheses to the signal. `@if(mySignal)` will
+just check if the signal is defined and will show accordingly (even if the value might be false).
+Calling the signal `@if(mySignal())` will look at the value inside of the signal.
+
 An input signal in practice is a trivial extension of signals that you know from [the signals guide](guide/signals).
 
 ```typescript
