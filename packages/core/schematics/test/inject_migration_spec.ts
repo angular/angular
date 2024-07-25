@@ -166,7 +166,7 @@ describe('inject migration', () => {
       ``,
       `@Directive()`,
       `class MyDir {`,
-      `  private one = inject<ElementRef<HTMLElement>>(ElementRef<HTMLElement>);`,
+      `  private one = inject<ElementRef<HTMLElement>>(ElementRef);`,
       `  private two = inject<ElementRef<HTMLButtonElement> | ElementRef<HTMLSpanElement>>(ElementRef);`,
       `}`,
     ]);
