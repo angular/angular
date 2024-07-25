@@ -290,7 +290,6 @@ export function compileComponentFromMetadata(
   let hasStyles = !!meta.externalStyles?.length;
   // e.g. `styles: [str1, str2]`
   if (meta.styles && meta.styles.length) {
-    hasStyles = true;
     const styleValues =
       meta.encapsulation == core.ViewEncapsulation.Emulated
         ? compileStyles(meta.styles, CONTENT_ATTR, HOST_ATTR)
@@ -303,6 +302,7 @@ export function compileComponentFromMetadata(
     }, [] as o.Expression[]);
 
     if (styleNodes.length > 0) {
+      hasStyles = true;
       definitionMap.set('styles', o.literalArr(styleNodes));
     }
   }

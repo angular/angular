@@ -92,7 +92,8 @@ describe('bootstrap', () => {
     ) {
       @Component({
         selector: options.selector || 'my-app',
-        styles: [''],
+        // styles must be non-empty to trigger `ViewEncapsulation.Emulated`
+        styles: 'span {color:red}',
         template: '<span>a    b</span>',
         encapsulation: options.encapsulation,
         preserveWhitespaces: options.preserveWhitespaces,
