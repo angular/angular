@@ -41,7 +41,7 @@ export interface TestOnlyOptions {
    * Whether components that are poisoned should still be processed.
    * E.g. for generation of type check blocks and diagnostics.
    */
-  _compilePoisedComponents?: boolean;
+  _compilePoisonedComponents?: boolean;
 
   /**
    * An option to enable ngtsc's internal performance tracing.
