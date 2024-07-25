@@ -18,6 +18,7 @@ import {
   parameterDeclaresProperty,
 } from './analysis';
 import {getAngularDecorators} from '../../utils/ng_decorators';
+import {getImportOfIdentifier} from '../../utils/typescript/imports';
 
 /**
  * Placeholder used to represent expressions inside the AST.
@@ -336,13 +337,10 @@ function createInjectReplacementCall(
     switch (decorator.name) {
       case 'Inject':
         if (firstArg) {
-          injectedType = firstArg.getText();
-
-          // `inject` no longer officially supports string injection so we need
-          // to cast to any. We maintain the type by passing it as a generic.
-          if (ts.isStringLiteralLike(firstArg)) {
-            typeArguments = [type || ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)];
-            injectedType += ' as any';
+          const injectResult = migrateInjectDecorator(firstArg, type, localTypeChecker);
+          injectedType = injectResult.injectedType;
+          if (injectResult.typeArguments) {
+            typeArguments = injectResult.typeArguments;
           }
         }
         break;
@@ -399,6 +397,56 @@ function createInjectReplacementCall(
   }
 
   return replaceNodePlaceholder(param.getSourceFile(), expression, injectedType, printer);
+}
+
+/**
+ * Migrates a parameter based on its `@Inject()` decorator.
+ * @param firstArg First argument to `@Inject()`.
+ * @param type Type of the parameter.
+ * @param localTypeChecker Type checker set up for the specific file.
+ */
+function migrateInjectDecorator(
+  firstArg: ts.Expression,
+  type: ts.TypeNode | undefined,
+  localTypeChecker: ts.TypeChecker,
+) {
+  let injectedType = firstArg.getText();
+  let typeArguments: ts.TypeNode[] | null = null;
+
+  // `inject` no longer officially supports string injection so we need
+  // to cast to any. We maintain the type by passing it as a generic.
+  if (ts.isStringLiteralLike(firstArg)) {
+    typeArguments = [type || ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)];
+    injectedType += ' as any';
+  } else if (
+    ts.isCallExpression(firstArg) &&
+    ts.isIdentifier(firstArg.expression) &&
+    firstArg.arguments.length === 1
+  ) {
+    const callImport = getImportOfIdentifier(localTypeChecker, firstArg.expression);
+    const arrowFn = firstArg.arguments[0];
+
+    // If the first parameter is a `forwardRef`, unwrap it for a more
+    // accurate type and because it's no longer necessary.
+    if (
+      callImport !== null &&
+      callImport.name === 'forwardRef' &&
+      callImport.importModule === '@angular/core' &&
+      ts.isArrowFunction(arrowFn)
+    ) {
+      if (ts.isBlock(arrowFn.body)) {
+        const returnStatement = arrowFn.body.statements.find((stmt) => ts.isReturnStatement(stmt));
+
+        if (returnStatement && returnStatement.expression) {
+          injectedType = returnStatement.expression.getText();
+        }
+      } else {
+        injectedType = arrowFn.body.getText();
+      }
+    }
+  }
+
+  return {injectedType, typeArguments};
 }
 
 /**

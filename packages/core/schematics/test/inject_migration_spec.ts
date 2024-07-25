@@ -1166,4 +1166,99 @@ describe('inject migration', () => {
       `}`,
     ]);
   });
+
+  it('should unwrap forwardRef with an implicit return', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Inject, forwardRef } from '@angular/core';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Inject(forwardRef(() => Foo)) readonly foo: Foo) {}`,
+        `}`,
+        ``,
+        `@Directive()`,
+        `class Foo {}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, Inject, forwardRef, inject } from '@angular/core';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  readonly foo = inject(Foo);`,
+      `}`,
+      ``,
+      `@Directive()`,
+      `class Foo {}`,
+    ]);
+  });
+
+  it('should unwrap forwardRef with an explicit return', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Inject, forwardRef } from '@angular/core';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Inject(forwardRef(() => {`,
+        `    return Foo;`,
+        `  })) readonly foo: Foo) {}`,
+        `}`,
+        ``,
+        `@Directive()`,
+        `class Foo {}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, Inject, forwardRef, inject } from '@angular/core';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  readonly foo = inject(Foo);`,
+      `}`,
+      ``,
+      `@Directive()`,
+      `class Foo {}`,
+    ]);
+  });
+
+  it('should unwrap an aliased forwardRef', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Inject, forwardRef as aliasedForwardRef } from '@angular/core';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Inject(aliasedForwardRef(() => Foo)) readonly foo: Foo) {}`,
+        `}`,
+        ``,
+        `@Directive()`,
+        `class Foo {}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, Inject, forwardRef as aliasedForwardRef, inject } from '@angular/core';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  readonly foo = inject(Foo);`,
+      `}`,
+      ``,
+      `@Directive()`,
+      `class Foo {}`,
+    ]);
+  });
 });
