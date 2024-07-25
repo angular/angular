@@ -3749,6 +3749,14 @@
   resolved "https://registry.yarnpkg.com/@msgpackr-extract/msgpackr-extract-win32-x64/-/msgpackr-extract-win32-x64-3.0.2.tgz#0f164b726869f71da3c594171df5ebc1c4b0a407"
   integrity sha512-O+6Gs8UeDbyFpbSh2CPEz/UOrrdWPTBYNblZK5CxxLisYt4kGX3Sc+czffFonyjiGSq3jWLwJS/CCJc7tBr4sQ==
 
+"@netlify/angular-runtime@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@netlify/angular-runtime/-/angular-runtime-2.1.0.tgz#658880318398feed57cfd443206c8952389ffa1c"
+  integrity sha512-+Mb23oi3dWi6QNCdZKFYbYkwQ9aqxAvVtyejRJV5FlDU5OO1WpcLahhPJedXxGGw/uQIqZSpeNibK3PFfs5cgg==
+  dependencies:
+    fs-extra "^11.1.1"
+    semver "^7.5.4"
+
 "@ngtools/webpack@18.1.0-next.1":
   version "18.1.0-next.1"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-18.1.0-next.1.tgz#3d631ea818d471cb98dd665aeadb50c3090d7431"
@@ -9558,7 +9566,7 @@ fs-extra@^10.1.0:
     jsonfile "^6.0.1"
     universalify "^2.0.0"
 
-fs-extra@^11.2.0:
+fs-extra@^11.1.1, fs-extra@^11.2.0:
   version "11.2.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.2.0.tgz#e70e17dfad64232287d01929399e0ea7c86b0e5b"
   integrity sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==
