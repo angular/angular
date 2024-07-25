@@ -145,8 +145,8 @@ describe('component', () => {
     @Component({
       selector: 'encapsulated',
       encapsulation: ViewEncapsulation.Emulated,
-      // styles array must contain a value (even empty) to trigger `ViewEncapsulation.Emulated`
-      styles: [``],
+      // styles must be non-empty to trigger `ViewEncapsulation.Emulated`
+      styles: `:host {display: block}`,
       template: `foo<leaf></leaf>`,
     })
     class EncapsulatedComponent {}
@@ -182,9 +182,9 @@ describe('component', () => {
     });
 
     it('should encapsulate host and children with different attributes', () => {
-      // styles array must contain a value (even empty) to trigger `ViewEncapsulation.Emulated`
+      // styles must be non-empty to trigger `ViewEncapsulation.Emulated`
       TestBed.overrideComponent(LeafComponent, {
-        set: {encapsulation: ViewEncapsulation.Emulated, styles: [``]},
+        set: {encapsulation: ViewEncapsulation.Emulated, styles: [`span {color:red}`]},
       });
       const fixture = TestBed.createComponent(EncapsulatedComponent);
       fixture.detectChanges();
@@ -197,6 +197,28 @@ describe('component', () => {
           match[1]
         }=""><span ${match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></div>`,
       );
+    });
+
+    it('should be off for a component with no styles', () => {
+      TestBed.overrideComponent(EncapsulatedComponent, {
+        set: {styles: undefined},
+      });
+      const fixture = TestBed.createComponent(EncapsulatedComponent);
+      fixture.detectChanges();
+      const html = fixture.nativeElement.outerHTML;
+      expect(html).not.toContain('<encapsulated _nghost-');
+      expect(html).not.toContain('<leaf _ngcontent-');
+    });
+
+    it('should be off for a component with empty styles', () => {
+      TestBed.overrideComponent(EncapsulatedComponent, {
+        set: {styles: [`  `, '', '/*comment*/']},
+      });
+      const fixture = TestBed.createComponent(EncapsulatedComponent);
+      fixture.detectChanges();
+      const html = fixture.nativeElement.outerHTML;
+      expect(html).not.toContain('<encapsulated _nghost-');
+      expect(html).not.toContain('<leaf _ngcontent-');
     });
   });
 
