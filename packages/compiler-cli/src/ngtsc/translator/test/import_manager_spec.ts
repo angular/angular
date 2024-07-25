@@ -891,6 +891,196 @@ describe('import manager', () => {
       `),
     );
   });
+
+  it('should remove a pre-existing import from a declaration', () => {
+    const {testFile, emit} = createTestProgram(`
+      import { input, output, model } from '@angular/core';
+      input();
+      output();
+      model();
+    `);
+    const manager = new ImportManager();
+
+    manager.removeImport(testFile, 'output', '@angular/core');
+    const res = emit(manager, []);
+
+    expect(res).toBe(
+      omitLeadingWhitespace(`
+      import { input, model } from '@angular/core';
+      input();
+      output();
+      model();
+    `),
+    );
+  });
+
+  it('should remove the entire declaration if all pre-existing imports are removed', () => {
+    const {testFile, emit} = createTestProgram(`
+      import { input, output } from '@angular/core';
+      input();
+      output();
+    `);
+    const manager = new ImportManager();
+
+    manager.removeImport(testFile, 'input', '@angular/core');
+    manager.removeImport(testFile, 'output', '@angular/core');
+
+    expect(emit(manager, [])).toBe(
+      omitLeadingWhitespace(`
+      input();
+      output();
+      export {};
+    `),
+    );
+  });
+
+  it('should remove a pre-existing aliased import', () => {
+    const {testFile, emit} = createTestProgram(`
+      import { input, output as foo } from '@angular/core';
+      input();
+      foo();
+    `);
+    const manager = new ImportManager();
+
+    manager.removeImport(testFile, 'output', '@angular/core');
+
+    expect(emit(manager, [])).toBe(
+      omitLeadingWhitespace(`
+      import { input } from '@angular/core';
+      input();
+      foo();
+    `),
+    );
+  });
+
+  it('should remove all pre-existing instances of a specific import', () => {
+    const {testFile, emit} = createTestProgram(`
+      import { input, input as foo } from '@angular/core';
+      import { input as bar } from '@angular/core';
+      input();
+      foo();
+      bar();
+    `);
+    const manager = new ImportManager();
+
+    manager.removeImport(testFile, 'input', '@angular/core');
+
+    expect(emit(manager, [])).toBe(
+      omitLeadingWhitespace(`
+      input();
+      foo();
+      bar();
+      export {};
+    `),
+    );
+  });
+
+  it('should be able to remove from an import that is being modified', () => {
+    const {testFile, emit} = createTestProgram(`
+      import { input } from '@angular/core';
+      input();
+    `);
+    const manager = new ImportManager();
+
+    const ref = manager.addImport({
+      exportModuleSpecifier: '@angular/core',
+      exportSymbolName: 'foo',
+      requestedFile: testFile,
+    });
+
+    manager.removeImport(testFile, 'input', '@angular/core');
+    const res = emit(manager, [ts.factory.createExpressionStatement(ref)]);
+
+    expect(res).toBe(
+      omitLeadingWhitespace(`
+      import { foo } from '@angular/core';
+      foo;
+      input();
+    `),
+    );
+  });
+
+  it('should be able to remove a symbol from a newly-created import declaration', () => {
+    const {testFile, emit} = createTestProgram('');
+    const manager = new ImportManager();
+
+    const inputRef = manager.addImport({
+      exportModuleSpecifier: '@angular/core',
+      exportSymbolName: 'input',
+      requestedFile: testFile,
+    });
+
+    const outputRef = manager.addImport({
+      exportModuleSpecifier: '@angular/core',
+      exportSymbolName: 'output',
+      requestedFile: testFile,
+    });
+
+    manager.removeImport(testFile, 'input', '@angular/core');
+
+    const res = emit(manager, [
+      ts.factory.createExpressionStatement(inputRef),
+      ts.factory.createExpressionStatement(outputRef),
+    ]);
+
+    expect(res).toBe(
+      omitLeadingWhitespace(`
+      import { output } from "@angular/core";
+      input;
+      output;
+    `),
+    );
+  });
+
+  it('should add a symbol if addImport is called after removeImport', () => {
+    const {testFile, emit} = createTestProgram('');
+    const manager = new ImportManager();
+
+    manager.addImport({
+      exportModuleSpecifier: '@angular/core',
+      exportSymbolName: 'input',
+      requestedFile: testFile,
+    });
+
+    manager.removeImport(testFile, 'input', '@angular/core');
+
+    const ref = manager.addImport({
+      exportModuleSpecifier: '@angular/core',
+      exportSymbolName: 'input',
+      requestedFile: testFile,
+    });
+
+    const res = emit(manager, [ts.factory.createExpressionStatement(ref)]);
+
+    expect(res).toBe(
+      omitLeadingWhitespace(`
+      import { input } from "@angular/core";
+      input;
+    `),
+    );
+  });
+
+  it('should remove a newly-added aliased import', () => {
+    const {testFile, emit} = createTestProgram('');
+    const manager = new ImportManager();
+
+    const inputRef = manager.addImport({
+      exportModuleSpecifier: '@angular/core',
+      exportSymbolName: 'input',
+      unsafeAliasOverride: 'foo',
+      requestedFile: testFile,
+    });
+
+    manager.removeImport(testFile, 'input', '@angular/core');
+
+    const res = emit(manager, [ts.factory.createExpressionStatement(inputRef)]);
+
+    expect(res).toBe(
+      omitLeadingWhitespace(`
+      foo;
+    `),
+    );
+  });
 });
 
 function createTestProgram(text: string): {

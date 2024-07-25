@@ -18,14 +18,20 @@ import type {ImportManager} from './import_manager';
  *  - The transform updates existing imports with new symbols to be added.
  *  - The transform adds new necessary imports.
  *  - The transform inserts additional optional statements after imports.
+ *  - The transform deletes any nodes that are marked for deletion by the manager.
  */
 export function createTsTransformForImportManager(
   manager: ImportManager,
   extraStatementsForFiles?: Map<string, ts.Statement[]>,
 ): ts.TransformerFactory<ts.SourceFile> {
   return (ctx) => {
-    const {affectedFiles, newImports, updatedImports, reusedOriginalAliasDeclarations} =
-      manager.finalize();
+    const {
+      affectedFiles,
+      newImports,
+      updatedImports,
+      reusedOriginalAliasDeclarations,
+      deletedImports,
+    } = manager.finalize();
 
     // If we re-used existing source file alias declarations, mark those as referenced so TypeScript
     // doesn't drop these thinking they are unused.
@@ -45,12 +51,16 @@ export function createTsTransformForImportManager(
       }
     }
 
-    const visitStatement: ts.Visitor<ts.Node> = (node) => {
-      if (
-        !ts.isImportDeclaration(node) ||
-        node.importClause === undefined ||
-        !ts.isImportClause(node.importClause)
-      ) {
+    const visitStatement: ts.Visitor<ts.Node, ts.Node | undefined> = (node) => {
+      if (!ts.isImportDeclaration(node)) {
+        return node;
+      }
+
+      if (deletedImports.has(node)) {
+        return undefined;
+      }
+
+      if (node.importClause === undefined || !ts.isImportClause(node.importClause)) {
         return node;
       }
 
