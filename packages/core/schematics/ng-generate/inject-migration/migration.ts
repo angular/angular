@@ -309,9 +309,20 @@ function createInjectReplacementCall(
   const sourceFile = param.getSourceFile();
   const decorators = getAngularDecorators(localTypeChecker, ts.getDecorators(param) || []);
   const literalProps: ts.ObjectLiteralElementLike[] = [];
-  let injectedType = param.type?.getText() || '';
-  let typeArguments = param.type && hasGenerics(param.type) ? [param.type] : undefined;
+  const type = param.type;
+  let injectedType = '';
+  let typeArguments = type && hasGenerics(type) ? [type] : undefined;
   let hasOptionalDecorator = false;
+
+  if (type) {
+    // Remove the type arguments from generic type references, because
+    // they'll be specified as type arguments to `inject()`.
+    if (ts.isTypeReferenceNode(type) && type.typeArguments && type.typeArguments.length > 0) {
+      injectedType = type.typeName.getText();
+    } else {
+      injectedType = type.getText();
+    }
+  }
 
   for (const decorator of decorators) {
     if (decorator.moduleName !== moduleName) {
@@ -328,9 +339,7 @@ function createInjectReplacementCall(
           // `inject` no longer officially supports string injection so we need
           // to cast to any. We maintain the type by passing it as a generic.
           if (ts.isStringLiteralLike(firstArg)) {
-            typeArguments = [
-              param.type || ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
-            ];
+            typeArguments = [type || ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)];
             injectedType += ' as any';
           }
         }
