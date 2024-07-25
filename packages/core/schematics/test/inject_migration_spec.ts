@@ -1139,4 +1139,31 @@ describe('inject migration', () => {
       `}`,
     ]);
   });
+
+  it('should pick up the first non-literal type if a parameter has a union type', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Optional } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Optional() private foo: null | Foo) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, Optional, inject } from '@angular/core';`,
+      `import { Foo } from 'foo';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private foo = inject(Foo, { optional: true });`,
+      `}`,
+    ]);
+  });
 });
