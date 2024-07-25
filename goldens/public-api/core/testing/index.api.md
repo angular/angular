@@ -70,7 +70,9 @@ export { DeferBlockState }
 export function discardPeriodicTasks(): void;
 
 // @public
-export function fakeAsync(fn: Function): (...args: any[]) => any;
+export function fakeAsync(fn: Function, options?: {
+    flush?: boolean;
+}): (...args: any[]) => any;
 
 // @public
 export function flush(maxTurns?: number): number;
