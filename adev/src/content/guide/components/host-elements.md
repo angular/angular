@@ -6,7 +6,7 @@ Angular creates an instance of a component for every HTML element that matches t
 selector. The DOM element that matches a component's selector is that component's **host element**.
 The contents of a component's template are rendered inside its host element.
 
-```ts
+```angular-ts
 // Component source
 @Component({
   selector: 'profile-photo',
@@ -41,7 +41,7 @@ A component can bind properties, attributes, and events to its host element. Thi
 identically to bindings on elements inside the component's template, but instead defined with
 the `host` property in the `@Component` decorator:
 
-```ts
+```angular-ts
 @Component({
   ...,
   host: {
@@ -68,7 +68,7 @@ decorator to class members.
 
 `@HostBinding` lets you bind host properties and attributes to properties and methods:
 
-```ts
+```angular-ts
 @Component({
   /* ... */
 })
@@ -105,7 +105,7 @@ decorators exist exclusively for backwards compatibility.
 When you use a component in a template, you can add bindings to that component instance's element.
 The component may _also_ define host bindings for the same properties or attributes.
 
-```ts
+```angular-ts
 @Component({
   ...,
   host: {

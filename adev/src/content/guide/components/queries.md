@@ -12,7 +12,7 @@ There are two categories of query: **view queries** and **content queries.**
 
 View queries retrieve results from the elements in the component's _view_ — the elements defined in the component's own template. You can query for a single result with the `@ViewChild` decorator.
 
-<docs-code language="ts" highlight="[14, 16, 17, 18]">
+<docs-code language="angular-ts" highlight="[14, 16, 17, 18]">
 @Component({
   selector: 'custom-card-header',
   ...
@@ -42,7 +42,7 @@ If the query does not find a result, its value is `undefined`. This may occur if
 
 You can also query for multiple results with the `@ViewChildren` decorator.
 
-<docs-code language="ts" highlight="[17, 19, 20, 21, 22, 23]">
+<docs-code language="angular-ts" highlight="[17, 19, 20, 21, 22, 23]">
 @Component({
   selector: 'custom-card-action',
   ...,
@@ -77,7 +77,7 @@ export class CustomCard {
 
 Content queries retrieve results from the elements in the component's _content_— the elements nested inside the component in the template where it's used. You can query for a single result with the `@ContentChild` decorator.
 
-<docs-code language="ts" highlight="[14, 16, 17, 18, 25]">
+<docs-code language="angular-ts" highlight="[14, 16, 17, 18, 25]">
 @Component({
   selector: 'custom-toggle',
   ...
@@ -106,6 +106,7 @@ export class CustomExpando {
     </custom-expando>
   `
 })
+export class UserProfile { }
 </docs-code>
 
 In this example, the `CustomExpando` component queries for a child `CustomToggle` and accesses the result in `ngAfterContentInit`.
@@ -118,7 +119,7 @@ By default, content queries find only _direct_ children of the component and do 
 
 You can also query for multiple results with the `@ContentChildren` decorator.
 
-<docs-code language="ts" highlight="[14, 16, 17, 18, 19, 20]">
+<docs-code language="angular-ts" highlight="[14, 16, 17, 18, 19, 20]">
 @Component({
   selector: 'custom-menu-item',
   ...
@@ -150,6 +151,7 @@ export class CustomMenu {
     </custom-menu>
   `
 })
+export class UserProfile { }
 </docs-code>
 
 `@ContentChildren` creates a `QueryList` object that contains the query results. You can subscribe to changes to the query results over time via the `changes` property.
@@ -165,7 +167,7 @@ Most of the time, you want to use a component or directive as your locator.
 You can alternatively specify a string locator corresponding to
 a [template reference variable](guide/templates/reference-variables).
 
-```ts
+```angular-ts
 @Component({
   ...,
   template: `
@@ -188,7 +190,7 @@ Tip: See [Dependency Injection](guide/di) for background on providers and Angula
 
 For more advanced cases, you can use any `ProviderToken` as a locator. This lets you locate elements based on component and directive providers.
 
-```ts
+```angular-ts
 const SUB_ITEM = new InjectionToken<string>('sub-item');
 
 @Component({
@@ -213,7 +215,7 @@ All query decorators accept an options object as a second parameter. These optio
 
 `@ViewChild` and `@ContentChild` queries accept the `static` option.
 
-```ts
+```angular-ts
 @Component({
   selector: 'custom-card',
   template: '<custom-card-header>Visit sunny California!</custom-card-header>',
@@ -237,7 +239,7 @@ The `static` option is not available for `@ViewChildren` and `@ContentChildren` 
 
 By default, content queries find only _direct_ children of the component and do not traverse into descendants.
 
-<docs-code language="ts" highlight="[13, 14, 15, 16]">
+<docs-code language="angular-ts" highlight="[13, 14, 15, 16]">
 @Component({
   selector: 'custom-expando',
   ...
@@ -257,6 +259,7 @@ export class CustomExpando {
     </custom-expando>
   `
 })
+export class UserProfile { }
 </docs-code>
 
 In the example above, `CustomExpando` cannot find `<custom-toggle>` because it is not a direct child of `<custom-expando>`. By setting `descendants: true`, you configure the query to traverse all descendants in the same template. Queries, however, _never_ pierce into components to traverse elements in other templates.

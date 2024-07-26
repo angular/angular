@@ -30,7 +30,7 @@ The code above is an example of how to use a basic `@defer` block. By default `@
 
 Add a `@placeholder` block to the `@defer` block. The `@placeholder` block is where you put html that will show before the deferred loading starts. The content in `@placeholder` blocks is eagerly loaded.
 
-<docs-code language="html" highlight="[3,4,5]">
+<docs-code language="angular-html" highlight="[3,4,5]">
 @defer {
   <comments />
 } @placeholder {
@@ -44,7 +44,7 @@ Add a `@placeholder` block to the `@defer` block. The `@placeholder` block is wh
 
 Add a `@loading` block to the `@defer` block. The `@loading` block is where you put html that will show _while_ the deferred content is actively being fetched, but hasn't finished yet. The content in `@loading` blocks is eagerly loaded.
 
-<docs-code language="html" highlight="[5,6,7]">
+<docs-code language="angular-html" highlight="[5,6,7]">
 @defer {
   <comments />
 } @placeholder {
@@ -60,7 +60,7 @@ Add a `@loading` block to the `@defer` block. The `@loading` block is where you 
 
 Both `@placeholder` and `@loading` sections have optional parameters to prevent flickering from occurring when loading happens quickly. `@placeholder` has `minimum` and `@loading` has `minimum` and `after`. Add a `minimum` duration to the `@loading` block so it will be rendered for at least 2 seconds.
 
-<docs-code language="html" highlight="[5]">
+<docs-code language="angular-html" highlight="[5]">
 @defer {
   <comments />
 } @placeholder {
@@ -76,7 +76,7 @@ Both `@placeholder` and `@loading` sections have optional parameters to prevent 
 
 Deferrable views have a number of trigger options. Add a viewport trigger so the content will defer load once it enters the viewport.
 
-<docs-code language="html" highlight="[1]">
+<docs-code language="angular-html" highlight="[1]">
 @defer (on viewport) {
   <comments />
 }

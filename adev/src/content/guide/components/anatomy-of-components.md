@@ -11,7 +11,7 @@ Every component must have:
 
 You provide Angular-specific information for a component by adding a `@Component` [decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) on top of the TypeScript class:
 
-<docs-code language="ts" highlight="[1, 2, 3, 4]">
+<docs-code language="angular-ts" highlight="[1, 2, 3, 4]">
 @Component({
   selector: 'profile-photo',
   template: `<img src="profile-photo.jpg" alt="Your profile photo">`,
@@ -25,7 +25,7 @@ The object passed to the `@Component` decorator is called the component's **meta
 
 Components can optionally include a list of CSS styles that apply to that component's DOM:
 
-<docs-code language="ts" highlight="[4]">
+<docs-code language="angular-ts" highlight="[4]">
 @Component({
   selector: 'profile-photo',
   template: `<img src="profile-photo.jpg" alt="Your profile photo">`,
@@ -38,7 +38,7 @@ By default, a component's styles only affect elements defined in that component'
 
 You can alternatively choose to write your template and styles in separate files:
 
-<docs-code language="ts" highlight="[3, 4]">
+<docs-code language="angular-ts" highlight="[3, 4]">
 @Component({
   selector: 'profile-photo',
   templateUrl: 'profile-photo.html',
@@ -55,7 +55,7 @@ Both `templateUrl` and `styleUrl` are relative to the directory in which the com
 
 Every component defines a [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors):
 
-<docs-code language="ts" highlight="[2]">
+<docs-code language="angular-ts" highlight="[2]">
 @Component({
   selector: 'profile-photo',
   ...
@@ -67,7 +67,7 @@ See [Component Selectors](guide/components/selectors) for details about which ty
 
 You use a component by creating a matching HTML element in the template of _other_ components:
 
-<docs-code language="ts" highlight="[4]">
+<docs-code language="angular-ts" highlight="[4]">
 @Component({
   selector: 'user-profile',
   template: `

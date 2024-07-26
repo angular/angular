@@ -8,7 +8,7 @@ With attribute binding, you can improve accessibility, style your application dy
 Attribute binding syntax resembles [property binding](guide/templates/property-binding), but instead of an element property between brackets, you precede the name of the attribute with the prefix `attr`, followed by a dot.
 Then, you set the attribute value with an expression that resolves to a string.
 
-<docs-code language="html">
+<docs-code language="angular-html">
 
 <p [attr.attribute-you-are-targeting]="expression"></p>
 

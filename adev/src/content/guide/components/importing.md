@@ -10,7 +10,7 @@ A **standalone component** is a component that sets `standalone: true` in its co
 Standalone components directly import other components, directives, and pipes used in their
 templates:
 
-<docs-code language="ts" highlight="[2, [8, 9]]">
+<docs-code language="angular-ts" highlight="[2, [8, 9]]">
 @Component({
   standalone: true,
   selector: 'profile-photo',
