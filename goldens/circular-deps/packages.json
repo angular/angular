@@ -13,8 +13,52 @@
     "packages/compiler/src/render3/view/i18n/util.ts"
   ],
   [
+    "packages/core/src/authoring.ts",
+    "packages/core/src/authoring/queries.ts",
+    "packages/core/src/render3/query_reactive.ts",
+    "packages/core/src/render3/query.ts",
+    "packages/core/src/linker/template_ref.ts",
+    "packages/core/src/render3/view_manipulation.ts",
+    "packages/core/src/render3/instructions/render.ts",
+    "packages/core/src/hydration/utils.ts",
+    "packages/core/src/core.ts"
+  ],
+  [
+    "packages/core/src/cached_injector_service.ts",
+    "packages/core/src/render3/ng_module_ref.ts",
+    "packages/core/src/linker/component_factory_resolver.ts",
+    "packages/core/src/linker/component_factory.ts",
+    "packages/core/src/change_detection/change_detection.ts",
+    "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/view_ref.ts",
+    "packages/core/src/render3/instructions/change_detection.ts",
+    "packages/core/src/render3/instructions/shared.ts",
+    "packages/core/src/hydration/utils.ts",
+    "packages/core/src/defer/instructions.ts"
+  ],
+  [
+    "packages/core/src/cached_injector_service.ts",
+    "packages/core/src/render3/ng_module_ref.ts",
+    "packages/core/src/render3/component_ref.ts",
+    "packages/core/src/hydration/utils.ts",
+    "packages/core/src/defer/instructions.ts"
+  ],
+  [
+    "packages/core/src/cached_injector_service.ts",
+    "packages/core/src/render3/ng_module_ref.ts",
+    "packages/core/src/render3/component_ref.ts",
+    "packages/core/src/render3/instructions/render.ts",
+    "packages/core/src/hydration/utils.ts",
+    "packages/core/src/defer/instructions.ts"
+  ],
+  [
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_ref.ts"
+  ],
+  [
+    "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/view_ref.ts",
+    "packages/core/src/linker/view_ref.ts"
   ],
   [
     "packages/core/src/change_detection/differs/default_iterable_differ.ts",
@@ -23,6 +67,67 @@
   [
     "packages/core/src/change_detection/differs/default_keyvalue_differ.ts",
     "packages/core/src/change_detection/differs/keyvalue_differs.ts"
+  ],
+  [
+    "packages/core/src/defer/instructions.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/hydration/error_handling.ts",
+    "packages/core/src/hydration/utils.ts"
+  ],
+  [
+    "packages/core/src/defer/instructions.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/hydration/utils.ts"
+  ],
+  [
+    "packages/core/src/defer/instructions.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/hydration/views.ts",
+    "packages/core/src/hydration/cleanup.ts",
+    "packages/core/src/hydration/i18n.ts",
+    "packages/core/src/hydration/node_lookup_utils.ts",
+    "packages/core/src/hydration/utils.ts"
+  ],
+  [
+    "packages/core/src/defer/instructions.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/hydration/views.ts",
+    "packages/core/src/hydration/cleanup.ts",
+    "packages/core/src/hydration/i18n.ts",
+    "packages/core/src/hydration/utils.ts"
+  ],
+  [
+    "packages/core/src/defer/instructions.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/hydration/views.ts",
+    "packages/core/src/hydration/cleanup.ts",
+    "packages/core/src/hydration/utils.ts"
+  ],
+  [
+    "packages/core/src/defer/instructions.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/linker/template_ref.ts",
+    "packages/core/src/render3/view_manipulation.ts",
+    "packages/core/src/render3/instructions/render.ts",
+    "packages/core/src/hydration/utils.ts"
+  ],
+  [
+    "packages/core/src/defer/instructions.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/render3/view_manipulation.ts",
+    "packages/core/src/render3/instructions/render.ts",
+    "packages/core/src/hydration/utils.ts"
+  ],
+  [
+    "packages/core/src/defer/instructions.ts",
+    "packages/core/src/render3/instructions/template.ts",
+    "packages/core/src/hydration/utils.ts"
+  ],
+  [
+    "packages/core/src/defer/instructions.ts",
+    "packages/core/src/render3/view_manipulation.ts",
+    "packages/core/src/render3/instructions/render.ts",
+    "packages/core/src/hydration/utils.ts"
   ],
   [
     "packages/core/src/di/injectable.ts",

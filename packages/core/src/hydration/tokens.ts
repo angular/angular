@@ -64,3 +64,14 @@ export const IS_GLOBAL_EVENT_DELEGATION_ENABLED = new InjectionToken<boolean>(
 export const IS_PARTIAL_HYDRATION_ENABLED = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_PARTIAL_HYDRATION_ENABLED' : '',
 );
+
+/**
+ * A map of DOM elements with `jsaction` attributes grouped by action names.
+ */
+export const BLOCK_ELEMENT_MAP = new InjectionToken<Map<string, Set<Element>>>(
+  ngDevMode ? 'BLOCK_ELEMENT_MAP' : '',
+  {
+    providedIn: 'root',
+    factory: () => new Map<string, Set<Element>>(),
+  },
+);

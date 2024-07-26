@@ -28,6 +28,11 @@ export const enum TriggerType {
    * Represents prefetch triggers (e.g. `@defer (prefetch on idle) { ... }`).
    */
   Prefetch,
+
+  /**
+   * Represents hydrate triggers (e.g. `@defer (hydrate on idle) { ... }`).
+   */
+  Hydrate,
 }
 
 /**
@@ -123,14 +128,14 @@ export interface TDeferBlockDetails {
   taskId: number | null;
 
   /**
-   * A flag to indicate if hydration should happen.
-   */
-  hydrate: boolean;
-
-  /**
    * A unique identifier.
    */
   uniqueId: string;
+
+  /**
+   * List of hydrate triggers for a given block
+   */
+  hydrateTriggers: HydrateTrigger[] | null;
 }
 
 /**
@@ -150,6 +155,27 @@ export enum DeferBlockState {
 
   /** The error block content is rendered */
   Error = 3,
+}
+
+/**
+ * Describes the hydrate trigger type.
+ *
+ * @publicApi
+ */
+export enum HydrateTrigger {
+  Idle = 0,
+
+  Immediate = 1,
+
+  Viewport = 2,
+
+  Interaction = 3,
+
+  Hover = 4,
+
+  Timer = 5,
+
+  When = 6,
 }
 
 /**

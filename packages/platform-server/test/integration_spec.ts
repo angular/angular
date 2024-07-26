@@ -555,6 +555,10 @@ class HiddenModule {}
       destroyPlatform();
     });
 
+    afterEach(() => {
+      destroyPlatform();
+    });
+
     afterAll(() => {
       destroyPlatform();
     });

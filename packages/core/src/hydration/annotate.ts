@@ -50,7 +50,11 @@ import {unwrapLView, unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
-import {collectDomEventsInfo} from './event_replay';
+import {
+  appendBlocksToJSActionMap,
+  collectDomEventsInfo,
+  convertHydrateTriggersToJsAction,
+} from './event_replay';
 import {setJSActionAttributes} from '../event_delegation_utils';
 import {
   getOrComputeI18nChildren,
@@ -88,6 +92,7 @@ import {
   processTextNodeBeforeSerialization,
   TextNodeMarker,
 } from './utils';
+import {Injector} from '../di';
 
 /**
  * A collection that tracks all serialized views (`ngh` DOM annotations)
@@ -184,12 +189,19 @@ function calcNumRootNodesInLContainer(lContainer: LContainer): number {
 function annotateComponentLViewForHydration(
   lView: LView,
   context: HydrationContext,
+  injector: Injector,
 ): number | null {
   const hostElement = lView[HOST];
   // Root elements might also be annotated with the `ngSkipHydration` attribute,
   // check if it's present before starting the serialization process.
   if (hostElement && !(hostElement as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
-    return annotateHostElementForHydration(hostElement as HTMLElement, lView, null, context);
+    return annotateHostElementForHydration(
+      hostElement as HTMLElement,
+      lView,
+      null,
+      context,
+      injector,
+    );
   }
   return null;
 }
@@ -200,11 +212,19 @@ function annotateComponentLViewForHydration(
  * This function serializes the component itself as well as all views from the view
  * container.
  */
-function annotateLContainerForHydration(lContainer: LContainer, context: HydrationContext) {
+function annotateLContainerForHydration(
+  lContainer: LContainer,
+  context: HydrationContext,
+  injector: Injector,
+) {
   const componentLView = unwrapLView(lContainer[HOST]) as LView<unknown>;
 
   // Serialize the root component itself.
-  const componentLViewNghIndex = annotateComponentLViewForHydration(componentLView, context);
+  const componentLViewNghIndex = annotateComponentLViewForHydration(
+    componentLView,
+    context,
+    injector,
+  );
 
   if (componentLViewNghIndex === null) {
     // Component was not serialized (for example, if hydration was skipped by adding
@@ -218,7 +238,13 @@ function annotateLContainerForHydration(lContainer: LContainer, context: Hydrati
 
   // Serialize all views within this view container.
   const rootLView = lContainer[PARENT];
-  const rootLViewNghIndex = annotateHostElementForHydration(hostElement, rootLView, null, context);
+  const rootLViewNghIndex = annotateHostElementForHydration(
+    hostElement,
+    rootLView,
+    null,
+    context,
+    injector,
+  );
 
   const renderer = componentLView[RENDERER] as Renderer2;
 
@@ -276,9 +302,9 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
         deferBlocks,
       };
       if (isLContainer(lNode)) {
-        annotateLContainerForHydration(lNode, context);
+        annotateLContainerForHydration(lNode, context, injector);
       } else {
-        annotateComponentLViewForHydration(lNode, context);
+        annotateComponentLViewForHydration(lNode, context, injector);
       }
       insertCorruptedTextNodeMarkers(corruptedTextNodes, doc);
     }
@@ -344,6 +370,7 @@ function serializeLContainer(
   lView: LView,
   parentDeferBlockId: string | null,
   context: HydrationContext,
+  injector: Injector,
 ): SerializedContainerView[] {
   const views: SerializedContainerView[] = [];
   let lastViewAsString = '';
@@ -371,7 +398,7 @@ function serializeLContainer(
         // The `+1` is to capture the `<app-root />` element.
         numRootNodes = calcNumRootNodesInLContainer(childLView) + 1;
 
-        annotateLContainerForHydration(childLView, context);
+        annotateLContainerForHydration(childLView, context, injector);
 
         const componentLView = unwrapLView(childLView[HOST]) as LView<unknown>;
 
@@ -418,13 +445,24 @@ function serializeLContainer(
 
         // We need to annotate defer blocks with their unique id for partial hydration
         if (context.isPartialHydrationEnabled) {
-          debugger;
           const node = unwrapRNode(lContainer);
           if (node !== undefined) {
             if ((node as Node).nodeType === Node.COMMENT_NODE) {
               annotateDeferBlockAnchorForHydration(node as RComment, deferBlockId);
             }
           }
+          // Add JSAction attributes for root nodes that use some hydration triggers
+          const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
+          const actionList = convertHydrateTriggersToJsAction(tDetails.hydrateTriggers);
+          for (let et of actionList) {
+            context.eventTypesToReplay.regular.add(et);
+          }
+          annotateDeferBlockRootNodesWithJsAction(
+            actionList,
+            lContainer,
+            parentDeferBlockId,
+            injector,
+          );
         }
         // Serialize extra info into the view object.
         // TODO: this should be serialized and included at a different level
@@ -436,7 +474,7 @@ function serializeLContainer(
       // TODO: avoid copying of an object here
       serializedView = {
         ...serializedView,
-        ...serializeLView(lContainer[i] as LView, parentDeferBlockId, context),
+        ...serializeLView(lContainer[i] as LView, parentDeferBlockId, context, injector),
       };
     }
 
@@ -503,6 +541,7 @@ function serializeLView(
   lView: LView,
   parentDeferBlockId: string | null = null,
   context: HydrationContext,
+  injector: Injector,
 ): SerializedView {
   const ngh: SerializedView = {};
   const tView = lView[TVIEW];
@@ -641,6 +680,7 @@ function serializeLView(
             hostNode as LView,
             parentDeferBlockId,
             context,
+            injector,
           );
         }
       }
@@ -652,6 +692,7 @@ function serializeLView(
         lView,
         parentDeferBlockId,
         context,
+        injector,
       );
     } else if (Array.isArray(lView[i])) {
       // This is a component, annotate the host node with an `ngh` attribute.
@@ -662,6 +703,7 @@ function serializeLView(
           lView[i],
           parentDeferBlockId,
           context,
+          injector,
         );
       }
     } else {
@@ -767,6 +809,7 @@ function annotateHostElementForHydration(
   lView: LView,
   parentDeferBlockId: string | null,
   context: HydrationContext,
+  injector: Injector,
 ): number | null {
   const renderer = lView[RENDERER];
   if (
@@ -781,7 +824,7 @@ function annotateHostElementForHydration(
     renderer.setAttribute(element, SKIP_HYDRATION_ATTR_NAME, '');
     return null;
   } else {
-    const ngh = serializeLView(lView, parentDeferBlockId, context);
+    const ngh = serializeLView(lView, parentDeferBlockId, context, injector);
     const index = context.serializedViewCollection.add(ngh);
     renderer.setAttribute(element, NGH_ATTR_NAME, index.toString());
     return index;
@@ -834,4 +877,21 @@ function isContentProjectedNode(tNode: TNode): boolean {
     currentTNode = currentTNode.parent as TNode;
   }
   return false;
+}
+
+function annotateDeferBlockRootNodesWithJsAction(
+  actionList: string[],
+  lContainer: LContainer,
+  parentDeferBlockId: string,
+  injector: Injector,
+) {
+  if (actionList.length === 0) {
+    return;
+  }
+  let rootNodes: any[] = [];
+  collectNativeNodesInLContainer(lContainer, rootNodes);
+  for (let rNode of rootNodes) {
+    setJSActionAttributes(rNode, actionList, parentDeferBlockId);
+    appendBlocksToJSActionMap(rNode as RElement, injector);
+  }
 }

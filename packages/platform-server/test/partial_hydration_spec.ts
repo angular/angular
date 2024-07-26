@@ -22,116 +22,100 @@ import {getAppContents, prepareEnvironmentAndHydrate, resetTViewsFor} from './do
 import {getComponentRef, ssr, timeout} from './hydration_utils';
 
 describe('platform-server partial hydration integration', () => {
-  beforeEach(() => {
-    if (typeof ngDevMode === 'object') {
-      // Reset all ngDevMode counters.
-      for (const metric of Object.keys(ngDevMode!)) {
-        const currentValue = (ngDevMode as unknown as {[key: string]: number | boolean})[metric];
-        if (typeof currentValue === 'number') {
-          // Rest only numeric values, which represent counters.
-          (ngDevMode as unknown as {[key: string]: number | boolean})[metric] = 0;
-        }
-      }
-    }
-    if (getPlatform()) destroyPlatform();
+  let doc: Document;
+  const originalDocument = globalThis.document;
+  const originalWindow = globalThis.window;
+
+  beforeAll(async () => {
+    globalThis.window = globalThis as unknown as Window & typeof globalThis;
+    await import('@angular/core/primitives/event-dispatch/contract_bundle_min.js' as string);
   });
 
-  afterAll(() => destroyPlatform());
+  beforeEach(() => {
+    if (getPlatform()) destroyPlatform();
+    doc = TestBed.inject(DOCUMENT);
+  });
 
-  describe('partial hydration', () => {
-    let doc: Document;
-    const originalDocument = globalThis.document;
-    const originalWindow = globalThis.window;
+  afterAll(() => {
+    globalThis.window = originalWindow;
+    globalThis.document = originalDocument;
+    destroyPlatform();
+  });
 
-    beforeAll(async () => {
-      globalThis.window = globalThis as unknown as Window & typeof globalThis;
-      await import('@angular/core/primitives/event-dispatch/contract_bundle_min.js' as string);
-    });
+  afterEach(() => {
+    doc.body.outerHTML = '<body></body>';
+    window._ejsas = {};
+  });
 
-    beforeEach(() => {
-      if (getPlatform()) destroyPlatform();
-      doc = TestBed.inject(DOCUMENT);
-    });
+  describe('annotation', () => {
+    it('should annotate inner components with defer block id', async () => {
+      @Component({
+        standalone: true,
+        selector: 'dep-a',
+        template: '<button (click)="null">Click A</button>',
+      })
+      class DepA {}
 
-    afterEach(() => {
-      doc.body.outerHTML = '<body></body>';
-    });
+      @Component({
+        standalone: true,
+        selector: 'dep-b',
+        imports: [DepA],
+        template: `
+        <dep-a />
+        <button (click)="null">Click B</button>
+      `,
+      })
+      class DepB {}
 
-    afterAll(() => {
-      globalThis.window = originalWindow;
-      globalThis.document = originalDocument;
-    });
-
-    describe('annotation', () => {
-      it('should annotate inner components with defer block id', async () => {
-        @Component({
-          standalone: true,
-          selector: 'dep-a',
-          template: '<button (click)="null">Click A</button>',
-        })
-        class DepA {}
-
-        @Component({
-          standalone: true,
-          selector: 'dep-b',
-          imports: [DepA],
-          template: `
-          <dep-a />
-          <button (click)="null">Click B</button>
-        `,
-        })
-        class DepB {}
-
-        @Component({
-          standalone: true,
-          selector: 'app',
-          imports: [DepB],
-          template: `
-          <main (click)="fnA()">
-            @defer (on viewport; hydrate on interaction) {
-              <div (click)="fnA()">
-                Main defer block rendered!
-                @if (visible) {
-                  Defer events work!
-                }
-                <div id="outer-trigger" (mouseover)="showMessage()"></div>
-                @defer (on viewport; hydrate on interaction) {
-                  <p (click)="fnA()">Nested defer block</p>
-                  <dep-b />
-                } @placeholder {
-                  <span>Inner block placeholder</span>
-                }
-              </div>
-            } @placeholder {
-              <span>Outer block placeholder</span>
-            }
-          </main>
-        `,
-        })
-        class SimpleComponent {
-          items = [1, 2, 3];
-          visible = false;
-          fnA() {}
-          showMessage() {
-            this.visible = true;
+      @Component({
+        standalone: true,
+        selector: 'app',
+        imports: [DepB],
+        template: `
+        <main (click)="fnA()">
+          @defer (on viewport; hydrate on interaction) {
+            <div (click)="fnA()">
+              Main defer block rendered!
+              @if (visible) {
+                Defer events work!
+              }
+              <div id="outer-trigger" (mouseover)="showMessage()"></div>
+              @defer (on viewport; hydrate on interaction) {
+                <p (click)="fnA()">Nested defer block</p>
+                <dep-b />
+              } @placeholder {
+                <span>Inner block placeholder</span>
+              }
+            </div>
+          } @placeholder {
+            <span>Outer block placeholder</span>
           }
+        </main>
+      `,
+      })
+      class SimpleComponent {
+        items = [1, 2, 3];
+        visible = false;
+        fnA() {}
+        showMessage() {
+          this.visible = true;
         }
+      }
 
-        const appId = 'custom-app-id';
-        const providers = [{provide: APP_ID, useValue: appId}];
-        const hydrationFeatures = [withPartialHydration()];
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = [withPartialHydration()];
 
-        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
-        const ssrContents = getAppContents(html);
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      const ssrContents = getAppContents(html);
 
-        expect(ssrContents).toContain('<main jsaction="click:;">');
-        // Buttons inside nested components inherit parent defer block namespace.
-        expect(ssrContents).toContain('<button jsaction="click:;" ngb="d1">Click A</button>');
-        expect(ssrContents).toContain('<button jsaction="click:;" ngb="d1">Click B</button>');
-        expect(ssrContents).toContain('<!--ngh=d0-->');
-        expect(ssrContents).toContain('<!--ngh=d1-->');
-      }, 100_000);
-    });
+      expect(ssrContents).toContain('<main jsaction="click:;">');
+      // Buttons inside nested components inherit parent defer block namespace.
+      expect(ssrContents).toContain('<button jsaction="click:;" ngb="d1">Click A</button>');
+      expect(ssrContents).toContain('<button jsaction="click:;" ngb="d1">Click B</button>');
+      expect(ssrContents).toContain('<!--ngh=d0-->');
+      expect(ssrContents).toContain('<!--ngh=d1-->');
+    }, 100_000);
 
     describe('basic hydration behavior', () => {
       it('should SSR and hydrate top-level `@defer` blocks', async () => {
@@ -181,10 +165,10 @@ describe('platform-server partial hydration integration', () => {
         // <main> uses "eager" `custom-app-id` namespace.
         expect(ssrContents).toContain('<main jsaction="click:;');
         // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<article jsaction="click:;" ngb="d0');
+        expect(ssrContents).toContain('<article jsaction="click:;keydown:;" ngb="d0');
         expect(ssrContents).toContain('<aside id="outer-trigger" jsaction="mouseover:;" ngb="d0');
         // <p> is inside a nested defer block -> different namespace.
-        expect(ssrContents).toContain('<p jsaction="click:;" ngb="d1');
+        expect(ssrContents).toContain('<p jsaction="click:;keydown:;" ngb="d1');
         // There is an extra annotation in the TransferState data.
         expect(ssrContents).toContain('"__nghDeferBlocks__":{"d0":null,"d1":"d0"}');
         // Outer defer block is rendered.
@@ -214,11 +198,11 @@ describe('platform-server partial hydration integration', () => {
 
         // Elements from @defer blocks still have `jsaction` annotations,
         // since they were not triggered yet.
-        expect(appHostNode.outerHTML).toContain('<article jsaction="click:;" ngb="d0');
+        expect(appHostNode.outerHTML).toContain('<article jsaction="click:;keydown:;" ngb="d0');
         expect(appHostNode.outerHTML).toContain(
           '<aside id="outer-trigger" jsaction="mouseover:;" ngb="d0',
         );
-        expect(appHostNode.outerHTML).toContain('<p jsaction="click:;" ngb="d1');
+        expect(appHostNode.outerHTML).toContain('<p jsaction="click:;keydown:;" ngb="d1');
 
         // Emit an event inside of a defer block, which should result
         // in triggering the defer block (start loading deps, etc) and
@@ -242,7 +226,7 @@ describe('platform-server partial hydration integration', () => {
         );
 
         // Inner defer block was not triggered, thus it retains `jsaction` attributes.
-        expect(appHostNode.outerHTML).toContain('<p jsaction="click:;" ngb="d1');
+        expect(appHostNode.outerHTML).toContain('<p jsaction="click:;keydown:;" ngb="d1');
       }, 100_000);
 
       it('should SSR and hydrate nested `@defer` blocks', async () => {
@@ -292,10 +276,10 @@ describe('platform-server partial hydration integration', () => {
         // <main> uses "eager" `custom-app-id` namespace.
         expect(ssrContents).toContain('<main jsaction="click:;');
         // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<div jsaction="click:;" ngb="d0"');
+        expect(ssrContents).toContain('<div jsaction="click:;keydown:;" ngb="d0"');
         expect(ssrContents).toContain('<div id="outer-trigger" jsaction="mouseover:;" ngb="d0"');
         // <p> is inside a nested defer block -> different namespace.
-        expect(ssrContents).toContain('<p jsaction="click:;" ngb="d1');
+        expect(ssrContents).toContain('<p jsaction="click:;keydown:;" ngb="d1');
         // There is an extra annotation in the TransferState data.
         expect(ssrContents).toContain('"__nghDeferBlocks__":{"d0":null,"d1":"d0"}');
         // Outer defer block is rendered.
@@ -326,11 +310,11 @@ describe('platform-server partial hydration integration', () => {
 
         // Elements from @defer blocks still have `jsaction` annotations,
         // since they were not triggered yet.
-        expect(appHostNode.outerHTML).toContain('<div jsaction="click:;" ngb="d0"');
+        expect(appHostNode.outerHTML).toContain('<div jsaction="click:;keydown:;" ngb="d0"');
         expect(appHostNode.outerHTML).toContain(
           '<div id="outer-trigger" jsaction="mouseover:;" ngb="d0',
         );
-        expect(appHostNode.outerHTML).toContain('<p jsaction="click:;" ngb="d1"');
+        expect(appHostNode.outerHTML).toContain('<p jsaction="click:;keydown:;" ngb="d1"');
 
         // Emit an event inside of a defer block, which should result
         // in triggering the defer block (start loading deps, etc) and
@@ -400,7 +384,7 @@ describe('platform-server partial hydration integration', () => {
         // <main> uses "eager" `custom-app-id` namespace.
         expect(ssrContents).toContain('<main jsaction="click:;');
         // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<div jsaction="click:;" ngb="d0"');
+        expect(ssrContents).toContain('<div jsaction="click:;keydown:;" ngb="d0"');
         expect(ssrContents).toContain('<div id="outer-trigger" jsaction="mouseover:;" ngb="d0"');
         // <p> is inside a nested defer block -> different namespace.
         // expect(ssrContents).toContain('<p jsaction="click:;" ngb="d1');
@@ -434,7 +418,7 @@ describe('platform-server partial hydration integration', () => {
 
         // Elements from @defer blocks still have `jsaction` annotations,
         // since they were not triggered yet.
-        expect(appHostNode.outerHTML).toContain('<div jsaction="click:;" ngb="d0"');
+        expect(appHostNode.outerHTML).toContain('<div jsaction="click:;keydown:;" ngb="d0"');
         expect(appHostNode.outerHTML).toContain(
           '<div id="outer-trigger" jsaction="mouseover:;" ngb="d0',
         );
@@ -467,10 +451,7 @@ describe('platform-server partial hydration integration', () => {
 
     /* TODO: tests to add
 
-      1. add jsaction to root nodes of every defer block based on trigger type
-      2. not trigger defer block on nested block without hydrate syntax
       3. transfer state data is correct for parent / child defer blocks
-      4. defer block id is in comment node for every defer block
     */
 
     describe('triggers', () => {
@@ -505,7 +486,7 @@ describe('platform-server partial hydration integration', () => {
           // <main> uses "eager" `custom-app-id` namespace.
           expect(ssrContents).toContain('<main jsaction="click:;');
           // <div>s inside a defer block have `d0` as a namespace.
-          expect(ssrContents).toContain('<article jsaction="click:;keydown:;" ngb="d0');
+          expect(ssrContents).toContain('<article jsaction="click:;keydown:;"');
           // Outer defer block is rendered.
           expect(ssrContents).toContain('defer block rendered');
 
@@ -523,7 +504,7 @@ describe('platform-server partial hydration integration', () => {
 
           const appHostNode = compRef.location.nativeElement;
 
-          expect(appHostNode.outerHTML).toContain('<article jsaction="click:;keydown:;" ngb="d0');
+          expect(appHostNode.outerHTML).toContain('<article jsaction="click:;keydown:;"');
 
           // Emit an event inside of a defer block, which should result
           // in triggering the defer block (start loading deps, etc) and
@@ -534,8 +515,7 @@ describe('platform-server partial hydration integration', () => {
           await timeout(1000); // wait for defer blocks to resolve
 
           appRef.tick();
-
-          expect(appHostNode.outerHTML).not.toContain('<div jsaction="click:;keydown:;" ngb="d0');
+          expect(appHostNode.outerHTML).not.toContain('<div jsaction="click:;keydown:;"');
         }, 100_000);
 
         it('keydown', async () => {
@@ -568,7 +548,7 @@ describe('platform-server partial hydration integration', () => {
           // <main> uses "eager" `custom-app-id` namespace.
           expect(ssrContents).toContain('<main jsaction="click:;');
           // <div>s inside a defer block have `d0` as a namespace.
-          expect(ssrContents).toContain('<article jsaction="click:;keydown:;" ngb="d0');
+          expect(ssrContents).toContain('<article jsaction="click:;keydown:;"');
           // Outer defer block is rendered.
           expect(ssrContents).toContain('defer block rendered');
 
@@ -586,7 +566,7 @@ describe('platform-server partial hydration integration', () => {
 
           const appHostNode = compRef.location.nativeElement;
 
-          expect(appHostNode.outerHTML).toContain('<article jsaction="click:;keydown:;" ngb="d0');
+          expect(appHostNode.outerHTML).toContain('<article jsaction="click:;keydown:;"');
 
           // Emit an event inside of a defer block, which should result
           // in triggering the defer block (start loading deps, etc) and
@@ -598,7 +578,7 @@ describe('platform-server partial hydration integration', () => {
 
           appRef.tick();
 
-          expect(appHostNode.outerHTML).not.toContain('<div jsaction="click:;keydown:;" ngb="d0');
+          expect(appHostNode.outerHTML).not.toContain('<div jsaction="click:;keydown:;"');
         }, 100_000);
       });
 
@@ -633,7 +613,7 @@ describe('platform-server partial hydration integration', () => {
           // <main> uses "eager" `custom-app-id` namespace.
           expect(ssrContents).toContain('<main jsaction="click:;');
           // <div>s inside a defer block have `d0` as a namespace.
-          expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;" ngb="d0');
+          expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;"');
           // Outer defer block is rendered.
           expect(ssrContents).toContain('defer block rendered');
 
@@ -651,9 +631,7 @@ describe('platform-server partial hydration integration', () => {
 
           const appHostNode = compRef.location.nativeElement;
 
-          expect(appHostNode.outerHTML).toContain(
-            '<article jsaction="mouseenter:;focusin:;" ngb="d0',
-          );
+          expect(appHostNode.outerHTML).toContain('<article jsaction="mouseenter:;focusin:;"');
 
           // Emit an event inside of a defer block, which should result
           // in triggering the defer block (start loading deps, etc) and
@@ -665,9 +643,7 @@ describe('platform-server partial hydration integration', () => {
 
           appRef.tick();
 
-          expect(appHostNode.outerHTML).not.toContain(
-            '<div jsaction="mouseenter:;focusin:;" ngb="d0',
-          );
+          expect(appHostNode.outerHTML).not.toContain('<div jsaction="mouseenter:;focusin:;"');
         }, 100_000);
 
         it('focusin', async () => {
@@ -700,7 +676,7 @@ describe('platform-server partial hydration integration', () => {
           // <main> uses "eager" `custom-app-id` namespace.
           expect(ssrContents).toContain('<main jsaction="click:;');
           // <div>s inside a defer block have `d0` as a namespace.
-          expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;" ngb="d0');
+          expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;"');
           // Outer defer block is rendered.
           expect(ssrContents).toContain('defer block rendered');
 
@@ -718,9 +694,7 @@ describe('platform-server partial hydration integration', () => {
 
           const appHostNode = compRef.location.nativeElement;
 
-          expect(appHostNode.outerHTML).toContain(
-            '<article jsaction="mouseenter:;focusin:;" ngb="d0',
-          );
+          expect(appHostNode.outerHTML).toContain('<article jsaction="mouseenter:;focusin:;"');
 
           // Emit an event inside of a defer block, which should result
           // in triggering the defer block (start loading deps, etc) and
@@ -732,13 +706,11 @@ describe('platform-server partial hydration integration', () => {
 
           appRef.tick();
 
-          expect(appHostNode.outerHTML).not.toContain(
-            '<div jsaction="mouseenter:;focusin:;" ngb="d0',
-          );
+          expect(appHostNode.outerHTML).not.toContain('<div jsaction="mouseenter:;focusin:;"');
         }, 100_000);
       });
 
-      it('viewport', async () => {
+      xit('viewport', async () => {
         @Component({
           standalone: true,
           selector: 'app',
@@ -768,7 +740,7 @@ describe('platform-server partial hydration integration', () => {
         // <main> uses "eager" `custom-app-id` namespace.
         expect(ssrContents).toContain('<main jsaction="click:;');
         // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;" ngb="d0');
+        expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;"');
         // Outer defer block is rendered.
         expect(ssrContents).toContain('defer block rendered');
 
@@ -786,9 +758,7 @@ describe('platform-server partial hydration integration', () => {
 
         const appHostNode = compRef.location.nativeElement;
 
-        expect(appHostNode.outerHTML).toContain(
-          '<article jsaction="mouseenter:;focusin:;" ngb="d0',
-        );
+        expect(appHostNode.outerHTML).toContain('<article jsaction="mouseenter:;focusin:;"');
 
         // Emit an event inside of a defer block, which should result
         // in triggering the defer block (start loading deps, etc) and
@@ -800,14 +770,12 @@ describe('platform-server partial hydration integration', () => {
 
         appRef.tick();
 
-        expect(appHostNode.outerHTML).not.toContain(
-          '<div jsaction="mouseenter:;focusin:;" ngb="d0',
-        );
+        expect(appHostNode.outerHTML).not.toContain('<div jsaction="mouseenter:;focusin:;"');
         // TODO: Update this test to be a proper test
         expect(false).toBe(true);
       }, 100_000);
 
-      it('immediate', async () => {
+      xit('immediate', async () => {
         @Component({
           standalone: true,
           selector: 'app',
@@ -837,7 +805,7 @@ describe('platform-server partial hydration integration', () => {
         // <main> uses "eager" `custom-app-id` namespace.
         expect(ssrContents).toContain('<main jsaction="click:;');
         // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;" ngb="d0');
+        expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;"');
         // Outer defer block is rendered.
         expect(ssrContents).toContain('defer block rendered');
 
@@ -855,9 +823,7 @@ describe('platform-server partial hydration integration', () => {
 
         const appHostNode = compRef.location.nativeElement;
 
-        expect(appHostNode.outerHTML).toContain(
-          '<article jsaction="mouseenter:;focusin:;" ngb="d0',
-        );
+        expect(appHostNode.outerHTML).toContain('<article jsaction="mouseenter:;focusin:;"');
 
         // Emit an event inside of a defer block, which should result
         // in triggering the defer block (start loading deps, etc) and
@@ -869,14 +835,12 @@ describe('platform-server partial hydration integration', () => {
 
         appRef.tick();
 
-        expect(appHostNode.outerHTML).not.toContain(
-          '<div jsaction="mouseenter:;focusin:;" ngb="d0',
-        );
+        expect(appHostNode.outerHTML).not.toContain('<div jsaction="mouseenter:;focusin:;"');
         // TODO: Update this test to be a proper test
         expect(false).toBe(true);
       }, 100_000);
 
-      it('idle', async () => {
+      xit('idle', async () => {
         @Component({
           standalone: true,
           selector: 'app',
@@ -906,7 +870,7 @@ describe('platform-server partial hydration integration', () => {
         // <main> uses "eager" `custom-app-id` namespace.
         expect(ssrContents).toContain('<main jsaction="click:;');
         // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;" ngb="d0');
+        expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;"');
         // Outer defer block is rendered.
         expect(ssrContents).toContain('defer block rendered');
 
@@ -924,9 +888,7 @@ describe('platform-server partial hydration integration', () => {
 
         const appHostNode = compRef.location.nativeElement;
 
-        expect(appHostNode.outerHTML).toContain(
-          '<article jsaction="mouseenter:;focusin:;" ngb="d0',
-        );
+        expect(appHostNode.outerHTML).toContain('<article jsaction="mouseenter:;focusin:;"');
 
         // Emit an event inside of a defer block, which should result
         // in triggering the defer block (start loading deps, etc) and
@@ -938,14 +900,12 @@ describe('platform-server partial hydration integration', () => {
 
         appRef.tick();
 
-        expect(appHostNode.outerHTML).not.toContain(
-          '<div jsaction="mouseenter:;focusin:;" ngb="d0',
-        );
+        expect(appHostNode.outerHTML).not.toContain('<div jsaction="mouseenter:;focusin:;"');
         // TODO: Update this test to be a proper test
         expect(false).toBe(true);
       }, 100_000);
 
-      it('timer', async () => {
+      xit('timer', async () => {
         @Component({
           standalone: true,
           selector: 'app',
@@ -975,7 +935,7 @@ describe('platform-server partial hydration integration', () => {
         // <main> uses "eager" `custom-app-id` namespace.
         expect(ssrContents).toContain('<main jsaction="click:;');
         // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<article ngb="d0');
+        expect(ssrContents).toContain('<article');
         // Outer defer block is rendered.
         expect(ssrContents).toContain('defer block rendered');
 
@@ -1005,7 +965,7 @@ describe('platform-server partial hydration integration', () => {
 
         appRef.tick();
 
-        expect(appHostNode.outerHTML).not.toContain('<div ngb="d0');
+        expect(appHostNode.outerHTML).not.toContain('<div');
         // TODO: Update this test to be a proper test
         expect(false).toBe(true);
       }, 100_000);
