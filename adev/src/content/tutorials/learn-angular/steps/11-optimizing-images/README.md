@@ -28,7 +28,7 @@ import { NgOptimizedImage } from '@angular/common';
 
 To enable the `NgOptimizedImage` directive, swap out the `src` attribute for `ngSrc`. This applies for both static image sources (i.e., `src`) and dynamic image sources (i.e., `[src]`).
 
-<docs-code language="ts" highlight="[[9], [13]]">
+<docs-code language="angular-ts" highlight="[[9], [13]]">
 import { NgOptimizedImage } from '@angular/common';
 
 @Component({
@@ -57,7 +57,7 @@ Note that in the above code example, each image has both `width` and `height` at
 
 In situations where you can't or don't want to specify a static `height` and `width` for images, you can use [the `fill` attribute](https://web.dev/articles/cls) to tell the image to act like a "background image", filling its containing element:
 
-```ts
+```angular-html
 <div class="image-container"> //Container div has 'position: "relative"'
   <img ngSrc="www.example.com/image.png" fill />
 </div>
@@ -85,9 +85,10 @@ One of the most important optimizations for loading performance is to prioritize
 providers: [
   provideImgixLoader('https://my.base.url/'),
 ]
+```
 
-// ...
-// Final URL will be 'https://my.base.url/image.png'
+Final URL will be 'https://my.base.url/image.png'
+```angular-html
 <img ngSrc="image.png" height="600" width="800" />
 ```
 

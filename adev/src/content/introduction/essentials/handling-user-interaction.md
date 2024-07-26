@@ -17,7 +17,7 @@ You can add an event handler to an element by:
 
 For example, if we wanted to create a button that would run a `transformText` function when the `click` event is fired, it would look like the following:
 
-```ts
+```angular-ts
 // text-transformer.component.ts
 @Component({
   standalone: true,
@@ -38,8 +38,11 @@ export class TextTransformer {
 
 Other common examples of event listeners include:
 
-- `<input (keyup)="validateInput()" />`
-- `<input (keydown)="updateInput()" />`
+```angular-html
+<input (keyup)="validateInput()" />
+<input (keydown)="updateInput()" />
+```
+
 
 ### $event
 

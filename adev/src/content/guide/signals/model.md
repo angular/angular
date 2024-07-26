@@ -8,7 +8,7 @@ HELPFUL: Model inputs are currently in [developer preview](/reference/releases#d
 When creating a component, you can define a model input similarly to how you create a standard
 input.
 
-```typescript
+```angular-ts
 import {Component, model, input} from '@angular/core';
 
 @Component({...})
@@ -27,7 +27,7 @@ the component author to write values into the property**.
 In other respects, you can use model inputs the same way you use standard inputs. You can read the
 value by calling the signal function, including in reactive contexts like `computed` and `effect`.
 
-```typescript
+```angular-ts
 import {Component, model, input} from '@angular/core';
 
 @Component({
@@ -53,7 +53,7 @@ values can flow in both directions.
 
 You can bind a writable signal to a model input.
 
-```typescript
+```angular-ts
 @Component({
   ...,
   // `checked` is a model input.
@@ -74,7 +74,7 @@ itself, not the _value_ of the signal.
 
 You can bind a plain JavaScript property to a model input.
 
-```typescript
+```angular-ts
 @Component({
   ...,
   // `checked` is a model input.
@@ -96,7 +96,7 @@ When you declare a model input in a component or directive, Angular automaticall
 corresponding [output](guide/components/outputs) for that model. The output's name is the model
 input's name suffixed with "Change".
 
-```typescript
+```angular-ts
 @Directive({...})
 export class CustomCheckbox {
   // This automatically creates an output named "checkedChange".

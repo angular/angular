@@ -8,7 +8,7 @@ In this activity, you'll learn how to add an event handler.
 
 In Angular you bind to events with the parentheses syntax `()`. On a given element, wrap the event you want to bind to with parentheses and set an event handler. Consider this `button` example:
 
-```ts
+```angular-ts
 @Component({
     ...
     template: `<button (click)="greet()">`
@@ -40,7 +40,7 @@ onMouseOver() {
 <docs-step title="Bind to the template event">
 Update the template code in `app.component.ts` to bind to the `mouseover` event of the `section` element.
 
-```ts
+```angular-html
 <section (mouseover)="onMouseOver()">
 ```
 

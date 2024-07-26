@@ -143,12 +143,12 @@ To prevent expression evaluation in the browser, add `ngNonBindable` to the host
 
 In the following example, the expression `{{ 1 + 1 }}` renders just as it does in your code editor, and does not display `2`.
 
-<docs-code header="src/app/app.component.html" linenums="false" path="adev/src/content/examples/attribute-directives/src/app/app.component.html" visibleRegion="ngNonBindable"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/attribute-directives/src/app/app.component.html" visibleRegion="ngNonBindable"/>
 
 Applying `ngNonBindable` to an element stops binding for that element's child elements.
 However, `ngNonBindable` still lets directives work on the element where you apply `ngNonBindable`.
 In the following example, the `appHighlight` directive is still active but Angular does not evaluate the expression `{{ 1 + 1 }}`.
 
-<docs-code header="src/app/app.component.html" linenums="false" path="adev/src/content/examples/attribute-directives/src/app/app.component.html" visibleRegion="ngNonBindable-with-directive"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/attribute-directives/src/app/app.component.html" visibleRegion="ngNonBindable-with-directive"/>
 
 If you apply `ngNonBindable` to a parent element, Angular disables interpolation and binding of any sort, such as property binding or event binding, for the element's children.

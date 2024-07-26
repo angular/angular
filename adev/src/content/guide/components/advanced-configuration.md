@@ -34,7 +34,7 @@ By default, Angular throws an error when it encounters an unknown HTML element. 
 disable this behavior for a component by including `CUSTOM_ELEMENTS_SCHEMA` in the `schemas`
 property in your component metadata.
 
-```ts
+```angular-ts
 import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 
 @Component({

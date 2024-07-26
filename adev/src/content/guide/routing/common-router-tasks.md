@@ -565,16 +565,19 @@ Consider the following router link that navigates from the root of the applicati
 
 You could also redefine the `AppComponent` template with Crisis Center routes exclusively:
 
-```ts
-template: `
-  <h1 class="title">Angular Router</h1>
-  <nav>
-    <a [routerLink]="['/crisis-center']">Crisis Center</a>
-    <a [routerLink]="['/crisis-center/1', { foo: 'foo' }]">Dragon Crisis</a>
-    <a [routerLink]="['/crisis-center/2']">Shark Crisis</a>
-  </nav>
-  <router-outlet></router-outlet>
-`
+```angular-ts
+@Component({
+  template: `
+    <h1 class="title">Angular Router</h1>
+    <nav>
+      <a [routerLink]="['/crisis-center']">Crisis Center</a>
+      <a [routerLink]="['/crisis-center/1', { foo: 'foo' }]">Dragon Crisis</a>
+      <a [routerLink]="['/crisis-center/2']">Shark Crisis</a>
+    </nav>
+    <router-outlet></router-outlet>
+  `
+})
+export class AppComponent {}
 ```
 
 In summary, you can write applications with one, two or more levels of routing.
