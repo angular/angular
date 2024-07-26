@@ -17,7 +17,7 @@ For example, using the `TodoListItem` component, create two properties that you 
 1. `taskTitle` — What the title of the task is
 2. `isComplete` — Whether or not the task is complete
 
-```ts
+```angular-ts
 // todo-list-item.component.ts
 @Component({ ... })
 export class TodoListItem {
@@ -30,7 +30,7 @@ export class TodoListItem {
 
 When you want to update state, this is typically accomplished by defining methods in the component class that can access the various class fields with the `this` keyword.
 
-```ts
+```angular-ts
 // todo-list-item.component.ts
 @Component({ ... })
 export class TodoListItem {

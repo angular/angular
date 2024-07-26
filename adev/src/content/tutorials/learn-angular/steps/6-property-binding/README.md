@@ -10,7 +10,7 @@ In this activity, you'll learn how to use property binding in templates.
 
 To bind to an element's attribute, wrap the attribute name in square brackets. Here's an example:
 
-```ts
+```angular-html
 <img alt="photo" [src]="imageURL">
 ```
 
@@ -31,7 +31,7 @@ export class AppComponent {
 <docs-step title="Bind to `contentEditable`" header="app.component.ts" language="ts">
 Next, bind the `contentEditable` attribute of the `div` to the `isEditable` property by using the <code aria-label="square brackets">[]</code> syntax.
 
-<docs-code highlight="[3]">
+<docs-code highlight="[3]" language="angular-ts">
 @Component({
     ...
     template: `<div [contentEditable]="isEditable"></div>`,

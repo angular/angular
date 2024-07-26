@@ -9,7 +9,7 @@ The syntax that enables repeating elements in a template is `@for`.
 
 Here's an example of how to use the `@for` syntax in a component:
 
-```ts
+```angular-ts
 @Component({
   ...
   template: `
@@ -42,7 +42,7 @@ In the `AppComponent` class, add a property called `users` that contains users a
 <docs-step title="Update the template">
 Update the template to display each user name in a `p` element using the `@for` template syntax.
 
-```ts
+```angular-html
 @for (user of users; track user.id) {
   <p>{{ user.name }}</p>
 }

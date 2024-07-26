@@ -5,7 +5,7 @@ Tip: This guide assumes you've already read the [Essentials Guide](essentials). 
 You often need to create components that act as containers for different types of content. For
 example, you may want to create a custom card component:
 
-```ts
+```angular-ts
 @Component({
   selector: 'custom-card',
   template: '<div class="card-shadow"> <!-- card content goes here --> </div>',
@@ -15,7 +15,7 @@ export class CustomCard {/* ... */}
 
 **You can use the `<ng-content>` element as a placeholder to mark where content should go**:
 
-```ts
+```angular-ts
 @Component({
   selector: 'custom-card',
   template: '<div class="card-shadow"> <ng-content></ng-content> </div>',
@@ -30,7 +30,7 @@ but with some Angular-specific functionality.
 When you use a component with `<ng-content>`, any children of the component host element are
 rendered, or **projected**, at the location of that `<ng-content>`:
 
-```ts
+```angular-ts
 // Component source
 @Component({
   selector: 'custom-card',

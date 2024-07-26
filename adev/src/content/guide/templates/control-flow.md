@@ -81,7 +81,7 @@ These variables are always available with these names, but can be aliased via a 
 
 ```angular-html
 @for (item of items; track item.id; let idx = $index, e = $even) {
-Item #{{ idx }}: {{ item.name }}
+  Item #{{ idx }}: {{ item.name }}
 }
 ```
 

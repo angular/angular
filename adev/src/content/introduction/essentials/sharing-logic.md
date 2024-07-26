@@ -15,7 +15,7 @@ Similar to defining a component, services are comprised of the following:
 
 Here is an example of a `Calculator` service.
 
-```ts
+```angular-ts
 import {Injectable} from '@angular/core';
 
 @Injectable({
@@ -37,7 +37,7 @@ When you want to use a service in a component, you need to:
 
 Here’s what it might look like in the `Receipt` component:
 
-```ts
+```angular-ts
 import { Component, inject } from '@angular/core';
 import { CalculatorService } from './calculator.service';
 

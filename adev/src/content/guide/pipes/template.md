@@ -2,7 +2,7 @@
 
 To apply a pipe, use the pipe operator (`|`) within a template expression as shown in the following code example.
 
-<docs-code header="app.component.html">
+<docs-code language="angular-html" header="app.component.html">
 <p>The hero's birthday is {{ birthday | date }}</p>
 </docs-code>
 
@@ -30,7 +30,7 @@ Pipes can take additional parameters that configure the transformation. Paramete
 For example, the `date` pipe takes optional parameters that control the date's display format.
 To specify the parameter, follow the pipe name with a colon (`:`) and the parameter value (the format).
 
-<docs-code header="app.component.html">
+<docs-code language="angular-html" header="app.component.html">
 <p>The hero's birthday is in {{ birthday | date:'yyyy' }}</p>
 </docs-code>
 
@@ -49,7 +49,7 @@ You can connect multiple pipes so that the output of one pipe becomes the input 
 
 The following example passes a date to the `DatePipe` and then forwards the result to the [`UpperCasePipe`](api/common/UpperCasePipe 'API reference') pipe.
 
-<docs-code header="app.component.html">
+<docs-code language="angular-html" header="app.component.html">
 <p>The hero's birthday is {{ birthday | date }}</p>
 <p>The hero's birthday is in {{ birthday | date:'yyyy' | uppercase }}</p>
 </docs-code>

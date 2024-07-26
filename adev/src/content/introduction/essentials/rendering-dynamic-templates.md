@@ -10,7 +10,7 @@ When you need to display dynamic content in your template, Angular uses the doub
 
 Here is a simplified example from a `TodoListItem` component.
 
-```ts
+```angular-ts
 @Component({
   selector: 'todo-list-item',
   template: `
@@ -38,7 +38,7 @@ For example, a common example of dynamically updating properties in your HTML is
 
 Wrap the desired property in square brackets to tell Angular that the assigned value is dynamic (i.e., not a static string).
 
-```ts
+```angular-ts
 @Component({
   selector: 'sign-up-form',
   template: `
@@ -60,7 +60,7 @@ In this example, because `formIsInvalid` is true, the rendered HTML would be:
 
 In the event you want to dynamically bind custom HTML attributes (e.g., `aria-`, `data-`, etc.), you might be inclined to wrap the custom attributes with the same square brackets.
 
-```ts
+```angular-ts
 @Component({
   standalone: true,
   template: `
@@ -74,7 +74,7 @@ export class AppBanner {
 
 Unfortunately, this will not work because custom HTML attributes are not standard DOM properties. In order for this to work as intended, we need to prepend the custom HTML attribute with the `attr.` prefix.
 
-```ts
+```angular-ts
 @Component({
   standalone: true,
   template: `

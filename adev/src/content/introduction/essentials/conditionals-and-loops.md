@@ -16,7 +16,7 @@ A common example of this is whether or not to display certain controls on the sc
 
 Similar to JavaScript's `if` statement, Angular uses `@if` control flow blocks to conditionally hide and show part of a template and its contents.
 
-```ts
+```angular-ts
 // user-controls.component.ts
 @Component({
   standalone: true,
@@ -42,7 +42,7 @@ For example, in the `UserControls` component, rather than show a blank screen, i
 
 When you need a fallback, similar to JavaScript's `else` clause, add an `@else` block to accomplish the same effect.
 
-```ts
+```angular-ts
 // user-controls.component.ts
 @Component({
   standalone: true,
@@ -77,7 +77,7 @@ Similar to JavaScript’s `for...of` loops, Angular provides the `@for` block fo
 </ul>
 ```
 
-```ts
+```angular-ts
 // ingredient-list.component.ts
 @Component({
   standalone: true,

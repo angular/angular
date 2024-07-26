@@ -20,18 +20,18 @@ View queries retrieve results from the elements in the component's own template 
 
 You can declare a query targeting a single result with the `viewChild` function. 
 
-```ts
+```angular-ts
 @Component({
-    template: `
-        <div #el></div>
-        <my-component />
-    `
+  template: `
+    <div #el></div>
+    <my-component />
+  `
 })
 export class TestComponent {
-    // query for a single result by a string predicate  
-    divEl = viewChild<ElementRef>('el');       // Signal<ElementRef|undefined>
-    // query for a single result by a type predicate
-    cmp = viewChild(MyComponent);              // Signal<MyComponent|undefined>
+  // query for a single result by a string predicate  
+  divEl = viewChild<ElementRef>('el')  // Signal<ElementRef|undefined>
+  // query for a single result by a type predicate
+  cmp = viewChild(MyComponent);        // Signal<MyComponent|undefined>
 }
 ```
 
@@ -39,20 +39,20 @@ export class TestComponent {
 
 You can also query for multiple results with the `viewChildren` function. 
 
-```ts
- @Component({
-    template: `
-        <div #el></div>
-        @if (show) {
-            <div #el></div>
-        }
-    `
+```angular-ts
+@Component({
+  template: `
+    <div #el></div>
+    @if (show) {
+      <div #el></div>
+    }
+  `
 })
 export class TestComponent {
-    show = true;
+  show = true;
 
-    // query for multiple results
-    divEls = viewChildren<ElementRef>('el');        // Signal<ReadonlyArray<ElementRef>>
+  // query for multiple results
+  divEls = viewChildren<ElementRef>('el');    // Signal<ReadonlyArray<ElementRef>>
 }
 ```
 
@@ -65,13 +65,13 @@ The `viewChild` and the `viewChildren` query declaration functions have a simila
 
 Signal-based view queries accept only one option: `read`. The `read` option indicates the type of result to inject from the matched nodes and return in the final results. 
 
-```ts
+```angular-ts
 @Component({
-    template: `<my-component/>`
+  template: `<my-component/>`
 })
 export class TestComponent {
-    // query for a single result with options
-    cmp = viewChild(MyComponent, {read: ElementRef});   // Signal<ElementRef|undefined>
+  // query for a single result with options
+  cmp = viewChild(MyComponent, {read: ElementRef});   // Signal<ElementRef|undefined>
 }
 ```
 
@@ -85,12 +85,12 @@ You can query for a single result with the `contentChild` function.
 
 ```ts
 @Component({...})
-    export class TestComponent {
-    // query by a string predicate  
-    headerEl = contentChild<ElementRef>('h');   // Signal<ElementRef|undefined>
+  export class TestComponent {
+  // query by a string predicate  
+  headerEl = contentChild<ElementRef>('h');   // Signal<ElementRef|undefined>
 
-    // query by a type predicate
-    header = contentChild(MyHeader);            // Signal<MyHeader|undefined>
+  // query by a type predicate
+  header = contentChild(MyHeader);            // Signal<MyHeader|undefined>
 }
 ```
 
@@ -99,11 +99,11 @@ You can query for a single result with the `contentChild` function.
 You can also query for multiple results with the `contentChildren` function. 
 
 ```ts
-    @Component({...})
-    export class TestComponent {
-    // query for multiple results
-    divEls = contentChildren<ElementRef>('h');  // Signal<ReadonlyArray<ElementRef>>
-    }
+@Component({...})
+export class TestComponent {
+  // query for multiple results
+  divEls = contentChildren<ElementRef>('h');  // Signal<ReadonlyArray<ElementRef>>
+}
 ```
 
 ### Content query options
@@ -128,7 +128,7 @@ Because of this, the child queries return a signal that potentially have the `un
 
 For such cases, you can mark child queries as `required` to enforce presence of at least one matching result. This eliminates `undefined` from the result type signature. If a `required` query does not find any results, Angular throws an error.
 
-```ts
+```angular-ts
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -138,7 +138,7 @@ For such cases, you can mark child queries as `required` to enforce presence of 
 })
 export class App {
   existingEl = viewChild.required('requiredEl');     // required and existing result
-  missingEl = viewChild.required('notInATemplate'); // required but NOT existing result
+  missingEl = viewChild.required('notInATemplate');  // required but NOT existing result
   
   ngAfterViewInit() {
     console.log(this.existingEl()); // OK :-)
@@ -161,7 +161,7 @@ Note: to avoid returning incomplete query results while a template is rendered, 
 
 The `viewChild`, `contentChild`, `viewChildren` and `contentChildren` functions are special function recognized by the Angular compiler. You can use those functions to declare queries by initializing a component or a directive property. You can never call these functions outside of component and directive property initializers.
 
-```ts
+```angular-ts
 @Component({
   selector: 'app-root',
   standalone: true,

@@ -28,7 +28,7 @@ Every component has the following core properties:
 
 Here is a simplified example of a TodoListItem component.
 
-```ts
+```angular-ts
 // todo-list-item.component.ts
 @Component({
   selector: 'todo-list-item',
@@ -48,7 +48,7 @@ Other common metadata that you'll also see in components include:
 
 Knowing this, here is an updated version of our `TodoListItem` component.
 
-```ts
+```angular-ts
 // todo-list-item.component.ts
 @Component({
   standalone: true,
@@ -74,7 +74,7 @@ For teams that prefer managing their HTML and/or CSS in separate files, Angular 
 
 Using the previous `TodoListItem` component, the alternative approach looks like:
 
-```ts
+```angular-ts
 // todo-list-item.component.ts
 @Component({
   standalone: true,
@@ -93,7 +93,7 @@ export class TodoListItem {
 ```
 
 ```css
-// todo-list-item.component.css
+/* todo-list-item.component.css */
 li {
   color: red;
   font-weight: 300;
@@ -112,7 +112,7 @@ To use a component, you need to:
 
 Here's an example of a `TodoList` component importing the `TodoListItem` component from before:
 
-```ts
+```angular-ts
 // todo-list.component.ts
 import {TodoListItem} from './todo-list-item.component.ts';
 
