@@ -193,4 +193,21 @@ describe('computed', () => {
     const double = computed(() => counter() * 2);
     expect(double + '').toBe('[Computed: 2]');
   });
+
+  it('should not allow accessing length property', () => {
+    function shouldAcceptSignal<T>(func: () => T): T {
+      return func();
+    }
+
+    const array = signal([1, 2, 3]);
+    const computedArray = computed(() => array());
+
+    expect(computedArray().length).toBe(3);
+
+    // @ts-expect-error
+    if (computedArray.length) {
+      // We do a compile time check here
+    }
+    expect(shouldAcceptSignal(computedArray)).toEqual([1, 2, 3]);
+  });
 });

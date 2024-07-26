@@ -193,4 +193,28 @@ describe('signals', () => {
       expect(log).toBe(0);
     });
   });
+
+  it('should not allow accessing length property', () => {
+    function shouldAcceptSignal<T>(func: () => T): T {
+      return func();
+    }
+
+    const writableState = signal([1, 2, 3]);
+    expect(writableState().length).toBe(3);
+
+    // @ts-expect-error
+    if (writableState.length) {
+      // We do a compile time check here
+    }
+    expect(shouldAcceptSignal(writableState)).toEqual([1, 2, 3]);
+
+    const readonlyState = signal([1, 2, 3]).asReadonly();
+    expect(readonlyState().length).toBe(3);
+
+    // @ts-expect-error
+    if (readonlyState.length) {
+      // We do a compile time check here
+    }
+    expect(shouldAcceptSignal(readonlyState)).toEqual([1, 2, 3]);
+  });
 });

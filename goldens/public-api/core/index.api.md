@@ -1565,6 +1565,7 @@ export function setTestabilityGetter(getter: GetTestability): void;
 // @public
 export type Signal<T> = (() => T) & {
     [SIGNAL]: unknown;
+    length(): never;
 };
 
 // @public

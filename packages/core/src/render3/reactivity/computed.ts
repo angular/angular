@@ -34,5 +34,5 @@ export function computed<T>(computation: () => T, options?: CreateComputedOption
   if (ngDevMode) {
     getter.toString = () => `[Computed: ${getter()}]`;
   }
-  return getter;
+  return getter as Signal<T>;
 }

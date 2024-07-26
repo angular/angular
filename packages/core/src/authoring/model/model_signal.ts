@@ -97,7 +97,7 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
       | typeof ɵINPUT_SIGNAL_BRAND_READ_TYPE
       | typeof ɵINPUT_SIGNAL_BRAND_WRITE_TYPE
       | typeof ɵWRITABLE_SIGNAL
-    >;
+    > & {length(): never};
 }
 
 /** Asserts that a model's value is set. */

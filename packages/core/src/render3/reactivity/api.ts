@@ -18,6 +18,13 @@ import {SIGNAL} from '@angular/core/primitives/signals';
  */
 export type Signal<T> = (() => T) & {
   [SIGNAL]: unknown;
+
+  /**
+   * We trick the compiler into thinking that the `length` property is never available on a Signal.
+   * This way we ensure that a signal wrapping an array, would never end up being treated as an array
+   * ex: `mySignal.length` that should have been a `mySignal().length`
+   */
+  length(): never;
 };
 
 /**
