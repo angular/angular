@@ -29,6 +29,7 @@ import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
 
 import {
+  BLOCK_ELEMENT_MAP,
   EVENT_REPLAY_ENABLED_DEFAULT,
   IS_EVENT_REPLAY_ENABLED,
   IS_GLOBAL_EVENT_DELEGATION_ENABLED,
@@ -43,12 +44,8 @@ import {
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
-import {hydrateFromBlockName, findFirstKnownParentDeferBlock} from './api';
-
-/**
- * A map of DOM elements with `jsaction` attributes grouped by action names.
- */
-let jsActionMap = new Map<string, Set<Element>>();
+import {hydrateFromBlockName, findFirstKnownParentDeferBlock} from './utils';
+import {HydrateTrigger} from '../defer/interfaces';
 
 /**
  * A set of in progress hydrating blocks
@@ -101,7 +98,7 @@ export function withEventReplay(): Provider[] {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
         const injector = inject(Injector);
-        // TODO: is this a problem?
+        const jsActionMap = inject(BLOCK_ELEMENT_MAP);
         if (isPlatformBrowser(injector) && shouldEnableEventReplay(injector)) {
           setStashFn((rEl: RElement, eventName: string, listenerFn: VoidFunction) => {
             sharedStashFunction(rEl, eventName, listenerFn);
@@ -128,7 +125,7 @@ export function withEventReplay(): Provider[] {
             whenStable(appRef).then(() => {
               const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
               initEventReplay(eventContractDetails, injector);
-              removeListenersFromBlocks(['']);
+              removeListenersFromBlocks([''], injector);
             });
           };
         }
@@ -244,6 +241,7 @@ function hydrateAndInvokeBlockListeners(
   if (!hydratingBlocks.has(blockName)) {
     hydratingBlocks.add(blockName);
     triggerBlockHydration(appRef, blockName);
+    hydratingBlocks.delete(blockName);
   }
 }
 
@@ -255,10 +253,10 @@ async function triggerBlockHydration(appRef: ApplicationRef, blockName: string) 
   }
   const hydratedBlocks = await hydrateFromBlockName(appRef, blockName);
   hydratedBlocks.add(blockName);
-  replayQueuedBlockEvents(hydratedBlocks);
+  replayQueuedBlockEvents(hydratedBlocks, appRef.injector);
 }
 
-function replayQueuedBlockEvents(hydratedBlocks: Set<string>) {
+function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector) {
   // clone the queue
   const queue = [...blockEventQueue];
   // empty it
@@ -272,14 +270,41 @@ function replayQueuedBlockEvents(hydratedBlocks: Set<string>) {
       blockEventQueue.push({event, currentTarget});
     }
   }
-  removeListenersFromBlocks([...hydratedBlocks]);
+  removeListenersFromBlocks([...hydratedBlocks], injector);
 }
 
-function removeListenersFromBlocks(blockNames: string[]) {
+function removeListenersFromBlocks(blockNames: string[], injector: Injector) {
   let blockList: Element[] = [];
+  const jsActionMap = injector.get(BLOCK_ELEMENT_MAP);
   for (let blockName of blockNames) {
-    blockList = [...blockList, ...jsActionMap.get(blockName)!];
+    if (jsActionMap.has(blockName)) {
+      blockList = [...blockList, ...jsActionMap.get(blockName)!];
+    }
   }
   const replayList = new Set(blockList);
   replayList.forEach(removeListeners);
+}
+
+export function convertHydrateTriggersToJsAction(triggers: HydrateTrigger[] | null): string[] {
+  let actionList: string[] = [];
+  if (triggers !== null) {
+    for (let trigger of triggers) {
+      switch (trigger) {
+        case HydrateTrigger.Hover:
+          actionList = [...actionList, 'mouseenter', 'focusin'];
+          break;
+        case HydrateTrigger.Interaction:
+          actionList = [...actionList, 'click', 'keydown'];
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  return actionList;
+}
+
+export function appendBlocksToJSActionMap(el: RElement, injector: Injector) {
+  const jsActionMap = injector.get(BLOCK_ELEMENT_MAP);
+  sharedMapFunction(el, jsActionMap);
 }

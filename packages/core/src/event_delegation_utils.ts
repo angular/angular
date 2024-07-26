@@ -47,8 +47,13 @@ export function setJSActionAttributes(
   if (!eventTypes.length) {
     return;
   }
-  const parts = eventTypes.reduce((prev, curr) => prev + curr + ':;', '');
   const existingAttr = nativeElement.getAttribute(Attribute.JSACTION);
+  // we need to dedupe in cases where hydrate triggers are used as it's possible that
+  // someone may have added an event binding to the root node that matches what the
+  // hydrate trigger adds.
+  const parts = eventTypes
+    .filter((et) => !existingAttr?.match(et))
+    .reduce((prev, curr) => prev + curr + ':;', '');
   //  This is required to be a module accessor to appease security tests on setAttribute.
   nativeElement.setAttribute(Attribute.JSACTION, `${existingAttr ?? ''}${parts}`);
 

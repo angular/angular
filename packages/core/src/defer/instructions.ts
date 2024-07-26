@@ -74,6 +74,7 @@ import {
   DeferredLoadingBlockConfig,
   DeferredPlaceholderBlockConfig,
   DependencyResolverFn,
+  HydrateTrigger,
   LDeferBlockDetails,
   LOADING_AFTER_CLEANUP_FN,
   NEXT_DEFER_BLOCK_STATE,
@@ -254,8 +255,8 @@ export function ɵɵdefer(
       loadingPromise: null,
       providers: null,
       taskId: null,
-      hydrate: false,
       uniqueId: uniqueId,
+      hydrateTriggers: null,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
     setTDeferBlockDetails(tView, adjustedIndex, tDetails);
@@ -371,7 +372,8 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
   const lView = getLView();
   const tNode = getSelectedTNode();
   const bindingIndex = nextBindingIndex();
-  getTDeferBlockDetails(getTView(), tNode).hydrate = true;
+  const hydrateTriggers = (getTDeferBlockDetails(getTView(), tNode).hydrateTriggers ??= []);
+  hydrateTriggers.push(HydrateTrigger.When);
   if (bindingUpdated(lView, bindingIndex, rawValue)) {
     const prevConsumer = setActiveConsumer(null);
     try {
@@ -420,7 +422,9 @@ export function ɵɵdeferPrefetchOnIdle() {
 export function ɵɵdeferHydrateOnIdle() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  getTDeferBlockDetails(getTView(), tNode).hydrate = true;
+  const tDetails = getTDeferBlockDetails(getTView(), tNode);
+  const hydrateTriggers = (getTDeferBlockDetails(getTView(), tNode).hydrateTriggers ??= []);
+  hydrateTriggers.push(HydrateTrigger.Idle);
 
   if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -443,7 +447,10 @@ export function ɵɵdeferOnImmediate() {
   // Render placeholder block only if loading template is not present and we're on
   // the client to avoid content flickering, since it would be immediately replaced
   // by the loading block.
-  if (!shouldTriggerDeferBlock(injector, tDetails.hydrate) || tDetails.loadingTmplIndex === null) {
+  if (
+    !shouldTriggerDeferBlock(injector, tDetails.hydrateTriggers !== null) ||
+    tDetails.loadingTmplIndex === null
+  ) {
     renderPlaceholder(lView, tNode);
   }
   triggerDeferBlock(lView, tNode);
@@ -473,7 +480,8 @@ export function ɵɵdeferHydrateOnImmediate() {
   const tNode = getCurrentTNode()!;
   const tView = lView[TVIEW];
   const injector = lView[INJECTOR]!;
-  getTDeferBlockDetails(tView, tNode).hydrate = true;
+  const hydrateTriggers = (getTDeferBlockDetails(getTView(), tNode).hydrateTriggers ??= []);
+  hydrateTriggers.push(HydrateTrigger.Immediate);
 
   if (shouldTriggerWhenOnServer(injector)) {
     triggerDeferBlock(lView, tNode);
@@ -506,7 +514,8 @@ export function ɵɵdeferPrefetchOnTimer(delay: number) {
 export function ɵɵdeferHydrateOnTimer(delay: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  getTDeferBlockDetails(getTView(), tNode).hydrate = true;
+  const hydrateTriggers = (getTDeferBlockDetails(getTView(), tNode).hydrateTriggers ??= []);
+  hydrateTriggers.push(HydrateTrigger.Timer);
 
   if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -568,7 +577,8 @@ export function ɵɵdeferPrefetchOnHover(triggerIndex: number, walkUpTimes?: num
 export function ɵɵdeferHydrateOnHover() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  getTDeferBlockDetails(getTView(), tNode).hydrate = true;
+  const hydrateTriggers = (getTDeferBlockDetails(getTView(), tNode).hydrateTriggers ??= []);
+  hydrateTriggers.push(HydrateTrigger.Hover);
 
   if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -630,7 +640,8 @@ export function ɵɵdeferPrefetchOnInteraction(triggerIndex: number, walkUpTimes
 export function ɵɵdeferHydrateOnInteraction() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  getTDeferBlockDetails(getTView(), tNode).hydrate = true;
+  const hydrateTriggers = (getTDeferBlockDetails(getTView(), tNode).hydrateTriggers ??= []);
+  hydrateTriggers.push(HydrateTrigger.Interaction);
 
   // TODO: this should be repeated for all "on" conditions.
   if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
@@ -693,6 +704,8 @@ export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: 
 export function ɵɵdeferHydrateOnViewport() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+  const hydrateTriggers = (getTDeferBlockDetails(getTView(), tNode).hydrateTriggers ??= []);
+  hydrateTriggers.push(HydrateTrigger.Viewport);
 
   // TODO: this should be repeated for all "on" conditions.
   if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
@@ -1095,7 +1108,10 @@ function isValidStateChange(
  */
 export function triggerPrefetching(tDetails: TDeferBlockDetails, lView: LView, tNode: TNode) {
   const tDeferBlockDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
-  if (lView[INJECTOR] && shouldTriggerDeferBlock(lView[INJECTOR]!, tDeferBlockDetails.hydrate)) {
+  if (
+    lView[INJECTOR] &&
+    shouldTriggerDeferBlock(lView[INJECTOR]!, tDeferBlockDetails.hydrateTriggers !== null)
+  ) {
     triggerResourceLoading(tDetails, lView, tNode);
   }
 }
@@ -1279,7 +1295,7 @@ export function triggerDeferBlock(lView: LView, tNode: TNode) {
   const lDetails = getLDeferBlockDetails(lView, tNode);
   const tDetails = getTDeferBlockDetails(tView, tNode);
 
-  if (!shouldTriggerDeferBlock(injector, tDetails.hydrate)) return;
+  if (!shouldTriggerDeferBlock(injector, tDetails.hydrateTriggers !== null)) return;
 
   // Defer block is triggered, cleanup all registered trigger functions.
   invokeAllTriggerCleanupFns(lDetails);
