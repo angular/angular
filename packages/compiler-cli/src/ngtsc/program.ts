@@ -28,7 +28,7 @@ import {IndexedComponent} from './indexer';
 import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
 import {TsCreateProgramDriver} from './program_driver';
 import {DeclarationNode} from './reflection';
-import {retagAllTsFiles, untagAllTsFiles} from './shims';
+import {retagAllTsFiles} from './shims';
 import {OptimizeFor} from './typecheck/api';
 
 /**
@@ -292,10 +292,6 @@ export class NgtscProgram implements api.Program {
         };
       }
     }
-
-    // Untag all the files, otherwise TS 5.4 may end up emitting
-    // references to typecheck files (see #56945).
-    untagAllTsFiles(this.tsProgram);
 
     const forceEmit = opts?.forceEmit ?? false;
 
