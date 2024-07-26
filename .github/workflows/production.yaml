@@ -1,0 +1,46 @@
+name: Netlify Production Deployment
+on:
+  push:
+    branches:
+      - main
+      - master
+env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_API_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+jobs:
+  Deploy-Production-Shared:
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'yarn'
+
+      - name: Install Netlify CLI
+        run: yarn global add netlify-cli@17.23
+
+      - name: Link Netlify project
+        run: netlify link
+
+      - name: Set environment variables from secrets and create .env file
+        run: |
+          echo "${{ vars.ENV_FILE }}" > .env
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Build Project Artifacts
+        run: yarn docs:build
+
+      - name: Deploy Project Artifacts to Netlify
+        run: |
+          netlify deploy \
+            --dir ./dist/bin/adev/build/browser \
+            --skip-functions-cache \
+            --prod \
+            --message "Action-${{env.BRANCH_NAME}}-${{github.event.head_commit.message}}"
+            
