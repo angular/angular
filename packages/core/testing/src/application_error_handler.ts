@@ -6,31 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  ErrorHandler,
-  inject,
-  NgZone,
-  Injectable,
-  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
-} from '@angular/core';
+import {ErrorHandler, inject, NgZone, Injectable, InjectionToken} from '@angular/core';
+
+export const RETHROW_APPLICATION_ERRORS = new InjectionToken<boolean>('rethrow application errors');
 
 @Injectable()
 export class TestBedApplicationErrorHandler {
   private readonly zone = inject(NgZone);
   private readonly userErrorHandler = inject(ErrorHandler);
-  private readonly zoneless = inject(ZONELESS_ENABLED);
   readonly whenStableRejectFunctions: Set<(e: unknown) => void> = new Set();
 
   handleError(e: unknown) {
-    // TODO(atscott): Investigate if we can align the behaviors of zone and zoneless
-    if (this.zoneless) {
-      this.zonelessHandleError(e);
-    } else {
-      this.zone.runOutsideAngular(() => this.userErrorHandler.handleError(e));
-    }
-  }
-
-  private zonelessHandleError(e: unknown) {
     try {
       this.zone.runOutsideAngular(() => this.userErrorHandler.handleError(e));
     } catch (userError: unknown) {

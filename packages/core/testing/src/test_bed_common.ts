@@ -73,6 +73,9 @@ export interface TestModuleMetadata {
    * Defaults to `manual`.
    */
   deferBlockBehavior?: DeferBlockBehavior;
+
+  /** @internal */
+  _rethrowApplicationTickErrors?: boolean;
 }
 
 /**
