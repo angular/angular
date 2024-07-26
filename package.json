@@ -200,7 +200,7 @@
     "gsap": "^3.12.3",
     "gulp": "^5.0.0",
     "gulp-conventional-changelog": "^5.0.0",
-    "husky": "9.1.1",
+    "husky": "9.1.3",
     "inquirer": "^10.0.0",
     "jsdom": "^24.0.0",
     "karma-coverage": "^2.2.1",
