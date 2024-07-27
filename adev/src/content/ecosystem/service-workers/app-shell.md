@@ -28,7 +28,7 @@ ng generate app-shell
 
 </docs-code>
 
-For more information about this command, see [App shell command](cli/generate#app-shell-command).
+For more information about this command, see [App shell command](cli/generate/app-shell).
 
 The command updates the application code and adds extra files to the project structure.
 
