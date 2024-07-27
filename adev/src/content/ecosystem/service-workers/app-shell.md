@@ -1,11 +1,9 @@
 # App shell pattern
 
-The [App shell pattern](https://developers.google.com/web/fundamentals/architecture/app-shell) is a way to render a portion of your application using a route at build time.
+The [App shell pattern](https://developer.chrome.com/blog/app-shell) is a way to render a portion of your application using a route at build time.
 It can improve the user experience by quickly launching a static rendered page (a skeleton common to all pages) while the browser downloads the full client version and switches to it automatically after the code loads.
 
 This gives users a meaningful first paint of your application that appears quickly because the browser can render the HTML and CSS without the need to initialize any JavaScript.
-
-Learn more in [The App Shell Model](https://developers.google.com/web/fundamentals/architecture/app-shell).
 
 <docs-workflow>
 <docs-step title="Prepare the application">
