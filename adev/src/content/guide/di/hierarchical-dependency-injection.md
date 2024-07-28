@@ -164,7 +164,7 @@ When resolving a token for a component/directive, Angular resolves it in two pha
 When a component declares a dependency, Angular tries to satisfy that dependency with its own `ElementInjector`.
 If the component's injector lacks the provider, it passes the request up to its parent component's `ElementInjector`.
 
-The requests keep forwarding up until Angular finds an injector that can handle the request or runs out of ancestor `ElementInjector` hierarchies.This approach allows different parents to tweak the behavior of the same child component differently within their respective trees, rather than being constrained by the module where the child belongs.
+The requests keep forwarding up until Angular finds an injector that can handle the request or runs out of ancestor `ElementInjector` hierarchies. This approach allows different parents to tweak the behavior of their child components differently within their respective trees, even though these child components are based on the same class. This means that components of the same class can exhibit different behaviors depending on the providers configured in the parent’s ElementInjector.
 
 If Angular doesn't find the provider in any `ElementInjector` hierarchies, it goes back to the element where the request originated and looks in the `EnvironmentInjector` hierarchy.
 If Angular still doesn't find the provider, it throws an error.
