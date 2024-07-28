@@ -302,9 +302,9 @@ If not specified, the default value depends on the data group's configured strat
 
 <docs-callout title="Comment on opaque responses">
   
-In case you are not familiar, an [opaque response][https://fetch.spec.whatwg.org#concept-filtered-response-opaque] is a special type of response returned when requesting a resource that is on a different origin which doesn't return CORS headers.
+In case you are not familiar, an [opaque response](https://fetch.spec.whatwg.org#concept-filtered-response-opaque) is a special type of response returned when requesting a resource that is on a different origin which doesn't return CORS headers.
 One of the characteristics of an opaque response is that the service worker is not allowed to read its status, meaning it can't check if the request was successful or not.
-See [Introduction to fetch()][https://developers.google.com/web/updates/2015/03/introduction-to-fetch#response_types] for more details.
+See [Introduction to `fetch()`](https://developers.google.com/web/updates/2015/03/introduction-to-fetch#response_types) for more details.
 
 If you are not able to implement CORS — for example, if you don't control the origin — prefer using the `freshness` strategy for resources that result in opaque responses.
 
