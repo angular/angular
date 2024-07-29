@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from './global';
+import {noop} from './noop';
 
 /**
  * Gets a scheduling function that runs the callback after the first of setTimeout and
@@ -35,38 +35,40 @@ import {global} from './global';
  * @returns a function to cancel the scheduled callback
  */
 export function scheduleCallbackWithRafRace(callback: Function): () => void {
-  let executeCallback = true;
-  setTimeout(() => {
-    if (!executeCallback) {
-      return;
-    }
-    executeCallback = false;
-    callback();
-  });
-  if (typeof global['requestAnimationFrame'] === 'function') {
-    global['requestAnimationFrame'](() => {
-      if (!executeCallback) {
-        return;
+  let timeoutId: number;
+  let animationFrameId: number;
+  function cleanup() {
+    callback = noop;
+    try {
+      if (animationFrameId !== undefined && typeof cancelAnimationFrame === 'function') {
+        cancelAnimationFrame(animationFrameId);
       }
-      executeCallback = false;
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+      }
+    } catch {
+      // Clearing/canceling can fail in tests due to the timing of functions being patched and unpatched
+      // Just ignore the errors - we protect ourselves from this issue by also making the callback a no-op.
+    }
+  }
+  timeoutId = setTimeout(() => {
+    callback();
+    cleanup();
+  }) as unknown as number;
+  if (typeof requestAnimationFrame === 'function') {
+    animationFrameId = requestAnimationFrame(() => {
       callback();
+      cleanup();
     });
   }
 
-  return () => {
-    executeCallback = false;
-  };
+  return () => cleanup();
 }
 
 export function scheduleCallbackWithMicrotask(callback: Function): () => void {
-  let executeCallback = true;
-  queueMicrotask(() => {
-    if (executeCallback) {
-      callback();
-    }
-  });
+  queueMicrotask(() => callback());
 
   return () => {
-    executeCallback = false;
+    callback = noop;
   };
 }
