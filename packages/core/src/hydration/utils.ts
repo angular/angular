@@ -17,8 +17,6 @@ import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
 import type {HydrationContext} from './annotate';
-import {DeferBlockRegistry, onDeferBlockCompletion, triggerDeferBlock} from '../defer/instructions';
-import {getLDeferBlockDetails} from '../defer/utils';
 
 import {
   CONTAINERS,
@@ -28,10 +26,9 @@ import {
   MULTIPLIER,
   NUM_ROOT_NODES,
   SerializedContainerView,
+  SerializedDeferBlock,
   SerializedView,
 } from './interfaces';
-import {ApplicationRef} from '../core';
-import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -47,16 +44,13 @@ export const NGH_DATA_KEY = makeStateKey<Array<SerializedView>>(TRANSFER_STATE_T
 /**
  * The name of the key used in the TransferState collection,
  * where serialized defer block information is located.
- *
- * TODO: consider updating '__nghData__' key and change value format
- * from an array to an object.
  */
-const TRANSFER_STATE_DEFER_BLOCKS_INFO = '__nghDeferBlocks__';
+const TRANSFER_STATE_DEFER_BLOCKS_INFO = '__nghDeferData__';
 
 /**
  * Lookup key used to retrieve defer block datain `TransferState`.
  */
-export const NGH_DEFER_BLOCKS_KEY = makeStateKey<{[key: string]: string | null}>(
+export const NGH_DEFER_BLOCKS_KEY = makeStateKey<{[key: string]: SerializedDeferBlock}>(
   TRANSFER_STATE_DEFER_BLOCKS_INFO,
 );
 
@@ -131,6 +125,7 @@ export function retrieveHydrationInfoImpl(
   const remainingNgh = isRootView ? componentViewNgh : rootNgh;
 
   let data: SerializedView = {};
+  let nghDeferData: {[key: string]: SerializedDeferBlock} | undefined;
   // An element might have an empty `ngh` attribute value (e.g. `<comp ngh="" />`),
   // which means that no special annotations are required. Do not attempt to read
   // from the TransferState in this case.
@@ -138,6 +133,8 @@ export function retrieveHydrationInfoImpl(
     const transferState = injector.get(TransferState, null, {optional: true});
     if (transferState !== null) {
       const nghData = transferState.get(NGH_DATA_KEY, []);
+
+      nghDeferData = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
 
       // The nghAttrValue is always a number referencing an index
       // in the hydration TransferState data.
@@ -153,6 +150,10 @@ export function retrieveHydrationInfoImpl(
     data,
     firstChild: rNode.firstChild ?? null,
   };
+
+  if (nghDeferData) {
+    dehydratedView.dehydratedDeferBlockData = nghDeferData;
+  }
 
   if (isRootView) {
     // If there is hydration info present for the root view, it means that there was
@@ -499,73 +500,4 @@ export function processTextNodeBeforeSerialization(context: HydrationContext, no
   } else if (el.nextSibling?.nodeType === Node.TEXT_NODE) {
     corruptedTextNodes.set(el, TextNodeMarker.Separator);
   }
-}
-
-/**
- * Finds first hydrated parent `@defer` block for a given block id.
- * If there are any dehydrated `@defer` blocks found along the way,
- * they are also stored and returned from the function (as a list of ids).
- */
-export function findFirstKnownParentDeferBlock(deferBlockId: string, appRef: ApplicationRef) {
-  const deferBlockRegistry = appRef.injector.get(DeferBlockRegistry);
-  const transferState = appRef.injector.get(TransferState);
-  const deferBlockParents = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
-  const dehydratedBlocks: string[] = [];
-
-  let deferBlock = deferBlockRegistry.get(deferBlockId) ?? null;
-  let currentBlockId: string | null = deferBlockId;
-  while (!deferBlock) {
-    dehydratedBlocks.unshift(currentBlockId);
-    currentBlockId = deferBlockParents[currentBlockId];
-    if (!currentBlockId) break;
-    deferBlock = deferBlockRegistry.get(currentBlockId);
-  }
-  return {blockId: currentBlockId, deferBlock, dehydratedBlocks};
-}
-
-function triggerAndWaitForCompletion(deferBlock: any): Promise<void> {
-  const lDetails = getLDeferBlockDetails(deferBlock.lView, deferBlock.tNode);
-  const promise = new Promise<void>((resolve) => {
-    onDeferBlockCompletion(lDetails, resolve);
-  });
-  triggerDeferBlock(deferBlock.lView, deferBlock.tNode);
-  return promise;
-}
-
-async function hydrateFromBlockNameImpl(
-  appRef: ApplicationRef,
-  blockName: string,
-  hydratedBlocks: Set<string>,
-): Promise<void> {
-  const deferBlockRegistry = appRef.injector.get(DeferBlockRegistry);
-
-  // Make sure we don't hydrate/trigger the same thing multiple times
-  if (deferBlockRegistry.hydrating.has(blockName)) return;
-
-  const {blockId, deferBlock, dehydratedBlocks} = findFirstKnownParentDeferBlock(blockName, appRef);
-  if (deferBlock && blockId) {
-    hydratedBlocks.add(blockId);
-    deferBlockRegistry.hydrating.add(blockId);
-
-    await triggerAndWaitForCompletion(deferBlock);
-    for (const dehydratedBlock of dehydratedBlocks) {
-      await hydrateFromBlockNameImpl(appRef, dehydratedBlock, hydratedBlocks);
-    }
-  } else {
-    // TODO: this is likely an error, consider producing a `console.error`.
-  }
-}
-
-export async function hydrateFromBlockName(
-  appRef: ApplicationRef,
-  blockName: string,
-): Promise<Set<string>> {
-  const deferBlockRegistry = appRef.injector.get(DeferBlockRegistry);
-  const hydratedBlocks = new Set<string>();
-
-  // Make sure we don't hydrate/trigger the same thing multiple times
-  if (deferBlockRegistry.hydrating.has(blockName)) return hydratedBlocks;
-
-  await hydrateFromBlockNameImpl(appRef, blockName, hydratedBlocks);
-  return hydratedBlocks;
 }

@@ -44,8 +44,8 @@ import {
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
-import {hydrateFromBlockName, findFirstKnownParentDeferBlock} from './utils';
-import {HydrateTrigger} from '../defer/interfaces';
+import {hydrateFromBlockName, findFirstKnownParentDeferBlock} from './blocks';
+import {Trigger} from '../defer/interfaces';
 
 /**
  * A set of in progress hydrating blocks
@@ -154,7 +154,7 @@ const initEventReplay = (eventDelegation: EventContractDetails, injector: Inject
   eventContract.replayEarlyEventInfos(eventInfos);
   clearAppScopedEarlyEventContract(appId);
   const dispatcher = new EventDispatcher((event) => {
-    invokeRegisteredReplayListeners(appRef, event, event.currentTarget as Element);
+    invokeRegisteredReplayListeners(injector, event, event.currentTarget as Element);
   });
   registerDispatcher(eventContract, dispatcher);
 };
@@ -219,13 +219,13 @@ function invokeListeners(event: Event, currentTarget: Element | null) {
 }
 
 export function invokeRegisteredReplayListeners(
-  appRef: ApplicationRef,
+  injector: Injector,
   event: Event,
   currentTarget: Element | null,
 ) {
   const blockName = (currentTarget && currentTarget.getAttribute(BLOCKNAME_ATTRIBUTE)) ?? '';
   if (/d\d+/.test(blockName)) {
-    hydrateAndInvokeBlockListeners(blockName, appRef, event, currentTarget!);
+    hydrateAndInvokeBlockListeners(blockName, injector, event, currentTarget!);
   } else if (event.eventPhase === EventPhase.REPLAY) {
     invokeListeners(event, currentTarget);
   }
@@ -233,27 +233,27 @@ export function invokeRegisteredReplayListeners(
 
 function hydrateAndInvokeBlockListeners(
   blockName: string,
-  appRef: ApplicationRef,
+  injector: Injector,
   event: Event,
   currentTarget: Element,
 ) {
   blockEventQueue.push({event, currentTarget});
   if (!hydratingBlocks.has(blockName)) {
     hydratingBlocks.add(blockName);
-    triggerBlockHydration(appRef, blockName);
+    triggerBlockHydration(injector, blockName);
     hydratingBlocks.delete(blockName);
   }
 }
 
-async function triggerBlockHydration(appRef: ApplicationRef, blockName: string) {
+async function triggerBlockHydration(injector: Injector, blockName: string) {
   // grab the list of dehydrated blocks and queue them up
-  const {dehydratedBlocks} = findFirstKnownParentDeferBlock(blockName, appRef);
+  const {dehydratedBlocks} = findFirstKnownParentDeferBlock(blockName, injector);
   for (let block of dehydratedBlocks) {
     hydratingBlocks.add(block);
   }
-  const hydratedBlocks = await hydrateFromBlockName(appRef, blockName);
+  const hydratedBlocks = await hydrateFromBlockName(injector, blockName);
   hydratedBlocks.add(blockName);
-  replayQueuedBlockEvents(hydratedBlocks, appRef.injector);
+  replayQueuedBlockEvents(hydratedBlocks, injector);
 }
 
 function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector) {
@@ -285,15 +285,15 @@ function removeListenersFromBlocks(blockNames: string[], injector: Injector) {
   replayList.forEach(removeListeners);
 }
 
-export function convertHydrateTriggersToJsAction(triggers: HydrateTrigger[] | null): string[] {
+export function convertHydrateTriggersToJsAction(triggers: Trigger[] | null): string[] {
   let actionList: string[] = [];
   if (triggers !== null) {
     for (let trigger of triggers) {
       switch (trigger) {
-        case HydrateTrigger.Hover:
+        case Trigger.Hover:
           actionList = [...actionList, 'mouseenter', 'focusin'];
           break;
-        case HydrateTrigger.Interaction:
+        case Trigger.Interaction:
           actionList = [...actionList, 'click', 'keydown'];
           break;
         default:

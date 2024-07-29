@@ -170,7 +170,9 @@ describe('platform-server partial hydration integration', () => {
         // <p> is inside a nested defer block -> different namespace.
         expect(ssrContents).toContain('<p jsaction="click:;keydown:;" ngb="d1');
         // There is an extra annotation in the TransferState data.
-        expect(ssrContents).toContain('"__nghDeferBlocks__":{"d0":null,"d1":"d0"}');
+        expect(ssrContents).toContain(
+          '"__nghDeferData__":{"d0":{"p":null,"r":1,"s":2,"t":[3],"pt":null},"d1":{"p":"d0","r":1,"s":2,"t":[3],"pt":null}}',
+        );
         // Outer defer block is rendered.
         expect(ssrContents).toContain('Main defer block rendered');
         // Inner defer block is rendered as well.
@@ -281,7 +283,9 @@ describe('platform-server partial hydration integration', () => {
         // <p> is inside a nested defer block -> different namespace.
         expect(ssrContents).toContain('<p jsaction="click:;keydown:;" ngb="d1');
         // There is an extra annotation in the TransferState data.
-        expect(ssrContents).toContain('"__nghDeferBlocks__":{"d0":null,"d1":"d0"}');
+        expect(ssrContents).toContain(
+          '"__nghDeferData__":{"d0":{"p":null,"r":1,"s":2,"t":[3],"pt":null},"d1":{"p":"d0","r":1,"s":2,"t":[3],"pt":null}}',
+        );
         // Outer defer block is rendered.
         expect(ssrContents).toContain('Main defer block rendered');
         // Inner defer block is rendered as well.
@@ -389,7 +393,9 @@ describe('platform-server partial hydration integration', () => {
         // <p> is inside a nested defer block -> different namespace.
         // expect(ssrContents).toContain('<p jsaction="click:;" ngb="d1');
         // There is an extra annotation in the TransferState data.
-        expect(ssrContents).toContain('"__nghDeferBlocks__":{"d0":null,"d1":"d0"}');
+        expect(ssrContents).toContain(
+          '"__nghDeferData__":{"d0":{"p":null,"r":1,"s":2,"t":[3],"pt":null},"d1":{"p":"d0","r":1,"s":0,"t":null,"pt":null}}',
+        );
         // Outer defer block is rendered.
         expect(ssrContents).toContain('Main defer block rendered');
         // Inner defer block should only display placeholder.

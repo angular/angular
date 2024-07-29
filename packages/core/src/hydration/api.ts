@@ -43,12 +43,7 @@ import {
   IS_PARTIAL_HYDRATION_ENABLED,
   PRESERVE_HOST_CONTENT,
 } from './tokens';
-import {
-  enableRetrieveHydrationInfoImpl,
-  NGH_DATA_KEY,
-  NGH_DEFER_BLOCKS_KEY,
-  SSR_CONTENT_INTEGRITY_MARKER,
-} from './utils';
+import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 
 /**

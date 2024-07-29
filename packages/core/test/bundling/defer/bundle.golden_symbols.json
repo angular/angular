@@ -1170,6 +1170,9 @@
     "name": "init_bindings"
   },
   {
+    "name": "init_blocks"
+  },
+  {
     "name": "init_bootstrap"
   },
   {
@@ -1933,6 +1936,9 @@
   },
   {
     "name": "init_reflection_capabilities"
+  },
+  {
+    "name": "init_registry"
   },
   {
     "name": "init_render"
