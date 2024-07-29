@@ -7643,6 +7643,72 @@ describe('platform-server hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.innerHTML).toContain(`<inner>${expectedContent}</inner>`);
       });
+
+      it('should handle let declaration before and directly inside of an embedded view', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            @let before = 'before';
+            @if (true) {
+              @let inside = 'inside';
+              {{before}}|{{inside}}
+            }
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('before|inside');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('before|inside');
+      });
+
+      it('should handle let declaration before, directly inside of and after an embedded view', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            @let before = 'before';
+            @if (true) {
+              @let inside = 'inside';
+              {{inside}}
+            }
+            @let after = 'after';
+            {{before}}|{{after}}
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('inside <!--container--> before|after');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('inside  before|after');
+      });
     });
 
     describe('Router', () => {
