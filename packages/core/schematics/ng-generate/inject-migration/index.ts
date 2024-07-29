@@ -67,15 +67,18 @@ function runInjectMigration(
 
   for (const sourceFile of sourceFiles) {
     const changes = migrateFile(sourceFile, schematicOptions);
-    const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
 
-    changes.forEach((change) => {
-      if (change.removeLength != null) {
-        update.remove(change.start, change.removeLength);
+    if (changes.length > 0) {
+      const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
+
+      for (const change of changes) {
+        if (change.removeLength != null) {
+          update.remove(change.start, change.removeLength);
+        }
+        update.insertRight(change.start, change.text);
       }
-      update.insertRight(change.start, change.text);
-    });
 
-    tree.commitUpdate(update);
+      tree.commitUpdate(update);
+    }
   }
 }

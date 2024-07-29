@@ -107,7 +107,7 @@ describe('inject migration', () => {
     await runMigration();
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Inject, inject } from '@angular/core';`,
+      `import { Directive, inject } from '@angular/core';`,
       `import { Foo } from 'foo';`,
       `import { FOO_TOKEN } from './token';`,
       ``,
@@ -134,7 +134,7 @@ describe('inject migration', () => {
     await runMigration();
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Inject, inject } from '@angular/core';`,
+      `import { Directive, inject } from '@angular/core';`,
       ``,
       `@Directive()`,
       `class MyDir {`,
@@ -162,7 +162,7 @@ describe('inject migration', () => {
     await runMigration();
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Inject, ElementRef, inject } from '@angular/core';`,
+      `import { Directive, ElementRef, inject } from '@angular/core';`,
       ``,
       `@Directive()`,
       `class MyDir {`,
@@ -188,7 +188,7 @@ describe('inject migration', () => {
     await runMigration();
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Attribute, HostAttributeToken, inject } from '@angular/core';`,
+      `import { Directive, HostAttributeToken, inject } from '@angular/core';`,
       ``,
       `@Directive()`,
       `class MyDir {`,
@@ -218,7 +218,7 @@ describe('inject migration', () => {
     await runMigration();
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Inject, Optional, Self, Host, inject } from '@angular/core';`,
+      `import { Directive, inject } from '@angular/core';`,
       `import { FOO_TOKEN, BAR_TOKEN, Foo } from './tokens';`,
       ``,
       `@Directive()`,
@@ -226,6 +226,51 @@ describe('inject migration', () => {
       `  private a = inject(FOO_TOKEN, { optional: true });`,
       `  protected b = inject(BAR_TOKEN, { self: true });`,
       `  readonly c = inject(Foo, { optional: true, host: true });`,
+      `}`,
+    ]);
+  });
+
+  it('should preserve parameter decorators if they are used outside of the migrated class', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Inject, Optional } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        `import { FOO_TOKEN } from './token';`,
+        ``,
+        `@Directive({`,
+        `  providers: [`,
+        `    {`,
+        `      provide: FOO_TOKEN,`,
+        `      deps: [new Inject(FOO_TOKEN), new Optional()]`,
+        `      useFactory: (defaultValue?: any) => defaultValue || 'hello'`,
+        `    }`,
+        `  ]`,
+        `})`,
+        `class MyDir {`,
+        `  constructor(@Inject(FOO_TOKEN) @Optional() private foo: Foo) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, Inject, Optional, inject } from '@angular/core';`,
+      `import { Foo } from 'foo';`,
+      `import { FOO_TOKEN } from './token';`,
+      ``,
+      `@Directive({`,
+      `  providers: [`,
+      `    {`,
+      `      provide: FOO_TOKEN,`,
+      `      deps: [new Inject(FOO_TOKEN), new Optional()]`,
+      `      useFactory: (defaultValue?: any) => defaultValue || 'hello'`,
+      `    }`,
+      `  ]`,
+      `})`,
+      `class MyDir {`,
+      `  private foo = inject(FOO_TOKEN, { optional: true });`,
       `}`,
     ]);
   });
@@ -521,7 +566,7 @@ describe('inject migration', () => {
     await runMigration();
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Inject, LOCALE_ID, inject } from '@angular/core';`,
+      `import { Directive, LOCALE_ID, inject } from '@angular/core';`,
       ``,
       `@Directive()`,
       `class MyDir {`,
@@ -1087,7 +1132,7 @@ describe('inject migration', () => {
     await runMigration({nonNullableOptional: true});
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Optional, inject } from '@angular/core';`,
+      `import { Directive, inject } from '@angular/core';`,
       `import { Foo } from 'foo';`,
       ``,
       `@Directive()`,
@@ -1123,7 +1168,7 @@ describe('inject migration', () => {
     await runMigration({nonNullableOptional: true});
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Inject, Optional, inject } from '@angular/core';`,
+      `import { Directive, inject } from '@angular/core';`,
       `import { A, B, C, D, E, F, G, H } from './types';`,
       ``,
       `@Directive()`,
@@ -1157,7 +1202,7 @@ describe('inject migration', () => {
     await runMigration();
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Optional, inject } from '@angular/core';`,
+      `import { Directive, inject } from '@angular/core';`,
       `import { Foo } from 'foo';`,
       ``,
       `@Directive()`,
@@ -1186,7 +1231,7 @@ describe('inject migration', () => {
     await runMigration();
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Inject, forwardRef, inject } from '@angular/core';`,
+      `import { Directive, inject } from '@angular/core';`,
       ``,
       `@Directive()`,
       `class MyDir {`,
@@ -1219,7 +1264,7 @@ describe('inject migration', () => {
     await runMigration();
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Inject, forwardRef, inject } from '@angular/core';`,
+      `import { Directive, inject } from '@angular/core';`,
       ``,
       `@Directive()`,
       `class MyDir {`,
@@ -1250,7 +1295,7 @@ describe('inject migration', () => {
     await runMigration();
 
     expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive, Inject, forwardRef as aliasedForwardRef, inject } from '@angular/core';`,
+      `import { Directive, inject } from '@angular/core';`,
       ``,
       `@Directive()`,
       `class MyDir {`,
@@ -1259,6 +1304,39 @@ describe('inject migration', () => {
       ``,
       `@Directive()`,
       `class Foo {}`,
+    ]);
+  });
+
+  it('should preserve the forwardRef import if it is used outside of the constructor', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Inject, forwardRef } from '@angular/core';`,
+        ``,
+        `@Directive({`,
+        `  providers: [`,
+        `    {provide: forwardRef(() => MyDir), useClass: MyDir}`,
+        `  ]`,
+        `})`,
+        `class MyDir {`,
+        `  constructor(@Inject(forwardRef(() => MyDir)) readonly foo: MyDir) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, forwardRef, inject } from '@angular/core';`,
+      ``,
+      `@Directive({`,
+      `  providers: [`,
+      `    {provide: forwardRef(() => MyDir), useClass: MyDir}`,
+      `  ]`,
+      `})`,
+      `class MyDir {`,
+      `  readonly foo = inject(MyDir);`,
+      `}`,
     ]);
   });
 });
