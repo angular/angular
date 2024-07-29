@@ -27,6 +27,13 @@ export function isReferenceToImport(
   node: ts.Node,
   importSpecifier: ts.ImportSpecifier,
 ): boolean {
+  // If this function is called on an identifier (should be most cases), we can quickly rule out
+  // non-matches by comparing the identifier's string and the local name of the import specifier
+  // which saves us some calls to the type checker.
+  if (ts.isIdentifier(node) && node.text !== importSpecifier.name.text) {
+    return false;
+  }
+
   const nodeSymbol = typeChecker.getTypeAtLocation(node).getSymbol();
   const importSymbol = typeChecker.getTypeAtLocation(importSpecifier).getSymbol();
   return (
