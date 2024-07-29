@@ -39,7 +39,8 @@
 .xterm-screen {
   padding: 10px;
   box-sizing: border-box;
-  overflow: visible !important;
+  overflow-x: visible !important;
+  overflow-y: auto !important;
   height: 100% !important;
   width: 100% !important;
 }
