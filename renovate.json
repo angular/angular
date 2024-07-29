@@ -49,7 +49,7 @@
   ],
   "packageRules": [
     {
-      "matchDepPatterns": ["*"],
+      "matchPackageNames": ["*"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
       "schedule": ["after 10:00pm on monday", "before 04:00am on tuesday"]
