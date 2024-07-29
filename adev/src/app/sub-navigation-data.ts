@@ -1477,6 +1477,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'reference/migrations/control-flow',
         contentPath: 'reference/migrations/control-flow',
       },
+      {
+        label: 'inject() Function',
+        path: 'reference/migrations/inject-function',
+        contentPath: 'reference/migrations/inject-function',
+      },
     ],
   },
   {
