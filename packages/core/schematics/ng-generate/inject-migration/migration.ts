@@ -9,13 +9,14 @@
 import ts from 'typescript';
 import {PendingChange, ChangeTracker} from '../../utils/change_tracker';
 import {
-  detectClassesUsingDI,
+  analyzeFile,
   getNodeIndentation,
   getSuperParameters,
   getConstructorUnusedParameters,
   hasGenerics,
   isNullableType,
   parameterDeclaresProperty,
+  DI_PARAM_SYMBOLS,
 } from './analysis';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
@@ -50,10 +51,16 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
   // 2. All the necessary information for this migration is local so using a file-specific type
   //    checker should speed up the lookups.
   const localTypeChecker = getLocalTypeChecker(sourceFile);
+  const analysis = analyzeFile(sourceFile, localTypeChecker);
+
+  if (analysis === null || analysis.classes.length === 0) {
+    return [];
+  }
+
   const printer = ts.createPrinter();
   const tracker = new ChangeTracker(printer);
 
-  detectClassesUsingDI(sourceFile, localTypeChecker).forEach((result) => {
+  analysis.classes.forEach((result) => {
     migrateClass(
       result.node,
       result.constructor,
@@ -63,6 +70,13 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
       printer,
       tracker,
     );
+  });
+
+  DI_PARAM_SYMBOLS.forEach((name) => {
+    // Both zero and undefined are fine here.
+    if (!analysis.nonDecoratorReferences[name]) {
+      tracker.removeImport(sourceFile, name, '@angular/core');
+    }
   });
 
   return tracker.recordChanges().get(sourceFile) || [];

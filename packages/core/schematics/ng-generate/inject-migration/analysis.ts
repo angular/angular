@@ -8,6 +8,8 @@
 
 import ts from 'typescript';
 import {getAngularDecorators} from '../../utils/ng_decorators';
+import {getNamedImports} from '../../utils/typescript/imports';
+import {isReferenceToImport} from '../../utils/typescript/symbol';
 
 /** Names of decorators that enable DI on a class declaration. */
 const DECORATORS_SUPPORTING_DI = new Set([
@@ -18,20 +20,82 @@ const DECORATORS_SUPPORTING_DI = new Set([
   'Injectable',
 ]);
 
+/** Names of symbols used for DI on parameters. */
+export const DI_PARAM_SYMBOLS = new Set([
+  'Inject',
+  'Attribute',
+  'Optional',
+  'SkipSelf',
+  'Self',
+  'Host',
+  'forwardRef',
+]);
+
 /**
- * Detects the classes within a file that are likely using DI.
- * @param sourceFile File in which to search for classes.
+ * Finds the necessary information for the `inject` migration in a file.
+ * @param sourceFile File which to analyze.
  * @param localTypeChecker Type checker scoped to the specific file.
  */
-export function detectClassesUsingDI(sourceFile: ts.SourceFile, localTypeChecker: ts.TypeChecker) {
-  const results: {
+export function analyzeFile(sourceFile: ts.SourceFile, localTypeChecker: ts.TypeChecker) {
+  const coreSpecifiers = getNamedImports(sourceFile, '@angular/core');
+
+  // Exit early if there are no Angular imports.
+  if (coreSpecifiers === null || coreSpecifiers.elements.length === 0) {
+    return null;
+  }
+
+  const classes: {
     node: ts.ClassDeclaration;
     constructor: ts.ConstructorDeclaration;
     superCall: ts.CallExpression | null;
   }[] = [];
+  const nonDecoratorReferences: Record<string, number | undefined> = {};
+  const importsToSpecifiers = coreSpecifiers.elements.reduce((map, specifier) => {
+    const symbolName = (specifier.propertyName || specifier.name).text;
+    if (DI_PARAM_SYMBOLS.has(symbolName)) {
+      map.set(symbolName, specifier);
+    }
+    return map;
+  }, new Map<string, ts.ImportSpecifier>());
 
   sourceFile.forEachChild(function walk(node) {
-    if (ts.isClassDeclaration(node)) {
+    // Skip import declarations since they can throw off the identifier
+    // could below and we don't care about them in this migration.
+    if (ts.isImportDeclaration(node)) {
+      return;
+    }
+
+    // Only visit the initializer of parameters, because we won't exclude
+    // their decorators from the identifier counting result below.
+    if (ts.isParameter(node)) {
+      if (node.initializer) {
+        walk(node.initializer);
+      }
+      return;
+    }
+
+    if (ts.isIdentifier(node) && importsToSpecifiers.size > 0) {
+      let symbol: ts.Symbol | undefined;
+
+      for (const [name, specifier] of importsToSpecifiers) {
+        const localName = (specifier.propertyName || specifier.name).text;
+
+        // Quick exit if the two symbols don't match up.
+        if (localName === node.text) {
+          if (!symbol) {
+            symbol = localTypeChecker.getSymbolAtLocation(node);
+
+            // If the symbol couldn't be resolved the first time, it won't be resolved the next
+            // time either. Stop the loop since we won't be able to get an accurate result.
+            if (!symbol || !symbol.declarations) {
+              break;
+            } else if (symbol.declarations.some((decl) => decl === specifier)) {
+              nonDecoratorReferences[name] = (nonDecoratorReferences[name] || 0) + 1;
+            }
+          }
+        }
+      }
+    } else if (ts.isClassDeclaration(node)) {
       const decorators = getAngularDecorators(localTypeChecker, ts.getDecorators(node) || []);
       const supportsDI = decorators.some((dec) => DECORATORS_SUPPORTING_DI.has(dec.name));
       const constructorNode = node.members.find(
@@ -42,7 +106,7 @@ export function detectClassesUsingDI(sourceFile: ts.SourceFile, localTypeChecker
       ) as ts.ConstructorDeclaration | undefined;
 
       if (supportsDI && constructorNode) {
-        results.push({
+        classes.push({
           node,
           constructor: constructorNode,
           superCall: node.heritageClauses ? findSuperCall(constructorNode) : null,
@@ -53,7 +117,7 @@ export function detectClassesUsingDI(sourceFile: ts.SourceFile, localTypeChecker
     node.forEachChild(walk);
   });
 
-  return results;
+  return {classes, nonDecoratorReferences};
 }
 
 /**
