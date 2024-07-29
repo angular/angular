@@ -864,7 +864,11 @@ export function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode | n
     ngDevMode &&
       assertTNodeType(
         tNode,
-        TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Icu | TNodeType.Projection,
+        TNodeType.AnyRNode |
+          TNodeType.AnyContainer |
+          TNodeType.Icu |
+          TNodeType.Projection |
+          TNodeType.LetDeclaration,
       );
 
     const tNodeType = tNode.type;
@@ -884,6 +888,8 @@ export function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode | n
           return unwrapRNode(rNodeOrLContainer);
         }
       }
+    } else if (tNodeType & TNodeType.LetDeclaration) {
+      return getFirstNativeNode(lView, tNode.next);
     } else if (tNodeType & TNodeType.Icu) {
       let nextRNode = icuContainerIterate(tNode as TIcuContainerNode, lView);
       let rNode: RNode | null = nextRNode();
