@@ -285,6 +285,9 @@
     "name": "NGH_DATA_KEY"
   },
   {
+    "name": "NGH_DEFER_BLOCKS_KEY"
+  },
+  {
     "name": "NG_COMP_DEF"
   },
   {

@@ -135,7 +135,12 @@ export interface TDeferBlockDetails {
   /**
    * List of hydrate triggers for a given block
    */
-  hydrateTriggers: HydrateTrigger[] | null;
+  hydrateTriggers: Trigger[] | null;
+
+  /**
+   * List of prefetch triggers for a given block
+   */
+  prefetchTriggers: Trigger[] | null;
 }
 
 /**
@@ -158,11 +163,11 @@ export enum DeferBlockState {
 }
 
 /**
- * Describes the hydrate trigger type.
+ * Describes the defer trigger type.
  *
  * @publicApi
  */
-export enum HydrateTrigger {
+export enum Trigger {
   Idle = 0,
 
   Immediate = 1,

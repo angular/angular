@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Trigger} from '../defer/interfaces';
 import type {I18nICUNode} from '../render3/interfaces/i18n';
 import {RNode} from '../render3/interfaces/renderer_dom';
 
@@ -38,7 +39,10 @@ export const NODES = 'n';
 export const DISCONNECTED_NODES = 'd';
 export const I18N_DATA = 'l';
 export const DEFER_BLOCK_ID = 'di';
-export const DEFER_BLOCK_STATE = 'ds';
+export const DEFER_BLOCK_STATE = 's';
+export const DEFER_PARENT_BLOCK_ID = 'p';
+export const DEFER_HYDRATE_TRIGGERS = 't';
+export const DEFER_PREFETCH_TRIGGERS = 'pt';
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -111,8 +115,7 @@ export interface SerializedView {
   [DEFER_BLOCK_ID]?: string;
 
   /**
-   * If this view represents a `@defer` block, this field represents
-   * a status, based on the `DeferBlockState` enum.
+   * This field represents a status, based on the `DeferBlockState` enum.
    */
   [DEFER_BLOCK_STATE]?: number;
 }
@@ -145,6 +148,42 @@ export interface SerializedContainerView extends SerializedView {
    * information about similar views (for example, produced by *ngFor).
    */
   [MULTIPLIER]?: number;
+}
+
+/**
+ * Serialized data structure that contains relevant defer block
+ * information that describes a given partial hydration boundary
+ */
+export interface SerializedDeferBlock {
+  /**
+   * This contains the unique id of this defer block's parent, if it exists.
+   */
+  [DEFER_PARENT_BLOCK_ID]: string | null;
+
+  /**
+   * This field represents a status, based on the `DeferBlockState` enum.
+   */
+  [DEFER_BLOCK_STATE]?: number;
+
+  /**
+   * Number of root nodes that belong to this defer block's template.
+   * This information is needed to effectively traverse the DOM tree
+   * and add jsaction attributes to root nodes appropriately for
+   * partial hydration.
+   */
+  [NUM_ROOT_NODES]: number;
+
+  /**
+   * The list of triggers that exist for partial hydration, based on the
+   * `Trigger` enum.
+   */
+  [DEFER_HYDRATE_TRIGGERS]: Trigger[] | null;
+
+  /**
+   * The list of triggers that exist for prefetching, based on the
+   * `Trigger` enum.
+   */
+  [DEFER_PREFETCH_TRIGGERS]: Trigger[] | null;
 }
 
 /**
@@ -207,6 +246,8 @@ export interface DehydratedView {
    * removed from the DOM during hydration cleanup.
    */
   dehydratedIcuData?: Map<number, DehydratedIcuData>;
+
+  dehydratedDeferBlockData?: Record<string, SerializedDeferBlock>;
 }
 
 /**

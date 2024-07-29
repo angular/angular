@@ -761,6 +761,11 @@ class HiddenModule {}
         doc = '<html><head></head><body><app></app></body></html>';
       });
 
+      afterEach(() => {
+        doc = '<html><head></head><body><app></app></body></html>';
+        TestBed.resetTestingModule();
+      });
+
       it('using long form should work', async () => {
         const platform = platformServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
 

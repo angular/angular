@@ -66,6 +66,9 @@ import {
   CONTAINERS,
   DEFER_BLOCK_ID,
   DEFER_BLOCK_STATE,
+  DEFER_HYDRATE_TRIGGERS,
+  DEFER_PARENT_BLOCK_ID,
+  DEFER_PREFETCH_TRIGGERS,
   DISCONNECTED_NODES,
   ELEMENT_CONTAINERS,
   I18N_DATA,
@@ -73,6 +76,7 @@ import {
   NODES,
   NUM_ROOT_NODES,
   SerializedContainerView,
+  SerializedDeferBlock,
   SerializedView,
   TEMPLATE_ID,
   TEMPLATES,
@@ -141,11 +145,6 @@ function getSsrId(tView: TView): string {
   return tView.ssrId;
 }
 
-// TODO: if there is just one field, we can avoid an object here.
-interface DeferBlockInfo {
-  parentDeferBlockId: string | null;
-}
-
 /**
  * Describes a context available during the serialization
  * process. The context is used to share and collect information
@@ -160,7 +159,7 @@ export interface HydrationContext {
   eventTypesToReplay: {regular: Set<string>; capture: Set<string>};
   shouldReplayEvents: boolean;
   appId: string; // the value of `APP_ID`
-  deferBlocks: Map<string /* defer block id, e.g. `d0` */, DeferBlockInfo>;
+  deferBlocks: Map<string /* defer block id, e.g. `d0` */, SerializedDeferBlock>;
 }
 
 /**
@@ -282,7 +281,7 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
     regular: new Set<string>(),
     capture: new Set<string>(),
   };
-  const deferBlocks = new Map<string, DeferBlockInfo>();
+  const deferBlocks = new Map<string, SerializedDeferBlock>();
   const appId = appRef.injector.get(APP_ID);
   for (const viewRef of viewRefs) {
     const lNode = getLNodeForHydration(viewRef);
@@ -320,10 +319,10 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   transferState.set(NGH_DATA_KEY, serializedViews);
 
   if (deferBlocks.size > 0) {
-    const blocks: {[key: string]: string | null} = {};
+    const blocks: {[key: string]: SerializedDeferBlock} = {};
     // TODO: we should probably have an object here instead of a Map?
     for (const [id, info] of deferBlocks.entries()) {
-      blocks[id] = info.parentDeferBlockId;
+      blocks[id] = info;
     }
     transferState.set(NGH_DEFER_BLOCKS_KEY, blocks);
   }
@@ -430,21 +429,27 @@ function serializeLContainer(
 
       // If this is a defer block, serialize extra info.
       if (isDeferBlock(lView[TVIEW], tNode)) {
-        // Add defer block into info context.deferBlocks
-        const deferBlockInfo: DeferBlockInfo = {
-          parentDeferBlockId,
-        };
-
         const deferBlockId = getDeferBlockId(tNode, lView)!;
-        context.deferBlocks.set(deferBlockId, deferBlockInfo);
-
-        // Use current block id as parent for nested routes.
-        parentDeferBlockId = deferBlockId;
-
         const lDetails = getLDeferBlockDetails(lView, tNode);
 
         // We need to annotate defer blocks with their unique id for partial hydration
         if (context.isPartialHydrationEnabled) {
+          let rootNodes: any[] = [];
+          collectNativeNodesInLContainer(lContainer, rootNodes);
+
+          const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
+
+          // Add defer block into info context.deferBlocks
+          const deferBlockInfo: SerializedDeferBlock = {
+            [DEFER_PARENT_BLOCK_ID]: parentDeferBlockId,
+            [NUM_ROOT_NODES]: rootNodes.length,
+            [DEFER_BLOCK_STATE]: lDetails[CURRENT_DEFER_BLOCK_STATE],
+            [DEFER_HYDRATE_TRIGGERS]: tDetails.hydrateTriggers,
+            [DEFER_PREFETCH_TRIGGERS]: tDetails.prefetchTriggers,
+          };
+
+          context.deferBlocks.set(deferBlockId, deferBlockInfo);
+
           const node = unwrapRNode(lContainer);
           if (node !== undefined) {
             if ((node as Node).nodeType === Node.COMMENT_NODE) {
@@ -452,18 +457,16 @@ function serializeLContainer(
             }
           }
           // Add JSAction attributes for root nodes that use some hydration triggers
-          const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
           const actionList = convertHydrateTriggersToJsAction(tDetails.hydrateTriggers);
           for (let et of actionList) {
             context.eventTypesToReplay.regular.add(et);
           }
-          annotateDeferBlockRootNodesWithJsAction(
-            actionList,
-            lContainer,
-            parentDeferBlockId,
-            injector,
-          );
+          annotateDeferBlockRootNodesWithJsAction(actionList, rootNodes, deferBlockId, injector);
         }
+
+        // Use current block id as parent for nested routes.
+        parentDeferBlockId = deferBlockId;
+
         // Serialize extra info into the view object.
         // TODO: this should be serialized and included at a different level
         // (not at the view level).
@@ -881,17 +884,14 @@ function isContentProjectedNode(tNode: TNode): boolean {
 
 function annotateDeferBlockRootNodesWithJsAction(
   actionList: string[],
-  lContainer: LContainer,
+  rootNodes: any[],
   parentDeferBlockId: string,
   injector: Injector,
 ) {
-  if (actionList.length === 0) {
-    return;
-  }
-  let rootNodes: any[] = [];
-  collectNativeNodesInLContainer(lContainer, rootNodes);
-  for (let rNode of rootNodes) {
-    setJSActionAttributes(rNode, actionList, parentDeferBlockId);
-    appendBlocksToJSActionMap(rNode as RElement, injector);
+  if (actionList.length > 0) {
+    for (let rNode of rootNodes) {
+      setJSActionAttributes(rNode, actionList, parentDeferBlockId);
+      appendBlocksToJSActionMap(rNode as RElement, injector);
+    }
   }
 }
