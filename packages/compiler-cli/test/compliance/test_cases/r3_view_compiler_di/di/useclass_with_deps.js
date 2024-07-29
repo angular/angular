@@ -1,13 +1,13 @@
 MyService.ɵprov = /*@__PURE__*/ $r3$.ɵɵdefineInjectable({
   token: MyService,
-  factory: function MyService_Factory(t) {
-    let r = null;
-    if (t) {
-      r = new t();
+  factory: function MyService_Factory(ɵt) {
+    let ɵr = null;
+    if (ɵt) {
+      ɵr = new ɵt();
     } else {
-      r = new MyAlternateService($r3$.ɵɵinject(SomeDep));
+      ɵr = new MyAlternateService($r3$.ɵɵinject(SomeDep));
     }
-    return r;
+    return ɵr;
   },
   providedIn: 'root'
 });

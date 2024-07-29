@@ -1,1 +1,1 @@
-MyPurePipe.ɵfac = function MyPurePipe_Factory(t) { return new (t || MyPurePipe)(); };
+MyPurePipe.ɵfac = function MyPurePipe_Factory(ɵt) { return new (ɵt || MyPurePipe)(); };
