@@ -1,1 +1,1 @@
-MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)(); };
+MyPipe.ɵfac = function MyPipe_Factory(ɵt) { return new (ɵt || MyPipe)(); };

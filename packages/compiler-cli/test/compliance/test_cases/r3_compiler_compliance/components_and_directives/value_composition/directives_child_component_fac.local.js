@@ -1,1 +1,1 @@
-ChildComponent.ɵfac = function ChildComponent_Factory(t) { return new (t || ChildComponent)(); };
+ChildComponent.ɵfac = function ChildComponent_Factory(ɵt) { return new (ɵt || ChildComponent)(); };
