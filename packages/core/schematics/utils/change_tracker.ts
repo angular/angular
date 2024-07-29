@@ -141,6 +141,25 @@ export class ChangeTracker {
   }
 
   /**
+   * Removes an import from a file.
+   * @param sourceFile File from which to remove the import.
+   * @param symbolName Original name of the symbol to be removed. Used even if the import is aliased.
+   * @param moduleName Module from which the symbol is imported.
+   */
+  removeImport(sourceFile: ts.SourceFile, symbolName: string, moduleName: string): void {
+    // It's common for paths to be manipulated with Node's `path` utilties which
+    // can yield a path with back slashes. Normalize them since outputting such
+    // paths will also cause TS to escape the forward slashes.
+    moduleName = normalizePath(moduleName);
+
+    if (!this._changes.has(sourceFile)) {
+      this._changes.set(sourceFile, []);
+    }
+
+    this._importManager.removeImport(sourceFile, symbolName, moduleName);
+  }
+
+  /**
    * Gets the changes that should be applied to all the files in the migration.
    * The changes are sorted in the order in which they should be applied.
    */
@@ -201,10 +220,14 @@ export class ChangeTracker {
 
   /** Records the pending import changes from the import manager. */
   private _recordImports(): void {
-    const {newImports, updatedImports} = this._importManager.finalize();
+    const {newImports, updatedImports, deletedImports} = this._importManager.finalize();
 
     for (const [original, replacement] of updatedImports) {
       this.replaceNode(original, replacement);
+    }
+
+    for (const node of deletedImports) {
+      this.removeNode(node);
     }
 
     for (const [sourceFile] of this._changes) {
