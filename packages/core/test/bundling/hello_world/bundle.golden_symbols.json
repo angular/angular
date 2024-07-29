@@ -372,9 +372,6 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_global"
-  },
-  {
     "name": "_icuContainerIterate"
   },
   {

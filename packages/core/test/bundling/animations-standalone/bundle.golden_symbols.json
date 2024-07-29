@@ -609,9 +609,6 @@
     "name": "_getInsertInFrontOfRNodeWithI18n"
   },
   {
-    "name": "_global"
-  },
-  {
     "name": "_icuContainerIterate"
   },
   {
