@@ -32,6 +32,7 @@ const DEFAULT_EVENT_TYPE: string = EventType.CLICK;
 /** Resolves actions for Events. */
 export class ActionResolver {
   private a11yClickSupport: boolean = false;
+  private clickModSupport: boolean = true;
   private readonly syntheticMouseEventSupport: boolean;
 
   private updateEventInfoForA11yClick?: (eventInfo: eventInfoLib.EventInfo) => void = undefined;
@@ -46,10 +47,13 @@ export class ActionResolver {
 
   constructor({
     syntheticMouseEventSupport = false,
+    clickModSupport = true,
   }: {
     syntheticMouseEventSupport?: boolean;
+    clickModSupport?: boolean;
   } = {}) {
     this.syntheticMouseEventSupport = syntheticMouseEventSupport;
+    this.clickModSupport = clickModSupport;
   }
 
   resolveEventType(eventInfo: eventInfoLib.EventInfo) {
@@ -87,6 +91,7 @@ export class ActionResolver {
     // a11y click support is enabled, addEvent() will set up the appropriate key
     // event handler automatically.
     if (
+      this.clickModSupport &&
       eventInfoLib.getEventType(eventInfo) === EventType.CLICK &&
       eventLib.isModifiedClickEvent(eventInfoLib.getEvent(eventInfo))
     ) {
