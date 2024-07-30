@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Renderer2, RendererFactory2} from '@angular/core';
-import {ReplaySubject, Subject} from 'rxjs';
+import {Injectable, Renderer2, RendererFactory2, signal} from '@angular/core';
 
 export type Theme = 'dark-theme' | 'light-theme';
 
@@ -16,7 +15,7 @@ export type Theme = 'dark-theme' | 'light-theme';
 })
 export class ThemeService {
   private renderer: Renderer2;
-  currentTheme: Subject<Theme> = new ReplaySubject();
+  readonly currentTheme = signal<Theme>('light-theme');
 
   constructor(private _rendererFactory: RendererFactory2) {
     this.renderer = this._rendererFactory.createRenderer(null, null);
@@ -28,7 +27,7 @@ export class ThemeService {
     const addClass = !isDark ? 'light-theme' : 'dark-theme';
     this.renderer.removeClass(document.body, removeClass);
     this.renderer.addClass(document.body, addClass);
-    this.currentTheme.next(addClass);
+    this.currentTheme.set(addClass);
   }
 
   initializeThemeWatcher(): void {

@@ -6,7 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  NgZone,
+  OnDestroy,
+  viewChild,
+} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 import {Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
@@ -19,20 +31,14 @@ import {TreeMapFormatter, TreeMapNode} from '../record-formatter/tree-map-format
   templateUrl: './tree-map-visualizer.component.html',
   styleUrls: ['./tree-map-visualizer.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TreeMapVisualizerComponent implements OnInit, OnDestroy {
+export class TreeMapVisualizerComponent implements OnDestroy {
   private _formatter = new TreeMapFormatter();
 
-  @Input()
-  set frame(frame: ProfilerFrame) {
-    // first element in data is the Application node
-    this.treeMapRecords = this._formatter.formatFrame(frame);
-    if (this.tree) {
-      this._renderTree();
-    }
-  }
+  readonly frame = input.required<ProfilerFrame>();
 
-  constructor(private _ngZone: NgZone) {}
+  private _ngZone = inject(NgZone);
 
   private resize$ = new Subject<void>();
   private _throttledResizeSubscription!: Subscription;
@@ -40,20 +46,31 @@ export class TreeMapVisualizerComponent implements OnInit, OnDestroy {
   private _resizeObserver: ResizeObserver = new ResizeObserver(() =>
     this._ngZone.run(() => this.resize$.next()),
   );
-  private treeMapRecords!: TreeMapNode;
+  private readonly treeMapRecords = computed<TreeMapNode>(() => {
+    // first element in data is the Application node
+    return this._formatter.formatFrame(this.frame());
+  });
 
-  @ViewChild('webTree', {static: true}) tree!: ElementRef<HTMLElement>;
+  readonly tree = viewChild.required<ElementRef<HTMLElement>>('webTree');
 
-  ngOnInit(): void {
-    this._throttledResizeSubscription = this.resize$
-      .pipe(debounceTime(100))
-      .subscribe(() => this._renderTree());
-    this._resizeObserver.observe(this.tree.nativeElement);
+  constructor() {
+    effect(() => {
+      if (this.tree()) this._renderTree();
+    });
+
+    afterNextRender({
+      read: () => {
+        this._throttledResizeSubscription = this.resize$
+          .pipe(debounceTime(100))
+          .subscribe(() => this._renderTree());
+        this._resizeObserver.observe(this.tree().nativeElement);
+      },
+    });
   }
 
   ngOnDestroy(): void {
     this._throttledResizeSubscription.unsubscribe();
-    this._resizeObserver.unobserve(this.tree.nativeElement);
+    this._resizeObserver.unobserve(this.tree().nativeElement);
   }
 
   private _renderTree(): void {
@@ -62,11 +79,11 @@ export class TreeMapVisualizerComponent implements OnInit, OnDestroy {
   }
 
   private _removeTree(): void {
-    Array.from(this.tree.nativeElement.children).forEach((child) => child.remove());
+    Array.from(this.tree().nativeElement.children).forEach((child) => child.remove());
   }
 
   private _createTree(): void {
-    render(this.tree.nativeElement, this.treeMapRecords, {
+    render(this.tree().nativeElement, this.treeMapRecords(), {
       padding: [20, 5, 5, 5],
       caption: (node) => `${node.id}: ${node.size.toFixed(3)} ms`,
       showNode: () => true,
