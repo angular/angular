@@ -367,25 +367,7 @@ describe('ComponentFixture', () => {
     })
     class Blank {}
 
-    // note: this test only verifies existing behavior was not broken by a change to the zoneless fixture.
-    // We probably do want the whenStable promise to be rejected. The current zone-based fixture is bad
-    // and confusing for two reason:
-    //  1. with autoDetect, errors in the fixture _cannot be handled_ with whenStable because
-    //  they're just thrown inside the rxjs subcription (and then goes to setTimeout(() => throw e))
-    //  2. errors from other views attached to ApplicationRef just go to the ErrorHandler, which by default
-    //  only logs to console, allowing the test to pass
-    it('resolves whenStable promise when errors happen during appRef.tick', async () => {
-      const fixture = TestBed.createComponent(Blank);
-      const throwingThing = createComponent(ThrowingThing, {
-        environmentInjector: TestBed.inject(EnvironmentInjector),
-      });
-
-      TestBed.inject(ApplicationRef).attachView(throwingThing.hostView);
-      await expectAsync(fixture.whenStable()).toBeResolved();
-    });
-
-    it('can opt-in to rethrowing application errors and rejecting whenStable promises', async () => {
-      TestBed.configureTestingModule({_rethrowApplicationTickErrors: true} as any);
+    it('rejects whenStable promise when errors happen during appRef.tick', async () => {
       const fixture = TestBed.createComponent(Blank);
       const throwingThing = createComponent(ThrowingThing, {
         environmentInjector: TestBed.inject(EnvironmentInjector),
@@ -393,6 +375,17 @@ describe('ComponentFixture', () => {
 
       TestBed.inject(ApplicationRef).attachView(throwingThing.hostView);
       await expectAsync(fixture.whenStable()).toBeRejected();
+    });
+
+    it('can opt-out of rethrowing application errors and rejecting whenStable promises', async () => {
+      TestBed.configureTestingModule({rethrowApplicationErrors: false});
+      const fixture = TestBed.createComponent(Blank);
+      const throwingThing = createComponent(ThrowingThing, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
+
+      TestBed.inject(ApplicationRef).attachView(throwingThing.hostView);
+      await expectAsync(fixture.whenStable()).toBeResolved();
     });
   });
 

@@ -69,13 +69,24 @@ export interface TestModuleMetadata {
   errorOnUnknownProperties?: boolean;
 
   /**
+   * Whether errors that happen during application change detection should be rethrown.
+   *
+   * When `true`, errors that are caught during application change detection will
+   * be reported to the `ErrorHandler` and rethrown to prevent them from going
+   * unnoticed in tests.
+   *
+   * When `false`, errors are only forwarded to the `ErrorHandler`, which by default
+   * simply logs them to the console.
+   *
+   * Defaults to `true`.
+   */
+  rethrowApplicationErrors?: boolean;
+
+  /**
    * Whether defer blocks should behave with manual triggering or play through normally.
    * Defaults to `manual`.
    */
   deferBlockBehavior?: DeferBlockBehavior;
-
-  /** @internal */
-  _rethrowApplicationTickErrors?: boolean;
 }
 
 /**
