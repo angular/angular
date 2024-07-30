@@ -51,8 +51,11 @@ export class EventDispatcher {
 
   private readonly dispatcher: Dispatcher;
 
-  constructor(private readonly dispatchDelegate: (event: Event, actionName: string) => void) {
-    this.actionResolver = new ActionResolver();
+  constructor(
+    private readonly dispatchDelegate: (event: Event, actionName: string) => void,
+    private readonly clickModSupport = true,
+  ) {
+    this.actionResolver = new ActionResolver({clickModSupport});
     this.dispatcher = new Dispatcher(
       (eventInfoWrapper: EventInfoWrapper) => {
         this.dispatchToDelegate(eventInfoWrapper);
