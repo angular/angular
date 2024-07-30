@@ -1,7 +1,7 @@
-<nav class="devtools-nav" #navBar mat-tab-nav-bar [color]="'accent'" [tabPanel]="tabPanel">
+<nav class="devtools-nav" #navBar mat-tab-nav-bar mat-stretch-tabs="false" [disablePagination]="true" [color]="'accent'" [tabPanel]="tabPanel">
   <div id="nav-buttons">
     <button (click)="toggleInspector()" matTooltip="Inspect element">
-      <mat-icon [class.inspector-active]="inspectorRunning"> pin_end </mat-icon>
+      <mat-icon [class.inspector-active]="inspectorRunning()"> pin_end </mat-icon>
     </button>
     <button [matMenuTriggerFor]="menu" matTooltip="Open settings">
       <mat-icon> settings </mat-icon>
@@ -25,8 +25,8 @@
     }
   </select>
 
-  @for (tab of tabs; track $index) {
-    <a class="mat-tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab === tab">
+  @for (tab of tabs(); track $index) {
+    <a class="mat-tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab() === tab">
       {{ tab }}
     </a>
   }
@@ -39,10 +39,10 @@
           {{ angularVersion() }}
         </span>
       } @else {
-        <span 
+        <span
           id="version-number"
           matTooltip="
-            Angular Devtools supports Angular versions 12 and above. Some DevTools features may be available in 
+            Angular Devtools supports Angular versions 12 and above. Some DevTools features may be available in
             older versions of Angular, but it is not officially supported.
           "
           class="unsupported-version"
@@ -51,7 +51,7 @@
         </span>
       }
 
-      | DevTools: {{ extensionVersion }}
+      | DevTools: {{ extensionVersion() }}
     </section>
   }
 </nav>
@@ -60,35 +60,38 @@
   @if (!applicationEnvironment.frameSelectorEnabled || frameManager.selectedFrame !== null) {
     <div class="tab-content">
       <ng-directive-explorer
-        [showCommentNodes]="showCommentNodes"
-        [isHydrationEnabled]="isHydrationEnabled"
-        [class.hidden]="activeTab !== 'Components'"
+        [showCommentNodes]="showCommentNodes()"
+        [isHydrationEnabled]="isHydrationEnabled()"
+        [class.hidden]="activeTab() !== 'Components'"
         (toggleInspector)="toggleInspector()"
       />
-      <ng-profiler [class.hidden]="activeTab !== 'Profiler'"/>
-      <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'"/>
-      <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'"/>
+      <ng-profiler [class.hidden]="activeTab() !== 'Profiler'"/>
+      <ng-router-tree [routes]="routes()" [class.hidden]="activeTab() !== 'Router Tree'"/>
+      <ng-injector-tree [class.hidden]="activeTab() !== 'Injector Tree'"/>
     </div>
   }
 </mat-tab-nav-panel>
 
 <mat-menu #menu="matMenu">
-  @if (!profilingNotificationsSupported) {
-    <div mat-menu-item disableRipple (click)="$event.stopPropagation(); toggleTimingAPI()">
-      <mat-slide-toggle [checked]="timingAPIEnabled">
-        Enable timing API
+  <div (click)="$event.stopPropagation()">
+    @if (!profilingNotificationsSupported) {
+      <label mat-menu-item disableRipple>
+        <mat-slide-toggle [checked]="timingAPIEnabled()" (change)="toggleTimingAPI()">
+          Enable timing API
+        </mat-slide-toggle>
+      </label>
+    }
+    <label mat-menu-item disableRipple>
+      @let currentTheme = themeService.currentTheme();
+      <mat-slide-toggle [checked]="currentTheme === 'dark-theme'" (click)="themeService.toggleDarkMode(currentTheme === 'light-theme')">
+        Dark Mode
       </mat-slide-toggle>
-    </div>
-  }
-  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); themeService.toggleDarkMode(currentTheme === 'light-theme')">
-    <mat-slide-toggle [checked]="currentTheme === 'dark-theme'">
-      Dark Mode
-    </mat-slide-toggle>
-  </div>
-  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); showCommentNodes = $event.checked">
-    <mat-slide-toggle [checked]="showCommentNodes">
-      Show comment nodes
-    </mat-slide-toggle>
+    </label>
+    <label mat-menu-item disableRipple>
+      <mat-slide-toggle [checked]="showCommentNodes()" (change)="showCommentNodes.set($event.checked)">
+        Show comment nodes
+      </mat-slide-toggle>
+    </label>
   </div>
 </mat-menu>
 

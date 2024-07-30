@@ -1,37 +1,37 @@
 <as-split unit="percent" [gutterSize]="9">
   <as-split-area size="75">
-    @switch (_visualizationMode) {
+    @switch (visualizationMode()) {
       @case (cmpVisualizationModes.FlameGraph) {
         <ng-flamegraph-visualizer
-          [frame]="frame"
-          [changeDetection]="changeDetection"
+          [frame]="frame()"
+          [changeDetection]="changeDetection()"
           (nodeSelect)="handleNodeSelect($event)"
         />
       }
       @case (cmpVisualizationModes.TreeMap) {
-        <ng-tree-map-visualizer [frame]="frame"/>
+        <ng-tree-map-visualizer [frame]="frame()"/>
       }
       @case (cmpVisualizationModes.BarGraph) {
-        <ng-bargraph-visualizer [frame]="frame" (nodeSelect)="handleNodeSelect($event)"/>
+        <ng-bargraph-visualizer [frame]="frame()" (nodeSelect)="handleNodeSelect($event)"/>
       }
     }
   </as-split-area>
-  @if (selectedEntry) {
+  @if (selectedEntry(); as entry) {
     <as-split-area size="25" minSize="15">
       <mat-card class="selected-entry">
-        <mat-toolbar>{{ selectedEntry.label }} details</mat-toolbar>
+        <mat-toolbar>{{ entry.label }} details</mat-toolbar>
         <section class="entry-statistics">
           <div class="txt-total-time">
-            <label>Total time spent:</label><span> {{ selectedEntry.value | number }} ms</span>
+            <label>Total time spent:</label><span> {{ entry.value | number }} ms</span>
           </div>
-          @if (selectedEntry.value > 0) {
-            <ng-execution-details [data]="selectedDirectives"/>
+          @if (entry.value > 0) {
+            <ng-execution-details [data]="selectedDirectives()"/>
           }
-          @if (parentHierarchy.length > 0) {
+          @if (parentHierarchy().length > 0) {
             <div>
               <div class="txt-total-time"><label>Parent Hierarchy</label></div>
               <ul>
-                @for (parent of parentHierarchy; track $index) {
+                @for (parent of parentHierarchy(); track $index) {
                   <li>{{ parent.name }}</li>
                 }
               </ul>
