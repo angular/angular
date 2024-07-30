@@ -50,7 +50,7 @@ export class EventContractContainer implements EventContractContainerManager {
 
 // @public
 export class EventDispatcher {
-    constructor(dispatchDelegate: (event: Event, actionName: string) => void);
+    constructor(dispatchDelegate: (event: Event, actionName: string) => void, clickModSupport?: boolean);
     dispatch(eventInfo: EventInfo): void;
 }
 

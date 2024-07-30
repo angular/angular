@@ -115,6 +115,6 @@ export const initGlobalEventDelegation = (
   const eventContract = (eventContractDetails.instance = new EventContract(
     new EventContractContainer(document.body),
   ));
-  const dispatcher = new EventDispatcher(invokeRegisteredListeners);
+  const dispatcher = new EventDispatcher(invokeRegisteredListeners, /** clickModSupport */ false);
   registerDispatcher(eventContract, dispatcher);
 };
