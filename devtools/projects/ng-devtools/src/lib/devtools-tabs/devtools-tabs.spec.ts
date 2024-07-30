@@ -61,11 +61,11 @@ describe('DevtoolsTabsComponent', () => {
   });
 
   it('toggles inspector flag', () => {
-    expect(comp.inspectorRunning).toBe(false);
+    expect(comp.inspectorRunning()).toBe(false);
     comp.toggleInspectorState();
-    expect(comp.inspectorRunning).toBe(true);
+    expect(comp.inspectorRunning()).toBe(true);
     comp.toggleInspectorState();
-    expect(comp.inspectorRunning).toBe(false);
+    expect(comp.inspectorRunning()).toBe(false);
   });
 
   it('emits inspector event', () => {

@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Input} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  input,
+  signal,
+  untracked,
+} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 
 import {BargraphNode} from '../record-formatter/bargraph-formatter';
@@ -34,6 +42,11 @@ export interface SelectedDirective {
   value: number;
 }
 
+interface SelectedNode {
+  visualizationMode: VisualizationMode;
+  node: SelectedEntry;
+}
+
 @Component({
   selector: 'ng-timeline-visualizer',
   templateUrl: './timeline-visualizer.component.html',
@@ -50,30 +63,42 @@ export interface SelectedDirective {
     ExecutionDetailsComponent,
     DecimalPipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineVisualizerComponent {
-  @Input()
-  set visualizationMode(mode: VisualizationMode) {
-    this._visualizationMode = mode;
-    this.selectedEntry = null;
-    this.selectedDirectives = [];
-    this.parentHierarchy = [];
-  }
-  @Input({required: true}) frame!: ProfilerFrame;
-  @Input({required: true}) changeDetection!: boolean;
+  readonly visualizationMode = input.required<VisualizationMode>();
+  readonly frame = input.required<ProfilerFrame>();
+  readonly changeDetection = input.required<boolean>();
 
   cmpVisualizationModes = VisualizationMode;
+  private readonly selectedNodeWithVizMode = signal<SelectedNode | null>(null);
+  private readonly selectedNode = computed(() => {
+    const nodeWithMode = this.selectedNodeWithVizMode();
 
-  selectedEntry: BargraphNode | FlamegraphNode | null = null;
-  selectedDirectives: SelectedDirective[] = [];
-  parentHierarchy: {name: string}[] = [];
+    if (this.visualizationMode() !== nodeWithMode?.visualizationMode) return null;
 
-  /** @internal */
-  _visualizationMode!: VisualizationMode;
+    return nodeWithMode.node;
+  });
+  readonly selectedEntry = computed(() => this.selectedNode()?.entry ?? null);
+  readonly selectedDirectives = computed(() => this.selectedNode()?.selectedDirectives ?? []);
+  readonly parentHierarchy = computed(() => this.selectedNode()?.parentHierarchy ?? []);
 
-  handleNodeSelect({entry, parentHierarchy, selectedDirectives}: SelectedEntry): void {
-    this.selectedEntry = entry;
-    this.selectedDirectives = selectedDirectives;
-    this.parentHierarchy = parentHierarchy ?? [];
+  constructor() {
+    effect(
+      () => {
+        const nodeWithMode = untracked(this.selectedNodeWithVizMode);
+        if (nodeWithMode?.visualizationMode !== this.visualizationMode()) {
+          this.selectedNodeWithVizMode.set(null);
+        }
+      },
+      {allowSignalWrites: true},
+    );
+  }
+
+  handleNodeSelect(selected: SelectedEntry): void {
+    this.selectedNodeWithVizMode.set({
+      visualizationMode: this.visualizationMode(),
+      node: selected,
+    });
   }
 }
