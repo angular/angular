@@ -744,6 +744,7 @@ export const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => 
 // @public
 export interface RouterConfigOptions {
     canceledNavigationResolution?: 'replace' | 'computed';
+    defaultQueryParamsHandling?: QueryParamsHandling;
     onSameUrlNavigation?: OnSameUrlNavigation;
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     resolveNavigationPromiseOnError?: boolean;

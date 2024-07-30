@@ -452,7 +452,7 @@ export class Router {
       navigationExtras;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
     let q: Params | null = null;
-    switch (queryParamsHandling) {
+    switch (queryParamsHandling ?? this.options.defaultQueryParamsHandling) {
       case 'merge':
         q = {...this.currentUrlTree.queryParams, ...queryParams};
         break;
