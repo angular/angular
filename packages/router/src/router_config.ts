@@ -8,7 +8,7 @@
 
 import {InjectionToken} from '@angular/core';
 
-import {OnSameUrlNavigation} from './models';
+import {OnSameUrlNavigation, QueryParamsHandling} from './models';
 
 /**
  * Error handler that is invoked when a navigation error occurs.
@@ -112,6 +112,20 @@ export interface RouterConfigOptions {
    * showing an error message with the URL that failed.
    */
   urlUpdateStrategy?: 'deferred' | 'eager';
+
+  /**
+   * The default strategy to use for handling query params in `Router.createUrlTree` when one is not provided.
+   *
+   * The `createUrlTree` method is used internally by `Router.navigate` and `RouterLink`.
+   * Note that `QueryParamsHandling` does not apply to `Router.navigateByUrl`.
+   *
+   * When neither the default nor the queryParamsHandling option is specified in the call to `createUrlTree`,
+   * the current parameters will be replaced by new parameters.
+   *
+   * @see {@link Router#createUrlTree}
+   * @see {@link QueryParamsHandling}
+   */
+  defaultQueryParamsHandling?: QueryParamsHandling;
 
   /**
    * When `true`, the `Promise` will instead resolve with `false`, as it does with other failed

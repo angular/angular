@@ -11,12 +11,13 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {By} from '@angular/platform-browser';
 
 import {createUrlTreeFromSnapshot} from '../src/create_url_tree';
-import {Routes} from '../src/models';
+import {QueryParamsHandling, Routes} from '../src/models';
 import {Router} from '../src/router';
 import {RouterModule} from '../src/router_module';
 import {ActivatedRoute, ActivatedRouteSnapshot} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
+import {provideRouter, withRouterConfig} from '../src';
 
 describe('createUrlTree', async () => {
   const serializer = new DefaultUrlSerializer();
@@ -571,6 +572,45 @@ describe('createUrlTree', async () => {
     await router.navigateByUrl('/');
     const t = create(router.routerState.root.children[0].children[0], ['lazy']);
     expect(serializer.serialize(t)).toEqual('/lazy');
+  });
+});
+
+describe('defaultQueryParamsHandling', () => {
+  async function setupRouter(defaultQueryParamsHandling: QueryParamsHandling): Promise<Router> {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [{path: '**', component: class {}}],
+          withRouterConfig({
+            defaultQueryParamsHandling,
+          }),
+        ),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/initial?a=1');
+    return router;
+  }
+
+  it('can use "merge" as the default', async () => {
+    const router = await setupRouter('merge');
+    await router.navigate(['new'], {queryParams: {'b': 2}});
+    expect(router.url).toEqual('/new?a=1&b=2');
+  });
+
+  it('can use "perserve" as the default', async () => {
+    const router = await setupRouter('preserve');
+    await router.navigate(['new'], {queryParams: {'b': 2}});
+    expect(router.url).toEqual('/new?a=1');
+  });
+
+  it('can override the default by providing a new option', async () => {
+    const router = await setupRouter('preserve');
+    await router.navigate(['new'], {queryParams: {'b': 2}, queryParamsHandling: 'merge'});
+    expect(router.url).toEqual('/new?a=1&b=2');
+    await router.navigate(['replace'], {queryParamsHandling: 'replace'});
+    expect(router.url).toEqual('/replace');
   });
 });
 

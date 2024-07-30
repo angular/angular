@@ -587,7 +587,7 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
 export function provideRoutes(routes: Routes): Provider[];
 
 // @public
-export type QueryParamsHandling = 'merge' | 'preserve' | '';
+export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
 // @public
 export class RedirectCommand {
@@ -744,6 +744,7 @@ export const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => 
 // @public
 export interface RouterConfigOptions {
     canceledNavigationResolution?: 'replace' | 'computed';
+    defaultQueryParamsHandling?: QueryParamsHandling;
     onSameUrlNavigation?: OnSameUrlNavigation;
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     resolveNavigationPromiseOnError?: boolean;

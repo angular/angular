@@ -275,13 +275,14 @@ export type LoadChildren = LoadChildrenCallback;
  * One of:
  * - `"merge"` : Merge new parameters with current parameters.
  * - `"preserve"` : Preserve current parameters.
- * - `""` : Replace current parameters with new parameters. This is the default behavior.
+ * - `"replace"` : Replace current parameters with new parameters. This is the default behavior.
+ * - `""` : For legacy reasons, the same as `'replace'`.
  *
  * @see {@link UrlCreationOptions#queryParamsHandling}
  * @see {@link RouterLink}
  * @publicApi
  */
-export type QueryParamsHandling = 'merge' | 'preserve' | '';
+export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
 /**
  * The type for the function that can be used to handle redirects when the path matches a `Route` config.
