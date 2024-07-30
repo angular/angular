@@ -22,7 +22,6 @@ import {
   LOCALE_ID,
   ModuleWithComponentFactories,
   ModuleWithProviders,
-  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   NgModule,
   NgModuleFactory,
   Pipe,
@@ -52,6 +51,7 @@ import {
   ɵNG_INJ_DEF as NG_INJ_DEF,
   ɵNG_MOD_DEF as NG_MOD_DEF,
   ɵNG_PIPE_DEF as NG_PIPE_DEF,
+  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵNgModuleFactory as R3NgModuleFactory,
   ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes,
   ɵNgModuleType as NgModuleType,
@@ -80,7 +80,7 @@ import {
 } from './resolvers';
 import {DEFER_BLOCK_DEFAULT_BEHAVIOR, TestModuleMetadata} from './test_bed_common';
 import {
-  RETHROW_APPLICATION_ERRORS,
+  RETHROW_APPLICATION_ERRORS_DEFAULT,
   TestBedApplicationErrorHandler,
 } from './application_error_handler';
 
@@ -190,6 +190,7 @@ export class TestBedCompiler {
   private testModuleRef: NgModuleRef<any> | null = null;
 
   private deferBlockBehavior = DEFER_BLOCK_DEFAULT_BEHAVIOR;
+  private rethrowApplicationTickErrors = RETHROW_APPLICATION_ERRORS_DEFAULT;
 
   constructor(
     private platform: PlatformRef,
@@ -226,16 +227,14 @@ export class TestBedCompiler {
     if (moduleDef.providers !== undefined) {
       this.providers.push(...moduleDef.providers);
     }
-    this.providers.push({
-      provide: RETHROW_APPLICATION_ERRORS,
-      useValue: moduleDef._rethrowApplicationTickErrors ?? false,
-    });
 
     if (moduleDef.schemas !== undefined) {
       this.schemas.push(...moduleDef.schemas);
     }
 
     this.deferBlockBehavior = moduleDef.deferBlockBehavior ?? DEFER_BLOCK_DEFAULT_BEHAVIOR;
+    this.rethrowApplicationTickErrors =
+      moduleDef.rethrowApplicationErrors ?? RETHROW_APPLICATION_ERRORS_DEFAULT;
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
@@ -944,22 +943,6 @@ export class TestBedCompiler {
         ...this.rootProviderOverrides,
         internalProvideZoneChangeDetection({}),
         TestBedApplicationErrorHandler,
-        {
-          provide: INTERNAL_APPLICATION_ERROR_HANDLER,
-          useFactory: () => {
-            if (inject(ZONELESS_ENABLED) || inject(RETHROW_APPLICATION_ERRORS, {optional: true})) {
-              const handler = inject(TestBedApplicationErrorHandler);
-              return (e: unknown) => {
-                handler.handleError(e);
-              };
-            } else {
-              const userErrorHandler = inject(ErrorHandler);
-              const ngZone = inject(NgZone);
-              return (e: unknown) =>
-                ngZone.runOutsideAngular(() => userErrorHandler.handleError(e));
-            }
-          },
-        },
         {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
       ],
     });
@@ -967,6 +950,21 @@ export class TestBedCompiler {
     const providers = [
       {provide: Compiler, useFactory: () => new R3TestCompiler(this)},
       {provide: DEFER_BLOCK_CONFIG, useValue: {behavior: this.deferBlockBehavior}},
+      {
+        provide: INTERNAL_APPLICATION_ERROR_HANDLER,
+        useFactory: () => {
+          if (this.rethrowApplicationTickErrors) {
+            const handler = inject(TestBedApplicationErrorHandler);
+            return (e: unknown) => {
+              handler.handleError(e);
+            };
+          } else {
+            const userErrorHandler = inject(ErrorHandler);
+            const ngZone = inject(NgZone);
+            return (e: unknown) => ngZone.runOutsideAngular(() => userErrorHandler.handleError(e));
+          }
+        },
+      },
       ...this.providers,
       ...this.providerOverrides,
     ];

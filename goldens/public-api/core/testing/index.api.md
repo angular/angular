@@ -216,6 +216,7 @@ export interface TestModuleMetadata {
     imports?: any[];
     // (undocumented)
     providers?: any[];
+    rethrowApplicationErrors?: boolean;
     // (undocumented)
     schemas?: Array<SchemaMetadata | any[]>;
     // (undocumented)
