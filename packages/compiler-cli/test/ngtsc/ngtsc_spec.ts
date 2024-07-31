@@ -645,6 +645,37 @@ runInEachFileSystem((os: string) => {
       expect(env.getContents('test.js')).not.toContain('NonJitComponent.propDecorators');
     });
 
+    it('should run JIT transform for `NgModule` marked as `jit: true`', () => {
+      env.write(
+        'test.ts',
+        `
+        import {NgModule, Injector} from '@angular/core';
+
+        @NgModule({
+          jit: true
+        })
+        class MyJitModule {
+          constructor(dep: Injector) {}
+        }
+
+        @NgModule({})
+        class NonJitModule {
+          constructor(dep: Injector) {}
+        }
+      `,
+      );
+
+      env.driveMain();
+
+      expect(trim(env.getContents('test.js'))).toContain(
+        trim(`
+        MyJitModule.ctorParameters = () => [
+          { type: Injector }
+        ];`),
+      );
+      expect(env.getContents('test.js')).not.toContain('NonJitModule.ctorParameters');
+    });
+
     // This test triggers the Tsickle compiler which asserts that the file-paths
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.

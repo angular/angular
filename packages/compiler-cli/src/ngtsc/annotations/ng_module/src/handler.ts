@@ -100,6 +100,7 @@ import {
   getValidConstructorDependencies,
   InjectableClassRegistry,
   isExpressionForwardReference,
+  JitDeclarationRegistry,
   ReferencesRegistry,
   resolveProvidersRequiringFactory,
   toR3Reference,
@@ -285,6 +286,7 @@ export class NgModuleDecoratorHandler
     private includeSelectorScope: boolean,
     private readonly compilationMode: CompilationMode,
     private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
+    private readonly jitDeclarationRegistry: JitDeclarationRegistry,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -341,6 +343,7 @@ export class NgModuleDecoratorHandler
     const ngModule = reflectObjectLiteral(meta);
 
     if (ngModule.has('jit')) {
+      this.jitDeclarationRegistry.jitDeclarations.add(node);
       // The only allowed value is true, so there's no need to expand further.
       return {};
     }

@@ -28,7 +28,11 @@ import {
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../scope';
 import {getDeclaration, makeProgram} from '../../../testing';
 import {CompilationMode} from '../../../transform';
-import {InjectableClassRegistry, NoopReferencesRegistry} from '../../common';
+import {
+  InjectableClassRegistry,
+  JitDeclarationRegistry,
+  NoopReferencesRegistry,
+} from '../../common';
 import {NgModuleDecoratorHandler} from '../src/handler';
 
 function setup(program: ts.Program, compilationMode = CompilationMode.FULL) {
@@ -52,6 +56,7 @@ function setup(program: ts.Program, compilationMode = CompilationMode.FULL) {
   const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
   const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
   const exportedProviderStatusResolver = new ExportedProviderStatusResolver(metaReader);
+  const jitDeclarationRegistry = new JitDeclarationRegistry();
 
   const handler = new NgModuleDecoratorHandler(
     reflectionHost,
@@ -72,6 +77,7 @@ function setup(program: ts.Program, compilationMode = CompilationMode.FULL) {
     true,
     compilationMode,
     /* localCompilationExtraImportsTracker */ null,
+    jitDeclarationRegistry,
   );
 
   return {handler, reflectionHost};
