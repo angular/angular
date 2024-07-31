@@ -768,9 +768,6 @@
     "name": "diPublicInInjector"
   },
   {
-    "name": "enableHydrationRuntimeSupport"
-  },
-  {
     "name": "enterDI"
   },
   {
@@ -1390,6 +1387,9 @@
   },
   {
     "name": "whenStableStore"
+  },
+  {
+    "name": "withDomHydration"
   },
   {
     "name": "writeDirectClass"
