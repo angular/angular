@@ -102,12 +102,3 @@ Then create and merge a PR targeting `patch` with this change.
 
 Once the PR merges and both Chrome and Firefox are showing the new version to end users, then
 the release is complete!
-
-git add . && git commit -m "release: bump Angular DevTools version to 1.0.10"
-git push -u origin devtools-release
-```
-
-Then create and merge a PR targeting `patch` with this change.
-
-Once the PR merges and both Chrome and Firefox are showing the new version to end users, then
-the release is complete!
