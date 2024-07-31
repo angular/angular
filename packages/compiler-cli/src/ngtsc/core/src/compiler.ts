@@ -1512,6 +1512,7 @@ export class NgCompiler {
         supportJitMode,
         compilationMode,
         localCompilationExtraImportsTracker,
+        jitDeclarationRegistry,
       ),
     ];
 
