@@ -80,7 +80,7 @@ describe('markdown to html', () => {
     const h2HeaderId = h2?.getAttribute('id');
     const h2AnchorHref = h2Anchor?.getAttribute('href');
 
-    expect(h2HeaderId).toContain('my-custom-id');
+    expect(h2HeaderId).toBe('my-custom-id');
     expect(h2AnchorHref).toBe(`#${h2HeaderId}`);
   });
 });
