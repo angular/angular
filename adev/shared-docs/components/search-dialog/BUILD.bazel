@@ -46,8 +46,10 @@ ts_library(
         "//adev/shared-docs/services",
         "//adev/shared-docs/testing",
         "//packages/core",
+        "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/router",
+        "//packages/router/testing",
     ],
 )
 
