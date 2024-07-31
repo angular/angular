@@ -38,6 +38,12 @@ export class SignalInputMigration extends TsurgeComplexMigration<
   upgradeAnalysisPhaseToAvoidBatch = false;
   upgradedAnalysisPhaseResults: Replacement[] | null = null;
 
+  // Necessary for language service configuration.
+  reportProgressFn: ((percentage: number, updateMessage: string) => void) | null = null;
+  beforeMigrateHook:
+    | ((host: MigrationHost, knownInputs: KnownInputs, result: MigrationResult) => void)
+    | null = null;
+
   bestEffortMode = false;
 
   // Override the default ngtsc program creation, to add extra flags.
@@ -70,7 +76,10 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     const result = new MigrationResult();
     const host = createMigrationHost(info);
 
+    this.reportProgressFn?.(10, 'Analyzing project (input usages)..');
     const {inheritanceGraph} = executeAnalysisPhase(host, knownInputs, result, analysisDeps);
+
+    this.reportProgressFn?.(40, 'Checking inheritance..');
     pass4__checkInheritanceOfInputs(host, inheritanceGraph, metaRegistry, knownInputs);
     if (this.bestEffortMode) {
       filterIncompatibilitiesForBestEffortMode(knownInputs);
@@ -81,6 +90,8 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     // Non-batch mode!
     if (this.upgradeAnalysisPhaseToAvoidBatch) {
       const merged = await this.merge([unitData]);
+
+      this.reportProgressFn?.(60, 'Collecting migration changes..');
       const replacements = await this.migrate(merged, info, {
         knownInputs,
         result,
@@ -88,6 +99,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
         inheritanceGraph,
         analysisDeps,
       });
+      this.reportProgressFn?.(100, 'Completed migration.');
 
       // Expose the upgraded analysis stage results.
       this.upgradedAnalysisPhaseResults = replacements;
@@ -122,14 +134,20 @@ export class SignalInputMigration extends TsurgeComplexMigration<
       const analysisRes = executeAnalysisPhase(host, knownInputs, result, analysisDeps);
       inheritanceGraph = analysisRes.inheritanceGraph;
       populateKnownInputsFromGlobalData(knownInputs, globalMetadata);
-    } else {
-      inheritanceGraph = nonBatchData.inheritanceGraph;
+
+      pass4__checkInheritanceOfInputs(
+        host,
+        inheritanceGraph,
+        analysisDeps.metaRegistry,
+        knownInputs,
+      );
+      if (this.bestEffortMode) {
+        filterIncompatibilitiesForBestEffortMode(knownInputs);
+      }
     }
 
-    pass4__checkInheritanceOfInputs(host, inheritanceGraph, analysisDeps.metaRegistry, knownInputs);
-    if (this.bestEffortMode) {
-      filterIncompatibilitiesForBestEffortMode(knownInputs);
-    }
+    // Optional before migrate hook. Used by the language service.
+    this.beforeMigrateHook?.(host, knownInputs, result);
 
     executeMigrationPhase(host, knownInputs, result, analysisDeps);
 
