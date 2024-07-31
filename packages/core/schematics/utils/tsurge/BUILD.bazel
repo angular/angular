@@ -5,6 +5,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     visibility = [
         "//packages/core/schematics:__subpackages__",
+        "//packages/language-service/src/refactorings:__pkg__",
     ],
     deps = [
         "//packages/compiler-cli",
