@@ -45,7 +45,7 @@ export const NGH_DATA_KEY = makeStateKey<Array<SerializedView>>(TRANSFER_STATE_T
  * The name of the key used in the TransferState collection,
  * where serialized defer block information is located.
  */
-const TRANSFER_STATE_DEFER_BLOCKS_INFO = '__nghDeferData__';
+export const TRANSFER_STATE_DEFER_BLOCKS_INFO = '__nghDeferData__';
 
 /**
  * Lookup key used to retrieve defer block datain `TransferState`.
