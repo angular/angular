@@ -587,7 +587,7 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
 export function provideRoutes(routes: Routes): Provider[];
 
 // @public
-export type QueryParamsHandling = 'merge' | 'preserve' | '';
+export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
 // @public
 export class RedirectCommand {

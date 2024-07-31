@@ -609,6 +609,8 @@ describe('defaultQueryParamsHandling', () => {
     const router = await setupRouter('preserve');
     await router.navigate(['new'], {queryParams: {'b': 2}, queryParamsHandling: 'merge'});
     expect(router.url).toEqual('/new?a=1&b=2');
+    await router.navigate(['replace'], {queryParamsHandling: 'replace'});
+    expect(router.url).toEqual('/replace');
   });
 });
 
