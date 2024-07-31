@@ -28,8 +28,14 @@ export const headingRender: RendererApi['heading'] = (text, level, raw) => {
   const regex = /<a\s+(?:[^>]*?\s+)?href.*?>(.*?)<\/a>/gi;
   const anchorLessText = text.replace(regex, '$1');
 
-  const link = getHeaderId(anchorLessText);
-  const label = anchorLessText.replace(/`(.*?)`/g, '<code>$1</code>');
+  // extract the extended markdown heading id
+  // ex:  ## MyHeading {# myId}
+  const customIdRegex = /{#\s*([\w-]+)\s*}/g;
+  const customId = customIdRegex.exec(anchorLessText)?.[1];
+  const link = customId ?? getHeaderId(anchorLessText);
+  const label = anchorLessText
+    .replaceAll(/`(.*?)`/g, '<code>$1</code>')
+    .replaceAll(customIdRegex, '');
 
   return `
   <h${level} id="${link}">
