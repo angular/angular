@@ -8,7 +8,7 @@
 
 import {setOutput} from '@actions/core';
 import {GitClient, Log, bold, green, yellow} from '@angular/ng-dev';
-import inquirer from 'inquirer';
+import {select} from '@inquirer/prompts';
 import yargs from 'yargs';
 import {collectBenchmarkResults} from './results.mjs';
 import {ResolvedTarget, findBenchmarkTargets, getTestlogPath, resolveTarget} from './targets.mjs';
@@ -36,19 +36,19 @@ await yargs(process.argv.slice(2))
           demandOption: true,
         })
         .positional('bazel-target', {description: 'Bazel target', type: 'string'}),
-    (args) => runCompare(args.bazelTarget, args.compareRef)
+    (args) => runCompare(args.bazelTarget, args.compareRef),
   )
   .command(
     'run [bazel-target]',
     'Runs a benchmark',
     (argv) => argv.positional('bazel-target', {description: 'Bazel target', type: 'string'}),
-    (args) => runBenchmarkCmd(args.bazelTarget)
+    (args) => runBenchmarkCmd(args.bazelTarget),
   )
   .command(
     'prepare-for-github-action <comment-body>',
     false, // Do not show in help.
     (argv) => argv.positional('comment-body', {demandOption: true, type: 'string'}),
-    (args) => prepareForGitHubAction(args.commentBody)
+    (args) => prepareForGitHubAction(args.commentBody),
   )
   .demandCommand()
   .scriptName('$0')
@@ -60,14 +60,10 @@ await yargs(process.argv.slice(2))
 async function promptForBenchmarkTarget(): Promise<string> {
   const targets = await findBenchmarkTargets();
 
-  return (
-    await inquirer.prompt<{bazelTarget: string}>({
-      name: 'bazelTarget',
-      message: 'Select benchmark target to run:',
-      type: 'list',
-      choices: targets.map((t) => ({value: t, name: t})),
-    })
-  ).bazelTarget;
+  return await select({
+    message: 'Select benchmark target to run:',
+    choices: targets.map((t) => ({value: t, name: t})),
+  });
 }
 
 /**
