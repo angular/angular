@@ -3,11 +3,11 @@ export function provideModule() {
 }
 …
 export class TestModule {}
-TestModule.ɵfac = function TestModule_Factory(ɵt) { return new (ɵt || TestModule)(); };
+TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); };
 TestModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TestModule, imports: () => [ForwardModule] });
 TestModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [provideModule()] });
 …
 export class ForwardModule {}
-ForwardModule.ɵfac = function ForwardModule_Factory(ɵt) { return new (ɵt || ForwardModule)(); };
+ForwardModule.ɵfac = function ForwardModule_Factory(t) { return new (t || ForwardModule)(); };
 ForwardModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ForwardModule });
 ForwardModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});

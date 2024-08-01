@@ -17,6 +17,8 @@ import {
 import {Identifiers} from './render3/r3_identifiers';
 import {
   convertFromMaybeForwardRefExpression,
+  ForwardRefHandling,
+  generateForwardRef,
   MaybeForwardRefExpression,
   R3CompiledExpression,
   R3Reference,
@@ -185,6 +187,8 @@ function delegateToFactory(
 }
 
 function createFactoryFunction(type: o.Expression): o.ArrowFunctionExpr {
-  const t = new o.FnParam('ɵt', o.DYNAMIC_TYPE);
-  return o.arrowFn([t], type.prop('ɵfac').callFn([o.variable(t.name)]));
+  return o.arrowFn(
+    [new o.FnParam('t', o.DYNAMIC_TYPE)],
+    type.prop('ɵfac').callFn([o.variable('t')]),
+  );
 }
