@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {IMAGE_CONFIG, ImageConfig} from './application/application_tokens';
+import {IMAGE_CONFIG, ImageConfig, PLATFORM_ID} from './application/application_tokens';
 import {Injectable} from './di';
 import {inject} from './di/injector_compatibility';
 import {formatRuntimeError, RuntimeErrorCode} from './errors';
@@ -27,10 +27,12 @@ export class ImagePerformanceWarning implements OnDestroy {
   private window: Window | null = null;
   private observer: PerformanceObserver | null = null;
   private options: ImageConfig = inject(IMAGE_CONFIG);
+  private readonly isBrowser = inject(PLATFORM_ID) === 'browser';
   private lcpImageUrl?: string;
 
   public start() {
     if (
+      !this.isBrowser ||
       typeof PerformanceObserver === 'undefined' ||
       (this.options?.disableImageSizeWarning && this.options?.disableImageLazyLoadWarning)
     ) {
