@@ -16,6 +16,7 @@ export interface Step {
   material?: boolean;
   renderedStep?: string;
   windows?: boolean;
+  eslint?: boolean;
 }
 
 export const RECOMMENDATIONS: Step[] = [
@@ -2224,6 +2225,14 @@ export const RECOMMENDATIONS: Step[] = [
     material: true,
     step: 'update @angular/material',
     action: 'Run `ng update @angular/material@18`.',
+  },
+  {
+    possibleIn: 1800,
+    necessaryAsOf: 1800,
+    level: ApplicationComplexity.Basic,
+    eslint: true,
+    step: 'update @angular-eslint/schematics',
+    action: 'Run `ng update @angular-eslint/schematics@18`.',
   },
   {
     possibleIn: 1800,

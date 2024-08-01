@@ -46,6 +46,7 @@ export default class AppComponent {
   protected readonly optionList: Option[] = [
     {id: 'ngUpgrade', name: 'ngUpgrade', description: 'to combine AngularJS & Angular'},
     {id: 'material', name: 'Angular Material', description: ''},
+    {id: 'eslint', name: 'Angular EsLint', description: ''},
     {id: 'windows', name: 'Windows', description: ''},
   ];
 
