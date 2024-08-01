@@ -8,11 +8,11 @@
 
 import {
   EventEmitter,
-  signal,
   ɵRuntimeError as RuntimeError,
   ɵWritable as Writable,
-  untracked,
   computed,
+  signal,
+  untracked,
 } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 
@@ -634,7 +634,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * false otherwise.
    */
   get pending(): boolean {
-    return this.status == PENDING;
+    return this.status === PENDING;
   }
 
   /**
