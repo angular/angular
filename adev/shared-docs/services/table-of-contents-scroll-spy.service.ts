@@ -14,7 +14,6 @@ import {
   afterNextRender,
   inject,
   signal,
-  NgZone,
 } from '@angular/core';
 import {RESIZE_EVENT_DELAY} from '../constants/index';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -34,7 +33,6 @@ export class TableOfContentsScrollSpy {
   private readonly tableOfContentsLoader = inject(TableOfContentsLoader);
   private readonly document = inject(DOCUMENT);
   private readonly window = inject(WINDOW);
-  private readonly ngZone = inject(NgZone);
   private readonly viewportScroller = inject(ViewportScroller);
   private readonly injector = inject(EnvironmentInjector);
   private contentSourceElement: HTMLElement | null = null;
@@ -112,9 +110,7 @@ export class TableOfContentsScrollSpy {
       takeUntilDestroyed(this.destroyRef),
     );
 
-    this.ngZone.runOutsideAngular(() => {
-      scroll$.subscribe(() => this.setActiveItemId());
-    });
+    scroll$.subscribe(() => this.setActiveItemId());
   }
 
   private setActiveItemId(): void {
