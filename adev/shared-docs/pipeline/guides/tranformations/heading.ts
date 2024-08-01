@@ -33,9 +33,7 @@ export const headingRender: RendererApi['heading'] = (text, level, raw) => {
   const customIdRegex = /{#\s*([\w-]+)\s*}/g;
   const customId = customIdRegex.exec(anchorLessText)?.[1];
   const link = customId ?? getHeaderId(anchorLessText);
-  const label = anchorLessText
-    .replaceAll(/`(.*?)`/g, '<code>$1</code>')
-    .replaceAll(customIdRegex, '');
+  const label = anchorLessText.replace(/`(.*?)`/g, '<code>$1</code>').replace(customIdRegex, '');
 
   return `
   <h${level} id="${link}">
