@@ -1,1 +1,1 @@
-MyOtherPipe.ɵfac = function MyOtherPipe_Factory(ɵt) { return new (ɵt || MyOtherPipe)($i0$.ɵɵdirectiveInject($i0$.ChangeDetectorRef, 24)); };
+MyOtherPipe.ɵfac = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($i0$.ɵɵdirectiveInject($i0$.ChangeDetectorRef, 24)); };
