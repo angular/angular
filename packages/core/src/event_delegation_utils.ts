@@ -18,7 +18,11 @@ import {
 import {Attribute} from '@angular/core/primitives/event-dispatch';
 import {Injectable, InjectionToken, Injector, inject} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
-import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './hydration/tokens';
+import {
+  BLOCK_ELEMENT_MAP,
+  EVENT_REPLAY_ENABLED_DEFAULT,
+  IS_EVENT_REPLAY_ENABLED,
+} from './hydration/tokens';
 import {OnDestroy} from './interface/lifecycle_hooks';
 
 export const BLOCKNAME_ATTRIBUTE = 'ngb';
@@ -81,6 +85,18 @@ export const sharedMapFunction = (rEl: RElement, jsActionMap: Map<string, Set<El
   }
   jsActionMap.set(blockName, blockSet);
 };
+
+export function removeListenersFromBlocks(blockNames: string[], injector: Injector) {
+  let blockList: Element[] = [];
+  const jsActionMap = injector.get(BLOCK_ELEMENT_MAP);
+  for (let blockName of blockNames) {
+    if (jsActionMap.has(blockName)) {
+      blockList = [...blockList, ...jsActionMap.get(blockName)!];
+    }
+  }
+  const replayList = new Set(blockList);
+  replayList.forEach(removeListeners);
+}
 
 export const removeListeners = (el: Element) => {
   el.removeAttribute(Attribute.JSACTION);
@@ -152,6 +168,9 @@ export const initGlobalEventDelegation = (
   const eventContract = (eventContractDetails.instance = new EventContract(
     new EventContractContainer(document.body),
   ));
-  const dispatcher = new EventDispatcher(invokeRegisteredDelegationListeners, /** clickModSupport */ false);
+  const dispatcher = new EventDispatcher(
+    invokeRegisteredDelegationListeners,
+    /** clickModSupport */ false,
+  );
   registerDispatcher(eventContract, dispatcher);
 };

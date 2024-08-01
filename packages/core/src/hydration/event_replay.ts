@@ -41,6 +41,7 @@ import {
   BLOCKNAME_ATTRIBUTE,
   EventContractDetails,
   JSACTION_EVENT_CONTRACT,
+  removeListenersFromBlocks,
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
@@ -271,18 +272,6 @@ function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector
     }
   }
   removeListenersFromBlocks([...hydratedBlocks], injector);
-}
-
-function removeListenersFromBlocks(blockNames: string[], injector: Injector) {
-  let blockList: Element[] = [];
-  const jsActionMap = injector.get(BLOCK_ELEMENT_MAP);
-  for (let blockName of blockNames) {
-    if (jsActionMap.has(blockName)) {
-      blockList = [...blockList, ...jsActionMap.get(blockName)!];
-    }
-  }
-  const replayList = new Set(blockList);
-  replayList.forEach(removeListeners);
 }
 
 export function convertHydrateTriggersToJsAction(triggers: Trigger[] | null): string[] {

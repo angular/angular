@@ -746,7 +746,7 @@ describe('platform-server partial hydration integration', () => {
         // <main> uses "eager" `custom-app-id` namespace.
         expect(ssrContents).toContain('<main jsaction="click:;');
         // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;"');
+        expect(ssrContents).toContain('<!-- ngh=d0 -->');
         // Outer defer block is rendered.
         expect(ssrContents).toContain('defer block rendered');
 
@@ -763,8 +763,6 @@ describe('platform-server partial hydration integration', () => {
         await whenStable(appRef);
 
         const appHostNode = compRef.location.nativeElement;
-
-        expect(appHostNode.outerHTML).toContain('<article jsaction="mouseenter:;focusin:;"');
 
         // Emit an event inside of a defer block, which should result
         // in triggering the defer block (start loading deps, etc) and
@@ -781,15 +779,16 @@ describe('platform-server partial hydration integration', () => {
         expect(false).toBe(true);
       }, 100_000);
 
-      xit('immediate', async () => {
+      it('immediate', async () => {
         @Component({
           standalone: true,
           selector: 'app',
           template: `
           <main (click)="fnA()">
-            @defer (hydrate on viewport) {
+            @defer (hydrate on immediate) {
               <article>
                 defer block rendered!
+                <span id="test" (click)="fnB()">{{value}}</span>
               </article>
             } @placeholder {
               <span>Outer block placeholder</span>
@@ -799,6 +798,11 @@ describe('platform-server partial hydration integration', () => {
         })
         class SimpleComponent {
           fnA() {}
+          value = 'start';
+
+          fnB() {
+            this.value = 'end';
+          }
         }
 
         const appId = 'custom-app-id';
@@ -810,8 +814,6 @@ describe('platform-server partial hydration integration', () => {
 
         // <main> uses "eager" `custom-app-id` namespace.
         expect(ssrContents).toContain('<main jsaction="click:;');
-        // <div>s inside a defer block have `d0` as a namespace.
-        expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;"');
         // Outer defer block is rendered.
         expect(ssrContents).toContain('defer block rendered');
 
@@ -828,22 +830,20 @@ describe('platform-server partial hydration integration', () => {
         await whenStable(appRef);
 
         const appHostNode = compRef.location.nativeElement;
+        expect(appHostNode.outerHTML).toContain(
+          '<span id="test" (click)="fnB()" ngb="d0">start</span>',
+        );
 
-        expect(appHostNode.outerHTML).toContain('<article jsaction="mouseenter:;focusin:;"');
-
-        // Emit an event inside of a defer block, which should result
-        // in triggering the defer block (start loading deps, etc) and
-        // subsequent hydration.
-        const article = doc.getElementsByTagName('article')![0];
-        const hoverEvent = new CustomEvent('mouseenter', {bubbles: true});
-        article.dispatchEvent(hoverEvent);
+        const testElement = doc.getElementById('test')!;
+        const clickEvent2 = new CustomEvent('click');
+        testElement.dispatchEvent(clickEvent2);
         await timeout(1000); // wait for defer blocks to resolve
 
         appRef.tick();
 
-        expect(appHostNode.outerHTML).not.toContain('<div jsaction="mouseenter:;focusin:;"');
-        // TODO: Update this test to be a proper test
-        expect(false).toBe(true);
+        expect(appHostNode.outerHTML).toContain(
+          '<span id="test" (click)="fnB()" ngb="d0">end</span>',
+        );
       }, 100_000);
 
       xit('idle', async () => {
@@ -956,6 +956,10 @@ describe('platform-server partial hydration integration', () => {
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
         await whenStable(appRef);
+
+        const inner = doc.getElementById('outer-trigger')!;
+        const clickEvent2 = new CustomEvent('mouseover', {bubbles: true});
+        inner.dispatchEvent(clickEvent2);
 
         const appHostNode = compRef.location.nativeElement;
 

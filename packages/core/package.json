@@ -13,6 +13,9 @@
     },
     "./event-dispatch-contract.min.js": {
       "default": "./event-dispatch-contract.min.js"
+    },
+    "./partial-hydration-bundle.min.js": {
+      "default": "./partial-hydration-bundle.min.js"
     }
   },
   "dependencies": {

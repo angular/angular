@@ -14,6 +14,7 @@ import {DEFER_PARENT_BLOCK_ID} from './interfaces';
 import {NGH_DEFER_BLOCKS_KEY} from './utils';
 import {Injector} from '../di';
 import {TransferState} from '../transfer_state';
+import {removeListenersFromBlocks} from '../event_delegation_utils';
 
 /**
  * Finds first hydrated parent `@defer` block for a given block id.
@@ -85,6 +86,15 @@ export async function hydrateFromBlockName(
 
   await hydrateFromBlockNameImpl(injector, blockName, hydratedBlocks);
   return hydratedBlocks;
+}
+
+export async function partialHydrateFromBlockName(
+  injector: Injector,
+  blockName: string,
+): Promise<void> {
+  const hydratedBlocks = await hydrateFromBlockName(injector, blockName);
+  // TODO(thePunderWoman): restore original bindings here
+  removeListenersFromBlocks([...hydratedBlocks], injector);
 }
 
 export function onDeferBlockCompletion(lDetails: LDeferBlockDetails, callback: VoidFunction) {

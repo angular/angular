@@ -45,6 +45,7 @@ import {
 } from './tokens';
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
+import {bootstrapPartialHydration, enableRetrieveDeferBlockDataImpl} from './partial';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -121,7 +122,7 @@ function enableI18nHydrationRuntimeSupport() {
 function enablePartialHydrationRuntimeSupport() {
   if (!isPartialHydrationRuntimeSupportEnabled) {
     isPartialHydrationRuntimeSupportEnabled = true;
-    // TODO: this needs to do similar things to withEventReplay to enable usage of JSAction
+    enableRetrieveDeferBlockDataImpl();
   }
 }
 
@@ -297,6 +298,19 @@ export function withPartialHydration(): Provider[] {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
         enablePartialHydrationRuntimeSupport();
+      },
+      multi: true,
+    },
+    {
+      provide: APP_BOOTSTRAP_LISTENER,
+      useFactory: () => {
+        if (isPlatformBrowser()) {
+          const injector = inject(Injector);
+          return () => {
+            bootstrapPartialHydration(getDocument(), injector);
+          };
+        }
+        return () => {}; // noop for the server code
       },
       multi: true,
     },
