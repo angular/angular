@@ -38,6 +38,7 @@ import {runAndMeasurePerf} from './profiler';
  * This const represents the "id" attribute value.
  */
 export const EVENT_DISPATCH_SCRIPT_ID = 'ng-event-dispatch-contract';
+export const PARTIAL_HYDRATION_SCRIPT_ID = 'ng-partial-hydration';
 
 interface PlatformOptions {
   document?: string | Document;
@@ -58,19 +59,21 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
 }
 
 /**
- * Finds and returns inlined event dispatch script if it exists.
- * See the `EVENT_DISPATCH_SCRIPT_ID` const docs for additional info.
+ * Finds and returns inlined script by script id if it exists.
+ * See the `EVENT_DISPATCH_SCRIPT_ID` or `PARTIAL_HYDRATION_SCRIPT_ID`
+ * const docs for additional info.
  */
-function findEventDispatchScript(doc: Document) {
-  return doc.getElementById(EVENT_DISPATCH_SCRIPT_ID);
+function findScriptById(doc: Document, scriptId: string) {
+  return doc.getElementById(scriptId);
 }
 
 /**
  * Removes inlined event dispatch script if it exists.
- * See the `EVENT_DISPATCH_SCRIPT_ID` const docs for additional info.
+ * See the `EVENT_DISPATCH_SCRIPT_ID` or `PARTIAL_HYDRATION_SCRIPT_ID`
+ * const docs for additional info.
  */
-function removeEventDispatchScript(doc: Document) {
-  findEventDispatchScript(doc)?.remove();
+function removeScriptById(doc: Document, scriptId: string) {
+  findScriptById(doc, scriptId)?.remove();
 }
 
 /**
@@ -83,9 +86,20 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
   if (!environmentInjector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {
     // Hydration is diabled, remove inlined event dispatch script.
     // (which was injected by the build process) from the HTML.
-    removeEventDispatchScript(doc);
+    removeScriptById(doc, EVENT_DISPATCH_SCRIPT_ID);
 
     return;
+  }
+  if (!environmentInjector.get(IS_PARTIAL_HYDRATION_ENABLED, false)) {
+    // Partial Hydration is diabled, remove inlined event dispatch script.
+    // (which was injected by the build process) from the HTML.
+    removeScriptById(doc, PARTIAL_HYDRATION_SCRIPT_ID);
+  } else {
+    insertPartialHydrationScript(
+      environmentInjector.get(APP_ID),
+      doc,
+      environmentInjector.get(CSP_NONCE, null),
+    );
   }
 
   appendSsrContentIntegrityMarker(doc);
@@ -101,7 +115,7 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
   } else {
     // No events to replay, we should remove inlined event dispatch script
     // (which was injected by the build process) from the HTML.
-    removeEventDispatchScript(doc);
+    removeScriptById(doc, EVENT_DISPATCH_SCRIPT_ID);
   }
 }
 
@@ -142,7 +156,7 @@ function insertEventRecordScript(
   nonce: string | null,
 ): void {
   const {regular, capture} = eventTypesToReplay;
-  const eventDispatchScript = findEventDispatchScript(doc);
+  const eventDispatchScript = findScriptById(doc, EVENT_DISPATCH_SCRIPT_ID);
   if (eventDispatchScript) {
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
     const replayScriptContents =
@@ -158,6 +172,21 @@ function insertEventRecordScript(
     // Insert replay script right after inlined event dispatch script, since it
     // relies on `__jsaction_bootstrap` to be defined in the global scope.
     eventDispatchScript.after(replayScript);
+  }
+}
+
+function insertPartialHydrationScript(appId: string, doc: Document, nonce: string | null): void {
+  const partialHydrationScript = findScriptById(doc, PARTIAL_HYDRATION_SCRIPT_ID);
+  if (partialHydrationScript) {
+    // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
+    const scriptContents =
+      `window.__partial_hydration_bootstrap(` + `document.body,` + `"${appId}",` + `);`;
+
+    const phScript = createScript(doc, scriptContents, nonce);
+
+    // Insert replay script right after inlined event dispatch script, since it
+    // relies on `__jsaction_bootstrap` to be defined in the global scope.
+    partialHydrationScript.after(phScript);
   }
 }
 

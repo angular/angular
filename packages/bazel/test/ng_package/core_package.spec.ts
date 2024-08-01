@@ -60,6 +60,7 @@ describe('@angular/core ng_package', () => {
             exports: matchesObjectWithOrder({
               './schematics/*': {default: './schematics/*.js'},
               './event-dispatch-contract.min.js': {default: './event-dispatch-contract.min.js'},
+              './partial-hydration-bundle.min.js': {default: './partial-hydration-bundle.min.js'},
               './package.json': {default: './package.json'},
               '.': {
                 types: './index.d.ts',

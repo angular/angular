@@ -28,7 +28,11 @@ import {
 import {HydrationFeatureKind} from '@angular/platform-browser/src/hydration';
 
 import {provideServerRendering} from '../public_api';
-import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
+import {
+  EVENT_DISPATCH_SCRIPT_ID,
+  PARTIAL_HYDRATION_SCRIPT_ID,
+  renderApplication,
+} from '../src/utils';
 
 import {getAppContents, stripUtilAttributes} from './dom_utils';
 
@@ -51,7 +55,8 @@ export const TRANSFER_STATE_TOKEN_ID = '__nghData__';
  * event dispatch (JSAction) logic.
  */
 export const EVENT_DISPATCH_SCRIPT = `<script type="text/javascript" id="${EVENT_DISPATCH_SCRIPT_ID}"></script>`;
-export const DEFAULT_DOCUMENT = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
+const PARTIAL_HYDRATION_SCRIPT = `<script type="text/javascript" id="${PARTIAL_HYDRATION_SCRIPT_ID}"></script>`;
+export const DEFAULT_DOCUMENT = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}${PARTIAL_HYDRATION_SCRIPT}<app></app></body></html>`;
 
 export function getComponentRef<T>(appRef: ApplicationRef): ComponentRef<T> {
   return appRef.components[0];

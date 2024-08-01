@@ -130,6 +130,9 @@ export function prepareEnvironment(doc: Document, html: string) {
     if (script?.textContent?.startsWith('window.__jsaction_bootstrap')) {
       eval(script.textContent);
     }
+    // if (script?.textContent?.startsWith('window.__partial_hydration_bootstrap')) {
+    //   eval(script.textContent);
+    // }
   }
 }
 
@@ -158,6 +161,9 @@ export async function prepareEnvironmentAndHydrate(
     if (script?.textContent?.startsWith('window.__jsaction_bootstrap')) {
       eval(script.textContent);
     }
+    // if (script?.textContent?.startsWith('window.__partial_hydration_bootstrap')) {
+    //   eval(script.textContent);
+    // }
   }
   return hydrate(doc, component, options);
 }
