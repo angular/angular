@@ -77,6 +77,6 @@ export function getApiUrl(packageNameWithoutPrefix: string, apiName: string): st
 
 function getNormalizedFilename(moduleName: string, entry: ApiManifestItem): string {
   // Angular entry points can contain `/`, we would like to swap `/` with an underscore
-  const normalizedModuleName = moduleName.replaceAll('/', '_');
+  const normalizedModuleName = moduleName.replace(/\//g, '_');
   return `angular_${normalizedModuleName}_${entry.name}_${entry.type}.html`;
 }
