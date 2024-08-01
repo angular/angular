@@ -156,7 +156,7 @@ export class UserProfile { }
 
 `@ContentChildren` creates a `QueryList` object that contains the query results. You can subscribe to changes to the query results over time via the `changes` property.
 
-**Queries never piece through component boundaries.** Content queries can only retrieve results from the same template as the component itself.
+**Queries never pierce through component boundaries.** Content queries can only retrieve results from the same template as the component itself.
 
 ## Query locators
 
