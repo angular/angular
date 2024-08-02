@@ -389,6 +389,7 @@ export class NgCompiler {
   readonly enableTemplateTypeChecker: boolean;
   private readonly enableBlockSyntax: boolean;
   private readonly enableLetSyntax: boolean;
+  private readonly disableImageImports: boolean;
   private readonly angularCoreVersion: string | null;
 
   /**
@@ -462,6 +463,9 @@ export class NgCompiler {
     this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
     this.enableLetSyntax = options['_enableLetSyntax'] ?? true;
     this.angularCoreVersion = options['_angularCoreVersion'] ?? null;
+
+    this.disableImageImports = options['disableImageImports'] === true;
+
     this.constructionDiagnostics.push(
       ...this.adapter.constructionDiagnostics,
       ...verifyCompatibleTypeCheckOptions(this.options),
@@ -1444,6 +1448,7 @@ export class NgCompiler {
         !!this.options.forbidOrphanComponents,
         this.enableBlockSyntax,
         this.enableLetSyntax,
+        this.disableImageImports,
         localCompilationExtraImportsTracker,
         jitDeclarationRegistry,
       ),

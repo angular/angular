@@ -274,7 +274,7 @@ export interface ImagePlaceholderConfig {
  */
 @Directive({
   standalone: true,
-  selector: 'img[ngSrc]',
+  selector: 'img[ngSrc],img[ngLocalSrc]',
   host: {
     '[style.position]': 'fill ? "absolute" : null',
     '[style.width]': 'fill ? "100%" : null',
@@ -312,7 +312,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * Image name will be processed by the image loader and the final URL will be applied as the `src`
    * property of the image.
    */
-  @Input({required: true, transform: unwrapSafeUrl}) ngSrc!: string;
+  @Input({transform: unwrapSafeUrl}) ngSrc!: string;
+
+  /**
+   * Path to a local image.
+   *
+   * Will work similarly to ngSrc,
+   * Image name will be processed by the image loader and the final URL will be applied as the `src`
+   * property of the image.
+   * Additionaly, height & width attributes will be added automatically if the fill attribute is not used
+   */
+  @Input({transform: unwrapSafeUrl}) ngLocalSrc!: string;
 
   /**
    * A comma separated list of width or density descriptors.
@@ -406,6 +416,10 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /** @nodoc */
   ngOnInit() {
     performanceMarkFeature('NgOptimizedImage');
+    if (this.ngLocalSrc) {
+      // This field is static
+      this.ngSrc = this.ngLocalSrc;
+    }
 
     if (ngDevMode) {
       const ngZone = this.injector.get(NgZone);

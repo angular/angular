@@ -249,6 +249,7 @@ export class ComponentDecoratorHandler
     private readonly forbidOrphanRendering: boolean,
     private readonly enableBlockSyntax: boolean,
     private readonly enableLetSyntax: boolean,
+    private readonly disableImageImports: boolean,
     private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
     private readonly jitDeclarationRegistry: JitDeclarationRegistry,
   ) {
@@ -258,6 +259,7 @@ export class ComponentDecoratorHandler
       usePoisonedData: this.usePoisonedData,
       enableBlockSyntax: this.enableBlockSyntax,
       enableLetSyntax: this.enableLetSyntax,
+      disableImageImports: this.disableImageImports,
     };
   }
 
@@ -278,6 +280,7 @@ export class ComponentDecoratorHandler
     usePoisonedData: boolean;
     enableBlockSyntax: boolean;
     enableLetSyntax: boolean;
+    disableImageImports: boolean;
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -629,6 +632,7 @@ export class ComponentDecoratorHandler
           usePoisonedData: this.usePoisonedData,
           enableBlockSyntax: this.enableBlockSyntax,
           enableLetSyntax: this.enableLetSyntax,
+          disableImageImports: this.disableImageImports,
         },
         this.compilationMode,
       );
@@ -794,6 +798,7 @@ export class ComponentDecoratorHandler
           i18nUseExternalIds: this.i18nUseExternalIds,
           relativeContextFilePath,
           rawImports: rawImports !== null ? new o.WrappedNodeExpr(rawImports) : undefined,
+          disableImageImports: this.disableImageImports,
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         classMetadata: this.includeClassMetadata
@@ -1536,6 +1541,7 @@ export class ComponentDecoratorHandler
       ...analysis.meta,
       ...resolution,
       defer: this.compileDeferBlocks(resolution),
+      disableImageImports: this.disableImageImports,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
 

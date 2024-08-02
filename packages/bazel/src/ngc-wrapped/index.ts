@@ -92,6 +92,7 @@ export async function runOneBuild(
     'onlyExplicitDeferDependencyImports',
     'generateExtraImportsInLocalMode',
     '_enableLetSyntax',
+    'disableImageImports',
   ]);
 
   const userOverrides = Object.entries(userOptions)

@@ -26,8 +26,6 @@ export class LinkerImportGenerator<TStatement, TExpression>
   ) {}
 
   addImport(request: ImportRequest<null>): TExpression {
-    this.assertModuleName(request.exportModuleSpecifier);
-
     if (request.exportSymbolName === null) {
       return this.ngImport;
     }
