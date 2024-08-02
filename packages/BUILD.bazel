@@ -1,6 +1,6 @@
 load("//tools:defaults.bzl", "ts_config", "ts_library")
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
-load("@npm//@angular/build-tooling/bazel/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
+load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
 
 package(default_visibility = ["//visibility:public"])
 

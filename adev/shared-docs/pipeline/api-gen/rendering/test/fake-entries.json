@@ -1,0 +1,84 @@
+{
+  "moduleName": "@angular/core",
+  "entries": [
+    {
+      "name": "NgTemplateOutlet",
+      "description": "*one* directive",
+      "entryType": "directive",
+      "members": [],
+      "jsdocTags": [],
+      "rawComment": "",
+      "source": {
+        "fileName": "/packages/core/src/ng_template_outlet.ts",
+        "line": 7,
+        "character": 7
+      }
+    },
+    {
+      "name": "UserProfile",
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "userId",
+          "type": "number",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "A user identifier.",
+          "jsdocTags": []
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "memberType": "getter",
+          "memberTags": [],
+          "description": "Name of the user",
+          "jsdocTags": []
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "memberType": "setter",
+          "memberTags": [],
+          "description": "Name of the user",
+          "jsdocTags": []
+        },
+        {
+          "params": [
+            {
+              "name": "config",
+              "description": "Setting for saving.",
+              "type": "object",
+              "isOptional": false,
+              "isRestParam": false
+            }
+          ],
+          "name": "save",
+          "returnType": "boolean",
+          "entryType": "function",
+          "description": "Save the user.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "Setting for saving."
+            },
+            {
+              "name": "returns",
+              "comment": "Whether it succeeded"
+            }
+          ],
+          "rawComment": "/**\n           * Save the user.\n           * @param config Setting for saving.\n           * @returns Whether it succeeded\n           */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "description": "",
+      "jsdocTags": [],
+      "rawComment": "",
+      "source": {
+        "fileName": "/packages/core/src/user-profile.ts",
+        "line": 3,
+        "character": 7
+      }
+    }
+  ]
+}

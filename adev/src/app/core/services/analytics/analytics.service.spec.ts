@@ -9,7 +9,7 @@
 import {Injector} from '@angular/core';
 import {ENVIRONMENT, WINDOW, LOCAL_STORAGE} from '@angular/docs';
 import {AnalyticsService} from './analytics.service';
-import {MockLocalStorage} from '@angular/docs/testing';
+import {MockLocalStorage} from '@angular/docs';
 
 describe('AnalyticsService', () => {
   let service: AnalyticsService;
