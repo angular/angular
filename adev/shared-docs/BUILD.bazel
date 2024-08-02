@@ -16,6 +16,7 @@ ng_module(
         "//adev/shared-docs/pipes",
         "//adev/shared-docs/providers",
         "//adev/shared-docs/services",
+        "//adev/shared-docs/testing",
         "//adev/shared-docs/utils",
     ],
 )
@@ -38,7 +39,6 @@ ng_package(
         "//adev/shared-docs/pipeline/examples/template:files",
         "//adev/shared-docs/pipeline/tutorials/common:files",
         "//adev/shared-docs/styles",
-        "//adev/shared-docs/testing",
     ],
     visibility = [
         "//adev:__pkg__",

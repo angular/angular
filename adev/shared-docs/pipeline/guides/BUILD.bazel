@@ -12,7 +12,6 @@ ts_library(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        # "@npm//@angular/build-tooling/bazel/api-gen/rendering:entities",
         "@npm//@bazel/runfiles",
         "@npm//@types/diff",
         "@npm//@types/jsdom",

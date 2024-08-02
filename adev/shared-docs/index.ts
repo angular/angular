@@ -17,3 +17,4 @@ export * from './interfaces/index';
 export * from './providers/index';
 export * from './services/index';
 export * from './utils/index';
+export * from './testing/index';

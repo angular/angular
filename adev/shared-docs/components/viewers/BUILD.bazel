@@ -65,6 +65,7 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
         "//packages/router",
+        "//packages/router/testing",
         "@npm//@angular/cdk",
         "@npm//@angular/material",
     ],

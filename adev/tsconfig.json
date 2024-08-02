@@ -30,6 +30,7 @@
     // TODO(crisbeto): temporarily disabled while adding support for TS 5.4. Should be re-enabled.
     "skipLibCheck": true,
     "paths": {
+      "@angular/docs": ["./shared-docs"],
       "@angular/*": ["../packages/*"],
     },
   },

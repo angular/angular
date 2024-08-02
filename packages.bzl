@@ -21,7 +21,7 @@ def _exclude_pkgs(packages, *args):
     return modified_packages
 
 # All framework packages published to NPM.
-ALL_PACKAGES = [
+PUBLISHED_PACKAGES = [
     "@angular/animations",
     "@angular/benchpress",
     "@angular/common",
@@ -42,8 +42,15 @@ ALL_PACKAGES = [
     "zone.js",
 ]
 
+# All packages in the repository which are not published to NPM
+UNPUBLISHED_PACKAGES = [
+    "@angular/docs",
+]
+
+ALL_PACKAGES = PUBLISHED_PACKAGES + UNPUBLISHED_PACKAGES
+
 # Packages used by integration tests
-INTEGRATION_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "angular-in-memory-web-api")
+INTEGRATION_PACKAGES = _exclude_pkgs(PUBLISHED_PACKAGES, "angular-in-memory-web-api")
 
 # Package names under //packages that have `files_for_docgen` targets
 DOCS_ENTRYPOINTS = [

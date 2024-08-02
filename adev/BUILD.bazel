@@ -7,6 +7,10 @@ load("//adev/tools/local_deps:index.bzl", "ensure_local_package_deps", "link_loc
 
 package(default_visibility = ["//visibility:public"])
 
+exports_files([
+    "tsconfig.json",
+])
+
 # All source and configuration files required to build the docs app
 APPLICATION_FILES = [
     "angular.json",
@@ -17,10 +21,6 @@ APPLICATION_FILES = [
     ["src/**/*"],
     exclude = [
         "src/**/*.spec.ts",
-        # Temporarily exclude generated sources produced by the non-bazel
-        # build until the whole project is built by bazel and this directory
-        # isn't needed.
-        "src/generated/**/*",
     ],
 )
 
@@ -29,7 +29,7 @@ TEST_FILES = APPLICATION_FILES + [
     "test-main.ts",
     "tsconfig.spec.json",
 ] + glob(
-    ["**/*.spec.ts"],
+    ["src/**/*.spec.ts"],
 )
 
 APPLICATION_ASSETS = [
@@ -43,6 +43,7 @@ APPLICATION_ASSETS = [
 ]
 
 APPLICATION_DEPS = [
+    "@npm//@angular/docs",
     "@npm//@angular/build",
     "@npm//@angular-devkit/build-angular",
     "@npm//@angular/animations",
@@ -51,7 +52,6 @@ APPLICATION_DEPS = [
     "@npm//@angular/compiler",
     "@npm//@angular/compiler-cli",
     "@npm//@angular/core",
-    "@npm//@angular/docs",
     "@npm//@angular/forms",
     "@npm//@angular/material",
     "@npm//@angular/platform-browser",
