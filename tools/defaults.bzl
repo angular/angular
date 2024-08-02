@@ -20,7 +20,7 @@ load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle"
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
-load("@npm//@angular/build-tooling/bazel/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
@@ -439,6 +439,40 @@ def zone_compatible_jasmine_node_test(name, external = [], srcs = [], deps = [],
     jasmine_node_test(
         name = name,
         deps = [":%s_bundle" % name],
+        **kwargs
+    )
+
+def esbuild_jasmine_node_test(name, specs = [], external = [], bootstrap = [], **kwargs):
+    templated_args = kwargs.pop("templated_args", []) + [
+        # TODO: Disable the linker fully here. Currently it is needed for ESM.
+        "--bazel_patch_module_resolver",
+    ]
+
+    deps = kwargs.pop("deps", []) + [
+        "@npm//chokidar",
+        "@npm//domino",
+        "@npm//jasmine-core",
+        "@npm//reflect-metadata",
+        "@npm//source-map-support",
+        "@npm//tslib",
+        "@npm//xhr2",
+    ]
+
+    spec_bundle(
+        name = "%s_test_bundle" % name,
+        platform = "node",
+        target = "es2020",
+        bootstrap = bootstrap,
+        deps = specs + deps,
+        external = external,
+    )
+
+    _jasmine_node_test(
+        name = name,
+        srcs = [":%s_test_bundle" % name],
+        use_direct_specs = True,
+        templated_args = templated_args,
+        deps = deps,
         **kwargs
     )
 

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "esbuild_jasmine_node_test", "ts_library")
 
 ts_library(
     name = "unit_test_lib",
@@ -23,7 +23,7 @@ ts_library(
     ],
 )
 
-jasmine_node_test(
+esbuild_jasmine_node_test(
     name = "unit_tests",
     bootstrap = [
         ":bootstrap",
@@ -41,6 +41,10 @@ jasmine_node_test(
     env = {
         "CHROME_BIN": "$(CHROMIUM)",
     },
+    external = [
+        "playwright-core",
+        "jsdom",
+    ],
     tags = [
         "no-remote-exec",
     ],
