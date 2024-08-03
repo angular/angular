@@ -34,8 +34,9 @@ export type ErrorHandler = (error: any) => any;
  * root component has been created. The bootstrap is not blocked on the completion of the initial
  * navigation.
  * * 'enabledBlocking' - The initial navigation starts before the root component is created.
- * The bootstrap is blocked until the initial navigation is complete. This value is required
- * for [server-side rendering](guide/ssr) to work.
+ * The bootstrap is blocked until the initial navigation is complete. This value should be set in
+ * case you use [server-side rendering](guide/ssr), but do not enable [hydration](guide/hydration)
+ * for your application.
  * * 'disabled' - The initial navigation is not performed. The location listener is set up before
  * the root component gets created. Use if there is a reason to have
  * more control over when the router starts its initial navigation due to some complex
@@ -216,8 +217,9 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * One of `enabled`, `enabledBlocking`, `enabledNonBlocking` or `disabled`.
    * When set to `enabled` or `enabledBlocking`, the initial navigation starts before the root
    * component is created. The bootstrap is blocked until the initial navigation is complete. This
-   * value is required for [server-side rendering](guide/ssr) to work. When set to
-   * `enabledNonBlocking`, the initial navigation starts after the root component has been created.
+   * value should be set in case you use [server-side rendering](guide/ssr), but do not enable
+   * [hydration](guide/hydration) for your application. When set to `enabledNonBlocking`,
+   * the initial navigation starts after the root component has been created.
    * The bootstrap is not blocked on the completion of the initial navigation. When set to
    * `disabled`, the initial navigation is not performed. The location listener is set up before the
    * root component gets created. Use if there is a reason to have more control over when the router
