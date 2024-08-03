@@ -2,7 +2,7 @@
 
 This site is built with Angular.
 
-The content is written primarly in Markdown format located in `src/content`. For simple edits, you can directly edit the file on GitHub and generate a Pull Request.
+The content is written primarily in Markdown format located in `src/content`. For simple edits, you can directly edit the file on GitHub and generate a Pull Request.
 
 ## Local Development
 
