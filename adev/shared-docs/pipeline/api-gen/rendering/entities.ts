@@ -132,15 +132,25 @@ export interface PipeEntry extends ClassEntry {
   // TODO: add `isPure`.
 }
 
-export interface FunctionEntry extends DocEntry {
+export interface FunctionSignatureMetadata extends DocEntry {
   params: ParameterEntry[];
   returnType: string;
+  returnDescription?: string;
+
   generics: GenericEntry[];
   isNewType: boolean;
 }
 
-export interface FunctionWithOverloadsEntry extends FunctionEntry {
-  overloads: FunctionEntry[] | null;
+export type FunctionEntry = FunctionDefinitionEntry &
+  DocEntry & {
+    implementation: FunctionSignatureMetadata;
+  };
+
+/** Interface describing a function with overload signatures. */
+export interface FunctionDefinitionEntry {
+  name: string;
+  signatures: FunctionSignatureMetadata[];
+  implementation: FunctionSignatureMetadata | null;
 }
 
 /** Sub-entry for a single class or enum member. */
@@ -178,15 +188,9 @@ export interface ParameterEntry {
   isRestParam: boolean;
 }
 
-export interface FunctionWithOverloads {
-  name: string;
-  signatures: FunctionEntry[];
-  implementation: FunctionEntry | null;
-}
-
 export interface InitializerApiFunctionEntry extends DocEntry {
-  callFunction: FunctionWithOverloads;
-  subFunctions: FunctionWithOverloads[];
+  callFunction: FunctionDefinitionEntry;
+  subFunctions: FunctionDefinitionEntry[];
 
   __docsMetadata__?: {
     /**
@@ -203,8 +207,4 @@ export interface InitializerApiFunctionEntry extends DocEntry {
 
 export function isDocEntryWithSourceInfo(entry: DocEntry): entry is DocEntryWithSourceInfo {
   return 'source' in entry;
-}
-
-export function isFunctionEntryWithOverloads(entry: DocEntry): entry is FunctionWithOverloadsEntry {
-  return 'overloads' in entry;
 }

@@ -12,6 +12,7 @@ import {
   DocEntry,
   EnumEntry,
   FunctionEntry,
+  FunctionSignatureMetadata,
   InitializerApiFunctionEntry,
   JsDocTagEntry,
   MemberEntry,
@@ -55,7 +56,7 @@ export type TypeAliasEntryRenderable = TypeAliasEntry & DocEntryRenderable & Has
 export type ClassEntryRenderable = ClassEntry &
   DocEntryRenderable &
   HasRenderableToc & {
-    membersGroups: Map<string, MemberEntryRenderable[]>;
+    members: MemberEntryRenderable[];
   };
 
 /** Documentation entity for a TypeScript enum augmented transformed content for rendering. */
@@ -71,9 +72,12 @@ export type InterfaceEntryRenderable = ClassEntryRenderable;
 export type FunctionEntryRenderable = FunctionEntry &
   DocEntryRenderable &
   HasRenderableToc & {
-    params: ParameterEntryRenderable[];
     deprecationMessage: string | null;
-    overloads: FunctionEntryRenderable[] | null;
+  };
+
+export type FunctionSignatureMetadataRenderable = FunctionSignatureMetadata &
+  DocEntryRenderable & {
+    params: ParameterEntryRenderable[];
   };
 
 /** Sub-entry for a single class or enum member augmented with transformed content for rendering. */

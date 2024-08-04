@@ -7,23 +7,65 @@
  */
 
 import {h} from 'preact';
-import {FunctionEntryRenderable} from '../entities/renderables';
+import {FunctionEntryRenderable, FunctionSignatureMetadataRenderable} from '../entities/renderables';
 import {
-  PARAM_KEYWORD_CLASS_NAME,
-  REFERENCE_HEADER,
   REFERENCE_MEMBERS,
   REFERENCE_MEMBERS_CONTAINER,
   REFERENCE_MEMBER_CARD,
   REFERENCE_MEMBER_CARD_BODY,
+  REFERENCE_MEMBER_CARD_HEADER,
 } from '../styling/css-classes';
 import {ClassMethodInfo} from './class-method-info';
 import {HeaderApi} from './header-api';
 import {TabApi} from './tab-api';
 import {TabDescription} from './tab-description';
 import {TabUsageNotes} from './tab-usage-notes';
+import {HighlightTypeScript} from './highlight-ts';
+import {printInitializerFunctionSignatureLine} from '../transforms/code-transforms';
+import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
+
+export const signatureCard = (
+  name: string,
+  signature: FunctionSignatureMetadataRenderable,
+  opts: {id: string},
+  printSignaturesAsHeader: boolean,
+) => {
+  return (
+    <div class={REFERENCE_MEMBER_CARD} id={opts.id} tabIndex={-1}>
+      <header>
+        {printSignaturesAsHeader ? (
+          <code>
+            <HighlightTypeScript
+              code={printInitializerFunctionSignatureLine(
+                name,
+                signature,
+                // Always omit types in signature headers, to keep them short.
+                true,
+              )}
+              removeFunctionKeyword={true}
+            />
+          </code>
+        ) : (
+          <div className={REFERENCE_MEMBER_CARD_HEADER}>
+            <h3>{name}</h3>
+            <div>
+              <code>{signature.returnType}</code>
+            </div>
+          </div>
+        )}
+      </header>
+      <div class={REFERENCE_MEMBER_CARD_BODY}>
+        <ClassMethodInfo entry={signature} />
+      </div>
+    </div>
+  );
+};
 
 /** Component to render a function API reference document. */
 export function FunctionReference(entry: FunctionEntryRenderable) {
+  // Use signatures as header if there are multiple signatures.
+  const printSignaturesAsHeader = entry.signatures.length > 1;
+
   return (
     <div class="api">
       <HeaderApi entry={entry} />
@@ -32,26 +74,16 @@ export function FunctionReference(entry: FunctionEntryRenderable) {
       <TabUsageNotes entry={entry} />
       <div className={REFERENCE_MEMBERS_CONTAINER}>
         <div className={REFERENCE_MEMBERS}>
-          <div className={REFERENCE_MEMBER_CARD}>
-            <header>
-              <div className={REFERENCE_HEADER}>
-                <h3>{entry.name}</h3>
-                <div>
-                  <code>{entry.returnType}</code>
-                </div>
-              </div>
-              {entry.isDeprecated && (
-                <span className={`${PARAM_KEYWORD_CLASS_NAME} docs-deprecated`}>@deprecated</span>
-              )}
-            </header>
-            <div className={REFERENCE_MEMBER_CARD_BODY}>
-              {entry.overloads ? (
-                entry.overloads.map((overload) => <ClassMethodInfo entry={overload} />)
-              ) : (
-                <ClassMethodInfo entry={entry} isOverloaded={true} />
-              )}
-            </div>
-          </div>
+          {entry.signatures.map((s, i) =>
+            signatureCard(
+              s.name,
+              getFunctionMetadataRenderable(s, entry.moduleName),
+              {
+                id: `${s.name}_${i}`,
+              },
+              printSignaturesAsHeader,
+            ),
+          )}
         </div>
       </div>
     </div>

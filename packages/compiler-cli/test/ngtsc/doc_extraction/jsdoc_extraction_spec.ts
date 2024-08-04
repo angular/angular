@@ -10,6 +10,7 @@ import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
 import {
   ClassEntry,
   FunctionEntry,
+  FunctionSignatureMetadata,
   MethodEntry,
 } from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
@@ -280,7 +281,7 @@ runInEachFileSystem(() => {
       const functionEntry = docs[0] as FunctionEntry;
       expect(functionEntry.description).toBe('Save some data.');
 
-      const [dataEntry, timingEntry] = functionEntry.params;
+      const [dataEntry, timingEntry] = functionEntry.implementation.params;
       expect(dataEntry.description).toBe('The data to save.');
       expect(timingEntry.description).toBe('Long description\nwith multiple lines.');
     });
@@ -323,7 +324,7 @@ runInEachFileSystem(() => {
       const saveEntry = classEntry.members[3] as MethodEntry;
       expect(saveEntry.description).toBe('Save the user.');
 
-      expect(saveEntry.params[0].description).toBe('Setting for saving.');
+      expect(saveEntry.implementation.params[0].description).toBe('Setting for saving.');
       expect(saveEntry.jsdocTags.length).toBe(2);
       expect(saveEntry.jsdocTags[1]).toEqual({name: 'returns', comment: 'Whether it succeeded'});
     });
