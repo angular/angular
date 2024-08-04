@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FunctionEntry, isFunctionEntryWithOverloads} from '../entities';
-import {FunctionEntryRenderable} from '../entities/renderables';
-import {HasRenderableOverloads} from '../entities/traits';
+import {FunctionEntry, FunctionSignatureMetadata} from '../entities';
+import {
+  FunctionEntryRenderable,
+  FunctionSignatureMetadataRenderable,
+} from '../entities/renderables';
 import {addRenderableCodeToc} from './code-transforms';
 import {
   addHtmlAdditionalLinks,
@@ -27,15 +29,10 @@ export function getFunctionRenderable(
 ): FunctionEntryRenderable {
   return setEntryFlags(
     addRenderableCodeToc(
-      addRenderableFunctionParams(
-        addOverloads(
-          moduleName,
-          addHtmlAdditionalLinks(
-            addHtmlUsageNotes(
-              setEntryFlags(
-                addHtmlJsDocTagComments(addHtmlDescription(addModuleName(entry, moduleName))),
-              ),
-            ),
+      addHtmlAdditionalLinks(
+        addHtmlUsageNotes(
+          setEntryFlags(
+            addHtmlJsDocTagComments(addHtmlDescription(addModuleName(entry, moduleName))),
           ),
         ),
       ),
@@ -43,15 +40,17 @@ export function getFunctionRenderable(
   );
 }
 
-function addOverloads<T extends FunctionEntry>(
-  moduleName: string,
-  entry: T,
-): T & HasRenderableOverloads {
-  return {
-    ...entry,
-    overloads:
-      isFunctionEntryWithOverloads(entry) && entry.overloads
-        ? entry.overloads.map((overload) => getFunctionRenderable(overload, moduleName))
-        : null,
-  };
+export function getFunctionMetadataRenderable(
+  entry: FunctionSignatureMetadata,
+  moduleName: string = '',
+): FunctionSignatureMetadataRenderable {
+  return addHtmlAdditionalLinks(
+    addRenderableFunctionParams(
+      addHtmlUsageNotes(
+        setEntryFlags(
+          addHtmlJsDocTagComments(addHtmlDescription(addModuleName(entry, moduleName))),
+        ),
+      ),
+    ),
+  );
 }
