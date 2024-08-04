@@ -68,7 +68,7 @@ runInEachFileSystem(() => {
       const methodEntry = interfaceEntry.members[0] as MethodEntry;
       expect(methodEntry.memberType).toBe(MemberType.Method);
       expect(methodEntry.name).toBe('firstName');
-      expect(methodEntry.returnType).toBe('string');
+      expect(methodEntry.implementation.returnType).toBe('string');
 
       const propertyEntry = interfaceEntry.members[1] as PropertyEntry;
       expect(propertyEntry.memberType).toBe(MemberType.Property);
@@ -93,7 +93,7 @@ runInEachFileSystem(() => {
       const methodEntry = interfaceEntry.members[0] as MethodEntry;
       expect(methodEntry.memberType).toBe(MemberType.Method);
       expect(methodEntry.name).toBe('');
-      expect(methodEntry.returnType).toBe('string');
+      expect(methodEntry.implementation.returnType).toBe('string');
     });
 
     it('should extract a method with a rest parameter', () => {
@@ -109,7 +109,7 @@ runInEachFileSystem(() => {
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const interfaceEntry = docs[0] as InterfaceEntry;
       const methodEntry = interfaceEntry.members[0] as MethodEntry;
-      const [prefixParamEntry, idsParamEntry] = methodEntry.params;
+      const [prefixParamEntry, idsParamEntry] = methodEntry.implementation.params;
 
       expect(prefixParamEntry.name).toBe('prefix');
       expect(prefixParamEntry.type).toBe('string');
@@ -138,9 +138,9 @@ runInEachFileSystem(() => {
       const methodEntry = interfaceEntry.members[0] as MethodEntry;
       expect(methodEntry.memberType).toBe(MemberType.Method);
       expect(methodEntry.name).toBe('setPhone');
-      expect(methodEntry.params.length).toBe(2);
+      expect(methodEntry.implementation.params.length).toBe(2);
 
-      const [numParam, areaParam] = methodEntry.params;
+      const [numParam, areaParam] = methodEntry.implementation.params;
       expect(numParam.name).toBe('num');
       expect(numParam.isOptional).toBe(false);
       expect(numParam.type).toBe('string');
@@ -306,12 +306,12 @@ runInEachFileSystem(() => {
 
       expect(numberSaveEntry.name).toBe('save');
       expect(numberSaveEntry.memberType).toBe(MemberType.Method);
-      expect((numberSaveEntry as MethodEntry).returnType).toBe('number');
+      expect((numberSaveEntry as MethodEntry).implementation.returnType).toBe('number');
       expect(numberSaveEntry.memberTags).not.toContain(MemberTags.Inherited);
 
       expect(unionSaveEntry.name).toBe('save');
       expect(unionSaveEntry.memberType).toBe(MemberType.Method);
-      expect((unionSaveEntry as MethodEntry).returnType).toBe('string | number');
+      expect((unionSaveEntry as MethodEntry).implementation.returnType).toBe('string | number');
       expect(unionSaveEntry.memberTags).not.toContain(MemberTags.Inherited);
 
       expect(nameEntry.name).toBe('name');

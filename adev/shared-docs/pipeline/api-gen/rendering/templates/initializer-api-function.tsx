@@ -7,20 +7,13 @@
  */
 
 import {h, JSX} from 'preact';
-import {FunctionEntryRenderable, InitializerApiFunctionRenderable} from '../entities/renderables';
+import {InitializerApiFunctionRenderable} from '../entities/renderables';
 import {HeaderApi} from './header-api';
 import {TabApi} from './tab-api';
 import {TabUsageNotes} from './tab-usage-notes';
-import {
-  REFERENCE_MEMBERS,
-  REFERENCE_MEMBERS_CONTAINER,
-  REFERENCE_MEMBER_CARD,
-  REFERENCE_MEMBER_CARD_BODY,
-} from '../styling/css-classes';
-import {printInitializerFunctionSignatureLine} from '../transforms/code-transforms';
-import {HighlightTypeScript} from './highlight-ts';
-import {ClassMethodInfo} from './class-method-info';
-import {getFunctionRenderable} from '../transforms/function-transforms';
+import {REFERENCE_MEMBERS, REFERENCE_MEMBERS_CONTAINER} from '../styling/css-classes';
+import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
+import {signatureCard} from './function-reference';
 
 /** Component to render a constant API reference document. */
 export function InitializerApiFunction(entry: InitializerApiFunctionRenderable) {
@@ -40,32 +33,6 @@ export function InitializerApiFunction(entry: InitializerApiFunctionRenderable) 
     entry.callFunction.signatures[0].description = '';
   }
 
-  const signatureCard = (name: string, signature: FunctionEntryRenderable, opts: {id: string}) => {
-    return (
-      <div class={REFERENCE_MEMBER_CARD} id={opts.id} tabIndex={-1}>
-        <header>
-          {printSignaturesAsHeader ? (
-            <code>
-              <HighlightTypeScript
-                code={printInitializerFunctionSignatureLine(
-                  name,
-                  signature,
-                  // Always omit types in signature headers, to keep them short.
-                  true,
-                )}
-              />
-            </code>
-          ) : (
-            <h3>{`${name}()`}</h3>
-          )}
-        </header>
-        <div class={REFERENCE_MEMBER_CARD_BODY}>
-          <ClassMethodInfo entry={signature} />
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div class="api">
       <HeaderApi entry={entry} showFullDescription={true} />
@@ -75,9 +42,14 @@ export function InitializerApiFunction(entry: InitializerApiFunctionRenderable) 
       <div class={REFERENCE_MEMBERS_CONTAINER}>
         <div class={REFERENCE_MEMBERS}>
           {entry.callFunction.signatures.map((s, i) =>
-            signatureCard(s.name, getFunctionRenderable(s, entry.moduleName), {
-              id: `${s.name}_${i}`,
-            }),
+            signatureCard(
+              s.name,
+              getFunctionMetadataRenderable(s, entry.moduleName),
+              {
+                id: `${s.name}_${i}`,
+              },
+              printSignaturesAsHeader,
+            ),
           )}
 
           {entry.subFunctions.reduce(
@@ -86,10 +58,11 @@ export function InitializerApiFunction(entry: InitializerApiFunctionRenderable) 
               ...subFunction.signatures.map((s, i) =>
                 signatureCard(
                   `${entry.name}.${s.name}`,
-                  getFunctionRenderable(s, entry.moduleName),
+                  getFunctionMetadataRenderable(s, entry.moduleName),
                   {
                     id: `${entry.name}_${s.name}_${i}`,
                   },
+                  printSignaturesAsHeader,
                 ),
               ),
             ],
