@@ -12,6 +12,7 @@ import {
   DocEntry,
   EnumEntry,
   FunctionEntry,
+  FunctionMetadata,
   InitializerApiFunctionEntry,
   JsDocTagEntry,
   MemberEntry,
@@ -71,9 +72,12 @@ export type InterfaceEntryRenderable = ClassEntryRenderable;
 export type FunctionEntryRenderable = FunctionEntry &
   DocEntryRenderable &
   HasRenderableToc & {
-    params: ParameterEntryRenderable[];
     deprecationMessage: string | null;
-    overloads: FunctionEntryRenderable[] | null;
+  };
+
+export type FunctionMetadataRenderable = FunctionMetadata &
+  DocEntryRenderable & {
+    params: ParameterEntryRenderable[];
   };
 
 /** Sub-entry for a single class or enum member augmented with transformed content for rendering. */

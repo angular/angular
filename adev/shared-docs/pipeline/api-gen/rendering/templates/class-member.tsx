@@ -13,21 +13,23 @@ import {
   isPropertyEntry,
   isSetterEntry,
 } from '../entities/categorization';
-import {MemberEntryRenderable} from '../entities/renderables';
 import {
-  REFERENCE_HEADER,
+  FunctionMetadataRenderable,
+  MemberEntryRenderable,
+  MethodEntryRenderable,
+} from '../entities/renderables';
+import {
   REFERENCE_MEMBER_CARD,
   REFERENCE_MEMBER_CARD_BODY,
+  REFERENCE_MEMBER_CARD_HEADER,
   REFERENCE_MEMBER_CARD_ITEM,
 } from '../styling/css-classes';
 import {ClassMethodInfo} from './class-method-info';
 import {DeprecatedLabel} from './deprecated-label';
 import {RawHtml} from './raw-html';
+import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
 
 export function ClassMember(props: {members: MemberEntryRenderable[]}) {
-  const memberName = props.members[0].name;
-  const returnType = getMemberType(props.members[0]);
-
   // Do not create body element when there is no description
   const body = props.members.every(
     (member) => !member.htmlDescription && !isClassMethodEntry(member),
@@ -35,27 +37,36 @@ export function ClassMember(props: {members: MemberEntryRenderable[]}) {
     <></>
   ) : (
     <div className={REFERENCE_MEMBER_CARD_BODY}>
-      {props.members.map((member) => {
-        return isClassMethodEntry(member) ? (
-          <ClassMethodInfo entry={member} isOverloaded={props.members.length > 1} />
-        ) : (
-          <div className={REFERENCE_MEMBER_CARD_ITEM}>
-            {props.members.every((member) => member.deprecationMessage !== null) ? (
-              <DeprecatedLabel entry={props.members[0]} />
-            ) : (
-              <></>
-            )}
-            <RawHtml value={member.htmlDescription} />
-          </div>
-        );
+      {props.members.map((member, index) => {
+        const hasSignature = isClassMethodEntry(member) && member.signatures?.[index] !== undefined;
+
+        if (hasSignature) {
+          const renderableMember = getFunctionMetadataRenderable(member.signatures[index]);
+          return (
+            <ClassMethodInfo entry={renderableMember} isOverloaded={props.members.length > 1} />
+          );
+        } else {
+          return (
+            <div className={REFERENCE_MEMBER_CARD_ITEM}>
+              {props.members.every((member) => member.deprecationMessage !== null) ? (
+                <DeprecatedLabel entry={props.members[0]} />
+              ) : (
+                <></>
+              )}
+              <RawHtml value={member.htmlDescription} />
+            </div>
+          );
+        }
       })}
     </div>
   );
 
+  const memberName = props.members[0].name;
+  const returnType = getMemberType(props.members[0]);
   return (
     <div id={memberName} className={REFERENCE_MEMBER_CARD} tabIndex={-1}>
       <header>
-        <div className={REFERENCE_HEADER}>
+        <div className={REFERENCE_MEMBER_CARD_HEADER}>
           <h3>{memberName}</h3>
           <div>
             {props.members.length > 1 ? (
@@ -75,7 +86,7 @@ export function ClassMember(props: {members: MemberEntryRenderable[]}) {
 
 function getMemberType(entry: MemberEntryRenderable): string | null {
   if (isClassMethodEntry(entry)) {
-    return entry.returnType;
+    return entry.implementation!.returnType;
   } else if (isPropertyEntry(entry) || isGetterEntry(entry) || isSetterEntry(entry)) {
     return entry.type;
   }

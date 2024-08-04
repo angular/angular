@@ -9,11 +9,11 @@
 import {
   DocEntry,
   FunctionEntry,
+  FunctionMetadata,
   MemberEntry,
   MemberTags,
   ParameterEntry,
   PropertyEntry,
-  isFunctionEntryWithOverloads,
 } from '../entities';
 
 import {
@@ -78,7 +78,7 @@ export function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   const afterCode = match[3];
 
   const lines = splitLines(insideCode);
-  const groups = groupCodeLines(lines, metadata);
+  const groups = groupCodeLines(lines, metadata, entry);
 
   return {
     ...entry,
@@ -89,11 +89,12 @@ export function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
 }
 
 /** Group overloaded methods */
-function groupCodeLines(lines: string[], metadata: CodeTableOfContentsData) {
+function groupCodeLines(lines: string[], metadata: CodeTableOfContentsData, entry: DocEntry) {
+  const hasSingleSignature = isFunctionEntry(entry) && entry.signatures.length === 1;
   return lines.reduce((groups, line, index) => {
-    const tocItem = {
+    const tocItem: CodeLineRenderable = {
       contents: line,
-      id: metadata.codeLineNumbersWithIdentifiers.get(index),
+      id: hasSingleSignature ? undefined : metadata.codeLineNumbersWithIdentifiers.get(index),
       isDeprecated: metadata.deprecatedLineNumbers.some((lineNumber) => lineNumber === index),
     };
 
@@ -134,21 +135,26 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   if (isFunctionEntry(entry)) {
     const isDeprecated = isDeprecatedEntry(entry);
     const codeLineNumbersWithIdentifiers = new Map<number, string>();
+    const hasSingleSignature = entry.signatures.length === 1;
 
-    if (isFunctionEntryWithOverloads(entry) && entry.overloads) {
+    if (entry.signatures.length > 0) {
       const initialMetadata: CodeTableOfContentsData = {
         contents: '',
         codeLineNumbersWithIdentifiers: new Map<number, string>(),
         deprecatedLineNumbers: [],
       };
 
-      return entry.overloads.reduce(
-        (acc: CodeTableOfContentsData, curr: FunctionEntry, index: number) => {
+      return entry.signatures.reduce(
+        (acc: CodeTableOfContentsData, curr: FunctionMetadata, index: number) => {
           const lineNumber = index;
-          acc.codeLineNumbersWithIdentifiers.set(lineNumber, curr.name);
-          acc.contents += `${curr.name}(${curr.params
-            .map((param) => mapParamEntry(param))
-            .join(`, `)}): ${curr.returnType}\n`;
+          acc.codeLineNumbersWithIdentifiers.set(lineNumber, `${curr.name}_${index}`);
+          acc.contents += getMethodCodeLine(curr, [], hasSingleSignature, true);
+
+          // We don't want to add line break after the last item
+          if (!hasSingleSignature && index < entry.signatures.length - 1) {
+            acc.contents += '\n';
+          }
+
           if (isDeprecatedEntry(curr)) {
             acc.deprecatedLineNumbers.push(lineNumber);
           }
@@ -157,9 +163,10 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
         initialMetadata,
       );
     }
+
     return {
       // It is important to add the function keyword as shiki will only highlight valid ts
-      contents: `function ${getMethodCodeLine(entry, [], true)}`,
+      contents: `function ${getMethodCodeLine(entry.implementation!, [], true)}`,
       codeLineNumbersWithIdentifiers,
       deprecatedLineNumbers: isDeprecated ? [0] : [],
     };
@@ -260,9 +267,9 @@ function getCodeTocData(members: MemberEntry[], hasPrefixLine: boolean): CodeTab
   }, initialMetadata);
 }
 
-function getCodeLine(member: MemberEntry) {
+function getCodeLine(member: MemberEntry): string {
   if (isClassMethodEntry(member)) {
-    return getMethodCodeLine(member, member.memberTags);
+    return getMethodCodeLine(member.implementation!, member.memberTags);
   } else if (isGetterEntry(member)) {
     return getGetterCodeLine(member);
   } else if (isSetterEntry(member)) {
@@ -281,11 +288,12 @@ function getPropertyCodeLine(member: PropertyEntry): string {
 
 /** Map method entry to text */
 function getMethodCodeLine(
-  member: FunctionEntry,
+  member: FunctionMetadata,
   memberTags: MemberTags[] = [],
   displayParamsInNewLines: boolean = false,
+  isFunction: boolean = false,
 ): string {
-  return `${memberTags.join(' ')} ${member.name}(${displayParamsInNewLines ? '\n  ' : ''}${member.params
+  return `${isFunction ? 'function' : ''}${memberTags.join(' ')} ${member.name}(${displayParamsInNewLines ? '\n  ' : ''}${member.params
     .map((param) => mapParamEntry(param))
     .join(`,${displayParamsInNewLines ? '\n  ' : ' '}`)}${
     displayParamsInNewLines ? '\n' : ''
@@ -344,7 +352,7 @@ function getNumberOfLinesOfCode(contents: string): number {
 /** Prints an initializer function signature into a single line. */
 export function printInitializerFunctionSignatureLine(
   name: string,
-  signature: FunctionEntry,
+  signature: FunctionMetadata,
   showTypesInSignaturePreview: boolean,
 ): string {
   let res = name;
@@ -381,7 +389,7 @@ export function printInitializerFunctionSignatureLine(
     res += `: ${signature.returnType}`;
   }
   res += ';';
-  return res;
+  return `function ${res}`;
 }
 
 function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContentsData): void {

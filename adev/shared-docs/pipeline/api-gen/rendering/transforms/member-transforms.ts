@@ -77,10 +77,8 @@ export function addRenderableGroupMembers<T extends HasMembers & HasModuleName>(
 
   const membersGroups = members.reduce((groups, item) => {
     const member = setEntryFlags(
-      addMethodParamsDescription(
-        addHtmlDescription(
-          addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(item, entry.moduleName))),
-        ),
+      addHtmlDescription(
+        addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(item, entry.moduleName))),
       ),
     );
     if (groups.has(member.name)) {
@@ -103,10 +101,8 @@ export function addRenderableMembers<T extends HasMembers & HasModuleName>(
 ): T & HasRenderableMembers {
   const members = entry.members.map((member) =>
     setEntryFlags(
-      addMethodParamsDescription(
-        addHtmlDescription(
-          addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(member, entry.moduleName))),
-        ),
+      addHtmlDescription(
+        addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(member, entry.moduleName))),
       ),
     ),
   );
@@ -115,16 +111,4 @@ export function addRenderableMembers<T extends HasMembers & HasModuleName>(
     ...entry,
     members,
   };
-}
-
-function addMethodParamsDescription<T extends MemberEntry & HasModuleName>(entry: T): T {
-  if (isClassMethodEntry(entry)) {
-    return {
-      ...entry,
-      params: entry.params.map((param) =>
-        addHtmlDescription(addModuleName(param, entry.moduleName)),
-      ),
-    };
-  }
-  return entry;
 }

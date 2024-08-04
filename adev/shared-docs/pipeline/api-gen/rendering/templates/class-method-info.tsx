@@ -9,6 +9,7 @@
 import {Fragment, h} from 'preact';
 import {
   FunctionEntryRenderable,
+  FunctionMetadataRenderable,
   MethodEntryRenderable,
   ParameterEntryRenderable,
 } from '../entities/renderables';
@@ -21,7 +22,7 @@ import {RawHtml} from './raw-html';
  * Component to render the method-specific parts of a class's API reference.
  */
 export function ClassMethodInfo(props: {
-  entry: MethodEntryRenderable | FunctionEntryRenderable;
+  entry: FunctionMetadataRenderable;
   isOverloaded?: boolean;
 }) {
   const entry = props.entry;
