@@ -81,6 +81,7 @@ function createTransformVisitor(
       if (angularDecorator !== undefined) {
         let hasChanged = false;
 
+        const sourceFile = originalNode.getSourceFile();
         const members = node.members.map((memberNode) => {
           if (!ts.isPropertyDeclaration(memberNode)) {
             return memberNode;
@@ -94,6 +95,7 @@ function createTransformVisitor(
           for (const transform of propertyTransforms) {
             const newNode = transform(
               {...member, node: memberNode},
+              sourceFile,
               host,
               ctx.factory,
               importTracker,

@@ -22,6 +22,7 @@ import {createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './tr
  */
 export const initializerApiOutputTransform: PropertyTransform = (
   member,
+  sourceFile,
   host,
   factory,
   importTracker,
@@ -43,7 +44,6 @@ export const initializerApiOutputTransform: PropertyTransform = (
     return member.node;
   }
 
-  const sourceFile = member.node.getSourceFile();
   const newDecorator = factory.createDecorator(
     factory.createCallExpression(
       createSyntheticAngularCoreDecoratorAccess(

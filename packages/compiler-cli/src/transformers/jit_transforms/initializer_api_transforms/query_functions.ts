@@ -40,6 +40,7 @@ const queryFunctionToDecorator: Record<QueryFunctionName, string> = {
  */
 export const queryFunctionsTransforms: PropertyTransform = (
   member,
+  sourceFile,
   host,
   factory,
   importTracker,
@@ -61,7 +62,6 @@ export const queryFunctionsTransforms: PropertyTransform = (
     return member.node;
   }
 
-  const sourceFile = member.node.getSourceFile();
   const callArgs = queryDefinition.call.arguments;
   const newDecorator = factory.createDecorator(
     factory.createCallExpression(
