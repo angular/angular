@@ -20,6 +20,7 @@ import {createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './tr
  */
 export const signalModelTransform: PropertyTransform = (
   member,
+  sourceFile,
   host,
   factory,
   importTracker,
@@ -56,7 +57,6 @@ export const signalModelTransform: PropertyTransform = (
     ),
   ]);
 
-  const sourceFile = member.node.getSourceFile();
   const inputDecorator = createDecorator(
     'Input',
     // Config is cast to `any` because `isSignal` will be private, and in case this
