@@ -15,6 +15,7 @@ import {ImportManager} from '../../../../translator';
 /** Function that can be used to transform class properties. */
 export type PropertyTransform = (
   member: Pick<ClassMember, 'name' | 'accessLevel' | 'value'> & {node: ts.PropertyDeclaration},
+  sourceFile: ts.SourceFile,
   host: ReflectionHost,
   factory: ts.NodeFactory,
   importTracker: ImportedSymbolsTracker,
