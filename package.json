@@ -209,7 +209,7 @@
     "karma-coverage": "^2.2.1",
     "karma-jasmine-html-reporter": "^2.1.0",
     "karma-sauce-launcher": "^4.3.6",
-    "madge": "^7.0.0",
+    "madge": "^8.0.0",
     "marked": "^12.0.0",
     "mermaid": "^10.9.1",
     "ogl": "^1.0.3",
