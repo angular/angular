@@ -12,7 +12,6 @@ import {filter, tap} from 'rxjs/operators';
 import {EventEmitter} from '../src/event_emitter';
 import {ApplicationRef} from '../public_api';
 import {firstValueFrom} from 'rxjs';
-import {PendingTasks} from '../src/pending_tasks';
 
 describe('EventEmitter', () => {
   let emitter: EventEmitter<number>;

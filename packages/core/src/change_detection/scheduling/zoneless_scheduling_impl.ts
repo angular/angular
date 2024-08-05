@@ -14,7 +14,7 @@ import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode, formatRuntimeError} from '../../errors';
-import {PendingTasks} from '../../pending_tasks';
+import {ExperimentalPendingTasks} from '../../application/pending_tasks';
 import {
   scheduleCallbackWithMicrotask,
   scheduleCallbackWithRafRace,
@@ -56,7 +56,7 @@ function trackMicrotaskNotificationForDebugging() {
 @Injectable({providedIn: 'root'})
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly appRef = inject(ApplicationRef);
-  private readonly taskService = inject(PendingTasks);
+  private readonly taskService = inject(ExperimentalPendingTasks);
   private readonly ngZone = inject(NgZone);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly disableScheduling =
@@ -69,7 +69,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private shouldRefreshViews = false;
   private useMicrotaskScheduler = false;
   runningTick = false;
-  pendingRenderTaskId: number | null = null;
+  removePendingTask: (() => void) | null = null;
 
   constructor() {
     this.subscriptions.add(
@@ -152,7 +152,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     const scheduleCallback = this.useMicrotaskScheduler
       ? scheduleCallbackWithMicrotask
       : scheduleCallbackWithRafRace;
-    this.pendingRenderTaskId = this.taskService.add();
+    this.removePendingTask = this.taskService.add();
     if (this.zoneIsDefined) {
       Zone.root.run(() => {
         this.cancelScheduledCallback = scheduleCallback(() => {
@@ -171,7 +171,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       return false;
     }
     // already scheduled or running
-    if (this.pendingRenderTaskId !== null || this.runningTick || this.appRef._runningTick) {
+    if (this.removePendingTask !== null || this.runningTick || this.appRef._runningTick) {
       return false;
     }
     // If we're inside the zone don't bother with scheduler. Zone will stabilize
@@ -200,7 +200,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       return;
     }
 
-    const task = this.taskService.add();
     try {
       this.ngZone.run(
         () => {
@@ -210,9 +209,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         undefined,
         this.schedulerTickApplyArgs,
       );
-    } catch (e: unknown) {
-      this.taskService.remove(task);
-      throw e;
     } finally {
       this.cleanup();
     }
@@ -224,7 +220,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     this.useMicrotaskScheduler = true;
     scheduleCallbackWithMicrotask(() => {
       this.useMicrotaskScheduler = false;
-      this.taskService.remove(task);
     });
   }
 
@@ -245,10 +240,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     // before removing it from the pending tasks (or the tasks service should
     // not synchronously emit stable, similar to how Zone stableness only
     // happens if it's still stable after a microtask).
-    if (this.pendingRenderTaskId !== null) {
-      const taskId = this.pendingRenderTaskId;
-      this.pendingRenderTaskId = null;
-      this.taskService.remove(taskId);
+    if (this.removePendingTask !== null) {
+      this.removePendingTask();
+      this.removePendingTask = null;
     }
   }
 }

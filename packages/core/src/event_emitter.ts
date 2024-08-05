@@ -13,7 +13,7 @@ import {OutputRef} from './authoring/output/output_ref';
 import {isInInjectionContext} from './di/contextual';
 import {inject} from './di/injector_compatibility';
 import {DestroyRef} from './linker/destroy_ref';
-import {PendingTasks} from './pending_tasks';
+import {PendingTasks} from './application/pending_tasks_internal';
 
 /**
  * Use in components with the `@Output` directive to emit custom events
@@ -112,6 +112,10 @@ export interface EventEmitter<T> extends Subject<T>, OutputRef<T> {
 class EventEmitter_ extends Subject<any> implements OutputRef<any> {
   __isAsync: boolean; // tslint:disable-line
   destroyRef: DestroyRef | undefined = undefined;
+  // TODO: We can't use the public pending tasks here because it depends on NgZone to run the timeout outside NgZone
+  // NgZone depends on EventEmitter so that's a ciruclar dep. NgZone should not use EventEmitter and we should use
+  // the public pending task API here (and/or update the internal pending task API to have a removeAsync option
+  // that remvoes the taskId in a setTimeout outside the Angular Zone).
   private readonly pendingTasks: PendingTasks | undefined = undefined;
 
   constructor(isAsync: boolean = false) {

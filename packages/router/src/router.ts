@@ -12,7 +12,7 @@ import {
   Injectable,
   Type,
   ɵConsole as Console,
-  ɵPendingTasks as PendingTasks,
+  ExperimentalPendingTasks,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
@@ -112,7 +112,7 @@ export class Router {
   private readonly console = inject(Console);
   private readonly stateManager = inject(StateManager);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
-  private readonly pendingTasks = inject(PendingTasks);
+  private readonly pendingTasks = inject(ExperimentalPendingTasks);
   private readonly urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
   private readonly navigationTransitions = inject(NavigationTransitions);
   private readonly urlSerializer = inject(UrlSerializer);
@@ -653,11 +653,9 @@ export class Router {
     }
 
     // Indicate that the navigation is happening.
-    const taskId = this.pendingTasks.add();
+    const removeTask = this.pendingTasks.add();
     afterNextNavigation(this, () => {
-      // Remove pending task in a microtask to allow for cancelled
-      // initial navigations and redirects within the same task.
-      queueMicrotask(() => this.pendingTasks.remove(taskId));
+      removeTask();
     });
 
     this.navigationTransitions.handleNavigationRequest({

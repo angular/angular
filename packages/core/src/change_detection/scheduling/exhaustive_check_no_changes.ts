@@ -98,7 +98,7 @@ export class DebugNgZoneForCheckNoChanges extends NgZone {
       this.onMicrotaskEmpty.emit = () => {};
       this.onStable.emit = () => {
         this.scheduler ||= this.injector.get(ChangeDetectionSchedulerImpl);
-        if (this.scheduler.pendingRenderTaskId || this.scheduler.runningTick) {
+        if (this.scheduler.removePendingTask || this.scheduler.runningTick) {
           return;
         }
         this.checkApplicationViews();
@@ -146,7 +146,7 @@ function exhaustiveCheckNoChangesInterval(
               if (applicationRef.destroyed) {
                 return;
               }
-              if (scheduler.pendingRenderTaskId || scheduler.runningTick) {
+              if (scheduler.removePendingTask || scheduler.runningTick) {
                 scheduleCheckNoChanges();
                 return;
               }

@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ExperimentalPendingTasks} from '@angular/core';
+import {
+  ApplicationRef,
+  ExperimentalPendingTasks,
+  ɵPendingTasks as PendingTasks,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, of} from 'rxjs';
 import {map, take, withLatestFrom} from 'rxjs/operators';
-
-import {PendingTasks} from '../../src/pending_tasks';
 
 describe('PendingTasks', () => {
   it('should wait until all tasks are completed', async () => {
