@@ -1,3 +1,12 @@
+## [0.14.10](https://github.com/angular/angular/compare/zone.js-0.14.8...zone.js-0.14.10) (2024-08-05)
+
+
+### Features
+
+* **zone.js:** Add 'flush' parameter option to fakeAsync to flush after the test ([#57137](https://github.com/angular/angular/issues/57137)) ([99d679d](https://github.com/angular/angular/commit/99d679d6061d731a04930824e92f247bb94f21e7))
+
+
+
 ## [0.14.8](https://github.com/angular/angular/compare/zone.js-0.14.7...zone.js-0.14.8) (2024-07-17)
 
 
