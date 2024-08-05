@@ -1,3 +1,24 @@
+<a name="18.2.0-next.4"></a>
+# 18.2.0-next.4 (2024-08-05)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e2259c7b09](https://github.com/angular/angular/commit/e2259c7b093decc9255c8afe084ec574e029d7d2) | fix | support JIT transforms before other transforms modifying classes ([#57262](https://github.com/angular/angular/pull/57262)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [827070e331](https://github.com/angular/angular/commit/827070e3314d4c3acee77920dc0d5375398917ab) | fix | Do not run image performance warning checks on server ([#57234](https://github.com/angular/angular/pull/57234)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4bb9d0f923](https://github.com/angular/angular/commit/4bb9d0f9235c644ba3ec7f1840ffa81457c5622e) | fix | avoid generating TS suggestion diagnostics for templates ([#56241](https://github.com/angular/angular/pull/56241)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6c76c91e15](https://github.com/angular/angular/commit/6c76c91e151b53dfaccb4be43d43a8d857715dd7) | feat | Add defaultQueryParamsHandling to router configuration ([#57198](https://github.com/angular/angular/pull/57198)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.0-next.3"></a>
 # 18.2.0-next.3 (2024-07-31)
 ### compiler
