@@ -203,10 +203,11 @@ export function getBodyNode(): any | null {
 
 export function containsElement(elm1: any, elm2: any): boolean {
   while (elm2) {
-    if (elm2 === elm1) {
+    if (elm1.contains(elm2)) {
       return true;
     }
-    elm2 = getParentElement(elm2);
+    const root = elm2.getRootNode();
+    elm2 = root.host;
   }
   return false;
 }
