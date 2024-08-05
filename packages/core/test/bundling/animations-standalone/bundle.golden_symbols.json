@@ -654,6 +654,9 @@
     "name": "allocLFrame"
   },
   {
+    "name": "angularZoneInstanceIdProperty"
+  },
+  {
     "name": "animate"
   },
   {
@@ -1119,6 +1122,9 @@
     "name": "invokeQuery"
   },
   {
+    "name": "isAngularZoneProperty"
+  },
+  {
     "name": "isApplicationBootstrapConfig"
   },
   {
@@ -1258,6 +1264,9 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "ngZoneInstanceId"
   },
   {
     "name": "nonNull"

@@ -399,6 +399,9 @@
     "name": "allocLFrame"
   },
   {
+    "name": "angularZoneInstanceIdProperty"
+  },
+  {
     "name": "applyNodes"
   },
   {
@@ -750,6 +753,9 @@
     "name": "invokeHostBindingsInCreationMode"
   },
   {
+    "name": "isAngularZoneProperty"
+  },
+  {
     "name": "isApplicationBootstrapConfig"
   },
   {
@@ -838,6 +844,9 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "ngZoneInstanceId"
   },
   {
     "name": "noop"

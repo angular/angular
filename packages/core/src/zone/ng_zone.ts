@@ -18,6 +18,11 @@ import {AsyncStackTaggingZoneSpec} from './async-stack-tagging';
 // ERROR - [JSC_UNDEFINED_VARIABLE] variable Zone is undeclared
 declare const Zone: any;
 
+const isAngularZoneProperty = 'isAngularZone';
+export const angularZoneInstanceIdProperty = isAngularZoneProperty + '_ID';
+
+let ngZoneInstanceId = 0;
+
 /**
  * An injectable service for executing work inside or outside of the Angular zone.
  *
@@ -173,7 +178,7 @@ export class NgZone {
   */
   static isInAngularZone(): boolean {
     // Zone needs to be checked, because this method might be called even when NoopNgZone is used.
-    return typeof Zone !== 'undefined' && Zone.current.get('isAngularZone') === true;
+    return typeof Zone !== 'undefined' && Zone.current.get(isAngularZoneProperty) === true;
   }
 
   /**
@@ -266,7 +271,7 @@ export class NgZone {
 
 const EMPTY_PAYLOAD = {};
 
-interface NgZonePrivate extends NgZone {
+export interface NgZonePrivate extends NgZone {
   _outer: Zone;
   _inner: Zone;
   _nesting: number;
@@ -394,9 +399,14 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
   const delayChangeDetectionForEventsDelegate = () => {
     delayChangeDetectionForEvents(zone);
   };
+  const instanceId = ngZoneInstanceId++;
   zone._inner = zone._inner.fork({
     name: 'angular',
-    properties: <any>{'isAngularZone': true},
+    properties: <any>{
+      [isAngularZoneProperty]: true,
+      [angularZoneInstanceIdProperty]: instanceId,
+      [angularZoneInstanceIdProperty + instanceId]: true,
+    },
     onInvokeTask: (
       delegate: ZoneDelegate,
       current: Zone,

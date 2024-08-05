@@ -20,7 +20,7 @@ import {
   scheduleCallbackWithRafRace,
 } from '../../util/callback_scheduler';
 import {performanceMarkFeature} from '../../util/performance';
-import {NgZone, NoopNgZone} from '../../zone/ng_zone';
+import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '../../zone/ng_zone';
 
 import {
   ChangeDetectionScheduler,
@@ -64,6 +64,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly subscriptions = new Subscription();
+  private readonly angularZoneId = this.zoneIsDefined
+    ? (this.ngZone as NgZonePrivate)._inner?.get(angularZoneInstanceIdProperty)
+    : null;
 
   private cancelScheduledCallback: null | (() => void) = null;
   private shouldRefreshViews = false;
@@ -176,7 +179,11 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
     // If we're inside the zone don't bother with scheduler. Zone will stabilize
     // eventually and run change detection.
-    if (!this.zonelessEnabled && this.zoneIsDefined && NgZone.isInAngularZone()) {
+    if (
+      !this.zonelessEnabled &&
+      this.zoneIsDefined &&
+      Zone.current.get(angularZoneInstanceIdProperty + this.angularZoneId)
+    ) {
       return false;
     }
 
