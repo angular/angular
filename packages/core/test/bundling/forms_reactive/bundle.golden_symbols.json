@@ -759,6 +759,9 @@
     "name": "allocLFrame"
   },
   {
+    "name": "angularZoneInstanceIdProperty"
+  },
+  {
     "name": "appendChild"
   },
   {
@@ -1365,6 +1368,9 @@
     "name": "isAbstractControlOptions"
   },
   {
+    "name": "isAngularZoneProperty"
+  },
+  {
     "name": "isApplicationBootstrapConfig"
   },
   {
@@ -1588,6 +1594,9 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "ngZoneInstanceId"
   },
   {
     "name": "noSideEffects"
