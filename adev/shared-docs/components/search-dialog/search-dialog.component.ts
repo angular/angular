@@ -7,18 +7,20 @@
  */
 
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
-  Injector,
+  EventEmitter,
+  NgZone,
   OnDestroy,
-  Signal,
-  afterNextRender,
-  effect,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChild,
+  ViewChildren,
   inject,
-  output,
-  viewChild,
-  viewChildren,
 } from '@angular/core';
 
 import {WINDOW} from '../../providers/index';
@@ -51,82 +53,95 @@ import {RelativeLink} from '../../pipes/relative-link.pipe';
   templateUrl: './search-dialog.component.html',
   styleUrls: ['./search-dialog.component.scss'],
 })
-export class SearchDialog implements OnDestroy {
-  onClose = output();
-  dialog = viewChild.required('searchDialog', {read: ElementRef}) as Signal<
-    ElementRef<HTMLDialogElement>
-  >;
-  items = viewChildren(SearchItem);
+export class SearchDialog implements OnInit, AfterViewInit, OnDestroy {
+  @Output() onClose = new EventEmitter<void>();
+  @ViewChild('searchDialog') dialog?: ElementRef<HTMLDialogElement>;
+  @ViewChildren(SearchItem) items?: QueryList<SearchItem>;
 
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly ngZone = inject(NgZone);
   private readonly search = inject(Search);
   private readonly relativeLink = new RelativeLink();
   private readonly router = inject(Router);
   private readonly window = inject(WINDOW);
-  private readonly injector = inject(Injector);
-  private readonly keyManager = new ActiveDescendantKeyManager(
-    this.items,
-    this.injector,
-  ).withWrap();
+
+  private keyManager?: ActiveDescendantKeyManager<SearchItem>;
 
   searchQuery = this.search.searchQuery;
   searchResults = this.search.searchResults;
 
-  constructor() {
-    effect(() => {
-      this.items();
-      afterNextRender(
-        {
-          write: () => this.keyManager.setFirstItemActive(),
-        },
-        {injector: this.injector},
-      );
+  ngOnInit(): void {
+    this.ngZone.runOutsideAngular(() => {
+      fromEvent<KeyboardEvent>(this.window, 'keydown')
+        .pipe(
+          filter((_) => !!this.keyManager),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe((event) => {
+          // When user presses Enter we can navigate to currently selected item in the search result list.
+          if (event.key === 'Enter') {
+            this.navigateToTheActiveItem();
+          } else {
+            this.ngZone.run(() => {
+              this.keyManager?.onKeydown(event);
+            });
+          }
+        });
     });
+  }
 
-    this.keyManager.change.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.keyManager.activeItem?.scrollIntoView();
-    });
+  ngAfterViewInit() {
+    if (!this.dialog?.nativeElement.open) {
+      this.dialog?.nativeElement.showModal?.();
+    }
 
-    afterNextRender({
-      write: () => {
-        if (!this.dialog().nativeElement.open) {
-          this.dialog().nativeElement.showModal?.();
-        }
-      },
-    });
+    if (!this.items) {
+      return;
+    }
 
-    fromEvent<KeyboardEvent>(this.window, 'keydown')
-      .pipe(takeUntilDestroyed())
-      .subscribe((event) => {
-        // When user presses Enter we can navigate to currently selected item in the search result list.
-        if (event.key === 'Enter') {
-          this.navigateToTheActiveItem();
-        } else {
-          this.keyManager.onKeydown(event);
-        }
-      });
+    this.keyManager = new ActiveDescendantKeyManager(this.items).withWrap();
+    this.keyManager?.setFirstItemActive();
+
+    this.updateActiveItemWhenResultsChanged();
+    this.scrollToActiveItem();
   }
 
   ngOnDestroy(): void {
-    this.keyManager.destroy();
+    this.keyManager?.destroy();
   }
 
   closeSearchDialog() {
-    this.dialog().nativeElement.close();
-    this.onClose.emit();
+    this.dialog?.nativeElement.close();
+    this.onClose.next();
   }
 
   updateSearchQuery(query: string) {
     this.search.updateSearchQuery(query);
   }
 
+  private updateActiveItemWhenResultsChanged(): void {
+    this.items?.changes.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      // Change detection should be run before execute `setFirstItemActive`.
+      Promise.resolve().then(() => {
+        this.keyManager?.setFirstItemActive();
+      });
+    });
+  }
+
   private navigateToTheActiveItem(): void {
-    const activeItemLink: string | undefined = this.keyManager.activeItem?.item?.url;
+    const activeItemLink: string | undefined = this.keyManager?.activeItem?.item?.url;
 
     if (!activeItemLink) {
       return;
     }
 
     this.router.navigateByUrl(this.relativeLink.transform(activeItemLink));
-    this.onClose.emit();
+    this.onClose.next();
+  }
+
+  private scrollToActiveItem(): void {
+    this.keyManager?.change.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.keyManager?.activeItem?.scrollIntoView();
+    });
   }
 }

@@ -56,6 +56,7 @@ describe('SearchDialog', () => {
 
     fakeSearch.searchResults.and.returnValue(fakeSearchResults);
     fixture.detectChanges();
+    fixture.componentInstance.ngAfterViewInit();
 
     fakeWindow.dispatchEvent(
       new KeyboardEvent('keydown', {
