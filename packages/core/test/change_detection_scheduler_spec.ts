@@ -16,7 +16,6 @@ import {
   Component,
   createComponent,
   destroyPlatform,
-  Directive,
   ElementRef,
   EnvironmentInjector,
   ErrorHandler,
@@ -43,6 +42,7 @@ import {filter, take, tap} from 'rxjs/operators';
 
 import {RuntimeError, RuntimeErrorCode} from '../src/errors';
 import {scheduleCallbackWithRafRace} from '../src/util/callback_scheduler';
+import {ChangeDetectionSchedulerImpl} from '../src/change_detection/scheduling/zoneless_scheduling_impl';
 import {global} from '../src/util/global';
 
 function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
@@ -735,6 +735,59 @@ describe('Angular with scheduler and ZoneJS', () => {
     expect(fixture.isStable()).toBe(false);
     await fixture.whenStable();
     expect(fixture.nativeElement.innerText).toContain('new');
+  });
+
+  it('updating signal in another "Angular" zone schedules update when in hybrid mode', async () => {
+    @Component({template: '{{thing()}}', standalone: true})
+    class App {
+      thing = signal('initial');
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toContain('initial');
+    const differentAngularZone: NgZone = Zone.root.run(() => new NgZone({}));
+    differentAngularZone.run(() => {
+      fixture.componentInstance.thing.set('new');
+    });
+
+    expect(fixture.isStable()).toBe(false);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toContain('new');
+  });
+
+  it('updating signal in a child zone of Angular does not schedule extra CD', async () => {
+    @Component({template: '{{thing()}}', standalone: true})
+    class App {
+      thing = signal('initial');
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toContain('initial');
+    const childZone = TestBed.inject(NgZone).run(() => Zone.current.fork({name: 'child'}));
+
+    childZone.run(() => {
+      fixture.componentInstance.thing.set('new');
+      expect(TestBed.inject(ChangeDetectionSchedulerImpl)['cancelScheduledCallback']).toBeNull();
+    });
+  });
+
+  it('updating signal in a child Angular zone of Angular does not schedule extra CD', async () => {
+    @Component({template: '{{thing()}}', standalone: true})
+    class App {
+      thing = signal('initial');
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toContain('initial');
+    const childAngularZone = TestBed.inject(NgZone).run(() => new NgZone({}));
+
+    childAngularZone.run(() => {
+      fixture.componentInstance.thing.set('new');
+      expect(TestBed.inject(ChangeDetectionSchedulerImpl)['cancelScheduledCallback']).toBeNull();
+    });
   });
 
   it('should not run change detection twice if notified during AppRef.tick', async () => {

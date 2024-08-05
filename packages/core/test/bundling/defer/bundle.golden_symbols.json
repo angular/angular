@@ -603,6 +603,9 @@
     "name": "allocLFrame"
   },
   {
+    "name": "angularZoneInstanceIdProperty"
+  },
+  {
     "name": "appendChild"
   },
   {
@@ -2154,6 +2157,9 @@
     "name": "invokeTriggerCleanupFns"
   },
   {
+    "name": "isAngularZoneProperty"
+  },
+  {
     "name": "isApplicationBootstrapConfig"
   },
   {
@@ -2290,6 +2296,9 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "ngZoneInstanceId"
   },
   {
     "name": "nonNull"
