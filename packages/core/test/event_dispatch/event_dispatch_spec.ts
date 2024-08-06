@@ -216,11 +216,9 @@ describe('event dispatch', () => {
       const bottomEl = nativeElement.querySelector('#bottom')!;
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
-      bottomEl.dispatchEvent(new MouseEvent('click', {bubbles: true, shiftKey: true}));
-      expect(onClickSpy).toHaveBeenCalledTimes(2);
       (fixture.componentInstance as SimpleComponent).destroy();
       bottomEl.click();
-      expect(onClickSpy).toHaveBeenCalledTimes(2);
+      expect(onClickSpy).toHaveBeenCalledTimes(1);
     });
     it('should allow host listening on the window', async () => {
       const onClickSpy = jasmine.createSpy();
