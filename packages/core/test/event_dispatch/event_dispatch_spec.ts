@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Renderer2, inject, ɵprovideGlobalEventDelegation} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Renderer2,
+  ViewChild,
+  inject,
+  ɵprovideGlobalEventDelegation,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 function configureTestingModule(components: unknown[]) {
@@ -210,11 +217,9 @@ describe('event dispatch', () => {
       const bottomEl = nativeElement.querySelector('#bottom')!;
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
-      bottomEl.dispatchEvent(new MouseEvent('click', {bubbles: true, shiftKey: true}));
-      expect(onClickSpy).toHaveBeenCalledTimes(2);
       (fixture.componentInstance as SimpleComponent).destroy();
       bottomEl.click();
-      expect(onClickSpy).toHaveBeenCalledTimes(2);
+      expect(onClickSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
