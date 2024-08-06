@@ -73,7 +73,7 @@ runInEachFileSystem(() => {
       const methodEntry = classEntry.members[0] as MethodEntry;
       expect(methodEntry.memberType).toBe(MemberType.Method);
       expect(methodEntry.name).toBe('firstName');
-      expect(methodEntry.implementation?.returnType).toBe('string');
+      expect(methodEntry.implementation.returnType).toBe('string');
       expect(methodEntry.signatures[0].returnType).toBe('string');
 
       const propertyEntry = classEntry.members[1] as PropertyEntry;
@@ -98,19 +98,20 @@ runInEachFileSystem(() => {
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
-      expect(classEntry.members.length).toBe(2);
+      expect(classEntry.members.length).toBe(1);
 
-      const [booleanOverloadEntry, numberOverloadEntry] = classEntry.members as MethodEntry[];
+      const [booleanOverloadEntry, numberOverloadEntry] = (classEntry.members[0] as MethodEntry)
+        .signatures;
 
       expect(booleanOverloadEntry.name).toBe('ident');
-      expect(booleanOverloadEntry.implementation?.params.length).toBe(1);
-      expect(booleanOverloadEntry.implementation?.params[0].type).toBe('boolean');
-      expect(booleanOverloadEntry.implementation?.returnType).toBe('boolean');
-      //////////////
+      expect(booleanOverloadEntry.params.length).toBe(1);
+      expect(booleanOverloadEntry.params[0].type).toBe('boolean');
+      expect(booleanOverloadEntry.returnType).toBe('boolean');
+
       expect(numberOverloadEntry.name).toBe('ident');
-      expect(numberOverloadEntry.implementation?.params.length).toBe(1);
-      expect(numberOverloadEntry.implementation?.params[0].type).toBe('number');
-      expect(numberOverloadEntry.implementation?.returnType).toBe('number');
+      expect(numberOverloadEntry.params.length).toBe(1);
+      expect(numberOverloadEntry.params[0].type).toBe('number');
+      expect(numberOverloadEntry.returnType).toBe('number');
     });
 
     it('should not extract Angular-internal members', () => {
@@ -504,7 +505,7 @@ runInEachFileSystem(() => {
 
       expect(childSaveEntry.name).toBe('save');
       expect(childSaveEntry.memberType).toBe(MemberType.Method);
-      expect((childSaveEntry as MethodEntry).implementation.returnType).toBe('number');
+      expect((childSaveEntry as MethodEntry).implementation.returnType).toBe('string | number');
       expect(childSaveEntry.memberTags).not.toContain(MemberTags.Inherited);
 
       expect(nameEntry.name).toBe('name');

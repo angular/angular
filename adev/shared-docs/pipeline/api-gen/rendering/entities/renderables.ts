@@ -56,7 +56,7 @@ export type TypeAliasEntryRenderable = TypeAliasEntry & DocEntryRenderable & Has
 export type ClassEntryRenderable = ClassEntry &
   DocEntryRenderable &
   HasRenderableToc & {
-    membersGroups: Map<string, MemberEntryRenderable[]>;
+    members: MemberEntryRenderable[];
   };
 
 /** Documentation entity for a TypeScript enum augmented transformed content for rendering. */

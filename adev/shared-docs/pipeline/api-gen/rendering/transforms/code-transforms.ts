@@ -8,7 +8,6 @@
 
 import {
   DocEntry,
-  FunctionEntry,
   FunctionSignatureMetadata,
   MemberEntry,
   MemberTags,
@@ -259,22 +258,31 @@ function getCodeTocData(members: MemberEntry[], hasPrefixLine: boolean): CodeTab
   // In case when hasPrefixLine is true we should take it into account when we're generating
   // `codeLineNumbersWithIdentifiers` below.
   const skip = !!hasPrefixLine ? 1 : 0;
+  let lineNumber = skip;
 
   return members.reduce((acc: CodeTableOfContentsData, curr: MemberEntry, index: number) => {
-    const lineNumber = index + skip;
-    acc.codeLineNumbersWithIdentifiers.set(lineNumber, curr.name);
-    acc.contents += `  ${getCodeLine(curr).trim()}\n`;
-    if (isDeprecatedEntry(curr)) {
-      acc.deprecatedLineNumbers.push(lineNumber);
+    const setTocData = (content: string) => {
+      acc.contents += `  ${content.trim()}\n`;
+      acc.codeLineNumbersWithIdentifiers.set(lineNumber, curr.name);
+      if (isDeprecatedEntry(curr)) {
+        acc.deprecatedLineNumbers.push(lineNumber);
+      }
+      lineNumber++;
+    };
+
+    if (isClassMethodEntry(curr)) {
+      curr.signatures.forEach((signature) => {
+        setTocData(getMethodCodeLine(signature, curr.memberTags));
+      });
+    } else {
+      setTocData(getCodeLine(curr));
     }
     return acc;
   }, initialMetadata);
 }
 
 function getCodeLine(member: MemberEntry): string {
-  if (isClassMethodEntry(member)) {
-    return getMethodCodeLine(member.implementation, member.memberTags);
-  } else if (isGetterEntry(member)) {
+  if (isGetterEntry(member)) {
     return getGetterCodeLine(member);
   } else if (isSetterEntry(member)) {
     return getSetterCodeLine(member);

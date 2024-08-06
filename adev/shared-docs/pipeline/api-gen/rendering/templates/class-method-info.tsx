@@ -33,12 +33,12 @@ export function ClassMethodInfo(props: {
     >
       <RawHtml value={entry.htmlDescription} className={'docs-function-definition'} />
       {/* In case when method is overloaded we need to indicate which overload is deprecated */}
-      {!props.isOverloaded ? (
-        <></>
-      ) : (
+      {entry.isDeprecated ? (
         <div>
           <DeprecatedLabel entry={entry} />
         </div>
+      ) : (
+        <></>
       )}
       {entry.params.map((param: ParameterEntryRenderable) => (
         <Parameter param={param} />

@@ -288,6 +288,10 @@
         background-color 0.3s ease,
         border 0.3s ease;
 
+      & > code {
+        max-width: 100%;
+      }
+
       code:has(pre) {
         padding: 0;
       }
@@ -295,7 +299,7 @@
       pre {
         margin: 0;
 
-        /* Do we have a better alternative ? */ 
+        /* Do we have a better alternative ? */
         overflow: auto;
       }
     }
