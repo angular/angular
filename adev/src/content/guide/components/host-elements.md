@@ -47,6 +47,7 @@ the `host` property in the `@Component` decorator:
   host: {
     'role': 'slider',
     '[attr.aria-valuenow]': 'value',
+    '[class.active]': 'isActive()',
     '[tabIndex]': 'disabled ? -1 : 0',
     '(keydown)': 'updateValue($event)',
   },
@@ -54,7 +55,7 @@ the `host` property in the `@Component` decorator:
 export class CustomSlider {
   value: number = 0;
   disabled: boolean = false;
-
+  isActive = signal(false);
   updateValue(event: KeyboardEvent) { /* ... */ }
 
   /* ... */
