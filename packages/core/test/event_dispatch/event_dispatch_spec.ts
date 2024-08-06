@@ -248,5 +248,31 @@ describe('event dispatch', () => {
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
     });
+    it('should allow host listening on the window', async () => {
+      const onClickSpy = jasmine.createSpy();
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `
+            <div id="top">
+                <div id="bottom"></div>
+            </div>
+          `,
+      })
+      class SimpleComponent {
+        renderer = inject(Renderer2);
+        destroy!: Function;
+        @HostListener('window:click', ['$event.target'])
+        listen(el: Element) {
+          onClickSpy();
+        }
+      }
+      configureTestingModule([SimpleComponent]);
+      fixture = TestBed.createComponent(SimpleComponent);
+      const nativeElement = fixture.debugElement.nativeElement;
+      const bottomEl = nativeElement.querySelector('#bottom')!;
+      bottomEl.click();
+      expect(onClickSpy).toHaveBeenCalledTimes(1);
+    });
   });
 });
