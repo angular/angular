@@ -131,6 +131,7 @@ export function patchJest(Zone: ZoneType): void {
       };
       context[methodName].each = wrapTestFactoryInZone((originalJestFn as any).each);
       context[methodName].todo = (originalJestFn as any).todo;
+      context[methodName].failing = (originalJestFn as any).failing;
     });
 
     context.it.only = context.fit;

@@ -96,6 +96,10 @@ it.each`
   expect(bar).toBe(2);
 });
 
+it.failing('it is not equal', () => {
+  expect(5).toBe(6); // this test will pass
+});
+
 test('test', () => {
   assertInsideProxyZone();
 });
@@ -104,6 +108,9 @@ test.each([[]])('test.each', () => {
 });
 
 test.todo('todo');
+test.failing('it is not equal', () => {
+  expect(5).toBe(6); // this test will pass
+});
 
 function enableJestPatch() {
   global[Zone.__symbol__('fakeAsyncDisablePatchingFakeTimer')] = true;
