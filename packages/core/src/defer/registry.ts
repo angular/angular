@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵɵdefineInjectable} from '../di';
+import {TNode} from '../render3/interfaces/node';
+import {LView} from '../render3/interfaces/view';
 
-// TODO: figure out proper location for this class.
 export class DeferBlockRegistry {
-  private registry = new Map<string, any>();
+  private registry = new Map<string, {lView: LView; tNode: TNode}>();
   add(id: string, info: any) {
     this.registry.set(id, info);
   }

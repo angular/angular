@@ -100,6 +100,7 @@ export function removeListenersFromBlocks(blockNames: string[], injector: Inject
 
 export const removeListeners = (el: Element) => {
   el.removeAttribute(Attribute.JSACTION);
+  el.removeAttribute(BLOCKNAME_ATTRIBUTE);
   el.__jsaction_fns = undefined;
 };
 

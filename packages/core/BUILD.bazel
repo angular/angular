@@ -54,7 +54,6 @@ ng_package(
     srcs = [
         "package.json",
         ":event_dispatch_contract_binary",
-        ":partial-hydration_bundle",
     ],
     nested_packages = [
         "//packages/core/schematics:npm_package",

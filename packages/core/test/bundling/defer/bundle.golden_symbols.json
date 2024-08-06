@@ -225,6 +225,9 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
+    "name": "HYDRATE_TRIGGER_CLEANUP_FNS"
+  },
+  {
     "name": "INJECTOR"
   },
   {
@@ -1813,6 +1816,9 @@
   },
   {
     "name": "init_partial"
+  },
+  {
+    "name": "init_partial2"
   },
   {
     "name": "init_pending_tasks"
