@@ -93,15 +93,25 @@ export class GlobalEventDelegation implements OnDestroy {
     return isEarlyEventType(eventType);
   }
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    this.eventContractDetails.instance!.addEvent(eventName);
-    sharedStashFunction(element, eventName, handler);
-    getActionCache(element)[eventName] = '';
-    return () => this.removeEventListener(element, eventName, handler);
+  addEventListener(element: HTMLElement, eventType: string, handler: Function): Function {
+    // Note: contrary to the type, Window and Document can be passed in
+    // as well.
+    if (element.nodeType === Node.ELEMENT_NODE) {
+      this.eventContractDetails.instance!.addEvent(eventType);
+      getActionCache(element)[eventType] = '';
+      sharedStashFunction(element, eventType, handler);
+    } else {
+      element.addEventListener(eventType, handler as EventListener);
+    }
+    return () => this.removeEventListener(element, eventType, handler);
   }
 
   removeEventListener(element: HTMLElement, eventType: string, callback: Function): void {
-    getActionCache(element)[eventType] = undefined;
+    if (element.nodeType === Node.ELEMENT_NODE) {
+      getActionCache(element)[eventType] = undefined;
+    } else {
+      element.removeEventListener(eventType, callback as EventListener);
+    }
   }
 }
 
