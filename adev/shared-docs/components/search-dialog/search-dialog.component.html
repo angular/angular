@@ -9,66 +9,71 @@
       placeholder="Search docs"
     ></docs-text-field>
 
-    @if (searchResults() && searchResults()!.length > 0) {
-    <ul class="docs-search-results docs-mini-scroll-track">
-      @for (result of searchResults(); track result.objectID) {
-      <li docsSearchItem [item]="result">
-        @if (result.url) {
-          <a [routerLink]="'/' + result.url | relativeLink: 'pathname'" [fragment]="result.url | relativeLink: 'hash'">
-            <div>
-              <div class="docs-result-icon-and-type">
-                <!-- Icon -->
-                <span class="docs-search-result-icon" aria-hidden="true">
-                  @if (result.hierarchy?.lvl0 === 'Docs') {
-                  <i role="presentation" class="material-symbols-outlined docs-icon-small">
-                    description
-                  </i>
-                  } @else if (result.hierarchy?.lvl0 === 'Tutorials') {
-                  <i role="presentation" class="material-symbols-outlined docs-icon-small">code</i>
-                  } @else if (result.hierarchy?.lvl0 === 'Reference') {
-                  <i role="presentation" class="material-symbols-outlined docs-icon-small">
-                    description
-                  </i>
-                  }
-                </span>
-                <!-- Results type -->
-                <span class="docs-search-results__type">{{ result.hierarchy?.lvl1 }}</span>
-              </div>
+    @let results = searchResults();
+    @if (results.length > 0) {
+      <div class="docs-search-results docs-mini-scroll-track">
+        @for (group of results; track $index) {
+          <section>
+            <div class="docs-search-results__header">{{ group.header }}</div>
+            <ul>
+              @for (result of group.results; track result.objectID) {
+                @let hierarchy = result.hierarchy;
+                <li docsSearchItem [item]="result">
+                  <a
+                    [routerLink]="'/' + result.url | relativeLink: 'pathname'"
+                    [fragment]="result.url | relativeLink: 'hash'"
+                  >
+                    <div>
+                      <div class="docs-result-icon-and-type">
+                        <!-- Icon -->
+                        <span class="docs-search-result-icon" aria-hidden="true">
+                          <i role="presentation" class="material-symbols-outlined docs-icon-small">
+                            {{ hierarchy.lvl0 === 'Tutorials' ? 'code' : 'description'}}
+                          </i>
+                        </span>
+                        <span class="docs-search-results__type">
+                          @if (result.type === 'content') {
+                            {{ hierarchy?.lvl3 ?? hierarchy?.lvl2 ?? hierarchy?.lvl1 }}
+                          } @else {
+                            <ng-container
+                              [ngTemplateOutlet]="matchResult"
+                              [ngTemplateOutletContext]="{result}"
+                            ></ng-container>
+                          }
+                        </span>
+                      </div>
 
-              <!-- Hide level 2 if level 3 exists -->
-              <!-- Level 2 -->
-              @if (result.hierarchy?.lvl2 && !result.hierarchy?.lvl3) {
-              <span class="docs-search-results__type docs-search-results__lvl2">
-                {{ result.hierarchy?.lvl2 }}
-              </span>
-              }
-              <!-- Level 3 -->
-              @if (result.hierarchy?.lvl3) {
-              <span class="docs-search-results__type docs-search-results__lvl3">
-                {{ result.hierarchy?.lvl3 }}
-              </span>
-              }
-            </div>
+                      @if (result.type === 'content') {
+                        <span class="docs-search-results__type docs-search-results__lvl2">
+                          <ng-container
+                            [ngTemplateOutlet]="matchResult"
+                            [ngTemplateOutletContext]="{result}"
+                          ></ng-container>
+                        </span>
+                      }
+                    </div>
 
-            <!-- Page title -->
-            <span class="docs-result-page-title">{{ result.hierarchy?.lvl0 }}</span>
-          </a>
+                    <!-- Page title -->
+                    <!-- <span class="docs-result-page-title">{{ result.hierarchy?.lvl0 }}</span> -->
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
         }
-      </li>
-      }
-    </ul>
+      </div>
     } @else {
-    <div class="docs-search-results docs-mini-scroll-track">
-      @if (searchResults() === undefined) {
-      <div class="docs-search-results__start-typing">
-        <span>Start typing to see results</span>
+      <div class="docs-search-results docs-mini-scroll-track">
+        @if (searchResults() === undefined) {
+          <div class="docs-search-results__start-typing">
+            <span>Start typing to see results</span>
+          </div>
+        } @else if (searchResults()?.length === 0) {
+          <div class="docs-search-results__no-results">
+            <span>No results found</span>
+          </div>
+        }
       </div>
-      } @else if (searchResults()?.length === 0) {
-      <div class="docs-search-results__no-results">
-        <span>No results found</span>
-      </div>
-      }
-    </div>
     }
 
     <div class="docs-algolia">
@@ -79,3 +84,16 @@
     </div>
   </div>
 </dialog>
+
+<ng-template #matchResult let-result="result">
+  @let snippet =
+    result.type === 'content' ? result._snippetResult.content!.value : $any(result._snippetResult.hierarchy)[result.type]!.value;
+  @let parts = splitHighlightedText(snippet);
+  @for (part of parts; track $index) {
+    @if (part.highlight) {
+      <mark>{{part.text}}</mark>
+    } @else {
+      <span>{{part.text}}</span>
+    }
+  }
+</ng-template>

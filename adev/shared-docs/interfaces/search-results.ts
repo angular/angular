@@ -9,11 +9,26 @@
 /* The interface represents Algolia search result item. */
 export interface SearchResult {
   /* The url link to the search result page */
-  url?: string;
+  url: string;
   /* The hierarchy of the item */
-  hierarchy?: Hierarchy;
+  hierarchy: Hierarchy;
   /* The unique id of the search result item */
   objectID: string;
+  /** Where the match ocurred. ie lvl0, lvl1, content, etc */
+  type: string;
+  /** Documentation content (not headers) */
+  content: string | null;
+  /** Snippets of the matched text */
+  _snippetResult: {
+    hierarchy?: {
+      lvl0?: {value: string};
+      lvl1?: {value: string};
+      lvl2?: {value: string};
+      lvl3?: {value: string};
+      lvl4?: {value: string};
+    };
+    content?: {value: string};
+  };
 }
 
 /* The hierarchy of the item */

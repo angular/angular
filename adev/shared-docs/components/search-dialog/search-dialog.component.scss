@@ -33,9 +33,18 @@ dialog {
     }
   }
 
-  ul {
+  .docs-search-results__header {
+    color: var(--secondary-contrast);
+    font-weight: 600;
+    padding-block: 0.25rem;
+  }
+
+  .docs-search-results {
     max-height: 50vh;
     overflow-y: auto;
+  }
+
+  ul {
     list-style-type: none;
     padding-inline: 0;
     padding-block-start: 1rem;
@@ -47,6 +56,14 @@ dialog {
       margin-inline-start: 1rem;
       padding-inline-end: 1rem;
       padding-block: 0.25rem;
+
+      mark {
+        background: #e62600;
+        background: var(--red-to-orange-horizontal-gradient);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
 
       a {
         color: var(--secondary-contrast);
