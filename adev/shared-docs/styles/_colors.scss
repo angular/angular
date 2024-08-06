@@ -274,7 +274,7 @@
 }
 
 // LIGHT MODE (Explicit)
-.docs-light-mode {
+.docs-dark-mode {
   background-color: #ffffff;
   @include root-definitions();
   @include mdc-definitions();
@@ -285,7 +285,7 @@
 }
 
 // DARK MODE (Explicit)
-.docs-dark-mode {
+.docs-light-mode {
   background-color: oklch(16.93% 0.004 285.95);
   @include root-definitions();
   @include dark-mode-definitions();
