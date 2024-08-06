@@ -6,8 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TransferState} from '../core';
-import {Trigger} from '../defer/interfaces';
+import {TransferState} from '../transfer_state';
+import {onIdle} from '../defer/idle_scheduler';
+import {scheduleDelayedHydrating, triggerAndWaitForCompletion} from '../defer/instructions';
+import {HydrateTrigger, Trigger} from '../defer/interfaces';
+import {DeferBlockRegistry} from '../defer/registry';
+import {onTimer} from '../defer/timer_scheduler';
 import {Injector} from '../di';
 import {assertDefined} from '../util/assert';
 import {partialHydrateFromBlockName} from './blocks';
@@ -32,9 +36,18 @@ interface BlockSummary {
 }
 
 interface ElementTrigger {
-  trigger: number;
   el: HTMLElement;
   blockName: string;
+  delay?: number;
+}
+
+function isTimerTrigger(trigger: any): boolean {
+  if (trigger in Trigger) return false;
+  return 'delay' in trigger;
+}
+
+function hasHydrateTimerTrigger(blockData: SerializedDeferBlock): boolean {
+  return (blockData[DEFER_HYDRATE_TRIGGERS]?.filter((t) => isTimerTrigger(t)) ?? []).length > 0;
 }
 
 function hasHydrateTrigger(blockData: SerializedDeferBlock, trigger: Trigger): boolean {
@@ -51,7 +64,7 @@ function createBlockSummary(blockInfo: SerializedDeferBlock): BlockSummary {
     hydrate: {
       idle: hasHydrateTrigger(blockInfo, Trigger.Idle),
       immediate: hasHydrateTrigger(blockInfo, Trigger.Immediate),
-      timer: hasHydrateTrigger(blockInfo, Trigger.Timer),
+      timer: hasHydrateTimerTrigger(blockInfo),
       viewport: hasHydrateTrigger(blockInfo, Trigger.Viewport),
     },
     prefetch: {
@@ -90,6 +103,13 @@ function gatherDeferBlocksCommentNodes(doc: Document, node?: HTMLElement): Map<s
   return nodesByBlockId;
 }
 
+function getTimerDelay(summary: BlockSummary): number {
+  const hydrateTrigger = summary.data[DEFER_HYDRATE_TRIGGERS]!.find((t) =>
+    isTimerTrigger(t),
+  ) as HydrateTrigger;
+  return hydrateTrigger.delay!;
+}
+
 function processAndInitTriggers(
   injector: Injector,
   blockData: Map<string, BlockSummary>,
@@ -108,32 +128,21 @@ function processAndInitTriggers(
       for (let i = 0; i < numRootNodes; i++) {
         currentNode = currentNode.previousSibling as HTMLElement;
         elementBlockMap.set(currentNode, blockId);
+        const et: ElementTrigger = {el: currentNode, blockName: blockId};
         // hydrate
         if (blockSummary.hydrate.idle) {
-          idleElements.push({trigger: 2, el: currentNode, blockName: blockId});
+          idleElements.push(et);
         }
         if (blockSummary.hydrate.immediate) {
-          immediateElements.push({trigger: 2, el: currentNode, blockName: blockId});
+          immediateElements.push(et);
         }
         if (blockSummary.hydrate.timer) {
-          timerElements.push({trigger: 2, el: currentNode, blockName: blockId});
+          et.delay = getTimerDelay(blockSummary);
+          timerElements.push(et);
         }
         if (blockSummary.hydrate.viewport) {
-          viewportElements.push({trigger: 2, el: currentNode, blockName: blockId});
+          viewportElements.push(et);
         }
-        // prefetch
-        // if (blockSummary.prefetch.idle) {
-        //   idleElements.push({ trigger: 1, el: currentNode });
-        // }
-        // if (blockSummary.prefetch.immediate) {
-        //   immediateElements.push({ trigger: 1, el: currentNode });
-        // }
-        // if (blockSummary.prefetch.timer) {
-        //   timerElements.push({ trigger: 1, el: currentNode });
-        // }
-        // if (blockSummary.prefetch.viewport) {
-        //   viewportElements.push({ trigger: 1, el: currentNode });
-        // }
       }
     }
   }
@@ -145,7 +154,18 @@ function processAndInitTriggers(
 }
 
 async function setIdleTriggers(injector: Injector, ets: ElementTrigger[]) {
-  // set requestidlecallback
+  if (ets.length > 0) {
+    const registry = injector.get(DeferBlockRegistry);
+    for (const elementTrigger of ets) {
+      const block = registry.get(elementTrigger.blockName)!;
+      const cb = () => {
+        partialHydrateFromBlockName(injector, elementTrigger.blockName, (deferBlock: any) =>
+          triggerAndWaitForCompletion(deferBlock),
+        );
+      };
+      scheduleDelayedHydrating(() => onIdle(cb, block.lView), block.lView, block.tNode);
+    }
+  }
 }
 
 async function setViewportTriggers(
@@ -160,6 +180,7 @@ async function setViewportTriggers(
           partialHydrateFromBlockName(
             injector,
             elementBlockMap.get(current.target as HTMLElement)!,
+            (deferBlock: any) => triggerAndWaitForCompletion(deferBlock),
           );
         }
       }
@@ -171,12 +192,20 @@ async function setViewportTriggers(
 }
 
 async function setTimerTriggers(injector: Injector, ets: ElementTrigger[]) {
-  // set timer
+  if (ets.length > 0) {
+    const registry = injector.get(DeferBlockRegistry);
+    for (const elementTrigger of ets) {
+      const block = registry.get(elementTrigger.blockName)!;
+      scheduleDelayedHydrating(onTimer(elementTrigger.delay!), block.lView, block.tNode);
+    }
+  }
 }
 
 async function setImmediateTriggers(injector: Injector, ets: ElementTrigger[]) {
   for (const elementTrigger of ets) {
-    partialHydrateFromBlockName(injector, elementTrigger.blockName);
+    partialHydrateFromBlockName(injector, elementTrigger.blockName, (deferBlock: any) =>
+      triggerAndWaitForCompletion(deferBlock),
+    );
   }
 }
 

@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {triggerDeferBlock} from '../defer/instructions';
-import {LDeferBlockDetails, ON_COMPLETE_FNS} from '../defer/interfaces';
 import {DeferBlockRegistry} from '../defer/registry';
-import {getLDeferBlockDetails} from '../defer/utils';
 import {DEFER_PARENT_BLOCK_ID} from './interfaces';
 import {NGH_DEFER_BLOCKS_KEY} from './utils';
 import {Injector} from '../di';
@@ -38,19 +35,11 @@ export function findFirstKnownParentDeferBlock(deferBlockId: string, injector: I
   return {blockId: currentBlockId, deferBlock, dehydratedBlocks};
 }
 
-function triggerAndWaitForCompletion(deferBlock: any): Promise<void> {
-  const lDetails = getLDeferBlockDetails(deferBlock.lView, deferBlock.tNode);
-  const promise = new Promise<void>((resolve) => {
-    onDeferBlockCompletion(lDetails, resolve);
-  });
-  triggerDeferBlock(deferBlock.lView, deferBlock.tNode);
-  return promise;
-}
-
 async function hydrateFromBlockNameImpl(
   injector: Injector,
   blockName: string,
   hydratedBlocks: Set<string>,
+  onTriggerFn: (deferBlock: any) => void,
 ): Promise<void> {
   const deferBlockRegistry = injector.get(DeferBlockRegistry);
 
@@ -65,9 +54,9 @@ async function hydrateFromBlockNameImpl(
     hydratedBlocks.add(blockId);
     deferBlockRegistry.hydrating.add(blockId);
 
-    await triggerAndWaitForCompletion(deferBlock);
+    await onTriggerFn(deferBlock);
     for (const dehydratedBlock of dehydratedBlocks) {
-      await hydrateFromBlockNameImpl(injector, dehydratedBlock, hydratedBlocks);
+      await hydrateFromBlockNameImpl(injector, dehydratedBlock, hydratedBlocks, onTriggerFn);
     }
   } else {
     // TODO: this is likely an error, consider producing a `console.error`.
@@ -77,6 +66,7 @@ async function hydrateFromBlockNameImpl(
 export async function hydrateFromBlockName(
   injector: Injector,
   blockName: string,
+  onTriggerFn: (deferBlock: any) => void,
 ): Promise<Set<string>> {
   const deferBlockRegistry = injector.get(DeferBlockRegistry);
   const hydratedBlocks = new Set<string>();
@@ -84,22 +74,16 @@ export async function hydrateFromBlockName(
   // Make sure we don't hydrate/trigger the same thing multiple times
   if (deferBlockRegistry.hydrating.has(blockName)) return hydratedBlocks;
 
-  await hydrateFromBlockNameImpl(injector, blockName, hydratedBlocks);
+  await hydrateFromBlockNameImpl(injector, blockName, hydratedBlocks, onTriggerFn);
   return hydratedBlocks;
 }
 
 export async function partialHydrateFromBlockName(
   injector: Injector,
   blockName: string,
+  triggerFn: (deferBlock: any) => void,
 ): Promise<void> {
-  const hydratedBlocks = await hydrateFromBlockName(injector, blockName);
+  const hydratedBlocks = await hydrateFromBlockName(injector, blockName, triggerFn);
   // TODO(thePunderWoman): restore original bindings here
   removeListenersFromBlocks([...hydratedBlocks], injector);
-}
-
-export function onDeferBlockCompletion(lDetails: LDeferBlockDetails, callback: VoidFunction) {
-  if (!Array.isArray(lDetails[ON_COMPLETE_FNS])) {
-    lDetails[ON_COMPLETE_FNS] = [];
-  }
-  lDetails[ON_COMPLETE_FNS].push(callback);
 }

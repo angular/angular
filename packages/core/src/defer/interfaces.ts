@@ -135,7 +135,7 @@ export interface TDeferBlockDetails {
   /**
    * List of hydrate triggers for a given block
    */
-  hydrateTriggers: Trigger[] | null;
+  hydrateTriggers: (Trigger | HydrateTrigger)[] | null;
 
   /**
    * List of prefetch triggers for a given block
@@ -183,6 +183,11 @@ export enum Trigger {
   When = 6,
 }
 
+export interface HydrateTrigger {
+  trigger: Trigger;
+  delay?: number;
+}
+
 /**
  * Describes the initial state of this defer block instance.
  *
@@ -207,6 +212,7 @@ export const PREFETCH_TRIGGER_CLEANUP_FNS = 5;
 export const UNIQUE_SSR_ID = 6;
 export const SSR_STATE = 7;
 export const ON_COMPLETE_FNS = 8;
+export const HYDRATE_TRIGGER_CLEANUP_FNS = 9;
 
 /**
  * Describes instance-specific defer block data.
@@ -263,6 +269,11 @@ export interface LDeferBlockDetails extends Array<unknown> {
    * A set of callbacks to be invoked once the main content is rendered.
    */
   [ON_COMPLETE_FNS]: VoidFunction[] | null;
+
+  /**
+   * List of cleanup functions for hydrate triggers.
+   */
+  [HYDRATE_TRIGGER_CLEANUP_FNS]: VoidFunction[] | null;
 }
 
 /**
