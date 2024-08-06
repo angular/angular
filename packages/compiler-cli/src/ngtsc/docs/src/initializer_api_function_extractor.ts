@@ -16,7 +16,7 @@ import {
 } from './entities';
 import {
   extractAllParams,
-  extractOverloadSignatures,
+  extractCallSignatures,
   findImplementationOfFunction,
 } from './function_extractor';
 import {extractGenerics} from './generics_extractor';
@@ -203,7 +203,7 @@ function extractFunctionWithOverloads(
 ): FunctionDefinitionEntry {
   return {
     name,
-    signatures: extractOverloadSignatures(name, typeChecker, type),
+    signatures: extractCallSignatures(name, typeChecker, type),
     // Implementation may be populated later.
     implementation: null,
   };

@@ -7,7 +7,7 @@
  */
 
 import {h} from 'preact';
-import {FunctionEntryRenderable, FunctionMetadataRenderable} from '../entities/renderables';
+import {FunctionEntryRenderable, FunctionSignatureMetadataRenderable} from '../entities/renderables';
 import {
   REFERENCE_MEMBERS,
   REFERENCE_MEMBERS_CONTAINER,
@@ -26,7 +26,7 @@ import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
 
 export const signatureCard = (
   name: string,
-  signature: FunctionMetadataRenderable,
+  signature: FunctionSignatureMetadataRenderable,
   opts: {id: string},
   printSignaturesAsHeader: boolean,
 ) => {

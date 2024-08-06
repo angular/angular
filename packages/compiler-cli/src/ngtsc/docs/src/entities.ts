@@ -127,7 +127,7 @@ export interface PipeEntry extends ClassEntry {
   // TODO: add `isPure`.
 }
 
-export interface FunctionMetadata extends DocEntry {
+export interface FunctionSignatureMetadata extends DocEntry {
   params: ParameterEntry[];
   returnType: string;
   returnDescription?: string;
@@ -171,13 +171,16 @@ export interface ParameterEntry {
   isRestParam: boolean;
 }
 
-export type FunctionEntry = FunctionDefinitionEntry & DocEntry;
+export type FunctionEntry = FunctionDefinitionEntry &
+  DocEntry & {
+    implementation: FunctionSignatureMetadata;
+  };
 
 /** Interface describing a function with overload signatures. */
 export interface FunctionDefinitionEntry {
   name: string;
-  signatures: FunctionMetadata[];
-  implementation: FunctionMetadata | null;
+  signatures: FunctionSignatureMetadata[];
+  implementation: FunctionSignatureMetadata | null;
 }
 
 /**

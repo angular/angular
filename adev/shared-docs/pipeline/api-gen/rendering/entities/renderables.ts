@@ -12,7 +12,7 @@ import {
   DocEntry,
   EnumEntry,
   FunctionEntry,
-  FunctionMetadata,
+  FunctionSignatureMetadata,
   InitializerApiFunctionEntry,
   JsDocTagEntry,
   MemberEntry,
@@ -75,7 +75,7 @@ export type FunctionEntryRenderable = FunctionEntry &
     deprecationMessage: string | null;
   };
 
-export type FunctionMetadataRenderable = FunctionMetadata &
+export type FunctionSignatureMetadataRenderable = FunctionSignatureMetadata &
   DocEntryRenderable & {
     params: ParameterEntryRenderable[];
   };

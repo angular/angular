@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { h } from 'preact';
-import { RawHtml } from './raw-html';
-import { codeToHtml } from '../shiki/shiki';
+import {h} from 'preact';
+import {RawHtml} from './raw-html';
+import {codeToHtml} from '../shiki/shiki';
 
 /** Component to render a header of the CLI page. */
 export function HighlightTypeScript(props: {code: string}) {
-  const result = codeToHtml(props.code, 'typescript');
+  const result = codeToHtml(props.code, 'typescript', /* removeFunctionKeyword */ true);
 
-  return (
-    <RawHtml value={result} />
-  );
+  return <RawHtml value={result} />;
 }

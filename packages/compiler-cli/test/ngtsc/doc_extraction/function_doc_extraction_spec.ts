@@ -38,8 +38,8 @@ runInEachFileSystem(() => {
       const functionEntry = docs[0] as FunctionEntry;
       expect(functionEntry.name).toBe('getInjector');
       expect(functionEntry.entryType).toBe(EntryType.Function);
-      expect(functionEntry.implementation!.params.length).toBe(0);
-      expect(functionEntry.implementation!.returnType).toBe('void');
+      expect(functionEntry.implementation.params.length).toBe(0);
+      expect(functionEntry.implementation.returnType).toBe('void');
     });
 
     it('should extract function with parameters', () => {
@@ -57,11 +57,11 @@ runInEachFileSystem(() => {
 
       const functionEntry = docs[0] as FunctionEntry;
       expect(functionEntry.entryType).toBe(EntryType.Function);
-      expect(functionEntry.implementation!.returnType).toBe('boolean');
+      expect(functionEntry.implementation.returnType).toBe('boolean');
 
-      expect(functionEntry.implementation!.params.length).toBe(3);
+      expect(functionEntry.implementation.params.length).toBe(3);
 
-      const [numParam, intlParam, areaParam] = functionEntry.implementation!.params;
+      const [numParam, intlParam, areaParam] = functionEntry.implementation.params;
       expect(numParam.name).toBe('num');
       expect(numParam.isOptional).toBe(false);
       expect(numParam.type).toBe('string');
@@ -87,7 +87,7 @@ runInEachFileSystem(() => {
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const functionEntry = docs[0] as FunctionEntry;
-      const [prefixParamEntry, idsParamEntry] = functionEntry.implementation!.params;
+      const [prefixParamEntry, idsParamEntry] = functionEntry.implementation.params;
 
       expect(prefixParamEntry.name).toBe('prefix');
       expect(prefixParamEntry.type).toBe('string');
@@ -140,7 +140,7 @@ runInEachFileSystem(() => {
       const [functionEntry] = docs as FunctionEntry[];
       expect(functionEntry.signatures.length).toBe(1);
 
-      const [genericEntry] = functionEntry.implementation!.generics;
+      const [genericEntry] = functionEntry.implementation.generics;
       expect(genericEntry.name).toBe('T');
       expect(genericEntry.constraint).toBeUndefined();
       expect(genericEntry.default).toBeUndefined();

@@ -21,18 +21,30 @@ export async function initHighlighter() {
   });
 }
 
-export function codeToHtml(code: string, language: string | undefined): string {
+export function codeToHtml(
+  code: string,
+  language: string | undefined,
+  removeFunctionKeyword = false,
+): string {
+  const html = highlighter.codeToHtml(code, {
+    lang: language ?? 'text',
+    themes: {
+      light: 'github-light',
+      dark: 'github-dark',
+    },
+    cssVariablePrefix: '--shiki-',
+    defaultColor: false,
+  });
+
+  if (removeFunctionKeyword) {
+    return removeFunctionKeywordFromShikiHtml(html);
+  }
+  return html;
+}
+
+export function removeFunctionKeywordFromShikiHtml(shikiHtml: string): string {
   return (
-    highlighter
-      .codeToHtml(code, {
-        lang: language ?? 'text',
-        themes: {
-          light: 'github-light',
-          dark: 'github-dark',
-        },
-        cssVariablePrefix: '--shiki-',
-        defaultColor: false,
-      })
+    shikiHtml
       // remove the leading space of the element after the "function" element
       .replace(/(<[^>]*>function<\/\w+><[^>]*>)(\s)(\w+<\/\w+>)/g, '$1$3')
       // Shiki requires the keyword function for highlighting functions signatures

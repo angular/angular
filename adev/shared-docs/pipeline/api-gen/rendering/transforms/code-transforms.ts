@@ -9,7 +9,7 @@
 import {
   DocEntry,
   FunctionEntry,
-  FunctionMetadata,
+  FunctionSignatureMetadata,
   MemberEntry,
   MemberTags,
   ParameterEntry,
@@ -64,7 +64,11 @@ export function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   const metadata = mapDocEntryToCode(entry);
   appendPrefixAndSuffix(entry, metadata);
 
-  const codeWithSyntaxHighlighting = codeToHtml(metadata.contents, 'typescript');
+  const codeWithSyntaxHighlighting = codeToHtml(
+    metadata.contents,
+    'typescript',
+    /* removeFunctionKeyword */ true,
+  );
 
   // shiki returns the lines wrapped by 2 node : 1 pre node, 1 code node.
   // As leveraging jsdom isn't trivial here, we rely on a regex to extract the line nodes
@@ -145,7 +149,7 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
       };
 
       return entry.signatures.reduce(
-        (acc: CodeTableOfContentsData, curr: FunctionMetadata, index: number) => {
+        (acc: CodeTableOfContentsData, curr: FunctionSignatureMetadata, index: number) => {
           const lineNumber = index;
           acc.codeLineNumbersWithIdentifiers.set(lineNumber, `${curr.name}_${index}`);
           acc.contents += getMethodCodeLine(curr, [], hasSingleSignature, true);
@@ -166,7 +170,7 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
 
     return {
       // It is important to add the function keyword as shiki will only highlight valid ts
-      contents: `function ${getMethodCodeLine(entry.implementation!, [], true)}`,
+      contents: `function ${getMethodCodeLine(entry.implementation, [], true)}`,
       codeLineNumbersWithIdentifiers,
       deprecatedLineNumbers: isDeprecated ? [0] : [],
     };
@@ -269,7 +273,7 @@ function getCodeTocData(members: MemberEntry[], hasPrefixLine: boolean): CodeTab
 
 function getCodeLine(member: MemberEntry): string {
   if (isClassMethodEntry(member)) {
-    return getMethodCodeLine(member.implementation!, member.memberTags);
+    return getMethodCodeLine(member.implementation, member.memberTags);
   } else if (isGetterEntry(member)) {
     return getGetterCodeLine(member);
   } else if (isSetterEntry(member)) {
@@ -288,7 +292,7 @@ function getPropertyCodeLine(member: PropertyEntry): string {
 
 /** Map method entry to text */
 function getMethodCodeLine(
-  member: FunctionMetadata,
+  member: FunctionSignatureMetadata,
   memberTags: MemberTags[] = [],
   displayParamsInNewLines: boolean = false,
   isFunction: boolean = false,
@@ -352,7 +356,7 @@ function getNumberOfLinesOfCode(contents: string): number {
 /** Prints an initializer function signature into a single line. */
 export function printInitializerFunctionSignatureLine(
   name: string,
-  signature: FunctionMetadata,
+  signature: FunctionSignatureMetadata,
   showTypesInSignaturePreview: boolean,
 ): string {
   let res = name;

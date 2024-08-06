@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FunctionEntry, FunctionMetadata} from '../entities';
-import {FunctionEntryRenderable, FunctionMetadataRenderable} from '../entities/renderables';
+import {FunctionEntry, FunctionSignatureMetadata} from '../entities';
+import {
+  FunctionEntryRenderable,
+  FunctionSignatureMetadataRenderable,
+} from '../entities/renderables';
 import {addRenderableCodeToc} from './code-transforms';
 import {
   addHtmlAdditionalLinks,
@@ -38,9 +41,9 @@ export function getFunctionRenderable(
 }
 
 export function getFunctionMetadataRenderable(
-  entry: FunctionMetadata,
+  entry: FunctionSignatureMetadata,
   moduleName: string = '',
-): FunctionMetadataRenderable {
+): FunctionSignatureMetadataRenderable {
   return addHtmlAdditionalLinks(
     addRenderableFunctionParams(
       addHtmlUsageNotes(

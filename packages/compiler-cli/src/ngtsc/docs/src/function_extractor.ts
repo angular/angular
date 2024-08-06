@@ -45,7 +45,7 @@ export class FunctionExtractor {
       this.exportDeclaration;
 
     const type = this.typeChecker.getTypeAtLocation(this.exportDeclaration);
-    const overloads = extractOverloadSignatures(this.name, this.typeChecker, type);
+    const overloads = extractCallSignatures(this.name, this.typeChecker, type);
     const jsdocsTags = extractJsDocTags(implementation);
     const description = extractJsDocDescription(implementation);
 
@@ -86,7 +86,7 @@ export function extractAllParams(
   }));
 }
 
-/** Filters the list signatures to valid initializer API signatures. */
+/** Filters the list signatures to valid function and initializer API signatures. */
 function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
   const result: Array<{
     signature: ts.Signature;
@@ -105,11 +105,7 @@ function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
   return result;
 }
 
-export function extractOverloadSignatures(
-  name: string,
-  typeChecker: ts.TypeChecker,
-  type: ts.Type,
-) {
+export function extractCallSignatures(name: string, typeChecker: ts.TypeChecker, type: ts.Type) {
   return filterSignatureDeclarations(type.getCallSignatures()).map(({decl, signature}) => ({
     name,
     entryType: EntryType.Function,

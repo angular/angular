@@ -14,7 +14,7 @@ import {
   isSetterEntry,
 } from '../entities/categorization';
 import {
-  FunctionMetadataRenderable,
+  FunctionSignatureMetadataRenderable,
   MemberEntryRenderable,
   MethodEntryRenderable,
 } from '../entities/renderables';

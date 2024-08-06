@@ -144,7 +144,7 @@ runInEachFileSystem(() => {
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
       const methodEntry = classEntry.members[0] as MethodEntry;
-      const [prefixParamEntry, idsParamEntry] = methodEntry.implementation!.params;
+      const [prefixParamEntry, idsParamEntry] = methodEntry.implementation.params;
 
       expect(prefixParamEntry.name).toBe('prefix');
       expect(prefixParamEntry.type).toBe('string');
@@ -173,9 +173,9 @@ runInEachFileSystem(() => {
       const methodEntry = classEntry.members[0] as MethodEntry;
       expect(methodEntry.memberType).toBe(MemberType.Method);
       expect(methodEntry.name).toBe('setPhone');
-      expect(methodEntry.implementation!.params.length).toBe(3);
+      expect(methodEntry.implementation.params.length).toBe(3);
 
-      const [numParam, intlParam, areaParam] = methodEntry.implementation!.params;
+      const [numParam, intlParam, areaParam] = methodEntry.implementation.params;
       expect(numParam.name).toBe('num');
       expect(numParam.isOptional).toBe(false);
       expect(numParam.type).toBe('string');
@@ -453,7 +453,7 @@ runInEachFileSystem(() => {
       expect(docs.length).toBe(1);
 
       const classEntry = docs[0] as ClassEntry;
-      const [genericEntry] = (classEntry.members[0] as MethodEntry).implementation!.generics;
+      const [genericEntry] = (classEntry.members[0] as MethodEntry).implementation.generics;
 
       expect(genericEntry.name).toBe('T');
       expect(genericEntry.constraint).toBeUndefined();
@@ -504,7 +504,7 @@ runInEachFileSystem(() => {
 
       expect(childSaveEntry.name).toBe('save');
       expect(childSaveEntry.memberType).toBe(MemberType.Method);
-      expect((childSaveEntry as MethodEntry).implementation!.returnType).toBe('number');
+      expect((childSaveEntry as MethodEntry).implementation.returnType).toBe('number');
       expect(childSaveEntry.memberTags).not.toContain(MemberTags.Inherited);
 
       expect(nameEntry.name).toBe('name');
