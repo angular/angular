@@ -42,6 +42,7 @@ export const signatureCard = (
                 // Always omit types in signature headers, to keep them short.
                 true,
               )}
+              removeFunctionKeyword={true}
             />
           </code>
         ) : (

@@ -11,8 +11,10 @@ import {RawHtml} from './raw-html';
 import {codeToHtml} from '../shiki/shiki';
 
 /** Component to render a header of the CLI page. */
-export function HighlightTypeScript(props: {code: string}) {
-  const result = codeToHtml(props.code, 'typescript', /* removeFunctionKeyword */ true);
+export function HighlightTypeScript(props: {code: string; removeFunctionKeyword?: boolean}) {
+  const result = codeToHtml(props.code, 'typescript', {
+    removeFunctionKeyword: props.removeFunctionKeyword,
+  });
 
   return <RawHtml value={result} />;
 }

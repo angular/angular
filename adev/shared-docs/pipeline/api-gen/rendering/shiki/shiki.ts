@@ -24,7 +24,7 @@ export async function initHighlighter() {
 export function codeToHtml(
   code: string,
   language: string | undefined,
-  removeFunctionKeyword = false,
+  options?: {removeFunctionKeyword?: boolean},
 ): string {
   const html = highlighter.codeToHtml(code, {
     lang: language ?? 'text',
@@ -36,7 +36,7 @@ export function codeToHtml(
     defaultColor: false,
   });
 
-  if (removeFunctionKeyword) {
+  if (options?.removeFunctionKeyword) {
     return removeFunctionKeywordFromShikiHtml(html);
   }
   return html;

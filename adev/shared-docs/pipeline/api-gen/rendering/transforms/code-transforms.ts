@@ -63,11 +63,9 @@ export function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   const metadata = mapDocEntryToCode(entry);
   appendPrefixAndSuffix(entry, metadata);
 
-  const codeWithSyntaxHighlighting = codeToHtml(
-    metadata.contents,
-    'typescript',
-    /* removeFunctionKeyword */ true,
-  );
+  const codeWithSyntaxHighlighting = codeToHtml(metadata.contents, 'typescript', {
+    removeFunctionKeyword: true,
+  });
 
   // shiki returns the lines wrapped by 2 node : 1 pre node, 1 code node.
   // As leveraging jsdom isn't trivial here, we rely on a regex to extract the line nodes
