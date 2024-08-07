@@ -108,8 +108,8 @@ describe('BrowserViewportScroller', () => {
       return {
         anchorNode,
         cleanup: () => {
-          document.body.removeChild(tallItem);
-          document.body.removeChild(anchorNode);
+          tallItem.remove();
+          anchorNode.remove();
         },
       };
     }
@@ -128,8 +128,8 @@ describe('BrowserViewportScroller', () => {
       return {
         anchorNode,
         cleanup: () => {
-          document.body.removeChild(tallItem);
-          document.body.removeChild(elementWithShadowRoot);
+          tallItem.remove();
+          elementWithShadowRoot.remove();
         },
       };
     }

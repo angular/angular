@@ -1161,9 +1161,6 @@
     "name": "nativeInsertBefore"
   },
   {
-    "name": "nativeParentNode"
-  },
-  {
     "name": "nativeRemoveNode"
   },
   {

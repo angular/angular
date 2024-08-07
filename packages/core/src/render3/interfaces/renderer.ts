@@ -43,7 +43,7 @@ export interface Renderer {
   destroyNode?: ((node: RNode) => void) | null;
   appendChild(parent: RElement, newChild: RNode): void;
   insertBefore(parent: RNode, newChild: RNode, refChild: RNode | null, isMove?: boolean): void;
-  removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean): void;
+  removeChild(parent: RElement | null, oldChild: RNode, isHostElement?: boolean): void;
   selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): RElement;
 
   parentNode(node: RNode): RElement | null;

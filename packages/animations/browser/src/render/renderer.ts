@@ -78,7 +78,13 @@ export class BaseAnimationRenderer implements Renderer2 {
   }
 
   removeChild(parent: any, oldChild: any, isHostElement?: boolean): void {
-    this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
+    // Prior to the changes in #57203, this method wasn't being called at all by `core` if the child
+    // doesn't have a parent. There appears to be some animation-specific downstream logic that
+    // depends on the null check happening before the animation engine. This check keeps the old
+    // behavior while allowing `core` to not have to check for the parent element anymore.
+    if (this.parentNode(oldChild)) {
+      this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
+    }
   }
 
   selectRootElement(selectorOrNode: any, preserveContent?: boolean) {

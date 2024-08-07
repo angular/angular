@@ -51,7 +51,7 @@ class DOMParserHelper implements InertBodyHelper {
         // the `inertDocumentHelper` instead.
         return this.inertDocumentHelper.getInertBodyElement(html);
       }
-      body.removeChild(body.firstChild!);
+      body.firstChild?.remove();
       return body;
     } catch {
       return null;

@@ -261,7 +261,7 @@ export class UpgradeHelper {
     let childNode: Node | null;
 
     while ((childNode = this.element.firstChild)) {
-      this.element.removeChild(childNode);
+      (childNode as Element | Comment | Text).remove();
       childNodes.push(childNode);
     }
 
