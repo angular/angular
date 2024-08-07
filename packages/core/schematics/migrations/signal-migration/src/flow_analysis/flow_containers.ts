@@ -23,7 +23,7 @@ export function isControlFlowBoundary(node: ts.Node): boolean {
 
 /** Determines the current flow container of a given node. */
 export function getControlFlowContainer(node: ts.Node): ts.Node {
-  return findAncestor(node.parent, (node) => isControlFlowBoundary(node))!;
+  return ts.findAncestor(node.parent, (node) => isControlFlowBoundary(node))!;
 }
 
 /** Checks whether the given node refers to an IIFE declaration. */
@@ -41,21 +41,6 @@ function getImmediatelyInvokedFunctionExpression(func: ts.Node): ts.CallExpressi
     ) {
       return parent as ts.CallExpression;
     }
-  }
-  return undefined;
-}
-
-/** Traverses up the node chain until the callback is true, returning the node. */
-function findAncestor(
-  node: ts.Node | undefined,
-  callback: (element: ts.Node) => boolean,
-): ts.Node | undefined {
-  while (node) {
-    const result = callback(node);
-    if (result) {
-      return node;
-    }
-    node = node.parent;
   }
   return undefined;
 }

@@ -295,6 +295,63 @@ class HostBindingsShared2 {
   id = input(false);
   id2 = input(false);
 }
+@@@@@@ identifier_collisions.ts @@@@@@
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+const complex = 'some global variable';
+
+@Component({template: ''})
+class MyComp {
+  name = input<string | null>(null);
+  complex = input<string | null>(null);
+
+  valid() {
+    const name = this.name();
+    if (name) {
+      name.charAt(0);
+    }
+  }
+
+  // Input read cannot be stored in a variable: `name`.
+  simpleLocalCollision() {
+    const name = 'some other name';
+    const nameValue = this.name();
+    if (nameValue) {
+      nameValue.charAt(0);
+    }
+  }
+
+  // `this.complex` should conflict with the file-level `complex` variable,
+  // and result in a suffix variable.
+  complexParentCollision() {
+    const complexValue = this.complex();
+    if (complexValue) {
+      complexValue.charAt(0);
+    }
+  }
+
+  nestedShadowing() {
+    const nameValue = this.name();
+    if (nameValue) {
+      nameValue.charAt(0);
+    }
+
+    function nested() {
+      const name = '';
+    }
+  }
+}
 @@@@@@ index.ts @@@@@@
 
 // tslint:disable
@@ -330,15 +387,15 @@ export class AppComponent {
   }
 
   someControlFlowCase() {
-    const input_1 = this.input();
-    if (input_1) {
-      input_1.charAt(0);
+    const input = this.input();
+    if (input) {
+      input.charAt(0);
     }
   }
 
   moreComplexControlFlowCase() {
-    const input_2 = this.input();
-    if (!input_2) {
+    const input = this.input();
+    if (!input) {
       return;
     }
 
@@ -349,7 +406,7 @@ export class AppComponent {
       // No! it can't because we don't allow writes to "input"!!.
       // TODO: This assumption may change if we have a "best effort" mode where we still
       // migrate e.g. `"input" even if we see writes.
-      console.log(input_2.substring(0));
+      console.log(input.substring(0));
     })();
   }
 
@@ -358,18 +415,18 @@ export class AppComponent {
   }
 
   vsd() {
-    const input_3 = this.input();
-    const narrowableMultipleTimes_1 = this.narrowableMultipleTimes();
-    if (!input_3 && narrowableMultipleTimes_1 !== null) {
-      return narrowableMultipleTimes_1;
+    const input = this.input();
+    const narrowableMultipleTimes = this.narrowableMultipleTimes();
+    if (!input && narrowableMultipleTimes !== null) {
+      return narrowableMultipleTimes;
     }
-    return input_3 ? 'eager' : 'lazy';
+    return input ? 'eager' : 'lazy';
   }
 
   allTheSameNoNarrowing() {
-    const input_4 = this.input();
-    console.log(input_4);
-    console.log(input_4);
+    const input = this.input();
+    console.log(input);
+    console.log(input);
   }
 
   test() {
@@ -390,29 +447,29 @@ export class AppComponent {
   }
 
   extremeNarrowingNested() {
-    const narrowableMultipleTimes_2 = this.narrowableMultipleTimes();
-    if (narrowableMultipleTimes_2 && isCar(narrowableMultipleTimes_2)) {
-      narrowableMultipleTimes_2.__car;
+    const narrowableMultipleTimes = this.narrowableMultipleTimes();
+    if (narrowableMultipleTimes && isCar(narrowableMultipleTimes)) {
+      narrowableMultipleTimes.__car;
 
-      let car = narrowableMultipleTimes_2;
+      let car = narrowableMultipleTimes;
       let ctx = this;
 
       function nestedFn() {
         if (isAudi(car)) {
           console.log(car.__audi);
         }
-        const narrowableMultipleTimes_3 = ctx.narrowableMultipleTimes();
-        if (!isCar(narrowableMultipleTimes_3!) || !isAudi(narrowableMultipleTimes_3)) {
+        const narrowableMultipleTimes = ctx.narrowableMultipleTimes();
+        if (!isCar(narrowableMultipleTimes!) || !isAudi(narrowableMultipleTimes)) {
           return;
         }
 
-        narrowableMultipleTimes_3.__audi;
+        narrowableMultipleTimes.__audi;
       }
 
       // iife
       (() => {
-        if (isAudi(narrowableMultipleTimes_2)) {
-          narrowableMultipleTimes_2.__audi;
+        if (isAudi(narrowableMultipleTimes)) {
+          narrowableMultipleTimes.__audi;
         }
       })();
     }
@@ -524,9 +581,9 @@ class MyTestCmp {
   }
 
   test2() {
-    const someInput_1 = this.someInput();
-    while (isBla(someInput_1)) {
-      this.tmpValue = someInput_1.includes('someText');
+    const someInput = this.someInput();
+    while (isBla(someInput)) {
+      this.tmpValue = someInput.includes('someText');
     }
   }
 }
@@ -563,10 +620,10 @@ export class TestCmp {
 }>({ x: '' });
 
   bla() {
-    const shared_1 = this.shared();
-    shared_1.x = this.doSmth(shared_1);
+    const shared = this.shared();
+    shared.x = this.doSmth(shared);
 
-    this.doSmth(shared_1);
+    this.doSmth(shared);
   }
 
   doSmth(v: typeof this.shared()): string {
@@ -616,12 +673,12 @@ export class ObjectExpansion {
 import {AppComponent} from './index';
 
 function assertValidLoadingInput(dir: AppComponent) {
-  const withUndefinedInput_1 = dir.withUndefinedInput();
-  if (withUndefinedInput_1 && dir.narrowableMultipleTimes()) {
+  const withUndefinedInput = dir.withUndefinedInput();
+  if (withUndefinedInput && dir.narrowableMultipleTimes()) {
     throw new Error(``);
   }
   const validInputs = ['auto', 'eager', 'lazy'];
-  if (typeof withUndefinedInput_1 === 'string' && !validInputs.includes(withUndefinedInput_1)) {
+  if (typeof withUndefinedInput === 'string' && !validInputs.includes(withUndefinedInput)) {
     throw new Error();
   }
 }
@@ -706,14 +763,14 @@ export class TestCmp {
   shared = input(false);
 
   bla() {
-    const shared_1 = this.shared();
+    const shared = this.shared();
     if (TestCmp.arguments) {
-      this.someFn(shared_1);
+      this.someFn(shared);
     } else {
-      shared_1.valueOf();
+      shared.valueOf();
     }
 
-    this.someFn(shared_1);
+    this.someFn(shared);
   }
 
   someFn(bla: boolean): asserts bla is true {}
@@ -749,24 +806,24 @@ export class ScopeMismatchTest {
     const regexs: RegExp[] = [];
     const dir: SomeDir = null!;
 
-    const bla_1 = dir.bla();
+    const bla = dir.bla();
     if (global.console) {
-      regexs.push(bla_1);
+      regexs.push(bla);
     }
 
-    regexs.push(bla_1);
+    regexs.push(bla);
   }
 
   dir: SomeDir = null!;
   nestedButSharedInClassInstance() {
     const regexs: RegExp[] = [];
 
-    const bla_2 = this.dir.bla();
+    const bla = this.dir.bla();
     if (global.console) {
-      regexs.push(bla_2);
+      regexs.push(bla);
     }
 
-    regexs.push(bla_2);
+    regexs.push(bla);
   }
 }
 @@@@@@ spy_on.ts @@@@@@
