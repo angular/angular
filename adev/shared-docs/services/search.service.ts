@@ -43,6 +43,32 @@ export class Search {
         ? from(
             this.index.search(query, {
               maxValuesPerFacet: MAX_VALUE_PER_FACET,
+              attributesToRetrieve: [
+                'hierarchy.lvl0',
+                'hierarchy.lvl1',
+                'hierarchy.lvl2',
+                'hierarchy.lvl3',
+                'hierarchy.lvl4',
+                'hierarchy.lvl5',
+                'hierarchy.lvl6',
+                'content',
+                'type',
+                'url',
+              ],
+              hitsPerPage: 20,
+              snippetEllipsisText: '…',
+              highlightPreTag: '<ɵ>',
+              highlightPostTag: '</ɵ>',
+              attributesToHighlight: [],
+              attributesToSnippet: [
+                'hierarchy.lvl1:10',
+                'hierarchy.lvl2:10',
+                'hierarchy.lvl3:10',
+                'hierarchy.lvl4:10',
+                'hierarchy.lvl5:10',
+                'hierarchy.lvl6:10',
+                'content:10',
+              ],
             }),
           )
         : of(undefined);
@@ -72,6 +98,20 @@ export class Search {
     const uniqueUrls = new Set<string>();
 
     return items.filter((item) => {
+      if (item.type === 'content' && !item._snippetResult.content) {
+        return false;
+      }
+      // Ensure that this result actually matched on the type.
+      // If not, this is going to be a duplicate. There should be another result in
+      // the list that already matched on its type.
+      // A lvl2 match will also return all its lvl3 results as well, even if those
+      // values don't also match the query.
+      if (
+        item.type.indexOf('lvl') === 0 &&
+        item._snippetResult.hierarchy?.[item.type as 'lvl1']?.matchLevel === 'none'
+      ) {
+        return false;
+      }
       if (item.url && !uniqueUrls.has(item.url)) {
         uniqueUrls.add(item.url);
         return true;
