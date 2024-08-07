@@ -210,7 +210,7 @@
     "karma-jasmine-html-reporter": "^2.1.0",
     "karma-sauce-launcher": "^4.3.6",
     "madge": "^8.0.0",
-    "marked": "^12.0.0",
+    "marked": "^14.0.0",
     "mermaid": "^10.9.1",
     "ogl": "^1.0.3",
     "patch-package": "^7.0.0",
