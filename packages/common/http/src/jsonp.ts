@@ -164,9 +164,7 @@ export class JsonpClientBackend implements HttpBackend {
       // success, error, and cancellation paths, so it's extracted out for convenience.
       const cleanup = () => {
         // Remove the <script> tag if it's still on the page.
-        if (node.parentNode) {
-          node.parentNode.removeChild(node);
-        }
+        node.remove();
 
         // Remove the response callback from the callbackMap (window object in the
         // browser).

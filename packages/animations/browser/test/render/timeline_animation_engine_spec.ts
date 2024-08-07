@@ -39,7 +39,7 @@ import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_a
       document.body.appendChild(element);
     });
 
-    afterEach(() => document.body.removeChild(element));
+    afterEach(() => element.remove());
 
     it('should animate a timeline', () => {
       const engine = makeEngine(getBodyNode());

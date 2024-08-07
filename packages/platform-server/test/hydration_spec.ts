@@ -4102,8 +4102,7 @@ describe('platform-server hydration integration', () => {
           el = inject(ElementRef);
 
           ngAfterViewInit() {
-            const pTag = document.querySelector('p');
-            pTag?.parentElement?.removeChild(pTag);
+            document.querySelector('p')?.remove();
             const span = document.createElement('span');
             span.innerHTML = 'Appended span';
             this.el.nativeElement.appendChild(span);

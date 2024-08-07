@@ -56,7 +56,7 @@ describe('Animation', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(rootElement);
+    rootElement.remove();
   });
 
   describe('validation', () => {

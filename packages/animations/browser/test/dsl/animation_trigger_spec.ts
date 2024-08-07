@@ -29,7 +29,7 @@ describe('AnimationTrigger', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(element);
+    element.remove();
   });
 
   describe('trigger validation', () => {

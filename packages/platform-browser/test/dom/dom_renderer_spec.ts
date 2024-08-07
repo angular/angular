@@ -98,13 +98,12 @@ describe('DefaultDomRendererV2', () => {
   });
 
   describe('removeChild', () => {
-    it('should not error when removing a child with a different parent than given', () => {
-      const savedParent = document.createElement('div');
-      const realParent = document.createElement('div');
+    it('should not error when removing a child without passing a parent', () => {
+      const parent = document.createElement('div');
       const child = document.createElement('div');
 
-      realParent.appendChild(child);
-      renderer.removeChild(savedParent, child);
+      parent.appendChild(child);
+      renderer.removeChild(null, child);
     });
   });
 

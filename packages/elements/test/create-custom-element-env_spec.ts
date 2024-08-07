@@ -20,7 +20,7 @@ describe('createCustomElement with env injector', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(testContainer);
+    testContainer.remove();
     (testContainer as any) = null;
   });
 

@@ -29,15 +29,8 @@ export class AnimationRendererFactory implements RendererFactory2 {
     private engine: AnimationEngine,
     private _zone: NgZone,
   ) {
-    engine.onRemovalComplete = (element: any, delegate: Renderer2) => {
-      // Note: if a component element has a leave animation, and a host leave animation,
-      // the view engine will call `removeChild` for the parent
-      // component renderer as well as for the child component renderer.
-      // Therefore, we need to check if we already removed the element.
-      const parentNode = delegate?.parentNode(element);
-      if (parentNode) {
-        delegate.removeChild(parentNode, element);
-      }
+    engine.onRemovalComplete = (element: any, delegate: Renderer2 | null) => {
+      delegate?.removeChild(null, element);
     };
   }
 
