@@ -6,14 +6,39 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+export interface SnippetResult {
+  value: string;
+  matchLevel: 'none' | 'full' | string;
+}
+
 /* The interface represents Algolia search result item. */
 export interface SearchResult {
   /* The url link to the search result page */
-  url?: string;
+  url: string;
   /* The hierarchy of the item */
-  hierarchy?: Hierarchy;
+  hierarchy: Hierarchy;
   /* The unique id of the search result item */
   objectID: string;
+  /**
+   * The type of the result. A content result will have
+   * matched the content. A result of type 'lvl#' may have i
+   * matched a lvl above it. For example, a type 'lvl3' may be
+   * included in results because its 'lvl2' header matched the query.
+   */
+  type: string;
+  /** Documentation content (not headers) */
+  content: string | null;
+  /** Snippets of the matched text */
+  _snippetResult: {
+    hierarchy?: {
+      lvl0?: SnippetResult;
+      lvl1?: SnippetResult;
+      lvl2?: SnippetResult;
+      lvl3?: SnippetResult;
+      lvl4?: SnippetResult;
+    };
+    content?: SnippetResult;
+  };
 }
 
 /* The hierarchy of the item */
