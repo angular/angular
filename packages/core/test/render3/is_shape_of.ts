@@ -77,6 +77,7 @@ const ShapeOfTI18n: ShapeOf<TI18n> = {
   create: true,
   update: true,
   ast: true,
+  parentTNodeIndex: true,
 };
 
 /**

@@ -21,6 +21,7 @@ import {assertDefined, assertNotEqual} from '../util/assert';
 import type {HydrationContext} from './annotate';
 import {DehydratedIcuData, DehydratedView, I18N_DATA} from './interfaces';
 import {isDisconnectedRNode, locateNextRNode, tryLocateRNodeByPath} from './node_lookup_utils';
+import {isI18nInSkipHydrationBlock} from './skip_hydration';
 import {IS_I18N_HYDRATION_ENABLED} from './tokens';
 import {
   getNgContainerSize,
@@ -184,6 +185,11 @@ export function trySerializeI18nBlock(
   const tView = lView[TVIEW];
   const tI18n = tView.data[index] as TI18n | undefined;
   if (!tI18n || !tI18n.ast) {
+    return null;
+  }
+
+  const parentTNode = tView.data[tI18n.parentTNodeIndex] as TNode;
+  if (parentTNode && isI18nInSkipHydrationBlock(parentTNode)) {
     return null;
   }
 
@@ -401,7 +407,10 @@ function prepareI18nBlockForHydrationImpl(
   parentTNode: TNode | null,
   subTemplateIndex: number,
 ) {
-  if (!isI18nHydrationSupportEnabled()) {
+  if (
+    !isI18nHydrationSupportEnabled() ||
+    (parentTNode && isI18nInSkipHydrationBlock(parentTNode))
+  ) {
     return;
   }
 
