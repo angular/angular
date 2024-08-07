@@ -20,6 +20,7 @@ import {
   viewChild,
   viewChildren,
 } from '@angular/core';
+import {NgTemplateOutlet} from '@angular/common';
 
 import {WINDOW} from '../../providers/index';
 import {ClickOutside} from '../../directives/index';
@@ -34,6 +35,7 @@ import {Router, RouterLink} from '@angular/router';
 import {filter, fromEvent} from 'rxjs';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {RelativeLink} from '../../pipes/relative-link.pipe';
+import {SearchResult, SnippetResult} from '../../interfaces';
 
 @Component({
   selector: 'docs-search-dialog',
@@ -47,6 +49,7 @@ import {RelativeLink} from '../../pipes/relative-link.pipe';
     AlgoliaIcon,
     RelativeLink,
     RouterLink,
+    NgTemplateOutlet,
   ],
   templateUrl: './search-dialog.component.html',
   styleUrls: ['./search-dialog.component.scss'],
@@ -102,6 +105,46 @@ export class SearchDialog implements OnDestroy {
           this.keyManager.onKeydown(event);
         }
       });
+  }
+
+  splitMarkedText(snippet: string): Array<{highlight: boolean; text: string}> {
+    const parts: Array<{highlight: boolean; text: string}> = [];
+    while (snippet.indexOf('<ɵ>') !== -1) {
+      const beforeMatch = snippet.substring(0, snippet.indexOf('<ɵ>'));
+      const match = snippet.substring(snippet.indexOf('<ɵ>') + 3, snippet.indexOf('</ɵ>'));
+      parts.push({highlight: false, text: beforeMatch});
+      parts.push({highlight: true, text: match});
+      snippet = snippet.substring(snippet.indexOf('</ɵ>') + 4);
+    }
+    parts.push({highlight: false, text: snippet});
+    return parts;
+  }
+
+  getBestSnippetForMatch(result: SearchResult): string {
+    // if there is content, return it
+    if (result._snippetResult.content !== undefined) {
+      return result._snippetResult.content.value;
+    }
+
+    const hierarchy = result._snippetResult.hierarchy;
+    if (hierarchy === undefined) {
+      return '';
+    }
+    function matched(snippet: SnippetResult | undefined) {
+      return snippet?.matchLevel !== undefined && snippet.matchLevel !== 'none';
+    }
+    // return the most specific subheader match
+    if (matched(hierarchy.lvl4)) {
+      return hierarchy.lvl4!.value;
+    }
+    if (matched(hierarchy.lvl3)) {
+      return hierarchy.lvl3!.value;
+    }
+    if (matched(hierarchy.lvl2)) {
+      return hierarchy.lvl2!.value;
+    }
+    // if no subheader matched the query, fall back to just returning the most specific one
+    return hierarchy.lvl3?.value ?? hierarchy.lvl2?.value ?? '';
   }
 
   ngOnDestroy(): void {
