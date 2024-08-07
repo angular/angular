@@ -70,3 +70,16 @@ export function isInSkipHydrationBlock(tNode: TNode): boolean {
   }
   return false;
 }
+
+/**
+ * Check if an i18n block is in a skip hydration section by looking at a parent TNode
+ * to determine if this TNode is in a skip hydration section or the TNode has
+ * the `ngSkipHydration` attribute.
+ */
+export function isI18nInSkipHydrationBlock(parentTNode: TNode): boolean {
+  return (
+    hasInSkipHydrationBlockFlag(parentTNode) ||
+    hasSkipHydrationAttrOnTNode(parentTNode) ||
+    isInSkipHydrationBlock(parentTNode)
+  );
+}
