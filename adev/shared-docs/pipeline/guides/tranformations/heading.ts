@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {RendererApi} from 'marked';
+import {Renderer, Tokens} from 'marked';
 
 import {getHeaderId} from '../state';
 import {getPageTitle} from '../utils';
 
-export const headingRender: RendererApi['heading'] = (text, level, raw) => {
-  if (level === 1) {
+export function headingRender({text, depth}: Tokens.Heading): string;
+export function headingRender(this: Renderer, {text, depth}: Tokens.Heading): string {
+  if (depth === 1) {
     return `
     <header class="docs-header">
       <docs-breadcrumb></docs-breadcrumb>
@@ -36,8 +37,8 @@ export const headingRender: RendererApi['heading'] = (text, level, raw) => {
   const label = anchorLessText.replace(/`(.*?)`/g, '<code>$1</code>').replace(customIdRegex, '');
 
   return `
-  <h${level} id="${link}">
+  <h${depth} id="${link}">
     <a href="#${link}" class="docs-anchor" tabindex="-1" aria-label="Link to ${label}">${label}</a>
-  </h${level}>
+  </h${depth}>
   `;
-};
+}

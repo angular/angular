@@ -20,7 +20,7 @@
     "fflate": "^0.8.2",
     "html-entities": "~2.5.2",
     "jsdom": "~24.1.0",
-    "marked": "~12.0.2",
+    "marked": "~14.0.0",
     "mermaid": "^10.8.0",
     "shiki": "^1.10.3"
   },
