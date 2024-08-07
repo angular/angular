@@ -14,7 +14,7 @@ import {InputUniqueKey} from '../utils/input_id';
 import {isTsInputReference} from '../utils/input_reference';
 import {traverseAccess} from '../utils/traverse_access';
 import {KnownInputs} from '../input_detection/known_inputs';
-import {createGenerateUniqueIdentifierHelper} from '../../../../../../compiler-cli/src/ngtsc/translator/src/import_manager/check_unique_identifier_name';
+import {UniqueNamesGenerator} from '../utils/unique_names';
 
 /**
  * Phase that migrates TypeScript input references to be signal compatible.
@@ -46,9 +46,9 @@ export function pass5__migrateTypeScriptReferences(
   checker: ts.TypeChecker,
   knownInputs: KnownInputs,
 ) {
-  const generateUniqueIdentifier = createGenerateUniqueIdentifierHelper();
   const tsReferences = new Map<InputUniqueKey, {accesses: ts.Identifier[]}>();
   const seenIdentifiers = new WeakSet<ts.Identifier>();
+  const nameGenerator = new UniqueNamesGenerator();
 
   for (const reference of result.references) {
     // This pass only deals with TS references.
@@ -130,8 +130,7 @@ export function pass5__migrateTypeScriptReferences(
       const leadingSpace = ts.getLineAndCharacterOfPosition(sf, previous.getStart());
 
       const replaceNode = traverseAccess(originalNode);
-      const uniqueFieldName = generateUniqueIdentifier(sf, originalNode.text);
-      const fieldName = uniqueFieldName === null ? originalNode.text : uniqueFieldName.text;
+      const fieldName = nameGenerator.generate(originalNode.text, previous);
 
       idToSharedField.set(id, fieldName);
 
