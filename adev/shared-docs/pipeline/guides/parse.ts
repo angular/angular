@@ -8,7 +8,7 @@
 
 import {marked} from 'marked';
 import {hooks} from './hooks';
-import {renderer} from './renderer';
+import {Renderer} from './renderer';
 import {docsAlertExtension} from './extensions/docs-alert';
 import {docsCalloutExtension} from './extensions/docs-callout';
 import {docsPillExtension} from './extensions/docs-pill/docs-pill';
@@ -33,7 +33,6 @@ export async function parseMarkdown(
 
   marked.use({
     hooks,
-    renderer,
     extensions: [
       docsAlertExtension,
       docsCalloutExtension,
@@ -55,5 +54,5 @@ export async function parseMarkdown(
     async: true,
   });
 
-  return marked.parse(markdownContent);
+  return marked.parse(markdownContent, {renderer: new Renderer()});
 }
