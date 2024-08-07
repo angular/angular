@@ -244,7 +244,6 @@ describe('event dispatch', () => {
       configureTestingModule([SimpleComponent]);
       fixture = TestBed.createComponent(SimpleComponent);
       const nativeElement = fixture.debugElement.nativeElement;
-      (fixture.componentInstance as SimpleComponent).listen(nativeElement);
       const bottomEl = nativeElement.querySelector('#bottom')!;
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
