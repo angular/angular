@@ -1,3 +1,26 @@
+<a name="18.2.0-rc.0"></a>
+# 18.2.0-rc.0 (2024-08-07)
+## Breaking Changes
+### zone.js
+- `fakeAsync` will now flush pending timers at the end of
+  the given function by default. To opt-out of this, you can use `{flush:
+  false}` in options parameter of `fakeAsync`
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d9d68e73d2](https://github.com/angular/angular/commit/d9d68e73d2b59b598d1f7de03ad5faa2b6d31ee2) | fix | reduce chance of conflicts between generated factory and local variables ([#57181](https://github.com/angular/angular/pull/57181)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0b1dd39663](https://github.com/angular/angular/commit/0b1dd39663c290fcea9359d6faac91a01d2a9de1) | perf | improve performance of `interpolatedSignalNotInvoked` extended diagnostic ([#57291](https://github.com/angular/angular/pull/57291)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f7918f5272](https://github.com/angular/angular/commit/f7918f52720d3e903281154725cb257a952e8896) | feat | Add 'flush' parameter option to fakeAsync to flush after the test ([#57239](https://github.com/angular/angular/pull/57239)) |
+| [7919982063](https://github.com/angular/angular/commit/7919982063e7638ffabe2127d4803bb930c791bc) | feat | Add whenStable helper on ApplicationRef ([#57190](https://github.com/angular/angular/pull/57190)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.1.4"></a>
 # 18.1.4 (2024-08-07)
 ### compiler
