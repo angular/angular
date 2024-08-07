@@ -147,7 +147,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Dep.ɵprov =');
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };',
+        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
       );
       expect(jsContents).toContain("providedIn: 'root' })");
       expect(jsContents).not.toContain('__decorate');
@@ -176,7 +176,9 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain('factory: () => (() => new Service())()');
-      expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
+      expect(jsContents).toContain(
+        'Service_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Service)(); }',
+      );
       expect(jsContents).toContain(", providedIn: 'root' });");
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
@@ -204,10 +206,14 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain('factory: function Service_Factory(t) { let r = null; if (t) {');
-      expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
-      expect(jsContents).toContain('r = ((dep) => new Service(dep))(i0.ɵɵinject(Dep));');
-      expect(jsContents).toContain("return r; }, providedIn: 'root' });");
+      expect(jsContents).toContain(
+        'factory: function Service_Factory(__ngFactoryType__) { let __ngConditionalFactory__ = null; if (__ngFactoryType__) {',
+      );
+      expect(jsContents).toContain('return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));');
+      expect(jsContents).toContain(
+        '__ngConditionalFactory__ = ((dep) => new Service(dep))(i0.ɵɵinject(Dep));',
+      );
+      expect(jsContents).toContain("return __ngConditionalFactory__; }, providedIn: 'root' });");
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
@@ -238,10 +244,14 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain('factory: function Service_Factory(t) { let r = null; if (t) {');
-      expect(jsContents).toContain('return new (t || Service)(i0.ɵɵinject(Dep));');
-      expect(jsContents).toContain('r = ((dep) => new Service(dep))(i0.ɵɵinject(Dep, 10));');
-      expect(jsContents).toContain(`return r; }, providedIn: 'root' });`);
+      expect(jsContents).toContain(
+        'factory: function Service_Factory(__ngFactoryType__) { let __ngConditionalFactory__ = null; if (__ngFactoryType__) {',
+      );
+      expect(jsContents).toContain('return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));');
+      expect(jsContents).toContain(
+        '__ngConditionalFactory__ = ((dep) => new Service(dep))(i0.ɵɵinject(Dep, 10));',
+      );
+      expect(jsContents).toContain(`return __ngConditionalFactory__; }, providedIn: 'root' });`);
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
@@ -274,7 +284,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain('Mod.ɵmod =');
       expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };',
+        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
       );
       expect(jsContents).toContain('providedIn: i0.forwardRef(() => Mod) })');
       expect(jsContents).not.toContain('__decorate');
@@ -330,8 +340,8 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
 
       expect(jsContents).toContain(
-        `Service.ɵfac = function Service_Factory(t) { ` +
-          `return new (t || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`,
+        `Service.ɵfac = function Service_Factory(__ngFactoryType__) { ` +
+          `return new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`,
       );
     });
 
@@ -704,7 +714,7 @@ runInEachFileSystem((os: string) => {
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain('Dir.ɵfac = /** @pureOrBreakMyCode */ (() => {');
           expect(jsContents).toContain(
-            '(ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir);',
+            '(ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(__ngFactoryType__ || Dir);',
           );
         });
 
@@ -1444,7 +1454,7 @@ runInEachFileSystem((os: string) => {
         'function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestCmp] }); })();',
       );
       expect(jsContents).toContain(
-        'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }',
+        'TestModule.ɵfac = function TestModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestModule)(); }',
       );
       expect(jsContents).toContain('i0.ɵɵdefineInjector({});');
 
@@ -1601,7 +1611,7 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }',
+        'TestModule.ɵfac = function TestModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestModule)(); }',
       );
       expect(jsContents).toContain(
         'i0.ɵɵdefineInjector({ imports: [OtherModule, RouterModule.forRoot(),' +
@@ -1639,7 +1649,7 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }',
+        'TestModule.ɵfac = function TestModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestModule)(); }',
       );
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents).toContain(
@@ -1685,7 +1695,7 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }',
+        'TestModule.ɵfac = function TestModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestModule)(); }',
       );
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents).toContain(
@@ -1735,7 +1745,7 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }',
+        'TestModule.ɵfac = function TestModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestModule)(); }',
       );
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents).toContain(
@@ -2007,7 +2017,7 @@ runInEachFileSystem((os: string) => {
         'TestPipe.ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: false })',
       );
       expect(jsContents).toContain(
-        'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }',
+        'TestPipe.ɵfac = function TestPipe_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestPipe)(); }',
       );
       expect(dtsContents).toContain(
         'static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, "test-pipe", false>;',
@@ -2037,7 +2047,7 @@ runInEachFileSystem((os: string) => {
         'TestPipe.ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: true })',
       );
       expect(jsContents).toContain(
-        'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }',
+        'TestPipe.ɵfac = function TestPipe_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestPipe)(); }',
       );
       expect(dtsContents).toContain(
         'static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, "test-pipe", false>;',
@@ -2066,7 +2076,9 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('return new (t || TestPipe)(i0.ɵɵdirectiveInject(Dep, 16));');
+      expect(jsContents).toContain(
+        'return new (__ngFactoryType__ || TestPipe)(i0.ɵɵdirectiveInject(Dep, 16));',
+      );
     });
 
     it('should compile Pipes with generic types', () => {
@@ -3443,7 +3455,9 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
+          expect(jsContents).toMatch(
+            /function Test_Factory\(__ngFactoryType__\) { i0\.ɵɵinvalidFactory\(\)/m,
+          );
         });
 
         it('should not give a compile-time error if an invalid @Injectable is used with useFactory', () => {
@@ -3465,7 +3479,9 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
+          expect(jsContents).toMatch(
+            /function Test_Factory\(__ngFactoryType__\) { i0\.ɵɵinvalidFactory\(\)/m,
+          );
         });
 
         it('should not give a compile-time error if an invalid @Injectable is used with useExisting', () => {
@@ -3489,7 +3505,9 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
+          expect(jsContents).toMatch(
+            /function Test_Factory\(__ngFactoryType__\) { i0\.ɵɵinvalidFactory\(\)/m,
+          );
         });
 
         it('should not give a compile-time error if an invalid @Injectable is used with useClass', () => {
@@ -3513,7 +3531,9 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
+          expect(jsContents).toMatch(
+            /function Test_Factory\(__ngFactoryType__\) { i0\.ɵɵinvalidFactory\(\)/m,
+          );
         });
 
         it('should not give a compile-time error if an invalid @Injectable without providedIn is an abstract class', () => {
@@ -3532,7 +3552,9 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
+          expect(jsContents).toMatch(
+            /function Test_Factory\(__ngFactoryType__\) { i0\.ɵɵinvalidFactory\(\)/m,
+          );
         });
 
         it('should not give a compile-time error if an invalid @Injectable with providedIn is an abstract class', () => {
@@ -3553,7 +3575,9 @@ runInEachFileSystem((os: string) => {
 
           env.driveMain();
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toMatch(/function Test_Factory\(t\) { i0\.ɵɵinvalidFactory\(\)/m);
+          expect(jsContents).toMatch(
+            /function Test_Factory\(__ngFactoryType__\) { i0\.ɵɵinvalidFactory\(\)/m,
+          );
         });
 
         it('should give a compile-time error when a derived Directive inherits an invalid constructor', () => {
@@ -3815,7 +3839,7 @@ runInEachFileSystem((os: string) => {
           env.driveMain();
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()',
+            'Test.ɵfac = function Test_Factory(__ngFactoryType__) { i0.ɵɵinvalidFactory()',
           );
         });
 
@@ -3835,7 +3859,7 @@ runInEachFileSystem((os: string) => {
           env.driveMain();
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()',
+            'Test.ɵfac = function Test_Factory(__ngFactoryType__) { i0.ɵɵinvalidFactory()',
           );
         });
 
@@ -4034,7 +4058,7 @@ runInEachFileSystem((os: string) => {
           env.driveMain();
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()',
+            'Test.ɵfac = function Test_Factory(__ngFactoryType__) { i0.ɵɵinvalidFactory()',
           );
         });
       });
@@ -4056,7 +4080,7 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          'Test.ɵfac = function Test_Factory(t) { i0.ɵɵinvalidFactory()',
+          'Test.ɵfac = function Test_Factory(__ngFactoryType__) { i0.ɵɵinvalidFactory()',
         );
       });
     });
@@ -4530,7 +4554,7 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        `FooCmp.ɵfac = function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`,
+        `FooCmp.ɵfac = function FooCmp_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`,
       );
     });
 
@@ -5575,13 +5599,13 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
 
       expect(jsContents).toContain(
-        'function Base_Factory(t) { return new (t || Base)(i0.ɵɵinject(Dep)); }',
+        'function Base_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Base)(i0.ɵɵinject(Dep)); }',
       );
       expect(jsContents).toContain(
-        '(() => { let ɵChild_BaseFactory; return function Child_Factory(t) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(t || Child); }; })();',
+        '(() => { let ɵChild_BaseFactory; return function Child_Factory(__ngFactoryType__) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(__ngFactoryType__ || Child); }; })();',
       );
       expect(jsContents).toContain(
-        'function GrandChild_Factory(t) { return new (t || GrandChild)(); }',
+        'function GrandChild_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || GrandChild)(); }',
       );
     });
 
@@ -5607,7 +5631,7 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        '/*@__PURE__*/ (() => { let ɵDir_BaseFactory; return function Dir_Factory(t) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir); }; })();',
+        '/*@__PURE__*/ (() => { let ɵDir_BaseFactory; return function Dir_Factory(__ngFactoryType__) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(__ngFactoryType__ || Dir); }; })();',
       );
     });
 

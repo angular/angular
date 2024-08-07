@@ -1,3 +1,3 @@
-MyComponent.ɵfac = function MyComponent_Factory(t) {
-  return new (t || MyComponent)();
+MyComponent.ɵfac = function MyComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || MyComponent)();
 };
