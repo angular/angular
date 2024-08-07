@@ -10,7 +10,7 @@ import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {validateMatchingNode} from '../hydration/error_handling';
 import {CONTAINERS} from '../hydration/interfaces';
-import {hasInSkipHydrationBlockFlag, isInSkipHydrationBlock} from '../hydration/skip_hydration';
+import {isInSkipHydrationBlock} from '../hydration/skip_hydration';
 import {
   getSegmentHead,
   isDisconnectedNode,

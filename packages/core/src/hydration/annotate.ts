@@ -7,7 +7,6 @@
  */
 
 import {ApplicationRef} from '../application/application_ref';
-import {APP_ID} from '../application/application_tokens';
 import {isDetachedByI18n} from '../i18n/utils';
 import {ViewEncapsulation} from '../metadata';
 import {Renderer2} from '../render';
