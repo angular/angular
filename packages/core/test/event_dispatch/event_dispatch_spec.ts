@@ -8,9 +8,8 @@
 
 import {
   Component,
-  ElementRef,
+  HostListener,
   Renderer2,
-  ViewChild,
   inject,
   ɵprovideGlobalEventDelegation,
 } from '@angular/core';
@@ -217,7 +216,36 @@ describe('event dispatch', () => {
       const bottomEl = nativeElement.querySelector('#bottom')!;
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
+      bottomEl.dispatchEvent(new MouseEvent('click', {bubbles: true, shiftKey: true}));
+      expect(onClickSpy).toHaveBeenCalledTimes(2);
       (fixture.componentInstance as SimpleComponent).destroy();
+      bottomEl.click();
+      expect(onClickSpy).toHaveBeenCalledTimes(2);
+    });
+    it('should allow host listening on the window', async () => {
+      const onClickSpy = jasmine.createSpy();
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `
+            <div id="top">
+                <div id="bottom"></div>
+            </div>
+          `,
+      })
+      class SimpleComponent {
+        renderer = inject(Renderer2);
+        destroy!: Function;
+        @HostListener('window:click', ['$event.target'])
+        listen(el: Element) {
+          onClickSpy();
+        }
+      }
+      configureTestingModule([SimpleComponent]);
+      fixture = TestBed.createComponent(SimpleComponent);
+      const nativeElement = fixture.debugElement.nativeElement;
+      (fixture.componentInstance as SimpleComponent).listen(nativeElement);
+      const bottomEl = nativeElement.querySelector('#bottom')!;
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
     });
