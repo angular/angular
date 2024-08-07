@@ -122,9 +122,8 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
     it("should hook into the engine's insert operations when removing children", async () => {
       const renderer = await makeRenderer();
       const engine = (renderer as any).delegate.engine as MockAnimationEngine;
-      const container = el('<div></div>');
 
-      renderer.removeChild(container, element, false);
+      renderer.removeChild(null, element, false);
       expect(engine.captures['onRemove'].pop()).toEqual([element]);
     });
 

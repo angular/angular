@@ -49,7 +49,7 @@ const DEFAULT_NAMESPACE_ID = 'id';
     });
 
     afterEach(() => {
-      document.body.removeChild(element);
+      element.remove();
     });
 
     function makeEngine(normalizer?: AnimationStyleNormalizer) {

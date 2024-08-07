@@ -35,9 +35,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     el.dispatchEvent(evt);
   }
   override remove(node: Node): void {
-    if (node.parentNode) {
-      node.parentNode.removeChild(node);
-    }
+    (node as Element | Text | Comment).remove();
   }
   override createElement(tagName: string, doc?: Document): HTMLElement {
     doc = doc || this.getDefaultDocument();

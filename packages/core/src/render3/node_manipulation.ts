@@ -711,21 +711,6 @@ function nativeAppendOrInsertBefore(
   }
 }
 
-/** Removes a node from the DOM given its native parent. */
-function nativeRemoveChild(
-  renderer: Renderer,
-  parent: RElement,
-  child: RNode,
-  isHostElement?: boolean,
-): void {
-  renderer.removeChild(parent, child, isHostElement);
-}
-
-/** Checks if an element is a `<template>` node. */
-function isTemplateNode(node: RElement): node is RTemplate {
-  return node.tagName === 'TEMPLATE' && (node as RTemplate).content !== undefined;
-}
-
 /**
  * Returns a native parent of a given native node.
  */
@@ -951,10 +936,7 @@ export function getBeforeNodeForView(
  */
 export function nativeRemoveNode(renderer: Renderer, rNode: RNode, isHostElement?: boolean): void {
   ngDevMode && ngDevMode.rendererRemoveNode++;
-  const nativeParent = nativeParentNode(renderer, rNode);
-  if (nativeParent) {
-    nativeRemoveChild(renderer, nativeParent, rNode, isHostElement);
-  }
+  renderer.removeChild(null, rNode, isHostElement);
 }
 
 /**

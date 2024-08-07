@@ -2286,9 +2286,6 @@
     "name": "nativeInsertBefore"
   },
   {
-    "name": "nativeParentNode"
-  },
-  {
     "name": "nextNgElementId"
   },
   {
