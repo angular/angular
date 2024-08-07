@@ -1,3 +1,21 @@
+<a name="18.1.4"></a>
+# 18.1.4 (2024-08-07)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6a99f83659](https://github.com/angular/angular/commit/6a99f836593de35989cddc3db849da133814f8fb) | fix | reduce chance of conflicts between generated factory and local variables ([#57181](https://github.com/angular/angular/pull/57181)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [afb05ff1cb](https://github.com/angular/angular/commit/afb05ff1cb008478c98987edfa54ec848ae555d6) | fix | support JIT transforms before other transforms modifying classes ([#57262](https://github.com/angular/angular/pull/57262)) |
+| [bae54a1621](https://github.com/angular/angular/commit/bae54a1621e1c0427519abfa81fc4796c43f1551) | perf | improve performance of `interpolatedSignalNotInvoked` extended diagnostic ([#57291](https://github.com/angular/angular/pull/57291)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6ac209c24f](https://github.com/angular/angular/commit/6ac209c24f46a1240b1a186eb403c79ef596d68a) | fix | avoid generating TS suggestion diagnostics for templates ([#56241](https://github.com/angular/angular/pull/56241)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.1.3"></a>
 # 18.1.3 (2024-07-31)
 ### compiler
