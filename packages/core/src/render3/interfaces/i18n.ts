@@ -345,6 +345,11 @@ export interface TI18n {
    * while the Update and Create OpCodes are used at runtime.
    */
   ast: Array<I18nNode>;
+
+  /**
+   * Index of a parent TNode, which represents a host node for this i18n block.
+   */
+  parentTNodeIndex: number;
 }
 
 /**
