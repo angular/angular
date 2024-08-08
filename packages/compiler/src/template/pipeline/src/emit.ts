@@ -83,6 +83,7 @@ import {wrapI18nIcus} from './phases/wrap_icus';
 import {optimizeStoreLet} from './phases/store_let_optimization';
 import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
 import {generateLocalLetReferences} from './phases/generate_local_let_references';
+import {importLocalImage} from './phases/optimized_image';
 
 type Phase =
   | {
@@ -151,6 +152,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: collectI18nConsts},
   {kind: Kind.Tmpl, fn: collectConstExpressions},
   {kind: Kind.Both, fn: collectElementConsts},
+  {kind: Kind.Both, fn: importLocalImage},
   {kind: Kind.Tmpl, fn: removeI18nContexts},
   {kind: Kind.Both, fn: countVariables},
   {kind: Kind.Tmpl, fn: generateAdvance},

@@ -1,0 +1,95 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "Basic optimized image usage",
+      "inputFiles": ["basic_optimized_image.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic_optimized_image_template.js",
+              "generated": "basic_optimized_image.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "No optimized image instruction, ngLocalSrc is a property binding",
+      "inputFiles": ["no_optimized_image.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "no_optimized_image_template.js",
+              "generated": "no_optimized_image.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "Optimized image with size attributes",
+      "inputFiles": ["optimized_image_size.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "optimized_image_size_template.js",
+              "generated": "optimized_image_size.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "Optimized image with size bindings",
+      "inputFiles": ["optimized_image_size_binding.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "optimized_image_size_binding_template.js",
+              "generated": "optimized_image_size_binding.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "Optimized image with absolute image url",
+      "inputFiles": ["absolute_optimized_image.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "absolute_optimized_image_template.js",
+              "generated": "absolute_optimized_image.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "Optimized image with fill attribute",
+      "inputFiles": ["fill_optimized_image.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "fill_optimized_image_template.js",
+              "generated": "fill_optimized_image.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

@@ -127,6 +127,9 @@ export interface ParseTemplateOptions {
   /** Whether the `@let` syntax is enabled. */
   enableLetSyntax?: boolean;
 
+  /** OptimizedImage support by the compiler */
+  disableImageImports?: boolean;
+
   // TODO(crisbeto): delete this option when the migration is deleted.
   /**
    * Whether the parser should allow invalid two-way bindings.

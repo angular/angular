@@ -436,4 +436,9 @@ export interface MiscOptions {
    * another library without option set will not issue error if rendered in orphan way.
    */
   forbidOrphanComponents?: boolean;
+
+  /**
+   * Disables the generation of import statements for local images referenced by ngSrc
+   */
+  disableImageImports?: boolean;
 }

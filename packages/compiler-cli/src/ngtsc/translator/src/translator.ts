@@ -302,6 +302,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
         exportModuleSpecifier: ast.value.moduleName,
         exportSymbolName: null,
         requestedFile: this.contextFile,
+        attributes: ast.value.attributes,
       });
     }
     // If a moduleName is specified, this is a normal import. If there's no module name, it's a
@@ -312,6 +313,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
         exportModuleSpecifier: ast.value.moduleName,
         exportSymbolName: ast.value.name,
         requestedFile: this.contextFile,
+        attributes: ast.value.attributes,
       });
     } else {
       // The symbol is ambient, so just reference it.

@@ -176,6 +176,7 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
       exportSymbolName: ast.value.name,
       requestedFile: this.contextFile,
       asTypeReference: true,
+      attributes: ast.value.attributes,
     });
 
     const typeArguments =

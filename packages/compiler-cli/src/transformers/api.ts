@@ -95,6 +95,11 @@ export interface CompilerOptions extends NgCompilerOptions, ts.CompilerOptions {
    * Read more about this here: https://github.com/angular/angular/issues/25644.
    */
   createExternalSymbolFactoryReexports?: boolean;
+
+  /**
+   *
+   */
+  disableImageImports?: boolean;
 }
 
 export interface CompilerHost extends ts.CompilerHost, ExtendedTsCompilerHost {

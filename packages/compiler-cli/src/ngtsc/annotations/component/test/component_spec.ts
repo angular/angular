@@ -145,6 +145,7 @@ function setup(
     /* forbidOrphanRenderering */ false,
     /* enableBlockSyntax */ true,
     /* enableLetSyntax */ true,
+    /* disableImageImports */ false,
     /* localCompilationExtraImportsTracker */ null,
     jitDeclarationRegistry,
   );

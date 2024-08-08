@@ -41,6 +41,11 @@ export interface ImportRequest<TFile> {
    * with anything in the file.
    */
   unsafeAliasOverride?: string;
+
+  /**
+   * Attributes to add to the import statement
+   */
+  attributes?: Record<string, string> | null;
 }
 
 /**

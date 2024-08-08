@@ -69,9 +69,15 @@ export class ImportManager
   private newImports: Map<
     ts.SourceFile,
     {
-      namespaceImports: Map<ModuleName, ts.NamespaceImport>;
-      namedImports: Map<ModuleName, ts.ImportSpecifier[]>;
-      sideEffectImports: Set<ModuleName>;
+      namespaceImports: Map<
+        ModuleName,
+        [ts.NamespaceImport, attributes: ts.ImportAttributes | undefined]
+      >;
+      namedImports: Map<
+        ModuleName,
+        [ts.ImportSpecifier[], attributes: ts.ImportAttributes | undefined]
+      >;
+      sideEffectImports: Set<[ModuleName, attributes: ts.ImportAttributes | undefined]>;
     }
   > = new Map();
 
@@ -117,9 +123,10 @@ export class ImportManager
       );
     }
 
-    this._getNewImportsTrackerForFile(requestedFile).sideEffectImports.add(
+    this._getNewImportsTrackerForFile(requestedFile).sideEffectImports.add([
       moduleSpecifier as ModuleName,
-    );
+      undefined, // TODO: Add support for Import Attributes
+    ]);
   }
 
   /**
@@ -232,7 +239,10 @@ export class ImportManager
           ts.factory.createIdentifier(namespaceImportName),
       );
 
-      namespaceImports.set(request.exportModuleSpecifier as ModuleName, namespaceImport);
+      namespaceImports.set(request.exportModuleSpecifier as ModuleName, [
+        namespaceImport,
+        createImportAttributes(request.attributes),
+      ]);
 
       // Capture the generated namespace import alone, to allow re-use.
       captureGeneratedImport(
@@ -249,7 +259,10 @@ export class ImportManager
 
     // Otherwise, an individual named import is requested.
     if (!namedImports.has(request.exportModuleSpecifier as ModuleName)) {
-      namedImports.set(request.exportModuleSpecifier as ModuleName, []);
+      namedImports.set(request.exportModuleSpecifier as ModuleName, [
+        [],
+        createImportAttributes(request.attributes),
+      ]);
     }
 
     const exportSymbolName = ts.factory.createIdentifier(request.exportSymbolName);
@@ -272,7 +285,7 @@ export class ImportManager
     }
 
     namedImports
-      .get(request.exportModuleSpecifier as ModuleName)!
+      .get(request.exportModuleSpecifier as ModuleName)![0]
       .push(
         ts.factory.createImportSpecifier(
           false,
@@ -389,7 +402,7 @@ export class ImportManager
       const useSingleQuotes = this.config.shouldUseSingleQuotes(sourceFile);
       const fileName = sourceFile.fileName;
 
-      sideEffectImports.forEach((moduleName) => {
+      sideEffectImports.forEach(([moduleName, attributes]) => {
         addNewImport(
           fileName,
           ts.factory.createImportDeclaration(
@@ -400,11 +413,12 @@ export class ImportManager
         );
       });
 
-      namespaceImports.forEach((namespaceImport, moduleName) => {
+      namespaceImports.forEach(([namespaceImport, attributes], moduleName) => {
         const newImport = ts.factory.createImportDeclaration(
           undefined,
           ts.factory.createImportClause(false, undefined, namespaceImport),
           ts.factory.createStringLiteral(moduleName, useSingleQuotes),
+          attributes,
         );
 
         // IMPORTANT: Set the original TS node to the `ts.ImportDeclaration`. This allows
@@ -418,7 +432,7 @@ export class ImportManager
         addNewImport(fileName, newImport);
       });
 
-      namedImports.forEach((specifiers, moduleName) => {
+      namedImports.forEach(([specifiers, attributes], moduleName) => {
         const filteredSpecifiers = specifiers.filter((specifier) =>
           this._canAddSpecifier(sourceFile, moduleName, specifier),
         );
@@ -512,4 +526,21 @@ function createImportReference(
   } else {
     return Array.isArray(ref) ? ts.factory.createPropertyAccessExpression(ref[0], ref[1]) : ref;
   }
+}
+
+function createImportAttributes(
+  attributesRecord: Record<string, string> | undefined | null,
+): ts.ImportAttributes | undefined {
+  if (attributesRecord == undefined) {
+    return undefined;
+  }
+
+  const attributes = Object.entries(attributesRecord).map(([type, module]) => {
+    return ts.factory.createImportAttribute(
+      ts.factory.createIdentifier(type),
+      ts.factory.createStringLiteral(module),
+    );
+  });
+
+  return ts.factory.createImportAttributes(ts.factory.createNodeArray(attributes));
 }
