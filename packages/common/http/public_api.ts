@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {HttpBackend, HttpHandler} from './src/backend';
+export {
+  HttpBackend,
+  HttpHandler,
+  // The following 2 private symbols aren't used outside this package
+  // but have some usage in G3.
+  HttpInterceptorHandler as ɵHttpInterceptorHandler,
+  HttpInterceptorHandler as ɵHttpInterceptingHandler,
+} from './src/backend';
 export {HttpClient} from './src/client';
 export {HttpContext, HttpContextToken} from './src/context';
 export {FetchBackend} from './src/fetch';
@@ -16,8 +23,6 @@ export {
   HttpHandlerFn,
   HttpInterceptor,
   HttpInterceptorFn,
-  HttpInterceptorHandler as ɵHttpInterceptorHandler,
-  HttpInterceptorHandler as ɵHttpInterceptingHandler,
 } from './src/interceptor';
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
 export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule} from './src/module';
