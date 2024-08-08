@@ -7771,6 +7771,70 @@ describe('platform-server hydration integration', () => {
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
+
+      it('should cleanup dehydrated views in routed components that use ViewContainerRef', async () => {
+        @Component({
+          standalone: true,
+          selector: 'cmp-a',
+          template: `
+            @if (isServer) {
+              <p>Server view</p>
+            } @else {
+              <p>Client view</p>
+            }
+          `,
+        })
+        class CmpA {
+          isServer = isPlatformServer(inject(PLATFORM_ID));
+          viewContainerRef = inject(ViewContainerRef);
+        }
+
+        const routes: Routes = [
+          {
+            path: '',
+            component: CmpA,
+          },
+        ];
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [RouterOutlet],
+          template: `
+            <router-outlet />
+          `,
+        })
+        class SimpleComponent {}
+
+        const envProviders = [
+          {provide: PlatformLocation, useClass: MockPlatformLocation},
+          provideRouter(routes),
+        ] as unknown as Provider[];
+        const html = await ssr(SimpleComponent, {envProviders});
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+        expect(ssrContents).toContain('Server view');
+        expect(ssrContents).not.toContain('Client view');
+
+        resetTViewsFor(SimpleComponent, CmpA);
+
+        const appRef = await renderAndHydrate(doc, html, SimpleComponent, {envProviders});
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        await whenStable(appRef);
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        // <p> tag is used in a view that is different on a server and
+        // on a client, so it gets re-created (not hydrated) on a client
+        const p = clientRootNode.querySelector('p');
+        verifyAllNodesClaimedForHydration(clientRootNode, [p]);
+
+        expect(clientRootNode.innerHTML).not.toContain('Server view');
+        expect(clientRootNode.innerHTML).toContain('Client view');
+      });
     });
   });
 });
