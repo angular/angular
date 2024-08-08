@@ -472,7 +472,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @internal
    */
-  _hasOwnPendingAsyncValidator: null | {emitEvent: boolean} = null;
+  _hasOwnPendingAsyncValidator: null | {emitEvent: boolean; shouldHaveEmitted: boolean} = null;
 
   /** @internal */
   _pendingTouched = false;
@@ -1388,7 +1388,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   private _runAsyncValidator(shouldHaveEmitted: boolean, emitEvent?: boolean): void {
     if (this.asyncValidator) {
       this.status = PENDING;
-      this._hasOwnPendingAsyncValidator = {emitEvent: emitEvent !== false};
+      this._hasOwnPendingAsyncValidator = {
+        emitEvent: emitEvent !== false,
+        shouldHaveEmitted: shouldHaveEmitted !== false,
+      };
       const obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription = obs.subscribe((errors: ValidationErrors | null) => {
         this._hasOwnPendingAsyncValidator = null;
@@ -1406,7 +1409,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
       // we're cancelling the validator subscribtion, we keep if it should have emitted
       // because we want to emit eventually if it was required at least once.
-      const shouldHaveEmitted = this._hasOwnPendingAsyncValidator?.emitEvent ?? false;
+      const shouldHaveEmitted =
+        (this._hasOwnPendingAsyncValidator?.emitEvent ||
+          this._hasOwnPendingAsyncValidator?.shouldHaveEmitted) ??
+        false;
       this._hasOwnPendingAsyncValidator = null;
       return shouldHaveEmitted;
     }
