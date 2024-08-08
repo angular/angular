@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorHandler, inject, NgZone, Injectable, InjectionToken} from '@angular/core';
+import {ErrorHandler, inject, NgZone, Injectable} from '@angular/core';
 
-export const RETHROW_APPLICATION_ERRORS = new InjectionToken<boolean>('rethrow application errors');
+export const RETHROW_APPLICATION_ERRORS_DEFAULT = true;
 
 @Injectable()
 export class TestBedApplicationErrorHandler {
