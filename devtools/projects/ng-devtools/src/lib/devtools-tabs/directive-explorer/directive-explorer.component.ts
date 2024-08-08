@@ -7,17 +7,17 @@
  */
 
 import {
-  ChangeDetectorRef,
+  afterNextRender,
   Component,
   ElementRef,
-  EventEmitter,
   inject,
   Input,
-  NgZone,
+  input,
   OnDestroy,
-  OnInit,
-  Output,
+  output,
+  signal,
   ViewChild,
+  viewChild,
 } from '@angular/core';
 import {
   ComponentExplorerView,
@@ -86,57 +86,53 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     FormsModule,
   ],
 })
-export class DirectiveExplorerComponent implements OnInit, OnDestroy {
-  @Input() showCommentNodes = false;
+export class DirectiveExplorerComponent implements OnDestroy {
+  readonly showCommentNodes = input(false);
   @Input() isHydrationEnabled = false;
-  @Output() toggleInspector = new EventEmitter<void>();
+  readonly toggleInspector = output<void>();
 
-  @ViewChild(DirectiveForestComponent) directiveForest!: DirectiveForestComponent;
-  @ViewChild(BreadcrumbsComponent) breadcrumbs!: BreadcrumbsComponent;
+  readonly directiveForest = viewChild(DirectiveForestComponent);
+  readonly breadcrumbs = viewChild(BreadcrumbsComponent);
   @ViewChild(SplitComponent, {static: true, read: ElementRef}) splitElementRef!: ElementRef;
   @ViewChild('directiveForestSplitArea', {static: true, read: ElementRef})
   directiveForestSplitArea!: ElementRef;
 
-  currentSelectedElement: IndexedNode | null = null;
-  forest!: DevToolsNode[];
-  splitDirection: 'horizontal' | 'vertical' = 'horizontal';
-  parents: FlatNode[] | null = null;
-  showHydrationNodeHighlights: boolean = false;
+  readonly currentSelectedElement = signal<IndexedNode | null>(null);
+  readonly forest = signal<DevToolsNode[]>([]);
+  readonly splitDirection = signal<'horizontal' | 'vertical'>('horizontal');
+  readonly parents = signal<FlatNode[] | null>(null);
+  readonly showHydrationNodeHighlights = signal(false);
 
-  private _resizeObserver = new ResizeObserver((entries) =>
-    this._ngZone.run(() => {
-      this.refreshHydrationNodeHighlightsIfNeeded();
-
-      const resizedEntry = entries[0];
-      if (resizedEntry.target === this.splitElementRef.nativeElement) {
-        this.splitDirection = resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal';
-      }
-
-      if (!this.breadcrumbs) {
-        return;
-      }
-
-      this.breadcrumbs.updateScrollButtonVisibility();
-    }),
-  );
+  private _resizeObserver!: ResizeObserver;
 
   private _clickedElement: IndexedNode | null = null;
   private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
 
-  constructor(
-    private readonly _appOperations: ApplicationOperations,
-    private readonly _messageBus: MessageBus<Events>,
-    private readonly _propResolver: ElementPropertyResolver,
-    private readonly _cdr: ChangeDetectorRef,
-    private readonly _ngZone: NgZone,
-    private readonly _frameManager: FrameManager,
-  ) {}
+  private readonly _appOperations = inject(ApplicationOperations);
+  private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly _propResolver = inject(ElementPropertyResolver);
+  private readonly _frameManager = inject(FrameManager);
 
-  ngOnInit(): void {
-    this.subscribeToBackendEvents();
-    this.refresh();
-    this._resizeObserver.observe(this.splitElementRef.nativeElement);
-    this._resizeObserver.observe(this.directiveForestSplitArea.nativeElement);
+  constructor() {
+    afterNextRender(() => {
+      this._resizeObserver = new ResizeObserver((entries) => {
+        this.refreshHydrationNodeHighlightsIfNeeded();
+
+        const resizedEntry = entries[0];
+        if (resizedEntry.target === this.splitElementRef.nativeElement) {
+          this.splitDirection.set(
+            resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal',
+          );
+        }
+
+        this.breadcrumbs()?.updateScrollButtonVisibility();
+      });
+
+      this.subscribeToBackendEvents();
+      this.refresh();
+      this._resizeObserver.observe(this.splitElementRef.nativeElement);
+      this._resizeObserver.observe(this.directiveForestSplitArea.nativeElement);
+    });
   }
 
   ngOnDestroy(): void {
@@ -157,16 +153,17 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
       this._messageBus.emit('setSelectedComponent', [node.position]);
       this.refresh();
     } else {
-      this._clickedElement = this.currentSelectedElement = null;
+      this._clickedElement = null;
+      this.currentSelectedElement.set(null);
     }
   }
 
   subscribeToBackendEvents(): void {
     this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
-      this.forest = view.forest;
-      this.currentSelectedElement = this._clickedElement;
-      if (view.properties && this.currentSelectedElement) {
-        this._propResolver.setProperties(this.currentSelectedElement, view.properties);
+      this.forest.set(view.forest);
+      this.currentSelectedElement.set(this._clickedElement);
+      if (view.properties && this._clickedElement) {
+        this._propResolver.setProperties(this._clickedElement, view.properties);
       }
     });
 
@@ -192,12 +189,10 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
 
   viewSource(directiveName: string): void {
     // find the index of the directive with directiveName in this.currentSelectedElement.directives
+    const selectedEl = this.currentSelectedElement();
+    if (!selectedEl) return;
 
-    if (!this.currentSelectedElement) {
-      return;
-    }
-
-    const directiveIndex = this.currentSelectedElement.directives.findIndex(
+    const directiveIndex = selectedEl.directives.findIndex(
       (directive) => directive.name === directiveName,
     );
 
@@ -213,7 +208,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     }
 
     this._appOperations.viewSource(
-      this.currentSelectedElement.position,
+      selectedEl.position,
       directiveIndex !== -1 ? directiveIndex : undefined,
       new URL(selectedFrame!.url),
     );
@@ -262,8 +257,8 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     // set of properties which are already expanded.
     if (
       !this._clickedElement ||
-      !this.currentSelectedElement ||
-      !sameDirectives(this._clickedElement, this.currentSelectedElement)
+      !this.currentSelectedElement() ||
+      !sameDirectives(this._clickedElement, this.currentSelectedElement()!)
     ) {
       return {
         type: PropertyQueryTypes.All,
@@ -284,12 +279,11 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   }
 
   handleSelect(node: FlatNode): void {
-    this.directiveForest.handleSelect(node);
+    this.directiveForest()?.handleSelect(node);
   }
 
   handleSetParents(parents: FlatNode[] | null): void {
-    this.parents = parents;
-    this._cdr.detectChanges();
+    this.parents.set(parents);
   }
 
   inspect({
@@ -324,7 +318,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   }
 
   refreshHydrationNodeHighlightsIfNeeded() {
-    if (this.showHydrationNodeHighlights) {
+    if (this.showHydrationNodeHighlights()) {
       this.removeHydrationNodesHightlights();
       this.hightlightHydrationNodes();
     }

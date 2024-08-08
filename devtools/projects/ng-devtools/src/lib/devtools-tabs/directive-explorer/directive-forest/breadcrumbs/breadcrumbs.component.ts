@@ -7,16 +7,14 @@
  */
 
 import {
-  AfterViewInit,
   Component,
+  computed,
   ElementRef,
-  EventEmitter,
   HostListener,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  ViewChild,
+  input,
+  output,
+  signal,
+  viewChild,
 } from '@angular/core';
 import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
@@ -33,31 +31,35 @@ import {MatCard} from '@angular/material/card';
   standalone: true,
   imports: [MatCard, MatIcon, MatButton],
 })
-export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
-  @Input({required: true}) parents!: FlatNode[];
-  @Output() handleSelect = new EventEmitter();
-  @Output() mouseOverNode = new EventEmitter();
-  @Output() mouseLeaveNode = new EventEmitter();
+export class BreadcrumbsComponent {
+  readonly parents = input.required<FlatNode[]>();
+  readonly handleSelect = output<FlatNode>();
+  readonly mouseOverNode = output<FlatNode>();
+  readonly mouseLeaveNode = output<FlatNode>();
 
-  @ViewChild('breadcrumbs') breadcrumbsScrollContent!: ElementRef;
+  readonly breadcrumbsScrollContent = viewChild.required<ElementRef>('breadcrumbs');
 
-  showScrollLeftButton = false;
-  showScrollRightButton = false;
+  readonly showScrollLeftButton = computed(() => {
+    const _ = this.parents();
+    const __ = this.scrollUpdate();
+    const {scrollLeft} = this.breadcrumbsScrollContent().nativeElement;
+    return scrollLeft > 0;
+  });
 
-  updateScrollButtonVisibility$ = new Subject<void>();
+  readonly showScrollRightButton = computed(() => {
+    const _ = this.parents();
+    const __ = this.scrollUpdate();
+    const {clientWidth, scrollWidth, scrollLeft} = this.breadcrumbsScrollContent().nativeElement;
+    return scrollLeft + clientWidth < scrollWidth;
+  });
 
-  ngOnInit(): void {
+  readonly updateScrollButtonVisibility$ = new Subject<void>();
+  private readonly scrollUpdate = signal<number>(0);
+
+  constructor() {
     this.updateScrollButtonVisibility$
       .pipe(debounceTime(100))
       .subscribe(() => this.updateScrollButtonVisibility());
-  }
-
-  ngAfterViewInit(): void {
-    this.updateScrollButtonVisibility$.next();
-  }
-
-  ngOnChanges(): void {
-    this.updateScrollButtonVisibility$.next();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -66,13 +68,11 @@ export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   scroll(pixels: number): void {
-    this.breadcrumbsScrollContent.nativeElement.scrollLeft += pixels;
+    this.breadcrumbsScrollContent().nativeElement.scrollLeft += pixels;
     this.updateScrollButtonVisibility$.next();
   }
 
   updateScrollButtonVisibility(): void {
-    const {clientWidth, scrollWidth, scrollLeft} = this.breadcrumbsScrollContent.nativeElement;
-    this.showScrollLeftButton = scrollLeft > 0;
-    this.showScrollRightButton = scrollLeft + clientWidth < scrollWidth;
+    this.scrollUpdate.update((x) => x + 1);
   }
 }
