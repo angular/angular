@@ -324,7 +324,9 @@ export class ShadowCss {
     unscopedKeyframesSet: ReadonlySet<string>,
   ): string {
     return keyframe.replace(/^(\s*)(['"]?)(.+?)\2(\s*)$/, (_, spaces1, quote, name, spaces2) => {
-      name = `${unscopedKeyframesSet.has(unescapeQuotes(name, quote)) ? scopeSelector + '_' : ''}${name}`;
+      name = `${
+        unscopedKeyframesSet.has(unescapeQuotes(name, quote)) ? scopeSelector + '_' : ''
+      }${name}`;
       return `${spaces1}${quote}${name}${quote}${spaces2}`;
     });
   }
@@ -657,9 +659,10 @@ export class ShadowCss {
   }
 
   private _scopeSelector(selector: string, scopeSelector: string, hostSelector: string): string {
+    // split on commas except when they are inside parenthesis (for example :is(), :has())
     return selector
-      .split(/ ?, ?/)
-      .map((part) => part.split(_shadowDeepSelectors))
+      .split(/(?!\(.*),(?![^(]*?\))/g)
+      .map((part) => part.trim().split(_shadowDeepSelectors))
       .map((deepParts) => {
         const [shallowPart, ...otherParts] = deepParts;
         const applyScope = (shallowPart: string) => {
@@ -751,8 +754,12 @@ export class ShadowCss {
 
     let scopedSelector = '';
     let startIndex = 0;
+
     let res: RegExpExecArray | null;
-    const sep = /( |>|\+|~(?!=))\s*/g;
+
+    // spaces are only used as separators when they are not inside parenthesis (for example in :is()
+    // or :has())
+    const sep = /((?!\(.*)\s(?![^(]*?\))|>|\+|~(?!=))\s*/g;
 
     // If a selector appears before :host it should not be shimmed as it
     // matches on ancestor elements and not on elements in the host's shadow
@@ -761,10 +768,6 @@ export class ShadowCss {
     // the `div` is not part of the component in the 2nd selectors and should not be scoped.
     // Historically `component-tag:host` was matching the component so we also want to preserve
     // this behavior to avoid breaking legacy apps (it should not match).
-    // The behavior should be:
-    // - `tag:host` -> `tag[h]` (this is to avoid breaking legacy apps, should not match anything)
-    // - `tag :host` -> `tag [h]` (`tag` is not scoped because it's considered part of a
-    //   `:host-context(tag)`)
     const hasHost = selector.includes(_polyfillHostNoCombinator);
     // Only scope parts after the first `-shadowcsshost-no-combinator` when it is present
     let shouldScope = !hasHost;
@@ -875,7 +878,7 @@ const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix, 'gim');
 const _cssColonHostContextReGlobal = new RegExp(_polyfillHostContext + _parenSuffix, 'gim');
 const _cssColonHostContextRe = new RegExp(_polyfillHostContext + _parenSuffix, 'im');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
-const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s]*)/;
+const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s\)]*)/;
 const _shadowDOMSelectorsRe = [
   /::shadow/g,
   /::content/g,
