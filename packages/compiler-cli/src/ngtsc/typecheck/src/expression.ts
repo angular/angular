@@ -40,8 +40,19 @@ import {TypeCheckingConfig} from '../api';
 import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
 import {tsCastToAny, tsNumericExpression} from './ts_util';
 
-export const NULL_AS_ANY = ts.factory.createAsExpression(
-  ts.factory.createNull(),
+/**
+ * Expression that is cast to any. Currently represented as `0 as any`.
+ *
+ * Historically this expression was using `null as any`, but a newly-added check in TypeScript 5.6
+ * (https://devblogs.microsoft.com/typescript/announcing-typescript-5-6-beta/#disallowed-nullish-and-truthy-checks)
+ * started flagging it as always being nullish. Other options that were considered:
+ * - `NaN as any` or `Infinity as any` - not used, because they don't work if the `noLib` compiler
+ *   option is enabled. Also they require more characters.
+ * - Some flavor of function call, like `isNan(0) as any` - requires even more characters than the
+ *   NaN option and has the same issue with `noLib`.
+ */
+export const ANY_EXPRESSION = ts.factory.createAsExpression(
+  ts.factory.createNumericLiteral('0'),
   ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
 );
 const UNDEFINED = ts.factory.createIdentifier('undefined');
@@ -306,7 +317,7 @@ class AstTranslator implements AstVisitor {
     if (this.config.strictSafeNavigationTypes) {
       // Basically, the return here is either the type of the complete expression with a null-safe
       // property read, or `undefined`. So a ternary is used to create an "or" type:
-      // "a?.b" becomes (null as any ? a!.b : undefined)
+      // "a?.b" becomes (0 as any ? a!.b : undefined)
       // The type of this expression is (typeof a!.b) | undefined, which is exactly as desired.
       const expr = ts.factory.createPropertyAccessExpression(
         ts.factory.createNonNullExpression(receiver),
@@ -314,7 +325,13 @@ class AstTranslator implements AstVisitor {
       );
       addParseSpanInfo(expr, ast.nameSpan);
       node = ts.factory.createParenthesizedExpression(
-        ts.factory.createConditionalExpression(NULL_AS_ANY, undefined, expr, undefined, UNDEFINED),
+        ts.factory.createConditionalExpression(
+          ANY_EXPRESSION,
+          undefined,
+          expr,
+          undefined,
+          UNDEFINED,
+        ),
       );
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // Emulate a View Engine bug where 'any' is inferred for the left-hand side of the safe
@@ -345,14 +362,20 @@ class AstTranslator implements AstVisitor {
 
     // The form of safe property reads depends on whether strictness is in use.
     if (this.config.strictSafeNavigationTypes) {
-      // "a?.[...]" becomes (null as any ? a![...] : undefined)
+      // "a?.[...]" becomes (0 as any ? a![...] : undefined)
       const expr = ts.factory.createElementAccessExpression(
         ts.factory.createNonNullExpression(receiver),
         key,
       );
       addParseSpanInfo(expr, ast.sourceSpan);
       node = ts.factory.createParenthesizedExpression(
-        ts.factory.createConditionalExpression(NULL_AS_ANY, undefined, expr, undefined, UNDEFINED),
+        ts.factory.createConditionalExpression(
+          ANY_EXPRESSION,
+          undefined,
+          expr,
+          undefined,
+          UNDEFINED,
+        ),
       );
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // "a?.[...]" becomes (a as any)[...]
@@ -420,14 +443,20 @@ class AstTranslator implements AstVisitor {
     args: ts.Expression[],
   ): ts.Expression {
     if (this.config.strictSafeNavigationTypes) {
-      // "a?.method(...)" becomes (null as any ? a!.method(...) : undefined)
+      // "a?.method(...)" becomes (0 as any ? a!.method(...) : undefined)
       const call = ts.factory.createCallExpression(
         ts.factory.createNonNullExpression(expr),
         undefined,
         args,
       );
       return ts.factory.createParenthesizedExpression(
-        ts.factory.createConditionalExpression(NULL_AS_ANY, undefined, call, undefined, UNDEFINED),
+        ts.factory.createConditionalExpression(
+          ANY_EXPRESSION,
+          undefined,
+          call,
+          undefined,
+          UNDEFINED,
+        ),
       );
     }
 
