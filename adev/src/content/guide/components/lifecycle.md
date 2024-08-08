@@ -51,20 +51,20 @@ process.
       <td>Runs every time this component is checked for changes.</td>
     </tr>
     <tr>
-      <td><code>ngAfterViewInit</code></td>
-      <td>Runs once after the component's <em>view</em> has been initialized.</td>
-    </tr>
-    <tr>
       <td><code>ngAfterContentInit</code></td>
       <td>Runs once after the component's <em>content</em> has been initialized.</td>
     </tr>
     <tr>
-      <td><code>ngAfterViewChecked</code></td>
-      <td>Runs every time the component's view has been checked for changes.</td>
-    </tr>
-    <tr>
       <td><code>ngAfterContentChecked</code></td>
       <td>Runs every time this component content has been checked for changes.</td>
+    </tr>
+    <tr>
+      <td><code>ngAfterViewInit</code></td>
+      <td>Runs once after the component's <em>view</em> has been initialized.</td>
+    </tr>
+    <tr>
+      <td><code>ngAfterViewChecked</code></td>
+      <td>Runs every time the component's view has been checked for changes.</td>
     </tr>
     <tr>
       <td rowspan="2">Rendering</td>
@@ -173,16 +173,6 @@ defining this hook whenever possible, only using it when you have no alternative
 
 During initialization, the first `ngDoCheck` runs after `ngOnInit`.
 
-### ngAfterViewInit
-
-The `ngAfterViewInit` method runs once after all the children in the component's template (its
-_view_) have been initialized.
-
-You can use this lifecycle hook to read the results of
-[view queries](guide/components/queries#view-queries). While you can access the initialized state of
-these queries, attempting to change any state in this method results in an
-[ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100)
-
 ### ngAfterContentInit
 
 The `ngAfterContentInit` method runs once after all the children nested inside the component (
@@ -191,6 +181,29 @@ its _content_) have been initialized.
 You can use this lifecycle hook to read the results of
 [content queries](guide/components/queries#content-queries). While you can access the initialized
 state of these queries, attempting to change any state in this method results in an
+[ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100)
+
+### ngAfterContentChecked
+
+The `ngAfterContentChecked` method runs every time the children nested inside the component (its
+_content_) have been checked for changes.
+
+This method runs very frequently and can significantly impact your page's performance. Avoid
+defining this hook whenever possible, only using it when you have no alternative.
+
+While you can access the updated state
+of [content queries](guide/components/queries#content-queries) here, attempting to
+change any state in this method results in
+an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
+
+### ngAfterViewInit
+
+The `ngAfterViewInit` method runs once after all the children in the component's template (its
+_view_) have been initialized.
+
+You can use this lifecycle hook to read the results of
+[view queries](guide/components/queries#view-queries). While you can access the initialized state of
+these queries, attempting to change any state in this method results in an
 [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100)
 
 ### ngAfterViewChecked
@@ -203,19 +216,6 @@ defining this hook whenever possible, only using it when you have no alternative
 
 While you can access the updated state of [view queries](guide/components/queries#view-queries)
 here, attempting to
-change any state in this method results in
-an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
-
-### ngAfterContentChecked
-
-The `ngAfterContentChecked` method runs every time the children nested inside the component (its
-_content_) have been checked for changes.
-
-This method runs very frequently and can significantly impact your page's performance. Avoid
-defining this hook whenever possible, only using it when you have no alternative.
-
-While you can access the updated state
-of [content queries](guide/components/queries#content-queries) here, attempting to
 change any state in this method results in
 an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
