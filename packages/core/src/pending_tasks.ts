@@ -91,6 +91,27 @@ export class ExperimentalPendingTasks {
     return () => this.internalPendingTasks.remove(taskId);
   }
 
+  /**
+   * Runs an asynchronous function and blocks the application's stability until the function completes.
+   *
+   * ```
+   * pendingTasks.run(async () => {
+   *   const userData = await fetch('/api/user');
+   *   this.userData.set(userData);
+   * });
+   * ```
+   *
+   * @param fn The asynchronous function to execute
+   */
+  async run(fn: Function): Promise<void> {
+    const task = this.internalPendingTasks.add();
+    try {
+      await fn();
+    } finally {
+      this.internalPendingTasks.remove(task);
+    }
+  }
+
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
     token: ExperimentalPendingTasks,
