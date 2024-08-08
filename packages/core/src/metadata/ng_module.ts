@@ -135,7 +135,7 @@ export interface NgModule {
    * ```
    *
    */
-  imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
+  imports?: Array<Type<any> | ModuleWithProviders<{}> | ReadonlyArray<any>>;
 
   /**
    * The set of components, directives, and pipes declared in this
@@ -167,7 +167,7 @@ export interface NgModule {
    * }
    * ```
    */
-  exports?: Array<Type<any> | any[]>;
+  exports?: Array<Type<any> | ReadonlyArray<any>>;
 
   /**
    * The set of components that are bootstrapped when this module is bootstrapped.
