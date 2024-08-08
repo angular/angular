@@ -282,6 +282,7 @@ export function compileComponentFromMetadata(
   }
 
   // e.g. `styles: [str1, str2]`
+  let hasStyles = false;
   if (meta.styles && meta.styles.length) {
     const styleValues =
       meta.encapsulation == core.ViewEncapsulation.Emulated
@@ -295,9 +296,11 @@ export function compileComponentFromMetadata(
     }, [] as o.Expression[]);
 
     if (styleNodes.length > 0) {
+      hasStyles = true;
       definitionMap.set('styles', o.literalArr(styleNodes));
     }
-  } else if (meta.encapsulation === core.ViewEncapsulation.Emulated) {
+  }
+  if (!hasStyles && meta.encapsulation === core.ViewEncapsulation.Emulated) {
     // If there is no style, don't generate css selectors on elements
     meta.encapsulation = core.ViewEncapsulation.None;
   }
