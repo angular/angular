@@ -1223,10 +1223,10 @@ export class NgProbeToken {
 
 // @public
 export class NgZone {
-    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection, shouldCoalesceRunChangeDetection, }: {
-        enableLongStackTrace?: boolean | undefined;
-        shouldCoalesceEventChangeDetection?: boolean | undefined;
-        shouldCoalesceRunChangeDetection?: boolean | undefined;
+    constructor(options: {
+        enableLongStackTrace?: boolean;
+        shouldCoalesceEventChangeDetection?: boolean;
+        shouldCoalesceRunChangeDetection?: boolean;
     });
     static assertInAngularZone(): void;
     static assertNotInAngularZone(): void;

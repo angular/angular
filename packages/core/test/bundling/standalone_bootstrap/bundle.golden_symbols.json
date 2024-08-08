@@ -348,6 +348,9 @@
     "name": "RuntimeError"
   },
   {
+    "name": "SCHEDULE_IN_ROOT_ZONE"
+  },
+  {
     "name": "SIGNAL"
   },
   {

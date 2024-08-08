@@ -6,8 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, NgZone} from '@angular/core';
-import {fakeAsync, flushMicrotasks, inject, waitForAsync} from '@angular/core/testing';
+import {
+  Component,
+  EventEmitter,
+  NgZone,
+  afterRender,
+  provideZoneChangeDetection,
+} from '@angular/core';
+import {
+  TestBed,
+  fakeAsync,
+  flush,
+  flushMicrotasks,
+  inject,
+  tick,
+  waitForAsync,
+} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {firstValueFrom} from 'rxjs';
 
@@ -914,6 +928,33 @@ function commonTests() {
         });
       });
     });
+
+    it('coalescing can work with fakeAsync', fakeAsync(() => {
+      if (!isBrowser) {
+        return;
+      }
+
+      @Component({
+        standalone: true,
+        template: `
+          <div class="clickable" (click)="clicked = true"></div>
+          {{clicked ? 'clicked' : '' }}
+        `,
+      })
+      class OuterComponent {}
+
+      TestBed.configureTestingModule({
+        providers: [
+          provideZoneChangeDetection({eventCoalescing: true, scheduleInRootZone: false} as any),
+        ],
+      });
+      const fixture = TestBed.createComponent(OuterComponent);
+      fixture.autoDetectChanges();
+
+      document.querySelector('.clickable')!.dispatchEvent(new MouseEvent('click'));
+      flush();
+      expect(fixture.nativeElement.innerText).toContain('clicked');
+    }));
   });
 
   describe('coalescing', () => {

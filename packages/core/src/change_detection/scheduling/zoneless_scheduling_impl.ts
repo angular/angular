@@ -28,6 +28,7 @@ import {
   ZONELESS_ENABLED,
   PROVIDED_ZONELESS,
   ZONELESS_SCHEDULER_DISABLED,
+  SCHEDULE_IN_ROOT_ZONE,
 } from './zoneless_scheduling';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
@@ -67,6 +68,10 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly angularZoneId = this.zoneIsDefined
     ? (this.ngZone as NgZonePrivate)._inner?.get(angularZoneInstanceIdProperty)
     : null;
+  private readonly scheduleInRootZone =
+    !this.zonelessEnabled &&
+    this.zoneIsDefined &&
+    (inject(SCHEDULE_IN_ROOT_ZONE, {optional: true}) ?? false);
 
   private cancelScheduledCallback: null | (() => void) = null;
   private shouldRefreshViews = false;
@@ -156,16 +161,14 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       ? scheduleCallbackWithMicrotask
       : scheduleCallbackWithRafRace;
     this.pendingRenderTaskId = this.taskService.add();
-    if (this.zoneIsDefined) {
-      Zone.root.run(() => {
-        this.cancelScheduledCallback = scheduleCallback(() => {
-          this.tick(this.shouldRefreshViews);
-        });
-      });
+    if (this.scheduleInRootZone) {
+      this.cancelScheduledCallback = Zone.root.run(() =>
+        scheduleCallback(() => this.tick(this.shouldRefreshViews)),
+      );
     } else {
-      this.cancelScheduledCallback = scheduleCallback(() => {
-        this.tick(this.shouldRefreshViews);
-      });
+      this.cancelScheduledCallback = this.ngZone.runOutsideAngular(() =>
+        scheduleCallback(() => this.tick(this.shouldRefreshViews)),
+      );
     }
   }
 
@@ -316,6 +319,7 @@ export function provideExperimentalZonelessChangeDetection(): EnvironmentProvide
     {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
     {provide: NgZone, useClass: NoopNgZone},
     {provide: ZONELESS_ENABLED, useValue: true},
+    {provide: SCHEDULE_IN_ROOT_ZONE, useValue: false},
     typeof ngDevMode === 'undefined' || ngDevMode
       ? [{provide: PROVIDED_ZONELESS, useValue: true}]
       : [],
