@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {AbstractControl} from '../model/abstract_model';
+import type {AbstractControl} from '../model/abstract_model';
 import {
   emailValidator,
   maxLengthValidator,

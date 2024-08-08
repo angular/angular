@@ -11,7 +11,7 @@ import {Directive, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup} from '../model/form_group';
 
 import {ControlContainer} from './control_container';
-import {Form} from './form_interface';
+import type {Form} from './form_interface';
 import {controlPath} from './shared';
 
 /**
