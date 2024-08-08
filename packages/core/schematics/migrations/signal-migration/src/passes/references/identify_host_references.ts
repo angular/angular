@@ -95,13 +95,12 @@ export function identifyHostBindingReferences(
   }
   const hostMap = reflectObjectLiteral(hostField);
   const expressionResult: TmplInputExpressionReference<ts.Node>[] = [];
-  const expressionVisitor = new TemplateExpressionReferenceVisitor(
+  const expressionVisitor = new TemplateExpressionReferenceVisitor<ts.Node>(
     host,
     checker,
     null,
     node,
     knownDecoratorInputs,
-    expressionResult,
   );
 
   for (const [rawName, expression] of hostMap.entries()) {
@@ -158,7 +157,7 @@ export function identifyHostBindingReferences(
     }
 
     if (parsed != null) {
-      expressionVisitor.checkTemplateExpression(expression, false, parsed);
+      expressionResult.push(...expressionVisitor.checkTemplateExpression(expression, parsed));
     }
   }
 

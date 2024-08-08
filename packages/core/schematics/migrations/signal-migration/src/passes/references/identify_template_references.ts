@@ -55,10 +55,7 @@ export function identifyTemplateReferences(
 
       // TODO: Remove this when we support signal narrowing in templates.
       // https://github.com/angular/angular/pull/55456.
-      if (
-        process.env['MIGRATE_NARROWED_NARROWED_IN_TEMPLATES'] !== '1' &&
-        res.isInsideNarrowingExpression
-      ) {
+      if (process.env['MIGRATE_NARROWED_NARROWED_IN_TEMPLATES'] !== '1' && res.isLikelyNarrowed) {
         knownInputs.markInputAsIncompatible(res.targetInput, {
           reason: InputIncompatibilityReason.NarrowedInTemplateButNotSupportedYetTODO,
           context: null,
