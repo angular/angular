@@ -72,7 +72,7 @@ export class FakeNavigation implements Navigation {
   private canSetInitialEntry = true;
 
   /** `EventTarget` to dispatch events. */
-  private eventTarget: EventTarget = this.window.document.createElement('div');
+  private eventTarget: EventTarget;
 
   /** The next unique id for created entries. Replace recreates this id. */
   private nextId = 0;
@@ -100,6 +100,7 @@ export class FakeNavigation implements Navigation {
     private readonly window: Window,
     startURL: `http${string}`,
   ) {
+    this.eventTarget = this.window.document.createElement('div');
     // First entry.
     this.setInitialEntryForTesting(startURL);
   }
