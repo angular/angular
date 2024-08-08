@@ -138,3 +138,5 @@ export {isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './ut
 export {performanceMarkFeature as ɵperformanceMarkFeature} from './util/performance';
 export {stringify as ɵstringify, truncateMiddle as ɵtruncateMiddle} from './util/stringify';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider_flags';
+
+export {type InputSignalNode as ɵInputSignalNode} from './authoring/input/input_signal_node';

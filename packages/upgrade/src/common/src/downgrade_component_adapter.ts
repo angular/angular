@@ -19,6 +19,7 @@ import {
   StaticProvider,
   Testability,
   TestabilityRegistry,
+  type ɵInputSignalNode as InputSignalNode,
 } from '@angular/core';
 
 import {
@@ -32,6 +33,7 @@ import {
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
 import {cleanData, getTypeName, hookupNgModel, strictEquals} from './util';
+import {SIGNAL} from '@angular/core/primitives/signals';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true,
@@ -131,7 +133,7 @@ export class DowngradeComponentAdapter {
       let expr: string | null = null;
 
       if (attrs.hasOwnProperty(inputBinding.attr)) {
-        const observeFn = ((prop) => {
+        const observeFn = ((prop, isSignal) => {
           let prevValue = INITIAL_VALUE;
           return (currValue: any) => {
             // Initially, both `$observe()` and `$watch()` will call this function.
@@ -140,11 +142,11 @@ export class DowngradeComponentAdapter {
                 prevValue = currValue;
               }
 
-              this.updateInput(componentRef, prop, prevValue, currValue);
+              this.updateInput(componentRef, prop, prevValue, currValue, isSignal);
               prevValue = currValue;
             }
           };
-        })(inputBinding.prop);
+        })(inputBinding.prop, input.isSignal);
         attrs.$observe(inputBinding.attr, observeFn);
 
         // Use `$watch()` (in addition to `$observe()`) in order to initialize the input in time
@@ -166,9 +168,9 @@ export class DowngradeComponentAdapter {
       }
       if (expr != null) {
         const watchFn = (
-          (prop) => (currValue: unknown, prevValue: unknown) =>
-            this.updateInput(componentRef, prop, prevValue, currValue)
-        )(inputBinding.prop);
+          (prop, isSignal) => (currValue: unknown, prevValue: unknown) =>
+            this.updateInput(componentRef, prop, prevValue, currValue, isSignal)
+        )(inputBinding.prop, input.isSignal);
         this.componentScope.$watch(expr, watchFn);
       }
     }
@@ -314,13 +316,19 @@ export class DowngradeComponentAdapter {
     prop: string,
     prevValue: any,
     currValue: any,
+    isSignal: boolean,
   ) {
     if (this.implementsOnChanges) {
       this.inputChanges[prop] = new SimpleChange(prevValue, currValue, prevValue === currValue);
     }
 
     this.inputChangeCount++;
-    componentRef.instance[prop] = currValue;
+    if (isSignal) {
+      const node = componentRef.instance[prop][SIGNAL] as InputSignalNode<unknown, unknown>;
+      node.applyValueToInputSignal(node, currValue);
+    } else {
+      componentRef.instance[prop] = currValue;
+    }
   }
 
   private groupProjectableNodes() {

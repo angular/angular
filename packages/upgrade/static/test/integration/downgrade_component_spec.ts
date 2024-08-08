@@ -15,6 +15,7 @@ import {
   ElementRef,
   EventEmitter,
   Injector,
+  input,
   Input,
   NgModule,
   NgModuleRef,
@@ -168,6 +169,49 @@ withEachNg1Version(() => {
             'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | ' +
             'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;',
         );
+      });
+    }));
+
+    it('should bind properties to signal inputs', waitForAsync(() => {
+      const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
+        $rootScope['name'] = 'world';
+      });
+
+      @Component({
+        selector: 'ng2',
+        inputs: ['message'],
+        template: 'Message: {{message()}}',
+      })
+      class Ng2Component {
+        message = input<string>('');
+      }
+
+      @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      // Hack to wire up the `input()` signal correctly, since our JIT tests don't run with the
+      // transform which supports `input()`.
+      (Ng2Component as any).ɵcmp.inputs.message = ['message', /* InputFlags.SignalBased */ 1];
+
+      ng1Module.directive(
+        'ng2',
+        downgradeComponent({
+          component: Ng2Component,
+        }),
+      );
+
+      const element = html(`
+        <div>
+          <ng2 literal="Text" message="Hello {{name}}"></ng2>
+        </div>`);
+
+      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+        expect(multiTrim(document.body.textContent)).toEqual('Message: Hello world');
+
+        $apply(upgrade, 'name = "everyone"');
+        expect(multiTrim(document.body.textContent)).toEqual('Message: Hello everyone');
       });
     }));
 

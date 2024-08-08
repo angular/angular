@@ -4,6 +4,7 @@ package(default_visibility = [
     "//packages:__pkg__",
     "//packages/core:__subpackages__",
     "//packages/rxjs-interop/test:__subpackages__",
+    "//packages/upgrade:__subpackages__",
     "//tools/public_api_guard:__pkg__",
 ])
 

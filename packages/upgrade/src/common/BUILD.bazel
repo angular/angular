@@ -13,6 +13,7 @@ ts_library(
     ]),
     deps = [
         "//packages/core",
+        "//packages/core/primitives/signals",
     ],
 )
 
