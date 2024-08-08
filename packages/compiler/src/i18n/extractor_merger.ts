@@ -30,8 +30,9 @@ export function extractMessages(
   interpolationConfig: InterpolationConfig,
   implicitTags: string[],
   implicitAttrs: {[k: string]: string[]},
+  preserveSignificantWhitespace?: boolean,
 ): ExtractionResult {
-  const visitor = new _Visitor(implicitTags, implicitAttrs);
+  const visitor = new _Visitor(implicitTags, implicitAttrs, preserveSignificantWhitespace);
   return visitor.extract(nodes, interpolationConfig);
 }
 
@@ -98,6 +99,7 @@ class _Visitor implements html.Visitor {
   constructor(
     private _implicitTags: string[],
     private _implicitAttrs: {[k: string]: string[]},
+    private readonly _preserveSignificantWhitespace: boolean = true,
   ) {}
 
   /**
@@ -347,6 +349,10 @@ class _Visitor implements html.Visitor {
     this._createI18nMessage = createI18nMessageFactory(
       interpolationConfig,
       DEFAULT_CONTAINER_BLOCKS,
+      // When dropping significant whitespace we need to retain whitespace tokens or
+      // else we won't be able to reuse source spans because empty tokens would be
+      // removed and cause a mismatch.
+      !this._preserveSignificantWhitespace /* retainEmptyTokens */,
     );
   }
 

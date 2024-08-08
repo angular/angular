@@ -1446,6 +1446,7 @@ export class NgCompiler {
         this.enableLetSyntax,
         localCompilationExtraImportsTracker,
         jitDeclarationRegistry,
+        this.options.i18nPreserveWhitespaceForLegacyExtraction,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`

@@ -37,8 +37,14 @@ export interface I18nMessageFactory {
 export function createI18nMessageFactory(
   interpolationConfig: InterpolationConfig,
   containerBlocks: Set<string>,
+  retainEmptyTokens?: boolean,
 ): I18nMessageFactory {
-  const visitor = new _I18nVisitor(_expParser, interpolationConfig, containerBlocks);
+  const visitor = new _I18nVisitor(
+    _expParser,
+    interpolationConfig,
+    containerBlocks,
+    retainEmptyTokens,
+  );
   return (nodes, meaning, description, customId, visitNodeFn) =>
     visitor.toI18nMessage(nodes, meaning, description, customId, visitNodeFn);
 }
@@ -61,6 +67,7 @@ class _I18nVisitor implements html.Visitor {
     private _expressionParser: ExpressionParser,
     private _interpolationConfig: InterpolationConfig,
     private _containerBlocks: Set<string>,
+    private readonly _retainEmptyTokens = false,
   ) {}
 
   public toI18nMessage(
@@ -277,7 +284,16 @@ class _I18nVisitor implements html.Visitor {
           nodes.push(new i18n.Placeholder(expression, phName, token.sourceSpan));
           break;
         default:
-          if (token.parts[0].length > 0) {
+          // Try to merge text tokens with previous tokens. We do this even for all tokens
+          // when `retainEmptyTokens == true` because whitespace tokens may have non-zero
+          // length, but will be trimmed by `WhitespaceVisitor` in one extraction pass and
+          // be considered "empty" there. Therefore a whitespace token with
+          // `retainEmptyTokens === true` should be treated like an empty token and either
+          // retained or merged into the previous node. Since extraction does two passes with
+          // different trimming behavior, the second pass needs to have identical node count
+          // to reuse source spans, so we need this check to get the same answer when both
+          // trimming and not trimming.
+          if (token.parts[0].length > 0 || this._retainEmptyTokens) {
             // This token is text or an encoded entity.
             // If it is following on from a previous text node then merge it into that node
             // Otherwise, if it is following an interpolation, then add a new node.
@@ -293,7 +309,17 @@ class _I18nVisitor implements html.Visitor {
             } else {
               nodes.push(new i18n.Text(token.parts[0], token.sourceSpan));
             }
+          } else {
+            // Retain empty tokens to avoid breaking dropping entire nodes such that source
+            // spans should not be reusable across multiple parses of a template. We *should*
+            // do this all the time, however we need to maintain backwards compatibility
+            // with existing message IDs so we can't do it by default and should only enable
+            // this when removing significant whitespace.
+            if (this._retainEmptyTokens) {
+              nodes.push(new i18n.Text(token.parts[0], token.sourceSpan));
+            }
           }
+
           break;
       }
     }
@@ -359,7 +385,17 @@ function assertSingleContainerMessage(message: i18n.Message): void {
  */
 function assertEquivalentNodes(previousNodes: i18n.Node[], nodes: i18n.Node[]): void {
   if (previousNodes.length !== nodes.length) {
-    throw new Error('The number of i18n message children changed between first and second pass.');
+    throw new Error(
+      `
+The number of i18n message children changed between first and second pass.
+
+First pass (${previousNodes.length} tokens):
+${previousNodes.map((node) => `"${node.sourceSpan.toString()}"`).join('\n')}
+
+Second pass (${nodes.length} tokens):
+${nodes.map((node) => `"${node.sourceSpan.toString()}"`).join('\n')}
+    `.trim(),
+    );
   }
   if (previousNodes.some((node, i) => nodes[i].constructor !== node.constructor)) {
     throw new Error(

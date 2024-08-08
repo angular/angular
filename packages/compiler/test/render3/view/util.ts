@@ -12,7 +12,7 @@ import {Parser} from '../../../src/expression_parser/parser';
 import * as html from '../../../src/ml_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/defaults';
 import {HtmlParser} from '../../../src/ml_parser/html_parser';
-import {WhitespaceVisitor} from '../../../src/ml_parser/html_whitespaces';
+import {WhitespaceVisitor, visitAllWithSiblings} from '../../../src/ml_parser/html_whitespaces';
 import {ParseTreeResult} from '../../../src/ml_parser/parser';
 import * as a from '../../../src/render3/r3_ast';
 import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform';
@@ -164,7 +164,10 @@ export function parseR3(
   let htmlNodes = processI18nMeta(parseResult).rootNodes;
 
   if (!options.preserveWhitespaces) {
-    htmlNodes = html.visitAll(new WhitespaceVisitor(), htmlNodes);
+    htmlNodes = visitAllWithSiblings(
+      new WhitespaceVisitor(options.preserveWhitespaces /* preserveSignificantWhitespace */),
+      htmlNodes,
+    );
   }
 
   const expressionParser = new Parser(new Lexer());

@@ -133,6 +133,7 @@ export interface ExtractTemplateOptions {
   i18nNormalizeLineEndingsInICUs: boolean;
   enableBlockSyntax: boolean;
   enableLetSyntax: boolean;
+  preserveSignificantWhitespace?: boolean;
 }
 
 export function extractTemplate(
@@ -275,15 +276,16 @@ function parseExtractedTemplate(
   const parsedTemplate = parseTemplate(sourceStr, sourceMapUrl ?? '', {
     ...commonParseOptions,
     preserveWhitespaces: template.preserveWhitespaces,
+    preserveSignificantWhitespace: options.preserveSignificantWhitespace,
   });
 
   // Unfortunately, the primary parse of the template above may not contain accurate source map
   // information. If used directly, it would result in incorrect code locations in template
   // errors, etc. There are three main problems:
   //
-  // 1. `preserveWhitespaces: false` annihilates the correctness of template source mapping, as
-  //    the whitespace transformation changes the contents of HTML text nodes before they're
-  //    parsed into Angular expressions.
+  // 1. `preserveWhitespaces: false` or `preserveSignificantWhitespace: false` annihilates the
+  //    correctness of template source mapping, as the whitespace transformation changes the
+  //    contents of HTML text nodes before they're parsed into Angular expressions.
   // 2. `preserveLineEndings: false` causes growing misalignments in templates that use '\r\n'
   //    line endings, by normalizing them to '\n'.
   // 3. By default, the template parser strips leading trivia characters (like spaces, tabs, and
@@ -296,6 +298,7 @@ function parseExtractedTemplate(
     ...commonParseOptions,
     preserveWhitespaces: true,
     preserveLineEndings: true,
+    preserveSignificantWhitespace: true,
     leadingTriviaChars: [],
   });
 

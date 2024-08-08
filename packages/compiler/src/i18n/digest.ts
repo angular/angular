@@ -32,15 +32,18 @@ export function computeDigest(message: i18n.Message): string {
 /**
  * Return the message id or compute it using the XLIFF2/XMB/$localize digest.
  */
-export function decimalDigest(message: i18n.Message): string {
-  return message.id || computeDecimalDigest(message);
+export function decimalDigest(message: i18n.Message, preservePlaceholders?: boolean): string {
+  return message.id || computeDecimalDigest(message, preservePlaceholders);
 }
 
 /**
  * Compute the message id using the XLIFF2/XMB/$localize digest.
  */
-export function computeDecimalDigest(message: i18n.Message): string {
-  const visitor = new _SerializerIgnoreIcuExpVisitor();
+export function computeDecimalDigest(
+  message: i18n.Message,
+  preservePlaceholders: boolean = true,
+): string {
+  const visitor = new _SerializerIgnoreExpVisitor(preservePlaceholders);
   const parts = message.nodes.map((a) => a.visit(visitor, null));
   return computeMsgId(parts.join(''), message.meaning);
 }
@@ -100,12 +103,23 @@ export function serializeNodes(nodes: i18n.Node[]): string[] {
 /**
  * Serialize the i18n ast to something xml-like in order to generate an UID.
  *
- * Ignore the ICU expressions so that message IDs stays identical if only the expression changes.
+ * Ignore the expressions so that message IDs stays identical if only the expression changes.
  *
  * @internal
  */
-class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
-  override visitIcu(icu: i18n.Icu, context: any): any {
+class _SerializerIgnoreExpVisitor extends _SerializerVisitor {
+  constructor(private readonly preservePlaceholders = true) {
+    super();
+  }
+
+  override visitPlaceholder(ph: i18n.Placeholder, context: any): string {
+    // Do not take the expression into account when `preservePlaceholders` is disabled.
+    return this.preservePlaceholders
+      ? super.visitPlaceholder(ph, context)
+      : `<ph name="${ph.name}"/>`;
+  }
+
+  override visitIcu(icu: i18n.Icu): string {
     let strCases = Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
     // Do not take the expression into account
     return `{${icu.type}, ${strCases.join(', ')}}`;

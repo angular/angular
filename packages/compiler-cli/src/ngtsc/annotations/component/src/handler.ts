@@ -251,6 +251,7 @@ export class ComponentDecoratorHandler
     private readonly enableLetSyntax: boolean,
     private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
     private readonly jitDeclarationRegistry: JitDeclarationRegistry,
+    private readonly i18nPreserveSignificantWhitespace?: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -258,6 +259,7 @@ export class ComponentDecoratorHandler
       usePoisonedData: this.usePoisonedData,
       enableBlockSyntax: this.enableBlockSyntax,
       enableLetSyntax: this.enableLetSyntax,
+      preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
     };
   }
 
@@ -278,6 +280,7 @@ export class ComponentDecoratorHandler
     usePoisonedData: boolean;
     enableBlockSyntax: boolean;
     enableLetSyntax: boolean;
+    preserveSignificantWhitespace?: boolean;
   };
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -629,6 +632,7 @@ export class ComponentDecoratorHandler
           usePoisonedData: this.usePoisonedData,
           enableBlockSyntax: this.enableBlockSyntax,
           enableLetSyntax: this.enableLetSyntax,
+          preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
         },
         this.compilationMode,
       );

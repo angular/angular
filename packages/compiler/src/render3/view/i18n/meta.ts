@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {WhitespaceVisitor, visitAllWithSiblings} from '../../../ml_parser/html_whitespaces';
 import {computeDecimalDigest, computeDigest, decimalDigest} from '../../../i18n/digest';
 import * as i18n from '../../../i18n/i18n_ast';
 import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser';
@@ -30,19 +31,28 @@ export type I18nMeta = {
   meaning?: string;
 };
 
-const setI18nRefs: VisitNodeFn = (htmlNode, i18nNode) => {
-  if (htmlNode instanceof html.NodeWithI18n) {
-    if (i18nNode instanceof i18n.IcuPlaceholder && htmlNode.i18n instanceof i18n.Message) {
-      // This html node represents an ICU but this is a second processing pass, and the legacy id
-      // was computed in the previous pass and stored in the `i18n` property as a message.
-      // We are about to wipe out that property so capture the previous message to be reused when
-      // generating the message for this ICU later. See `_generateI18nMessage()`.
-      i18nNode.previousMessage = htmlNode.i18n;
+const setI18nRefs =
+  (originalNodeMap: Map<html.Node, html.Node>): VisitNodeFn =>
+  (trimmedNode, i18nNode) => {
+    // We need to set i18n properties on the original, untrimmed AST nodes. The i18n nodes needs to
+    // use the trimmed content for message IDs to make messages more stable to whitespace changes.
+    // But we don't want to actually trim the content, so we can't use the trimmed HTML AST for
+    // general code gen. Instead we map the trimmed HTML AST back to the original AST and then
+    // attach the i18n nodes so we get trimmed i18n nodes on the original (untrimmed) HTML AST.
+    const originalNode = originalNodeMap.get(trimmedNode) ?? trimmedNode;
+
+    if (originalNode instanceof html.NodeWithI18n) {
+      if (i18nNode instanceof i18n.IcuPlaceholder && originalNode.i18n instanceof i18n.Message) {
+        // This html node represents an ICU but this is a second processing pass, and the legacy id
+        // was computed in the previous pass and stored in the `i18n` property as a message.
+        // We are about to wipe out that property so capture the previous message to be reused when
+        // generating the message for this ICU later. See `_generateI18nMessage()`.
+        i18nNode.previousMessage = originalNode.i18n;
+      }
+      originalNode.i18n = i18nNode;
     }
-    htmlNode.i18n = i18nNode;
-  }
-  return i18nNode;
-};
+    return i18nNode;
+  };
 
 /**
  * This visitor walks over HTML parse tree and converts information stored in
@@ -59,6 +69,15 @@ export class I18nMetaVisitor implements html.Visitor {
     private keepI18nAttrs = false,
     private enableI18nLegacyMessageIdFormat = false,
     private containerBlocks: Set<string> = DEFAULT_CONTAINER_BLOCKS,
+    private readonly preserveSignificantWhitespace: boolean = true,
+
+    // When dropping significant whitespace we need to retain empty tokens or
+    // else we won't be able to reuse source spans because empty tokens would be
+    // removed and cause a mismatch. Unfortunately this still needs to be
+    // configurable and sometimes needs to be set independently in order to make
+    // sure the number of nodes don't change between parses, even when
+    // `preserveSignificantWhitespace` changes.
+    private readonly retainEmptyTokens: boolean = !preserveSignificantWhitespace,
   ) {}
 
   private _generateI18nMessage(
@@ -70,6 +89,7 @@ export class I18nMetaVisitor implements html.Visitor {
     const createI18nMessage = createI18nMessageFactory(
       this.interpolationConfig,
       this.containerBlocks,
+      this.retainEmptyTokens,
     );
     const message = createI18nMessage(nodes, meaning, description, customId, visitNodeFn);
     this._setMessageId(message, meta);
@@ -94,7 +114,26 @@ export class I18nMetaVisitor implements html.Visitor {
         if (attr.name === I18N_ATTR) {
           // root 'i18n' node attribute
           const i18n = element.i18n || attr.value;
-          message = this._generateI18nMessage(element.children, i18n, setI18nRefs);
+
+          // Generate a new AST with whitespace trimmed, but also generate a map
+          // to correlate each new node to its original so we can apply i18n
+          // information to the original node based on the trimmed content.
+          //
+          // `WhitespaceVisitor` removes *insignificant* whitespace as well as
+          // significant whitespace. Enabling this visitor should be conditional
+          // on `preserveWhitespace` rather than `preserveSignificantWhitespace`,
+          // however this would be a breaking change for existing behavior where
+          // `preserveWhitespace` was not respected correctly when generating
+          // message IDs. This is really a bug but one we need to keep to maintain
+          // backwards compatibility.
+          const originalNodeMap = new Map<html.Node, html.Node>();
+          const trimmedNodes = this.preserveSignificantWhitespace
+            ? element.children
+            : visitAllWithSiblings(
+                new WhitespaceVisitor(false /* preserveSignificantWhitespace */, originalNodeMap),
+                element.children,
+              );
+          message = this._generateI18nMessage(trimmedNodes, i18n, setI18nRefs(originalNodeMap));
           if (message.nodes.length === 0) {
             // Ignore the message if it is empty.
             message = undefined;
@@ -216,7 +255,9 @@ export class I18nMetaVisitor implements html.Visitor {
    */
   private _setMessageId(message: i18n.Message, meta: string | i18n.I18nMeta): void {
     if (!message.id) {
-      message.id = (meta instanceof i18n.Message && meta.id) || decimalDigest(message);
+      message.id =
+        (meta instanceof i18n.Message && meta.id) ||
+        decimalDigest(message, /* preservePlaceholders */ this.preserveSignificantWhitespace);
     }
   }
 
@@ -228,7 +269,13 @@ export class I18nMetaVisitor implements html.Visitor {
    */
   private _setLegacyIds(message: i18n.Message, meta: string | i18n.I18nMeta): void {
     if (this.enableI18nLegacyMessageIdFormat) {
-      message.legacyIds = [computeDigest(message), computeDecimalDigest(message)];
+      message.legacyIds = [
+        computeDigest(message),
+        computeDecimalDigest(
+          message,
+          /* preservePlaceholders */ this.preserveSignificantWhitespace,
+        ),
+      ];
     } else if (typeof meta !== 'string') {
       // This occurs if we are doing the 2nd pass after whitespace removal (see `parseTemplate()` in
       // `packages/compiler/src/render3/view/template.ts`).
