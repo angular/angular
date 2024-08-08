@@ -1434,6 +1434,7 @@ export class QueryList<T> implements Iterable<T> {
     destroy(): void;
     // (undocumented)
     readonly dirty = true;
+    every(fn: (value: T, index: number, array: T[]) => boolean): boolean;
     filter<S extends T>(predicate: (value: T, index: number, array: readonly T[]) => value is S): S[];
     // (undocumented)
     filter(predicate: (value: T, index: number, array: readonly T[]) => unknown): T[];

@@ -76,6 +76,14 @@ export class QueryList<T> implements Iterable<T> {
   }
 
   /**
+   * See
+   * [Array.every](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every)
+   */
+  every(fn: (value: T, index: number, array: T[]) => boolean): boolean {
+    return this._results.every(fn);
+  }
+
+  /**
    * Returns the QueryList entry at `index`.
    */
   get(index: number): T | undefined {

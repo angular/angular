@@ -139,6 +139,12 @@ describe('QueryList', () => {
     expect(queryList.some((item) => item === 'four')).toEqual(false);
   });
 
+  it('should support every', () => {
+    queryList.reset(['one', 'one', 'one']);
+    expect(queryList.every((item) => item === 'one')).toEqual(true);
+    expect(queryList.every((item) => item === 'two')).toEqual(false);
+  });
+
   it('should support guards on filter', () => {
     const qList = new QueryList<'foo' | 'bar'>();
     qList.reset(['foo']);
