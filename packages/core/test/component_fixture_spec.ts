@@ -467,6 +467,47 @@ describe('ComponentFixture', () => {
       expect(() => fixture.detectChanges()).toThrow();
     });
   });
+
+  it('reports errors from autoDetect change detection to error handler', () => {
+    let throwError = false;
+    @Component({template: ''})
+    class TestComponent {
+      ngDoCheck() {
+        if (throwError) {
+          throw new Error();
+        }
+      }
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.autoDetectChanges();
+    const errorHandler = TestBed.inject(ErrorHandler);
+    const spy = spyOn(errorHandler, 'handleError').and.callThrough();
+
+    throwError = true;
+    TestBed.inject(NgZone).run(() => {});
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('reports errors from checkNoChanges in autoDetect to error handler', () => {
+    let throwError = false;
+    @Component({template: '{{thing}}'})
+    class TestComponent {
+      thing = 'initial';
+      ngAfterViewChecked() {
+        if (throwError) {
+          this.thing = 'new';
+        }
+      }
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.autoDetectChanges();
+    const errorHandler = TestBed.inject(ErrorHandler);
+    const spy = spyOn(errorHandler, 'handleError').and.callThrough();
+
+    throwError = true;
+    TestBed.inject(NgZone).run(() => {});
+    expect(spy).toHaveBeenCalled();
+  });
 });
 
 describe('ComponentFixture with zoneless', () => {
