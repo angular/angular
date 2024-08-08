@@ -563,6 +563,7 @@ export class LanguageService {
     return this.withCompilerAndPerfTracing(PerfPhase.LSApplyRefactoring, (compiler) => {
       return matchingRefactoring.computeEditsForFix(
         compiler,
+        this.options,
         fileName,
         positionOrRange,
         reportProgress,

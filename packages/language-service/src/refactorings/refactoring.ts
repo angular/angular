@@ -9,6 +9,8 @@
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import ts from 'typescript';
 import {ApplyRefactoringProgressFn} from '@angular/language-service/api';
+import {CompilerOptions} from '@angular/compiler-cli';
+import {ConvertToSignalInputRefactoring} from './convert_to_signal_input';
 
 /**
  * Interface that describes a refactoring.
@@ -37,10 +39,11 @@ export interface Refactoring {
   /** Computes the edits for the refactoring. */
   computeEditsForFix(
     compiler: NgCompiler,
+    compilerOptions: CompilerOptions,
     fileName: string,
     positionOrRange: number | ts.TextRange,
     reportProgress: ApplyRefactoringProgressFn,
   ): ts.RefactorEditInfo;
 }
 
-export const allRefactorings: Refactoring[] = [];
+export const allRefactorings: Refactoring[] = [new ConvertToSignalInputRefactoring()];

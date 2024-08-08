@@ -25,6 +25,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/util",
+        "//packages/core/schematics/migrations/signal-migration/src",
         "//packages/language-service:api",
         "@npm//@types/node",
         "@npm//typescript",
