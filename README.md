@@ -90,19 +90,19 @@ yarn docs
 
 Install the Angular CLI globally:
 
-```
+```bash
 npm install -g @angular/cli
 ```
 
 Create workspace:
 
-```
+```bash
 ng new [PROJECT NAME]
 ```
 
 Run the application:
 
-```
+```bash
 cd [PROJECT NAME]
 ng serve
 ```
