@@ -23,6 +23,7 @@ import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {FormsModule} from '@angular/forms';
 import {SlideToggle, TextField} from '@angular/docs';
 import {NgFor, NgIf} from '@angular/common';
+import {Params, Router} from '@angular/router';
 import {ApiItemType} from '../interfaces/api-item-type';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import ApiItemLabel from '../api-item-label/api-item-label.component';
@@ -50,6 +51,7 @@ export const ALL_STATUSES_KEY = 'All';
 })
 export default class ApiReferenceList {
   private readonly apiReferenceManager = inject(ApiReferenceManager);
+  private readonly router = inject(Router);
   filterInput = viewChild.required(TextField, {read: ElementRef});
   private readonly injector = inject(EnvironmentInjector);
 
@@ -73,7 +75,7 @@ export default class ApiReferenceList {
     });
   }
 
-  query = signal('');
+  query = model<string | undefined>('');
   includeDeprecated = signal(false);
 
   type = model<string | undefined>(ALL_STATUSES_KEY);
@@ -87,8 +89,10 @@ export default class ApiReferenceList {
         id: group.id,
         items: group.items.filter((apiItem) => {
           return (
-            (this.query()
-              ? apiItem.title.toLocaleLowerCase().includes(this.query().toLocaleLowerCase())
+            (this.query() !== undefined
+              ? apiItem.title
+                  .toLocaleLowerCase()
+                  .includes((this.query() as string).toLocaleLowerCase())
               : true) &&
             (this.includeDeprecated() ? true : apiItem.isDeprecated === this.includeDeprecated()) &&
             (this.type() === undefined ||
@@ -100,6 +104,27 @@ export default class ApiReferenceList {
       .filter((group) => group.items.length > 0);
   });
   itemTypes = Object.values(ApiItemType);
+
+  constructor() {
+    effect(
+      () => {
+        const params: Params = {
+          'query': this.query() ? this.query() : null,
+          'type': this.type() ? this.type() : null,
+        };
+
+        this.router.navigate([], {
+          queryParams: params,
+          replaceUrl: true,
+          preserveFragment: true,
+          info: {
+            disableScrolling: true,
+          },
+        });
+      },
+      {allowSignalWrites: true},
+    );
+  }
 
   filterByItemType(itemType: ApiItemType): void {
     this.type.update((currentType) => (currentType === itemType ? ALL_STATUSES_KEY : itemType));
