@@ -305,6 +305,10 @@ const deferTriggerToR3TriggerInstructionsMap = new Map([
       Identifiers.deferHydrateOnViewport,
     ],
   ],
+  [
+    ir.DeferTriggerKind.Never,
+    [Identifiers.deferHydrateNever, Identifiers.deferHydrateNever, Identifiers.deferHydrateNever],
+  ],
 ]);
 
 export function deferOn(

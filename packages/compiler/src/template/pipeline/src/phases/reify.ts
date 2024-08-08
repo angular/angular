@@ -269,6 +269,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.DeferOn:
         let args: number[] = [];
         switch (op.trigger.kind) {
+          case ir.DeferTriggerKind.Never:
           case ir.DeferTriggerKind.Idle:
           case ir.DeferTriggerKind.Immediate:
             break;

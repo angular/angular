@@ -181,6 +181,8 @@ export enum Trigger {
   Timer = 5,
 
   When = 6,
+
+  Never = 7,
 }
 
 export interface HydrateTrigger {

@@ -14,6 +14,7 @@ import * as t from './r3_ast';
 import {
   getTriggerParametersStart,
   parseDeferredTime,
+  parseNeverTrigger,
   parseOnTrigger,
   parseWhenTrigger,
 } from './r3_deferred_triggers';
@@ -24,11 +25,14 @@ const PREFETCH_WHEN_PATTERN = /^prefetch\s+when\s/;
 /** Pattern to identify a `prefetch on` trigger. */
 const PREFETCH_ON_PATTERN = /^prefetch\s+on\s/;
 
-/** Pattern to identify a `prefetch when` trigger. */
+/** Pattern to identify a `hydrate when` trigger. */
 const HYDRATE_WHEN_PATTERN = /^hydrate\s+when\s/;
 
-/** Pattern to identify a `prefetch on` trigger. */
+/** Pattern to identify a `hydrate on` trigger. */
 const HYDRATE_ON_PATTERN = /^hydrate\s+on\s/;
+
+/** Pattern to identify a `hydrate never` trigger. */
+const HYDRATE_NEVER_PATTERN = /^hydrate\s+never\s*/;
 
 /** Pattern to identify a `minimum` parameter in a block. */
 const MINIMUM_PARAMETER_PATTERN = /^minimum\s/;
@@ -284,6 +288,8 @@ function parsePrimaryTriggers(
       parseWhenTrigger(param, bindingParser, hydrateTriggers, errors);
     } else if (HYDRATE_ON_PATTERN.test(param.expression)) {
       parseOnTrigger(param, hydrateTriggers, errors, placeholder);
+    } else if (HYDRATE_NEVER_PATTERN.test(param.expression)) {
+      parseNeverTrigger(param, hydrateTriggers, errors);
     } else {
       errors.push(new ParseError(param.sourceSpan, 'Unrecognized trigger'));
     }

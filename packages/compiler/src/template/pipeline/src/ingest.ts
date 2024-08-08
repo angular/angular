@@ -767,6 +767,16 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
       );
       deferOnOps.push(deferOnOp);
     }
+    if (triggers.never !== undefined) {
+      const deferOnOp = ir.createDeferOnOp(
+        deferXref,
+        {kind: ir.DeferTriggerKind.Never},
+        prefetch,
+        hydrate,
+        triggers.never.sourceSpan,
+      );
+      deferOnOps.push(deferOnOp);
+    }
     if (triggers.when !== undefined) {
       if (triggers.when.value instanceof e.Interpolation) {
         // TemplateDefinitionBuilder supports this case, but it's very strange to me. What would it

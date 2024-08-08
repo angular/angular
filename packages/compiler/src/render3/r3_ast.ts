@@ -202,6 +202,8 @@ export class BoundDeferredTrigger extends DeferredTrigger {
   }
 }
 
+export class NeverDeferredTrigger extends DeferredTrigger {}
+
 export class IdleDeferredTrigger extends DeferredTrigger {}
 
 export class ImmediateDeferredTrigger extends DeferredTrigger {}
@@ -329,6 +331,7 @@ export interface DeferredBlockTriggers {
   timer?: TimerDeferredTrigger;
   interaction?: InteractionDeferredTrigger;
   viewport?: ViewportDeferredTrigger;
+  never?: NeverDeferredTrigger;
 }
 
 export class DeferredBlock extends BlockNode implements Node {

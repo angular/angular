@@ -150,6 +150,7 @@ export {
   TimerDeferredTrigger as TmplAstTimerDeferredTrigger,
   InteractionDeferredTrigger as TmplAstInteractionDeferredTrigger,
   ViewportDeferredTrigger as TmplAstViewportDeferredTrigger,
+  NeverDeferredTrigger as TmplAstNeverDeferredTrigger,
   SwitchBlock as TmplAstSwitchBlock,
   SwitchBlockCase as TmplAstSwitchBlockCase,
   ForLoopBlock as TmplAstForLoopBlock,

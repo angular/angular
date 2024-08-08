@@ -381,6 +381,23 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
 }
 
 /**
+ * Specifies that hydration never occurs.
+ * @codeGenApi
+ */
+export function ɵɵdeferHydrateNever() {
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+  const tDeferBlockDetails = getTDeferBlockDetails(getTView(), tNode);
+  const hydrateTriggers = (tDeferBlockDetails.hydrateTriggers ??= []);
+  hydrateTriggers.push(Trigger.Never);
+
+  if (shouldTriggerWhenOnServer(lView[INJECTOR]!)) {
+    // We are on the server and SSR for defer blocks is enabled.
+    triggerDeferBlock(lView, tNode);
+  }
+}
+
+/**
  * Sets up logic to handle the `on idle` deferred trigger.
  * @codeGenApi
  */
@@ -1319,7 +1336,6 @@ export function triggerDeferBlock(lView: LView, tNode: TNode) {
 
   const lDetails = getLDeferBlockDetails(lView, tNode);
   const tDetails = getTDeferBlockDetails(tView, tNode);
-
   if (!shouldTriggerDeferBlock(injector, tDetails.hydrateTriggers !== null)) return;
 
   // Defer block is triggered, cleanup all registered trigger functions.
