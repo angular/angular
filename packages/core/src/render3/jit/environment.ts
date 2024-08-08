@@ -156,6 +156,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵdeferPrefetchOnInteraction': r3.ɵɵdeferPrefetchOnInteraction,
   'ɵɵdeferPrefetchOnViewport': r3.ɵɵdeferPrefetchOnViewport,
   'ɵɵdeferHydrateWhen': r3.ɵɵdeferHydrateWhen,
+  'ɵɵdeferHydrateNever': r3.ɵɵdeferHydrateNever,
   'ɵɵdeferHydrateOnIdle': r3.ɵɵdeferHydrateOnIdle,
   'ɵɵdeferHydrateOnImmediate': r3.ɵɵdeferHydrateOnImmediate,
   'ɵɵdeferHydrateOnTimer': r3.ɵɵdeferHydrateOnTimer,

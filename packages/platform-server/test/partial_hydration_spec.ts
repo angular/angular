@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
 import {
   APP_ID,
   Component,
@@ -17,7 +16,6 @@ import {
   signal,
   ɵwhenStable as whenStable,
 } from '@angular/core';
-import {TestBed} from '@angular/core/testing';
 import {withPartialHydration} from '@angular/platform-browser';
 
 import {getAppContents, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
@@ -1189,6 +1187,70 @@ describe('platform-server partial hydration integration', () => {
         appRef.tick();
 
         expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
+      }, 100_000);
+
+      it('never', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+          <main (click)="fnA()">
+            @defer (hydrate never) {
+              <article>
+                defer block rendered!
+              </article>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            }
+          </main>
+        `,
+        })
+        class SimpleComponent {
+          value = signal('start');
+          fnA() {}
+          fnB() {
+            this.value.set('end');
+          }
+        }
+
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+        const hydrationFeatures = [withPartialHydration()];
+
+        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+        const ssrContents = getAppContents(html);
+
+        // <main> uses "eager" `custom-app-id` namespace.
+        expect(ssrContents).toContain('<main jsaction="click:;');
+        // <div>s inside a defer block have `d0` as a namespace.
+        expect(ssrContents).toContain('<article>');
+        // Outer defer block is rendered.
+        expect(ssrContents).toContain('defer block rendered');
+
+        // Internal cleanup before we do server->client transition in this test.
+        resetTViewsFor(SimpleComponent);
+
+        ////////////////////////////////
+        const doc = getDocument();
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+          hydrationFeatures,
+        });
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+        await whenStable(appRef);
+
+        const appHostNode = compRef.location.nativeElement;
+
+        expect(appHostNode.outerHTML).toContain('<article>');
+
+        await timeout(500); // wait for timer
+        appRef.tick();
+
+        await timeout(1000); // wait for defer blocks to resolve
+        appRef.tick();
+
+        expect(appHostNode.outerHTML).not.toContain('Outer block placeholder');
       }, 100_000);
     });
   });

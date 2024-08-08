@@ -54,6 +54,7 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
   ): void {
     switch (op.trigger.kind) {
       case ir.DeferTriggerKind.Idle:
+      case ir.DeferTriggerKind.Never:
       case ir.DeferTriggerKind.Immediate:
       case ir.DeferTriggerKind.Timer:
         return;

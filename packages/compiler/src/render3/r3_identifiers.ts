@@ -253,6 +253,7 @@ export class Identifiers {
     moduleName: CORE,
   };
   static deferHydrateWhen: o.ExternalReference = {name: 'ɵɵdeferHydrateWhen', moduleName: CORE};
+  static deferHydrateNever: o.ExternalReference = {name: 'ɵɵdeferHydrateNever', moduleName: CORE};
   static deferHydrateOnIdle: o.ExternalReference = {
     name: 'ɵɵdeferHydrateOnIdle',
     moduleName: CORE,

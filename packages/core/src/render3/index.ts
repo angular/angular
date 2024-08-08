@@ -151,6 +151,7 @@ export {
   ɵɵdeferPrefetchOnInteraction,
   ɵɵdeferPrefetchOnViewport,
   ɵɵdeferHydrateWhen,
+  ɵɵdeferHydrateNever,
   ɵɵdeferHydrateOnIdle,
   ɵɵdeferHydrateOnImmediate,
   ɵɵdeferHydrateOnTimer,

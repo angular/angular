@@ -35,6 +35,35 @@ enum OnTriggerType {
   IMMEDIATE = 'immediate',
   HOVER = 'hover',
   VIEWPORT = 'viewport',
+  NEVER = 'never',
+}
+
+/** Parses a `when` deferred trigger. */
+export function parseNeverTrigger(
+  {expression, sourceSpan}: html.BlockParameter,
+  triggers: t.DeferredBlockTriggers,
+  errors: ParseError[],
+): void {
+  const neverIndex = expression.indexOf('never');
+  const neverSourceSpan = new ParseSourceSpan(
+    sourceSpan.start.moveBy(neverIndex),
+    sourceSpan.start.moveBy(neverIndex + 'never'.length),
+  );
+  const prefetchSpan = getPrefetchSpan(expression, sourceSpan);
+  const hydrateSpan = getHydrateSpan(expression, sourceSpan);
+
+  // This is here just to be safe, we shouldn't enter this function
+  // in the first place if a block doesn't have the "on" keyword.
+  if (neverIndex === -1) {
+    errors.push(new ParseError(sourceSpan, `Could not find "never" keyword in expression`));
+  } else {
+    trackTrigger(
+      'never',
+      triggers,
+      errors,
+      new t.NeverDeferredTrigger(neverSourceSpan, sourceSpan, prefetchSpan, null, hydrateSpan),
+    );
+  }
 }
 
 /** Parses a `when` deferred trigger. */
@@ -410,6 +439,21 @@ function trackTrigger(
   } else {
     allTriggers[name] = trigger as any;
   }
+}
+
+function createNeverTrigger(
+  parameters: string[],
+  nameSpan: ParseSourceSpan,
+  sourceSpan: ParseSourceSpan,
+  prefetchSpan: ParseSourceSpan | null,
+  onSourceSpan: ParseSourceSpan | null,
+  hydrateSpan: ParseSourceSpan | null,
+): t.NeverDeferredTrigger {
+  if (parameters.length > 0) {
+    throw new Error(`"${OnTriggerType.NEVER}" trigger cannot have parameters`);
+  }
+
+  return new t.NeverDeferredTrigger(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
 }
 
 function createIdleTrigger(

@@ -1010,6 +1010,10 @@ interface DeferImmediateTrigger extends DeferTriggerBase {
   kind: DeferTriggerKind.Immediate;
 }
 
+interface DeferNeverTrigger extends DeferTriggerBase {
+  kind: DeferTriggerKind.Never;
+}
+
 interface DeferHoverTrigger extends DeferTriggerWithTargetBase {
   kind: DeferTriggerKind.Hover;
 }
@@ -1037,7 +1041,8 @@ export type DeferTrigger =
   | DeferTimerTrigger
   | DeferHoverTrigger
   | DeferInteractionTrigger
-  | DeferViewportTrigger;
+  | DeferViewportTrigger
+  | DeferNeverTrigger;
 
 export interface DeferOnOp extends Op<CreateOp> {
   kind: OpKind.DeferOn;
