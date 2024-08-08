@@ -18,7 +18,7 @@ import {
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
-import {INPUT_BINDER} from './directives/router_outlet';
+import {INPUT_BINDER, standardizeConfig} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {
   BeforeActivateRoutes,
@@ -56,7 +56,6 @@ import {
 } from './url_tree';
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
-import {standardizeConfig} from './components/empty_outlet';
 
 function defaultErrorHandler(error: any): never {
   throw error;

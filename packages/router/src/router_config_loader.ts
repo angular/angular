@@ -22,7 +22,7 @@ import {finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
 import {DefaultExport, LoadedRouterConfig, Route, Routes} from './models';
 import {wrapIntoObservable} from './utils/collection';
 import {assertStandalone, validateConfig} from './utils/config';
-import {standardizeConfig} from './components/empty_outlet';
+import {standardizeConfig} from './directives/router_outlet';
 
 /**
  * The DI token for a router configuration.

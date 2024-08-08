@@ -222,6 +222,9 @@
     "name": "EmptyError"
   },
   {
+    "name": "EmptyOutletComponent"
+  },
+  {
     "name": "EmulatedEncapsulationDomRenderer2"
   },
   {
@@ -2152,9 +2155,6 @@
   },
   {
     "name": "{isArray:isArray}"
-  },
-  {
-    "name": "ɵEmptyOutletComponent"
   },
   {
     "name": "ɵɵInputTransformsFeature"

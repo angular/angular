@@ -24,12 +24,13 @@ import {
   SimpleChanges,
   ViewContainerRef,
   ɵRuntimeError as RuntimeError,
+  Component,
 } from '@angular/core';
-import {combineLatest, of, Subscription} from 'rxjs';
+import {combineLatest, of, Subject, Subscription} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from '../errors';
-import {Data} from '../models';
+import {Data, Route} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
@@ -213,6 +214,14 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private inputBinder = inject(INPUT_BINDER, {optional: true});
   /** @nodoc */
   readonly supportsBindingToComponentInputs = true;
+  private readonly hostEmptyOutlet = inject(EmptyOutletComponent, {host: true, optional: true});
+
+  /** @internal */
+  constructor() {
+    if (this.hostEmptyOutlet) {
+      this.hostEmptyOutlet.outlet = this;
+    }
+  }
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
@@ -286,7 +295,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
         RuntimeErrorCode.OUTLET_NOT_ACTIVATED,
         (typeof ngDevMode === 'undefined' || ngDevMode) && 'Outlet is not activated',
       );
-    return this.activated.instance;
+    const c = this.activated.instance;
+    if (c instanceof EmptyOutletComponent) {
+      return c.component;
+    }
+    return c;
   }
 
   get activatedRoute(): ActivatedRoute {
@@ -318,8 +331,14 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const cmp = this.activated;
     this.activated = null;
     this._activatedRoute = null;
-    this.detachEvents.emit(cmp.instance);
-    return cmp;
+    if (cmp.instance instanceof EmptyOutletComponent) {
+      // For the `EmptyOutletComponent` instances, the `detachEvents` are subscribed to and
+      // emitted in the `activateWith` function.
+      return cmp.instance.outlet?.activated ?? cmp;
+    } else {
+      this.detachEvents.emit(cmp.instance);
+      return cmp;
+    }
   }
 
   /**
@@ -330,7 +349,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this._activatedRoute = activatedRoute;
     this.location.insert(ref.hostView);
     this.inputBinder?.bindActivatedRouteToOutletComponent(this);
-    this.attachEvents.emit(ref.instance);
+    // For the `EmptyOutletComponent` instances, the `attachEvents` are subscribed to and
+    // emitted in the `activateWith` function.
+    if (!(ref.instance instanceof EmptyOutletComponent)) {
+      this.attachEvents.emit(ref.instance);
+    }
   }
 
   deactivate(): void {
@@ -339,7 +362,9 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       this.activated.destroy();
       this.activated = null;
       this._activatedRoute = null;
-      this.deactivateEvents.emit(c);
+      if (!(c instanceof EmptyOutletComponent)) {
+        this.deactivateEvents.emit(c);
+      }
     }
   }
 
@@ -367,7 +392,19 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
     this.inputBinder?.bindActivatedRouteToOutletComponent(this);
-    this.activateEvents.emit(this.activated.instance);
+    // If we have an empty outlet component, we want to instead proxy activate/deactivate events
+    // from the inner outlet
+    const c = this.activated.instance;
+    if (c instanceof EmptyOutletComponent) {
+      const sink = new Subscription();
+      sink.add(c.activateEvents.subscribe((ev: any) => this.activateEvents.emit(ev)));
+      sink.add(c.deactivateEvents.subscribe((ev: any) => this.deactivateEvents.emit(ev)));
+      sink.add(c.attachEvents.subscribe((ev: any) => this.attachEvents.emit(ev)));
+      sink.add(c.detachEvents.subscribe((ev: any) => this.detachEvents.emit(ev)));
+      c.destroy$.subscribe(() => sink.unsubscribe());
+    } else {
+      this.activateEvents.emit(this.activated.instance);
+    }
   }
 }
 
@@ -487,4 +524,77 @@ export class RoutedComponentInputBinder {
 
     this.outletDataSubscriptions.set(outlet, dataSubscription);
   }
+}
+/**
+ * This component is used internally within the router to be a placeholder when an empty
+ * router-outlet is needed. For example, with a config such as:
+ *
+ * `{path: 'parent', outlet: 'nav', children: [...]}`
+ *
+ * In order to render, there needs to be a component on this config, which will default
+ * to this `EmptyOutletComponent`.
+ *
+ * In order to avoid circular references this component was moved from its own file and placed here.
+ */
+@Component({
+  template: `<router-outlet 
+    (activate)="activateEvents.emit($event)" 
+    (deactivate)="deactivateEvents.emit($event)" 
+    (attach)="attachEvents.emit($event)" 
+    (detach)="detachEvents.emit($event)" />`,
+  standalone: true,
+  imports: [RouterOutlet],
+})
+export class EmptyOutletComponent {
+  @Output('activate') activateEvents = new EventEmitter<any>();
+  @Output('deactivate') deactivateEvents = new EventEmitter<any>();
+  @Output('attach') attachEvents = new EventEmitter<unknown>();
+  @Output('detach') detachEvents = new EventEmitter<unknown>();
+
+  outlet?: RouterOutlet;
+  destroy$ = new Subject<void>();
+
+  get component(): Object {
+    if (!this.outlet) {
+      return null as any;
+    }
+    return this.outlet.component;
+  }
+
+  get activatedRoute(): ActivatedRoute {
+    if (!this.outlet) {
+      return null as any;
+    }
+    return this.outlet.activatedRoute;
+  }
+
+  get activatedRouteData(): Data {
+    if (!this.activatedRoute) {
+      return {};
+    }
+    return this.activatedRoute.snapshot.data;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+}
+
+/**
+ * Makes a copy of the config and adds any default required properties.
+ */
+export function standardizeConfig(r: Route): Route {
+  const children = r.children && r.children.map(standardizeConfig);
+  const c = children ? {...r, children} : {...r};
+  if (
+    !c.component &&
+    !c.loadComponent &&
+    (children || c.loadChildren) &&
+    c.outlet &&
+    c.outlet !== PRIMARY_OUTLET
+  ) {
+    c.component = EmptyOutletComponent;
+  }
+  return c;
 }
