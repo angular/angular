@@ -1382,7 +1382,13 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   }
 
   private _runValidator(): ValidationErrors | null {
-    return this.validator ? this.validator(this) : null;
+    let result = this.validator?.(this) ?? null;
+
+    // We handle the case where the validator returns an empty object
+    if (result && Object.keys(result).length === 0) {
+      return null;
+    }
+    return result;
   }
 
   private _runAsyncValidator(shouldHaveEmitted: boolean, emitEvent?: boolean): void {

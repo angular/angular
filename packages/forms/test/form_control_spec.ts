@@ -7,7 +7,14 @@
  */
 
 import {fakeAsync, tick} from '@angular/core/testing';
-import {AsyncValidatorFn, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormArray,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 
 import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
@@ -405,6 +412,14 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         const c = new FormControl('1', minValidator);
         expect(c.hasValidator(minValidator)).toEqual(true);
         expect(c.hasValidator(Validators.min(5))).toEqual(false);
+      });
+
+      it('should consider empty object as valid', () => {
+        const validators = (ctrl: AbstractControl) => {
+          return {...Validators.max(5)(ctrl)};
+        };
+        const c = new FormControl('1', validators);
+        expect(c.valid).toEqual(true);
       });
     });
 
