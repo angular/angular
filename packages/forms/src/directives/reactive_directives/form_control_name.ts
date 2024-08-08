@@ -188,6 +188,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * @param newValue The new value for the view model.
    */
   override viewToModelUpdate(newValue: any): void {
+    this._syncControlValuesUnderSameFormGroup(newValue);
     this.viewModel = newValue;
     this.update.emit(newValue);
   }
@@ -230,5 +231,27 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     this._checkParentType();
     (this as Writable<this>).control = this.formDirective.addControl(this);
     this._added = true;
+  }
+
+  /**
+   * @description
+   * This method permits to sync form control values under the same form group when they share the
+   * same form control reference.
+   * @param newValue
+   * @private
+   */
+  private _syncControlValuesUnderSameFormGroup(newValue: any): void {
+    const isParentFormGroup = this._parent instanceof FormGroupDirective;
+    const isParentFormArray = this._parent instanceof FormArrayName;
+    if (isParentFormGroup || isParentFormArray) {
+      this.formDirective.directives.forEach((dir: FormControlName) => {
+        const sameControlReference = dir.control === this.control;
+        const differentDirective = dir !== this;
+        const differentName = dir.name !== this.name;
+        if (sameControlReference && differentDirective && differentName) {
+          dir.valueAccessor!.writeValue(newValue);
+        }
+      });
+    }
   }
 }
