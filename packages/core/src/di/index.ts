@@ -30,6 +30,7 @@ export {
   importProvidersFrom,
   ImportProvidersSource,
   makeEnvironmentProviders,
+  provideEnvironmentInitializer,
 } from './provider_collection';
 export {ENVIRONMENT_INITIALIZER} from './initializer_token';
 export {ProviderToken} from './provider_token';

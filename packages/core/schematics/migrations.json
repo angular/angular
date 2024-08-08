@@ -14,6 +14,11 @@
       "version": "18.1.0",
       "description": "Updates calls to afterRender with an explicit phase to the new API",
       "factory": "./migrations/after-render-phase/bundle"
+    },
+    "provide-initializer": {
+      "version": "18.1.0",
+      "description": "Replaces `APP_INITIALIZER`, 'ENVIRONMENT_INITIALIZER' & 'PLATFORM_INITIALIZER' respectively with `provideAppInitializer`, `provideEnvironmentInitializer` & `providePlatormInitializer`.",
+      "factory": "./migrations/provide-initializer/bundle"
     }
   }
 }

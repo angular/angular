@@ -25,6 +25,8 @@ jasmine_node_test(
         "//packages/core/schematics/migrations/http-providers:bundle",
         "//packages/core/schematics/migrations/invalid-two-way-bindings",
         "//packages/core/schematics/migrations/invalid-two-way-bindings:bundle",
+        "//packages/core/schematics/migrations/provide-initializer",
+        "//packages/core/schematics/migrations/provide-initializer:bundle",
         "//packages/core/schematics/ng-generate/control-flow-migration",
         "//packages/core/schematics/ng-generate/control-flow-migration:bundle",
         "//packages/core/schematics/ng-generate/control-flow-migration:static_files",

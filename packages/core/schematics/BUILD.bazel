@@ -23,6 +23,7 @@ pkg_npm(
         "//packages/core/schematics/migrations/after-render-phase:bundle",
         "//packages/core/schematics/migrations/http-providers:bundle",
         "//packages/core/schematics/migrations/invalid-two-way-bindings:bundle",
+        "//packages/core/schematics/migrations/provide-initializer:bundle",
         "//packages/core/schematics/ng-generate/control-flow-migration:bundle",
         "//packages/core/schematics/ng-generate/inject-migration:bundle",
         "//packages/core/schematics/ng-generate/route-lazy-loading:bundle",
