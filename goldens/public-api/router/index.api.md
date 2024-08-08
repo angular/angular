@@ -604,7 +604,7 @@ export type RedirectFunction = (redirectData: Pick<ActivatedRouteSnapshot, 'rout
 // @public
 export interface Resolve<T> {
     // (undocumented)
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T>;
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T | RedirectCommand>;
 }
 
 // @public
