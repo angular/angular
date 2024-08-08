@@ -18,7 +18,6 @@ import {
 } from '../api';
 
 import {LanguageService} from './language_service';
-import {isTypeScriptFile} from './utils';
 
 export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const {project, languageService, config} = info;
@@ -30,7 +29,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const ngLS = new LanguageService(project, tsLS, config);
 
   function getSyntacticDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
-    if (!angularOnly && isTypeScriptFile(fileName)) {
+    if (!angularOnly) {
       return tsLS.getSyntacticDiagnostics(fileName);
     }
 
@@ -50,7 +49,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
 
   function getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
-    if (!angularOnly && isTypeScriptFile(fileName)) {
+    if (!angularOnly) {
       diagnostics.push(...tsLS.getSemanticDiagnostics(fileName));
     }
     diagnostics.push(...ngLS.getSemanticDiagnostics(fileName));
@@ -58,7 +57,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   }
 
   function getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
+    if (angularOnly) {
       return ngLS.getQuickInfoAtPosition(fileName, position);
     } else {
       // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
@@ -73,7 +72,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     fileName: string,
     position: number,
   ): readonly ts.DefinitionInfo[] | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
+    if (angularOnly) {
       return ngLS.getTypeDefinitionAtPosition(fileName, position);
     } else {
       // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
@@ -88,7 +87,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     fileName: string,
     position: number,
   ): ts.DefinitionInfoAndBoundSpan | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
+    if (angularOnly) {
       return ngLS.getDefinitionAndBoundSpan(fileName, position);
     } else {
       // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
@@ -135,7 +134,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     position: number,
     options: ts.GetCompletionsAtPositionOptions,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
+    if (angularOnly) {
       return ngLS.getCompletionsAtPosition(fileName, position, options);
     } else {
       // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
@@ -155,7 +154,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     preferences: ts.UserPreferences | undefined,
     data: ts.CompletionEntryData | undefined,
   ): ts.CompletionEntryDetails | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
+    if (angularOnly) {
       return ngLS.getCompletionEntryDetails(
         fileName,
         position,
@@ -194,7 +193,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     name: string,
     source: string | undefined,
   ): ts.Symbol | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
+    if (angularOnly) {
       return ngLS.getCompletionEntrySymbol(fileName, position, name);
     } else {
       // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
@@ -221,7 +220,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     position: number,
     options: ts.SignatureHelpItemsOptions,
   ): ts.SignatureHelpItems | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
+    if (angularOnly) {
       return ngLS.getSignatureHelpItems(fileName, position, options);
     } else {
       return (
@@ -232,7 +231,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   }
 
   function getOutliningSpans(fileName: string): ts.OutliningSpan[] {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
+    if (angularOnly) {
       return ngLS.getOutliningSpans(fileName);
     } else {
       return tsLS.getOutliningSpans(fileName) ?? ngLS.getOutliningSpans(fileName);
@@ -293,7 +292,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     formatOptions: ts.FormatCodeSettings,
     preferences: ts.UserPreferences,
   ): readonly ts.CodeFixAction[] {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
+    if (angularOnly) {
       return ngLS.getCodeFixesAtPosition(
         fileName,
         start,
