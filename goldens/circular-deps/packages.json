@@ -108,30 +108,7 @@
     "packages/forms/src/directives/abstract_form_group_directive.ts",
     "packages/forms/src/directives/shared.ts",
     "packages/forms/src/directives/reactive_directives/form_group_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
-    "packages/forms/src/directives/control_container.ts",
-    "packages/forms/src/directives/form_interface.ts"
-  ],
-  [
-    "packages/forms/src/directives/abstract_form_group_directive.ts",
-    "packages/forms/src/directives/shared.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
-    "packages/forms/src/directives/form_interface.ts"
-  ],
-  [
-    "packages/forms/src/directives/abstract_form_group_directive.ts",
-    "packages/forms/src/directives/shared.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
-    "packages/forms/src/directives/reactive_directives/form_control_name.ts"
-  ],
-  [
-    "packages/forms/src/directives/abstract_form_group_directive.ts",
-    "packages/forms/src/directives/shared.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
-    "packages/forms/src/directives/reactive_directives/form_control_name.ts",
+    "packages/forms/src/directives/reactive_directives/abstract_form.directive.ts",
     "packages/forms/src/directives/control_container.ts",
     "packages/forms/src/directives/form_interface.ts"
   ],
@@ -145,33 +122,7 @@
     "packages/forms/src/directives/ng_model_group.ts"
   ],
   [
-    "packages/forms/src/directives/reactive_directives/form_control_directive.ts",
-    "packages/forms/src/directives/shared.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
-    "packages/forms/src/directives/reactive_directives/form_control_name.ts"
-  ],
-  [
-    "packages/forms/src/directives/reactive_directives/form_control_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts"
-  ],
-  [
-    "packages/forms/src/directives/reactive_directives/form_control_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts"
-  ],
-  [
-    "packages/forms/src/directives/reactive_directives/form_control_name.ts",
-    "packages/forms/src/directives/shared.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts"
-  ],
-  [
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_name.ts"
-  ],
-  [
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
+    "packages/forms/src/directives/reactive_directives/abstract_form.directive.ts",
     "packages/forms/src/directives/shared.ts",
     "packages/forms/src/directives/reactive_directives/form_group_name.ts"
   ],
