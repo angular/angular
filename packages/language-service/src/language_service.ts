@@ -363,8 +363,11 @@ export class LanguageService {
    *
    * Related context: https://github.com/angular/vscode-ng-language-service/pull/2050#discussion_r1673079263
    */
-  hasCodeFixesForErrorCode(errorCode: number): boolean {
-    return this.codeFixes.codeActionMetas.some((m) => m.errorCodes.includes(errorCode));
+  getSupportedCodeFixes(): readonly string[] {
+    return this.codeFixes.codeActionMetas
+      .map((meta) => meta.errorCodes)
+      .flat()
+      .map((code) => code + '');
   }
 
   getCodeFixesAtPosition(
@@ -375,11 +378,12 @@ export class LanguageService {
     formatOptions: ts.FormatCodeSettings,
     preferences: ts.UserPreferences,
   ): readonly ts.CodeFixAction[] {
+    const supportCodes = this.getSupportedCodeFixes();
     return this.withCompilerAndPerfTracing<readonly ts.CodeFixAction[]>(
       PerfPhase.LsCodeFixes,
       (compiler) => {
         // Fast exit if we know no code fix can exist for the given range/and error codes.
-        if (errorCodes.every((code) => !this.hasCodeFixesForErrorCode(code))) {
+        if (errorCodes.every((code) => !supportCodes.includes(code + ''))) {
           return [];
         }
 

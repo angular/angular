@@ -285,6 +285,14 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return ngLS.applyRefactoring(fileName, positionOrRange, refactorName, reportProgress);
   }
 
+  function getSupportedCodeFixes(fileName?: string): readonly string[] {
+    if (angularOnly || (fileName && !isTypeScriptFile(fileName))) {
+      return ngLS.getSupportedCodeFixes();
+    } else {
+      return tsLS.getSupportedCodeFixes(fileName);
+    }
+  }
+
   function getCodeFixesAtPosition(
     fileName: string,
     start: number,
@@ -360,7 +368,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getSignatureHelpItems,
     getOutliningSpans,
     getTemplateLocationForComponent,
-    hasCodeFixesForErrorCode: ngLS.hasCodeFixesForErrorCode.bind(ngLS),
+    getSupportedCodeFixes,
     getCodeFixesAtPosition,
     getCombinedCodeFix,
     getTypescriptLanguageService,
