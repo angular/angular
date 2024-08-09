@@ -49,7 +49,7 @@ export function patchCallbacks(
       });
     }
 
-    return nativeDelegate.call(target, name, opts, options);
+    return nativeDelegate.call(this, name, opts, options);
   };
 
   api.attachOriginToPatched(target[method], nativeDelegate);
