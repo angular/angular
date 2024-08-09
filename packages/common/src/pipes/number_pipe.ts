@@ -211,28 +211,6 @@ export class CurrencyPipe implements PipeTransform {
     @Inject(LOCALE_ID) private _locale: string,
     @Inject(DEFAULT_CURRENCY_CODE) private _defaultCurrencyCode: string = 'USD',
   ) {}
-
-  transform(
-    value: number | string,
-    currencyCode?: string,
-    display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean,
-    digitsInfo?: string,
-    locale?: string,
-  ): string | null;
-  transform(
-    value: null | undefined,
-    currencyCode?: string,
-    display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean,
-    digitsInfo?: string,
-    locale?: string,
-  ): null;
-  transform(
-    value: number | string | null | undefined,
-    currencyCode?: string,
-    display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean,
-    digitsInfo?: string,
-    locale?: string,
-  ): string | null;
   /**
    *
    * @param value The number to be formatted as currency.
@@ -266,6 +244,27 @@ export class CurrencyPipe implements PipeTransform {
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n/locale-id).
    */
+  transform(
+    value: number | string,
+    currencyCode?: string,
+    display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean,
+    digitsInfo?: string,
+    locale?: string,
+  ): string | null;
+  transform(
+    value: null | undefined,
+    currencyCode?: string,
+    display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean,
+    digitsInfo?: string,
+    locale?: string,
+  ): null;
+  transform(
+    value: number | string | null | undefined,
+    currencyCode?: string,
+    display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean,
+    digitsInfo?: string,
+    locale?: string,
+  ): string | null;
   transform(
     value: number | string | null | undefined,
     currencyCode: string = this._defaultCurrencyCode,
