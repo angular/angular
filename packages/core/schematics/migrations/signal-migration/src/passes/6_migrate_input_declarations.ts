@@ -13,6 +13,7 @@ import {convertToSignalInput} from '../convert-input/convert_to_signal';
 import assert from 'assert';
 import {MigrationHost} from '../migration_host';
 import {KnownInputs} from '../input_detection/known_inputs';
+import {ImportManager} from '../../../../../../compiler-cli/src/ngtsc/translator';
 
 /**
  * Phase that migrates `@Input()` declarations to signal inputs and
@@ -23,6 +24,7 @@ export function pass6__migrateInputDeclarations(
   checker: ts.TypeChecker,
   result: MigrationResult,
   knownInputs: KnownInputs,
+  importManager: ImportManager,
 ) {
   let filesWithMigratedInputs = new Set<ts.SourceFile>();
   let filesWithIncompatibleInputs = new WeakSet<ts.SourceFile>();
@@ -44,65 +46,15 @@ export function pass6__migrateInputDeclarations(
       new Replacement(
         input.node.getStart(),
         input.node.getEnd(),
-        convertToSignalInput(host, input.node, metadata, checker),
+        convertToSignalInput(host, input.node, metadata, checker, importManager),
       ),
     );
   }
 
-  // TODO: Consider using import manager for conflicts. but also in `convert_to_signal` then.
-
   for (const file of filesWithMigratedInputs) {
-    const specifiers = result.inputDecoratorSpecifiers.get(file);
-    assert(specifiers !== undefined, `No imports in source file of input: ${file.fileName}`);
-
-    const decoratorInputSpecifier = specifiers.find((s) => s.kind === 'decorator-input-import');
-    assert(decoratorInputSpecifier, 'Expected at least one import to "Input"');
-
-    const signalInputSpecifier = specifiers.find((s) => s.kind === 'signal-input-import');
-
-    if (filesWithIncompatibleInputs.has(file)) {
-      // add `input`, but not remove `Input`. Both are needed still.
-      if (signalInputSpecifier === undefined) {
-        result.addReplacement(
-          file.fileName,
-          new Replacement(
-            decoratorInputSpecifier.node.getEnd(),
-            decoratorInputSpecifier.node.getEnd(),
-            ', input',
-          ),
-        );
-      }
-    } else {
-      // replace `Input` with `input`. All migrated in this file.
-      if (signalInputSpecifier === undefined) {
-        result.addReplacement(
-          file.fileName,
-          new Replacement(
-            decoratorInputSpecifier.node.getStart(),
-            decoratorInputSpecifier.node.getEnd(),
-            'input',
-          ),
-        );
-      } else {
-        const elements = decoratorInputSpecifier.node.parent.elements;
-        const indexOfSpecifier = elements.findIndex((c) => c === decoratorInputSpecifier.node);
-
-        let start = decoratorInputSpecifier.node.getStart();
-        let end = decoratorInputSpecifier.node.getEnd();
-
-        // Either collapse (the comman between specifiers) with the preceding element,
-        // or with the following if present.
-        if (indexOfSpecifier > 0) {
-          start = elements[indexOfSpecifier - 1].getEnd();
-        } else {
-          if (elements.length > indexOfSpecifier + 1) {
-            end = elements[indexOfSpecifier + 1].getStart();
-          }
-        }
-
-        // We already have `input` in source code. Remove `Input` completely.
-        result.addReplacement(file.fileName, new Replacement(start, end, ''));
-      }
+    // All inputs were migrated, so we can safely remove the `Input` symbol.
+    if (!filesWithIncompatibleInputs.has(file)) {
+      importManager.removeImport(file, 'Input', '@angular/core');
     }
   }
 }

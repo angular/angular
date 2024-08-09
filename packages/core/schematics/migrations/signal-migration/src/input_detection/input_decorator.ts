@@ -34,7 +34,6 @@ import {InputNode, isInputContainerNode} from '../input_detection/input_node';
 /** Metadata extracted of an input declaration (in `.ts` or `.d.ts` files). */
 export interface ExtractedInput extends InputMapping {
   inSourceFile: boolean;
-  inputDecoratorRef: DecoratorIdentifier | null;
 }
 
 /** Attempts to extract metadata of a potential TypeScript `@Input()` declaration. */
@@ -87,7 +86,6 @@ function extractDtsInput(node: ts.Node, metadataReader: DtsMetadataReader): Extr
     ? null
     : {
         ...inputMapping,
-        inputDecoratorRef: null,
         inSourceFile: false,
       };
 }
@@ -152,7 +150,6 @@ function extractSourceCodeInput(
     isSignal: false,
     inSourceFile: true,
     transform: transformResult,
-    inputDecoratorRef: inputDecorator.identifier,
   };
 }
 
