@@ -16,13 +16,14 @@ import {executeAnalysisPhase} from './phase_analysis';
 import {executeMigrationPhase} from './phase_migrate';
 import {MigrationResult} from './result';
 import {writeMigrationReplacements} from './write_replacements';
+import {nonIgnorableIncompatibilities} from './input_detection/incompatibility';
 
-main(path.resolve(process.argv[2]));
+main(path.resolve(process.argv[2]), process.argv.includes('--best-effort-mode'));
 
 /**
  * Runs the signal input migration for the given TypeScript project.
  */
-export function main(absoluteTsconfigPath: string) {
+export function main(absoluteTsconfigPath: string, bestEffortMode: boolean) {
   const analysisDeps = createAndPrepareAnalysisProgram(absoluteTsconfigPath);
   const {tsHost, tsconfig, basePath, sourceFiles, metaRegistry} = analysisDeps;
   const knownInputs = new KnownInputs();
@@ -35,8 +36,21 @@ export function main(absoluteTsconfigPath: string) {
   );
 
   const {inheritanceGraph} = executeAnalysisPhase(host, knownInputs, result, analysisDeps);
-
   pass4__checkInheritanceOfInputs(host, inheritanceGraph, metaRegistry, knownInputs);
+
+  // Remove all "ignorable" incompatibilities of inputs, if best effort mode is requested.
+  if (bestEffortMode) {
+    knownInputs.knownInputIds.forEach(({container: c}) => {
+      if (c.incompatible !== null && !nonIgnorableIncompatibilities.includes(c.incompatible)) {
+        c.incompatible = null;
+      }
+      for (const [key, i] of c.memberIncompatibility.entries()) {
+        if (!nonIgnorableIncompatibilities.includes(i.reason)) {
+          c.memberIncompatibility.delete(key);
+        }
+      }
+    });
+  }
 
   executeMigrationPhase(host, knownInputs, result, analysisDeps);
 

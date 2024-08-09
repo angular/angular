@@ -15,6 +15,7 @@ import {getMemberName} from '../utils/class_member_names';
 import {InheritanceGraph} from '../utils/inheritance_graph';
 import {SpyOnInputPattern} from '../pattern_advisors/spy_on_pattern';
 import {MigrationHost} from '../migration_host';
+import {GroupedTsAstVisitor} from '../utils/grouped_ts_ast_visitor';
 
 /**
  * Phase where problematic patterns are detected and advise
@@ -28,9 +29,9 @@ import {MigrationHost} from '../migration_host';
  */
 export function pass3__checkIncompatiblePatterns(
   host: MigrationHost,
-  files: readonly ts.SourceFile[],
   inheritanceGraph: InheritanceGraph,
   checker: ts.TypeChecker,
+  groupedTsAstVisitor: GroupedTsAstVisitor,
   knownInputs: KnownInputs,
 ) {
   const inputClassSymbolsToClass = new Map<ts.Symbol, ts.ClassDeclaration>();
@@ -105,7 +106,7 @@ export function pass3__checkIncompatiblePatterns(
 
         knownInputs.markDirectiveAsIncompatible(
           inputClassSymbolsToClass.get(newTarget)!,
-          ClassIncompatibilityReason.ClassReferencedInPotentiallyBadLocation,
+          ClassIncompatibilityReason.InputOwningClassReferencedInClassProperty,
         );
       }
     }
@@ -120,5 +121,5 @@ export function pass3__checkIncompatiblePatterns(
     }
   };
 
-  files.forEach((f) => ts.forEachChild(f, visitor));
+  groupedTsAstVisitor.register(visitor);
 }

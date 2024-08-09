@@ -59,8 +59,10 @@ export function pass5__migrateTypeScriptReferences(
     if (knownInputs.get(reference.target)!.isIncompatible()) {
       continue;
     }
-    // TODO: Skip references migration for accessor inputs.
-    if (ts.isAccessor(reference.target.node)) {
+    // Never attempt to migrate write references.
+    // Those usually invalidate the target input most of the time, but in
+    // best-effort mode they are not.
+    if (reference.from.isWrite) {
       continue;
     }
     // Skip duplicate references. E.g. in batching.

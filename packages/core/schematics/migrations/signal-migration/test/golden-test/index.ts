@@ -46,8 +46,6 @@ export class AppComponent {
     (() => {
       // might be a different input value now?!
       // No! it can't because we don't allow writes to "input"!!.
-      // TODO: This assumption may change if we have a "best effort" mode where we still
-      // migrate e.g. `"input" even if we see writes.
       console.log(this.input.substring(0));
     })();
   }

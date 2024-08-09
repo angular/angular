@@ -17,7 +17,7 @@ export enum InputIncompatibilityReason {
   TypeConflictWithBaseClass,
   ParentIsIncompatible,
   SpyOnThatOverwritesField,
-  NarrowedInTemplateButNotSupportedYetTODO,
+  PotentiallyNarrowedInTemplateButNoSupportYet,
   IgnoredBecauseOfLanguageServiceRefactoringRange,
   RequiredInputButNoGoodExplicitTypeExtractable,
 }
@@ -25,7 +25,7 @@ export enum InputIncompatibilityReason {
 /** Reasons why a whole class and its inputs cannot be migrated. */
 export enum ClassIncompatibilityReason {
   ClassManuallyInstantiated,
-  ClassReferencedInPotentiallyBadLocation,
+  InputOwningClassReferencedInClassProperty,
 }
 
 /** Description of an input incompatibility and some helpful debug context. */
@@ -33,6 +33,16 @@ export interface InputMemberIncompatibility {
   reason: InputIncompatibilityReason;
   context: ts.Node | null;
 }
+
+/** Reasons that cannot be ignored. */
+export const nonIgnorableIncompatibilities: Array<
+  InputIncompatibilityReason | ClassIncompatibilityReason
+> = [
+  // There is no good output for accessor inputs.
+  InputIncompatibilityReason.Accessor,
+  // There is no good output for such inputs. We can't perform "conversion".
+  InputIncompatibilityReason.RequiredInputButNoGoodExplicitTypeExtractable,
+];
 
 /** Whether the given value refers to an input member incompatibility. */
 export function isInputMemberIncompatibility(value: unknown): value is InputMemberIncompatibility {
