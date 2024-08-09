@@ -17,7 +17,7 @@ export enum InputIncompatibilityReason {
   TypeConflictWithBaseClass,
   ParentIsIncompatible,
   SpyOnThatOverwritesField,
-  NarrowedInTemplateButNotSupportedYetTODO,
+  PotentiallyNarrowedInTemplateButNoSupportYet,
   IgnoredBecauseOfLanguageServiceRefactoringRange,
   RequiredInputButNoGoodExplicitTypeExtractable,
 }
