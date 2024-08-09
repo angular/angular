@@ -22,6 +22,7 @@ ng_module(
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/pipes",
         "//adev/shared-docs/services",
+        "//packages/common",
         "//packages/core",
         "//packages/forms",
         "//packages/router",
