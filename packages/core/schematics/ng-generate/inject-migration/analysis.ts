@@ -9,7 +9,6 @@
 import ts from 'typescript';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {getNamedImports} from '../../utils/typescript/imports';
-import {isReferenceToImport} from '../../utils/typescript/symbol';
 
 /** Names of decorators that enable DI on a class declaration. */
 const DECORATORS_SUPPORTING_DI = new Set([
@@ -124,10 +123,12 @@ export function analyzeFile(sourceFile: ts.SourceFile, localTypeChecker: ts.Type
  * Returns the parameters of a function that aren't used within its body.
  * @param declaration Function in which to search for unused parameters.
  * @param localTypeChecker Type checker scoped to the file in which the function was declared.
+ * @param removedStatements Statements that were already removed from the constructor.
  */
 export function getConstructorUnusedParameters(
   declaration: ts.ConstructorDeclaration,
   localTypeChecker: ts.TypeChecker,
+  removedStatements: Set<ts.Statement> | null,
 ): Set<ts.Declaration> {
   const accessedTopLevelParameters = new Set<ts.Declaration>();
   const topLevelParameters = new Set<ts.Declaration>();
@@ -147,6 +148,11 @@ export function getConstructorUnusedParameters(
   }
 
   declaration.body.forEachChild(function walk(node) {
+    // Don't descend into statements that were removed already.
+    if (removedStatements && ts.isStatement(node) && removedStatements.has(node)) {
+      return;
+    }
+
     if (!ts.isIdentifier(node) || !topLevelParameterNames.has(node.text)) {
       node.forEachChild(walk);
       return;
@@ -154,11 +160,7 @@ export function getConstructorUnusedParameters(
 
     // Don't consider `this.<name>` accesses as being references to
     // parameters since they'll be moved to property declarations.
-    if (
-      ts.isPropertyAccessExpression(node.parent) &&
-      node.parent.expression.kind === ts.SyntaxKind.ThisKeyword &&
-      node.parent.name === node
-    ) {
+    if (isAccessedViaThis(node)) {
       return;
     }
 
@@ -285,6 +287,15 @@ export function hasGenerics(node: ts.TypeNode): boolean {
   }
 
   return false;
+}
+
+/** Checks whether an identifier is accessed through `this`, e.g. `this.<some identifier>`. */
+export function isAccessedViaThis(node: ts.Identifier): boolean {
+  return (
+    ts.isPropertyAccessExpression(node.parent) &&
+    node.parent.expression.kind === ts.SyntaxKind.ThisKeyword &&
+    node.parent.name === node
+  );
 }
 
 /** Finds a `super` call inside of a specific node. */

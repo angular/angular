@@ -20,6 +20,8 @@ import {
 } from './analysis';
 import {getAngularDecorators} from '../../utils/ng_decorators';
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
+import {closestNode} from '../../utils/typescript/nodes';
+import {findUninitializedPropertiesToCombine} from './internal';
 
 /**
  * Placeholder used to represent expressions inside the AST.
@@ -30,13 +32,32 @@ const PLACEHOLDER = 'ɵɵngGeneratePlaceholderɵɵ';
 /** Options that can be used to configure the migration. */
 export interface MigrationOptions {
   /** Whether to generate code that keeps injectors backwards compatible. */
-  backwardsCompatibleConstructors: boolean;
+  backwardsCompatibleConstructors?: boolean;
 
   /** Whether to migrate abstract classes. */
-  migrateAbstractClasses: boolean;
+  migrateAbstractClasses?: boolean;
 
   /** Whether to make the return type of `@Optinal()` parameters to be non-nullable. */
-  nonNullableOptional: boolean;
+  nonNullableOptional?: boolean;
+
+  /**
+   * Internal-only option that determines whether the migration should try to move the
+   * initializers of class members from the constructor back into the member itself. E.g.
+   *
+   * ```
+   * // Before
+   * private foo;
+   *
+   * constructor(@Inject(BAR) private bar: Bar) {
+   *   this.foo = this.bar.getValue();
+   * }
+   *
+   * // After
+   * private bar = inject(BAR);
+   * private foo = this.bar.getValue();
+   * ```
+   */
+  _internalCombineMemberInitializers?: boolean;
 }
 
 /**
@@ -60,12 +81,45 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
   const printer = ts.createPrinter();
   const tracker = new ChangeTracker(printer);
 
-  analysis.classes.forEach((result) => {
+  analysis.classes.forEach(({node, constructor, superCall}) => {
+    let removedStatements: Set<ts.Statement> | null = null;
+
+    if (options._internalCombineMemberInitializers) {
+      findUninitializedPropertiesToCombine(node, constructor, localTypeChecker)?.forEach(
+        (initializer, property) => {
+          const statement = closestNode(initializer, ts.isStatement);
+
+          if (!statement) {
+            return;
+          }
+
+          const newProperty = ts.factory.updatePropertyDeclaration(
+            property,
+            property.modifiers,
+            property.name,
+            property.questionToken,
+            property.type,
+            initializer,
+          );
+          tracker.replaceText(
+            statement.getSourceFile(),
+            statement.getFullStart(),
+            statement.getFullWidth(),
+            '',
+          );
+          tracker.replaceNode(property, newProperty);
+          removedStatements = removedStatements || new Set();
+          removedStatements.add(statement);
+        },
+      );
+    }
+
     migrateClass(
-      result.node,
-      result.constructor,
-      result.superCall,
+      node,
+      constructor,
+      superCall,
       options,
+      removedStatements,
       localTypeChecker,
       printer,
       tracker,
@@ -88,6 +142,7 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
  * @param constructor Reference to the class' constructor node.
  * @param superCall Reference to the constructor's `super()` call, if any.
  * @param options Options used to configure the migration.
+ * @param removedStatements Statements that have been removed from the constructor already.
  * @param localTypeChecker Type checker set up for the specific file.
  * @param printer Printer used to output AST nodes as strings.
  * @param tracker Object keeping track of the changes made to the file.
@@ -97,6 +152,7 @@ function migrateClass(
   constructor: ts.ConstructorDeclaration,
   superCall: ts.CallExpression | null,
   options: MigrationOptions,
+  removedStatements: Set<ts.Statement> | null,
   localTypeChecker: ts.TypeChecker,
   printer: ts.Printer,
   tracker: ChangeTracker,
@@ -110,12 +166,20 @@ function migrateClass(
   }
 
   const sourceFile = node.getSourceFile();
-  const unusedParameters = getConstructorUnusedParameters(constructor, localTypeChecker);
+  const unusedParameters = getConstructorUnusedParameters(
+    constructor,
+    localTypeChecker,
+    removedStatements,
+  );
   const superParameters = superCall
     ? getSuperParameters(constructor, superCall, localTypeChecker)
     : null;
   const memberIndentation = getNodeIndentation(node.members[0]);
-  const innerReference = superCall || constructor.body?.statements[0] || constructor;
+  const removedStatementCount = removedStatements?.size || 0;
+  const innerReference =
+    superCall ||
+    constructor.body?.statements.find((statement) => !removedStatements?.has(statement)) ||
+    constructor;
   const innerIndentation = getNodeIndentation(innerReference);
   const propsToAdd: string[] = [];
   const prependToConstructor: string[] = [];
@@ -154,7 +218,7 @@ function migrateClass(
 
   if (
     !options.backwardsCompatibleConstructors &&
-    (!constructor.body || constructor.body.statements.length === 0)
+    (!constructor.body || constructor.body.statements.length - removedStatementCount === 0)
   ) {
     // Drop the constructor if it was empty.
     removedMembers.add(constructor);
