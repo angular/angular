@@ -751,6 +751,20 @@ import { input } from '@angular/core';
 class Required {
   simpleInput = input.required<string>();
 }
+@@@@@@ safe_property_reads.ts @@@@@@
+
+import { Component, input } from '@angular/core';
+
+@Component({
+  template: `
+    {{bla?.myInput()}}
+  `,
+})
+class WithSafePropertyReads {
+  myInput = input(0);
+
+  bla: this | undefined = this;
+}
 @@@@@@ scope_sharing.ts @@@@@@
 
 // tslint:disable
