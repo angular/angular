@@ -36,7 +36,7 @@ if (diskGolden !== golden) {
     fs.writeFileSync(
       path.join(
         process.env['BUILD_WORKING_DIRECTORY'],
-        'packages/core/schematics/migrations/signal-migration/test/golden.txt',
+        `packages/core/schematics/migrations/signal-migration/test/${goldenPath}`,
       ),
       golden,
     );

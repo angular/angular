@@ -74,6 +74,7 @@ export function extract(absoluteTsconfigPath: string) {
           from: {
             fileId: r.from.fileId,
             node: {positionEndInFile: r.from.node.getEnd()},
+            isWrite: r.from.isWrite,
           },
         };
       } else if (isHostBindingInputReference(r)) {

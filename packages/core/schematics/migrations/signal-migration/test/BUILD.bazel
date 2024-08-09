@@ -50,6 +50,25 @@ integration_test(
 )
 
 integration_test(
+    name = "test_best_effort",
+    srcs = [
+        "golden_best_effort.txt",
+        "//packages/core/schematics/migrations/signal-migration/test/golden-test:test_files",
+    ],
+    commands = [
+        "$(rootpath //packages/core/schematics/migrations/signal-migration/src:bin) ./golden-test/tsconfig.json --best-effort-mode",
+        "$(rootpath :golden_test_runner) ./golden-test ./golden_best_effort.txt",
+    ],
+    data = [
+        ":golden_test_runner",
+        "//packages/core/schematics/migrations/signal-migration/src:bin",
+    ],
+    environment = {
+        "FORCE_COLOR": "3",
+    },
+)
+
+integration_test(
     name = "test_batch",
     size = "large",
     srcs = [
