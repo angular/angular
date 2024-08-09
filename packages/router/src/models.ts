@@ -1214,7 +1214,10 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * @see {@link ResolveFn}
  */
 export interface Resolve<T> {
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T>;
+  resolve(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
+  ): MaybeAsync<T | RedirectCommand>;
 }
 
 /**
