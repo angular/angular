@@ -1,4 +1,5 @@
-<nav class="devtools-nav" #navBar mat-tab-nav-bar [color]="'accent'" [tabPanel]="tabPanel">
+<nav class="devtools-nav" #navBar mat-tab-nav-bar [color]="'accent'"
+  [tabPanel]="tabPanel">
   <div id="nav-buttons">
     <button (click)="toggleInspector()" matTooltip="Inspect element">
       <mat-icon [class.inspector-active]="inspectorRunning"> pin_end </mat-icon>
@@ -11,98 +12,118 @@
     </button>
   </div>
 
-  <select matTooltip="Select a frame to inspect with Angular Devtools" class="frame-selector" (change)="emitSelectedFrame($event.target.value)">
+  <select
+    matTooltip="Select a frame to inspect with Angular Devtools"
+    class="frame-selector"
+    (change)="emitSelectedFrame($event.target.value)">
     @for (frame of frameManager.frames; track frame.id) {
-      <option [value]="frame.id" [selected]="frameManager.isSelectedFrame(frame)">
-        @if (frame.id === TOP_LEVEL_FRAME_ID) {
-          top
-        } @else {
-          {{ frame.name }} ({{ frame.id }})
-        }
-      </option>
+    <option [value]="frame.id" [selected]="frameManager.isSelectedFrame(frame)">
+      @if (frame.id === TOP_LEVEL_FRAME_ID) {
+      top
+      } @else {
+      {{ frame.name }} ({{ frame.id }})
+      }
+    </option>
     } @empty {
-      <option value="0" selected>top</option>
+    <option value="0" selected>top</option>
     }
   </select>
 
   @for (tab of tabs; track $index) {
-    <a class="mat-tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab === tab">
-      {{ tab }}
-    </a>
+  <a class="mat-tab-link" mat-tab-link (click)="changeTab(tab)"
+    [active]="activeTab === tab">
+    {{ tab }}
+  </a>
   }
   @if (angularVersion()) {
-    <section id="app-angular-version">
-      Angular version:
+  <section id="app-angular-version">
+    Angular version:
 
-      @if (majorAngularVersion() > 12 || majorAngularVersion() == 0) {
-        <span id="version-number">
-          {{ angularVersion() }}
-        </span>
-      } @else {
-        <span 
-          id="version-number"
-          matTooltip="
+    @if (majorAngularVersion() > 12 || majorAngularVersion() == 0) {
+    <span id="version-number">
+      {{ angularVersion() }}
+    </span>
+    } @else {
+    <span
+      id="version-number"
+      matTooltip="
             Angular Devtools supports Angular versions 12 and above. Some DevTools features may be available in 
             older versions of Angular, but it is not officially supported.
           "
-          class="unsupported-version"
-          >
-          {{ angularVersion() }} (unsupported)
-        </span>
-      }
+      class="unsupported-version">
+      {{ angularVersion() }} (unsupported)
+    </span>
+    }
 
-      | DevTools: {{ extensionVersion }}
-    </section>
+    | DevTools: {{ extensionVersion }}
+  </section>
   }
 </nav>
 
 <mat-tab-nav-panel #tabPanel>
-  @if (!applicationEnvironment.frameSelectorEnabled || frameManager.selectedFrame !== null) {
-    <div class="tab-content">
-      <ng-directive-explorer
-        [showCommentNodes]="showCommentNodes"
-        [isHydrationEnabled]="isHydrationEnabled"
-        [class.hidden]="activeTab !== 'Components'"
-        (toggleInspector)="toggleInspector()"
-      />
-      <ng-profiler [class.hidden]="activeTab !== 'Profiler'"/>
-      <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'"/>
-      <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'"/>
-    </div>
+  @if (!applicationEnvironment.frameSelectorEnabled ||
+  frameManager.selectedFrame !== null) {
+  <div class="tab-content">
+    <ng-directive-explorer
+      [showCommentNodes]="showCommentNodes"
+      [isHydrationEnabled]="isHydrationEnabled"
+      [class.hidden]="activeTab !== 'Components'"
+      (toggleInspector)="toggleInspector()" />
+    <ng-profiler [class.hidden]="activeTab !== 'Profiler'" />
+    <ng-router-tree [routes]="routes"
+      [class.hidden]="activeTab !== 'Router Tree'" />
+    <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'" />
+  </div>
   }
 </mat-tab-nav-panel>
 
 <mat-menu #menu="matMenu">
   @if (!profilingNotificationsSupported) {
-    <div mat-menu-item disableRipple (click)="$event.stopPropagation(); toggleTimingAPI()">
-      <mat-slide-toggle [checked]="timingAPIEnabled">
-        Enable timing API
-      </mat-slide-toggle>
-    </div>
+  <div mat-menu-item disableRipple
+    (click)="$event.stopPropagation(); toggleTimingAPI()">
+    <mat-slide-toggle [checked]="timingAPIEnabled">
+      Enable timing API
+    </mat-slide-toggle>
+  </div>
   }
-  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); themeService.toggleDarkMode(currentTheme === 'light-theme')">
+  <div mat-menu-item disableRipple
+    (click)="$event.stopPropagation(); themeService.toggleDarkMode(currentTheme === 'light-theme')">
     <mat-slide-toggle [checked]="currentTheme === 'dark-theme'">
       Dark Mode
     </mat-slide-toggle>
+    <div mat-menu-item disableRipple
+      (click)="$event.stopPropagation(); toggleTimingAPI()">
+      <mat-slide-toggle [checked]="timingAPIEnabled"> Enable timing API
+      </mat-slide-toggle>
+    </div>
+    <div
+      mat-menu-item
+      disableRipple
+      (click)="$event.stopPropagation(); themeService.toggleDarkMode(currentTheme === 'light-theme')">
+      <mat-slide-toggle [checked]="currentTheme === 'dark-theme'"> Dark Mode
+      </mat-slide-toggle>
+    </div>
+    <div
+      mat-menu-item
+      disableRipple
+      (click)="$event.stopPropagation(); showCommentNodes = $event.checked">
+      <mat-slide-toggle [checked]="showCommentNodes"> Show comment nodes
+      </mat-slide-toggle>
+    </div>
   </div>
-  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); showCommentNodes = $event.checked">
-    <mat-slide-toggle [checked]="showCommentNodes">
-      Show comment nodes
-    </mat-slide-toggle>
-  </div>
-</mat-menu>
 
-<mat-menu #info="matMenu">
-  <a mat-menu-item href="https://angular.dev/tools/devtools" target="_blank">
-    <mat-icon>library_books</mat-icon>
-    Guide
-  </a>
-  <a mat-menu-item href="https://github.com/angular/angular" target="_blank">
-    <mat-icon>launch</mat-icon>
-    GitHub
-  </a>
-  <a mat-menu-item href="https://github.com/angular/angular/issues" target="_blank">
-    <mat-icon>bug_report</mat-icon>
-    Issues
-  </a>
-</mat-menu>
+  <mat-menu #info="matMenu">
+    <a mat-menu-item href="https://angular.dev/tools/devtools" target="_blank">
+      <mat-icon>library_books</mat-icon>
+      Guide
+    </a>
+    <a mat-menu-item href="https://github.com/angular/angular" target="_blank">
+      <mat-icon>launch</mat-icon>
+      GitHub
+    </a>
+    <a mat-menu-item href="https://github.com/angular/angular/issues"
+      target="_blank">
+      <mat-icon>bug_report</mat-icon>
+      Issues
+    </a>
+  </mat-menu>
