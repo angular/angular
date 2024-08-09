@@ -17,6 +17,7 @@ import {
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
+  SafePropertyRead,
   ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
@@ -274,12 +275,15 @@ export class TemplateExpressionReferenceVisitor<ExprContext> extends RecursiveAs
     super.visitLiteralMap(ast, context);
   }
 
-  // TODO: Consider safe property reads/writes.
-
   override visitPropertyRead(ast: PropertyRead) {
     this._inspectPropertyAccess(ast);
     super.visitPropertyRead(ast, null);
   }
+  override visitSafePropertyRead(ast: SafePropertyRead) {
+    this._inspectPropertyAccess(ast);
+    super.visitPropertyRead(ast, null);
+  }
+
   override visitPropertyWrite(ast: PropertyWrite) {
     this._inspectPropertyAccess(ast);
     super.visitPropertyWrite(ast, null);
