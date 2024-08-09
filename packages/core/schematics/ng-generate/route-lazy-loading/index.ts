@@ -22,14 +22,13 @@ interface Options {
 
 export default function (options: Options): Rule {
   return async (tree, context) => {
-    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
+    const {buildPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
-    const allPaths = [...buildPaths, ...testPaths];
     // TS and Schematic use paths in POSIX format even on Windows. This is needed as otherwise
     // string matching such as `sourceFile.fileName.startsWith(pathToMigrate)` might not work.
     const pathToMigrate = normalizePath(join(basePath, options.path));
 
-    if (!allPaths.length) {
+    if (!buildPaths.length) {
       throw new SchematicsException(
         'Could not find any tsconfig file. Cannot run the route lazy loading migration.',
       );
@@ -38,7 +37,7 @@ export default function (options: Options): Rule {
     let migratedRoutes: RouteMigrationData[] = [];
     let skippedRoutes: RouteMigrationData[] = [];
 
-    for (const tsconfigPath of allPaths) {
+    for (const tsconfigPath of buildPaths) {
       const {migratedRoutes: migrated, skippedRoutes: skipped} = standaloneRoutesMigration(
         tree,
         tsconfigPath,
