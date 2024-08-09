@@ -74,19 +74,23 @@ export function identifyPotentialTypeScriptReference(
     return;
   }
 
+  const accessParent = unwrapParent(traverseAccess(node).parent);
+  const isWriteReference =
+    ts.isBinaryExpression(accessParent) &&
+    writeBinaryOperators.includes(accessParent.operatorToken.kind);
+
   // track accesses from source files to inputs.
   result.references.push({
     kind: InputReferenceKind.TsInputReference,
-    from: {fileId: host.fileToId(node.getSourceFile()), node},
+    from: {
+      node,
+      fileId: host.fileToId(node.getSourceFile()),
+      isWrite: isWriteReference,
+    },
     target: targetInput?.descriptor,
   });
 
-  const accessParent = unwrapParent(traverseAccess(node).parent);
-
-  if (
-    ts.isBinaryExpression(accessParent) &&
-    writeBinaryOperators.includes(accessParent.operatorToken.kind)
-  ) {
+  if (isWriteReference) {
     knownInputs.markInputAsIncompatible(targetInput.descriptor, {
       context: accessParent,
       reason: InputIncompatibilityReason.WriteAssignment,

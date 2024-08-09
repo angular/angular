@@ -65,6 +65,8 @@ export interface TsInputReference {
     fileId: string;
     /** TypeScript AST node representing the reference. */
     node: ts.Identifier;
+    /** Whether the reference is a write. */
+    isWrite: boolean;
   };
   /** Target input addressed by the reference. */
   target: InputDescriptor;
