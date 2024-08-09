@@ -10,11 +10,11 @@ import {h} from 'preact';
 import {MemberEntryRenderable} from '../entities/renderables';
 import {ClassMember} from './class-member';
 
-export function ClassMemberList(props: {membersGroups: Map<string, MemberEntryRenderable[]>}) {
+export function ClassMemberList(props: {members: MemberEntryRenderable[]}) {
   return (
     <div class="docs-reference-members">
-      {Array.from(props.membersGroups).map(([_, group]) => (
-        <ClassMember members={group} />
+      {props.members.map((member) => (
+        <ClassMember member={member} />
       ))}
     </div>
   );

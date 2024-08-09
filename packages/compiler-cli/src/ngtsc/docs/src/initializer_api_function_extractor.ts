@@ -10,11 +10,15 @@ import ts from 'typescript';
 
 import {
   EntryType,
-  FunctionWithOverloads,
+  FunctionDefinitionEntry,
   InitializerApiFunctionEntry,
   JsDocTagEntry,
 } from './entities';
-import {extractAllParams} from './function_extractor';
+import {
+  extractAllParams,
+  extractCallSignatures,
+  findImplementationOfFunction,
+} from './function_extractor';
 import {extractGenerics} from './generics_extractor';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 
@@ -76,13 +80,13 @@ export function extractInitializerApiFunction(
   const type = typeChecker.getTypeAtLocation(node);
 
   // Top-level call signatures. E.g. `input()`, `input<ReadT>(initialValue: ReadT)`. etc.
-  const callFunction: FunctionWithOverloads = extractFunctionWithOverloads(
+  const callFunction: FunctionDefinitionEntry = extractFunctionWithOverloads(
     name,
-    type.getCallSignatures(),
+    type,
     typeChecker,
   );
   // Sub-functions like `input.required()`.
-  const subFunctions: FunctionWithOverloads[] = [];
+  const subFunctions: FunctionDefinitionEntry[] = [];
 
   for (const property of type.getProperties()) {
     const subName = property.getName();
@@ -94,9 +98,7 @@ export function extractInitializerApiFunction(
     }
 
     const subType = typeChecker.getTypeAtLocation(subDecl);
-    subFunctions.push(
-      extractFunctionWithOverloads(subName, subType.getCallSignatures(), typeChecker),
-    );
+    subFunctions.push(extractFunctionWithOverloads(subName, subType, typeChecker));
   }
 
   let jsdocTags: JsDocTagEntry[];
@@ -185,21 +187,6 @@ function getContainerVariableStatement(node: ts.VariableDeclaration): ts.Variabl
   return node.parent.parent;
 }
 
-/** Filters the list signatures to valid initializer API signatures. */
-function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
-  const result: Array<{
-    signature: ts.Signature;
-    decl: ts.FunctionDeclaration | ts.CallSignatureDeclaration;
-  }> = [];
-  for (const signature of signatures) {
-    const decl = signature.getDeclaration();
-    if (ts.isFunctionDeclaration(decl) || ts.isCallSignatureDeclaration(decl)) {
-      result.push({signature, decl});
-    }
-  }
-  return result;
-}
-
 /**
  * Extracts all given signatures and returns them as a function with
  * overloads.
@@ -211,43 +198,13 @@ function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
  */
 function extractFunctionWithOverloads(
   name: string,
-  signatures: readonly ts.Signature[],
+  type: ts.Type,
   typeChecker: ts.TypeChecker,
-): FunctionWithOverloads {
+): FunctionDefinitionEntry {
   return {
     name,
-    signatures: filterSignatureDeclarations(signatures).map(({decl, signature}) => ({
-      name,
-      entryType: EntryType.Function,
-      description: extractJsDocDescription(decl),
-      generics: extractGenerics(decl),
-      isNewType: false,
-      jsdocTags: extractJsDocTags(decl),
-      params: extractAllParams(decl.parameters, typeChecker),
-      rawComment: extractRawJsDoc(decl),
-      returnType: typeChecker.typeToString(
-        typeChecker.getReturnTypeOfSignature(signature),
-        undefined,
-        // This ensures that e.g. `T | undefined` is not reduced to `T`.
-        ts.TypeFormatFlags.NoTypeReduction | ts.TypeFormatFlags.NoTruncation,
-      ),
-    })),
+    signatures: extractCallSignatures(name, typeChecker, type),
     // Implementation may be populated later.
     implementation: null,
   };
-}
-
-/** Finds the implementation of the given function declaration overload signature. */
-function findImplementationOfFunction(
-  node: ts.FunctionDeclaration,
-  typeChecker: ts.TypeChecker,
-): ts.FunctionDeclaration | undefined {
-  if (node.body !== undefined || node.name === undefined) {
-    return node;
-  }
-
-  const symbol = typeChecker.getSymbolAtLocation(node.name);
-  return symbol?.declarations?.find(
-    (s): s is ts.FunctionDeclaration => ts.isFunctionDeclaration(s) && s.body !== undefined,
-  );
 }

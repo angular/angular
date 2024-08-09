@@ -73,7 +73,8 @@ runInEachFileSystem(() => {
       const methodEntry = classEntry.members[0] as MethodEntry;
       expect(methodEntry.memberType).toBe(MemberType.Method);
       expect(methodEntry.name).toBe('firstName');
-      expect(methodEntry.returnType).toBe('string');
+      expect(methodEntry.implementation.returnType).toBe('string');
+      expect(methodEntry.signatures[0].returnType).toBe('string');
 
       const propertyEntry = classEntry.members[1] as PropertyEntry;
       expect(propertyEntry.memberType).toBe(MemberType.Property);
@@ -97,9 +98,10 @@ runInEachFileSystem(() => {
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
-      expect(classEntry.members.length).toBe(2);
+      expect(classEntry.members.length).toBe(1);
 
-      const [booleanOverloadEntry, numberOverloadEntry] = classEntry.members as MethodEntry[];
+      const [booleanOverloadEntry, numberOverloadEntry] = (classEntry.members[0] as MethodEntry)
+        .signatures;
 
       expect(booleanOverloadEntry.name).toBe('ident');
       expect(booleanOverloadEntry.params.length).toBe(1);
@@ -143,7 +145,7 @@ runInEachFileSystem(() => {
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
       const methodEntry = classEntry.members[0] as MethodEntry;
-      const [prefixParamEntry, idsParamEntry] = methodEntry.params;
+      const [prefixParamEntry, idsParamEntry] = methodEntry.implementation.params;
 
       expect(prefixParamEntry.name).toBe('prefix');
       expect(prefixParamEntry.type).toBe('string');
@@ -172,9 +174,9 @@ runInEachFileSystem(() => {
       const methodEntry = classEntry.members[0] as MethodEntry;
       expect(methodEntry.memberType).toBe(MemberType.Method);
       expect(methodEntry.name).toBe('setPhone');
-      expect(methodEntry.params.length).toBe(3);
+      expect(methodEntry.implementation.params.length).toBe(3);
 
-      const [numParam, intlParam, areaParam] = methodEntry.params;
+      const [numParam, intlParam, areaParam] = methodEntry.implementation.params;
       expect(numParam.name).toBe('num');
       expect(numParam.isOptional).toBe(false);
       expect(numParam.type).toBe('string');
@@ -452,7 +454,7 @@ runInEachFileSystem(() => {
       expect(docs.length).toBe(1);
 
       const classEntry = docs[0] as ClassEntry;
-      const [genericEntry] = (classEntry.members[0] as MethodEntry).generics;
+      const [genericEntry] = (classEntry.members[0] as MethodEntry).implementation.generics;
 
       expect(genericEntry.name).toBe('T');
       expect(genericEntry.constraint).toBeUndefined();
@@ -503,7 +505,7 @@ runInEachFileSystem(() => {
 
       expect(childSaveEntry.name).toBe('save');
       expect(childSaveEntry.memberType).toBe(MemberType.Method);
-      expect((childSaveEntry as MethodEntry).returnType).toBe('number');
+      expect((childSaveEntry as MethodEntry).implementation.returnType).toBe('string | number');
       expect(childSaveEntry.memberTags).not.toContain(MemberTags.Inherited);
 
       expect(nameEntry.name).toBe('name');

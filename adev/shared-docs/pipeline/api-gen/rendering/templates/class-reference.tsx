@@ -24,9 +24,9 @@ export function ClassReference(entry: ClassEntryRenderable) {
       <TabDescription entry={entry} />
       <TabUsageNotes entry={entry} />
       {
-        entry.membersGroups.size > 0
+        entry.members.length > 0
           ? (<div class={REFERENCE_MEMBERS_CONTAINER}>
-              <ClassMemberList membersGroups={entry.membersGroups} />
+              <ClassMemberList members={entry.members} />
             </div>)
           : (<></>)
       }

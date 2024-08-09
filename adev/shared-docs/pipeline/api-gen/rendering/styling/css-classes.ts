@@ -16,6 +16,7 @@ export const REFERENCE_MEMBERS = 'docs-reference-members';
 export const REFERENCE_DEPRECATED = 'docs-reference-deprecated';
 export const REFERENCE_MEMBERS_CONTAINER = 'docs-reference-members-container';
 export const REFERENCE_MEMBER_CARD = 'docs-reference-member-card';
+export const REFERENCE_MEMBER_CARD_HEADER = 'docs-reference-card-header';
 export const REFERENCE_MEMBER_CARD_BODY = 'docs-reference-card-body';
 export const REFERENCE_MEMBER_CARD_ITEM = 'docs-reference-card-item';
 

@@ -16,7 +16,7 @@ import {
   addHtmlUsageNotes,
   setEntryFlags,
 } from './jsdoc-transforms';
-import {addRenderableGroupMembers} from './member-transforms';
+import {addRenderableMembers} from './member-transforms';
 import {addModuleName} from './module-name';
 
 /** Given an unprocessed interface entry, get the fully renderable interface entry. */
@@ -26,7 +26,7 @@ export function getInterfaceRenderable(
 ): InterfaceEntryRenderable {
   return setEntryFlags(
     addRenderableCodeToc(
-      addRenderableGroupMembers(
+      addRenderableMembers(
         addHtmlAdditionalLinks(
           addHtmlUsageNotes(
             addHtmlJsDocTagComments(addHtmlDescription(addModuleName(entry, moduleName))),

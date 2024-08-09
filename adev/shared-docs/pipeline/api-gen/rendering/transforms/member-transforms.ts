@@ -8,14 +8,7 @@
 
 import {MemberEntry, MemberTags, MemberType} from '../entities';
 
-import {isClassMethodEntry} from '../entities/categorization';
-import {MemberEntryRenderable} from '../entities/renderables';
-import {
-  HasMembers,
-  HasModuleName,
-  HasRenderableMembers,
-  HasRenderableMembersGroups,
-} from '../entities/traits';
+import {HasMembers, HasModuleName, HasRenderableMembers} from '../entities/traits';
 
 import {
   addHtmlDescription,
@@ -69,44 +62,13 @@ export function mergeGettersAndSetters(members: MemberEntry[]): MemberEntry[] {
   );
 }
 
-/** Given an entity with members, gets the entity augmented with renderable members. */
-export function addRenderableGroupMembers<T extends HasMembers & HasModuleName>(
-  entry: T,
-): T & HasRenderableMembersGroups {
-  const members = filterLifecycleMethods(entry.members);
-
-  const membersGroups = members.reduce((groups, item) => {
-    const member = setEntryFlags(
-      addMethodParamsDescription(
-        addHtmlDescription(
-          addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(item, entry.moduleName))),
-        ),
-      ),
-    );
-    if (groups.has(member.name)) {
-      const group = groups.get(member.name);
-      group?.push(member);
-    } else {
-      groups.set(member.name, [member]);
-    }
-    return groups;
-  }, new Map<string, MemberEntryRenderable[]>());
-
-  return {
-    ...entry,
-    membersGroups,
-  };
-}
-
 export function addRenderableMembers<T extends HasMembers & HasModuleName>(
   entry: T,
 ): T & HasRenderableMembers {
   const members = entry.members.map((member) =>
     setEntryFlags(
-      addMethodParamsDescription(
-        addHtmlDescription(
-          addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(member, entry.moduleName))),
-        ),
+      addHtmlDescription(
+        addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(member, entry.moduleName))),
       ),
     ),
   );
@@ -115,16 +77,4 @@ export function addRenderableMembers<T extends HasMembers & HasModuleName>(
     ...entry,
     members,
   };
-}
-
-function addMethodParamsDescription<T extends MemberEntry & HasModuleName>(entry: T): T {
-  if (isClassMethodEntry(entry)) {
-    return {
-      ...entry,
-      params: entry.params.map((param) =>
-        addHtmlDescription(addModuleName(param, entry.moduleName)),
-      ),
-    };
-  }
-  return entry;
 }

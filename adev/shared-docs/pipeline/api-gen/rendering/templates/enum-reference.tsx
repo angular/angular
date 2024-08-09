@@ -7,7 +7,7 @@
  */
 
 import {h, Fragment} from 'preact';
-import {EnumEntryRenderable} from '../entities/renderables';
+import {EnumEntryRenderable, MemberEntryRenderable} from '../entities/renderables';
 import {HeaderApi} from './header-api';
 import {TabDescription} from './tab-description';
 import {TabApi} from './tab-api';
@@ -26,7 +26,7 @@ export function EnumReference(entry: EnumEntryRenderable) {
           ? (
             <div class={REFERENCE_MEMBERS_CONTAINER}>
               <div class={REFERENCE_MEMBERS}>
-                {entry.members.map((member: any) => (<ClassMember members={[member]}/>))}
+                {entry.members.map((member: MemberEntryRenderable) => (<ClassMember member={member}/>))}
               </div>
             </div>
             )

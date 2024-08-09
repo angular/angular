@@ -232,6 +232,20 @@
     letter-spacing: -0.00875rem;
   }
 
+  .docs-reference-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    padding: 0.7rem 1rem;
+
+    code:not(pre *) {
+      padding: 0 0.3rem;
+    }
+  }
+
   .docs-reference-member-card {
     border: 1px solid var(--senary-contrast);
     border-radius: 0.25rem;
@@ -265,7 +279,6 @@
     header {
       display: flex;
       flex-direction: column;
-      padding: 0.7rem 1rem;
       border-radius: 0.25rem;
       background-color: var(--octonary-contrast);
       position: relative;
@@ -275,20 +288,23 @@
         background-color 0.3s ease,
         border 0.3s ease;
 
-      // h3 + code || # of overloads
-      .docs-reference-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        div {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-        }
+      & > code {
+        max-width: 100%;
       }
 
+      code:has(pre) {
+        padding: 0;
+      }
+
+      pre {
+        margin: 0;
+
+        /* Do we have a better alternative ? */
+        overflow: auto;
+      }
+    }
+
+    .docs-reference-card-header {
       h3 {
         display: inline-block;
         font-family: var(--code-font);

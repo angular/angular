@@ -106,7 +106,7 @@ class ClassExtractor {
 
   /** Extract docs for a class's members (methods and properties).  */
   protected extractClassMember(memberDeclaration: MemberElement): MemberEntry | undefined {
-    if (this.isMethod(memberDeclaration) && !this.isImplementationForOverload(memberDeclaration)) {
+    if (this.isMethod(memberDeclaration)) {
       return this.extractMethod(memberDeclaration);
     } else if (this.isProperty(memberDeclaration)) {
       return this.extractClassProperty(memberDeclaration);
@@ -222,7 +222,7 @@ class ClassExtractor {
     const result: MemberElement[] = [];
     for (const member of [...members, ...staticMembers]) {
       // A member may have multiple declarations in the case of function overloads.
-      const memberDeclarations = member.getDeclarations() ?? [];
+      const memberDeclarations = this.filterMethodOverloads(member.getDeclarations() ?? []);
       for (const memberDeclaration of memberDeclarations) {
         if (this.isDocumentableMember(memberDeclaration)) {
           result.push(memberDeclaration);
@@ -231,6 +231,18 @@ class ClassExtractor {
     }
 
     return result;
+  }
+
+  /** The result only contains properties, method implementations and abstracts */
+  private filterMethodOverloads(declarations: ts.Declaration[]) {
+    return declarations.filter((declaration) => {
+      if (ts.isFunctionDeclaration(declaration) || ts.isMethodDeclaration(declaration)) {
+        return (
+          !!declaration.body || ts.getCombinedModifierFlags(declaration) & ts.ModifierFlags.Abstract
+        );
+      }
+      return true;
+    });
   }
 
   /** Get the tags for a member that come from the declaration modifiers. */
@@ -330,18 +342,6 @@ class ClassExtractor {
   private isAbstract(): boolean {
     const modifiers = this.declaration.modifiers ?? [];
     return modifiers.some((mod) => mod.kind === ts.SyntaxKind.AbstractKeyword);
-  }
-
-  /** Gets whether a method is the concrete implementation for an overloaded function. */
-  private isImplementationForOverload(method: MethodLike): boolean | undefined {
-    // Method signatures (in an interface) are never implementations.
-    if (method.kind === ts.SyntaxKind.MethodSignature) return false;
-
-    const signature = this.typeChecker.getSignatureFromDeclaration(method);
-    return (
-      signature &&
-      this.typeChecker.isImplementationOfOverload(signature.declaration as ts.SignatureDeclaration)
-    );
   }
 }
 

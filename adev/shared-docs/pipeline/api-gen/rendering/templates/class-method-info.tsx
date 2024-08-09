@@ -9,6 +9,7 @@
 import {Fragment, h} from 'preact';
 import {
   FunctionEntryRenderable,
+  FunctionSignatureMetadataRenderable,
   MethodEntryRenderable,
   ParameterEntryRenderable,
 } from '../entities/renderables';
@@ -21,7 +22,7 @@ import {RawHtml} from './raw-html';
  * Component to render the method-specific parts of a class's API reference.
  */
 export function ClassMethodInfo(props: {
-  entry: MethodEntryRenderable | FunctionEntryRenderable;
+  entry: FunctionSignatureMetadataRenderable;
   isOverloaded?: boolean;
 }) {
   const entry = props.entry;
@@ -32,12 +33,12 @@ export function ClassMethodInfo(props: {
     >
       <RawHtml value={entry.htmlDescription} className={'docs-function-definition'} />
       {/* In case when method is overloaded we need to indicate which overload is deprecated */}
-      {!props.isOverloaded ? (
-        <></>
-      ) : (
+      {entry.isDeprecated ? (
         <div>
           <DeprecatedLabel entry={entry} />
         </div>
+      ) : (
+        <></>
       )}
       {entry.params.map((param: ParameterEntryRenderable) => (
         <Parameter param={param} />

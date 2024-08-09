@@ -90,21 +90,21 @@ $theme: mat.m2-define-light-theme(
   }
 }
 
-
 .docs-dark-mode .shiki {
-  color: var(--shiki-dark) ;
-  background-color: var(--shiki-dark-bg) ;
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
 
   span {
-    color: var(--shiki-dark) ;
-    background-color: var(--shiki-dark-bg) ;
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
     /* Optional, if you also want font styles */
-    font-style: var(--shiki-dark-font-style) ;
-    font-weight: var(--shiki-dark-font-weight) ;
-    text-decoration: var(--shiki-dark-text-decoration) ;
+    font-style: var(--shiki-dark-font-style);
+    font-weight: var(--shiki-dark-font-weight);
+    text-decoration: var(--shiki-dark-text-decoration);
   }
 
-  .shiki-ln-line-highlighted, button:hover {
+  .shiki-ln-line-highlighted,
+  button:hover {
     span {
       background-color: inherit;
     }
@@ -113,22 +113,27 @@ $theme: mat.m2-define-light-theme(
 
 .shiki {
   padding-block: 1rem;
+
+  &.cli {
+    padding-inline-start: 1rem;
+  }
 }
 
 .docs-light-mode .shiki {
   color: var(--shiki-light);
-  background-color: var(--shiki-light-bg) ;
+  background-color: var(--shiki-light-bg);
 
   span {
-    color: var(--shiki-light) ;
-    background-color: var(--shiki-light-bg) ;
+    color: var(--shiki-light);
+    background-color: var(--shiki-light-bg);
     /* Optional, if you also want font styles */
-    font-style: var(--shiki-light-font-style) ;
-    font-weight: var(--shiki-light-font-weight) ;
-    text-decoration: var(--shiki-light-text-decoration) ;
+    font-style: var(--shiki-light-font-style);
+    font-weight: var(--shiki-light-font-weight);
+    text-decoration: var(--shiki-light-text-decoration);
   }
 
-  .shiki-ln-line-highlighted, button:hover {
+  .shiki-ln-line-highlighted,
+  button:hover {
     span {
       background-color: inherit;
     }

@@ -15,7 +15,9 @@ import {codeToHtml} from '../shiki/shiki';
  */
 export const renderer: Partial<MarkedRenderer> = {
   code(code: string, language: string, isEscaped: boolean): string {
-    const highlightResult = codeToHtml(code, language).replace(/>\s+</g, '><');
+    const highlightResult = codeToHtml(code, language)
+      // remove spaces/line-breaks between elements to not mess-up `pre` style
+      .replace(/>\s+</g, '><');
 
     return `
       <div class="docs-code" role="group">

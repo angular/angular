@@ -8,7 +8,7 @@
 
 import {
   EntryType,
-  FunctionEntry,
+  FunctionSignatureMetadata,
   InitializerApiFunctionEntry,
   ParameterEntry,
 } from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
@@ -113,11 +113,11 @@ runInEachFileSystem(() => {
           name: 'input',
           implementation: null,
           signatures: [
-            jasmine.objectContaining<FunctionEntry>({
+            jasmine.objectContaining<FunctionSignatureMetadata>({
               generics: [{name: 'T', constraint: undefined, default: undefined}],
               returnType: 'InputSignal<T | undefined>',
             }),
-            jasmine.objectContaining<FunctionEntry>({
+            jasmine.objectContaining<FunctionSignatureMetadata>({
               generics: [{name: 'T', constraint: undefined, default: undefined}],
               params: [jasmine.objectContaining<ParameterEntry>({name: 'initialValue', type: 'T'})],
               returnType: 'InputSignal<T>',
@@ -132,11 +132,11 @@ runInEachFileSystem(() => {
             name: 'required',
             implementation: null,
             signatures: [
-              jasmine.objectContaining<FunctionEntry>({
+              jasmine.objectContaining<FunctionSignatureMetadata>({
                 generics: [{name: 'T', constraint: undefined, default: undefined}],
                 returnType: 'void',
               }),
-              jasmine.objectContaining<FunctionEntry>({
+              jasmine.objectContaining<FunctionSignatureMetadata>({
                 generics: [
                   {name: 'T', constraint: undefined, default: undefined},
                   {name: 'TransformT', constraint: undefined, default: undefined},
@@ -175,12 +175,12 @@ runInEachFileSystem(() => {
       it('should extract top-level call signatures', () => {
         expect(test(contentChildrenFixture)?.callFunction).toEqual({
           name: 'contentChildren',
-          implementation: jasmine.objectContaining<FunctionEntry>({
+          implementation: jasmine.objectContaining<FunctionSignatureMetadata>({
             name: 'contentChildren',
             description: jasmine.stringContaining('Overall description of "contentChildren" API'),
           }),
           signatures: [
-            jasmine.objectContaining<FunctionEntry>({
+            jasmine.objectContaining<FunctionSignatureMetadata>({
               generics: [{name: 'LocatorT', constraint: undefined, default: undefined}],
               params: [
                 jasmine.objectContaining<ParameterEntry>({name: 'locator', type: 'LocatorT'}),
@@ -192,7 +192,7 @@ runInEachFileSystem(() => {
               ],
               returnType: 'Signal<LocatorT>',
             }),
-            jasmine.objectContaining<FunctionEntry>({
+            jasmine.objectContaining<FunctionSignatureMetadata>({
               generics: [
                 {name: 'LocatorT', constraint: undefined, default: undefined},
                 {name: 'ReadT', constraint: undefined, default: undefined},
