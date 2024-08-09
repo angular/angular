@@ -12,6 +12,7 @@ import ts from 'typescript';
 import {MigrationHost} from '../migration_host';
 import {ConvertInputPreparation} from './prepare_and_check';
 import {DecoratorInputTransform} from '../../../../../../compiler-cli/src/ngtsc/metadata';
+import {ImportManager} from '../../../../../../compiler-cli/src/ngtsc/translator';
 
 const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
 
@@ -26,6 +27,7 @@ export function convertToSignalInput(
   node: ts.PropertyDeclaration,
   {resolvedMetadata: metadata, resolvedType, isResolvedTypeCheckable}: ConvertInputPreparation,
   checker: ts.TypeChecker,
+  importManager: ImportManager,
 ): string {
   let initialValue = node.initializer;
   let optionsLiteral: ts.ObjectLiteralExpression | null = null;
@@ -89,11 +91,11 @@ export function convertToSignalInput(
     inputArgs.push(optionsLiteral);
   }
 
-  const inputFnRef =
-    metadata.inputDecoratorRef !== null && ts.isPropertyAccessExpression(metadata.inputDecoratorRef)
-      ? ts.factory.createPropertyAccessExpression(metadata.inputDecoratorRef.expression, 'input')
-      : ts.factory.createIdentifier('input');
-
+  const inputFnRef = importManager.addImport({
+    exportModuleSpecifier: '@angular/core',
+    exportSymbolName: 'input',
+    requestedFile: node.getSourceFile(),
+  });
   const inputInitializerFn = metadata.required
     ? ts.factory.createPropertyAccessExpression(inputFnRef, 'required')
     : inputFnRef;

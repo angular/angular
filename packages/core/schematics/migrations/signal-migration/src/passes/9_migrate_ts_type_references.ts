@@ -23,10 +23,9 @@ import {ImportManager} from '../../../../../../compiler-cli/src/ngtsc/translator
 export function pass9__migrateTypeScriptTypeReferences(
   result: MigrationResult,
   knownInputs: KnownInputs,
+  importManager: ImportManager,
 ) {
   const seenTypeNodes = new WeakSet<ts.TypeReferenceNode>();
-  const fileNamesToFiles = new Map<string, ts.SourceFile>();
-  const importManager = new ImportManager();
 
   for (const reference of result.references) {
     // This pass only deals with TS input class type references.
@@ -50,7 +49,6 @@ export function pass9__migrateTypeScriptTypeReferences(
       const firstArg = reference.from.node.typeArguments[0];
       const sf = firstArg.getSourceFile();
 
-      fileNamesToFiles.set(sf.fileName, sf);
       const unwrapImportExpr = importManager.addImport({
         exportModuleSpecifier: 'google3/javascript/angular2/testing/catalyst',
         exportSymbolName: 'UnwrapSignalInputs',
@@ -68,40 +66,6 @@ export function pass9__migrateTypeScriptTypeReferences(
       result.addReplacement(
         sf.fileName,
         new Replacement(firstArg.getEnd(), firstArg.getEnd(), '>'),
-      );
-    }
-
-    // TODO: Formalize import manager support across phases.
-    const {newImports, updatedImports} = importManager.finalize();
-
-    // Capture new imports
-    newImports.forEach((newImports, fileName) => {
-      newImports.forEach((newImport) => {
-        result.addReplacement(
-          fileName,
-          new Replacement(
-            0,
-            0,
-            ts
-              .createPrinter()
-              .printNode(ts.EmitHint.Unspecified, newImport, fileNamesToFiles.get(fileName)!) +
-              '\n',
-          ),
-        );
-      });
-    });
-
-    // Capture updated imports
-    for (const [oldBindings, newBindings] of updatedImports.entries()) {
-      result.addReplacement(
-        oldBindings.getSourceFile().fileName,
-        new Replacement(
-          oldBindings.getStart(),
-          oldBindings.getEnd(),
-          ts
-            .createPrinter()
-            .printNode(ts.EmitHint.Unspecified, newBindings, oldBindings.getSourceFile()),
-        ),
       );
     }
   }
