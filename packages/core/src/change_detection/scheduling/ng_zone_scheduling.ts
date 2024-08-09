@@ -177,14 +177,14 @@ export interface NgZoneOptions {
    *
    * When button is clicked, because of the event bubbling, both
    * event handlers will be called and 2 change detections will be
-   * triggered. We can coalesce such kind of events to only trigger
+   * triggered. We can coalesce such kind of events to trigger
    * change detection only once.
    *
-   * By default, this option will be false. So the events will not be
-   * coalesced and the change detection will be triggered multiple times.
-   * And if this option be set to true, the change detection will be
-   * triggered async by scheduling a animation frame. So in the case above,
-   * the change detection will only be triggered once.
+   * By default, this option is set to false, meaning events will 
+   * not be coalesced, and change detection will be triggered multiple times.
+   * If this option is set to true, change detection will be triggered 
+   * asynchronously by scheduling an animation frame. As a result, change 
+   * detection will only be triggered once in the scenario described above.
    */
   eventCoalescing?: boolean;
 
