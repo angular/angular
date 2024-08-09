@@ -105,7 +105,7 @@ export function pass3__checkIncompatiblePatterns(
 
         knownInputs.markDirectiveAsIncompatible(
           inputClassSymbolsToClass.get(newTarget)!,
-          ClassIncompatibilityReason.ClassReferencedInPotentiallyBadLocation,
+          ClassIncompatibilityReason.InputOwningClassReferencedInClassProperty,
         );
       }
     }
