@@ -6,22 +6,92 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createWatch, Watch, WatchCleanupRegisterFn} from '@angular/core/primitives/signals';
-
-import {ChangeDetectorRef} from '../../change_detection';
-import {assertInInjectionContext} from '../../di/contextual';
+import {
+  REACTIVE_NODE,
+  ReactiveNode,
+  SIGNAL,
+  consumerAfterComputation,
+  consumerBeforeComputation,
+  consumerDestroy,
+  consumerPollProducersForChange,
+  isInNotificationPhase,
+} from '@angular/core/primitives/signals';
+import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
+import {markAncestorsForTraversal} from '../util/view_utils';
 import {InjectionToken} from '../../di/injection_token';
-import {Injector} from '../../di/injector';
-import {inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
-import {ErrorHandler} from '../../error_handler';
-import type {ViewRef} from '../view_ref';
-import {DestroyRef} from '../../linker/destroy_ref';
-import {FLAGS, LViewFlags, EFFECTS_TO_SCHEDULE} from '../interfaces/view';
-
-import {assertNotInReactiveContext} from './asserts';
-import {performanceMarkFeature} from '../../util/performance';
 import {PendingTasks} from '../../pending_tasks';
+import {inject} from '../../di/injector_compatibility';
+import {performanceMarkFeature} from '../../util/performance';
+import {Injector} from '../../di/injector';
+import {assertNotInReactiveContext} from './asserts';
+import {assertInInjectionContext} from '../../di/contextual';
+import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
+import {ViewContext} from '../view_context';
+import {noop} from '../../util/noop';
+import {ErrorHandler} from '../../error_handler';
+import {
+  ChangeDetectionScheduler,
+  NotificationSource,
+} from '../../change_detection/scheduling/zoneless_scheduling';
+
+/**
+ * A global reactive effect, which can be manually destroyed.
+ *
+ * @developerPreview
+ */
+export interface EffectRef {
+  /**
+   * Shut down the effect, removing it from any upcoming scheduled executions.
+   */
+  destroy(): void;
+}
+
+class EffectRefImpl implements EffectRef {
+  [SIGNAL]: EffectNode;
+
+  constructor(node: EffectNode) {
+    this[SIGNAL] = node;
+  }
+
+  destroy(): void {
+    this[SIGNAL].destroy();
+  }
+}
+
+/**
+ * Options passed to the `effect` function.
+ *
+ * @developerPreview
+ */
+export interface CreateEffectOptions {
+  /**
+   * The `Injector` in which to create the effect.
+   *
+   * If this is not provided, the current [injection context](guide/di/dependency-injection-context)
+   * will be used instead (via `inject`).
+   */
+  injector?: Injector;
+
+  /**
+   * Whether the `effect` should require manual cleanup.
+   *
+   * If this is `false` (the default) the effect will automatically register itself to be cleaned up
+   * with the current `DestroyRef`.
+   */
+  manualCleanup?: boolean;
+
+  /**
+   * Always create a root effect (which is scheduled as a microtask) regardless of whether `effect`
+   * is called within a component.
+   */
+  forceRoot?: true;
+
+  /**
+   * @deprecated no longer required, signal writes are allowed by default.
+   */
+  allowSignalWrites?: boolean;
+}
 
 /**
  * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
@@ -39,19 +109,96 @@ export type EffectCleanupFn = () => void;
  */
 export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
 
-export interface SchedulableEffect {
-  run(): void;
-  creationZone: unknown;
+/**
+ * Registers an "effect" that will be scheduled & executed whenever the signals that it reads
+ * changes.
+ *
+ * Angular has two different kinds of effect: component effects and root effects. Component effects
+ * are created when `effect()` is called from a component, directive, or within a service of a
+ * component/directive. Root effects are created when `effect()` is called from outside the
+ * component tree, such as in a root service, or when the `forceRoot` option is provided.
+ *
+ * The two effect types differ in their timing. Component effects run as a component lifecycle
+ * event during Angular's synchronization (change detection) process, and can safely read input
+ * signals or create/destroy views that depend on component state. Root effects run as microtasks
+ * and have no connection to the component tree or change detection.
+ *
+ * `effect()` must be run in injection context, unless the `injector` option is manually specified.
+ *
+ * @developerPreview
+ */
+export function effect(
+  effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
+  options?: CreateEffectOptions,
+): EffectRef {
+  performanceMarkFeature('NgSignals');
+  ngDevMode &&
+    assertNotInReactiveContext(
+      effect,
+      'Call `effect` outside of a reactive context. For example, schedule the ' +
+        'effect inside the component constructor.',
+    );
+
+  if (ngDevMode && options?.allowSignalWrites !== undefined) {
+    console.warn(
+      `The 'allowSignalWrites' flag is deprecated & longer required for effect() (writes are allowed by default)`,
+    );
+  }
+
+  !options?.injector && assertInInjectionContext(effect);
+  const injector = options?.injector ?? inject(Injector);
+  let destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
+
+  let node: EffectNode;
+
+  const viewContext = injector.get(ViewContext, null, {optional: true});
+  if (viewContext !== null && !options?.forceRoot) {
+    // This effect was created in the context of a view, and will be associated with the view.
+    node = createViewEffect(viewContext.view, effectFn);
+    if (destroyRef instanceof NodeInjectorDestroyRef && destroyRef._lView === viewContext.view) {
+      // The effect is being created in the same view as the `DestroyRef` references, so it will be
+      // automatically destroyed without the need for an explicit `DestroyRef` registration.
+      destroyRef = null;
+    }
+  } else {
+    // This effect was created outside the context of a view, and will be scheduled independently.
+    node = createRootEffect(
+      effectFn,
+      injector.get(EffectScheduler),
+      injector.get(ChangeDetectionScheduler),
+    );
+  }
+  node.injector = injector;
+
+  if (destroyRef !== null) {
+    // If we need to register for cleanup, do that here.
+    node.onDestroyFn = destroyRef.onDestroy(() => node.destroy());
+  }
+
+  return new EffectRefImpl(node);
 }
 
-/**
- * Not public API, which guarantees `EffectScheduler` only ever comes from the application root
- * injector.
- */
-export const APP_EFFECT_SCHEDULER = new InjectionToken('', {
-  providedIn: 'root',
-  factory: () => inject(EffectScheduler),
-});
+export interface EffectNode extends ReactiveNode {
+  hasRun: boolean;
+  zone: ZoneContract | null;
+  cleanupFns: EffectCleanupFn[] | undefined;
+  injector: Injector;
+
+  onDestroyFn: () => void;
+  fn: (cleanupFn: EffectCleanupRegisterFn) => void;
+  run(): void;
+  destroy(): void;
+  maybeCleanup(): void;
+}
+
+export interface ViewEffectNode extends EffectNode {
+  view: LView;
+}
+
+export interface RootEffectNode extends EffectNode {
+  scheduler: EffectScheduler;
+  notifier: ChangeDetectionScheduler;
+}
 
 /**
  * A scheduler which manages the execution of effects.
@@ -62,7 +209,7 @@ export abstract class EffectScheduler {
    *
    * It is an error to attempt to execute any effects synchronously during a scheduling operation.
    */
-  abstract scheduleEffect(e: SchedulableEffect): void;
+  abstract schedule(e: RootEffectNode): void;
 
   /**
    * Run any scheduled effects.
@@ -78,30 +225,173 @@ export abstract class EffectScheduler {
 }
 
 /**
+ * Not public API, which guarantees `EffectScheduler` only ever comes from the application root
+ * injector.
+ */
+export const APP_EFFECT_SCHEDULER = new InjectionToken('', {
+  providedIn: 'root',
+  factory: () => inject(EffectScheduler),
+});
+
+export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector'> =
+  /* @__PURE__ */ (() => ({
+    ...REACTIVE_NODE,
+    consumerIsAlwaysLive: true,
+    consumerAllowSignalWrites: true,
+    dirty: true,
+    hasRun: false,
+    cleanupFns: undefined,
+    zone: null,
+    onDestroyFn: noop,
+    run(this: EffectNode): void {
+      this.dirty = false;
+
+      if (ngDevMode && isInNotificationPhase()) {
+        throw new Error(`Schedulers cannot synchronously execute watches while scheduling.`);
+      }
+
+      if (this.hasRun && !consumerPollProducersForChange(this)) {
+        return;
+      }
+      this.hasRun = true;
+
+      const registerCleanupFn: EffectCleanupRegisterFn = (cleanupFn) =>
+        (this.cleanupFns ??= []).push(cleanupFn);
+
+      const prevNode = consumerBeforeComputation(this);
+      try {
+        this.maybeCleanup();
+        this.fn(registerCleanupFn);
+      } catch (err: unknown) {
+        // We inject the error handler lazily, to prevent circular dependencies when an effect is
+        // created inside of an ErrorHandler.
+        this.injector.get(ErrorHandler, null, {optional: true})?.handleError(err);
+      } finally {
+        consumerAfterComputation(this, prevNode);
+      }
+    },
+
+    maybeCleanup(this: EffectNode): void {
+      while (this.cleanupFns?.length) {
+        this.cleanupFns.pop()!();
+      }
+    },
+  }))();
+
+export const ROOT_EFFECT_NODE: Omit<RootEffectNode, 'fn' | 'scheduler' | 'notifier' | 'injector'> =
+  /* @__PURE__ */ (() => ({
+    ...BASE_EFFECT_NODE,
+    consumerMarkedDirty(this: RootEffectNode) {
+      this.scheduler.schedule(this);
+      this.notifier.notify(NotificationSource.RootEffect);
+    },
+    destroy(this: RootEffectNode) {
+      consumerDestroy(this);
+      this.onDestroyFn();
+      this.maybeCleanup();
+    },
+  }))();
+
+export const VIEW_EFFECT_NODE: Omit<ViewEffectNode, 'fn' | 'view' | 'injector'> =
+  /* @__PURE__ */ (() => ({
+    ...BASE_EFFECT_NODE,
+    consumerMarkedDirty(this: ViewEffectNode): void {
+      this.view[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
+      markAncestorsForTraversal(this.view);
+    },
+    destroy(this: ViewEffectNode): void {
+      consumerDestroy(this);
+      this.onDestroyFn();
+      this.maybeCleanup();
+      this.view[EFFECTS]?.delete(this);
+    },
+  }))();
+
+export function createViewEffect(
+  view: LView,
+  fn: (onCleanup: EffectCleanupRegisterFn) => void,
+): ViewEffectNode {
+  const node = Object.create(VIEW_EFFECT_NODE) as ViewEffectNode;
+  node.view = view;
+  node.zone = typeof Zone !== 'undefined' ? Zone.current : null;
+  node.fn = fn;
+
+  view[EFFECTS] ??= new Set();
+  view[EFFECTS].add(node);
+
+  node.consumerMarkedDirty(node);
+  return node;
+}
+
+export function createRootEffect(
+  fn: (onCleanup: EffectCleanupRegisterFn) => void,
+  scheduler: EffectScheduler,
+  notifier: ChangeDetectionScheduler,
+): RootEffectNode {
+  const node = Object.create(ROOT_EFFECT_NODE) as RootEffectNode;
+  node.fn = fn;
+  node.scheduler = scheduler;
+  node.notifier = notifier;
+  node.zone = typeof Zone !== 'undefined' ? Zone.current : null;
+  node.scheduler.schedule(node);
+  node.notifier.notify(NotificationSource.RootEffect);
+  return node;
+}
+
+export function runEffectsInView(view: LView): void {
+  if (view[EFFECTS] === null) {
+    return;
+  }
+
+  // Since effects can make other effects dirty, we flush them in a loop until there are no more to
+  // flush.
+  let tryFlushEffects = true;
+
+  while (tryFlushEffects) {
+    let foundDirtyEffect = false;
+    for (const effect of view[EFFECTS]) {
+      if (!effect.dirty) {
+        continue;
+      }
+      foundDirtyEffect = true;
+
+      // `runEffectsInView` is called during change detection, and therefore runs
+      // in the Angular zone if it's available.
+      if (effect.zone === null || Zone.current === effect.zone) {
+        effect.run();
+      } else {
+        effect.zone.run(() => effect.run());
+      }
+    }
+
+    // Check if we need to continue flushing. If we didn't find any dirty effects, then there's
+    // no need to loop back. Otherwise, check the view to see if it was marked for traversal
+    // again. If so, there's a chance that one of the effects we ran caused another effect to
+    // become dirty.
+    tryFlushEffects = foundDirtyEffect && !!(view[FLAGS] & LViewFlags.HasChildViewsToRefresh);
+  }
+}
+
+/**
  * A wrapper around `ZoneAwareQueueingScheduler` that schedules flushing via the microtask queue
  * when.
  */
 export class ZoneAwareEffectScheduler implements EffectScheduler {
   private queuedEffectCount = 0;
-  private queues = new Map<Zone | null, Set<SchedulableEffect>>();
+  private queues = new Map<Zone | null, Set<RootEffectNode>>();
   private readonly pendingTasks = inject(PendingTasks);
   private taskId: number | null = null;
 
-  scheduleEffect(handle: SchedulableEffect): void {
+  schedule(handle: RootEffectNode): void {
     this.enqueue(handle);
 
     if (this.taskId === null) {
-      const taskId = (this.taskId = this.pendingTasks.add());
-      queueMicrotask(() => {
-        this.flush();
-        this.pendingTasks.remove(taskId);
-        this.taskId = null;
-      });
+      this.taskId = this.pendingTasks.add();
     }
   }
 
-  private enqueue(handle: SchedulableEffect): void {
-    const zone = handle.creationZone as Zone | null;
+  private enqueue(handle: RootEffectNode): void {
+    const zone = handle.zone as Zone | null;
     if (!this.queues.has(zone)) {
       this.queues.set(zone, new Set());
     }
@@ -131,9 +421,14 @@ export class ZoneAwareEffectScheduler implements EffectScheduler {
         }
       }
     }
+
+    if (this.taskId !== null) {
+      this.pendingTasks.remove(this.taskId);
+      this.taskId = null;
+    }
   }
 
-  private flushQueue(queue: Set<SchedulableEffect>): void {
+  private flushQueue(queue: Set<RootEffectNode>): void {
     for (const handle of queue) {
       queue.delete(handle);
       this.queuedEffectCount--;
@@ -144,152 +439,6 @@ export class ZoneAwareEffectScheduler implements EffectScheduler {
   }
 }
 
-/**
- * Core reactive node for an Angular effect.
- *
- * `EffectHandle` combines the reactive graph's `Watch` base node for effects with the framework's
- * scheduling abstraction (`EffectScheduler`) as well as automatic cleanup via `DestroyRef` if
- * available/requested.
- */
-class EffectHandle implements EffectRef, SchedulableEffect {
-  unregisterOnDestroy: (() => void) | undefined;
-  readonly watcher: Watch;
-
-  constructor(
-    private scheduler: EffectScheduler,
-    private effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
-    public creationZone: Zone | null,
-    destroyRef: DestroyRef | null,
-    private injector: Injector,
-    allowSignalWrites: boolean,
-  ) {
-    this.watcher = createWatch(
-      (onCleanup) => this.runEffect(onCleanup),
-      () => this.schedule(),
-      allowSignalWrites,
-    );
-    this.unregisterOnDestroy = destroyRef?.onDestroy(() => this.destroy());
-  }
-
-  private runEffect(onCleanup: WatchCleanupRegisterFn): void {
-    try {
-      this.effectFn(onCleanup);
-    } catch (err) {
-      // Inject the `ErrorHandler` here in order to avoid circular DI error
-      // if the effect is used inside of a custom `ErrorHandler`.
-      const errorHandler = this.injector.get(ErrorHandler, null, {optional: true});
-      errorHandler?.handleError(err);
-    }
-  }
-
-  run(): void {
-    this.watcher.run();
-  }
-
-  private schedule(): void {
-    this.scheduler.scheduleEffect(this);
-  }
-
-  destroy(): void {
-    this.watcher.destroy();
-    this.unregisterOnDestroy?.();
-
-    // Note: if the effect is currently scheduled, it's not un-scheduled, and so the scheduler will
-    // retain a reference to it. Attempting to execute it will be a no-op.
-  }
-}
-
-/**
- * A global reactive effect, which can be manually destroyed.
- *
- * @developerPreview
- */
-export interface EffectRef {
-  /**
-   * Shut down the effect, removing it from any upcoming scheduled executions.
-   */
-  destroy(): void;
-}
-
-/**
- * Options passed to the `effect` function.
- *
- * @developerPreview
- */
-export interface CreateEffectOptions {
-  /**
-   * The `Injector` in which to create the effect.
-   *
-   * If this is not provided, the current [injection context](guide/di/dependency-injection-context)
-   * will be used instead (via `inject`).
-   */
-  injector?: Injector;
-
-  /**
-   * Whether the `effect` should require manual cleanup.
-   *
-   * If this is `false` (the default) the effect will automatically register itself to be cleaned up
-   * with the current `DestroyRef`.
-   */
-  manualCleanup?: boolean;
-
-  /**
-   * Whether the `effect` should allow writing to signals.
-   *
-   * Using effects to synchronize data by writing to signals can lead to confusing and potentially
-   * incorrect behavior, and should be enabled only when necessary.
-   */
-  allowSignalWrites?: boolean;
-}
-
-/**
- * Create a global `Effect` for the given reactive function.
- *
- * @developerPreview
- */
-export function effect(
-  effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
-  options?: CreateEffectOptions,
-): EffectRef {
-  performanceMarkFeature('NgSignals');
-  ngDevMode &&
-    assertNotInReactiveContext(
-      effect,
-      'Call `effect` outside of a reactive context. For example, schedule the ' +
-        'effect inside the component constructor.',
-    );
-
-  !options?.injector && assertInInjectionContext(effect);
-  const injector = options?.injector ?? inject(Injector);
-  const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
-
-  const handle = new EffectHandle(
-    injector.get(APP_EFFECT_SCHEDULER),
-    effectFn,
-    typeof Zone === 'undefined' ? null : Zone.current,
-    destroyRef,
-    injector,
-    options?.allowSignalWrites ?? false,
-  );
-
-  // Effects need to be marked dirty manually to trigger their initial run. The timing of this
-  // marking matters, because the effects may read signals that track component inputs, which are
-  // only available after those components have had their first update pass.
-  //
-  // We inject `ChangeDetectorRef` optionally, to determine whether this effect is being created in
-  // the context of a component or not. If it is, then we check whether the component has already
-  // run its update pass, and defer the effect's initial scheduling until the update pass if it
-  // hasn't already run.
-  const cdr = injector.get(ChangeDetectorRef, null, {optional: true}) as ViewRef<unknown> | null;
-  if (!cdr || !(cdr._lView[FLAGS] & LViewFlags.FirstLViewPass)) {
-    // This effect is either not running in a view injector, or the view has already
-    // undergone its first change detection pass, which is necessary for any required inputs to be
-    // set.
-    handle.watcher.notify();
-  } else {
-    // Delay the initialization of the effect until the view is fully initialized.
-    (cdr._lView[EFFECTS_TO_SCHEDULE] ??= []).push(handle.watcher.notify);
-  }
-
-  return handle;
+interface ZoneContract {
+  run<T>(fn: () => T): T;
 }

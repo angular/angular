@@ -43,6 +43,9 @@ export const enum NotificationSource {
   ViewDetachedFromDOM,
   // Applying animations might result in new DOM state and should rerun render hooks
   AsyncAnimationsLoaded,
+
+  // An `effect()` outside of the view tree became dirty and might need to run.
+  RootEffect,
 }
 
 /**

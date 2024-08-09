@@ -150,6 +150,9 @@
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
+    "name": "EffectScheduler"
+  },
+  {
     "name": "ElementRef"
   },
   {
@@ -457,6 +460,9 @@
   },
   {
     "name": "ZONELESS_SCHEDULER_DISABLED"
+  },
+  {
+    "name": "ZoneAwareEffectScheduler"
   },
   {
     "name": "ZoneStablePendingTask"
@@ -1159,6 +1165,9 @@
   },
   {
     "name": "retrieveHydrationInfo"
+  },
+  {
+    "name": "runEffectsInView"
   },
   {
     "name": "saveNameToExportMap"

@@ -180,6 +180,9 @@
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
+    "name": "EffectScheduler"
+  },
+  {
     "name": "ElementRef"
   },
   {
@@ -505,6 +508,9 @@
   },
   {
     "name": "ZONELESS_SCHEDULER_DISABLED"
+  },
+  {
+    "name": "ZoneAwareEffectScheduler"
   },
   {
     "name": "ZoneStablePendingTask"
@@ -2070,6 +2076,9 @@
     "name": "init_view_container_ref"
   },
   {
+    "name": "init_view_context"
+  },
+  {
     "name": "init_view_engine_compatibility_prebound"
   },
   {
@@ -2389,6 +2398,9 @@
   },
   {
     "name": "retrieveHydrationInfo"
+  },
+  {
+    "name": "runEffectsInView"
   },
   {
     "name": "saveNameToExportMap"

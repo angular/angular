@@ -156,7 +156,6 @@ describe('di', () => {
         {
           rendererFactory: {} as any,
           sanitizer: null,
-          inlineEffectRunner: null,
           afterRenderEventManager: null,
           changeDetectionScheduler: null,
         },

@@ -216,6 +216,9 @@
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
+    "name": "EffectScheduler"
+  },
+  {
     "name": "ElementRef"
   },
   {
@@ -775,6 +778,9 @@
   },
   {
     "name": "ZONELESS_SCHEDULER_DISABLED"
+  },
+  {
+    "name": "ZoneAwareEffectScheduler"
   },
   {
     "name": "ZoneStablePendingTask"
@@ -1933,6 +1939,9 @@
   },
   {
     "name": "routes"
+  },
+  {
+    "name": "runEffectsInView"
   },
   {
     "name": "runInInjectionContext"

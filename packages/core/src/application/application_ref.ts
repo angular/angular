@@ -44,6 +44,7 @@ import {isPromise} from '../util/lang';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
+import {EffectScheduler} from '../render3/reactivity/effect';
 
 /**
  * A DI token that provides a set of callbacks to
@@ -310,6 +311,10 @@ export class ApplicationRef {
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly afterRenderEffectManager = inject(AfterRenderEventManager);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
+  private readonly rootEffectScheduler = inject(EffectScheduler);
+
+  /** @internal */
+  dirtyFlags = ApplicationRefDirtyFlags.None;
 
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
@@ -557,11 +562,14 @@ export class ApplicationRef {
    * detection pass during which all change detection must complete.
    */
   tick(): void {
-    this._tick(true);
+    if (!this.zonelessEnabled) {
+      this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
+    }
+    this._tick();
   }
 
   /** @internal */
-  _tick(refreshViews: boolean): void {
+  _tick(): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     if (this._runningTick) {
       throw new RuntimeError(
@@ -573,8 +581,7 @@ export class ApplicationRef {
     const prevConsumer = setActiveConsumer(null);
     try {
       this._runningTick = true;
-
-      this.detectChangesInAttachedViews(refreshViews);
+      this.synchronize();
 
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
         for (let view of this._views) {
@@ -591,28 +598,41 @@ export class ApplicationRef {
     }
   }
 
-  private detectChangesInAttachedViews(refreshViews: boolean) {
+  private synchronize(): void {
     let rendererFactory: RendererFactory2 | null = null;
     if (!(this._injector as R3Injector).destroyed) {
       rendererFactory = this._injector.get(RendererFactory2, null, {optional: true});
     }
 
     let runs = 0;
-    const afterRenderEffectManager = this.afterRenderEffectManager;
-    while (runs < MAXIMUM_REFRESH_RERUNS) {
-      const isFirstPass = runs === 0;
-      // Some notifications to run a `tick` will only trigger render hooks. so we skip refreshing views the first time through.
-      // After the we execute render hooks in the first pass, we loop while views are marked dirty and should refresh them.
-      if (refreshViews || !isFirstPass) {
-        this.beforeRender.next(isFirstPass);
+    // Some notifications to run a `tick` will only trigger render hooks. so we can potentially
+    // skip refreshing views.
+    while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs < MAXIMUM_REFRESH_RERUNS) {
+      if (this.dirtyFlags & ApplicationRefDirtyFlags.RootEffects) {
+        this.dirtyFlags &= ~ApplicationRefDirtyFlags.RootEffects;
+        this.rootEffectScheduler.flush();
+      }
+
+      if (this.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeAny) {
+        const useGlobalCheck = Boolean(ApplicationRefDirtyFlags.ViewTreeGlobal);
+        // Remove the ViewTree bits.
+        this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeAny;
+
+        // Set the AfterRender bit, as we're checking views and need to run hooks.
+        this.dirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
+
+        this.beforeRender.next(useGlobalCheck);
         for (let {_lView, notifyErrorHandler} of this._views) {
           detectChangesInViewIfRequired(
             _lView,
             notifyErrorHandler,
-            isFirstPass,
+            useGlobalCheck,
             this.zonelessEnabled,
           );
         }
+
+        // `markForCheck()` & friends do not cause repeated CD if called from within CD.
+        this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeCheck;
       } else {
         // If we skipped refreshing views above, there might still be unflushed animations
         // because we never called `detectChangesInternal` on the views.
@@ -621,18 +641,37 @@ export class ApplicationRef {
       }
       runs++;
 
-      afterRenderEffectManager.executeInternalCallbacks();
-      // If we have a newly dirty view after running internal callbacks, recheck the views again
-      // before running user-provided callbacks
-      if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
-        continue;
+      if (this.dirtyFlags & ApplicationRefDirtyFlags.AfterRender) {
+        this.dirtyFlags &= ~ApplicationRefDirtyFlags.AfterRender;
+
+        this.afterRenderEffectManager.executeInternalCallbacks();
+
+        // If we have a newly dirty view after running internal callbacks, recheck the views again
+        // before running user-provided callbacks
+        if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
+          // Should be a no-op, but just in case:
+          this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
+          continue;
+        }
+
+        this.afterRenderEffectManager.execute();
+
+        if (this.dirtyFlags & ApplicationRefDirtyFlags.AfterRender) {
+          // If an after render hook schedules new after render hooks, we don't immediately loop,
+          // but instead run them in the next tick(). Therefore we clear the `AfterRender` bit here,
+          // but set up to restore it after `tick` completes. We might undo this later if a view
+          // ends up getting checked, which will set the `AfterRender` bit again.
+          this.dirtyFlags &= ~ApplicationRefDirtyFlags.AfterRender;
+        }
       }
 
-      afterRenderEffectManager.execute();
-      // If after running all afterRender callbacks we have no more views that need to be refreshed,
-      // we can break out of the loop
-      if (!this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
-        break;
+      if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
+        // If after running all afterRender callbacks new views are dirty, ensure we loop back.
+        this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
+      } else {
+        // Even though this flag may be set, none of _our_ views require traversal, and so the
+        // `ApplicationRef` doesn't require any repeated checking.
+        this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeAny;
       }
     }
 
@@ -645,6 +684,8 @@ export class ApplicationRef {
             'that afterRender hooks always mark views for check.',
       );
     }
+
+    this.dirtyFlags = ApplicationRefDirtyFlags.None;
   }
 
   /**
@@ -767,6 +808,40 @@ export function remove<T>(list: T[], el: T): void {
   if (index > -1) {
     list.splice(index, 1);
   }
+}
+
+export const enum ApplicationRefDirtyFlags {
+  None = 0,
+
+  /**
+   * A global change detection round has been requested.
+   */
+  ViewTreeGlobal = 0b00000001,
+
+  /**
+   * Part of the view tree is marked for traversal.
+   */
+  ViewTreeTraversal = 0b00000010,
+
+  /**
+   * Part of the view tree is marked to be checked (dirty).
+   */
+  ViewTreeCheck = 0b00000100,
+
+  /**
+   * Helper for any view tree bit being set.
+   */
+  ViewTreeAny = ViewTreeGlobal | ViewTreeTraversal | ViewTreeCheck,
+
+  /**
+   * After render hooks need to run.
+   */
+  AfterRender = 0b00001000,
+
+  /**
+   * Effects at the `ApplicationRef` level.
+   */
+  RootEffects = 0b00010000,
 }
 
 let whenStableStore: WeakMap<ApplicationRef, Promise<void>> | undefined;

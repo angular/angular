@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, effect, inject, Injector, NgZone, signal} from '@angular/core';
+import {Component, effect, inject, Injector, Input, NgZone, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('effects in TestBed', () => {
@@ -113,5 +113,28 @@ describe('effects in TestBed', () => {
     expect(observed).toBe('initial');
     await fixture.whenStable();
     expect(observed).toBe('new');
+  });
+
+  it('will run an effect with an input signal on the first CD', () => {
+    let observed: string | null = null;
+
+    @Component({
+      standalone: true,
+      template: '',
+    })
+    class Cmp {
+      @Input() input!: string;
+      constructor() {
+        effect(() => {
+          observed = this.input;
+        });
+      }
+    }
+
+    const fix = TestBed.createComponent(Cmp);
+    fix.componentRef.setInput('input', 'hello');
+    fix.detectChanges();
+
+    expect(observed as string | null).toBe('hello');
   });
 });

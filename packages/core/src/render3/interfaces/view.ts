@@ -15,7 +15,7 @@ import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import type {AfterRenderEventManager} from '../after_render_hooks';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
-import type {EffectScheduler} from '../reactivity/effect';
+import type {ViewEffectNode} from '../reactivity/effect';
 
 import {LContainer} from './container';
 import {
@@ -66,7 +66,8 @@ export const ID = 19;
 export const EMBEDDED_VIEW_INJECTOR = 20;
 export const ON_DESTROY_HOOKS = 21;
 export const EFFECTS_TO_SCHEDULE = 22;
-export const REACTIVE_TEMPLATE_CONSUMER = 23;
+export const EFFECTS = 23;
+export const REACTIVE_TEMPLATE_CONSUMER = 24;
 
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
@@ -346,6 +347,8 @@ export interface LView<T = unknown> extends Array<any> {
    */
   [EFFECTS_TO_SCHEDULE]: Array<() => void> | null;
 
+  [EFFECTS]: Set<ViewEffectNode> | null;
+
   /**
    * A collection of callbacks functions that are executed when a given LView is destroyed. Those
    * are user defined, LView-specific destroy callbacks that don't have any corresponding TView
@@ -371,9 +374,6 @@ export interface LViewEnvironment {
 
   /** An optional custom sanitizer. */
   sanitizer: Sanitizer | null;
-
-  /** Container for reactivity system `effect`s. */
-  inlineEffectRunner: EffectScheduler | null;
 
   /** Container for after render hooks */
   afterRenderEventManager: AfterRenderEventManager | null;

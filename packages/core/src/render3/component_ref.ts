@@ -266,8 +266,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       const environment: LViewEnvironment = {
         rendererFactory,
         sanitizer,
-        // We don't use inline effects (yet).
-        inlineEffectRunner: null,
         afterRenderEventManager,
         changeDetectionScheduler,
       };
