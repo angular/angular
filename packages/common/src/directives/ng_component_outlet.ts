@@ -11,15 +11,19 @@ import {
   createNgModule,
   Directive,
   DoCheck,
+  EventEmitter,
   Injector,
   Input,
   NgModuleFactory,
   NgModuleRef,
   OnChanges,
   OnDestroy,
+  OutputEmitterRef,
   SimpleChanges,
   Type,
   ViewContainerRef,
+  ɵComponentDef as ComponentDef,
+  ɵComponentType as ComponentType,
 } from '@angular/core';
 
 /**
@@ -99,6 +103,7 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
   @Input() ngComponentOutlet: Type<any> | null = null;
 
   @Input() ngComponentOutletInputs?: Record<string, unknown>;
+  @Input() ngComponentOutletOutputs?: Record<string, (...args: any[]) => unknown>;
   @Input() ngComponentOutletInjector?: Injector;
   @Input() ngComponentOutletContent?: any[][];
 
@@ -117,6 +122,10 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
    * that are no longer referenced.
    */
   private _inputsUsed = new Map<string, boolean>();
+  private _outputsUsed = new Map<
+    string,
+    [(...args: any[]) => unknown, {unsubscribe: () => void} | null]
+  >();
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
@@ -188,12 +197,14 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
       }
 
       this._applyInputStateDiff(this._componentRef);
+      this._applyOutputs(this._componentRef);
     }
   }
 
   /** @nodoc */
   ngOnDestroy() {
     this._moduleRef?.destroy();
+    this._outputsUsed.forEach(([_, sub]) => sub?.unsubscribe());
   }
 
   private _applyInputStateDiff(componentRef: ComponentRef<unknown>) {
@@ -206,6 +217,40 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
         // Since touched is true, it can be asserted that the inputs object is not empty.
         componentRef.setInput(inputName, this.ngComponentOutletInputs![inputName]);
         this._inputsUsed.set(inputName, false);
+      }
+    }
+  }
+
+  private _applyOutputs(componentRef: ComponentRef<any>) {
+    const outputs = this.ngComponentOutletOutputs;
+    this._outputsUsed.forEach(([_, sub], output) => {
+      if (!outputs || !outputs[output]) {
+        // Cancelling removed outputs
+        sub?.unsubscribe();
+      }
+    });
+
+    for (const [outputName, callback] of Object.entries(outputs ?? {})) {
+      const [bindedCallback, sub] = this._outputsUsed.get(outputName) ?? [];
+      if (bindedCallback == callback) {
+        // The callback didn't change we don't need to do anything
+        continue;
+      }
+
+      // Cancelling the previous output<<
+      sub?.unsubscribe();
+
+      const outputProp = (
+        (this.ngComponentOutlet! as ComponentType<unknown>).ɵcmp as ComponentDef<any>
+      ).outputs[outputName]!;
+      if (ngDevMode && !outputProp) {
+        throw new Error(`${outputProp} is not an output of the component of the ComponentOutlet`);
+      }
+
+      const maybeEmitter = componentRef.instance[outputProp];
+      if (maybeEmitter instanceof EventEmitter || maybeEmitter instanceof OutputEmitterRef) {
+        const sub = maybeEmitter.subscribe(callback);
+        this._outputsUsed.set(outputName, [callback, sub]);
       }
     }
   }
