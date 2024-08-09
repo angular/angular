@@ -60,9 +60,21 @@ export class FetchBackend implements HttpBackend {
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
       const aborter = new AbortController();
+
       this.doRequest(request, aborter.signal, observer).then(noop, (error) =>
         observer.error(new HttpErrorResponse({error})),
       );
+
+      if (request.timeout) {
+        this.ngZone.runOutsideAngular(() => {
+          setTimeout(() => {
+            if (!aborter.signal.aborted) {
+              aborter.abort(new DOMException('signal timed out', 'TimeoutError'));
+            }
+          }, request.timeout);
+        });
+      }
+
       return () => aborter.abort();
     });
   }
