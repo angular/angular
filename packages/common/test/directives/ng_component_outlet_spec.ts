@@ -12,6 +12,8 @@ import {
   Compiler,
   Component,
   ComponentRef,
+  createEnvironmentInjector,
+  EnvironmentInjector,
   Inject,
   InjectionToken,
   Injector,
@@ -116,6 +118,29 @@ describe('insert/remove', () => {
       providers: [{provide: TEST_TOKEN, useValue: uniqueValue}],
       parent: fixture.componentRef.injector,
     });
+
+    fixture.detectChanges();
+    let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
+    expect(cmpRef).toBeInstanceOf(ComponentRef);
+    expect(cmpRef.instance).toBeInstanceOf(InjectedComponent);
+    expect(cmpRef.instance.testToken).toBe(uniqueValue);
+  }));
+
+  it('should use the environmentInjector, if one supplied', waitForAsync(() => {
+    let fixture = TestBed.createComponent(TestComponent);
+
+    const uniqueValue = {};
+    fixture.componentInstance.currentComponent = InjectedComponent;
+    const environmentInjector = TestBed.inject(EnvironmentInjector);
+    fixture.componentInstance.environmentInjector = createEnvironmentInjector(
+      [
+        {
+          provide: TEST_TOKEN,
+          useValue: uniqueValue,
+        },
+      ],
+      environmentInjector,
+    );
 
     fixture.detectChanges();
     let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
@@ -390,6 +415,7 @@ class InjectedComponentAgain {}
 const TEST_CMP_TEMPLATE = `<ng-template *ngComponentOutlet="
       currentComponent;
       injector: injector;
+      environmentInjector: environmentInjector;
       inputs: inputs;
       content: projectables;
       ngModule: ngModule;
@@ -399,6 +425,7 @@ const TEST_CMP_TEMPLATE = `<ng-template *ngComponentOutlet="
 class TestComponent {
   currentComponent: Type<unknown> | null = null;
   injector?: Injector;
+  environmentInjector?: EnvironmentInjector;
   inputs?: Record<string, unknown>;
   projectables?: any[][];
   ngModule?: Type<unknown>;
