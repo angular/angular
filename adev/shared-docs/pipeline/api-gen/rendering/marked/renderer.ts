@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Renderer as MarkedRenderer} from 'marked';
+import {Renderer as MarkedRenderer, Tokens} from 'marked';
 import {codeToHtml} from '../shiki/shiki';
 
 /**
@@ -14,8 +14,8 @@ import {codeToHtml} from '../shiki/shiki';
  * files that can be used in the Angular docs.
  */
 export const renderer: Partial<MarkedRenderer> = {
-  code(code: string, language: string, isEscaped: boolean): string {
-    const highlightResult = codeToHtml(code, language).replace(/>\s+</g, '><');
+  code({lang, raw}): string {
+    const highlightResult = codeToHtml(raw, lang).replace(/>\s+</g, '><');
 
     return `
       <div class="docs-code" role="group">
@@ -25,37 +25,46 @@ export const renderer: Partial<MarkedRenderer> = {
       </div>
     `;
   },
-  image(href: string | null, title: string | null, text: string): string {
+  image({href, title, text}): string {
     return `
     <img src="${href}" alt="${text}" title="${title}" class="docs-image">
     `;
   },
-  link(href: string, title: string, text: string): string {
+  link({href, text}): string {
     return `<a href="${href}">${text}</a>`;
   },
-  list(body: string, ordered: boolean, start: number) {
+  list({items, ordered, start}) {
     if (ordered) {
       return `
       <ol class="docs-ordered-list">
-        ${body}
+        ${items}
       </ol>
       `;
     }
     return `
     <ul class="docs-list">
-      ${body}
+      ${items}
     </ul>
     `;
   },
-  table(header: string, body: string): string {
+
+  table(this: MarkedRenderer, {header, rows}: Tokens.Table) {
     return `
       <div class="docs-table docs-scroll-track-transparent">
         <table>
           <thead>
-            ${header}
+          ${this.tablerow({
+            text: header.map((cell) => this.tablecell(cell)).join(''),
+          })}
           </thead>
           <tbody>
-            ${body}
+          ${rows
+            .map((row) =>
+              this.tablerow({
+                text: row.map((cell) => this.tablecell(cell)).join(''),
+              }),
+            )
+            .join('')}
           </tbody>
         </table>
       </div>
