@@ -6,53 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BehaviorSubject} from 'rxjs';
-
-import {inject} from './di/injector_compatibility';
-import {ɵɵdefineInjectable} from './di/interface/defs';
-import {OnDestroy} from './interface/lifecycle_hooks';
-
-/**
- * Internal implementation of the pending tasks service.
- */
-export class PendingTasks implements OnDestroy {
-  private taskId = 0;
-  private pendingTasks = new Set<number>();
-  private get _hasPendingTasks() {
-    return this.hasPendingTasks.value;
-  }
-  hasPendingTasks = new BehaviorSubject<boolean>(false);
-
-  add(): number {
-    if (!this._hasPendingTasks) {
-      this.hasPendingTasks.next(true);
-    }
-    const taskId = this.taskId++;
-    this.pendingTasks.add(taskId);
-    return taskId;
-  }
-
-  remove(taskId: number): void {
-    this.pendingTasks.delete(taskId);
-    if (this.pendingTasks.size === 0 && this._hasPendingTasks) {
-      this.hasPendingTasks.next(false);
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.pendingTasks.clear();
-    if (this._hasPendingTasks) {
-      this.hasPendingTasks.next(false);
-    }
-  }
-
-  /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
-    token: PendingTasks,
-    providedIn: 'root',
-    factory: () => new PendingTasks(),
-  });
-}
+import {inject} from '../di/injector_compatibility';
+import {ɵɵdefineInjectable} from '../di/interface/defs';
+import {PendingTasks} from './pending_tasks_internal';
+import {NgZone} from '../zone/ng_zone';
 
 /**
  * Experimental service that keeps track of pending tasks contributing to the stableness of Angular
@@ -81,14 +38,22 @@ export class PendingTasks implements OnDestroy {
  * @experimental
  */
 export class ExperimentalPendingTasks {
-  private internalPendingTasks = inject(PendingTasks);
+  private readonly internalPendingTasks = inject(PendingTasks);
+  private readonly ngZone = inject(NgZone);
+
   /**
    * Adds a new task that should block application's stability.
-   * @returns A cleanup function that removes a task when called.
+   * @returns A cleanup function that removes a task after a microtask delay when called.
    */
   add(): () => void {
     const taskId = this.internalPendingTasks.add();
-    return () => this.internalPendingTasks.remove(taskId);
+    return () => {
+      this.ngZone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.internalPendingTasks.remove(taskId);
+        });
+      });
+    };
   }
 
   /** @nocollapse */

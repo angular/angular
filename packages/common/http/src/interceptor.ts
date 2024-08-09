@@ -16,7 +16,7 @@ import {
   runInInjectionContext,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
-  ɵPendingTasks as PendingTasks,
+  ExperimentalPendingTasks,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
@@ -241,11 +241,11 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
       );
     }
 
-    const pendingTasks = inject(PendingTasks);
+    const pendingTasks = inject(ExperimentalPendingTasks);
     const contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
     if (contributeToStability) {
-      const taskId = pendingTasks.add();
-      return chain(req, handler).pipe(finalize(() => pendingTasks.remove(taskId)));
+      const removeTask = pendingTasks.add();
+      return chain(req, handler).pipe(finalize(() => removeTask()));
     } else {
       return chain(req, handler);
     }
@@ -262,7 +262,7 @@ export function resetFetchBackendWarningFlag() {
 @Injectable()
 export class HttpInterceptorHandler extends HttpHandler {
   private chain: ChainedInterceptorFn<unknown> | null = null;
-  private readonly pendingTasks = inject(PendingTasks);
+  private readonly pendingTasks = inject(ExperimentalPendingTasks);
   private readonly contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
 
   constructor(
@@ -316,10 +316,10 @@ export class HttpInterceptorHandler extends HttpHandler {
     }
 
     if (this.contributeToStability) {
-      const taskId = this.pendingTasks.add();
+      const removeTask = this.pendingTasks.add();
       return this.chain(initialRequest, (downstreamRequest) =>
         this.backend.handle(downstreamRequest),
-      ).pipe(finalize(() => this.pendingTasks.remove(taskId)));
+      ).pipe(finalize(() => removeTask()));
     } else {
       return this.chain(initialRequest, (downstreamRequest) =>
         this.backend.handle(downstreamRequest),

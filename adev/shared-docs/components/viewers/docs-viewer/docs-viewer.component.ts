@@ -16,6 +16,7 @@ import {
   DestroyRef,
   ElementRef,
   EnvironmentInjector,
+  ExperimentalPendingTasks,
   inject,
   Injector,
   Input,
@@ -25,7 +26,6 @@ import {
   Type,
   ViewContainerRef,
   ViewEncapsulation,
-  ɵPendingTasks as PendingTasks,
   EventEmitter,
   Output,
 } from '@angular/core';
@@ -84,16 +84,16 @@ export class DocViewer implements OnChanges {
 
   // tslint:disable-next-line:no-unused-variable
   private animateContent = false;
-  private readonly pendingRenderTasks = inject(PendingTasks);
+  private readonly pendingTasks = inject(ExperimentalPendingTasks);
 
   private countOfExamples = 0;
 
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    const taskId = this.pendingRenderTasks.add();
+    const removeTask = this.pendingTasks.add();
     if ('docContent' in changes) {
       await this.renderContentsAndRunClientSetup(this.docContent!);
     }
-    this.pendingRenderTasks.remove(taskId);
+    removeTask();
   }
 
   async renderContentsAndRunClientSetup(content?: string): Promise<void> {

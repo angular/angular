@@ -21,7 +21,7 @@ import {FLAGS, LViewFlags, EFFECTS_TO_SCHEDULE} from '../interfaces/view';
 
 import {assertNotInReactiveContext} from './asserts';
 import {performanceMarkFeature} from '../../util/performance';
-import {PendingTasks} from '../../pending_tasks';
+import {ExperimentalPendingTasks} from '../../application/pending_tasks';
 
 /**
  * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
@@ -84,18 +84,18 @@ export abstract class EffectScheduler {
 export class ZoneAwareEffectScheduler implements EffectScheduler {
   private queuedEffectCount = 0;
   private queues = new Map<Zone | null, Set<SchedulableEffect>>();
-  private readonly pendingTasks = inject(PendingTasks);
-  private taskId: number | null = null;
+  private readonly pendingTasks = inject(ExperimentalPendingTasks);
+  private removeTask: (() => void) | null = null;
 
   scheduleEffect(handle: SchedulableEffect): void {
     this.enqueue(handle);
 
-    if (this.taskId === null) {
-      const taskId = (this.taskId = this.pendingTasks.add());
+    if (this.removeTask === null) {
+      const removeTask = (this.removeTask = this.pendingTasks.add());
       queueMicrotask(() => {
         this.flush();
-        this.pendingTasks.remove(taskId);
-        this.taskId = null;
+        removeTask();
+        this.removeTask = null;
       });
     }
   }
