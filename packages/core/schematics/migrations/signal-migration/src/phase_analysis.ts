@@ -15,6 +15,7 @@ import {pass3__checkIncompatiblePatterns} from './passes/3_check_incompatible_pa
 import {pass2_IdentifySourceFileReferences} from './passes/2_find_source_file_references';
 import {MigrationResult} from './result';
 import {InheritanceGraph} from './utils/inheritance_graph';
+import {GroupedTsAstVisitor} from './utils/grouped_ts_ast_visitor';
 
 /**
  * Executes the analysis phase of the migration.
@@ -59,26 +60,32 @@ export function executeAnalysisPhase(
       ),
   );
 
-  // Pass 2
-  sourceFiles.forEach((sf) =>
-    pass2_IdentifySourceFileReferences(
-      sf,
-      host,
-      typeChecker,
-      reflector,
-      templateTypeChecker,
-      knownInputs,
-      result,
-    ),
+  // A graph starting with source files is sufficient. We will resolve into
+  // declaration files if a source file depends on such.
+  const inheritanceGraph = new InheritanceGraph(typeChecker).expensivePopulate(sourceFiles);
+  const pass2And3SourceFileVisitor = new GroupedTsAstVisitor(sourceFiles);
+
+  // Register pass 2. Find all source file references.
+  pass2_IdentifySourceFileReferences(
+    host,
+    typeChecker,
+    reflector,
+    templateTypeChecker,
+    pass2And3SourceFileVisitor,
+    knownInputs,
+    result,
+  );
+  // Register pass 3. Check incompatible patterns pass.
+  pass3__checkIncompatiblePatterns(
+    host,
+    inheritanceGraph,
+    typeChecker,
+    pass2And3SourceFileVisitor,
+    knownInputs,
   );
 
-  // Source files is fine. We will resolve into declaration files if a source
-  // file depends on such.
-  const inheritanceGraph = new InheritanceGraph(typeChecker).expensivePopulate(sourceFiles);
-
-  // Check pass
-  // TODO: Combine with source file iterations above for speed up??
-  pass3__checkIncompatiblePatterns(host, sourceFiles, inheritanceGraph, typeChecker, knownInputs);
+  // Perform Pass 2 and Pass 3, efficiently in one pass.
+  pass2And3SourceFileVisitor.execute();
 
   return {inheritanceGraph};
 }

@@ -19,6 +19,7 @@ import {identifyTemplateReferences} from './references/identify_template_referen
 import {identifyPotentialTypeScriptReference} from './references/identify_ts_references';
 import {PartialDirectiveTypeInCatalystTests} from '../pattern_advisors/partial_directive_type';
 import {InputReferenceKind} from '../utils/input_reference';
+import {GroupedTsAstVisitor} from '../utils/grouped_ts_ast_visitor';
 
 /**
  * Phase where we iterate through all source file references and
@@ -34,11 +35,11 @@ import {InputReferenceKind} from '../utils/input_reference';
  *    - Host binding expressions.
  */
 export function pass2_IdentifySourceFileReferences(
-  sf: ts.SourceFile,
   host: MigrationHost,
   checker: ts.TypeChecker,
   reflector: ReflectionHost,
   templateTypeChecker: TemplateTypeChecker,
+  groupedTsAstVisitor: GroupedTsAstVisitor,
   knownInputs: KnownInputs,
   result: MigrationResult,
 ) {
@@ -86,8 +87,7 @@ export function pass2_IdentifySourceFileReferences(
         target: partialDirectiveInCatalyst.targetClass,
       });
     }
-
-    ts.forEachChild(node, visitor);
   };
-  ts.forEachChild(sf, visitor);
+
+  groupedTsAstVisitor.register(visitor);
 }
