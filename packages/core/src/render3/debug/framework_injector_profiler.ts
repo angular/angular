@@ -67,6 +67,7 @@ class DIDebugData {
     WeakMap<Type<unknown>, InjectedService[]>
   >();
   resolverToProviders = new WeakMap<Injector | TNode, ProviderRecord[]>();
+  resolverToEffects = new WeakMap<Injector | LView, any>();
   standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
 
   reset() {
@@ -113,7 +114,23 @@ function handleInjectorProfilerEvent(injectorProfilerEvent: InjectorProfilerEven
     handleInstanceCreatedByInjectorEvent(context, injectorProfilerEvent.instance);
   } else if (type === InjectorProfilerEventType.ProviderConfigured) {
     handleProviderConfiguredEvent(context, injectorProfilerEvent.providerRecord);
+  } else if (type === InjectorProfilerEventType.EffectCreated) {
+    handleEffectCreatedEvent(context, injectorProfilerEvent.effect);
   }
+}
+
+function handleEffectCreatedEvent(context: InjectorProfilerContext, effect: any): void {
+  const diResolver = getDIResolver(context.injector);
+  if (diResolver === null) {
+    throwError('An EffectCreated event must be run within an injection context.');
+  }
+
+  const diResolverToEffects = frameworkDIDebugData.resolverToEffects;
+  if (!diResolverToEffects.has(diResolver)) {
+    diResolverToEffects.set(diResolver, []);
+  }
+
+  diResolverToEffects.get(diResolver)!.push(effect);
 }
 
 /**
@@ -280,7 +297,7 @@ function handleProviderConfiguredEvent(
   resolverToProviders.get(diResolver)!.push(data);
 }
 
-function getDIResolver(injector: Injector | undefined): Injector | LView | null {
+export function getDIResolver(injector: Injector | undefined): Injector | LView | null {
   let diResolver: Injector | LView | null = null;
 
   if (injector === undefined) {

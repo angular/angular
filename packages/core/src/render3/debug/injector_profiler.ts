@@ -35,6 +35,11 @@ export const enum InjectorProfilerEventType {
    * Emits when an injector configures a provider.
    */
   ProviderConfigured,
+
+  /**
+   * Emits when an effect is created.
+   */
+  EffectCreated,
 }
 
 /**
@@ -74,6 +79,12 @@ export interface ProviderConfiguredEvent {
   providerRecord: ProviderRecord;
 }
 
+export interface EffectCreatedEvent {
+  type: InjectorProfilerEventType.EffectCreated;
+  context: InjectorProfilerContext;
+  effect: unknown;
+}
+
 /**
  * An object representing an event that is emitted through the injector profiler
  */
@@ -81,7 +92,8 @@ export interface ProviderConfiguredEvent {
 export type InjectorProfilerEvent =
   | InjectedServiceEvent
   | InjectorCreatedInstanceEvent
-  | ProviderConfiguredEvent;
+  | ProviderConfiguredEvent
+  | EffectCreatedEvent;
 
 /**
  * An object that contains information about a provider that has been configured
@@ -269,6 +281,16 @@ export function emitInjectEvent(token: Type<unknown>, value: unknown, flags: Inj
     type: InjectorProfilerEventType.Inject,
     context: getInjectorProfilerContext(),
     service: {token, value, flags},
+  });
+}
+
+export function emitEffectCreatedEvent(effect: unknown): void {
+  !ngDevMode && throwError('Injector profiler should never be called in production mode');
+
+  injectorProfiler({
+    type: InjectorProfilerEventType.EffectCreated,
+    context: getInjectorProfilerContext(),
+    effect,
   });
 }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createWatch, Watch, WatchCleanupRegisterFn} from '@angular/core/primitives/signals';
+import {createWatch, SIGNAL, Watch, WatchCleanupRegisterFn} from '@angular/core/primitives/signals';
 
 import {ChangeDetectorRef} from '../../change_detection';
 import {assertInInjectionContext} from '../../di/contextual';
@@ -22,6 +22,7 @@ import {FLAGS, LViewFlags, EFFECTS_TO_SCHEDULE} from '../interfaces/view';
 import {assertNotInReactiveContext} from './asserts';
 import {performanceMarkFeature} from '../../util/performance';
 import {PendingTasks} from '../../pending_tasks';
+import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injector_profiler';
 
 /**
  * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
@@ -162,12 +163,18 @@ class EffectHandle implements EffectRef, SchedulableEffect {
     destroyRef: DestroyRef | null,
     private injector: Injector,
     allowSignalWrites: boolean,
+    debugName?: string,
   ) {
     this.watcher = createWatch(
       (onCleanup) => this.runEffect(onCleanup),
       () => this.schedule(),
       allowSignalWrites,
     );
+
+    if (ngDevMode) {
+      this.watcher[SIGNAL].debugName = debugName;
+    }
+
     this.unregisterOnDestroy = destroyRef?.onDestroy(() => this.destroy());
   }
 
@@ -240,6 +247,11 @@ export interface CreateEffectOptions {
    * incorrect behavior, and should be enabled only when necessary.
    */
   allowSignalWrites?: boolean;
+
+  /**
+   * A debug name for the effect. Used in Angular DevTools to identify the effect.
+   */
+  debugName?: string;
 }
 
 /**
@@ -270,6 +282,7 @@ export function effect(
     destroyRef,
     injector,
     options?.allowSignalWrites ?? false,
+    ngDevMode ? options?.debugName : undefined,
   );
 
   // Effects need to be marked dirty manually to trigger their initial run. The timing of this
@@ -289,6 +302,15 @@ export function effect(
   } else {
     // Delay the initialization of the effect until the view is fully initialized.
     (cdr._lView[EFFECTS_TO_SCHEDULE] ??= []).push(handle.watcher.notify);
+  }
+
+  if (ngDevMode) {
+    const prevInjectorProfilerContext = setInjectorProfilerContext({injector, token: null});
+    try {
+      emitEffectCreatedEvent(handle);
+    } finally {
+      setInjectorProfilerContext(prevInjectorProfilerContext);
+    }
   }
 
   return handle;

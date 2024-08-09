@@ -11,15 +11,20 @@ import {
   Component,
   Directive,
   InjectionToken,
+  Injector,
   Input,
   Output,
   ViewChild,
   ViewEncapsulation,
+  effect,
+  inject,
+  runInInjectionContext,
+  signal,
 } from '@angular/core';
 import {EventEmitter} from '@angular/core/src/event_emitter';
 import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
 import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 
 import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement} from '../../src/render3/index';
@@ -36,6 +41,7 @@ import {
   getLocalRefs,
   getOwningComponent,
   getRootComponents,
+  getSignalGraph,
 } from '../../src/render3/util/discovery_utils';
 
 describe('discovery utils', () => {
@@ -96,6 +102,8 @@ describe('discovery utils', () => {
       <child dirA *ngIf="conditionalChildVisible"></child>
       <ng-container><p></p></ng-container>
       <b *ngIf="visible">Bold</b>
+
+      {{ primitiveSignal() }}
     `,
   })
   class MyApp {
@@ -104,8 +112,13 @@ describe('discovery utils', () => {
     conditionalChildVisible = true;
     @Input('a') b = 2;
     @Output('c') d = new EventEmitter();
+
+    primitiveSignal = signal(123, {debugName: 'primitiveSignal'});
+
     constructor() {
       myApp = this;
+
+      effect(() => this.primitiveSignal() ** 2, {debugName: 'non template effect'});
     }
 
     log(event: any) {
@@ -391,6 +404,39 @@ describe('discovery utils', () => {
       expect(metadata!.inputs).toEqual({a: 'b'});
       expect(metadata!.outputs).toEqual({c: 'd'});
     });
+  });
+
+  describe('getSignalGraph', () => {
+    it('should return the signal graph for an injector', fakeAsync(() => {
+      tick();
+      fixture.detectChanges();
+      const injector = fixture.componentRef.injector;
+      const signalGraph = getSignalGraph(injector);
+      const {nodes, edges} = signalGraph;
+      expect(nodes.length).toBe(3);
+      expect(edges.length).toBe(2);
+
+      const [templateNode, signalNode, effectNode] = nodes;
+      const [templateToSignalEdge, effectToSignalEdge] = edges;
+
+      expect(templateNode.type).toBe('template');
+      expect(templateNode.label).toBe('div');
+
+      expect(signalNode.type).toBe('signal');
+      expect(signalNode.label).toBe('primitiveSignal');
+      expect(signalNode.value).toBe(123);
+
+      expect(effectNode.type).toBe('effect');
+      expect(effectNode.label).toBe('non template effect');
+
+      // the template node should depend on the primitive signal node
+      expect(templateToSignalEdge.from).toBe(0);
+      expect(templateToSignalEdge.to).toBe(1);
+
+      // the effect node should depend on the primitive signal node
+      expect(effectToSignalEdge.from).toBe(2);
+      expect(effectToSignalEdge.to).toBe(1);
+    }));
   });
 });
 

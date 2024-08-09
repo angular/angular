@@ -40,7 +40,11 @@ interface QuerySignalNode<T> extends ComputedNode<T | ReadonlyArray<T>> {
  * @param required indicates if at least one result is required
  * @returns a read-only signal with query results
  */
-function createQuerySignalFn<V>(firstOnly: boolean, required: boolean) {
+function createQuerySignalFn<V>(
+  firstOnly: boolean,
+  required: boolean,
+  opts?: {debugName?: string},
+) {
   let node: QuerySignalNode<V>;
   const signalFn = createComputed(() => {
     // A dedicated signal that increments its value every time a query changes its dirty status. By
@@ -68,23 +72,33 @@ function createQuerySignalFn<V>(firstOnly: boolean, required: boolean) {
 
   if (ngDevMode) {
     signalFn.toString = () => `[Query Signal]`;
+    node.debugName = opts?.debugName;
   }
 
   return signalFn;
 }
 
-export function createSingleResultOptionalQuerySignalFn<ReadT>(): Signal<ReadT | undefined> {
-  return createQuerySignalFn(/* firstOnly */ true, /* required */ false) as Signal<
+export function createSingleResultOptionalQuerySignalFn<ReadT>(opts?: {
+  debugName?: string;
+}): Signal<ReadT | undefined> {
+  return createQuerySignalFn(/* firstOnly */ true, /* required */ false, opts) as Signal<
     ReadT | undefined
   >;
 }
 
-export function createSingleResultRequiredQuerySignalFn<ReadT>(): Signal<ReadT> {
-  return createQuerySignalFn(/* firstOnly */ true, /* required */ true) as Signal<ReadT>;
+export function createSingleResultRequiredQuerySignalFn<ReadT>(opts?: {
+  debugName?: string;
+}): Signal<ReadT> {
+  return createQuerySignalFn(/* firstOnly */ true, /* required */ true, opts) as Signal<ReadT>;
 }
 
-export function createMultiResultQuerySignalFn<ReadT>(): Signal<ReadonlyArray<ReadT>> {
-  return createQuerySignalFn(/* firstOnly */ false, /* required */ false) as Signal<
+export function createMultiResultQuerySignalFn<ReadT>(opts?: {
+  /**
+   * A debug name for the signal returned by contentChildren. Used in Angular DevTools to identify the signal.
+   */
+  debugName?: string;
+}): Signal<ReadonlyArray<ReadT>> {
+  return createQuerySignalFn(/* firstOnly */ false, /* required */ false, opts) as Signal<
     ReadonlyArray<ReadT>
   >;
 }
