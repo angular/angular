@@ -1,1 +1,52 @@
 @import './styles/xterm'; 
+
+.adev-top-level-banner-wrapper {
+  z-index: 50;
+  position: fixed;
+  height: 2rem;
+  width: 100vw;
+  border-bottom: 1px solid var(--septenary-contrast);
+  text-align: center;
+  align-content: center;
+  backdrop-filter: blur(16px);
+  background-color: color-mix(in srgb, var(--page-background) 70%, transparent);
+
+  a.adev-top-level-banner {
+    width: 100%;
+    display: inherit;
+  }
+
+  h1.adev-top-level-banner-cta {
+    display: inline;
+    font-size: 0.875rem;
+    margin: 0;
+    background-image: var(--red-to-pink-to-purple-horizontal-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    width: fit-content;
+    font-weight: 500;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      transform: scaleX(0);
+      height: 1px;
+      bottom: -2px;
+      left: 0;
+      background: var(--tertiary-contrast);
+      transform-origin: bottom right;
+      transition: transform 0.3s ease;
+    }
+  }
+
+  &:hover {
+    h1.adev-top-level-banner-cta {
+      &::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+      }
+    }
+  }
+}
