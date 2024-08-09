@@ -57,7 +57,7 @@ export function identifyTemplateReferences(
       // https://github.com/angular/angular/pull/55456.
       if (process.env['MIGRATE_NARROWED_NARROWED_IN_TEMPLATES'] !== '1' && res.isLikelyNarrowed) {
         knownInputs.markInputAsIncompatible(res.targetInput, {
-          reason: InputIncompatibilityReason.NarrowedInTemplateButNotSupportedYetTODO,
+          reason: InputIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet,
           context: null,
         });
       }
