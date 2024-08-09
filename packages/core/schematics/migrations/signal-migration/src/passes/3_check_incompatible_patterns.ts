@@ -15,6 +15,7 @@ import {getMemberName} from '../utils/class_member_names';
 import {InheritanceGraph} from '../utils/inheritance_graph';
 import {SpyOnInputPattern} from '../pattern_advisors/spy_on_pattern';
 import {MigrationHost} from '../migration_host';
+import {GroupedTsAstVisitor} from '../utils/grouped_ts_ast_visitor';
 
 /**
  * Phase where problematic patterns are detected and advise
@@ -28,9 +29,9 @@ import {MigrationHost} from '../migration_host';
  */
 export function pass3__checkIncompatiblePatterns(
   host: MigrationHost,
-  files: readonly ts.SourceFile[],
   inheritanceGraph: InheritanceGraph,
   checker: ts.TypeChecker,
+  groupedTsAstVisitor: GroupedTsAstVisitor,
   knownInputs: KnownInputs,
 ) {
   const inputClassSymbolsToClass = new Map<ts.Symbol, ts.ClassDeclaration>();
@@ -51,7 +52,6 @@ export function pass3__checkIncompatiblePatterns(
 
   const incompatibilityPatterns = [new SpyOnInputPattern(host, checker, knownInputs)];
 
-  let insidePropertyDeclaration: ts.PropertyDeclaration | null = null;
   const visitor = (node: ts.Node) => {
     // Check for manual class instantiations.
     if (ts.isNewExpression(node) && ts.isIdentifier(unwrapExpression(node.expression))) {
@@ -71,6 +71,7 @@ export function pass3__checkIncompatiblePatterns(
     // Detect possible problematic patterns.
     incompatibilityPatterns.forEach((p) => p.detect(node));
 
+    const insidePropertyDeclaration = groupedTsAstVisitor.state.insidePropertyDeclaration;
     // Check for problematic class references inside property declarations.
     // These are likely problematic, causing type conflicts, if the containing
     // class inherits a non-input member with the same name.
@@ -109,16 +110,7 @@ export function pass3__checkIncompatiblePatterns(
         );
       }
     }
-
-    if (ts.isPropertyDeclaration(node)) {
-      const oldPropertyDeclaration = insidePropertyDeclaration;
-      insidePropertyDeclaration = node;
-      ts.forEachChild(node, visitor);
-      insidePropertyDeclaration = oldPropertyDeclaration;
-    } else {
-      ts.forEachChild(node, visitor);
-    }
   };
 
-  files.forEach((f) => ts.forEachChild(f, visitor));
+  groupedTsAstVisitor.register(visitor);
 }
