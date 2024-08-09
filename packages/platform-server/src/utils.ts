@@ -18,6 +18,7 @@ import {
   Type,
   ɵannotateForHydration as annotateForHydration,
   ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
+  ɵIS_PARTIAL_HYDRATION_ENABLED as IS_PARTIAL_HYDRATION_ENABLED,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵwhenStable as whenStable,
 } from '@angular/core';
@@ -57,19 +58,21 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
 }
 
 /**
- * Finds and returns inlined event dispatch script if it exists.
- * See the `EVENT_DISPATCH_SCRIPT_ID` const docs for additional info.
+ * Finds and returns inlined script by script id if it exists.
+ * See the `EVENT_DISPATCH_SCRIPT_ID` or `PARTIAL_HYDRATION_SCRIPT_ID`
+ * const docs for additional info.
  */
-function findEventDispatchScript(doc: Document) {
-  return doc.getElementById(EVENT_DISPATCH_SCRIPT_ID);
+function findScriptById(doc: Document, scriptId: string) {
+  return doc.getElementById(scriptId);
 }
 
 /**
  * Removes inlined event dispatch script if it exists.
- * See the `EVENT_DISPATCH_SCRIPT_ID` const docs for additional info.
+ * See the `EVENT_DISPATCH_SCRIPT_ID` or `PARTIAL_HYDRATION_SCRIPT_ID`
+ * const docs for additional info.
  */
-function removeEventDispatchScript(doc: Document) {
-  findEventDispatchScript(doc)?.remove();
+function removeScriptById(doc: Document, scriptId: string) {
+  findScriptById(doc, scriptId)?.remove();
 }
 
 /**
@@ -82,7 +85,7 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
   if (!environmentInjector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {
     // Hydration is diabled, remove inlined event dispatch script.
     // (which was injected by the build process) from the HTML.
-    removeEventDispatchScript(doc);
+    removeScriptById(doc, EVENT_DISPATCH_SCRIPT_ID);
 
     return;
   }
@@ -100,7 +103,7 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
   } else {
     // No events to replay, we should remove inlined event dispatch script
     // (which was injected by the build process) from the HTML.
-    removeEventDispatchScript(doc);
+    removeScriptById(doc, EVENT_DISPATCH_SCRIPT_ID);
   }
 }
 
@@ -141,7 +144,7 @@ function insertEventRecordScript(
   nonce: string | null,
 ): void {
   const {regular, capture} = eventTypesToReplay;
-  const eventDispatchScript = findEventDispatchScript(doc);
+  const eventDispatchScript = findScriptById(doc, EVENT_DISPATCH_SCRIPT_ID);
   if (eventDispatchScript) {
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
     const replayScriptContents =

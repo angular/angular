@@ -29,21 +29,23 @@ import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {TransferState} from '../transfer_state';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
+import {withEventReplay} from './event_replay';
 
 import {cleanupDehydratedViews} from './cleanup';
 import {
   enableClaimDehydratedIcuCaseImpl,
   enablePrepareI18nBlockForHydrationImpl,
-  isI18nHydrationEnabled,
   setIsI18nHydrationSupportEnabled,
 } from './i18n';
 import {
   IS_HYDRATION_DOM_REUSE_ENABLED,
   IS_I18N_HYDRATION_ENABLED,
+  IS_PARTIAL_HYDRATION_ENABLED,
   PRESERVE_HOST_CONTENT,
 } from './tokens';
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
+import {bootstrapPartialHydration, enableRetrieveDeferBlockDataImpl} from './partial';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -60,6 +62,12 @@ let isHydrationSupportEnabled = false;
  * whether i18n blocks are serialized or hydrated.
  */
 let isI18nHydrationRuntimeSupportEnabled = false;
+
+/**
+ * Indicates whether the partial hydration code was added,
+ * prevents adding it multiple times.
+ */
+let isPartialHydrationRuntimeSupportEnabled = false;
 
 /**
  * Defines a period of time that Angular waits for the `ApplicationRef.isStable` to emit `true`.
@@ -103,6 +111,18 @@ function enableI18nHydrationRuntimeSupport() {
     enableLocateOrCreateI18nNodeImpl();
     enablePrepareI18nBlockForHydrationImpl();
     enableClaimDehydratedIcuCaseImpl();
+  }
+}
+
+/**
+ * Brings the necessary partial hydration code in tree-shakable manner.
+ * Similar to `enableHydrationRuntimeSupport`, the code is only
+ * present when `enablePartialHydrationRuntimeSupport` is invoked.
+ */
+function enablePartialHydrationRuntimeSupport() {
+  if (!isPartialHydrationRuntimeSupportEnabled) {
+    isPartialHydrationRuntimeSupportEnabled = true;
+    enableRetrieveDeferBlockDataImpl();
   }
 }
 
@@ -261,6 +281,40 @@ export function withI18nSupport(): Provider[] {
       },
       multi: true,
     },
+  ];
+}
+
+/**
+ * Returns a set of providers required to setup support for i18n hydration.
+ * Requires hydration to be enabled separately.
+ */
+export function withPartialHydration(): Provider[] {
+  return [
+    {
+      provide: IS_PARTIAL_HYDRATION_ENABLED,
+      useValue: true,
+    },
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      useValue: () => {
+        enablePartialHydrationRuntimeSupport();
+      },
+      multi: true,
+    },
+    {
+      provide: APP_BOOTSTRAP_LISTENER,
+      useFactory: () => {
+        if (isPlatformBrowser()) {
+          const injector = inject(Injector);
+          return () => {
+            bootstrapPartialHydration(getDocument(), injector);
+          };
+        }
+        return () => {}; // noop for the server code
+      },
+      multi: true,
+    },
+    withEventReplay(),
   ];
 }
 

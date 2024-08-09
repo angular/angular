@@ -7,6 +7,7 @@
  */
 
 import {
+  HYDRATE_TRIGGER_CLEANUP_FNS,
   LDeferBlockDetails,
   PREFETCH_TRIGGER_CLEANUP_FNS,
   TRIGGER_CLEANUP_FNS,
@@ -22,19 +23,29 @@ export function storeTriggerCleanupFn(
   lDetails: LDeferBlockDetails,
   cleanupFn: VoidFunction,
 ) {
-  const key = type === TriggerType.Prefetch ? PREFETCH_TRIGGER_CLEANUP_FNS : TRIGGER_CLEANUP_FNS;
+  let key = TRIGGER_CLEANUP_FNS;
+  if (type === TriggerType.Prefetch) {
+    key = PREFETCH_TRIGGER_CLEANUP_FNS;
+  } else if (type === TriggerType.Hydrate) {
+    key = HYDRATE_TRIGGER_CLEANUP_FNS;
+  }
   if (lDetails[key] === null) {
     lDetails[key] = [];
   }
-  lDetails[key]!.push(cleanupFn);
+  (lDetails[key]! as VoidFunction[]).push(cleanupFn);
 }
 
 /**
  * Invokes registered cleanup functions either for prefetch or for regular triggers.
  */
 export function invokeTriggerCleanupFns(type: TriggerType, lDetails: LDeferBlockDetails) {
-  const key = type === TriggerType.Prefetch ? PREFETCH_TRIGGER_CLEANUP_FNS : TRIGGER_CLEANUP_FNS;
-  const cleanupFns = lDetails[key];
+  let key = TRIGGER_CLEANUP_FNS;
+  if (type === TriggerType.Prefetch) {
+    key = PREFETCH_TRIGGER_CLEANUP_FNS;
+  } else if (type === TriggerType.Hydrate) {
+    key = HYDRATE_TRIGGER_CLEANUP_FNS;
+  }
+  const cleanupFns = lDetails[key] as VoidFunction[];
   if (cleanupFns !== null) {
     for (const cleanupFn of cleanupFns) {
       cleanupFn();

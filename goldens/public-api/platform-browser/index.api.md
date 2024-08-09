@@ -158,7 +158,9 @@ export enum HydrationFeatureKind {
     // (undocumented)
     I18nSupport = 2,
     // (undocumented)
-    NoHttpTransferCache = 0
+    NoHttpTransferCache = 0,
+    // (undocumented)
+    PartialHydration = 4
 }
 
 // @public
@@ -253,6 +255,9 @@ export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSup
 
 // @public
 export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache>;
+
+// @public
+export function withPartialHydration(): HydrationFeature<HydrationFeatureKind.PartialHydration>;
 
 // (No @packageDocumentation comment for this package)
 

@@ -102,6 +102,9 @@
     "name": "DEFAULT_APP_ID"
   },
   {
+    "name": "DEFER_BLOCK_ID"
+  },
+  {
     "name": "DEHYDRATED_VIEWS"
   },
   {
@@ -280,6 +283,9 @@
   },
   {
     "name": "NGH_DATA_KEY"
+  },
+  {
+    "name": "NGH_DEFER_BLOCKS_KEY"
   },
   {
     "name": "NG_COMP_DEF"

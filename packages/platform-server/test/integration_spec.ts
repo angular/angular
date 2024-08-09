@@ -555,6 +555,10 @@ class HiddenModule {}
       destroyPlatform();
     });
 
+    afterEach(() => {
+      destroyPlatform();
+    });
+
     afterAll(() => {
       destroyPlatform();
     });
@@ -755,6 +759,11 @@ class HiddenModule {}
       beforeEach(() => {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
         doc = '<html><head></head><body><app></app></body></html>';
+      });
+
+      afterEach(() => {
+        doc = '<html><head></head><body><app></app></body></html>';
+        TestBed.resetTestingModule();
       });
 
       it('using long form should work', async () => {

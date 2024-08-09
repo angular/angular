@@ -575,6 +575,7 @@ export enum DeferTriggerKind {
   Hover,
   Interaction,
   Viewport,
+  Never,
 }
 
 /**

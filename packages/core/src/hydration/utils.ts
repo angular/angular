@@ -26,7 +26,7 @@ import {
   MULTIPLIER,
   NUM_ROOT_NODES,
   SerializedContainerView,
-  SerializedElementContainers,
+  SerializedDeferBlock,
   SerializedView,
 } from './interfaces';
 
@@ -40,6 +40,19 @@ const TRANSFER_STATE_TOKEN_ID = '__nghData__';
  * Lookup key used to reference DOM hydration data (ngh) in `TransferState`.
  */
 export const NGH_DATA_KEY = makeStateKey<Array<SerializedView>>(TRANSFER_STATE_TOKEN_ID);
+
+/**
+ * The name of the key used in the TransferState collection,
+ * where serialized defer block information is located.
+ */
+export const TRANSFER_STATE_DEFER_BLOCKS_INFO = '__nghDeferData__';
+
+/**
+ * Lookup key used to retrieve defer block datain `TransferState`.
+ */
+export const NGH_DEFER_BLOCKS_KEY = makeStateKey<{[key: string]: SerializedDeferBlock}>(
+  TRANSFER_STATE_DEFER_BLOCKS_INFO,
+);
 
 /**
  * The name of the attribute that would be added to host component
@@ -112,6 +125,7 @@ export function retrieveHydrationInfoImpl(
   const remainingNgh = isRootView ? componentViewNgh : rootNgh;
 
   let data: SerializedView = {};
+  let nghDeferData: {[key: string]: SerializedDeferBlock} | undefined;
   // An element might have an empty `ngh` attribute value (e.g. `<comp ngh="" />`),
   // which means that no special annotations are required. Do not attempt to read
   // from the TransferState in this case.
@@ -119,6 +133,8 @@ export function retrieveHydrationInfoImpl(
     const transferState = injector.get(TransferState, null, {optional: true});
     if (transferState !== null) {
       const nghData = transferState.get(NGH_DATA_KEY, []);
+
+      nghDeferData = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
 
       // The nghAttrValue is always a number referencing an index
       // in the hydration TransferState data.
@@ -134,6 +150,10 @@ export function retrieveHydrationInfoImpl(
     data,
     firstChild: rNode.firstChild ?? null,
   };
+
+  if (nghDeferData) {
+    dehydratedView.dehydratedDeferBlockData = nghDeferData;
+  }
 
   if (isRootView) {
     // If there is hydration info present for the root view, it means that there was

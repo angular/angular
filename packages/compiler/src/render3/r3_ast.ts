@@ -180,6 +180,7 @@ export abstract class DeferredTrigger implements Node {
     public sourceSpan: ParseSourceSpan,
     public prefetchSpan: ParseSourceSpan | null,
     public whenOrOnSourceSpan: ParseSourceSpan | null,
+    public hydrateSpan: ParseSourceSpan | null,
   ) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -193,12 +194,15 @@ export class BoundDeferredTrigger extends DeferredTrigger {
     sourceSpan: ParseSourceSpan,
     prefetchSpan: ParseSourceSpan | null,
     whenSourceSpan: ParseSourceSpan,
+    hydrateSpan: ParseSourceSpan | null,
   ) {
     // BoundDeferredTrigger is for 'when' triggers. These aren't really "triggers" and don't have a
     // nameSpan. Trigger names are the built in event triggers like hover, interaction, etc.
-    super(/** nameSpan */ null, sourceSpan, prefetchSpan, whenSourceSpan);
+    super(/** nameSpan */ null, sourceSpan, prefetchSpan, whenSourceSpan, hydrateSpan);
   }
 }
+
+export class NeverDeferredTrigger extends DeferredTrigger {}
 
 export class IdleDeferredTrigger extends DeferredTrigger {}
 
@@ -211,8 +215,9 @@ export class HoverDeferredTrigger extends DeferredTrigger {
     sourceSpan: ParseSourceSpan,
     prefetchSpan: ParseSourceSpan | null,
     onSourceSpan: ParseSourceSpan | null,
+    hydrateSpan: ParseSourceSpan | null,
   ) {
-    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
   }
 }
 
@@ -223,8 +228,9 @@ export class TimerDeferredTrigger extends DeferredTrigger {
     sourceSpan: ParseSourceSpan,
     prefetchSpan: ParseSourceSpan | null,
     onSourceSpan: ParseSourceSpan | null,
+    hydrateSpan: ParseSourceSpan | null,
   ) {
-    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
   }
 }
 
@@ -235,8 +241,9 @@ export class InteractionDeferredTrigger extends DeferredTrigger {
     sourceSpan: ParseSourceSpan,
     prefetchSpan: ParseSourceSpan | null,
     onSourceSpan: ParseSourceSpan | null,
+    hydrateSpan: ParseSourceSpan | null,
   ) {
-    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
   }
 }
 
@@ -247,8 +254,9 @@ export class ViewportDeferredTrigger extends DeferredTrigger {
     sourceSpan: ParseSourceSpan,
     prefetchSpan: ParseSourceSpan | null,
     onSourceSpan: ParseSourceSpan | null,
+    hydrateSpan: ParseSourceSpan | null,
   ) {
-    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
   }
 }
 
@@ -323,18 +331,22 @@ export interface DeferredBlockTriggers {
   timer?: TimerDeferredTrigger;
   interaction?: InteractionDeferredTrigger;
   viewport?: ViewportDeferredTrigger;
+  never?: NeverDeferredTrigger;
 }
 
 export class DeferredBlock extends BlockNode implements Node {
   readonly triggers: Readonly<DeferredBlockTriggers>;
   readonly prefetchTriggers: Readonly<DeferredBlockTriggers>;
+  readonly hydrateTriggers: Readonly<DeferredBlockTriggers>;
   private readonly definedTriggers: (keyof DeferredBlockTriggers)[];
   private readonly definedPrefetchTriggers: (keyof DeferredBlockTriggers)[];
+  private readonly definedHydrateTriggers: (keyof DeferredBlockTriggers)[];
 
   constructor(
     public children: Node[],
     triggers: DeferredBlockTriggers,
     prefetchTriggers: DeferredBlockTriggers,
+    hydrateTriggers: DeferredBlockTriggers,
     public placeholder: DeferredBlockPlaceholder | null,
     public loading: DeferredBlockLoading | null,
     public error: DeferredBlockError | null,
@@ -348,10 +360,12 @@ export class DeferredBlock extends BlockNode implements Node {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
     this.triggers = triggers;
     this.prefetchTriggers = prefetchTriggers;
+    this.hydrateTriggers = hydrateTriggers;
     // We cache the keys since we know that they won't change and we
     // don't want to enumarate them every time we're traversing the AST.
     this.definedTriggers = Object.keys(triggers) as (keyof DeferredBlockTriggers)[];
     this.definedPrefetchTriggers = Object.keys(prefetchTriggers) as (keyof DeferredBlockTriggers)[];
+    this.definedHydrateTriggers = Object.keys(hydrateTriggers) as (keyof DeferredBlockTriggers)[];
   }
 
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -361,6 +375,7 @@ export class DeferredBlock extends BlockNode implements Node {
   visitAll(visitor: Visitor<unknown>): void {
     this.visitTriggers(this.definedTriggers, this.triggers, visitor);
     this.visitTriggers(this.definedPrefetchTriggers, this.prefetchTriggers, visitor);
+    this.visitTriggers(this.definedHydrateTriggers, this.hydrateTriggers, visitor);
     visitAll(visitor, this.children);
     const remainingBlocks = [this.placeholder, this.loading, this.error].filter(
       (x) => x !== null,

@@ -54,7 +54,7 @@
   },
   "platform-server-hydration/browser": {
     "uncompressed": {
-      "main": 207890,
+      "main": 215061,
       "polyfills": 33807,
       "event-dispatch-contract.min": 476
     }

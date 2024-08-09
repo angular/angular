@@ -269,6 +269,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.DeferOn:
         let args: number[] = [];
         switch (op.trigger.kind) {
+          case ir.DeferTriggerKind.Never:
           case ir.DeferTriggerKind.Idle:
           case ir.DeferTriggerKind.Immediate:
             break;
@@ -295,7 +296,10 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
               }`,
             );
         }
-        ir.OpList.replace(op, ng.deferOn(op.trigger.kind, args, op.prefetch, op.sourceSpan));
+        ir.OpList.replace(
+          op,
+          ng.deferOn(op.trigger.kind, args, op.prefetch, op.hydrate, op.sourceSpan),
+        );
         break;
       case ir.OpKind.ProjectionDef:
         ir.OpList.replace<ir.CreateOp>(op, ng.projectionDef(op.def));
@@ -538,7 +542,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.repeater(op.collection, op.sourceSpan));
         break;
       case ir.OpKind.DeferWhen:
-        ir.OpList.replace(op, ng.deferWhen(op.prefetch, op.expr, op.sourceSpan));
+        ir.OpList.replace(op, ng.deferWhen(op.prefetch, op.hydrate, op.expr, op.sourceSpan));
         break;
       case ir.OpKind.StoreLet:
         throw new Error(`AssertionError: unexpected storeLet ${op.declaredName}`);

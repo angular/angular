@@ -14,6 +14,7 @@ import * as t from './r3_ast';
 import {
   getTriggerParametersStart,
   parseDeferredTime,
+  parseNeverTrigger,
   parseOnTrigger,
   parseWhenTrigger,
 } from './r3_deferred_triggers';
@@ -23,6 +24,15 @@ const PREFETCH_WHEN_PATTERN = /^prefetch\s+when\s/;
 
 /** Pattern to identify a `prefetch on` trigger. */
 const PREFETCH_ON_PATTERN = /^prefetch\s+on\s/;
+
+/** Pattern to identify a `hydrate when` trigger. */
+const HYDRATE_WHEN_PATTERN = /^hydrate\s+when\s/;
+
+/** Pattern to identify a `hydrate on` trigger. */
+const HYDRATE_ON_PATTERN = /^hydrate\s+on\s/;
+
+/** Pattern to identify a `hydrate never` trigger. */
+const HYDRATE_NEVER_PATTERN = /^hydrate\s+never\s*/;
 
 /** Pattern to identify a `minimum` parameter in a block. */
 const MINIMUM_PARAMETER_PATTERN = /^minimum\s/;
@@ -53,7 +63,7 @@ export function createDeferredBlock(
 ): {node: t.DeferredBlock; errors: ParseError[]} {
   const errors: ParseError[] = [];
   const {placeholder, loading, error} = parseConnectedBlocks(connectedBlocks, errors, visitor);
-  const {triggers, prefetchTriggers} = parsePrimaryTriggers(
+  const {triggers, prefetchTriggers, hydrateTriggers} = parsePrimaryTriggers(
     ast.parameters,
     bindingParser,
     errors,
@@ -78,6 +88,7 @@ export function createDeferredBlock(
     html.visitAll(visitor, ast.children, ast.children),
     triggers,
     prefetchTriggers,
+    hydrateTriggers,
     placeholder,
     loading,
     error,
@@ -260,6 +271,7 @@ function parsePrimaryTriggers(
 ) {
   const triggers: t.DeferredBlockTriggers = {};
   const prefetchTriggers: t.DeferredBlockTriggers = {};
+  const hydrateTriggers: t.DeferredBlockTriggers = {};
 
   for (const param of params) {
     // The lexer ignores the leading spaces so we can assume
@@ -272,10 +284,16 @@ function parsePrimaryTriggers(
       parseWhenTrigger(param, bindingParser, prefetchTriggers, errors);
     } else if (PREFETCH_ON_PATTERN.test(param.expression)) {
       parseOnTrigger(param, prefetchTriggers, errors, placeholder);
+    } else if (HYDRATE_WHEN_PATTERN.test(param.expression)) {
+      parseWhenTrigger(param, bindingParser, hydrateTriggers, errors);
+    } else if (HYDRATE_ON_PATTERN.test(param.expression)) {
+      parseOnTrigger(param, hydrateTriggers, errors, placeholder);
+    } else if (HYDRATE_NEVER_PATTERN.test(param.expression)) {
+      parseNeverTrigger(param, hydrateTriggers, errors);
     } else {
       errors.push(new ParseError(param.sourceSpan, 'Unrecognized trigger'));
     }
   }
 
-  return {triggers, prefetchTriggers};
+  return {triggers, prefetchTriggers, hydrateTriggers};
 }

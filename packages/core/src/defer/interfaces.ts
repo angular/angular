@@ -28,6 +28,11 @@ export const enum TriggerType {
    * Represents prefetch triggers (e.g. `@defer (prefetch on idle) { ... }`).
    */
   Prefetch,
+
+  /**
+   * Represents hydrate triggers (e.g. `@defer (hydrate on idle) { ... }`).
+   */
+  Hydrate,
 }
 
 /**
@@ -116,6 +121,26 @@ export interface TDeferBlockDetails {
    * standalone components used within this defer block.
    */
   providers: Provider[] | null;
+
+  /**
+   * Id of the pending task, indicating that dependencies are being loaded.
+   */
+  taskId: number | null;
+
+  /**
+   * A unique identifier.
+   */
+  uniqueId: string;
+
+  /**
+   * List of hydrate triggers for a given block
+   */
+  hydrateTriggers: (Trigger | HydrateTrigger)[] | null;
+
+  /**
+   * List of prefetch triggers for a given block
+   */
+  prefetchTriggers: Trigger[] | null;
 }
 
 /**
@@ -135,6 +160,34 @@ export enum DeferBlockState {
 
   /** The error block content is rendered */
   Error = 3,
+}
+
+/**
+ * Describes the defer trigger type.
+ *
+ * @publicApi
+ */
+export enum Trigger {
+  Idle = 0,
+
+  Immediate = 1,
+
+  Viewport = 2,
+
+  Interaction = 3,
+
+  Hover = 4,
+
+  Timer = 5,
+
+  When = 6,
+
+  Never = 7,
+}
+
+export interface HydrateTrigger {
+  trigger: Trigger;
+  delay?: number;
 }
 
 /**
@@ -158,6 +211,10 @@ export const STATE_IS_FROZEN_UNTIL = 2;
 export const LOADING_AFTER_CLEANUP_FN = 3;
 export const TRIGGER_CLEANUP_FNS = 4;
 export const PREFETCH_TRIGGER_CLEANUP_FNS = 5;
+export const UNIQUE_SSR_ID = 6;
+export const SSR_STATE = 7;
+export const ON_COMPLETE_FNS = 8;
+export const HYDRATE_TRIGGER_CLEANUP_FNS = 9;
 
 /**
  * Describes instance-specific defer block data.
@@ -199,6 +256,26 @@ export interface LDeferBlockDetails extends Array<unknown> {
    * List of cleanup functions for prefetch triggers.
    */
   [PREFETCH_TRIGGER_CLEANUP_FNS]: VoidFunction[] | null;
+
+  /**
+   * Unique id of this defer block assigned during SSR.
+   */
+  [UNIQUE_SSR_ID]: string | null;
+
+  /**
+   * Defer block state after SSR.
+   */
+  [SSR_STATE]: number | null;
+
+  /**
+   * A set of callbacks to be invoked once the main content is rendered.
+   */
+  [ON_COMPLETE_FNS]: VoidFunction[] | null;
+
+  /**
+   * List of cleanup functions for hydrate triggers.
+   */
+  [HYDRATE_TRIGGER_CLEANUP_FNS]: VoidFunction[] | null;
 }
 
 /**

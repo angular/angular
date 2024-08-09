@@ -2586,6 +2586,8 @@ class Scope {
   private appendDeferredBlock(block: TmplAstDeferredBlock): void {
     this.appendDeferredTriggers(block, block.triggers);
     this.appendDeferredTriggers(block, block.prefetchTriggers);
+    this.appendDeferredTriggers(block, block.hydrateTriggers);
+
     this.appendChildren(block);
 
     if (block.placeholder !== null) {
