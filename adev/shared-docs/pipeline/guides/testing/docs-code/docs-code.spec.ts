@@ -52,4 +52,9 @@ describe('markdown to html', () => {
     expect(codeLines[2].classList.contains('add')).toBeFalse();
     expect(codeLines[2].classList.contains('remove')).toBeFalse();
   });
+
+  it('should load header and html code', () => {
+    const codeBlock = markdownDocument.querySelectorAll('code')[4];
+    expect(codeBlock).toBeTruthy();
+  });
 });
