@@ -351,6 +351,71 @@ runInEachFileSystem(() => {
     expect(diags.length).toBe(0);
   });
 
+  it('should produce a warning when a signal is not invoked for an in-scope directive input that is not applied on the element', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      {
+        fileName,
+        templates: {
+          'TestCmp': `
+          <!-- The below "myInput" binding should be ignored, as it corresponds with TestDir -->
+          <div dir [myInput]="dirSignal"></div>
+
+          <!-- The below "myInput" binding should be reported, as it does not correspond with TestDir -->
+          <div [myInput]="divSignal"></div>
+
+          <!-- The below "myInput" binding applies to the "div" element so it should be reported -->
+          <div *dir [myInput]="structuralSignal"></div>
+          `,
+        },
+        source: `
+          import {signal, input} from '@angular/core';
+
+          export class TestDir {
+            myInput = input.required();
+          }
+          export class TestCmp {
+            dirSignal = signal(0);
+            divSignal = signal(0);
+            structuralSignal = signal(0);
+          }`,
+        declarations: [
+          {
+            type: 'directive',
+            name: 'TestDir',
+            selector: '[dir]',
+            inputs: {
+              myInput: {
+                isSignal: true,
+                bindingPropertyName: 'myInput',
+                classPropertyName: 'myInput',
+                required: true,
+                transform: null,
+              },
+            },
+          },
+        ],
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+      templateTypeChecker,
+      program.getTypeChecker(),
+      [interpolatedSignalFactory],
+      {},
+      /* options */
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(2);
+    expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+    expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+    expect(getSourceCodeForDiagnostic(diags[0])).toBe(`divSignal`);
+    expect(diags[1].category).toBe(ts.DiagnosticCategory.Warning);
+    expect(diags[1].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+    expect(getSourceCodeForDiagnostic(diags[1])).toBe(`structuralSignal`);
+  });
+
   it('should produce a warning when a signal in a nested property read is not invoked', () => {
     const fileName = absoluteFrom('/main.ts');
     const {program, templateTypeChecker} = setup([
