@@ -135,9 +135,11 @@ function buildDiagnosticForSignal(
   // error.
   // We also check for `{{ mySignal.set }}` or `{{ mySignal.update }}` or
   // `{{ mySignal.asReadonly }}` as these are the names of instance properties of Signal
+  if (!isFunctionInstanceProperty(node.name) && !isSignalInstanceProperty(node.name)) {
+    return [];
+  }
   const symbolOfReceiver = ctx.templateTypeChecker.getSymbolOfNode(node.receiver, component);
   if (
-    (isFunctionInstanceProperty(node.name) || isSignalInstanceProperty(node.name)) &&
     symbolOfReceiver !== null &&
     symbolOfReceiver.kind === SymbolKind.Expression &&
     isSignalReference(symbolOfReceiver)
