@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Renderer as MarkedRenderer, Tokens} from 'marked';
+import {Renderer, Tokens} from 'marked';
 import {codeToHtml} from '../shiki/shiki';
 
 /**
  * Custom renderer for marked that will be used to transform markdown files to HTML
  * files that can be used in the Angular docs.
  */
-export const renderer: Partial<MarkedRenderer> = {
-  code({lang, raw}): string {
-    const highlightResult = codeToHtml(raw, lang).replace(/>\s+</g, '><');
+export const renderer: Partial<Renderer> = {
+  code({lang, text}): string {
+    const highlightResult = codeToHtml(text, lang).replace(/>\s+</g, '><');
 
     return `
       <div class="docs-code" role="group">
@@ -33,22 +33,22 @@ export const renderer: Partial<MarkedRenderer> = {
   link({href, text}): string {
     return `<a href="${href}">${text}</a>`;
   },
-  list({items, ordered, start}) {
+  list(this: Renderer, {items, ordered, start}) {
     if (ordered) {
       return `
       <ol class="docs-ordered-list">
-        ${items}
+        ${items.map((item) => this.listitem(item)).join('')}
       </ol>
       `;
     }
     return `
     <ul class="docs-list">
-      ${items}
+      ${items.map((item) => this.listitem(item)).join('')}
     </ul>
     `;
   },
 
-  table(this: MarkedRenderer, {header, rows}: Tokens.Table) {
+  table(this: Renderer, {header, rows}: Tokens.Table) {
     return `
       <div class="docs-table docs-scroll-track-transparent">
         <table>
