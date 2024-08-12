@@ -67,7 +67,7 @@ export class Compiler {
   }
 
   /**
-   * Same as {@link #compileModuleSync} but also creates ComponentFactories for all components.
+   * Same as {@link Compiler#compileModuleSync compileModuleSync} but also creates ComponentFactories for all components.
    */
   compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
     const ngModuleFactory = this.compileModuleSync(moduleType);
@@ -84,7 +84,7 @@ export class Compiler {
   }
 
   /**
-   * Same as {@link #compileModuleAsync} but also creates ComponentFactories for all components.
+   * Same as {@link Compiler#compileModuleAsync compileModuleAsync} but also creates ComponentFactories for all components.
    */
   compileModuleAndAllComponentsAsync<T>(
     moduleType: Type<T>,
