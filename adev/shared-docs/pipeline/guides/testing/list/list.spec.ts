@@ -21,7 +21,16 @@ describe('markdown to html', () => {
 
     const unorderedList = markdownDocument.querySelector('ul');
     expect(unorderedList?.className).toBe('docs-list');
-    expect(unorderedList?.childElementCount).toBe(4);
+    expect(unorderedList?.childElementCount).toBe(6);
     expect(unorderedList?.textContent).toContain('matter');
+  });
+
+  it('should render list items', () => {
+    const unorderedList = markdownDocument.querySelector('ul');
+    const linkItem = unorderedList!.children[4];
+    expect(linkItem.outerHTML).toContain('href="https://angular.dev"');
+
+    const codeItem = unorderedList!.children[5];
+    expect(codeItem.outerHTML).toContain('<code>SomeClass</code>');
   });
 });

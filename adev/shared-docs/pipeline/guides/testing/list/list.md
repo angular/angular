@@ -8,3 +8,5 @@
 - here
 - matter
 - doesn't
+- [some link](https://angular.dev)
+- Code block `SomeClass`
