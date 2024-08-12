@@ -1233,6 +1233,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'reference/migrations/cleanup-unused-imports',
         contentPath: 'reference/migrations/cleanup-unused-imports',
       },
+      {
+        label: 'Self-closing tags',
+        path: 'reference/migrations/self-closing-tags',
+        contentPath: 'reference/migrations/self-closing-tags',
+      },
     ],
   },
 ];
