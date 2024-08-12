@@ -282,17 +282,11 @@ export function convertHydrateTriggersToJsAction(
 ): string[] {
   let actionList: string[] = [];
   if (triggers !== null) {
-    for (let trigger of triggers) {
-      switch (trigger) {
-        case Trigger.Hover:
-          actionList = [...actionList, 'mouseenter', 'focusin'];
-          break;
-        case Trigger.Interaction:
-          actionList = [...actionList, 'click', 'keydown'];
-          break;
-        default:
-          break;
-      }
+    if (triggers.includes(Trigger.Hover)) {
+      actionList.push('mouseover', 'focusin');
+    }
+    if (triggers.includes(Trigger.Interaction)) {
+      actionList.push('click', 'keydown');
     }
   }
   return actionList;

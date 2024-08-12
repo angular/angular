@@ -1968,7 +1968,9 @@ describe('platform-server full application hydration integration', () => {
 
           resetTViewsFor(SimpleComponent, ContentComponent);
 
-          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            hydrationFeatures,
+          });
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
 

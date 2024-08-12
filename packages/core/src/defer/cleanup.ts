@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injector} from '../di';
 import {
   HYDRATE_TRIGGER_CLEANUP_FNS,
   LDeferBlockDetails,
   PREFETCH_TRIGGER_CLEANUP_FNS,
   TRIGGER_CLEANUP_FNS,
   TriggerType,
+  UNIQUE_SSR_ID,
 } from './interfaces';
+import {DeferBlockRegistry} from './registry';
 
 /**
  * Registers a cleanup function associated with a prefetching trigger
@@ -42,8 +45,6 @@ export function invokeTriggerCleanupFns(type: TriggerType, lDetails: LDeferBlock
   let key = TRIGGER_CLEANUP_FNS;
   if (type === TriggerType.Prefetch) {
     key = PREFETCH_TRIGGER_CLEANUP_FNS;
-  } else if (type === TriggerType.Hydrate) {
-    key = HYDRATE_TRIGGER_CLEANUP_FNS;
   }
   const cleanupFns = lDetails[key] as VoidFunction[];
   if (cleanupFns !== null) {
@@ -57,8 +58,11 @@ export function invokeTriggerCleanupFns(type: TriggerType, lDetails: LDeferBlock
 /**
  * Invokes registered cleanup functions for both prefetch and regular triggers.
  */
-export function invokeAllTriggerCleanupFns(lDetails: LDeferBlockDetails) {
-  invokeTriggerCleanupFns(TriggerType.Hydrate, lDetails);
+export function invokeAllTriggerCleanupFns(
+  lDetails: LDeferBlockDetails,
+  registry: DeferBlockRegistry,
+) {
+  registry.invokeCleanupFns(lDetails[UNIQUE_SSR_ID]!);
   invokeTriggerCleanupFns(TriggerType.Prefetch, lDetails);
   invokeTriggerCleanupFns(TriggerType.Regular, lDetails);
 }

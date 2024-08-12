@@ -84,6 +84,5 @@ export async function partialHydrateFromBlockName(
   triggerFn: (deferBlock: any) => void,
 ): Promise<void> {
   const hydratedBlocks = await hydrateFromBlockName(injector, blockName, triggerFn);
-  // TODO(thePunderWoman): restore original bindings here
   removeListenersFromBlocks([...hydratedBlocks], injector);
 }

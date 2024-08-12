@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵdefineInjectable} from '../di';
-import {INJECTOR, LView} from '../render3/interfaces/view';
+import {Injector, ɵɵdefineInjectable} from '../di';
 import {arrayInsert2, arraySplice} from '../util/array_utils';
 
 /**
@@ -15,7 +14,8 @@ import {arrayInsert2, arraySplice} from '../util/array_utils';
  * Invoking the returned function schedules a trigger.
  */
 export function onTimer(delay: number) {
-  return (callback: VoidFunction, lView: LView) => scheduleTimerTrigger(delay, callback, lView);
+  return (callback: VoidFunction, injector: Injector) =>
+    scheduleTimerTrigger(delay, callback, injector);
 }
 
 /**
@@ -25,8 +25,7 @@ export function onTimer(delay: number) {
  * @param callback A function to be invoked after a timeout.
  * @param lView LView that hosts an instance of a defer block.
  */
-export function scheduleTimerTrigger(delay: number, callback: VoidFunction, lView: LView) {
-  const injector = lView[INJECTOR]!;
+export function scheduleTimerTrigger(delay: number, callback: VoidFunction, injector: Injector) {
   const scheduler = injector.get(TimerScheduler);
   const cleanupFn = () => scheduler.remove(callback);
   scheduler.add(delay, callback);

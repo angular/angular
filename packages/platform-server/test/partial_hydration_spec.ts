@@ -600,7 +600,7 @@ describe('platform-server partial hydration integration', () => {
       });
 
       describe('hydrate on hover', () => {
-        it('mouseenter', async () => {
+        it('mouseover', async () => {
           @Component({
             standalone: true,
             selector: 'app',
@@ -635,7 +635,7 @@ describe('platform-server partial hydration integration', () => {
           // <main> uses "eager" `custom-app-id` namespace.
           expect(ssrContents).toContain('<main jsaction="click:;');
           // <div>s inside a defer block have `d0` as a namespace.
-          expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;"');
+          expect(ssrContents).toContain('<article jsaction="mouseover:;focusin:;"');
           // Outer defer block is rendered.
           expect(ssrContents).toContain('defer block rendered');
 
@@ -654,19 +654,19 @@ describe('platform-server partial hydration integration', () => {
 
           const appHostNode = compRef.location.nativeElement;
 
-          expect(appHostNode.outerHTML).toContain('<article jsaction="mouseenter:;focusin:;"');
+          expect(appHostNode.outerHTML).toContain('<article jsaction="mouseover:;focusin:;"');
 
           // Emit an event inside of a defer block, which should result
           // in triggering the defer block (start loading deps, etc) and
           // subsequent hydration.
           const article = doc.getElementsByTagName('article')![0];
-          const hoverEvent = new CustomEvent('mouseenter', {bubbles: true});
+          const hoverEvent = new CustomEvent('mouseover', {bubbles: true});
           article.dispatchEvent(hoverEvent);
           await timeout(1000); // wait for defer blocks to resolve
 
           appRef.tick();
 
-          expect(appHostNode.outerHTML).not.toContain('<div jsaction="mouseenter:;focusin:;"');
+          expect(appHostNode.outerHTML).not.toContain('<div jsaction="mouseover:;focusin:;"');
         }, 100_000);
 
         it('focusin', async () => {
@@ -704,7 +704,7 @@ describe('platform-server partial hydration integration', () => {
           // <main> uses "eager" `custom-app-id` namespace.
           expect(ssrContents).toContain('<main jsaction="click:;');
           // <div>s inside a defer block have `d0` as a namespace.
-          expect(ssrContents).toContain('<article jsaction="mouseenter:;focusin:;"');
+          expect(ssrContents).toContain('<article jsaction="mouseover:;focusin:;"');
           // Outer defer block is rendered.
           expect(ssrContents).toContain('defer block rendered');
 
@@ -723,7 +723,7 @@ describe('platform-server partial hydration integration', () => {
 
           const appHostNode = compRef.location.nativeElement;
 
-          expect(appHostNode.outerHTML).toContain('<article jsaction="mouseenter:;focusin:;"');
+          expect(appHostNode.outerHTML).toContain('<article jsaction="mouseover:;focusin:;"');
 
           // Emit an event inside of a defer block, which should result
           // in triggering the defer block (start loading deps, etc) and
@@ -735,7 +735,7 @@ describe('platform-server partial hydration integration', () => {
 
           appRef.tick();
 
-          expect(appHostNode.outerHTML).not.toContain('<div jsaction="mouseenter:;focusin:;"');
+          expect(appHostNode.outerHTML).not.toContain('<div jsaction="mouseover:;focusin:;"');
         }, 100_000);
       });
 
@@ -1253,7 +1253,7 @@ describe('platform-server partial hydration integration', () => {
         expect(appHostNode.outerHTML).not.toContain('Outer block placeholder');
       }, 100_000);
 
-      fit('defer triggers should not fire when hydrate never is used', async () => {
+      it('defer triggers should not fire when hydrate never is used', async () => {
         @Component({
           standalone: true,
           selector: 'app',
@@ -1309,7 +1309,7 @@ describe('platform-server partial hydration integration', () => {
 
         expect(appHostNode.outerHTML).toContain('<article>');
 
-        expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+        expect(appHostNode.outerHTML).toContain('>start</span>');
 
         await timeout(500); // wait for timer
         appRef.tick();
@@ -1323,7 +1323,8 @@ describe('platform-server partial hydration integration', () => {
 
         appRef.tick();
 
-        expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+        expect(appHostNode.outerHTML).toContain('>start</span>');
+        expect(appHostNode.outerHTML).not.toContain('<span id="test">end</span>');
 
         expect(appHostNode.outerHTML).not.toContain('Outer block placeholder');
       }, 100_000);

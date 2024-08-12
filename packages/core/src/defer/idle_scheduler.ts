@@ -6,18 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, ɵɵdefineInjectable} from '../di';
-import {INJECTOR, LView} from '../render3/interfaces/view';
+import {inject, Injector, ɵɵdefineInjectable} from '../di';
 import {NgZone} from '../zone';
 
 /**
  * Helper function to schedule a callback to be invoked when a browser becomes idle.
  *
  * @param callback A function to be invoked when a browser becomes idle.
- * @param lView LView that hosts an instance of a defer block.
+ * @param injector injector for the app
  */
-export function onIdle(callback: VoidFunction, lView: LView) {
-  const injector = lView[INJECTOR]!;
+export function onIdle(callback: VoidFunction, injector: Injector) {
   const scheduler = injector.get(IdleScheduler);
   const cleanupFn = () => scheduler.remove(callback);
   scheduler.add(callback);

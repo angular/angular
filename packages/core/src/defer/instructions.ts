@@ -83,6 +83,7 @@ import {
   STATE_IS_FROZEN_UNTIL,
   TDeferBlockDetails,
   TriggerType,
+  HydrateTrigger,
 } from './interfaces';
 import {onTimer, scheduleTimerTrigger} from './timer_scheduler';
 import {
@@ -125,6 +126,26 @@ function shouldTriggerWhenOnServer(injector: Injector) {
     optional: true,
   });
   return isServer && isPartialHydrationEnabled;
+}
+
+function shouldTriggerWhenOnClient(
+  injector: Injector,
+  state: DeferBlockState | DeferBlockInternalState | null,
+  hydrateTriggers: (Trigger | HydrateTrigger)[] | null,
+): boolean {
+  const isClient = isPlatformBrowser(injector);
+  if (!isClient) {
+    return false;
+  }
+  const isPartialHydrationEnabled = injector.get(IS_PARTIAL_HYDRATION_ENABLED, false, {
+    optional: true,
+  });
+  const isRendered = state && state === DeferBlockState.Complete;
+  const hasHydrateTriggers = hydrateTriggers && hydrateTriggers.length > 0;
+  if (isPartialHydrationEnabled && hasHydrateTriggers && isRendered) {
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -270,18 +291,18 @@ export function ɵɵdefer(
   ];
   setLDeferBlockDetails(lView, adjustedIndex, lDetails);
 
-  const cleanupTriggersFn = () => invokeAllTriggerCleanupFns(lDetails);
+  if (uniqueId !== null) {
+    // Also store this defer block in the registry.
+    registry.add(uniqueId, {lView, tNode});
+  }
+
+  const cleanupTriggersFn = () => invokeAllTriggerCleanupFns(lDetails, registry);
 
   // When defer block is triggered - unsubscribe from LView destroy cleanup.
   storeTriggerCleanupFn(TriggerType.Regular, lDetails, () =>
     removeLViewOnDestroy(lView, cleanupTriggersFn),
   );
   storeLViewOnDestroy(lView, cleanupTriggersFn);
-
-  if (uniqueId !== null) {
-    // Also store this defer block in the registry.
-    registry.add(uniqueId, {lView, tNode});
-  }
 }
 
 /**
@@ -297,6 +318,7 @@ export function ɵɵdeferWhen(rawValue: unknown) {
       const value = Boolean(rawValue); // handle truthy or falsy values
       const tNode = getSelectedTNode();
       const lDetails = getLDeferBlockDetails(lView, tNode);
+      const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
       const renderedState = lDetails[DEFER_BLOCK_STATE];
       if (value === false && renderedState === DeferBlockInternalState.Initial) {
         // If nothing is rendered yet, render a placeholder (if defined).
@@ -304,7 +326,8 @@ export function ɵɵdeferWhen(rawValue: unknown) {
       } else if (
         value === true &&
         (renderedState === DeferBlockInternalState.Initial ||
-          renderedState === DeferBlockState.Placeholder)
+          renderedState === DeferBlockState.Placeholder) &&
+        shouldTriggerWhenOnClient(lView[INJECTOR]!, lDetails[SSR_STATE], tDetails.hydrateTriggers)
       ) {
         // The `when` condition has changed to `true`, trigger defer block loading
         // if the block is either in initial (nothing is rendered) or a placeholder
@@ -443,6 +466,7 @@ export function ɵɵdeferOnImmediate() {
   const tView = lView[TVIEW];
   const injector = lView[INJECTOR]!;
   const tDetails = getTDeferBlockDetails(tView, tNode);
+  const lDetails = getLDeferBlockDetails(lView, tNode);
 
   // Render placeholder block only if loading template is not present and we're on
   // the client to avoid content flickering, since it would be immediately replaced
@@ -453,7 +477,9 @@ export function ɵɵdeferOnImmediate() {
   ) {
     renderPlaceholder(lView, tNode);
   }
-  triggerDeferBlock(lView, tNode);
+  if (shouldTriggerWhenOnClient(injector, lDetails[SSR_STATE], tDetails.hydrateTriggers)) {
+    triggerDeferBlock(lView, tNode);
+  }
 }
 
 /**
@@ -540,17 +566,20 @@ export function ɵɵdeferHydrateOnTimer(delay: number) {
 export function ɵɵdeferOnHover(triggerIndex: number, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-
+  const lDetails = getLDeferBlockDetails(lView, tNode);
+  const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
   renderPlaceholder(lView, tNode);
-  registerDomTrigger(
-    lView,
-    tNode,
-    triggerIndex,
-    walkUpTimes,
-    onHover,
-    () => triggerDeferBlock(lView, tNode),
-    TriggerType.Regular,
-  );
+  if (shouldTriggerWhenOnClient(lView[INJECTOR]!, lDetails[SSR_STATE], tDetails.hydrateTriggers)) {
+    registerDomTrigger(
+      lView,
+      tNode,
+      triggerIndex,
+      walkUpTimes,
+      onHover,
+      () => triggerDeferBlock(lView, tNode),
+      TriggerType.Regular,
+    );
+  }
 }
 
 /**
@@ -605,17 +634,20 @@ export function ɵɵdeferHydrateOnHover() {
 export function ɵɵdeferOnInteraction(triggerIndex: number, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-
+  const lDetails = getLDeferBlockDetails(lView, tNode);
+  const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
   renderPlaceholder(lView, tNode);
-  registerDomTrigger(
-    lView,
-    tNode,
-    triggerIndex,
-    walkUpTimes,
-    onInteraction,
-    () => triggerDeferBlock(lView, tNode),
-    TriggerType.Regular,
-  );
+  if (shouldTriggerWhenOnClient(lView[INJECTOR]!, lDetails[SSR_STATE], tDetails.hydrateTriggers)) {
+    registerDomTrigger(
+      lView,
+      tNode,
+      triggerIndex,
+      walkUpTimes,
+      onInteraction,
+      () => triggerDeferBlock(lView, tNode),
+      TriggerType.Regular,
+    );
+  }
 }
 
 /**
@@ -671,17 +703,20 @@ export function ɵɵdeferHydrateOnInteraction() {
 export function ɵɵdeferOnViewport(triggerIndex: number, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-
+  const lDetails = getLDeferBlockDetails(lView, tNode);
+  const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
   renderPlaceholder(lView, tNode);
-  registerDomTrigger(
-    lView,
-    tNode,
-    triggerIndex,
-    walkUpTimes,
-    onViewport,
-    () => triggerDeferBlock(lView, tNode),
-    TriggerType.Regular,
-  );
+  if (shouldTriggerWhenOnClient(lView[INJECTOR]!, lDetails[SSR_STATE], tDetails.hydrateTriggers)) {
+    registerDomTrigger(
+      lView,
+      tNode,
+      triggerIndex,
+      walkUpTimes,
+      onViewport,
+      () => triggerDeferBlock(lView, tNode),
+      TriggerType.Regular,
+    );
+  }
 }
 
 /**
@@ -736,19 +771,22 @@ export function ɵɵdeferHydrateOnViewport() {
  * Schedules triggering of a defer block for `on idle` and `on timer` conditions.
  */
 function scheduleDelayedTrigger(
-  scheduleFn: (callback: VoidFunction, lView: LView) => VoidFunction,
+  scheduleFn: (callback: VoidFunction, injector: Injector) => VoidFunction,
 ) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+  const lDetails = getLDeferBlockDetails(lView, tNode);
+  const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
 
   renderPlaceholder(lView, tNode);
 
-  // Only trigger the scheduled trigger on the browser
-  // since we don't want to delay the server response.
-  if (isPlatformBrowser(lView[INJECTOR]!)) {
-    const cleanupFn = scheduleFn(() => triggerDeferBlock(lView, tNode), lView);
-    const lDetails = getLDeferBlockDetails(lView, tNode);
-    storeTriggerCleanupFn(TriggerType.Regular, lDetails, cleanupFn);
+  if (shouldTriggerWhenOnClient(lView[INJECTOR]!, lDetails[SSR_STATE], tDetails.hydrateTriggers)) {
+    // Only trigger the scheduled trigger on the browser
+    // since we don't want to delay the server response.
+    if (isPlatformBrowser(lView[INJECTOR]!)) {
+      const cleanupFn = scheduleFn(() => triggerDeferBlock(lView, tNode), lView[INJECTOR]!);
+      storeTriggerCleanupFn(TriggerType.Regular, lDetails, cleanupFn);
+    }
   }
 }
 
@@ -758,7 +796,7 @@ function scheduleDelayedTrigger(
  * @param scheduleFn A function that does the scheduling.
  */
 function scheduleDelayedPrefetching(
-  scheduleFn: (callback: VoidFunction, lView: LView) => VoidFunction,
+  scheduleFn: (callback: VoidFunction, injector: Injector) => VoidFunction,
   trigger: Trigger,
 ) {
   const lView = getLView();
@@ -775,7 +813,7 @@ function scheduleDelayedPrefetching(
     if (tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
       const lDetails = getLDeferBlockDetails(lView, tNode);
       const prefetch = () => triggerPrefetching(tDetails, lView, tNode);
-      const cleanupFn = scheduleFn(prefetch, lView);
+      const cleanupFn = scheduleFn(prefetch, lView[INJECTOR]!);
       storeTriggerCleanupFn(TriggerType.Prefetch, lDetails, cleanupFn);
     }
   }
@@ -785,7 +823,7 @@ function scheduleDelayedPrefetching(
  * Schedules hydration triggering of a defer block for `on idle` and `on timer` conditions.
  */
 export function scheduleDelayedHydrating(
-  scheduleFn: (callback: VoidFunction, lView: LView) => VoidFunction,
+  scheduleFn: (callback: VoidFunction, injector: Injector) => VoidFunction,
   lView: LView,
   tNode: TNode,
 ) {
@@ -799,7 +837,7 @@ export function scheduleDelayedHydrating(
         partialHydrateFromBlockName(injector, tDeferBlockDetails.uniqueId, (deferBlock: any) =>
           triggerAndWaitForCompletion(deferBlock),
         ),
-      lView,
+      injector,
     );
     const lDetails = getLDeferBlockDetails(lView, tNode);
     storeTriggerCleanupFn(TriggerType.Hydrate, lDetails, cleanupFn);
@@ -1125,7 +1163,7 @@ function scheduleDeferBlockUpdate(
       renderDeferBlockState(nextState, tNode, lContainer);
     }
   };
-  return scheduleTimerTrigger(timeout, callback, hostLView);
+  return scheduleTimerTrigger(timeout, callback, hostLView[INJECTOR]!);
 }
 
 /**
@@ -1340,8 +1378,9 @@ export function triggerDeferBlock(lView: LView, tNode: TNode) {
   const tDetails = getTDeferBlockDetails(tView, tNode);
   if (!shouldTriggerDeferBlock(injector, tDetails.hydrateTriggers !== null)) return;
 
+  const registry = injector.get(DeferBlockRegistry);
   // Defer block is triggered, cleanup all registered trigger functions.
-  invokeAllTriggerCleanupFns(lDetails);
+  invokeAllTriggerCleanupFns(lDetails, registry);
 
   switch (tDetails.loadingState) {
     case DeferDependenciesLoadingState.NOT_STARTED:

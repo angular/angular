@@ -8,7 +8,7 @@
 
 import {TransferState} from '../transfer_state';
 import {onIdle} from '../defer/idle_scheduler';
-import {scheduleDelayedHydrating, triggerAndWaitForCompletion} from '../defer/instructions';
+import {triggerAndWaitForCompletion} from '../defer/instructions';
 import {HydrateTrigger, Trigger} from '../defer/interfaces';
 import {DeferBlockRegistry} from '../defer/registry';
 import {onTimer} from '../defer/timer_scheduler';
@@ -22,6 +22,7 @@ import {
   SerializedDeferBlock,
 } from './interfaces';
 import {NGH_DEFER_BLOCKS_KEY} from './utils';
+import {onViewport} from '../defer/dom_triggers';
 
 export function bootstrapPartialHydration(doc: Document, injector: Injector) {
   const deferBlockData = processBlockData(injector);
@@ -119,7 +120,6 @@ function processAndInitTriggers(
   const timerElements: ElementTrigger[] = [];
   const viewportElements: ElementTrigger[] = [];
   const immediateElements: ElementTrigger[] = [];
-  const elementBlockMap = new Map<HTMLElement, string>();
   for (let [blockId, blockSummary] of blockData) {
     const commentNode = nodes.get(blockId);
     if (commentNode !== undefined) {
@@ -127,7 +127,6 @@ function processAndInitTriggers(
       let currentNode: Comment | HTMLElement = commentNode;
       for (let i = 0; i < numRootNodes; i++) {
         currentNode = currentNode.previousSibling as HTMLElement;
-        elementBlockMap.set(currentNode, blockId);
         const et: ElementTrigger = {el: currentNode, blockName: blockId};
         // hydrate
         if (blockSummary.hydrate.idle) {
@@ -149,7 +148,7 @@ function processAndInitTriggers(
 
   setIdleTriggers(injector, idleElements);
   setImmediateTriggers(injector, immediateElements);
-  setViewportTriggers(injector, viewportElements, elementBlockMap);
+  setViewportTriggers(injector, viewportElements);
   setTimerTriggers(injector, timerElements);
 }
 
@@ -157,46 +156,44 @@ async function setIdleTriggers(injector: Injector, ets: ElementTrigger[]) {
   if (ets.length > 0) {
     const registry = injector.get(DeferBlockRegistry);
     for (const elementTrigger of ets) {
-      const block = registry.get(elementTrigger.blockName)!;
-      const cb = () => {
+      const registry = injector.get(DeferBlockRegistry);
+      const onInvoke = () =>
         partialHydrateFromBlockName(injector, elementTrigger.blockName, (deferBlock: any) =>
           triggerAndWaitForCompletion(deferBlock),
         );
-      };
-      scheduleDelayedHydrating(() => onIdle(cb, block.lView), block.lView, block.tNode);
+      const cleanupFn = onIdle(onInvoke, injector);
+      registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
     }
   }
 }
 
-async function setViewportTriggers(
-  injector: Injector,
-  ets: ElementTrigger[],
-  elementBlockMap: Map<HTMLElement, string>,
-) {
+async function setViewportTriggers(injector: Injector, ets: ElementTrigger[]) {
   if (ets.length > 0) {
-    const intersectionObserver = new IntersectionObserver((entries) => {
-      for (const current of entries) {
-        if (current.isIntersecting) {
-          partialHydrateFromBlockName(
-            injector,
-            elementBlockMap.get(current.target as HTMLElement)!,
-            (deferBlock: any) => triggerAndWaitForCompletion(deferBlock),
+    for (let et of ets) {
+      onViewport(
+        et.el,
+        () => {
+          partialHydrateFromBlockName(injector, et.blockName, (deferBlock: any) =>
+            triggerAndWaitForCompletion(deferBlock),
           );
-        }
-      }
-    });
-    ets.forEach((et) => {
-      intersectionObserver.observe(et.el);
-    });
+        },
+        injector,
+      );
+    }
   }
 }
 
 async function setTimerTriggers(injector: Injector, ets: ElementTrigger[]) {
   if (ets.length > 0) {
-    const registry = injector.get(DeferBlockRegistry);
     for (const elementTrigger of ets) {
-      const block = registry.get(elementTrigger.blockName)!;
-      scheduleDelayedHydrating(onTimer(elementTrigger.delay!), block.lView, block.tNode);
+      const registry = injector.get(DeferBlockRegistry);
+      const onInvoke = () =>
+        partialHydrateFromBlockName(injector, elementTrigger.blockName, (deferBlock: any) =>
+          triggerAndWaitForCompletion(deferBlock),
+        );
+      const timerFn = onTimer(elementTrigger.delay!);
+      const cleanupFn = timerFn(onInvoke, injector);
+      registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
     }
   }
 }

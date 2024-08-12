@@ -228,9 +228,6 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
-    "name": "HYDRATE_TRIGGER_CLEANUP_FNS"
-  },
-  {
     "name": "INJECTOR"
   },
   {
@@ -244,6 +241,9 @@
   },
   {
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
+  },
+  {
+    "name": "IS_PARTIAL_HYDRATION_ENABLED"
   },
   {
     "name": "InjectFlags"
@@ -511,6 +511,9 @@
   },
   {
     "name": "TYPE"
+  },
+  {
+    "name": "UNIQUE_SSR_ID"
   },
   {
     "name": "USE_VALUE"
