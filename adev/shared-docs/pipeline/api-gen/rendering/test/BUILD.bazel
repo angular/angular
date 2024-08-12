@@ -19,10 +19,18 @@ ts_library(
     ),
     deps = [
         "//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html_lib",
+        "@npm//@bazel/runfiles",
+        "@npm//@types/jsdom",
+        "@npm//jsdom",
     ],
 )
 
 jasmine_node_test(
     name = "unit_tests",
+    data = [
+        "@npm//jsdom",
+    ] + glob([
+        "**/*.json",
+    ]),
     deps = [":unit_test_lib"],
 )
