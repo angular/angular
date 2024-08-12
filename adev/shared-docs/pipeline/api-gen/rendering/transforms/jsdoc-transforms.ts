@@ -37,6 +37,7 @@ export const JS_DOC_DESCRIPTION_TAG = 'description';
 
 // Some links are written in the following format: {@link Route}
 const jsDoclinkRegex = /\{\s*@link\s+([^}]+)\s*\}/;
+const jsDoclinkRegexGlobal = /\{\s*@link\s+([^}]+)\s*\}/g;
 
 /** Given an entity with a description, gets the entity augmented with an `htmlDescription`. */
 export function addHtmlDescription<T extends HasDescription & HasModuleName>(
@@ -196,7 +197,7 @@ function convertJsDocExampleToHtmlExample(text: string): string {
 }
 
 function convertLinks(text: string, entry: HasModuleName) {
-  return text.replace(jsDoclinkRegex, (_, link) => {
+  return text.replace(jsDoclinkRegexGlobal, (_, link) => {
     const [symbol, description] = link.split(/\s(.+)/);
     if (symbol && description) {
       // {@link Route Some route with description}
