@@ -8,6 +8,7 @@
 
 import path from 'path';
 import ts from 'typescript';
+import {NgCompilerOptions} from '../../../../../compiler-cli/src/ngtsc/core/api';
 
 /**
  * A migration host is in practice a container object that
@@ -20,7 +21,7 @@ export class MigrationHost {
   constructor(
     public projectDir: string,
     public isMigratingCore: boolean,
-    public tsOptions: ts.CompilerOptions,
+    public options: NgCompilerOptions,
     sourceFiles: readonly ts.SourceFile[],
   ) {
     this._sourceFiles = new WeakSet(sourceFiles);
