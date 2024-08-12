@@ -1,4 +1,4 @@
-import {Injector, NgModule} from '@angular/core';
+import {Injector, NgModule, provideManualChangeDetection} from '@angular/core';
 import {createCustomElement} from '@angular/elements';
 import {BrowserModule} from '@angular/platform-browser';
 
@@ -17,6 +17,7 @@ import {
     TestCardComponent,
   ],
   imports: [BrowserModule],
+  providers: [provideManualChangeDetection()],
 })
 export class AppModule {
   constructor(injector: Injector) {

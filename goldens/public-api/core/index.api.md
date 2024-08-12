@@ -174,7 +174,7 @@ export interface AttributeDecorator {
 // @public
 export function booleanAttribute(value: unknown): boolean;
 
-// @public
+// @public @deprecated
 export interface BootstrapOptions {
     // @deprecated
     ignoreChangesOutsideZone?: boolean;
@@ -1393,6 +1393,9 @@ export function provideExperimentalCheckNoChangesForDebug(options: {
 
 // @public
 export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders;
+
+// @public
+export function provideManualChangeDetection(): EnvironmentProviders;
 
 // @public
 export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];

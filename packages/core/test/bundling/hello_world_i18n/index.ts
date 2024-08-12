@@ -7,7 +7,7 @@
  */
 import './translations';
 
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule, provideManualChangeDetection} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Component({
@@ -20,7 +20,8 @@ export class HelloWorld {}
   declarations: [HelloWorld],
   imports: [BrowserModule],
   bootstrap: [HelloWorld],
+  providers: [provideManualChangeDetection()],
 })
 export class Module {}
 
-platformBrowser().bootstrapModule(Module, {ngZone: 'noop'});
+platformBrowser().bootstrapModule(Module);

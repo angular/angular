@@ -25,6 +25,7 @@ import {PROVIDED_ZONELESS} from '../change_detection/scheduling/zoneless_schedul
 import {Injector} from '../di';
 import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util/stringify';
+import {PROVIDED_MANUAL_CHANGE_DETECTION} from '../change_detection/scheduling/disabled_scheduling';
 
 export interface ModuleBootstrapConfig<M> {
   moduleRef: InternalNgModuleRef<M>;
@@ -73,11 +74,17 @@ export function bootstrap<M>(
           errorMessage,
         );
       }
-      if (envInjector.get(PROVIDED_ZONELESS) && envInjector.get(PROVIDED_NG_ZONE)) {
+      const numberOfChangeDetectionConfigurations =
+        (envInjector.get(PROVIDED_ZONELESS) ? 1 : 0) +
+        (envInjector.get(PROVIDED_NG_ZONE) ? 1 : 0) +
+        (envInjector.get(PROVIDED_MANUAL_CHANGE_DETECTION) ? 1 : 0);
+
+      if (numberOfChangeDetectionConfigurations > 1) {
         throw new RuntimeError(
-          RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
+          RuntimeErrorCode.PROVIDED_MULTIPLE_CHANGE_DETECTION_CONFIGURATIONS,
           'Invalid change detection configuration: ' +
-            'provideZoneChangeDetection and provideExperimentalZonelessChangeDetection cannot be used together.',
+            'Only one of provideZoneChangeDetection, provideExperimentalZonelessChangeDetection, or provideManualChangeDetection ' +
+            'should be used to configure application change detection behavior.',
         );
       }
     }

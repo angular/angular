@@ -1341,6 +1341,9 @@
     "name": "init_directives"
   },
   {
+    "name": "init_disabled_scheduling"
+  },
+  {
     "name": "init_discovery"
   },
   {

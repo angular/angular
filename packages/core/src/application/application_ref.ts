@@ -98,6 +98,10 @@ export class NgProbeToken {
  * Provides additional options to the bootstrapping process.
  *
  * @publicApi
+ * @deprecated NgZone behavior should be configured with providers instead.
+ *  - Use `provideZoneChangeDetection()` to configure the NgZone with options
+ *  - Use `provideManualChangeDetection()` instead of `ngZone: 'noop'`
+ *  - Use `{provide: NgZone, useValue: myCustomZone}` instead of `ngZone: myCustomZone`
  */
 export interface BootstrapOptions {
   /**

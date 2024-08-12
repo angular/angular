@@ -14,6 +14,7 @@ import {
   NgModule,
   OnInit,
   TestabilityRegistry,
+  provideManualChangeDetection,
 } from '@angular/core';
 import {getTestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -42,7 +43,7 @@ describe('ApplicationRef bootstrap', () => {
     declarations: [HelloWorldComponent],
     bootstrap: [HelloWorldComponent],
     imports: [BrowserModule],
-    providers: [{provide: DOCUMENT, useFactory: () => document}],
+    providers: [{provide: DOCUMENT, useFactory: () => document}, provideManualChangeDetection()],
   })
   class MyAppModule {}
 
@@ -50,9 +51,7 @@ describe('ApplicationRef bootstrap', () => {
     'should bootstrap hello world',
     withBody('<hello-world></hello-world>', async () => {
       const MyAppModuleFactory = new NgModuleFactory(MyAppModule);
-      const moduleRef = await getTestBed().platform.bootstrapModuleFactory(MyAppModuleFactory, {
-        ngZone: 'noop',
-      });
+      const moduleRef = await getTestBed().platform.bootstrapModuleFactory(MyAppModuleFactory);
       const appRef = moduleRef.injector.get(ApplicationRef);
       const helloWorldComponent = appRef.components[0].instance as HelloWorldComponent;
       expect(document.body.innerHTML).toEqual(
@@ -77,9 +76,7 @@ describe('ApplicationRef bootstrap', () => {
     'should expose the `window.ng` global utilities',
     withBody('<hello-world></hello-world>', async () => {
       const MyAppModuleFactory = new NgModuleFactory(MyAppModule);
-      const moduleRef = await getTestBed().platform.bootstrapModuleFactory(MyAppModuleFactory, {
-        ngZone: 'noop',
-      });
+      const moduleRef = await getTestBed().platform.bootstrapModuleFactory(MyAppModuleFactory);
 
       const glob = typeof global !== 'undefined' ? global : window;
       const ngUtils = (glob as any).ng;
