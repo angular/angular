@@ -699,6 +699,9 @@
     "name": "configureViewWithDirective"
   },
   {
+    "name": "consumerAfterComputation"
+  },
+  {
     "name": "consumerBeforeComputation"
   },
   {
@@ -760,6 +763,9 @@
   },
   {
     "name": "deepForEachProvider"
+  },
+  {
+    "name": "defaultEquals"
   },
   {
     "name": "defaultErrorHandler"
@@ -1063,6 +1069,9 @@
   },
   {
     "name": "init_advance"
+  },
+  {
+    "name": "init_after_render_effect"
   },
   {
     "name": "init_all"

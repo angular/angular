@@ -459,6 +459,6 @@ function afterRenderImpl(
 }
 
 /** `AfterRenderRef` that does nothing. */
-const NOOP_AFTER_RENDER_REF: AfterRenderRef = {
+export const NOOP_AFTER_RENDER_REF: AfterRenderRef = {
   destroy() {},
 };

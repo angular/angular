@@ -23,4 +23,5 @@ export {
   EffectCleanupRegisterFn,
   EffectScheduler as ɵEffectScheduler,
 } from './render3/reactivity/effect';
+export {afterRenderEffect, ɵFirstAvailableSignal} from './render3/reactivity/after_render_effect';
 export {assertNotInReactiveContext} from './render3/reactivity/asserts';

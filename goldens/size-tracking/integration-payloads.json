@@ -7,8 +7,8 @@
   },
   "cli-hello-world-ivy-i18n": {
     "uncompressed": {
-      "main": 130590,
-      "polyfills": 34676
+      "main": 135813,
+      "polyfills": 35883
     }
   },
   "cli-hello-world-lazy": {
