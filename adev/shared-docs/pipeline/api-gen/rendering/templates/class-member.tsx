@@ -35,7 +35,7 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
       {isClassMethodEntry(props.member) ? (
         props.member.signatures.map((sig, i, signatures) => {
           const renderableMember = getFunctionMetadataRenderable(sig);
-          return <ClassMethodInfo entry={renderableMember} isOverloaded={signatures.length > 1} />;
+          return <ClassMethodInfo entry={renderableMember} options={{showUsageNotes: true}} />;
         })
       ) : (
         <div className={REFERENCE_MEMBER_CARD_ITEM}>
