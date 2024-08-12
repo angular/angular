@@ -188,6 +188,35 @@ describe('event dispatch', () => {
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
     });
+    it('should call the original stopPropagation method', async () => {
+      @Component({
+        standalone: true,
+        selector: 'app',
+        template: `
+            <div id="top" (click)="onClick($event)">
+                <div id="bottom" (click)="onClick($event)"></div>
+            </div>
+          `,
+      })
+      class SimpleComponent {
+        onClick(e: Event) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }
+      configureTestingModule([SimpleComponent]);
+      fixture = TestBed.createComponent(SimpleComponent);
+      const nativeElement = fixture.debugElement.nativeElement;
+      const bottomEl = nativeElement.querySelector('#bottom')!;
+      const event = new MouseEvent('click', {bubbles: true});
+      spyOn(event, 'stopPropagation');
+      const stopPropagation = event.stopPropagation;
+      spyOn(event, 'preventDefault');
+      const preventDefault = event.preventDefault;
+      bottomEl.dispatchEvent(event);
+      expect(stopPropagation).toHaveBeenCalled();
+      expect(preventDefault).toHaveBeenCalled();
+    });
   });
 
   describe('manual listening', () => {
