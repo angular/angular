@@ -1252,6 +1252,81 @@ describe('platform-server partial hydration integration', () => {
 
         expect(appHostNode.outerHTML).not.toContain('Outer block placeholder');
       }, 100_000);
+
+      fit('defer triggers should not fire when hydrate never is used', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+          <main (click)="fnA()">
+            @defer (on timer(1s); hydrate never) {
+              <article>
+                defer block rendered!
+                <span id="test" (click)="fnB()">{{value()}}</span>
+              </article>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            }
+          </main>
+        `,
+        })
+        class SimpleComponent {
+          value = signal('start');
+          fnA() {}
+          fnB() {
+            this.value.set('end');
+          }
+        }
+
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+        const hydrationFeatures = [withPartialHydration()];
+
+        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+        const ssrContents = getAppContents(html);
+
+        // <main> uses "eager" `custom-app-id` namespace.
+        expect(ssrContents).toContain('<main jsaction="click:;');
+        // <div>s inside a defer block have `d0` as a namespace.
+        expect(ssrContents).toContain('<article>');
+        // Outer defer block is rendered.
+        expect(ssrContents).toContain('defer block rendered');
+
+        // Internal cleanup before we do server->client transition in this test.
+        resetTViewsFor(SimpleComponent);
+
+        ////////////////////////////////
+        const doc = getDocument();
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+          hydrationFeatures,
+        });
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+        await whenStable(appRef);
+
+        const appHostNode = compRef.location.nativeElement;
+
+        expect(appHostNode.outerHTML).toContain('<article>');
+
+        expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+
+        await timeout(500); // wait for timer
+        appRef.tick();
+
+        await timeout(1000); // wait for defer blocks to resolve
+        appRef.tick();
+
+        const testElement = doc.getElementById('test')!;
+        const clickEvent2 = new CustomEvent('click');
+        testElement.dispatchEvent(clickEvent2);
+
+        appRef.tick();
+
+        expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+
+        expect(appHostNode.outerHTML).not.toContain('Outer block placeholder');
+      }, 100_000);
     });
   });
 });

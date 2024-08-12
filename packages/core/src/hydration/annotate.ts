@@ -272,7 +272,9 @@ function annotateLContainerForHydration(
 export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const injector = appRef.injector;
   const isI18nHydrationEnabledVal = isI18nHydrationEnabled(injector);
-  const isPartialHydrationEnabledVal = injector.get(IS_PARTIAL_HYDRATION_ENABLED, false);
+  const isPartialHydrationEnabledVal = injector.get(IS_PARTIAL_HYDRATION_ENABLED, false, {
+    optional: true,
+  });
   const serializedViewCollection = new SerializedViewCollection();
   const corruptedTextNodes = new Map<HTMLElement, TextNodeMarker>();
   const viewRefs = appRef._views;

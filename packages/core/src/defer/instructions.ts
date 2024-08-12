@@ -121,7 +121,9 @@ export const DEFER_BLOCK_CONFIG = new InjectionToken<DeferBlockConfig>(
 
 function shouldTriggerWhenOnServer(injector: Injector) {
   const isServer = !isPlatformBrowser(injector);
-  const isPartialHydrationEnabled = injector.get(IS_PARTIAL_HYDRATION_ENABLED);
+  const isPartialHydrationEnabled = injector.get(IS_PARTIAL_HYDRATION_ENABLED, false, {
+    optional: true,
+  });
   return isServer && isPartialHydrationEnabled;
 }
 
