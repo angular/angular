@@ -7,7 +7,6 @@
  */
 
 import ts from 'typescript';
-import assert from 'assert';
 import {
   confirmAsSerializable,
   MigrationStats,
