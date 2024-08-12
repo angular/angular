@@ -55,7 +55,7 @@ export function convertToSignalInput(
   }
 
   const strictPropertyInitialization =
-    !!host.tsOptions.strict || !!host.tsOptions.strictPropertyInitialization;
+    !!host.options.strict || !!host.options.strictPropertyInitialization;
   const inputArgs: ts.Expression[] = [];
   const typeArguments: ts.TypeNode[] = [];
 
