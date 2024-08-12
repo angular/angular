@@ -20,6 +20,8 @@ import {identifyPotentialTypeScriptReference} from './references/identify_ts_ref
 import {PartialDirectiveTypeInCatalystTests} from '../pattern_advisors/partial_directive_type';
 import {InputReferenceKind} from '../utils/input_reference';
 import {GroupedTsAstVisitor} from '../utils/grouped_ts_ast_visitor';
+import {ResourceLoader} from '../../../../../../compiler-cli/src/ngtsc/annotations';
+import {PartialEvaluator} from '../../../../../../compiler-cli/src/ngtsc/partial_evaluator';
 
 /**
  * Phase where we iterate through all source file references and
@@ -38,6 +40,8 @@ export function pass2_IdentifySourceFileReferences(
   host: MigrationHost,
   checker: ts.TypeChecker,
   reflector: ReflectionHost,
+  resourceLoader: ResourceLoader,
+  evaluator: PartialEvaluator,
   templateTypeChecker: TemplateTypeChecker,
   groupedTsAstVisitor: GroupedTsAstVisitor,
   knownInputs: KnownInputs,
@@ -51,7 +55,18 @@ export function pass2_IdentifySourceFileReferences(
 
   const visitor = (node: ts.Node) => {
     if (ts.isClassDeclaration(node)) {
-      identifyTemplateReferences(node, host, checker, templateTypeChecker, result, knownInputs);
+      identifyTemplateReferences(
+        node,
+        host,
+        reflector,
+        checker,
+        evaluator,
+        templateTypeChecker,
+        resourceLoader,
+        host.options,
+        result,
+        knownInputs,
+      );
       identifyHostBindingReferences(node, host, checker, reflector, result, knownInputs);
     }
 
