@@ -50,6 +50,17 @@ export function afterRender<E = never, W = never, M = never>(spec: {
 export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
 
 // @public
+export function afterRenderEffect(callback: (onCleanup: EffectCleanupRegisterFn) => void, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
+
+// @public
+export function afterRenderEffect<E = never, W = never, M = never>(spec: {
+    earlyRead?: (onCleanup: EffectCleanupRegisterFn) => E;
+    write?: (...args: [...ɵFirstAvailableSignal<[E]>, EffectCleanupRegisterFn]) => W;
+    mixedReadWrite?: (...args: [...ɵFirstAvailableSignal<[W, E]>, EffectCleanupRegisterFn]) => M;
+    read?: (...args: [...ɵFirstAvailableSignal<[M, W, E]>, EffectCleanupRegisterFn]) => void;
+}, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
+
+// @public
 export interface AfterRenderOptions {
     injector?: Injector;
     // @deprecated
