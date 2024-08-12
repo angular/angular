@@ -21,6 +21,7 @@ ts_library(
         "//packages/compiler-cli/test:test_utils",
         "@npm//source-map",
         "@npm//typescript",
+        "@npm//esbuild"
     ],
 )
 

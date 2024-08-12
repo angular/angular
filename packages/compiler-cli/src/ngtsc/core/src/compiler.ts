@@ -106,6 +106,7 @@ import {
   DtsTransformRegistry,
   ivyTransformFactory,
   TraitCompiler,
+  signalMetadataTransform,
 } from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
@@ -815,6 +816,7 @@ export class NgCompiler {
       ),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
+      signalMetadataTransform(this.inputProgram),
     ];
 
     // If there are JIT declarations, wire up the JIT transform and efficiently
@@ -841,7 +843,7 @@ export class NgCompiler {
           },
         )(ctx);
 
-        return (sourceFile) => {
+        return (sourceFile: ts.SourceFile) => {
           if (!sourceFilesWithJit.has(sourceFile.fileName)) {
             return sourceFile;
           }
