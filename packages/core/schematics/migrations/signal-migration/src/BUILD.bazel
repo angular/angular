@@ -15,6 +15,7 @@ ts_library(
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/annotations/common",
+        "//packages/compiler-cli/src/ngtsc/annotations/component",
         "//packages/compiler-cli/src/ngtsc/annotations/directive",
         "//packages/compiler-cli/src/ngtsc/core",
         "//packages/compiler-cli/src/ngtsc/core:api",

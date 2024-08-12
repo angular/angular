@@ -15,15 +15,16 @@ import {PartialEvaluator} from '../../../../../compiler-cli/src/ngtsc/partial_ev
 import {NgtscProgram} from '../../../../../compiler-cli/src/ngtsc/program';
 import {TypeScriptReflectionHost} from '../../../../../compiler-cli/src/ngtsc/reflection';
 
+import assert from 'assert';
+import {ResourceLoader} from '../../../../../compiler-cli/src/ngtsc/annotations';
+import {NgCompiler} from '../../../../../compiler-cli/src/ngtsc/core';
+import {ReferenceEmitter} from '../../../../../compiler-cli/src/ngtsc/imports';
+import {isShim} from '../../../../../compiler-cli/src/ngtsc/shims';
+import {TemplateTypeChecker} from '../../../../../compiler-cli/src/ngtsc/typecheck/api';
 import {
   ParsedConfiguration,
   readConfiguration,
 } from '../../../../../compiler-cli/src/perform_compile';
-import {TemplateTypeChecker} from '../../../../../compiler-cli/src/ngtsc/typecheck/api';
-import {ReferenceEmitter} from '../../../../../compiler-cli/src/ngtsc/imports';
-import {isShim} from '../../../../../compiler-cli/src/ngtsc/shims';
-import {NgCompiler} from '../../../../../compiler-cli/src/ngtsc/core';
-import assert from 'assert';
 
 /**
  * Interface containing the analysis information
@@ -41,6 +42,7 @@ export interface AnalysisProgramInfo {
   dtsMetadataReader: DtsMetadataReader;
   evaluator: PartialEvaluator;
   refEmitter: ReferenceEmitter;
+  resourceLoader: ResourceLoader;
 }
 
 /** Creates and prepares analysis for the given TypeScript project. */
@@ -116,6 +118,7 @@ export function prepareAnalysisInfo(
   const reflector = new TypeScriptReflectionHost(typeChecker);
   const evaluator = new PartialEvaluator(reflector, typeChecker, null);
   const dtsMetadataReader = new DtsMetadataReader(typeChecker, reflector);
+  const resourceLoader = compiler['resourceManager'];
 
   const limitToRootNamesOnly = process.env['LIMIT_TO_ROOT_NAMES_ONLY'] === '1';
   if (limitToRootNamesOnly) {
@@ -148,5 +151,6 @@ export function prepareAnalysisInfo(
     typeChecker,
     refEmitter,
     templateTypeChecker,
+    resourceLoader,
   };
 }

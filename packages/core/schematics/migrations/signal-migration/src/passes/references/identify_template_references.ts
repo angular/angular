@@ -7,13 +7,24 @@
  */
 
 import ts from 'typescript';
+import {ResourceLoader} from '../../../../../../../compiler-cli/src/ngtsc/annotations';
+import {TemplateTypeChecker} from '../../../../../../../compiler-cli/src/ngtsc/typecheck/api';
 import {InputIncompatibilityReason} from '../../input_detection/incompatibility';
 import {KnownInputs} from '../../input_detection/known_inputs';
+import {TemplateReferenceVisitor} from '../../input_detection/template_reference_visitor';
 import {MigrationHost} from '../../migration_host';
 import {MigrationResult} from '../../result';
 import {InputReferenceKind} from '../../utils/input_reference';
-import {TemplateTypeChecker} from '../../../../../../../compiler-cli/src/ngtsc/typecheck/api';
-import {TemplateReferenceVisitor} from '../../input_detection/template_reference_visitor';
+import {
+  ClassDeclaration,
+  ReflectionHost,
+} from '../../../../../../../compiler-cli/src/ngtsc/reflection';
+import {PartialEvaluator} from '../../../../../../../compiler-cli/src/ngtsc/partial_evaluator';
+import {extractTemplate} from '../../../../../../../compiler-cli/src/ngtsc/annotations/component/src/resources';
+import {attemptExtractTemplateDefinition} from '../../utils/extract_template';
+import {NgCompilerOptions} from '../../../../../../../compiler-cli/src/ngtsc/core/api';
+import {CompilationMode} from '../../../../../../../compiler-cli/src/ngtsc/transform';
+import {TmplAstNode} from '@angular/compiler';
 
 /**
  * Checks whether the given class has an Angular template, and resolves
@@ -22,12 +33,30 @@ import {TemplateReferenceVisitor} from '../../input_detection/template_reference
 export function identifyTemplateReferences(
   node: ts.ClassDeclaration,
   host: MigrationHost,
+  reflector: ReflectionHost,
   checker: ts.TypeChecker,
+  evaluator: PartialEvaluator,
   templateTypeChecker: TemplateTypeChecker,
+  resourceLoader: ResourceLoader,
+  options: NgCompilerOptions,
   result: MigrationResult,
   knownInputs: KnownInputs,
 ) {
-  const template = templateTypeChecker.getTemplate(node);
+  const template =
+    templateTypeChecker.getTemplate(node) ??
+    // If there is no template registered in the TCB or compiler, the template may
+    // be skipped due to an explicit `jit: true` setting. We try to detect this case
+    // and parse the template manually.
+    extractTemplateWithoutCompilerAnalysis(
+      node,
+      checker,
+      reflector,
+      resourceLoader,
+      evaluator,
+      options,
+      host,
+    );
+
   if (template !== null) {
     const visitor = new TemplateReferenceVisitor(
       host,
@@ -63,4 +92,46 @@ export function identifyTemplateReferences(
       }
     }
   }
+}
+
+/**
+ * Attempts to extract a `@Component` template from the given class,
+ * without relying on the `NgCompiler` program analysis.
+ *
+ * This is useful for JIT components using `jit: true` which were not
+ * processed by the Angular compiler, but may still have templates that
+ * contain references to inputs that we can resolve via the fallback
+ * reference resolutions (that does not use the type check block).
+ */
+function extractTemplateWithoutCompilerAnalysis(
+  node: ts.ClassDeclaration,
+  checker: ts.TypeChecker,
+  reflector: ReflectionHost,
+  resourceLoader: ResourceLoader,
+  evaluator: PartialEvaluator,
+  options: NgCompilerOptions,
+  host: MigrationHost,
+): TmplAstNode[] | null {
+  if (node.name === undefined) {
+    return null;
+  }
+  const tmplDef = attemptExtractTemplateDefinition(node, checker, reflector, host);
+  if (tmplDef === null) {
+    return null;
+  }
+  return extractTemplate(
+    node as ClassDeclaration,
+    tmplDef,
+    evaluator,
+    null,
+    resourceLoader,
+    {
+      enableBlockSyntax: true,
+      enableLetSyntax: true,
+      usePoisonedData: true,
+      enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat !== false,
+      i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs === true,
+    },
+    CompilationMode.FULL,
+  ).nodes;
 }
