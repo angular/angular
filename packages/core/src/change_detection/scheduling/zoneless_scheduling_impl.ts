@@ -135,9 +135,16 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeCheck;
         break;
       }
+      case NotificationSource.DeferredRenderHook: {
+        // Render hooks are "deferred" when they're triggered from other render hooks. Using the
+        // deferred dirty flags ensures that adding new hooks doesn't automatically trigger a loop
+        // inside tick().
+        this.appRef.deferredDirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
+        break;
+      }
       case NotificationSource.ViewDetachedFromDOM:
       case NotificationSource.ViewAttached:
-      case NotificationSource.NewRenderHook:
+      case NotificationSource.RenderHook:
       case NotificationSource.AsyncAnimationsLoaded:
       default: {
         // These notifications only schedule a tick but do not change whether we should refresh
