@@ -321,12 +321,17 @@ function migrateParameter(
   // If the parameter declares a property, we need to declare it (e.g. `private foo: Foo`).
   if (declaresProp) {
     const prop = ts.factory.createPropertyDeclaration(
-      node.modifiers?.filter((modifier) => {
-        // Strip out the DI decorators, as well as `public` which is redundant.
-        return !ts.isDecorator(modifier) && modifier.kind !== ts.SyntaxKind.PublicKeyword;
-      }),
+      cloneModifiers(
+        node.modifiers?.filter((modifier) => {
+          // Strip out the DI decorators, as well as `public` which is redundant.
+          return !ts.isDecorator(modifier) && modifier.kind !== ts.SyntaxKind.PublicKeyword;
+        }),
+      ),
       name,
-      undefined,
+      // Don't add the question token to private properties since it won't affect interface implementation.
+      node.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.PrivateKeyword)
+        ? undefined
+        : node.questionToken,
       // We can't initialize the property if it's referenced within a `super` call.
       // See the logic further below for the initialization.
       usedInSuper ? node.type : undefined,
@@ -609,4 +614,16 @@ function replaceNodePlaceholder(
 ): string {
   const result = printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
   return result.replace(PLACEHOLDER, replacement);
+}
+
+/**
+ * Clones an optional array of modifiers. Can be useful to
+ * strip the comments from a node with modifiers.
+ */
+function cloneModifiers(modifiers: ts.ModifierLike[] | ts.NodeArray<ts.ModifierLike> | undefined) {
+  return modifiers?.map((modifier) => {
+    return ts.isDecorator(modifier)
+      ? ts.factory.createDecorator(modifier.expression)
+      : ts.factory.createModifier(modifier.kind);
+  });
 }
