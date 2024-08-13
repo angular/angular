@@ -93,9 +93,8 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
             return;
           }
 
-          const newProperty = ts.factory.updatePropertyDeclaration(
-            property,
-            property.modifiers,
+          const newProperty = ts.factory.createPropertyDeclaration(
+            cloneModifiers(property.modifiers),
             property.name,
             property.questionToken,
             property.type,

@@ -1773,5 +1773,40 @@ describe('inject migration', () => {
         `}`,
       ]);
     });
+
+    it('should account for doc strings when inlining initializers', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Directive } from '@angular/core';`,
+          `import { Foo } from 'foo';`,
+          ``,
+          `@Directive()`,
+          `class MyDir {`,
+          `  /** Value of Foo */`,
+          `  private value: number;`,
+          ``,
+          `  constructor(private foo: Foo) {`,
+          `    this.value = this.foo.getValue();`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runInternalMigration();
+
+      expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+        `import { Directive, inject } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  private foo = inject(Foo);`,
+        ``,
+        `  /** Value of Foo */`,
+        `  private value: number = this.foo.getValue();`,
+        `}`,
+      ]);
+    });
   });
 });
