@@ -13,6 +13,8 @@ import {
   InputMemberIncompatibility,
 } from '../input_detection/incompatibility';
 import {InputNode} from '../input_detection/input_node';
+import {Decorator} from '../../../../../../compiler-cli/src/ngtsc/reflection';
+import assert from 'assert';
 
 /**
  * Interface describing analysis performed when the input
@@ -23,6 +25,7 @@ export interface ConvertInputPreparation {
   preferShorthandIfPossible: {originalType: ts.TypeNode} | null;
   isUndefinedInitialValue: boolean;
   resolvedMetadata: ExtractedInput;
+  originalInputDecorator: Decorator;
 }
 
 /**
@@ -46,6 +49,12 @@ export function prepareAndCheckForConversion(
       reason: InputIncompatibilityReason.Accessor,
     };
   }
+
+  assert(
+    metadata.inputDecorator !== null,
+    'Expected an input decorator for inputs that are being migrated.',
+  );
+
   const initialValue = node.initializer;
 
   // If an input can be required, due to the non-null assertion on the property,
@@ -118,5 +127,6 @@ export function prepareAndCheckForConversion(
     resolvedType: typeToAdd,
     preferShorthandIfPossible,
     isUndefinedInitialValue,
+    originalInputDecorator: metadata.inputDecorator,
   };
 }
