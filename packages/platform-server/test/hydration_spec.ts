@@ -2128,6 +2128,54 @@ describe('platform-server hydration integration', () => {
           expect(content.innerHTML).toBe('<span>two</span><div>one</div>');
         });
 
+        it('should work when i18n content is not projected', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app-content',
+            template: `
+              @if (false) {
+                <ng-content />
+              }
+              Content outside of 'if'.
+            `,
+          })
+          class ContentComponent {}
+
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              <app-content>
+                <div i18n>Hello!</div>
+                <ng-container i18n>Hello again!</ng-container>
+              </app-content>
+            `,
+            imports: [ContentComponent],
+          })
+          class SimpleComponent {}
+
+          const hydrationFeatures = [withI18nSupport()] as unknown as HydrationFeature<any>[];
+          const html = await ssr(SimpleComponent, {hydrationFeatures});
+
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent, ContentComponent);
+
+          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {hydrationFeatures});
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          const content = clientRootNode.querySelector('app-content');
+          const text = content.textContent.trim();
+          expect(text).toBe("Content outside of 'if'.");
+          expect(text).not.toContain('Hello');
+        });
+
         it('should support interleaving projected content', async () => {
           @Component({
             standalone: true,
