@@ -67,9 +67,11 @@ export function setUpControl(
   dir: NgControl,
   callSetDisabledState: SetDisabledStateOption = setDisabledStateDefault,
 ): void {
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    if (!control) _throwError(dir, 'Cannot find control with');
-    if (!dir.valueAccessor) _throwMissingValueAccessorError(dir);
+  // We want to throw the full error in prod mode as an error code would be to ambiguous
+  if (!control) _throwError(dir, 'Cannot find control with');
+
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && !dir.valueAccessor) {
+    _throwMissingValueAccessorError(dir);
   }
 
   setUpValidators(control, dir);
