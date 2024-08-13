@@ -186,8 +186,6 @@ export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
     this.initializeInputs();
     this.initializeOutputs(this.componentRef);
 
-    this.componentRef.changeDetectorRef.detectChanges();
-
     const applicationRef = this.injector.get<ApplicationRef>(ApplicationRef);
     applicationRef.attachView(this.componentRef.hostView);
   }

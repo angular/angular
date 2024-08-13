@@ -162,10 +162,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
       );
     });
 
-    it('should detect changes', () => {
-      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalled();
-    });
-
     it('should listen to output events', () => {
       const events: NgElementStrategyEvent[] = [];
       strategy.events.subscribe((e) => events.push(e));
