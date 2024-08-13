@@ -32,6 +32,7 @@ export function convertToSignalInput(
     resolvedType,
     preferShorthandIfPossible,
     isUndefinedInitialValue,
+    originalInputDecorator,
   }: ConvertInputPreparation,
   checker: ts.TypeChecker,
   importManager: ImportManager,
@@ -117,12 +118,16 @@ export function convertToSignalInput(
     inputArgs,
   );
 
-  // TODO:
-  //   - modifiers (but private does not work)
-  //   - preserve custom decorators etc.
+  let modifiersWithoutInputDecorator =
+    node.modifiers?.filter((m) => m !== originalInputDecorator.node) ?? [];
+
+  // Add `readonly` to all new signal input declarations.
+  if (!modifiersWithoutInputDecorator?.some((s) => s.kind === ts.SyntaxKind.ReadonlyKeyword)) {
+    modifiersWithoutInputDecorator.push(ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword));
+  }
 
   const result = ts.factory.createPropertyDeclaration(
-    undefined,
+    modifiersWithoutInputDecorator,
     node.name,
     undefined,
     undefined,
