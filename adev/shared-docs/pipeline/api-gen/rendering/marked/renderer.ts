@@ -30,8 +30,8 @@ export const renderer: Partial<MarkedRenderer> = {
     <img src="${href}" alt="${text}" title="${title}" class="docs-image">
     `;
   },
-  link({href, text}): string {
-    return `<a href="${href}">${text}</a>`;
+  link(this: Renderer, {href, tokens}): string {
+    return `<a href="${href}">${this.parser.parseInline(tokens)}</a>`;
   },
   list({items, ordered, start}) {
     if (ordered) {
