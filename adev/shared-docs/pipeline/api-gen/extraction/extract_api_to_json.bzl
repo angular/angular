@@ -13,6 +13,9 @@ def _extract_api_to_json(ctx):
     # Pass the module_name for the extracted APIs. This will be something like "@angular/core".
     args.add(ctx.attr.module_name)
 
+    # Pass the module_label for the extracted APIs, This is something like core for "@angular/core".
+    args.add(ctx.attr.module_label)
+
     # Pass the entry_point for from which to extract public symbols.
     args.add(ctx.file.entry_point)
 
@@ -81,6 +84,9 @@ extract_api_to_json = rule(
         "module_name": attr.string(
             doc = """JS Module name to be used for the extracted symbols""",
             mandatory = True,
+        ),
+        "module_label": attr.string(
+            doc = """Module label to be used for the extracted symbols. To be used as display name, for example in API docs""",
         ),
         "extra_entries": attr.label_list(
             doc = """JSON files that contain extra entries to append to the final collection.""",

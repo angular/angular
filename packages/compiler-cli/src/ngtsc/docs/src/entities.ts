@@ -6,6 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/** The JSON data file format for extracted API reference info. */
+export interface EntryCollection {
+  moduleName: string;
+
+  // The normalized name is shared so rendering and manifest use the same common field
+  normalizedModuleName: string;
+
+  moduleLabel: string;
+  entries: DocEntry[];
+}
+
 /** Type of top-level documentation entry. */
 export enum EntryType {
   Block = 'block',
