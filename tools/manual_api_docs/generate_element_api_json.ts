@@ -36,6 +36,8 @@ function main() {
     outputFileExecRootRelativePath,
     JSON.stringify({
       moduleName: '@angular/core',
+      normalizedModuleName: 'angular_core',
+      moduleLabel: 'core',
       entries,
     }),
     {encoding: 'utf8'},

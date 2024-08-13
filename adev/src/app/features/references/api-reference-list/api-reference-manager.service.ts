@@ -9,7 +9,7 @@
 import {Injectable, signal} from '@angular/core';
 // This file is generated at build-time, error is expected here.
 import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
-import {ANGULAR_PACKAGE_PREFIX, getApiUrl} from '../helpers/manifest.helper';
+import {getApiUrl} from '../helpers/manifest.helper';
 import {ApiItem} from '../interfaces/api-item';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
 import {ApiManifest} from '../interfaces/api-manifest';
@@ -34,6 +34,8 @@ export const FEATURED_ITEMS_URLS = [
   'api/router/CanActivate',
 ];
 
+const manifest = API_MANIFEST_JSON as ApiManifest;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -50,20 +52,14 @@ export class ApiReferenceManager {
 
   private mapManifestToApiGroups(): ApiItemsGroup[] {
     const groups: ApiItemsGroup[] = [];
-    const manifest = API_MANIFEST_JSON as ApiManifest;
 
-    const packageNames = Object.keys(API_MANIFEST_JSON);
-
-    for (const packageName of packageNames) {
-      const packageNameWithoutPrefix = packageName.replace(ANGULAR_PACKAGE_PREFIX, '');
-      const packageApis = manifest[packageName];
-
+    for (const module of manifest) {
       groups.push({
-        title: packageNameWithoutPrefix,
-        id: packageNameWithoutPrefix.replace(/\//g, '-'),
-        items: packageApis
+        title: module.moduleLabel.replace('@angular/', ''),
+        id: module.normalizedModuleName,
+        items: module.entries
           .map((api) => {
-            const url = getApiUrl(packageNameWithoutPrefix, api.name);
+            const url = getApiUrl(module, api.name);
             const isFeatured = FEATURED_ITEMS_URLS.some((featuredUrl) => featuredUrl === url);
             const apiItem = {
               itemType: api.type,

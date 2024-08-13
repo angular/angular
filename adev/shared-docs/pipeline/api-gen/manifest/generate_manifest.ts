@@ -1,11 +1,5 @@
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
-import type {DocEntry, JsDocTagEntry} from '@angular/compiler-cli';
-
-/** The JSON data file format for extracted API reference info. */
-export interface EntryCollection {
-  moduleName: string;
-  entries: DocEntry[];
-}
+import type {DocEntry, EntryCollection, JsDocTagEntry} from '@angular/compiler-cli';
 
 export interface ManifestEntry {
   name: string;
@@ -16,7 +10,12 @@ export interface ManifestEntry {
 }
 
 /** Manifest that maps each module name to a list of API symbols. */
-export type Manifest = Record<string, ManifestEntry[]>;
+export type Manifest = {
+  moduleName: string;
+  normalizedModuleName: string;
+  moduleLabel: string;
+  entries: ManifestEntry[];
+}[];
 
 /** Gets a unique lookup key for an API, e.g. "@angular/core/ElementRef". */
 function getApiLookupKey(moduleName: string, name: string) {
@@ -114,22 +113,39 @@ export function generateManifest(apiCollections: EntryCollection[]): Manifest {
     });
   }
 
-  const manifest: Manifest = {};
+  const manifest: Manifest = [];
   for (const collection of apiCollections) {
-    if (!manifest[collection.moduleName]) {
-      manifest[collection.moduleName] = [];
+    const entries = collection.entries.map((entry) => ({
+      name: entry.name,
+      type: entry.entryType,
+      isDeprecated: isDeprecated(entryLookup, collection.moduleName, entry),
+      isDeveloperPreview: isDeveloperPreview(entryLookup, collection.moduleName, entry),
+      isExperimental: isExperimental(entryLookup, collection.moduleName, entry),
+    }));
+
+    const existingEntry = manifest.find((entry) => entry.moduleName === collection.moduleName);
+    if (existingEntry) {
+      existingEntry.entries.push(...entries);
+    } else {
+      manifest.push({
+        moduleName: collection.moduleName,
+        normalizedModuleName: collection.normalizedModuleName,
+        moduleLabel: collection.moduleLabel ?? collection.moduleName,
+        entries,
+      });
+    }
+  }
+
+  manifest.sort((entry1, entry2) => {
+    // Ensure that labels that start with a `code` tag like `window.ng` are last
+    if (entry1.moduleLabel.startsWith('<')) {
+      return 1;
+    } else if (entry2.moduleLabel.startsWith('<')) {
+      return -1;
     }
 
-    manifest[collection.moduleName].push(
-      ...collection.entries.map((entry) => ({
-        name: entry.name,
-        type: entry.entryType,
-        isDeprecated: isDeprecated(entryLookup, collection.moduleName, entry),
-        isDeveloperPreview: isDeveloperPreview(entryLookup, collection.moduleName, entry),
-        isExperimental: isExperimental(entryLookup, collection.moduleName, entry),
-      })),
-    );
-  }
+    return entry1.moduleLabel.localeCompare(entry2.moduleLabel);
+  });
 
   return manifest;
 }

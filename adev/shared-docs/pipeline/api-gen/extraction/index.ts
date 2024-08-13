@@ -1,7 +1,13 @@
 import {readFileSync, writeFileSync} from 'fs';
 import path from 'path';
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
-import {NgtscProgram, CompilerOptions, createCompilerHost, DocEntry} from '@angular/compiler-cli';
+import {
+  NgtscProgram,
+  CompilerOptions,
+  createCompilerHost,
+  DocEntry,
+  EntryCollection,
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 function main() {
@@ -10,6 +16,7 @@ function main() {
 
   const [
     moduleName,
+    moduleLabel,
     entryPointExecRootRelativePath,
     srcs,
     outputFilenameExecRootRelativePath,
@@ -57,10 +64,14 @@ function main() {
   const extractedEntries = program.getApiDocumentation(entryPointExecRootRelativePath);
   const combinedEntries = extractedEntries.concat(extraEntries);
 
+  const normalized = moduleName.replace('@', '').replace(/[\/]/g, '_');
+
   const output = JSON.stringify({
+    moduleLabel: moduleLabel || moduleName,
     moduleName: moduleName,
+    normalizedModuleName: normalized,
     entries: combinedEntries,
-  });
+  } satisfies EntryCollection);
 
   writeFileSync(outputFilenameExecRootRelativePath, output, {encoding: 'utf8'});
 }
