@@ -9,6 +9,7 @@ import {validateMatchingNode, validateNodeExists} from '../../hydration/error_ha
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {
   getNgContainerSize,
+  isDisconnectedNode,
   markRNodeAsClaimedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
@@ -204,7 +205,11 @@ function locateOrCreateElementContainerNode(
 ): RComment {
   let comment: RComment;
   const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock() || isDetachedByI18n(tNode);
+  const isNodeCreationMode =
+    !hydrationInfo ||
+    isInSkipHydrationBlock() ||
+    isDisconnectedNode(hydrationInfo, index) ||
+    isDetachedByI18n(tNode);
 
   lastNodeWasCreated(isNodeCreationMode);
 

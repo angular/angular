@@ -26,6 +26,7 @@ import {IS_I18N_HYDRATION_ENABLED} from './tokens';
 import {
   getNgContainerSize,
   initDisconnectedNodes,
+  isDisconnectedNode,
   isSerializedElementContainer,
   processTextNodeBeforeSerialization,
 } from './utils';
@@ -407,15 +408,17 @@ function prepareI18nBlockForHydrationImpl(
   parentTNode: TNode | null,
   subTemplateIndex: number,
 ) {
-  if (
-    !isI18nHydrationSupportEnabled() ||
-    (parentTNode && isI18nInSkipHydrationBlock(parentTNode))
-  ) {
+  const hydrationInfo = lView[HYDRATION];
+  if (!hydrationInfo) {
     return;
   }
 
-  const hydrationInfo = lView[HYDRATION];
-  if (!hydrationInfo) {
+  if (
+    !isI18nHydrationSupportEnabled() ||
+    (parentTNode &&
+      (isI18nInSkipHydrationBlock(parentTNode) ||
+        isDisconnectedNode(hydrationInfo, parentTNode.index - HEADER_OFFSET)))
+  ) {
     return;
   }
 
