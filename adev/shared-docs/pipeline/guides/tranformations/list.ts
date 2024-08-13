@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {RendererApi} from 'marked';
+import {Renderer, Tokens} from 'marked';
 
-export const listRender: RendererApi['list'] = (body, ordered, start) => {
+export function listRender(this: Renderer, {items, ordered}: Tokens.List) {
   if (ordered) {
     return `
     <ol class="docs-ordered-list">
-      ${body}
+      ${items.map((item) => this.listitem(item)).join('')}
     </ol>
     `;
   }
   return `
   <ul class="docs-list">
-    ${body}
+    ${items.map((item) => this.listitem(item)).join('')}
   </ul>
   `;
-};
+}

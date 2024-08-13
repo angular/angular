@@ -33,8 +33,8 @@ export interface OutputOptions {
  *
  * To use `output()`, import the function from `@angular/core`.
  *
- * ```
- * import {output} from '@angular/core`;
+ * ```ts
+ * import {output} from '@angular/core';
  * ```
  *
  * Inside your component, introduce a new class member and initialize
