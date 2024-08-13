@@ -32,7 +32,7 @@ Other notable differences from JavaScript syntax include:
 
 Interpolated expressions have a context—a particular part of the application to which the expression belongs.  Typically, this context is the component instance.
 
-In the following snippet, the expression `recommended` and the expression `itemImageUrl2` refer to properties of the `AppComponent`.
+In the following snippet, the expressions `recommended` and `itemImageUrl2` refer to properties of the `AppComponent`.
 
 <docs-code path="adev/src/content/examples/interpolation/src/app/app.component.html" visibleRegion="component-context" header="src/app/app.component.html"/>
 
@@ -74,7 +74,7 @@ When using a template expression, follow these best practices:
 
 * **Use short expressions**
 
-Use property names or method calls whenever possible.  Keep application and business logic in the component, where it is accessible to develop and test.
+Use property names or method calls whenever possible.  Keep application and business logic in the component, which is accessible to develop and test.
 
 * **Quick execution**
 
