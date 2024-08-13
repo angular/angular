@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, createEnvironmentInjector, EnvironmentInjector, Injectable, OnDestroy} from '@angular/core';
+import {
+  Compiler,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  Injectable,
+  OnDestroy,
+} from '@angular/core';
 import {from, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, filter, mergeAll, mergeMap} from 'rxjs/operators';
 
@@ -14,7 +20,6 @@ import {Event, NavigationEnd} from './events';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
-
 
 /**
  * @description
@@ -78,14 +83,20 @@ export class RouterPreloader implements OnDestroy {
   private subscription?: Subscription;
 
   constructor(
-      private router: Router, compiler: Compiler, private injector: EnvironmentInjector,
-      private preloadingStrategy: PreloadingStrategy, private loader: RouterConfigLoader) {}
+    private router: Router,
+    compiler: Compiler,
+    private injector: EnvironmentInjector,
+    private preloadingStrategy: PreloadingStrategy,
+    private loader: RouterConfigLoader,
+  ) {}
 
   setUpPreloading(): void {
-    this.subscription =
-        this.router.events
-            .pipe(filter((e: Event) => e instanceof NavigationEnd), concatMap(() => this.preload()))
-            .subscribe(() => {});
+    this.subscription = this.router.events
+      .pipe(
+        filter((e: Event) => e instanceof NavigationEnd),
+        concatMap(() => this.preload()),
+      )
+      .subscribe(() => {});
   }
 
   preload(): Observable<any> {
@@ -103,8 +114,11 @@ export class RouterPreloader implements OnDestroy {
     const res: Observable<any>[] = [];
     for (const route of routes) {
       if (route.providers && !route._injector) {
-        route._injector =
-            createEnvironmentInjector(route.providers, injector, `Route: ${route.path}`);
+        route._injector = createEnvironmentInjector(
+          route.providers,
+          injector,
+          `Route: ${route.path}`,
+        );
       }
 
       const injectorForCurrentRoute = route._injector ?? injector;
@@ -118,8 +132,10 @@ export class RouterPreloader implements OnDestroy {
       // when present. Lastly, it remains to be decided whether `canLoad` should behave this way
       // at all. Code splitting and lazy loading is separate from client-side authorization checks
       // and should not be used as a security measure to prevent loading of code.
-      if ((route.loadChildren && !route._loadedRoutes && route.canLoad === undefined) ||
-          (route.loadComponent && !route._loadedComponent)) {
+      if (
+        (route.loadChildren && !route._loadedRoutes && route.canLoad === undefined) ||
+        (route.loadComponent && !route._loadedComponent)
+      ) {
         res.push(this.preloadConfig(injectorForCurrentRoute, route));
       }
       if (route.children || route._loadedRoutes) {
@@ -131,24 +147,25 @@ export class RouterPreloader implements OnDestroy {
 
   private preloadConfig(injector: EnvironmentInjector, route: Route): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
-      let loadedChildren$: Observable<LoadedRouterConfig|null>;
+      let loadedChildren$: Observable<LoadedRouterConfig | null>;
       if (route.loadChildren && route.canLoad === undefined) {
         loadedChildren$ = this.loader.loadChildren(injector, route);
       } else {
         loadedChildren$ = of(null);
       }
 
-      const recursiveLoadChildren$ =
-          loadedChildren$.pipe(mergeMap((config: LoadedRouterConfig|null) => {
-            if (config === null) {
-              return of(void 0);
-            }
-            route._loadedRoutes = config.routes;
-            route._loadedInjector = config.injector;
-            // If the loaded config was a module, use that as the module/module injector going
-            // forward. Otherwise, continue using the current module/module injector.
-            return this.processRoutes(config.injector ?? injector, config.routes);
-          }));
+      const recursiveLoadChildren$ = loadedChildren$.pipe(
+        mergeMap((config: LoadedRouterConfig | null) => {
+          if (config === null) {
+            return of(void 0);
+          }
+          route._loadedRoutes = config.routes;
+          route._loadedInjector = config.injector;
+          // If the loaded config was a module, use that as the module/module injector going
+          // forward. Otherwise, continue using the current module/module injector.
+          return this.processRoutes(config.injector ?? injector, config.routes);
+        }),
+      );
       if (route.loadComponent && !route._loadedComponent) {
         const loadComponent$ = this.loader.loadComponent(route);
         return from([recursiveLoadChildren$, loadComponent$]).pipe(mergeAll());

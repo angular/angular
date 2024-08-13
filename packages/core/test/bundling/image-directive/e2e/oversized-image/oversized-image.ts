@@ -11,7 +11,7 @@ import {Component} from '@angular/core';
 
 const imageLoader = {
   provide: IMAGE_LOADER,
-  useFactory: () => (config: ImageLoaderConfig) => config.src
+  useFactory: () => (config: ImageLoaderConfig) => config.src,
 };
 
 @Component({
@@ -31,9 +31,7 @@ const imageLoader = {
       </div>
      `,
 })
-export class OversizedImageComponentPassing {
-}
-
+export class OversizedImageComponentPassing {}
 
 @Component({
   selector: 'oversized-image-failing',
@@ -47,5 +45,4 @@ export class OversizedImageComponentPassing {
        </div>
       `,
 })
-export class OversizedImageComponentFailing {
-}
+export class OversizedImageComponentFailing {}

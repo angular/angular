@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BabelFile, PluginObj, types as t} from '@babel/core';
-import {NodePath} from '@babel/traverse';
+import {BabelFile, NodePath, PluginObj, types as t} from '@babel/core';
 
 import {FileLinker, isFatalLinkerError, LinkerEnvironment} from '../../../linker';
 
@@ -22,31 +21,39 @@ import {LinkerPluginOptions} from './linker_plugin_options';
  * The plugin delegates most of its work to a generic `FileLinker` for each file (`t.Program` in
  * Babel) that is visited.
  */
-export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: LinkerPluginOptions):
-    PluginObj {
-  let fileLinker: FileLinker<ConstantScopePath, t.Statement, t.Expression>|null = null;
+export function createEs2015LinkerPlugin({
+  fileSystem,
+  logger,
+  ...options
+}: LinkerPluginOptions): PluginObj {
+  let fileLinker: FileLinker<ConstantScopePath, t.Statement, t.Expression> | null = null;
 
   return {
     visitor: {
       Program: {
-
         /**
          * Create a new `FileLinker` as we enter each file (`t.Program` in Babel).
          */
-        enter(path: NodePath<t.Program>): void {
+        enter(_, state): void {
           assertNull(fileLinker);
           // Babel can be configured with a `filename` or `relativeFilename` (or both, or neither) -
           // possibly relative to the optional `cwd` path.
-          const file = path.hub.file;
+          const file = state.file;
           const filename = file.opts.filename ?? file.opts.filenameRelative;
           if (!filename) {
             throw new Error(
-                'No filename (nor filenameRelative) provided by Babel. This is required for the linking of partially compiled directives and components.');
+              'No filename (nor filenameRelative) provided by Babel. This is required for the linking of partially compiled directives and components.',
+            );
           }
           const sourceUrl = fileSystem.resolve(file.opts.cwd ?? '.', filename);
 
           const linkerEnvironment = LinkerEnvironment.create<t.Statement, t.Expression>(
-              fileSystem, logger, new BabelAstHost(), new BabelAstFactory(sourceUrl), options);
+            fileSystem,
+            logger,
+            new BabelAstHost(),
+            new BabelAstFactory(sourceUrl),
+            options,
+          );
           fileLinker = new FileLinker(linkerEnvironment, sourceUrl, file.code);
         },
 
@@ -60,14 +67,14 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
             insertStatements(constantScope, statements);
           }
           fileLinker = null;
-        }
+        },
       },
 
       /**
        * Test each call expression to see if it is a partial declaration; it if is then replace it
        * with the results of linking the declaration.
        */
-      CallExpression(call: NodePath<t.CallExpression>): void {
+      CallExpression(call: NodePath<t.CallExpression>, state): void {
         if (fileLinker === null) {
           // Any statements that are inserted upon program exit will be visited outside of an active
           // linker context. These call expressions are known not to contain partial declarations,
@@ -90,11 +97,11 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
 
           call.replaceWith(replacement);
         } catch (e) {
-          const node = isFatalLinkerError(e) ? e.node as t.Node : call.node;
-          throw buildCodeFrameError(call.hub.file, (e as Error).message, node);
+          const node = isFatalLinkerError(e) ? (e.node as t.Node) : call.node;
+          throw buildCodeFrameError(state.file, (e as Error).message, node);
         }
-      }
-    }
+      },
+    },
   };
 }
 
@@ -115,7 +122,9 @@ function insertStatements(path: ConstantScopePath, statements: t.Statement[]): v
  * Insert the `statements` at the top of the body of the `fn` function.
  */
 function insertIntoFunction(
-    fn: NodePath<t.FunctionExpression|t.FunctionDeclaration>, statements: t.Statement[]): void {
+  fn: NodePath<t.FunctionExpression | t.FunctionDeclaration>,
+  statements: t.Statement[],
+): void {
   const body = fn.get('body');
   body.unshiftContainer('body', statements);
 }
@@ -125,15 +134,16 @@ function insertIntoFunction(
  */
 function insertIntoProgram(program: NodePath<t.Program>, statements: t.Statement[]): void {
   const body = program.get('body');
-  const importStatements = body.filter(statement => statement.isImportDeclaration());
-  if (importStatements.length === 0) {
+  const insertBeforeIndex = body.findIndex((statement) => !statement.isImportDeclaration());
+
+  if (insertBeforeIndex === -1) {
     program.unshiftContainer('body', statements);
   } else {
-    importStatements[importStatements.length - 1].insertAfter(statements);
+    body[insertBeforeIndex].insertBefore(statements);
   }
 }
 
-function getCalleeName(call: NodePath<t.CallExpression>): string|null {
+function getCalleeName(call: NodePath<t.CallExpression>): string | null {
   const callee = call.node.callee;
   if (t.isIdentifier(callee)) {
     return callee.name;
@@ -150,13 +160,13 @@ function getCalleeName(call: NodePath<t.CallExpression>): string|null {
  * Return true if all the `nodes` are Babel expressions.
  */
 function isExpressionArray(nodes: t.Node[]): nodes is t.Expression[] {
-  return nodes.every(node => t.isExpression(node));
+  return nodes.every((node) => t.isExpression(node));
 }
 
 /**
  * Assert that the given `obj` is `null`.
  */
-function assertNull<T>(obj: T|null): asserts obj is null {
+function assertNull<T>(obj: T | null): asserts obj is null {
   if (obj !== null) {
     throw new Error('BUG - expected `obj` to be null');
   }
@@ -165,7 +175,7 @@ function assertNull<T>(obj: T|null): asserts obj is null {
 /**
  * Assert that the given `obj` is not `null`.
  */
-function assertNotNull<T>(obj: T|null): asserts obj is T {
+function assertNotNull<T>(obj: T | null): asserts obj is T {
   if (obj === null) {
     throw new Error('BUG - expected `obj` not to be null');
   }
@@ -176,6 +186,6 @@ function assertNotNull<T>(obj: T|null): asserts obj is T {
  */
 function buildCodeFrameError(file: BabelFile, message: string, node: t.Node): string {
   const filename = file.opts.filename || '(unknown file)';
-  const error = file.buildCodeFrameError(node, message);
+  const error = file.hub.buildError(node, message);
   return `${filename}: ${error.message}`;
 }

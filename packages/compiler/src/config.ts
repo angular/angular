@@ -10,34 +10,28 @@ import {MissingTranslationStrategy, ViewEncapsulation} from './core';
 import {noUndefined} from './util';
 
 export class CompilerConfig {
-  public defaultEncapsulation: ViewEncapsulation|null;
-  public useJit: boolean;
-  public missingTranslation: MissingTranslationStrategy|null;
+  public defaultEncapsulation: ViewEncapsulation | null;
   public preserveWhitespaces: boolean;
   public strictInjectionParameters: boolean;
 
   constructor({
     defaultEncapsulation = ViewEncapsulation.Emulated,
-    useJit = true,
-    missingTranslation = null,
     preserveWhitespaces,
-    strictInjectionParameters
+    strictInjectionParameters,
   }: {
-    defaultEncapsulation?: ViewEncapsulation,
-    useJit?: boolean,
-    missingTranslation?: MissingTranslationStrategy|null,
-    preserveWhitespaces?: boolean,
-    strictInjectionParameters?: boolean,
+    defaultEncapsulation?: ViewEncapsulation;
+    preserveWhitespaces?: boolean;
+    strictInjectionParameters?: boolean;
   } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
-    this.useJit = !!useJit;
-    this.missingTranslation = missingTranslation;
     this.preserveWhitespaces = preserveWhitespacesDefault(noUndefined(preserveWhitespaces));
     this.strictInjectionParameters = strictInjectionParameters === true;
   }
 }
 
 export function preserveWhitespacesDefault(
-    preserveWhitespacesOption: boolean|null, defaultSetting = false): boolean {
+  preserveWhitespacesOption: boolean | null,
+  defaultSetting = false,
+): boolean {
   return preserveWhitespacesOption === null ? defaultSetting : preserveWhitespacesOption;
 }

@@ -17,8 +17,11 @@ import {serializeLocationPosition} from '../source_file_utils';
  * object (as necessary).
  */
 export function checkDuplicateMessages(
-    fs: PathManipulation, messages: ɵParsedMessage[],
-    duplicateMessageHandling: DiagnosticHandlingStrategy, basePath: AbsoluteFsPath): Diagnostics {
+  fs: PathManipulation,
+  messages: ɵParsedMessage[],
+  duplicateMessageHandling: DiagnosticHandlingStrategy,
+  basePath: AbsoluteFsPath,
+): Diagnostics {
   const diagnostics = new Diagnostics();
   if (duplicateMessageHandling === 'ignore') return diagnostics;
 
@@ -35,8 +38,9 @@ export function checkDuplicateMessages(
     if (duplicates.length <= 1) continue;
     if (duplicates.every((message) => message.text === duplicates[0].text)) continue;
 
-    const diagnosticMessage = `Duplicate messages with id "${duplicates[0].id}":\n` +
-        duplicates.map((message) => serializeMessage(fs, basePath, message)).join('\n');
+    const diagnosticMessage =
+      `Duplicate messages with id "${duplicates[0].id}":\n` +
+      duplicates.map((message) => serializeMessage(fs, basePath, message)).join('\n');
     diagnostics.add(duplicateMessageHandling, diagnosticMessage);
   }
 
@@ -47,7 +51,10 @@ export function checkDuplicateMessages(
  * Serialize the given `message` object into a string.
  */
 function serializeMessage(
-    fs: PathManipulation, basePath: AbsoluteFsPath, message: ɵParsedMessage): string {
+  fs: PathManipulation,
+  basePath: AbsoluteFsPath,
+  message: ɵParsedMessage,
+): string {
   if (message.location === undefined) {
     return `   - "${message.text}"`;
   } else {

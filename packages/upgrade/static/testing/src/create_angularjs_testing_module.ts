@@ -12,7 +12,6 @@ import {ɵangular1 as ng, ɵconstants} from '@angular/upgrade/static';
 
 import {UpgradeAppType} from '../../../src/common/src/util';
 
-
 /**
  * A helper function to use when unit testing AngularJS services that depend upon downgraded Angular
  * services.
@@ -81,19 +80,17 @@ import {UpgradeAppType} from '../../../src/common/src/util';
  * @publicApi
  */
 export function createAngularJSTestingModule(angularModules: any[]): string {
-  return ng.module_('$$angularJSTestingModule', [])
-      .constant(ɵconstants.UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
-      .factory(
-          ɵconstants.INJECTOR_KEY,
-          [
-            ɵconstants.$INJECTOR,
-            ($injector: ng.IInjectorService) => {
-              TestBed.configureTestingModule({
-                imports: angularModules,
-                providers: [{provide: ɵconstants.$INJECTOR, useValue: $injector}]
-              });
-              return TestBed.inject(Injector);
-            }
-          ])
-      .name;
+  return ng
+    .module_('$$angularJSTestingModule', [])
+    .constant(ɵconstants.UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
+    .factory(ɵconstants.INJECTOR_KEY, [
+      ɵconstants.$INJECTOR,
+      ($injector: ng.IInjectorService) => {
+        TestBed.configureTestingModule({
+          imports: angularModules,
+          providers: [{provide: ɵconstants.$INJECTOR, useValue: $injector}],
+        });
+        return TestBed.inject(Injector);
+      },
+    ]).name;
 }

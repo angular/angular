@@ -14,12 +14,13 @@ import {FormControl, FormGroup} from '@angular/forms';
   selector: 'example-app',
   template: `
     <form [formGroup]="form">
-      <input type="radio" formControlName="food" value="beef" > Beef
-      <input type="radio" formControlName="food" value="lamb"> Lamb
-      <input type="radio" formControlName="food" value="fish"> Fish
+      <input type="radio" formControlName="food" value="beef" /> Beef
+      <input type="radio" formControlName="food" value="lamb" /> Lamb
+      <input type="radio" formControlName="food" value="fish" /> Fish
     </form>
 
-    <p>Form value: {{ form.value | json }}</p>  <!-- {food: 'lamb' } -->
+    <p>Form value: {{ form.value | json }}</p>
+    <!-- {food: 'lamb' } -->
   `,
 })
 export class ReactiveRadioButtonComp {

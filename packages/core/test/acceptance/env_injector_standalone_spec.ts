@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, createEnvironmentInjector, EnvironmentInjector, importProvidersFrom, InjectionToken, NgModule} from '@angular/core';
+import {
+  Component,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  importProvidersFrom,
+  InjectionToken,
+  NgModule,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {internalImportProvidersFrom} from '../../src/di/provider_collection';
@@ -16,16 +23,16 @@ describe('environment injector and standalone components', () => {
     class ModuleService {}
 
     @NgModule({providers: [ModuleService]})
-    class Module {
-    }
+    class Module {}
 
     @Component({standalone: true, imports: [Module]})
-    class StandaloneComponent {
-    }
+    class StandaloneComponent {}
 
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
     const envInjector = createEnvironmentInjector(
-        internalImportProvidersFrom(false, StandaloneComponent), parentEnvInjector);
+      internalImportProvidersFrom(false, StandaloneComponent),
+      parentEnvInjector,
+    );
     expect(envInjector.get(ModuleService)).toBeInstanceOf(ModuleService);
   });
 
@@ -33,20 +40,19 @@ describe('environment injector and standalone components', () => {
     class ModuleService {}
 
     @NgModule({providers: [ModuleService]})
-    class Module {
-    }
+    class Module {}
 
     @Component({standalone: true, imports: [Module]})
-    class StandaloneComponent {
-    }
+    class StandaloneComponent {}
 
     @NgModule({imports: [StandaloneComponent], exports: [StandaloneComponent]})
-    class AppModule {
-    }
+    class AppModule {}
 
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
-    const envInjector =
-        createEnvironmentInjector([importProvidersFrom(AppModule)], parentEnvInjector);
+    const envInjector = createEnvironmentInjector(
+      [importProvidersFrom(AppModule)],
+      parentEnvInjector,
+    );
     expect(envInjector.get(ModuleService)).toBeInstanceOf(ModuleService);
   });
 
@@ -54,27 +60,25 @@ describe('environment injector and standalone components', () => {
     class ModuleService {}
 
     @NgModule({providers: [{provide: ModuleService, useClass: ModuleService, multi: true}]})
-    class Module {
-    }
+    class Module {}
 
     @Component({standalone: true, imports: [Module]})
-    class StandaloneComponent1 {
-    }
+    class StandaloneComponent1 {}
 
     @Component({standalone: true, imports: [Module]})
-    class StandaloneComponent2 {
-    }
+    class StandaloneComponent2 {}
 
     @NgModule({
       imports: [StandaloneComponent1, StandaloneComponent2],
-      exports: [StandaloneComponent1, StandaloneComponent2]
+      exports: [StandaloneComponent1, StandaloneComponent2],
     })
-    class AppModule {
-    }
+    class AppModule {}
 
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
-    const envInjector =
-        createEnvironmentInjector([importProvidersFrom(AppModule)], parentEnvInjector);
+    const envInjector = createEnvironmentInjector(
+      [importProvidersFrom(AppModule)],
+      parentEnvInjector,
+    );
     const services = envInjector.get(ModuleService) as ModuleService[];
 
     expect(services.length).toBe(1);
@@ -87,14 +91,15 @@ describe('environment injector and standalone components', () => {
     const MULTI = new InjectionToken('D');
 
     const providers = [
-      {provide: MULTI, useValue: 1, multi: true}, {provide: A, useValue: 'A'},  //
+      {provide: MULTI, useValue: 1, multi: true},
+      {provide: A, useValue: 'A'}, //
       [
         {provide: B, useValue: 'B'},
         [
           {provide: C, useValue: 'C'},
           {provide: MULTI, useValue: 2, multi: true},
-        ]
-      ]
+        ],
+      ],
     ];
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
     const envInjector = createEnvironmentInjector(providers, parentEnvInjector);

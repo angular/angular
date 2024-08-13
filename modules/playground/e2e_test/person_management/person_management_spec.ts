@@ -9,10 +9,10 @@
 import {verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {browser} from 'protractor';
 
-describe('Person Management CRUD', function() {
+describe('Person Management CRUD', function () {
   const URL = '/';
 
-  it('should work', function() {
+  it('should work', function () {
     browser.get(URL);
     verifyNoBrowserErrors();
   });

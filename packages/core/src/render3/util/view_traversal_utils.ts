@@ -13,17 +13,7 @@ import {LContainer} from '../interfaces/container';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT} from '../interfaces/view';
 
-
-/**
- * Gets the parent LView of the passed LView, if the PARENT is an LContainer, will get the parent of
- * that LContainer, which is an LView
- * @param lView the lView whose parent to get
- */
-export function getLViewParent(lView: LView): LView|null {
-  ngDevMode && assertLView(lView);
-  const parent = lView[PARENT];
-  return isLContainer(parent) ? parent[PARENT]! : parent;
-}
+import {getLViewParent} from './view_utils';
 
 /**
  * Retrieve the root view from any component or `LView` by walking the parent `LView` until
@@ -31,7 +21,7 @@ export function getLViewParent(lView: LView): LView|null {
  *
  * @param componentOrLView any component or `LView`
  */
-export function getRootView<T>(componentOrLView: LView|{}): LView<T> {
+export function getRootView<T>(componentOrLView: LView | {}): LView<T> {
   ngDevMode && assertDefined(componentOrLView, 'component');
   let lView = isLView(componentOrLView) ? componentOrLView : readPatchedLView(componentOrLView)!;
   while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
@@ -48,29 +38,28 @@ export function getRootView<T>(componentOrLView: LView|{}): LView<T> {
  *
  * @param viewOrComponent the `LView` or component to get the root context for.
  */
-export function getRootContext<T>(viewOrComponent: LView<T>|{}): T {
+export function getRootContext<T>(viewOrComponent: LView<T> | {}): T {
   const rootView = getRootView(viewOrComponent);
   ngDevMode &&
-      assertDefined(rootView[CONTEXT], 'Root view has no context. Perhaps it is disconnected?');
+    assertDefined(rootView[CONTEXT], 'Root view has no context. Perhaps it is disconnected?');
   return rootView[CONTEXT] as T;
 }
-
 
 /**
  * Gets the first `LContainer` in the LView or `null` if none exists.
  */
-export function getFirstLContainer(lView: LView): LContainer|null {
+export function getFirstLContainer(lView: LView): LContainer | null {
   return getNearestLContainer(lView[CHILD_HEAD]);
 }
 
 /**
  * Gets the next `LContainer` that is a sibling of the given container.
  */
-export function getNextLContainer(container: LContainer): LContainer|null {
+export function getNextLContainer(container: LContainer): LContainer | null {
   return getNearestLContainer(container[NEXT]);
 }
 
-function getNearestLContainer(viewOrContainer: LContainer|LView|null) {
+function getNearestLContainer(viewOrContainer: LContainer | LView | null) {
   while (viewOrContainer !== null && !isLContainer(viewOrContainer)) {
     viewOrContainer = viewOrContainer[NEXT];
   }

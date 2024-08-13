@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-!function() {
+!(function () {
   function A() {
     function ignoreA() {}
   }
   function B() {
     let ignoreB = {};
   }
-  !function() {
+  !function () {
     let ignoreC = {};
   };
-}();
+})();

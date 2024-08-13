@@ -43,13 +43,13 @@ if (!parallelExecutions) {
 
 // Start the daemon and launch the given browser
 const daemon = new SaucelabsDaemon(
-    username,
-    accessKey,
-    process.env['CIRCLE_BUILD_NUM']!,
-    Object.values(customLaunchers) as Browser[],
-    parallelExecutions,
-    sauceConnect,
-    {tunnelIdentifier},
+  username,
+  accessKey,
+  process.env['CIRCLE_BUILD_NUM']!,
+  Object.values(customLaunchers) as Browser[],
+  parallelExecutions,
+  sauceConnect,
+  {tunnelIdentifier},
 );
 
 if (args.includes('--connect')) {

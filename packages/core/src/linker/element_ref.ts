@@ -77,6 +77,6 @@ export class ElementRef<T = any> {
  * @param value value to unwrap
  * @returns `nativeElement` if `ElementRef` otherwise returns value as is.
  */
-export function unwrapElementRef<T, R>(value: T|ElementRef<R>): T|R {
+export function unwrapElementRef<T, R>(value: T | ElementRef<R>): T | R {
   return value instanceof ElementRef ? value.nativeElement : value;
 }

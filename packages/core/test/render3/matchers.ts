@@ -12,7 +12,6 @@ import {TView} from '@angular/core/src/render3/interfaces/view';
 
 import {isDOMElement, isDOMText, isTI18n, isTIcu, isTNode, isTView} from './is_shape_of';
 
-
 /**
  * Generic matcher which asserts that an object is of a given shape (`shapePredicate`) and that it
  * contains a subset of properties.
@@ -22,13 +21,15 @@ import {isDOMElement, isDOMText, isTI18n, isTIcu, isTNode, isTView} from './is_s
  * @param expected Expected set of properties to be found on the object.
  */
 export function matchObjectShape<T>(
-    name: string, shapePredicate: (obj: any) => obj is T,
-    expected: Partial<T> = {}): jasmine.AsymmetricMatcher<T> {
-  const matcher = function() {};
+  name: string,
+  shapePredicate: (obj: any) => obj is T,
+  expected: Partial<T> = {},
+): jasmine.AsymmetricMatcher<T> {
+  const matcher = function () {};
   let _actual: any = null;
   let _matcherUtils: jasmine.MatchersUtil = null!;
 
-  matcher.asymmetricMatch = function(actual: any, matcherUtils: jasmine.MatchersUtil) {
+  matcher.asymmetricMatch = function (actual: any, matcherUtils: jasmine.MatchersUtil) {
     _actual = actual;
     _matcherUtils = matcherUtils;
     if (!shapePredicate(actual)) return false;
@@ -39,7 +40,7 @@ export function matchObjectShape<T>(
     }
     return true;
   };
-  matcher.jasmineToString = function(pp: (value: any) => string) {
+  matcher.jasmineToString = function (pp: (value: any) => string) {
     let errors: string[] = [];
     if (!_actual || typeof _actual !== 'object') {
       return `Expecting ${pp(expect)} got ${pp(_actual)}`;
@@ -53,7 +54,6 @@ export function matchObjectShape<T>(
 
   return matcher;
 }
-
 
 /**
  * Asymmetric matcher which matches a `TView` of a given shape.
@@ -93,7 +93,6 @@ export function matchTNode(expected?: Partial<TNode>): jasmine.AsymmetricMatcher
   return matchObjectShape('TNode', isTNode, expected);
 }
 
-
 /**
  * Asymmetric matcher which matches a `T18n` of a given shape.
  *
@@ -112,7 +111,6 @@ export function matchTNode(expected?: Partial<TNode>): jasmine.AsymmetricMatcher
 export function matchTI18n(expected?: Partial<TI18n>): jasmine.AsymmetricMatcher<TI18n> {
   return matchObjectShape('TI18n', isTI18n, expected);
 }
-
 
 /**
  * Asymmetric matcher which matches a `T1cu` of a given shape.
@@ -133,8 +131,6 @@ export function matchTIcu(expected?: Partial<TIcu>): jasmine.AsymmetricMatcher<T
   return matchObjectShape('TIcu', isTIcu, expected);
 }
 
-
-
 /**
  * Asymmetric matcher which matches a DOM Element.
  *
@@ -152,15 +148,16 @@ export function matchTIcu(expected?: Partial<TIcu>): jasmine.AsymmetricMatcher<T
  * @param expectedAttributes optional DOM element properties.
  */
 export function matchDomElement(
-    expectedTagName: string|undefined = undefined,
-    expectedAttrs: {[key: string]: string|null} = {}): jasmine.AsymmetricMatcher<Element> {
-  const matcher = function() {};
+  expectedTagName: string | undefined = undefined,
+  expectedAttrs: {[key: string]: string | null} = {},
+): jasmine.AsymmetricMatcher<Element> {
+  const matcher = function () {};
   let _actual: any = null;
 
-  matcher.asymmetricMatch = function(actual: any) {
+  matcher.asymmetricMatch = function (actual: any) {
     _actual = actual;
     if (!isDOMElement(actual)) return false;
-    if (expectedTagName && (expectedTagName.toUpperCase() !== actual.tagName.toUpperCase())) {
+    if (expectedTagName && expectedTagName.toUpperCase() !== actual.tagName.toUpperCase()) {
       return false;
     }
     if (expectedAttrs) {
@@ -176,11 +173,13 @@ export function matchDomElement(
     }
     return true;
   };
-  matcher.jasmineToString = function() {
-    let actualStr = isDOMElement(_actual) ? `<${_actual.tagName}${toString(_actual.attributes)}>` :
-                                            JSON.stringify(_actual);
-    let expectedStr = `<${expectedTagName || '*'}${
-        Object.entries(expectedAttrs).map(([key, value]) => ` ${key}=${JSON.stringify(value)}`)}>`;
+  matcher.jasmineToString = function () {
+    let actualStr = isDOMElement(_actual)
+      ? `<${_actual.tagName}${toString(_actual.attributes)}>`
+      : JSON.stringify(_actual);
+    let expectedStr = `<${expectedTagName || '*'}${Object.entries(expectedAttrs).map(
+      ([key, value]) => ` ${key}=${JSON.stringify(value)}`,
+    )}>`;
     return `[${actualStr} != ${expectedStr}]`;
   };
 
@@ -192,7 +191,6 @@ export function matchDomElement(
     }
     return text;
   }
-
 
   return matcher;
 }
@@ -212,22 +210,24 @@ export function matchDomElement(
  *
  * @param expectedText optional DOM text.
  */
-export function matchDomText(expectedText: string|undefined = undefined):
-    jasmine.AsymmetricMatcher<Text> {
-  const matcher = function() {};
+export function matchDomText(
+  expectedText: string | undefined = undefined,
+): jasmine.AsymmetricMatcher<Text> {
+  const matcher = function () {};
   let _actual: any = null;
 
-  matcher.asymmetricMatch = function(actual: any) {
+  matcher.asymmetricMatch = function (actual: any) {
     _actual = actual;
     if (!isDOMText(actual)) return false;
-    if (expectedText && (expectedText !== actual.textContent)) {
+    if (expectedText && expectedText !== actual.textContent) {
       return false;
     }
     return true;
   };
-  matcher.jasmineToString = function() {
-    let actualStr = isDOMText(_actual) ? `#TEXT: ${JSON.stringify(_actual.textContent)}` :
-                                         JSON.stringify(_actual);
+  matcher.jasmineToString = function () {
+    let actualStr = isDOMText(_actual)
+      ? `#TEXT: ${JSON.stringify(_actual.textContent)}`
+      : JSON.stringify(_actual);
     let expectedStr = `#TEXT: ${JSON.stringify(expectedText)}`;
     return `[${actualStr} != ${expectedStr}]`;
   };
@@ -235,21 +235,22 @@ export function matchDomText(expectedText: string|undefined = undefined):
   return matcher;
 }
 
-export function matchI18nMutableOpCodes(expectedMutableOpCodes: string[]):
-    jasmine.AsymmetricMatcher<IcuCreateOpCodes> {
-  const matcher = function() {};
+export function matchI18nMutableOpCodes(
+  expectedMutableOpCodes: string[],
+): jasmine.AsymmetricMatcher<IcuCreateOpCodes> {
+  const matcher = function () {};
   let _actual: any = null;
 
-  matcher.asymmetricMatch = function(actual: any, matchersUtil: jasmine.MatchersUtil) {
+  matcher.asymmetricMatch = function (actual: any, matchersUtil: jasmine.MatchersUtil) {
     _actual = actual;
     if (!Array.isArray(actual)) return false;
     const debug = (actual as I18nDebug).debug as undefined | string[];
-    if (expectedMutableOpCodes && (!matchersUtil.equals(debug, expectedMutableOpCodes))) {
+    if (expectedMutableOpCodes && !matchersUtil.equals(debug, expectedMutableOpCodes)) {
       return false;
     }
     return true;
   };
-  matcher.jasmineToString = function() {
+  matcher.jasmineToString = function () {
     const debug = (_actual as I18nDebug).debug as undefined | string[];
     return `[${JSON.stringify(debug)} != ${expectedMutableOpCodes}]`;
   };

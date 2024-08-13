@@ -5,7 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  absoluteFrom,
+  getFileSystem,
+  PathManipulation,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵParsedMessage} from '@angular/localize';
 
@@ -32,28 +36,32 @@ runInEachFileSystem(() => {
           }),
           mockMessage('67890', ['a', '', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'], {
             description: 'some description',
-            location: location('/project/file.ts', 5, 10, 5, 12)
+            location: location('/project/file.ts', 5, 10, 5, 12),
           }),
           mockMessage('67890', ['a', '', 'c'], ['START_TAG_SPAN', 'CLOSE_TAG_SPAN'], {
             description: 'some description',
-            location: location('/project/other.ts', 2, 10, 3, 12)
+            location: location('/project/other.ts', 2, 10, 3, 12),
           }),
           mockMessage('13579', ['', 'b', ''], ['START_BOLD_TEXT', 'CLOSE_BOLD_TEXT'], {}),
           mockMessage('24680', ['a'], [], {meaning: 'meaning', description: 'and description'}),
           mockMessage('80808', ['multi\nlines'], [], {}),
           mockMessage('90000', ['<escape', 'me>'], ['double-quotes-"'], {}),
           mockMessage(
-              '100000',
-              [
-                'pre-ICU {VAR_SELECT, select, a {a} b {{INTERPOLATION}} c {pre {INTERPOLATION_1} post}} post-ICU'
-              ],
-              [], {}),
+            '100000',
+            [
+              'pre-ICU {VAR_SELECT, select, a {a} b {{INTERPOLATION}} c {pre {INTERPOLATION_1} post}} post-ICU',
+            ],
+            [],
+            {},
+          ),
           mockMessage(
-              '100001',
-              [
-                '{VAR_PLURAL, plural, one {{START_BOLD_TEXT}something bold{CLOSE_BOLD_TEXT}} other {pre {START_TAG_SPAN}middle{CLOSE_TAG_SPAN} post}}'
-              ],
-              [], {}),
+            '100001',
+            [
+              '{VAR_PLURAL, plural, one {{START_BOLD_TEXT}something bold{CLOSE_BOLD_TEXT}} other {pre {START_TAG_SPAN}middle{CLOSE_TAG_SPAN} post}}',
+            ],
+            [],
+            {},
+          ),
         ];
         const serializer = new ArbTranslationSerializer('xx', fs.resolve('/project'), fs);
         const output = serializer.serialize(messages);

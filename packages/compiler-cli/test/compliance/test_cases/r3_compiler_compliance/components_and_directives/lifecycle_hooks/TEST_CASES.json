@@ -24,11 +24,13 @@
         {
           "failureMessage": "Incorrect MyComponent.ɵcmp",
           "files": [
-            "local_reference_nested.js"
+            {
+              "generated": "local_reference_nested.js",
+              "expected": "local_reference_nested.pipeline.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support local refs mixed with context assignments",
@@ -39,11 +41,13 @@
         {
           "failureMessage": "Incorrect template",
           "files": [
-            "local_reference_and_context_variables.js"
+            {
+              "expected": "local_reference_and_context_variables_template.pipeline.js",
+              "generated": "local_reference_and_context_variables.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should gen hooks with a few simple components",

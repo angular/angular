@@ -6,8 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {areTypeParametersEqual, isArrayEqual, isSetEqual, isSymbolEqual, SemanticSymbol, SemanticTypeParameter} from '../../../incremental/semantic_graph';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta, InputMapping, InputOrOutput, TemplateGuardMeta} from '../../../metadata';
+import {
+  areTypeParametersEqual,
+  isArrayEqual,
+  isSetEqual,
+  isSymbolEqual,
+  SemanticSymbol,
+  SemanticTypeParameter,
+} from '../../../incremental/semantic_graph';
+import {
+  ClassPropertyMapping,
+  DirectiveTypeCheckMeta,
+  InputMapping,
+  InputOrOutput,
+  TemplateGuardMeta,
+} from '../../../metadata';
 import {ClassDeclaration} from '../../../reflection';
 
 /**
@@ -15,14 +28,17 @@ import {ClassDeclaration} from '../../../reflection';
  * from this symbol.
  */
 export class DirectiveSymbol extends SemanticSymbol {
-  baseClass: SemanticSymbol|null = null;
+  baseClass: SemanticSymbol | null = null;
 
   constructor(
-      decl: ClassDeclaration, public readonly selector: string|null,
-      public readonly inputs: ClassPropertyMapping<InputMapping>,
-      public readonly outputs: ClassPropertyMapping, public readonly exportAs: string[]|null,
-      public readonly typeCheckMeta: DirectiveTypeCheckMeta,
-      public readonly typeParameters: SemanticTypeParameter[]|null) {
+    decl: ClassDeclaration,
+    public readonly selector: string | null,
+    public readonly inputs: ClassPropertyMapping<InputMapping>,
+    public readonly outputs: ClassPropertyMapping,
+    public readonly exportAs: string[] | null,
+    public readonly typeCheckMeta: DirectiveTypeCheckMeta,
+    public readonly typeParameters: SemanticTypeParameter[] | null,
+  ) {
     super(decl);
   }
 
@@ -39,10 +55,12 @@ export class DirectiveSymbol extends SemanticSymbol {
     //  2. The binding names of their inputs and outputs; a change in ordering is also considered
     //     to be a change in public API.
     //  3. The list of exportAs names and its ordering.
-    return this.selector !== previousSymbol.selector ||
-        !isArrayEqual(this.inputs.propertyNames, previousSymbol.inputs.propertyNames) ||
-        !isArrayEqual(this.outputs.propertyNames, previousSymbol.outputs.propertyNames) ||
-        !isArrayEqual(this.exportAs, previousSymbol.exportAs);
+    return (
+      this.selector !== previousSymbol.selector ||
+      !isArrayEqual(this.inputs.propertyNames, previousSymbol.inputs.propertyNames) ||
+      !isArrayEqual(this.outputs.propertyNames, previousSymbol.outputs.propertyNames) ||
+      !isArrayEqual(this.exportAs, previousSymbol.exportAs)
+    );
   }
 
   override isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean {
@@ -57,10 +75,18 @@ export class DirectiveSymbol extends SemanticSymbol {
 
     // The type-check block also depends on the class property names, as writes property bindings
     // directly into the backing fields.
-    if (!isArrayEqual(
-            Array.from(this.inputs), Array.from(previousSymbol.inputs), isInputMappingEqual) ||
-        !isArrayEqual(
-            Array.from(this.outputs), Array.from(previousSymbol.outputs), isInputOrOutputEqual)) {
+    if (
+      !isArrayEqual(
+        Array.from(this.inputs),
+        Array.from(previousSymbol.inputs),
+        isInputMappingEqual,
+      ) ||
+      !isArrayEqual(
+        Array.from(this.outputs),
+        Array.from(previousSymbol.outputs),
+        isInputOrOutputEqual,
+      )
+    ) {
       return true;
     }
 
@@ -92,19 +118,25 @@ function isInputMappingEqual(current: InputMapping, previous: InputMapping): boo
 }
 
 function isInputOrOutputEqual(current: InputOrOutput, previous: InputOrOutput): boolean {
-  return current.classPropertyName === previous.classPropertyName &&
-      current.bindingPropertyName === previous.bindingPropertyName;
+  return (
+    current.classPropertyName === previous.classPropertyName &&
+    current.bindingPropertyName === previous.bindingPropertyName &&
+    current.isSignal === previous.isSignal
+  );
 }
 
 function isTypeCheckMetaEqual(
-    current: DirectiveTypeCheckMeta, previous: DirectiveTypeCheckMeta): boolean {
+  current: DirectiveTypeCheckMeta,
+  previous: DirectiveTypeCheckMeta,
+): boolean {
   if (current.hasNgTemplateContextGuard !== previous.hasNgTemplateContextGuard) {
     return false;
   }
   if (current.isGeneric !== previous.isGeneric) {
-    // Note: changes in the number of type parameters is also considered in `areTypeParametersEqual`
-    // so this check is technically not needed; it is done anyway for completeness in terms of
-    // whether the `DirectiveTypeCheckMeta` struct itself compares equal or not.
+    // Note: changes in the number of type parameters is also considered in
+    // `areTypeParametersEqual` so this check is technically not needed; it is done anyway for
+    // completeness in terms of whether the `DirectiveTypeCheckMeta` struct itself compares
+    // equal or not.
     return false;
   }
   if (!isArrayEqual(current.ngTemplateGuards, previous.ngTemplateGuards, isTemplateGuardEqual)) {
@@ -129,7 +161,10 @@ function isTemplateGuardEqual(current: TemplateGuardMeta, previous: TemplateGuar
   return current.inputName === previous.inputName && current.type === previous.type;
 }
 
-function isBaseClassEqual(current: SemanticSymbol|null, previous: SemanticSymbol|null): boolean {
+function isBaseClassEqual(
+  current: SemanticSymbol | null,
+  previous: SemanticSymbol | null,
+): boolean {
   if (current === null || previous === null) {
     return current === previous;
   }

@@ -32,8 +32,8 @@ function _sha1(words32: number[], len: number): string {
   const w: number[] = [];
   let [a, b, c, d, e]: number[] = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0];
 
-  words32[len >> 5] |= 0x80 << (24 - len % 32);
-  words32[((len + 64 >> 9) << 4) + 15] = len;
+  words32[len >> 5] |= 0x80 << (24 - (len % 32));
+  words32[(((len + 64) >> 9) << 4) + 15] = len;
 
   for (let i = 0; i < words32.length; i += 16) {
     const [h0, h1, h2, h3, h4]: number[] = [a, b, c, d, e];
@@ -111,7 +111,6 @@ function fk(index: number, b: number, c: number, d: number): [number, number] {
   return [b ^ c ^ d, 0xca62c1d6];
 }
 
-
 function stringToWords32(str: string, endian: Endian): number[] {
   const size = (str.length + 3) >>> 2;
   const words32 = [];
@@ -133,7 +132,7 @@ function arrayBufferToWords32(buffer: ArrayBuffer, endian: Endian): number[] {
   return words32;
 }
 
-function byteAt(str: string|Uint8Array, index: number): number {
+function byteAt(str: string | Uint8Array, index: number): number {
   if (typeof str === 'string') {
     return index >= str.length ? 0 : str.charCodeAt(index) & 0xff;
   } else {
@@ -141,7 +140,7 @@ function byteAt(str: string|Uint8Array, index: number): number {
   }
 }
 
-function wordAt(str: string|Uint8Array, index: number, endian: Endian): number {
+function wordAt(str: string | Uint8Array, index: number, endian: Endian): number {
   let word = 0;
   if (endian === Endian.Big) {
     for (let i = 0; i < 4; i++) {
@@ -149,7 +148,7 @@ function wordAt(str: string|Uint8Array, index: number, endian: Endian): number {
     }
   } else {
     for (let i = 0; i < 4; i++) {
-      word += byteAt(str, index + i) << 8 * i;
+      word += byteAt(str, index + i) << (8 * i);
     }
   }
   return word;
@@ -162,7 +161,7 @@ function words32ToByteString(words32: number[]): string {
 function word32ToByteString(word: number): string {
   let str = '';
   for (let i = 0; i < 4; i++) {
-    str += String.fromCharCode((word >>> 8 * (3 - i)) & 0xff);
+    str += String.fromCharCode((word >>> (8 * (3 - i))) & 0xff);
   }
   return str;
 }
@@ -206,7 +205,6 @@ function addBigInt(x: string, y: string): string {
 
   return sum;
 }
-
 
 function numberTimesBigInt(num: number, b: string): string {
   let product = '';

@@ -47,6 +47,8 @@ export interface PerFileShimGenerator {
    * Generate the shim for a given original `ts.SourceFile`, with the given filename.
    */
   generateShimForFile(
-      sf: ts.SourceFile, genFilePath: AbsoluteFsPath,
-      priorShimSf: ts.SourceFile|null): ts.SourceFile;
+    sf: ts.SourceFile,
+    genFilePath: AbsoluteFsPath,
+    priorShimSf: ts.SourceFile | null,
+  ): ts.SourceFile;
 }

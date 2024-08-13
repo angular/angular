@@ -7,11 +7,13 @@
  */
 
 import {Component} from '@angular/core';
+import {RecordingDialogComponent} from './recording-dialog.component';
 
 @Component({
   selector: 'ng-recording-modal',
   templateUrl: './recording-modal.component.html',
   styleUrls: ['./recording-modal.component.scss'],
+  standalone: true,
+  imports: [RecordingDialogComponent],
 })
-export class RecordingModalComponent {
-}
+export class RecordingModalComponent {}

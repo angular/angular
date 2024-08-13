@@ -72,40 +72,39 @@ runInNativeFileSystem(() => {
         expect(output).toEqual('function foo($localize) {\n  $localize`a${1}b${2}c`;\n}');
       });
 
-      it('should add missing translation to diagnostic errors if missingTranslation is set to "error"',
-         () => {
-           const input = 'const b = 10;\n$localize `try\\n${40 + b}\\n  me`;';
-           const diagnostics = new Diagnostics();
-           transformCode(input, {}, {missingTranslation: 'error'}, diagnostics);
-           expect(diagnostics.hasErrors).toBe(true);
-           expect(diagnostics.messages[0]).toEqual({
-             type: 'error',
-             message: `No translation found for "${
-                 ɵcomputeMsgId('try\n{$PH}\n  me')}" ("try\n{$PH}\n  me").`
-           });
-         });
+      it('should add missing translation to diagnostic errors if missingTranslation is set to "error"', () => {
+        const input = 'const b = 10;\n$localize `try\\n${40 + b}\\n  me`;';
+        const diagnostics = new Diagnostics();
+        transformCode(input, {}, {missingTranslation: 'error'}, diagnostics);
+        expect(diagnostics.hasErrors).toBe(true);
+        expect(diagnostics.messages[0]).toEqual({
+          type: 'error',
+          message: `No translation found for "${ɵcomputeMsgId(
+            'try\n{$PH}\n  me',
+          )}" ("try\n{$PH}\n  me").`,
+        });
+      });
 
-      it('should add missing translation to diagnostic errors if missingTranslation is set to "warning"',
-         () => {
-           const input = 'const b = 10;\n$localize `try\\n${40 + b}\\n  me`;';
-           const diagnostics = new Diagnostics();
-           transformCode(input, {}, {missingTranslation: 'warning'}, diagnostics);
-           expect(diagnostics.hasErrors).toBe(false);
-           expect(diagnostics.messages[0]).toEqual({
-             type: 'warning',
-             message: `No translation found for "${
-                 ɵcomputeMsgId('try\n{$PH}\n  me')}" ("try\n{$PH}\n  me").`
-           });
-         });
+      it('should add missing translation to diagnostic errors if missingTranslation is set to "warning"', () => {
+        const input = 'const b = 10;\n$localize `try\\n${40 + b}\\n  me`;';
+        const diagnostics = new Diagnostics();
+        transformCode(input, {}, {missingTranslation: 'warning'}, diagnostics);
+        expect(diagnostics.hasErrors).toBe(false);
+        expect(diagnostics.messages[0]).toEqual({
+          type: 'warning',
+          message: `No translation found for "${ɵcomputeMsgId(
+            'try\n{$PH}\n  me',
+          )}" ("try\n{$PH}\n  me").`,
+        });
+      });
 
-      it('should add missing translation to diagnostic errors if missingTranslation is set to "ignore"',
-         () => {
-           const input = 'const b = 10;\n$localize `try\\n${40 + b}\\n  me`;';
-           const diagnostics = new Diagnostics();
-           transformCode(input, {}, {missingTranslation: 'ignore'}, diagnostics);
-           expect(diagnostics.hasErrors).toBe(false);
-           expect(diagnostics.messages).toEqual([]);
-         });
+      it('should add missing translation to diagnostic errors if missingTranslation is set to "ignore"', () => {
+        const input = 'const b = 10;\n$localize `try\\n${40 + b}\\n  me`;';
+        const diagnostics = new Diagnostics();
+        transformCode(input, {}, {missingTranslation: 'ignore'}, diagnostics);
+        expect(diagnostics.hasErrors).toBe(false);
+        expect(diagnostics.messages).toEqual([]);
+      });
     });
 
     describe('(with translations)', () => {
@@ -117,18 +116,20 @@ runInNativeFileSystem(() => {
           [ɵcomputeMsgId('abc{$PH}def{$PH_1}')]: ɵparseTranslation('abc{$PH}def{$PH_1}'),
           [ɵcomputeMsgId('Hello, {$PH}!')]: ɵparseTranslation('Hello, {$PH}!'),
         };
-        const input = '$localize `abc`;\n' +
-            '$localize `abc${1 + 2 + 3}`;\n' +
-            '$localize `abc${1 + 2 + 3}def`;\n' +
-            '$localize `abc${1 + 2 + 3}def${4 + 5 + 6}`;\n' +
-            '$localize `Hello, ${getName()}!`;';
+        const input =
+          '$localize `abc`;\n' +
+          '$localize `abc${1 + 2 + 3}`;\n' +
+          '$localize `abc${1 + 2 + 3}def`;\n' +
+          '$localize `abc${1 + 2 + 3}def${4 + 5 + 6}`;\n' +
+          '$localize `Hello, ${getName()}!`;';
         const output = transformCode(input, translations);
         expect(output).toEqual(
-            '"abc";\n' +
+          '"abc";\n' +
             '"abc" + (1 + 2 + 3) + "";\n' +
             '"abc" + (1 + 2 + 3) + "def";\n' +
             '"abc" + (1 + 2 + 3) + "def" + (4 + 5 + 6) + "";\n' +
-            '"Hello, " + getName() + "!";');
+            '"Hello, " + getName() + "!";',
+        );
       });
 
       it('should translate message parts (uppercase translations)', () => {
@@ -139,35 +140,40 @@ runInNativeFileSystem(() => {
           [ɵcomputeMsgId('abc{$PH}def{$PH_1}')]: ɵparseTranslation('ABC{$PH}DEF{$PH_1}'),
           [ɵcomputeMsgId('Hello, {$PH}!')]: ɵparseTranslation('HELLO, {$PH}!'),
         };
-        const input = '$localize `abc`;\n' +
-            '$localize `abc${1 + 2 + 3}`;\n' +
-            '$localize `abc${1 + 2 + 3}def`;\n' +
-            '$localize `abc${1 + 2 + 3}def${4 + 5 + 6}`;\n' +
-            '$localize `Hello, ${getName()}!`;';
+        const input =
+          '$localize `abc`;\n' +
+          '$localize `abc${1 + 2 + 3}`;\n' +
+          '$localize `abc${1 + 2 + 3}def`;\n' +
+          '$localize `abc${1 + 2 + 3}def${4 + 5 + 6}`;\n' +
+          '$localize `Hello, ${getName()}!`;';
         const output = transformCode(input, translations);
         expect(output).toEqual(
-            '"ABC";\n' +
+          '"ABC";\n' +
             '"ABC" + (1 + 2 + 3) + "";\n' +
             '"ABC" + (1 + 2 + 3) + "DEF";\n' +
             '"ABC" + (1 + 2 + 3) + "DEF" + (4 + 5 + 6) + "";\n' +
-            '"HELLO, " + getName() + "!";');
+            '"HELLO, " + getName() + "!";',
+        );
       });
 
       it('should translate message parts (reversing placeholders)', () => {
         const translations = {
-          [ɵcomputeMsgId('abc{$PH}def{$PH_1} - Hello, {$PH_2}!')]:
-              ɵparseTranslation('abc{$PH_2}def{$PH_1} - Hello, {$PH}!'),
+          [ɵcomputeMsgId('abc{$PH}def{$PH_1} - Hello, {$PH_2}!')]: ɵparseTranslation(
+            'abc{$PH_2}def{$PH_1} - Hello, {$PH}!',
+          ),
         };
         const input = '$localize `abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`;';
         const output = transformCode(input, translations);
         expect(output).toEqual(
-            '"abc" + getName() + "def" + (4 + 5 + 6) + " - Hello, " + (1 + 2 + 3) + "!";');
+          '"abc" + getName() + "def" + (4 + 5 + 6) + " - Hello, " + (1 + 2 + 3) + "!";',
+        );
       });
 
       it('should translate message parts (removing placeholders)', () => {
         const translations = {
-          [ɵcomputeMsgId('abc{$PH}def{$PH_1} - Hello, {$PH_2}!')]:
-              ɵparseTranslation('abc{$PH} - Hello, {$PH_2}!'),
+          [ɵcomputeMsgId('abc{$PH}def{$PH_1} - Hello, {$PH_2}!')]: ɵparseTranslation(
+            'abc{$PH} - Hello, {$PH_2}!',
+          ),
         };
         const input = '$localize `abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`;';
         const output = transformCode(input, translations);
@@ -177,14 +183,17 @@ runInNativeFileSystem(() => {
   });
 
   function transformCode(
-      input: string, translations: Record<string, ɵParsedTranslation> = {},
-      pluginOptions?: TranslatePluginOptions, diagnostics = new Diagnostics()): string {
+    input: string,
+    translations: Record<string, ɵParsedTranslation> = {},
+    pluginOptions?: TranslatePluginOptions,
+    diagnostics = new Diagnostics(),
+  ): string {
     const cwd = fs.resolve('/');
     const filename = fs.resolve(cwd, 'app/dist/test.js');
     return transformSync(input, {
-             plugins: [makeEs2015TranslatePlugin(diagnostics, translations, pluginOptions)],
-             filename,
-             cwd,
-           })!.code!;
+      plugins: [makeEs2015TranslatePlugin(diagnostics, translations, pluginOptions)],
+      filename,
+      cwd,
+    })!.code!;
   }
 });

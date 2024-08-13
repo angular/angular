@@ -18,29 +18,37 @@
  */
 
 import {global} from '../global';
-import {TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory} from './trusted_type_defs';
+import {
+  TrustedHTML,
+  TrustedScript,
+  TrustedScriptURL,
+  TrustedTypePolicy,
+  TrustedTypePolicyFactory,
+} from './trusted_type_defs';
 
 /**
  * The Trusted Types policy, or null if Trusted Types are not
  * enabled/supported, or undefined if the policy has not been created yet.
  */
-let policy: TrustedTypePolicy|null|undefined;
+let policy: TrustedTypePolicy | null | undefined;
 
 /**
  * Returns the Trusted Types policy, or null if Trusted Types are not
  * enabled/supported. The first call to this function will create the policy.
  */
-function getPolicy(): TrustedTypePolicy|null {
+function getPolicy(): TrustedTypePolicy | null {
   if (policy === undefined) {
     policy = null;
     if (global.trustedTypes) {
       try {
-        policy = (global.trustedTypes as TrustedTypePolicyFactory)
-                     .createPolicy('angular#unsafe-bypass', {
-                       createHTML: (s: string) => s,
-                       createScript: (s: string) => s,
-                       createScriptURL: (s: string) => s,
-                     });
+        policy = (global.trustedTypes as TrustedTypePolicyFactory).createPolicy(
+          'angular#unsafe-bypass',
+          {
+            createHTML: (s: string) => s,
+            createScript: (s: string) => s,
+            createScriptURL: (s: string) => s,
+          },
+        );
       } catch {
         // trustedTypes.createPolicy throws if called with a name that is
         // already registered, even in report-only mode. Until the API changes,
@@ -60,7 +68,7 @@ function getPolicy(): TrustedTypePolicy|null {
  * is only passed strings that come directly from custom sanitizers or the
  * bypassSecurityTrust* functions.
  */
-export function trustedHTMLFromStringBypass(html: string): TrustedHTML|string {
+export function trustedHTMLFromStringBypass(html: string): TrustedHTML | string {
   return getPolicy()?.createHTML(html) || html;
 }
 
@@ -72,7 +80,7 @@ export function trustedHTMLFromStringBypass(html: string): TrustedHTML|string {
  * is only passed strings that come directly from custom sanitizers or the
  * bypassSecurityTrust* functions.
  */
-export function trustedScriptFromStringBypass(script: string): TrustedScript|string {
+export function trustedScriptFromStringBypass(script: string): TrustedScript | string {
   return getPolicy()?.createScript(script) || script;
 }
 
@@ -84,6 +92,6 @@ export function trustedScriptFromStringBypass(script: string): TrustedScript|str
  * is only passed strings that come directly from custom sanitizers or the
  * bypassSecurityTrust* functions.
  */
-export function trustedScriptURLFromStringBypass(url: string): TrustedScriptURL|string {
+export function trustedScriptURLFromStringBypass(url: string): TrustedScriptURL | string {
   return getPolicy()?.createScriptURL(url) || url;
 }

@@ -25,14 +25,6 @@ export class NoopAnimationDriver implements AnimationDriver {
   }
 
   /**
-   * @deprecated unused
-   */
-  matchesElement(_element: any, _selector: string): boolean {
-    // This method is deprecated and no longer in use so we return false.
-    return false;
-  }
-
-  /**
    *
    * @returns Whether elm1 contains elm2.
    */
@@ -66,9 +58,14 @@ export class NoopAnimationDriver implements AnimationDriver {
    * @returns An `NoopAnimationPlayer`
    */
   animate(
-      element: any, keyframes: Array<Map<string, string|number>>, duration: number, delay: number,
-      easing: string, previousPlayers: any[] = [],
-      scrubberAccessRequested?: boolean): AnimationPlayer {
+    element: any,
+    keyframes: Array<Map<string, string | number>>,
+    duration: number,
+    delay: number,
+    easing: string,
+    previousPlayers: any[] = [],
+    scrubberAccessRequested?: boolean,
+  ): AnimationPlayer {
     return new NoopAnimationPlayer(duration, delay);
   }
 }
@@ -80,16 +77,11 @@ export abstract class AnimationDriver {
   /**
    * @deprecated Use the NoopAnimationDriver class.
    */
-  static NOOP: AnimationDriver = (/* @__PURE__ */ new NoopAnimationDriver());
+  static NOOP: AnimationDriver = /* @__PURE__ */ new NoopAnimationDriver();
 
   abstract validateStyleProperty(prop: string): boolean;
 
   abstract validateAnimatableStyleProperty?: (prop: string) => boolean;
-
-  /**
-   * @deprecated No longer in use. Will be removed.
-   */
-  abstract matchesElement(element: any, selector: string): boolean;
 
   abstract containsElement(elm1: any, elm2: any): boolean;
 
@@ -103,6 +95,12 @@ export abstract class AnimationDriver {
   abstract computeStyle(element: any, prop: string, defaultValue?: string): string;
 
   abstract animate(
-      element: any, keyframes: Array<Map<string, string|number>>, duration: number, delay: number,
-      easing?: string|null, previousPlayers?: any[], scrubberAccessRequested?: boolean): any;
+    element: any,
+    keyframes: Array<Map<string, string | number>>,
+    duration: number,
+    delay: number,
+    easing?: string | null,
+    previousPlayers?: any[],
+    scrubberAccessRequested?: boolean,
+  ): any;
 }

@@ -15,12 +15,11 @@ import type {ComponentCompilationJob} from '../compilation';
  * Lifts local reference declarations on element-like structures within each view into an entry in
  * the `consts` array for the whole component.
  */
-export function phaseLocalRefs(job: ComponentCompilationJob): void {
+export function liftLocalRefs(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.ElementStart:
-        case ir.OpKind.Element:
         case ir.OpKind.Template:
           if (!Array.isArray(op.localRefs)) {
             throw new Error(`AssertionError: expected localRefs to be an array still`);

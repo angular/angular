@@ -8,7 +8,6 @@ ng_module(
     name = "animations_standalone",
     srcs = ["index.ts"],
     deps = [
-        "//packages/animations",
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser/animations",

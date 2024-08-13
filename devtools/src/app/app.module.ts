@@ -24,7 +24,7 @@ import {AppComponent} from './app.component';
       {
         path: '',
         loadChildren: () =>
-            import('./devtools-app/devtools-app.module').then((m) => m.DevToolsModule),
+          import('./devtools-app/devtools-app.module').then((m) => m.DevToolsModule),
         pathMatch: 'full',
       },
       {
@@ -45,5 +45,4 @@ import {AppComponent} from './app.component';
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

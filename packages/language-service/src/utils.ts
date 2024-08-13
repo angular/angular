@@ -5,25 +5,55 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher, TmplAstBoundEvent} from '@angular/compiler';
+import {
+  AbsoluteSourceSpan,
+  AST,
+  ASTWithSource,
+  BindingPipe,
+  CssSelector,
+  ImplicitReceiver,
+  LiteralPrimitive,
+  ParseSourceSpan,
+  ParseSpan,
+  PropertyRead,
+  PropertyWrite,
+  SelectorMatcher,
+  ThisReceiver,
+  TmplAstBoundAttribute,
+  TmplAstBoundEvent,
+  TmplAstElement,
+  TmplAstNode,
+  TmplAstTemplate,
+  TmplAstTextAttribute,
+} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  absoluteFrom,
+  absoluteFromSourceFile,
+  AbsoluteFsPath,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
-import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 import ts from 'typescript';
 
-import {ALIAS_NAME, SYMBOL_PUNC} from './display_parts';
+import {
+  ALIAS_NAME,
+  createDisplayParts,
+  DisplayInfoKind,
+  SYMBOL_PUNC,
+  unsafeCastDisplayInfoKindToScriptElementKind,
+} from './display_parts';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
 
-export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
+export function getTextSpanOfNode(node: TmplAstNode | AST): ts.TextSpan {
   if (isTemplateNodeWithKeyAndValue(node)) {
     return toTextSpan(node.keySpan);
   } else if (
-      node instanceof e.PropertyWrite || node instanceof e.BindingPipe ||
-      node instanceof e.PropertyRead) {
+    node instanceof PropertyWrite ||
+    node instanceof BindingPipe ||
+    node instanceof PropertyRead
+  ) {
     // The `name` part of a `PropertyWrite` and `BindingPipe` does not have its own AST
     // so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
     return toTextSpan(node.nameSpan);
@@ -32,9 +62,9 @@ export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
   }
 }
 
-export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan|e.ParseSpan): ts.TextSpan {
+export function toTextSpan(span: AbsoluteSourceSpan | ParseSourceSpan | ParseSpan): ts.TextSpan {
   let start: number, end: number;
-  if (span instanceof AbsoluteSourceSpan || span instanceof e.ParseSpan) {
+  if (span instanceof AbsoluteSourceSpan || span instanceof ParseSpan) {
     start = span.start;
     end = span.end;
   } else {
@@ -44,12 +74,14 @@ export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan|e.ParseSpan)
   return {start, length: end - start};
 }
 
-interface NodeWithKeyAndValue extends t.Node {
+interface NodeWithKeyAndValue extends TmplAstNode {
   keySpan: ParseSourceSpan;
   valueSpan?: ParseSourceSpan;
 }
 
-export function isTemplateNodeWithKeyAndValue(node: t.Node|e.AST): node is NodeWithKeyAndValue {
+export function isTemplateNodeWithKeyAndValue(
+  node: TmplAstNode | AST,
+): node is NodeWithKeyAndValue {
   return isTemplateNode(node) && node.hasOwnProperty('keySpan');
 }
 
@@ -59,7 +91,7 @@ export function isWithinKey(position: number, node: NodeWithKeyAndValue): boolea
     valueSpan = node.handlerSpan;
   }
   const isWithinKeyValue =
-      isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
+    isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
   return isWithinKeyValue;
 }
 
@@ -69,26 +101,29 @@ export function isWithinKeyValue(position: number, node: NodeWithKeyAndValue): b
     valueSpan = node.handlerSpan;
   }
   const isWithinKeyValue =
-      isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
+    isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
   return isWithinKeyValue;
 }
 
-export function isTemplateNode(node: t.Node|e.AST): node is t.Node {
+export function isTemplateNode(node: TmplAstNode | AST): node is TmplAstNode {
   // Template node implements the Node interface so we cannot use instanceof.
   return node.sourceSpan instanceof ParseSourceSpan;
 }
 
-export function isExpressionNode(node: t.Node|e.AST): node is e.AST {
-  return node instanceof e.AST;
+export function isExpressionNode(node: TmplAstNode | AST): node is AST {
+  return node instanceof AST;
 }
 
 export interface TemplateInfo {
-  template: t.Node[];
+  template: TmplAstNode[];
   component: ts.ClassDeclaration;
 }
 
 function getInlineTemplateInfoAtPosition(
-    sf: ts.SourceFile, position: number, compiler: NgCompiler): TemplateInfo|undefined {
+  sf: ts.SourceFile,
+  position: number,
+  compiler: NgCompiler,
+): TemplateInfo | undefined {
   const expression = findTightestNode(sf, position);
   if (expression === undefined) {
     return undefined;
@@ -101,8 +136,11 @@ function getInlineTemplateInfoAtPosition(
   // Return `undefined` if the position is not on the template expression or the template resource
   // is not inline.
   const resources = compiler.getComponentResources(classDecl);
-  if (resources === null || isExternalResource(resources.template) ||
-      expression !== resources.template.expression) {
+  if (
+    resources === null ||
+    isExternalResource(resources.template) ||
+    expression !== resources.template.expression
+  ) {
     return undefined;
   }
 
@@ -118,7 +156,10 @@ function getInlineTemplateInfoAtPosition(
  * Retrieves the `ts.ClassDeclaration` at a location along with its template nodes.
  */
 export function getTemplateInfoAtPosition(
-    fileName: string, position: number, compiler: NgCompiler): TemplateInfo|undefined {
+  fileName: string,
+  position: number,
+  compiler: NgCompiler,
+): TemplateInfo | undefined {
   if (isTypeScriptFile(fileName)) {
     const sf = compiler.getCurrentProgram().getSourceFile(fileName);
     if (sf === undefined) {
@@ -147,8 +188,10 @@ function tsDeclarationSortComparator(a: DeclarationNode, b: DeclarationNode): nu
   }
 }
 
-function getFirstComponentForTemplateFile(fileName: string, compiler: NgCompiler): TemplateInfo|
-    undefined {
+export function getFirstComponentForTemplateFile(
+  fileName: string,
+  compiler: NgCompiler,
+): TemplateInfo | undefined {
   const templateTypeChecker = compiler.getTemplateTypeChecker();
   const components = compiler.getComponentsWithTemplateFile(fileName);
   const sortedComponents = Array.from(components).sort(tsDeclarationSortComparator);
@@ -169,9 +212,11 @@ function getFirstComponentForTemplateFile(fileName: string, compiler: NgCompiler
 /**
  * Given an attribute node, converts it to string form for use as a CSS selector.
  */
-function toAttributeCssSelector(attribute: t.TextAttribute|t.BoundAttribute|t.BoundEvent): string {
+function toAttributeCssSelector(
+  attribute: TmplAstTextAttribute | TmplAstBoundAttribute | TmplAstBoundEvent,
+): string {
   let selector: string;
-  if (attribute instanceof t.BoundEvent || attribute instanceof t.BoundAttribute) {
+  if (attribute instanceof TmplAstBoundEvent || attribute instanceof TmplAstBoundAttribute) {
     selector = `[${attribute.name}]`;
   } else {
     selector = `[${attribute.name}=${attribute.valueSpan?.toString() ?? ''}]`;
@@ -182,18 +227,22 @@ function toAttributeCssSelector(attribute: t.TextAttribute|t.BoundAttribute|t.Bo
   return selector.replace(/\$/g, '\\$');
 }
 
-function getNodeName(node: t.Template|t.Element): string {
-  return node instanceof t.Template ? (node.tagName ?? 'ng-template') : node.name;
+function getNodeName(node: TmplAstTemplate | TmplAstElement): string {
+  return node instanceof TmplAstTemplate ? node.tagName ?? 'ng-template' : node.name;
 }
 
 /**
  * Given a template or element node, returns all attributes on the node.
  */
-function getAttributes(node: t.Template|
-                       t.Element): Array<t.TextAttribute|t.BoundAttribute|t.BoundEvent> {
-  const attributes: Array<t.TextAttribute|t.BoundAttribute|t.BoundEvent> =
-      [...node.attributes, ...node.inputs, ...node.outputs];
-  if (node instanceof t.Template) {
+function getAttributes(
+  node: TmplAstTemplate | TmplAstElement,
+): Array<TmplAstTextAttribute | TmplAstBoundAttribute | TmplAstBoundEvent> {
+  const attributes: Array<TmplAstTextAttribute | TmplAstBoundAttribute | TmplAstBoundEvent> = [
+    ...node.attributes,
+    ...node.inputs,
+    ...node.outputs,
+  ];
+  if (node instanceof TmplAstTemplate) {
     attributes.push(...node.templateAttrs);
   }
   return attributes;
@@ -225,17 +274,20 @@ function difference<T>(left: Set<T>, right: Set<T>): Set<T> {
  */
 // TODO(atscott): Add unit tests for this and the one for attributes
 export function getDirectiveMatchesForElementTag<T extends {selector: string | null}>(
-    element: t.Template|t.Element, directives: T[]): Set<T> {
+  element: TmplAstTemplate | TmplAstElement,
+  directives: T[],
+): Set<T> {
   const attributes = getAttributes(element);
   const allAttrs = attributes.map(toAttributeCssSelector);
-  const allDirectiveMatches =
-      getDirectiveMatchesForSelector(directives, getNodeName(element) + allAttrs.join(''));
+  const allDirectiveMatches = getDirectiveMatchesForSelector(
+    directives,
+    getNodeName(element) + allAttrs.join(''),
+  );
   const matchesWithoutElement = getDirectiveMatchesForSelector(directives, allAttrs.join(''));
   return difference(allDirectiveMatches, matchesWithoutElement);
 }
 
-
-export function makeElementSelector(element: t.Element|t.Template): string {
+export function makeElementSelector(element: TmplAstElement | TmplAstTemplate): string {
   const attributes = getAttributes(element);
   const allAttrs = attributes.map(toAttributeCssSelector);
   return getNodeName(element) + allAttrs.join('');
@@ -253,15 +305,21 @@ export function makeElementSelector(element: t.Element|t.Template): string {
  * @returns The list of directives matching the tag name via the strategy described above.
  */
 export function getDirectiveMatchesForAttribute(
-    name: string, hostNode: t.Template|t.Element,
-    directives: DirectiveSymbol[]): Set<DirectiveSymbol> {
+  name: string,
+  hostNode: TmplAstTemplate | TmplAstElement,
+  directives: DirectiveSymbol[],
+): Set<DirectiveSymbol> {
   const attributes = getAttributes(hostNode);
   const allAttrs = attributes.map(toAttributeCssSelector);
-  const allDirectiveMatches =
-      getDirectiveMatchesForSelector(directives, getNodeName(hostNode) + allAttrs.join(''));
-  const attrsExcludingName = attributes.filter(a => a.name !== name).map(toAttributeCssSelector);
+  const allDirectiveMatches = getDirectiveMatchesForSelector(
+    directives,
+    getNodeName(hostNode) + allAttrs.join(''),
+  );
+  const attrsExcludingName = attributes.filter((a) => a.name !== name).map(toAttributeCssSelector);
   const matchesWithoutAttr = getDirectiveMatchesForSelector(
-      directives, getNodeName(hostNode) + attrsExcludingName.join(''));
+    directives,
+    getNodeName(hostNode) + attrsExcludingName.join(''),
+  );
   return difference(allDirectiveMatches, matchesWithoutAttr);
 }
 
@@ -270,22 +328,26 @@ export function getDirectiveMatchesForAttribute(
  * for the selector.
  */
 function getDirectiveMatchesForSelector<T extends {selector: string | null}>(
-    directives: T[], selector: string): Set<T> {
+  directives: T[],
+  selector: string,
+): Set<T> {
   try {
     const selectors = CssSelector.parse(selector);
     if (selectors.length === 0) {
       return new Set();
     }
-    return new Set(directives.filter((dir: T) => {
-      if (dir.selector === null) {
-        return false;
-      }
+    return new Set(
+      directives.filter((dir: T) => {
+        if (dir.selector === null) {
+          return false;
+        }
 
-      const matcher = new SelectorMatcher();
-      matcher.addSelectables(CssSelector.parse(dir.selector));
+        const matcher = new SelectorMatcher();
+        matcher.addSelectables(CssSelector.parse(dir.selector));
 
-      return selectors.some(selector => matcher.match(selector, null));
-    }));
+        return selectors.some((selector) => matcher.match(selector, null));
+      }),
+    );
   } catch {
     // An invalid selector may throw an error. There would be no directive matches for an invalid
     // selector.
@@ -299,10 +361,10 @@ function getDirectiveMatchesForSelector<T extends {selector: string | null}>(
  */
 export function filterAliasImports(displayParts: ts.SymbolDisplayPart[]): ts.SymbolDisplayPart[] {
   const tcbAliasImportRegex = /i\d+/;
-  function isImportAlias(part: {kind: string, text: string}) {
+  function isImportAlias(part: {kind: string; text: string}) {
     return part.kind === ALIAS_NAME && tcbAliasImportRegex.test(part.text);
   }
-  function isDotPunctuation(part: {kind: string, text: string}) {
+  function isDotPunctuation(part: {kind: string; text: string}) {
     return part.kind === SYMBOL_PUNC && part.text === '.';
   }
 
@@ -311,40 +373,32 @@ export function filterAliasImports(displayParts: ts.SymbolDisplayPart[]): ts.Sym
     const nextPart = displayParts[i + 1];
 
     const aliasNameFollowedByDot =
-        isImportAlias(part) && nextPart !== undefined && isDotPunctuation(nextPart);
+      isImportAlias(part) && nextPart !== undefined && isDotPunctuation(nextPart);
     const dotPrecededByAlias =
-        isDotPunctuation(part) && previousPart !== undefined && isImportAlias(previousPart);
+      isDotPunctuation(part) && previousPart !== undefined && isImportAlias(previousPart);
 
     return !aliasNameFollowedByDot && !dotPrecededByAlias;
   });
 }
 
-export function isDollarEvent(n: t.Node|e.AST): n is e.PropertyRead {
-  return n instanceof e.PropertyRead && n.name === '$event' &&
-      n.receiver instanceof e.ImplicitReceiver && !(n.receiver instanceof e.ThisReceiver);
-}
-
-/**
- * Returns a new array formed by applying a given callback function to each element of the array,
- * and then flattening the result by one level.
- */
-export function flatMap<T, R>(items: T[]|readonly T[], f: (item: T) => R[] | readonly R[]): R[] {
-  const results: R[] = [];
-  for (const x of items) {
-    results.push(...f(x));
-  }
-  return results;
+export function isDollarEvent(n: TmplAstNode | AST): n is PropertyRead {
+  return (
+    n instanceof PropertyRead &&
+    n.name === '$event' &&
+    n.receiver instanceof ImplicitReceiver &&
+    !(n.receiver instanceof ThisReceiver)
+  );
 }
 
 export function isTypeScriptFile(fileName: string): boolean {
-  return fileName.endsWith('.ts');
+  return /\.[cm]?tsx?$/i.test(fileName);
 }
 
 export function isExternalTemplate(fileName: string): boolean {
   return !isTypeScriptFile(fileName);
 }
 
-export function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceSpan): boolean {
+export function isWithin(position: number, span: AbsoluteSourceSpan | ParseSourceSpan): boolean {
   let start: number, end: number;
   if (span instanceof ParseSourceSpan) {
     start = span.start.offset;
@@ -363,10 +417,16 @@ export function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceS
  * the span in the template.
  */
 export function getTemplateLocationFromTcbLocation(
-    templateTypeChecker: TemplateTypeChecker, tcbPath: AbsoluteFsPath, tcbIsShim: boolean,
-    positionInFile: number): {templateUrl: AbsoluteFsPath, span: ParseSourceSpan}|null {
-  const mapping = templateTypeChecker.getTemplateMappingAtTcbLocation(
-      {tcbPath, isShimFile: tcbIsShim, positionInFile});
+  templateTypeChecker: TemplateTypeChecker,
+  tcbPath: AbsoluteFsPath,
+  tcbIsShim: boolean,
+  positionInFile: number,
+): {templateUrl: AbsoluteFsPath; span: ParseSourceSpan} | null {
+  const mapping = templateTypeChecker.getTemplateMappingAtTcbLocation({
+    tcbPath,
+    isShimFile: tcbIsShim,
+    positionInFile,
+  });
   if (mapping === null) {
     return null;
   }
@@ -386,19 +446,49 @@ export function getTemplateLocationFromTcbLocation(
   return {templateUrl, span};
 }
 
-export function isBoundEventWithSyntheticHandler(event: t.BoundEvent): boolean {
+export function isBoundEventWithSyntheticHandler(event: TmplAstBoundEvent): boolean {
   // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
   // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
   // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding
   // parser, and is not suitable to use for Language Service analysis. Skip it.
   //
   // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
-  let handler: e.AST = event.handler;
-  if (handler instanceof e.ASTWithSource) {
+  let handler: AST = event.handler;
+  if (handler instanceof ASTWithSource) {
     handler = handler.ast;
   }
-  if (handler instanceof e.LiteralPrimitive && handler.value === 'ERROR') {
+  if (handler instanceof LiteralPrimitive && handler.value === 'ERROR') {
     return true;
   }
   return false;
+}
+
+/**
+ * Construct a QuickInfo object taking into account its container and type.
+ * @param name Name of the QuickInfo target
+ * @param kind component, directive, pipe, etc.
+ * @param textSpan span of the target
+ * @param containerName either the Symbol's container or the NgModule that contains the directive
+ * @param type user-friendly name of the type
+ * @param documentation docstring or comment
+ */
+export function createQuickInfo(
+  name: string,
+  kind: DisplayInfoKind,
+  textSpan: ts.TextSpan,
+  containerName?: string,
+  type?: string,
+  documentation?: ts.SymbolDisplayPart[],
+  tags?: ts.JSDocTagInfo[],
+): ts.QuickInfo {
+  const displayParts = createDisplayParts(name, kind, containerName, type);
+
+  return {
+    kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
+    kindModifiers: ts.ScriptElementKindModifier.none,
+    textSpan: textSpan,
+    displayParts,
+    documentation,
+    tags,
+  };
 }

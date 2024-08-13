@@ -103,7 +103,6 @@ export interface StrictTemplateOptions {
    */
   strictTemplates?: boolean;
 
-
   /**
    * Whether to check the type of a binding to a directive/component input against the type of the
    * field on the directive/component.
@@ -317,6 +316,24 @@ export interface BazelAndG3Options {
    * Insert JSDoc type annotations needed by Closure Compiler
    */
   annotateForClosureCompiler?: boolean;
+
+  /**
+   * Specifies whether Angular compiler should rely on explicit imports
+   * via `@Component.deferredImports` field for `@defer` blocks and generate
+   * dynamic imports only for types from that list.
+   *
+   * This flag is needed to enable stricter behavior internally to make sure
+   * that local compilation with specific internal configuration can support
+   * `@defer` blocks.
+   */
+  onlyExplicitDeferDependencyImports?: boolean;
+
+  /**
+   * Generates extra imports in local compilation mode which imply the extra imports generated in
+   * full mode compilation (e.g., imports for statically resolved component dependencies). These
+   * extra imports are needed for bundling purposes in g3.
+   */
+  generateExtraImportsInLocalMode?: boolean;
 }
 
 /**
@@ -339,7 +356,6 @@ export interface I18nOptions {
    * Path to the extracted message file to emit when the xi18n operation is requested.
    */
   i18nOutFile?: string;
-
 
   /**
    * Locale of the application (used when xi18n is requested).
@@ -392,7 +408,7 @@ export interface TargetOptions {
    *
    * The default value is 'full'.
    */
-  compilationMode?: 'full'|'partial'|'experimental-local';
+  compilationMode?: 'full' | 'partial' | 'experimental-local';
 }
 
 /**
@@ -411,4 +427,13 @@ export interface MiscOptions {
    * Disable TypeScript Version Check.
    */
   disableTypeScriptVersionCheck?: boolean;
+
+  /**
+   * Enables the runtime check to guard against rendering a component without first loading its
+   * NgModule.
+   *
+   * This check is only applied to the current compilation unit, i.e., a component imported from
+   * another library without option set will not issue error if rendered in orphan way.
+   */
+  forbidOrphanComponents?: boolean;
 }

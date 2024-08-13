@@ -67,38 +67,95 @@ describe('attr_util', () => {
 
       mergeHostAttribute(attrs, AttributeMarker.Styles, 'Style', null, 'v1');
       expect(attrs).toEqual([
-        'Key', 'value', AttributeMarker.Classes, 'CLASS', AttributeMarker.Styles, 'Style', 'v1'
+        'Key',
+        'value',
+        AttributeMarker.Classes,
+        'CLASS',
+        AttributeMarker.Styles,
+        'Style',
+        'v1',
       ]);
 
       mergeHostAttribute(attrs, -1, 'Key2', null, 'value2');
       expect(attrs).toEqual([
-        'Key', 'value', 'Key2', 'value2', AttributeMarker.Classes, 'CLASS', AttributeMarker.Styles,
-        'Style', 'v1'
+        'Key',
+        'value',
+        'Key2',
+        'value2',
+        AttributeMarker.Classes,
+        'CLASS',
+        AttributeMarker.Styles,
+        'Style',
+        'v1',
       ]);
 
       mergeHostAttribute(attrs, AttributeMarker.Classes, 'CLASS2', null, null);
       expect(attrs).toEqual([
-        'Key', 'value', 'Key2', 'value2', AttributeMarker.Classes, 'CLASS', 'CLASS2',
-        AttributeMarker.Styles, 'Style', 'v1'
+        'Key',
+        'value',
+        'Key2',
+        'value2',
+        AttributeMarker.Classes,
+        'CLASS',
+        'CLASS2',
+        AttributeMarker.Styles,
+        'Style',
+        'v1',
       ]);
 
       mergeHostAttribute(attrs, AttributeMarker.Styles, 'Style2', null, 'v2');
       expect(attrs).toEqual([
-        'Key', 'value', 'Key2', 'value2', AttributeMarker.Classes, 'CLASS', 'CLASS2',
-        AttributeMarker.Styles, 'Style', 'v1', 'Style2', 'v2'
+        'Key',
+        'value',
+        'Key2',
+        'value2',
+        AttributeMarker.Classes,
+        'CLASS',
+        'CLASS2',
+        AttributeMarker.Styles,
+        'Style',
+        'v1',
+        'Style2',
+        'v2',
       ]);
 
       mergeHostAttribute(attrs, AttributeMarker.NamespaceURI, 'uri', 'key', 'value');
       expect(attrs).toEqual([
-        'Key', 'value', 'Key2', 'value2', AttributeMarker.NamespaceURI, 'uri', 'key', 'value',
-        AttributeMarker.Classes, 'CLASS', 'CLASS2', AttributeMarker.Styles, 'Style', 'v1', 'Style2',
-        'v2'
+        'Key',
+        'value',
+        'Key2',
+        'value2',
+        AttributeMarker.NamespaceURI,
+        'uri',
+        'key',
+        'value',
+        AttributeMarker.Classes,
+        'CLASS',
+        'CLASS2',
+        AttributeMarker.Styles,
+        'Style',
+        'v1',
+        'Style2',
+        'v2',
       ]);
       mergeHostAttribute(attrs, AttributeMarker.NamespaceURI, 'uri', 'key', 'new value');
       expect(attrs).toEqual([
-        'Key', 'value', 'Key2', 'value2', AttributeMarker.NamespaceURI, 'uri', 'key', 'new value',
-        AttributeMarker.Classes, 'CLASS', 'CLASS2', AttributeMarker.Styles, 'Style', 'v1', 'Style2',
-        'v2'
+        'Key',
+        'value',
+        'Key2',
+        'value2',
+        AttributeMarker.NamespaceURI,
+        'uri',
+        'key',
+        'new value',
+        AttributeMarker.Classes,
+        'CLASS',
+        'CLASS2',
+        AttributeMarker.Styles,
+        'Style',
+        'v1',
+        'Style2',
+        'v2',
       ]);
     });
   });

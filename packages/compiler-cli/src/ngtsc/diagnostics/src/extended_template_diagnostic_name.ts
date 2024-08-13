@@ -21,7 +21,11 @@ export enum ExtendedTemplateDiagnosticName {
   OPTIONAL_CHAIN_NOT_NULLABLE = 'optionalChainNotNullable',
   MISSING_CONTROL_FLOW_DIRECTIVE = 'missingControlFlowDirective',
   TEXT_ATTRIBUTE_NOT_BINDING = 'textAttributeNotBinding',
+  UNINVOKED_FUNCTION_IN_EVENT_BINDING = 'uninvokedFunctionInEventBinding',
   MISSING_NGFOROF_LET = 'missingNgForOfLet',
   SUFFIX_NOT_SUPPORTED = 'suffixNotSupported',
   SKIP_HYDRATION_NOT_STATIC = 'skipHydrationNotStatic',
+  INTERPOLATED_SIGNAL_NOT_INVOKED = 'interpolatedSignalNotInvoked',
+  CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 'controlFlowPreventingContentProjection',
+  UNUSED_LET_DECLARATION = 'unusedLetDeclaration',
 }

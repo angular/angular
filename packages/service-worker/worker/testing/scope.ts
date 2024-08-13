@@ -12,7 +12,14 @@ import {sha1} from '../src/sha1';
 
 import {MockCacheStorage} from './cache';
 import {MockClient, MockClients} from './clients';
-import {MockActivateEvent, MockExtendableMessageEvent, MockFetchEvent, MockInstallEvent, MockNotificationEvent, MockPushEvent} from './events';
+import {
+  MockActivateEvent,
+  MockExtendableMessageEvent,
+  MockFetchEvent,
+  MockInstallEvent,
+  MockNotificationEvent,
+  MockPushEvent,
+} from './events';
 import {MockHeaders, MockRequest, MockResponse} from './fetch';
 import {MockServerState, MockServerStateBuilder} from './mock';
 import {normalizeUrl, parseUrl} from './utils';
@@ -41,10 +48,12 @@ export class SwTestHarnessBuilder {
   }
 }
 
-export type SwTestHarness = SwTestHarnessImpl&ServiceWorkerGlobalScope;
+export type SwTestHarness = SwTestHarnessImpl & ServiceWorkerGlobalScope;
 
-export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
-    Partial<ServiceWorkerGlobalScope> {
+export class SwTestHarnessImpl
+  extends Adapter<MockCacheStorage>
+  implements Partial<ServiceWorkerGlobalScope>
+{
   readonly clients = new MockClients();
   private eventHandlers = new Map<string, EventListener>();
   private skippedWaiting = false;
@@ -52,7 +61,7 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
   private selfMessageQueue: any[] = [];
   autoAdvanceTime = false;
   unregistered: boolean = false;
-  readonly notifications: {title: string, options: Object}[] = [];
+  readonly notifications: {title: string; options: Object}[] = [];
   readonly registration: ServiceWorkerRegistration = {
     active: {
       postMessage: (msg: any) => {
@@ -60,14 +69,12 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
       },
     },
     scope: this.scopeUrl,
-    showNotification:
-        (title: string, options: Object) => {
-          this.notifications.push({title, options});
-        },
-    unregister:
-        () => {
-          this.unregistered = true;
-        },
+    showNotification: (title: string, options: Object) => {
+      this.notifications.push({title, options});
+    },
+    unregister: () => {
+      this.unregistered = true;
+    },
   } as any;
 
   override get time() {
@@ -77,15 +84,19 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
   private mockTime = Date.now();
 
   private timers: {
-    at: number,
-    duration: number,
-    fn: Function,
-    fired: boolean,
+    at: number;
+    duration: number;
+    fn: Function;
+    fired: boolean;
   }[] = [];
 
   override parseUrl = parseUrl;
 
-  constructor(private server: MockServerState, caches: MockCacheStorage, scopeUrl: string) {
+  constructor(
+    private server: MockServerState,
+    caches: MockCacheStorage,
+    scopeUrl: string,
+  ) {
     super(scopeUrl, caches);
   }
 
@@ -100,7 +111,7 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
     }
   }
 
-  async startup(firstTime: boolean = false): Promise<boolean|null> {
+  async startup(firstTime: boolean = false): Promise<boolean | null> {
     if (!firstTime) {
       return null;
     }
@@ -134,20 +145,24 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
   }
 
   addEventListener(
-      type: string, listener: EventListenerOrEventListenerObject,
-      options?: boolean|AddEventListenerOptions): void {
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void {
     if (options !== undefined) {
       throw new Error('Mock `addEventListener()` does not support `options`.');
     }
 
     const handler: EventListener =
-        (typeof listener === 'function') ? listener : evt => listener.handleEvent(evt);
+      typeof listener === 'function' ? listener : (evt) => listener.handleEvent(evt);
     this.eventHandlers.set(type, handler);
   }
 
   removeEventListener(
-      type: string, listener: EventListenerOrEventListenerObject,
-      options?: boolean|AddEventListenerOptions): void {
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void {
     if (options !== undefined) {
       throw new Error('Mock `removeEventListener()` does not support `options`.');
     }
@@ -174,7 +189,7 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
     this.skippedWaiting = true;
   }
 
-  handleFetch(req: Request, clientId = ''): [Promise<Response|undefined>, Promise<void>] {
+  handleFetch(req: Request, clientId = ''): [Promise<Response | undefined>, Promise<void>] {
     if (!this.eventHandlers.has('fetch')) {
       throw new Error('No fetch handler registered');
     }
@@ -185,14 +200,15 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
       this.clients.add(clientId, isNavigation ? req.url : this.scopeUrl);
     }
 
-    const event = isNavigation ? new MockFetchEvent(req, '', clientId) :
-                                 new MockFetchEvent(req, clientId, '');
+    const event = isNavigation
+      ? new MockFetchEvent(req, '', clientId)
+      : new MockFetchEvent(req, clientId, '');
     this.eventHandlers.get('fetch')!.call(this, event);
 
     return [event.response, event.ready];
   }
 
-  handleMessage(data: Object, clientId: string|null): Promise<void> {
+  handleMessage(data: Object, clientId: string | null): Promise<void> {
     if (!this.eventHandlers.has('message')) {
       throw new Error('No message handler registered');
     }
@@ -201,8 +217,10 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
       this.clients.add(clientId, this.scopeUrl);
     }
 
-    const event =
-        new MockExtendableMessageEvent(data, clientId && this.clients.getMock(clientId) || null);
+    const event = new MockExtendableMessageEvent(
+      data,
+      (clientId && this.clients.getMock(clientId)) || null,
+    );
     this.eventHandlers.get('message')!.call(this, event);
 
     return event.ready;
@@ -227,7 +245,7 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
   }
 
   override timeout(ms: number): Promise<void> {
-    const promise = new Promise<void>(resolve => {
+    const promise = new Promise<void>((resolve) => {
       this.timers.push({
         at: this.mockTime + ms,
         duration: ms,
@@ -245,12 +263,13 @@ export class SwTestHarnessImpl extends Adapter<MockCacheStorage> implements
 
   advance(by: number): void {
     this.mockTime += by;
-    this.timers.filter(timer => !timer.fired)
-        .filter(timer => timer.at <= this.mockTime)
-        .forEach(timer => {
-          timer.fired = true;
-          timer.fn();
-        });
+    this.timers
+      .filter((timer) => !timer.fired)
+      .filter((timer) => timer.at <= this.mockTime)
+      .forEach((timer) => {
+        timer.fired = true;
+        timer.fn();
+      });
   }
 
   override isClient(obj: any): obj is Client {
@@ -265,7 +284,10 @@ interface StaticFile {
 }
 
 export class AssetGroupBuilder {
-  constructor(private up: ConfigBuilder, readonly name: string) {}
+  constructor(
+    private up: ConfigBuilder,
+    readonly name: string,
+  ) {}
 
   private files: StaticFile[] = [];
 
@@ -297,7 +319,9 @@ export class ConfigBuilder {
   }
 
   finish(): Manifest {
-    const assetGroups = Array.from(this.assetGroups.values()).map(group => group.toManifestGroup());
+    const assetGroups = Array.from(this.assetGroups.values()).map((group) =>
+      group.toManifestGroup(),
+    );
     const hashTable = {};
     return {
       configVersion: 1,

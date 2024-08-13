@@ -10,20 +10,31 @@
  * This is an example of a Hero-oriented InMemoryDbService with method overrides.
  */
 import {Injectable} from '@angular/core';
-import {getStatusText, ParsedRequestUrl, RequestInfo, RequestInfoUtilities, ResponseOptions, STATUS} from 'angular-in-memory-web-api';
+import {
+  getStatusText,
+  ParsedRequestUrl,
+  RequestInfo,
+  RequestInfoUtilities,
+  ResponseOptions,
+  STATUS,
+} from 'angular-in-memory-web-api';
 import {Observable} from 'rxjs';
 
 import {HeroInMemDataService} from './hero-in-mem-data-service';
 
 const villains = [
   // deliberately using string ids that look numeric
-  {id: 100, name: 'Snidley Wipsnatch'}, {id: 101, name: 'Boris Badenov'},
-  {id: 103, name: 'Natasha Fatale'}
+  {id: 100, name: 'Snidley Wipsnatch'},
+  {id: 101, name: 'Boris Badenov'},
+  {id: 103, name: 'Natasha Fatale'},
 ];
 
 // Pseudo guid generator
 function guid() {
-  const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+  const s4 = () =>
+    Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
@@ -39,12 +50,12 @@ export class HeroInMemDataOverrideService extends HeroInMemDataService {
   }
 
   // HTTP GET interceptor
-  get(reqInfo: RequestInfo): Observable<any>|undefined {
+  get(reqInfo: RequestInfo): Observable<any> | undefined {
     const collectionName = reqInfo.collectionName;
     if (collectionName === 'villains') {
       return this.getVillains(reqInfo);
     }
-    return undefined;  // let the default GET handle all others
+    return undefined; // let the default GET handle all others
   }
 
   // HTTP GET interceptor handles requests for villains
@@ -55,9 +66,9 @@ export class HeroInMemDataOverrideService extends HeroInMemDataService {
       const id = reqInfo.id;
       const data = id == null ? collection : reqInfo.utils.findById(collection, id);
 
-      const options: ResponseOptions = data ?
-          {body: dataEncapsulation ? {data} : data, status: STATUS.OK} :
-          {body: {error: `'Villains' with id='${id}' not found`}, status: STATUS.NOT_FOUND};
+      const options: ResponseOptions = data
+        ? {body: dataEncapsulation ? {data} : data, status: STATUS.OK}
+        : {body: {error: `'Villains' with id='${id}' not found`}, status: STATUS.NOT_FOUND};
       return this.finishOptions(options, reqInfo);
     });
   }

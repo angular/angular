@@ -12,17 +12,26 @@ import {NgtscTestEnvironment} from './env';
 class TestSourceFile {
   private lineStarts: number[];
 
-  constructor(public url: string, public contents: string) {
+  constructor(
+    public url: string,
+    public contents: string,
+  ) {
     this.lineStarts = this.getLineStarts();
   }
 
-  getSegment(key: 'generated'|'original', start: MappingItem|any, end: MappingItem|any): string {
+  getSegment(
+    key: 'generated' | 'original',
+    start: MappingItem | any,
+    end: MappingItem | any,
+  ): string {
     const startLine = start[key + 'Line'];
     const startCol = start[key + 'Column'];
     const endLine = end[key + 'Line'];
     const endCol = end[key + 'Column'];
     return this.contents.substring(
-        this.lineStarts[startLine - 1] + startCol, this.lineStarts[endLine - 1] + endCol);
+      this.lineStarts[startLine - 1] + startCol,
+      this.lineStarts[endLine - 1] + endCol,
+    );
   }
 
   getSourceMapFileName(generatedContents: string): string {
@@ -37,7 +46,7 @@ class TestSourceFile {
     const lineStarts = [0];
     let currentPos = 0;
     const lines = this.contents.split('\n');
-    lines.forEach(line => {
+    lines.forEach((line) => {
       currentPos += line.length + 1;
       lineStarts.push(currentPos);
     });
@@ -65,7 +74,9 @@ export interface SegmentMapping {
  * @returns An array of segment mappings for each mapped segment in the given generated file.
  */
 export async function getMappedSegments(
-    env: NgtscTestEnvironment, generatedFileName: string): Promise<SegmentMapping[]> {
+  env: NgtscTestEnvironment,
+  generatedFileName: string,
+): Promise<SegmentMapping[]> {
   const generated = new TestSourceFile(generatedFileName, env.getContents(generatedFileName));
   const sourceMapFileName = generated.getSourceMapFileName(generated.contents);
 
@@ -74,7 +85,7 @@ export async function getMappedSegments(
 
   const mapContents = env.getContents(sourceMapFileName);
   const sourceMapConsumer = await new SourceMapConsumer(JSON.parse(mapContents) as RawSourceMap);
-  sourceMapConsumer.eachMapping(item => {
+  sourceMapConsumer.eachMapping((item) => {
     if (!sources.has(item.source)) {
       sources.set(item.source, new TestSourceFile(item.source, env.getContents(item.source)));
     }
@@ -90,7 +101,7 @@ export async function getMappedSegments(
       const segment = {
         generated: generated.getSegment('generated', currentMapping, nextMapping),
         source: source.getSegment('original', currentMapping, nextMapping),
-        sourceUrl: source.url
+        sourceUrl: source.url,
       };
       if (segment.generated !== segment.source) {
         segments.push(segment);

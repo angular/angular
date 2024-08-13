@@ -1,19 +1,11 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "plugins": [
-      {
-        "name": "@bazel/tsetse",
-        "disabledRules": [
-          "must-type-assert-json-parse"
-        ]
-      }
-    ],
     "baseUrl": "../",
     "outDir": "bazel-out/darwin-fastbuild/bin",
     "sourceMap": true,
     "declaration": true,
-    "strictNullChecks": true,
+    "strict": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "downlevelIteration": true,
@@ -24,7 +16,7 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "target": "es2020",
-    "lib": ["es2020", "dom"],
+    "lib": ["es2020", "dom", "dom.iterable"],
     "typeRoots": [
       "./devtools/node_modules/@types",
     ],
@@ -53,7 +45,7 @@
     },
   },
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
+    "strictTemplates": true,
     "strictInjectionParameters": true
   }
 }

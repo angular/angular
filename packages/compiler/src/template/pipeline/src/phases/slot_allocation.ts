@@ -17,7 +17,7 @@ import type {ComponentCompilationJob} from '../compilation';
  * This phase is also responsible for counting the number of slots used for each view (its `decls`)
  * and propagating that number into the `Template` operations which declare embedded views.
  */
-export function phaseSlotAllocation(job: ComponentCompilationJob): void {
+export function allocateSlots(job: ComponentCompilationJob): void {
   // Map of all declarations in all views within the component which require an assigned slot index.
   // This map needs to be global (across all views within the component) since it's possible to
   // reference a slot from one view from an expression within another (e.g. local references work
@@ -36,10 +36,10 @@ export function phaseSlotAllocation(job: ComponentCompilationJob): void {
       }
 
       // Assign slots to this declaration starting at the current `slotCount`.
-      op.slot = slotCount;
+      op.handle.slot = slotCount;
 
       // And track its assigned slot in the `slotMap`.
-      slotMap.set(op.xref, op.slot);
+      slotMap.set(op.xref, op.handle.slot);
 
       // Each declaration may use more than 1 slot, so increment `slotCount` to reserve the number
       // of slots required.
@@ -58,46 +58,15 @@ export function phaseSlotAllocation(job: ComponentCompilationJob): void {
   // propagate the number of slots used for each view into the operation which declares it.
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      if (op.kind === ir.OpKind.Template) {
+      if (op.kind === ir.OpKind.Template || op.kind === ir.OpKind.RepeaterCreate) {
         // Record the number of slots used by the view this `ir.TemplateOp` declares in the
         // operation itself, so it can be emitted later.
         const childView = job.views.get(op.xref)!;
         op.decls = childView.decls;
+
+        // TODO: currently we handle the decls for the RepeaterCreate empty template in the reify
+        // phase. We should handle that here instead.
       }
-
-      if (ir.hasUsesSlotIndexTrait(op) && op.slot === null) {
-        if (!slotMap.has(op.target)) {
-          // We do expect to find a slot allocated for everything which might be referenced.
-          throw new Error(
-              `AssertionError: no slot allocated for ${ir.OpKind[op.kind]} target ${op.target}`);
-        }
-
-        op.slot = slotMap.get(op.target)!;
-      }
-
-      // Process all `ir.Expression`s within this view, and look for `usesSlotIndexExprTrait`.
-      ir.visitExpressionsInOp(op, expr => {
-        if (!ir.isIrExpression(expr)) {
-          return;
-        }
-
-        if (!ir.hasUsesSlotIndexTrait(expr) || expr.slot !== null) {
-          return;
-        }
-
-        // The `UsesSlotIndexExprTrait` indicates that this expression references something declared
-        // in this component template by its slot index. Use the `target` `ir.XrefId` to find the
-        // allocated slot for that declaration in `slotMap`.
-
-        if (!slotMap.has(expr.target)) {
-          // We do expect to find a slot allocated for everything which might be referenced.
-          throw new Error(`AssertionError: no slot allocated for ${expr.constructor.name} target ${
-              expr.target}`);
-        }
-
-        // Record the allocated slot on the expression.
-        expr.slot = slotMap.get(expr.target)!;
-      });
     }
   }
 }

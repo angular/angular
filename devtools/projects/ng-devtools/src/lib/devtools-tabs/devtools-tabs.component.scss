@@ -2,14 +2,22 @@
   position: relative;
   width: 100%;
   height: 100%;
-  display: block;  
+  display: block;
 }
 
 .hidden {
   display: none;
 }
 
+ng-injector-tree.hidden {
+  display: block;
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+}
+
 .tab-content {
+  position: relative;
   height: calc(100% - 31px);
 }
 
@@ -59,6 +67,10 @@
   -webkit-user-select: text;
   -ms-user-select: text;
   user-select: text;
+
+  &.unsupported-version {
+    color: red;
+  }
 }
 
 mat-icon {
@@ -81,6 +93,10 @@ mat-icon {
 :host-context(.dark-theme) {
   #version-number {
     color: #5caace;
+
+    &.unsupported-version {
+      color: red;
+    }
   }
 
   .inspector-active {
@@ -109,5 +125,24 @@ mat-icon {
     label {
       cursor: pointer;
     }
+  }
+}
+
+.frame-selector {
+  background-color: #e2e2e2;
+  border-radius: 2px;
+  color: #474747;
+  border: none;
+  margin: 4px 4px 2px 4px;
+  padding: 2px;
+  outline-offset: -2px;
+  width: 100px;
+  font-size: 12px;
+}
+
+:host-context(.dark-theme) {
+  .frame-selector {
+    background-color: #464646;
+    color: #fff;
   }
 }

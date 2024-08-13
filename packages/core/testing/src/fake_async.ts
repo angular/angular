@@ -8,8 +8,7 @@
 const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;
 const fakeAsyncTestModule = _Zone && _Zone[_Zone.__symbol__('fakeAsyncTest')];
 
-const fakeAsyncTestModuleNotLoadedErrorMessage =
-    `zone-testing.js is needed for the fakeAsync() test helper but could not be found.
+const fakeAsyncTestModuleNotLoadedErrorMessage = `zone-testing.js is needed for the fakeAsync() test helper but could not be found.
         Please make sure that your environment includes zone.js/testing`;
 
 /**
@@ -25,16 +24,23 @@ export function resetFakeAsyncZone(): void {
   throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
 }
 
+export function resetFakeAsyncZoneIfExists(): void {
+  if (fakeAsyncTestModule) {
+    fakeAsyncTestModule.resetFakeAsyncZone();
+  }
+}
+
 /**
  * Wraps a function to be executed in the `fakeAsync` zone:
  * - Microtasks are manually executed by calling `flushMicrotasks()`.
  * - Timers are synchronous; `tick()` simulates the asynchronous passage of time.
  *
- * If there are any pending timers at the end of the function, an exception is thrown.
- *
  * Can be used to wrap `inject()` calls.
  *
  * @param fn The function that you want to wrap in the `fakeAsync` zone.
+ * @param options
+ *   - flush: When true, will drain the macrotask queue after the test function completes.
+ *     When false, will throw an exception at the end of the function if there are pending timers.
  *
  * @usageNotes
  * ### Example
@@ -48,9 +54,9 @@ export function resetFakeAsyncZone(): void {
  *
  * @publicApi
  */
-export function fakeAsync(fn: Function): (...args: any[]) => any {
+export function fakeAsync(fn: Function, options?: {flush?: boolean}): (...args: any[]) => any {
   if (fakeAsyncTestModule) {
-    return fakeAsyncTestModule.fakeAsync(fn);
+    return fakeAsyncTestModule.fakeAsync(fn, options);
   }
   throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
 }
@@ -120,9 +126,11 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
  * @publicApi
  */
 export function tick(
-    millis: number = 0, tickOptions: {processNewMacroTasksSynchronously: boolean} = {
-      processNewMacroTasksSynchronously: true
-    }): void {
+  millis: number = 0,
+  tickOptions: {processNewMacroTasksSynchronously: boolean} = {
+    processNewMacroTasksSynchronously: true,
+  },
+): void {
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.tick(millis, tickOptions);
   }

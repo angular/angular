@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable, OnDestroy, ɵformatRuntimeError as formatRuntimeError} from '@angular/core';
+import {
+  inject,
+  Injectable,
+  OnDestroy,
+  ɵformatRuntimeError as formatRuntimeError,
+  PLATFORM_ID,
+} from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
@@ -14,6 +20,7 @@ import {RuntimeErrorCode} from '../../errors';
 import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';
 import {getUrl} from './url';
+import {isPlatformBrowser} from '../../platform_id';
 
 interface ObservedImageState {
   priority: boolean;
@@ -37,13 +44,14 @@ export class LCPImageObserver implements OnDestroy {
   // Map of full image URLs -> original `ngSrc` values.
   private images = new Map<string, ObservedImageState>();
 
-  private window: Window|null = null;
-  private observer: PerformanceObserver|null = null;
+  private window: Window | null = null;
+  private observer: PerformanceObserver | null = null;
 
   constructor() {
+    const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     assertDevMode('LCP checker');
     const win = inject(DOCUMENT).defaultView;
-    if (typeof win !== 'undefined' && typeof PerformanceObserver !== 'undefined') {
+    if (isBrowser && typeof PerformanceObserver !== 'undefined') {
       this.window = win;
       this.observer = this.initPerformanceObserver();
     }
@@ -74,7 +82,7 @@ export class LCPImageObserver implements OnDestroy {
       if (!img) return;
       if (!img.priority && !img.alreadyWarnedPriority) {
         img.alreadyWarnedPriority = true;
-        logMissingPriorityWarning(imgSrc);
+        logMissingPriorityError(imgSrc);
       }
       if (img.modified && !img.alreadyWarnedModified) {
         img.alreadyWarnedModified = true;
@@ -91,7 +99,7 @@ export class LCPImageObserver implements OnDestroy {
       priority: isPriority,
       modified: false,
       alreadyWarnedModified: false,
-      alreadyWarnedPriority: false
+      alreadyWarnedPriority: false,
     };
     this.images.set(getUrl(rewrittenSrc, this.window!).href, newObservedImageState);
   }
@@ -102,6 +110,7 @@ export class LCPImageObserver implements OnDestroy {
   }
 
   updateImage(originalSrc: string, newSrc: string) {
+    if (!this.observer) return;
     const originalUrl = getUrl(originalSrc, this.window!).href;
     const img = this.images.get(originalUrl);
     if (img) {
@@ -118,22 +127,28 @@ export class LCPImageObserver implements OnDestroy {
   }
 }
 
-function logMissingPriorityWarning(ngSrc: string) {
+function logMissingPriorityError(ngSrc: string) {
   const directiveDetails = imgDirectiveDetails(ngSrc);
-  console.warn(formatRuntimeError(
+  console.error(
+    formatRuntimeError(
       RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
       `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
-          `element but was not marked "priority". This image should be marked ` +
-          `"priority" in order to prioritize its loading. ` +
-          `To fix this, add the "priority" attribute.`));
+        `element but was not marked "priority". This image should be marked ` +
+        `"priority" in order to prioritize its loading. ` +
+        `To fix this, add the "priority" attribute.`,
+    ),
+  );
 }
 
 function logModifiedWarning(ngSrc: string) {
   const directiveDetails = imgDirectiveDetails(ngSrc);
-  console.warn(formatRuntimeError(
+  console.warn(
+    formatRuntimeError(
       RuntimeErrorCode.LCP_IMG_NGSRC_MODIFIED,
       `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
-          `element and has had its "ngSrc" attribute modified. This can cause ` +
-          `slower loading performance. It is recommended not to modify the "ngSrc" ` +
-          `property on any image which could be the LCP element.`));
+        `element and has had its "ngSrc" attribute modified. This can cause ` +
+        `slower loading performance. It is recommended not to modify the "ngSrc" ` +
+        `property on any image which could be the LCP element.`,
+    ),
+  );
 }

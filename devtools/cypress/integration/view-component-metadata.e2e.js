@@ -17,9 +17,9 @@ describe('Viewing component metadata', () => {
   });
 
   describe('viewing TodoComponent', () => {
-    beforeEach(
-        () => prepareHeaderExpansionPanelForAssertions(
-            '.tree-node:contains("app-todo[TooltipDirective]")'));
+    beforeEach(() =>
+      prepareHeaderExpansionPanelForAssertions('.tree-node:contains("app-todo[TooltipDirective]")'),
+    );
 
     it('should display view encapsulation', () => {
       cy.contains('.meta-data-container .mat-button:first', 'View Encapsulation: Emulated');
@@ -31,9 +31,9 @@ describe('Viewing component metadata', () => {
   });
 
   describe('viewing DemoAppComponent', () => {
-    beforeEach(
-        () =>
-            prepareHeaderExpansionPanelForAssertions('.tree-node:contains("app-demo-component")'));
+    beforeEach(() =>
+      prepareHeaderExpansionPanelForAssertions('.tree-node:contains("app-demo-component")'),
+    );
 
     it('should display view encapsulation', () => {
       cy.contains('.meta-data-container .mat-button:first', 'View Encapsulation: None');

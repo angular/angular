@@ -57,7 +57,12 @@ export function stringifyElement(el: Element): string {
       } else {
         // Browsers order style rules differently. Order them alphabetically for consistency.
         if (lowerCaseKey === 'style') {
-          attValue = attValue.split(/; ?/).filter(s => !!s).sort().map(s => `${s};`).join(' ');
+          attValue = attValue
+            .split(/; ?/)
+            .filter((s) => !!s)
+            .sort()
+            .map((s) => `${s};`)
+            .join(' ');
         }
 
         result += ` ${lowerCaseKey}="${attValue}"`;
@@ -115,7 +120,7 @@ export function setCookie(name: string, value: string) {
   document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
 }
 
-export function hasStyle(element: any, styleName: string, styleValue?: string|null): boolean {
+export function hasStyle(element: any, styleName: string, styleValue?: string | null): boolean {
   const value = element.style[styleName] || '';
   return styleValue ? value == styleValue : value.length > 0;
 }

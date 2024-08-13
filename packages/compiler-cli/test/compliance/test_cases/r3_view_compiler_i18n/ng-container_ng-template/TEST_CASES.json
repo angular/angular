@@ -13,8 +13,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle single translation message using <ng-template>",
@@ -28,8 +27,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should be able to act as child elements inside i18n block",
@@ -43,8 +41,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle ICUs outside of translatable sections",
@@ -58,8 +55,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should correctly propagate i18n context through nested templates",
@@ -73,8 +69,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should work with ICUs",
@@ -88,8 +83,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle self-closing tags as content",
@@ -98,13 +92,18 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "self_closing_tags.js",
+              "expected": "self_closing_tags.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not emit duplicate i18n consts for nested <ng-container>s",
@@ -130,8 +129,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should generate a self-closing container instruction for ng-container inside i18n",
@@ -145,8 +143,7 @@
             "verifyUniqueConsts"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not generate a self-closing container instruction for ng-container with non-text ",
@@ -169,13 +166,46 @@
       ],
       "expectations": [
         {
+          "files": [
+            {
+              "generated": "structural_directives.js",
+              "expected": "structural_directives.pipeline.js"
+            }
+          ],
           "extraChecks": [
             "verifyPlaceholdersIntegrity",
             "verifyUniqueConsts"
           ]
         }
+      ]
+    },
+    {
+      "description": "should handle structural directives with same placeholder",
+      "inputFiles": [
+        "structural_directives_same_placeholder.ts"
       ],
-      "skipForTemplatePipeline": true
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle templates in sibling i18n blocks",
+      "inputFiles": [
+        "sibling_i18n_blocks.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
     }
   ]
 }

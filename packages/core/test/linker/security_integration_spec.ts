@@ -21,13 +21,10 @@ class OnPrefixDir {
   @Input() onclick: any;
 }
 
-describe('security integration tests', function() {
+describe('security integration tests', function () {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        SecuredComponent,
-        OnPrefixDir,
-      ]
+      declarations: [SecuredComponent, OnPrefixDir],
     });
   });
 
@@ -46,9 +43,9 @@ describe('security integration tests', function() {
       expect(() => {
         const cmp = TestBed.createComponent(SecuredComponent);
         cmp.detectChanges();
-      })
-          .toThrowError(
-              /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
+      }).toThrowError(
+        /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../,
+      );
     });
 
     // this test is similar to the previous one, but since on-prefixed attributes validation now
@@ -56,29 +53,29 @@ describe('security integration tests', function() {
     it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
       const template = `<div [onclick]="ctxProp"></div>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
-        schemas: [NO_ERRORS_SCHEMA]
+        schemas: [NO_ERRORS_SCHEMA],
       });
 
       expect(() => {
         const cmp = TestBed.createComponent(SecuredComponent);
         cmp.detectChanges();
-      })
-          .toThrowError(
-              /Binding to event property 'onclick' is disallowed for security reasons, please use \(click\)=.../);
+      }).toThrowError(
+        /Binding to event property 'onclick' is disallowed for security reasons, please use \(click\)=.../,
+      );
     });
 
     it('should disallow binding to on* unless it is consumed by a directive', () => {
       const template = `<div [onPrefixedProp]="ctxProp" [onclick]="ctxProp"></div>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
-        schemas: [NO_ERRORS_SCHEMA]
+        schemas: [NO_ERRORS_SCHEMA],
       });
 
       // should not throw for inputs starting with "on"
       let cmp: ComponentFixture<SecuredComponent> = undefined!;
-      expect(() => cmp = TestBed.createComponent(SecuredComponent)).not.toThrow();
+      expect(() => (cmp = TestBed.createComponent(SecuredComponent))).not.toThrow();
 
       // must bind to the directive not to the property of the div
-      const value = cmp.componentInstance.ctxProp = {};
+      const value = (cmp.componentInstance.ctxProp = {});
       cmp.detectChanges();
       const div = cmp.debugElement.children[0];
       expect(div.injector.get(OnPrefixDir).onclick).toBe(value);
@@ -87,7 +84,7 @@ describe('security integration tests', function() {
     });
   });
 
-  describe('safe HTML values', function() {
+  describe('safe HTML values', function () {
     it('should not escape values marked as trusted', () => {
       const template = `<a [href]="ctxProp">Link Title</a>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
@@ -161,7 +158,7 @@ describe('security integration tests', function() {
     it('should escape unsafe properties if they are used in host bindings', () => {
       @Directive({selector: '[dirHref]'})
       class HrefDirective {
-        @HostBinding('href') @Input() dirHref: string|undefined;
+        @HostBinding('href') @Input() dirHref: string | undefined;
       }
 
       const template = `<a [dirHref]="ctxProp">Link Title</a>`;
@@ -175,7 +172,7 @@ describe('security integration tests', function() {
     it('should escape unsafe attributes if they are used in host bindings', () => {
       @Directive({selector: '[dirHref]'})
       class HrefDirective {
-        @HostBinding('attr.href') @Input() dirHref: string|undefined;
+        @HostBinding('attr.href') @Input() dirHref: string | undefined;
       }
 
       const template = `<a [dirHref]="ctxProp">Link Title</a>`;
@@ -227,24 +224,27 @@ describe('security integration tests', function() {
       const template = `<iframe srcdoc="foo" i18n-srcdoc></iframe>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-      expect(() => TestBed.createComponent(SecuredComponent))
-          .toThrowError(/Translating attribute 'srcdoc' is disallowed for security reasons./);
+      expect(() => TestBed.createComponent(SecuredComponent)).toThrowError(
+        /Translating attribute 'srcdoc' is disallowed for security reasons./,
+      );
     });
 
     it('should throw error on security-sensitive attributes with interpolated values', () => {
       const template = `<object i18n-data data="foo{{bar}}baz"></object>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-      expect(() => TestBed.createComponent(SecuredComponent))
-          .toThrowError(/Translating attribute 'data' is disallowed for security reasons./);
+      expect(() => TestBed.createComponent(SecuredComponent)).toThrowError(
+        /Translating attribute 'data' is disallowed for security reasons./,
+      );
     });
 
     it('should throw error on security-sensitive attributes with bound values', () => {
       const template = `<div [innerHTML]="foo" i18n-innerHTML></div>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-      expect(() => TestBed.createComponent(SecuredComponent))
-          .toThrowError(/Translating attribute 'innerHTML' is disallowed for security reasons./);
+      expect(() => TestBed.createComponent(SecuredComponent)).toThrowError(
+        /Translating attribute 'innerHTML' is disallowed for security reasons./,
+      );
     });
   });
 });

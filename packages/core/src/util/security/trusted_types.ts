@@ -18,19 +18,25 @@
 
 import {global} from '../global';
 
-import {TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory} from './trusted_type_defs';
+import {
+  TrustedHTML,
+  TrustedScript,
+  TrustedScriptURL,
+  TrustedTypePolicy,
+  TrustedTypePolicyFactory,
+} from './trusted_type_defs';
 
 /**
  * The Trusted Types policy, or null if Trusted Types are not
  * enabled/supported, or undefined if the policy has not been created yet.
  */
-let policy: TrustedTypePolicy|null|undefined;
+let policy: TrustedTypePolicy | null | undefined;
 
 /**
  * Returns the Trusted Types policy, or null if Trusted Types are not
  * enabled/supported. The first call to this function will create the policy.
  */
-function getPolicy(): TrustedTypePolicy|null {
+function getPolicy(): TrustedTypePolicy | null {
   if (policy === undefined) {
     policy = null;
     if (global.trustedTypes) {
@@ -60,7 +66,7 @@ function getPolicy(): TrustedTypePolicy|null {
  * that will be interpreted as HTML by a browser, e.g. when assigning to
  * element.innerHTML.
  */
-export function trustedHTMLFromString(html: string): TrustedHTML|string {
+export function trustedHTMLFromString(html: string): TrustedHTML | string {
   return getPolicy()?.createHTML(html) || html;
 }
 
@@ -71,7 +77,7 @@ export function trustedHTMLFromString(html: string): TrustedHTML|string {
  * never cause an XSS vulnerability if used in a context that will be
  * interpreted and executed as a script by a browser, e.g. when calling eval.
  */
-export function trustedScriptFromString(script: string): TrustedScript|string {
+export function trustedScriptFromString(script: string): TrustedScript | string {
   return getPolicy()?.createScript(script) || script;
 }
 
@@ -84,7 +90,7 @@ export function trustedScriptFromString(script: string): TrustedScript|string {
  * that will cause a browser to load and execute a resource, e.g. when
  * assigning to script.src.
  */
-export function trustedScriptURLFromString(url: string): TrustedScriptURL|string {
+export function trustedScriptURLFromString(url: string): TrustedScriptURL | string {
   return getPolicy()?.createScriptURL(url) || url;
 }
 

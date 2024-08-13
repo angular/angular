@@ -61,5 +61,8 @@ export interface Database {
  * An error returned in rejected promises if the given key is not found in the table.
  */
 export class NotFound {
-  constructor(public table: string, public key: string) {}
+  constructor(
+    public table: string,
+    public key: string,
+  ) {}
 }

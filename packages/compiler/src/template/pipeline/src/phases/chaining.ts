@@ -12,14 +12,20 @@ import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
 const CHAINABLE = new Set([
-  R3.elementStart,
-  R3.elementEnd,
-  R3.element,
-  R3.property,
-  R3.hostProperty,
-  R3.syntheticHostProperty,
-  R3.styleProp,
   R3.attribute,
+  R3.classProp,
+  R3.element,
+  R3.elementContainer,
+  R3.elementContainerEnd,
+  R3.elementContainerStart,
+  R3.elementEnd,
+  R3.elementStart,
+  R3.hostProperty,
+  R3.i18nExp,
+  R3.listener,
+  R3.listener,
+  R3.property,
+  R3.styleProp,
   R3.stylePropInterpolate1,
   R3.stylePropInterpolate2,
   R3.stylePropInterpolate3,
@@ -29,15 +35,20 @@ const CHAINABLE = new Set([
   R3.stylePropInterpolate7,
   R3.stylePropInterpolate8,
   R3.stylePropInterpolateV,
-  R3.classProp,
-  R3.listener,
-  R3.elementContainerStart,
-  R3.elementContainerEnd,
-  R3.elementContainer,
-  R3.listener,
   R3.syntheticHostListener,
+  R3.syntheticHostProperty,
   R3.templateCreate,
+  R3.twoWayProperty,
+  R3.twoWayListener,
+  R3.declareLet,
 ]);
+
+/**
+ * Chaining results in repeated call expressions, causing a deep AST of receiver expressions. To prevent running out of
+ * stack depth the maximum number of chained instructions is limited to this threshold, which has been selected
+ * arbitrarily.
+ */
+const MAX_CHAIN_LENGTH = 256;
 
 /**
  * Post-process a reified view compilation and convert sequential calls to chainable instructions
@@ -56,23 +67,25 @@ const CHAINABLE = new Set([
  * elementStart(0, 'div')(1, 'span');
  * ```
  */
-export function phaseChaining(job: CompilationJob): void {
+export function chain(job: CompilationJob): void {
   for (const unit of job.units) {
     chainOperationsInList(unit.create);
     chainOperationsInList(unit.update);
   }
 }
 
-function chainOperationsInList(opList: ir.OpList<ir.CreateOp|ir.UpdateOp>): void {
-  let chain: Chain|null = null;
+function chainOperationsInList(opList: ir.OpList<ir.CreateOp | ir.UpdateOp>): void {
+  let chain: Chain | null = null;
   for (const op of opList) {
     if (op.kind !== ir.OpKind.Statement || !(op.statement instanceof o.ExpressionStatement)) {
       // This type of statement isn't chainable.
       chain = null;
       continue;
     }
-    if (!(op.statement.expr instanceof o.InvokeFunctionExpr) ||
-        !(op.statement.expr.fn instanceof o.ExternalExpr)) {
+    if (
+      !(op.statement.expr instanceof o.InvokeFunctionExpr) ||
+      !(op.statement.expr.fn instanceof o.ExternalExpr)
+    ) {
       // This is a statement, but not an instruction-type call, so not chainable.
       chain = null;
       continue;
@@ -87,19 +100,24 @@ function chainOperationsInList(opList: ir.OpList<ir.CreateOp|ir.UpdateOp>): void
 
     // This instruction can be chained. It can either be added on to the previous chain (if
     // compatible) or it can be the start of a new chain.
-    if (chain !== null && chain.instruction === instruction) {
+    if (chain !== null && chain.instruction === instruction && chain.length < MAX_CHAIN_LENGTH) {
       // This instruction can be added onto the previous chain.
       const expression = chain.expression.callFn(
-          op.statement.expr.args, op.statement.expr.sourceSpan, op.statement.expr.pure);
+        op.statement.expr.args,
+        op.statement.expr.sourceSpan,
+        op.statement.expr.pure,
+      );
       chain.expression = expression;
       chain.op.statement = expression.toStmt();
-      ir.OpList.remove(op as ir.Op<ir.CreateOp|ir.UpdateOp>);
+      chain.length++;
+      ir.OpList.remove(op as ir.Op<ir.CreateOp | ir.UpdateOp>);
     } else {
       // Leave this instruction alone for now, but consider it the start of a new chain.
       chain = {
         op,
         instruction,
         expression: op.statement.expr,
+        length: 1,
       };
     }
   }
@@ -112,7 +130,7 @@ interface Chain {
   /**
    * The statement which holds the entire chain.
    */
-  op: ir.StatementOp<ir.CreateOp|ir.UpdateOp>;
+  op: ir.StatementOp<ir.CreateOp | ir.UpdateOp>;
 
   /**
    * The expression representing the whole current chained call.
@@ -126,4 +144,9 @@ interface Chain {
    * The instruction that is being chained.
    */
   instruction: o.ExternalReference;
+
+  /**
+   * The number of instructions that have been collected into this chain.
+   */
+  length: number;
 }

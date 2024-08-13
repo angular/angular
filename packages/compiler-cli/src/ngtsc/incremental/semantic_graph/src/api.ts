@@ -31,13 +31,13 @@ export abstract class SemanticSymbol {
    * case, the symbol is always assumed to have semantically changed to guarantee a proper
    * rebuild.
    */
-  public readonly identifier: string|null;
+  public readonly identifier: string | null;
 
   constructor(
-      /**
-       * The declaration for this symbol.
-       */
-      public readonly decl: ClassDeclaration,
+    /**
+     * The declaration for this symbol.
+     */
+    public readonly decl: ClassDeclaration,
   ) {
     this.path = absoluteFromSourceFile(decl.getSourceFile());
     this.identifier = getSymbolIdentifier(decl);
@@ -94,8 +94,10 @@ export abstract class SemanticSymbol {
    * different type of symbol, if e.g. a Component was changed into a Directive with the same name.
    * @param typeCheckApiAffected The set of symbols of which the type-check API has changed.
    */
-  isTypeCheckBlockAffected?
-      (previousSymbol: SemanticSymbol, typeCheckApiAffected: Set<SemanticSymbol>): boolean;
+  isTypeCheckBlockAffected?(
+    previousSymbol: SemanticSymbol,
+    typeCheckApiAffected: Set<SemanticSymbol>,
+  ): boolean;
 }
 
 /**
@@ -112,10 +114,10 @@ export interface SemanticReference {
   /**
    * The path by which the symbol has been referenced.
    */
-  importPath: string|null;
+  importPath: string | null;
 }
 
-function getSymbolIdentifier(decl: ClassDeclaration): string|null {
+function getSymbolIdentifier(decl: ClassDeclaration): string | null {
   if (!ts.isSourceFile(decl.parent)) {
     return null;
   }

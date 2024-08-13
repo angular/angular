@@ -1,59 +1,62 @@
 {
   "cli-hello-world": {
     "uncompressed": {
-      "runtime": 908,
-      "main": 134468,
+      "main": 132425,
       "polyfills": 33792
     }
   },
   "cli-hello-world-ivy-i18n": {
     "uncompressed": {
-      "runtime": 926,
-      "main": 131777,
+      "main": 130590,
       "polyfills": 34676
     }
   },
   "cli-hello-world-lazy": {
     "uncompressed": {
-      "runtime": 2734,
-      "main": 238106,
-      "polyfills": 33810,
-      "src_app_lazy_lazy_routes_ts": 487
+      "main": 108611,
+      "polyfills": 34169,
+      "lazy.routes": 388
     }
   },
   "forms": {
     "uncompressed": {
-      "runtime": 888,
-      "main": 166256,
+      "main": 176726,
       "polyfills": 33772
     }
   },
   "animations": {
     "uncompressed": {
-      "runtime": 898,
-      "main": 164757,
-      "polyfills": 33782
+      "main": 143167,
+      "polyfills": 34023,
+      "open-close.component": 1190
     }
   },
-  "platform-server/standalone/browser": {
+  "animations-async": {
     "uncompressed": {
-      "runtime": 2694,
-      "main": 238273,
-      "polyfills": 33782
-    }
-  },
-  "platform-server/ngmodule/browser": {
-    "uncompressed": {
-      "runtime": 2688,
-      "main": 249925,
-      "polyfills": 33778
+      "main": 86540,
+      "polyfills": 33782,
+      "browser": 63949,
+      "open-close.component": 1218
     }
   },
   "standalone-bootstrap": {
     "uncompressed": {
-      "runtime": 918,
-      "main": 91485,
+      "main": 89354,
       "polyfills": 33802
+    }
+  },
+  "defer": {
+    "uncompressed": {
+      "main": 12148,
+      "polyfills": 33807,
+      "defer.component": 371
+    }
+  },
+  "platform-server-hydration/browser": {
+    "uncompressed": {
+      "main": 207890,
+      "polyfills": 33807,
+      "event-dispatch-contract.min": 476
     }
   }
 }

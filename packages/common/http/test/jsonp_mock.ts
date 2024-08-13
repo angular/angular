@@ -10,22 +10,26 @@ export class MockScriptElement {
   constructor(public ownerDocument: MockDocument) {}
 
   listeners: {
-    load?: (event: Event) => void,
-    error?: (err: Error) => void,
+    load?: (event: Event) => void;
+    error?: (err: Error) => void;
   } = {};
 
-  addEventListener(event: 'load'|'error', handler: Function): void {
+  addEventListener(event: 'load' | 'error', handler: Function): void {
     this.listeners[event] = handler as any;
   }
 
-  removeEventListener(event: 'load'|'error'): void {
+  removeEventListener(event: 'load' | 'error'): void {
     delete this.listeners[event];
+  }
+
+  remove() {
+    this.ownerDocument.removeNode(this);
   }
 }
 
 export class MockDocument {
   // TODO(issue/24571): remove '!'.
-  mock!: MockScriptElement|null;
+  mock!: MockScriptElement | null;
   readonly body: any = this;
 
   implementation = {

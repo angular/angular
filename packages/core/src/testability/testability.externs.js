@@ -6,7 +6,7 @@ function PublicTestability() {}
 /**
  * @return {?}
  */
-PublicTestability.prototype.isStable = function() {};
+PublicTestability.prototype.isStable = function () {};
 
 /**
  * @param {?} callback
@@ -14,7 +14,7 @@ PublicTestability.prototype.isStable = function() {};
  * @param {?} updateCallback
  * @return {?}
  */
-PublicTestability.prototype.whenStable = function(callback, timeout, updateCallback) {};
+PublicTestability.prototype.whenStable = function (callback, timeout, updateCallback) {};
 
 /**
  * @param {?} using
@@ -22,4 +22,4 @@ PublicTestability.prototype.whenStable = function(callback, timeout, updateCallb
  * @param {?} exactMatch
  * @return {?}
  */
-PublicTestability.prototype.findProviders = function(using, provider, exactMatch) {};
+PublicTestability.prototype.findProviders = function (using, provider, exactMatch) {};

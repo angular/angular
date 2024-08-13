@@ -13,8 +13,6 @@ import {FormControl, FormGroup, FormsModule, NG_VALIDATORS, NgForm} from '@angul
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-
-
 /**
  * A domain model we are binding the form controls to.
  */
@@ -44,12 +42,11 @@ export function creditCardValidator(c: FormControl): {[key: string]: boolean} {
 export const creditCardValidatorBinding = {
   provide: NG_VALIDATORS,
   useValue: creditCardValidator,
-  multi: true
+  multi: true,
 };
 
 @Directive({selector: '[credit-card]', providers: [creditCardValidatorBinding]})
-export class CreditCardValidator {
-}
+export class CreditCardValidator {}
 
 /**
  * This is a component that displays an error message.
@@ -69,9 +66,7 @@ export class CreditCardValidator {
 @Component({
   selector: 'show-error',
   inputs: ['controlPath: control', 'errorTypes: errors'],
-  template: `
-    <span *ngIf="errorMessage !== null">{{errorMessage}}</span>
-  `
+  template: ` <span *ngIf="errorMessage !== null">{{ errorMessage }}</span> `,
 })
 export class ShowError {
   formDir: NgForm;
@@ -104,7 +99,6 @@ export class ShowError {
   }
 }
 
-
 @Component({
   selector: 'template-driven-forms',
   template: `
@@ -113,55 +107,61 @@ export class ShowError {
     <form (ngSubmit)="onSubmit()" #f="ngForm">
       <p>
         <label for="firstName">First Name</label>
-        <input type="text" id="firstName" name="firstName" [(ngModel)]="model.firstName" required>
+        <input type="text" id="firstName" name="firstName" [(ngModel)]="model.firstName" required />
         <show-error control="firstName" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="middleName">Middle Name</label>
-        <input type="text" id="middleName" name="middleName" [(ngModel)]="model.middleName">
+        <input type="text" id="middleName" name="middleName" [(ngModel)]="model.middleName" />
       </p>
 
       <p>
         <label for="lastName">Last Name</label>
-        <input type="text" id="lastName" name="lastName" [(ngModel)]="model.lastName" required>
+        <input type="text" id="lastName" name="lastName" [(ngModel)]="model.lastName" required />
         <show-error control="lastName" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="country">Country</label>
         <select id="country" name="country" [(ngModel)]="model.country">
-          <option *ngFor="let c of countries" [value]="c">{{c}}</option>
+          <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
         </select>
       </p>
 
       <p>
         <label for="creditCard">Credit Card</label>
-        <input type="text" id="creditCard" name="creditCard" [(ngModel)]="model.creditCard" required credit-card>
+        <input
+          type="text"
+          id="creditCard"
+          name="creditCard"
+          [(ngModel)]="model.creditCard"
+          required
+          credit-card
+        />
         <show-error control="creditCard" [errors]="['required', 'invalidCreditCard']"></show-error>
       </p>
 
       <p>
         <label for="amount">Amount</label>
-        <input type="number" id="amount" name="amount" [(ngModel)]="model.amount" required>
+        <input type="number" id="amount" name="amount" [(ngModel)]="model.amount" required />
         <show-error control="amount" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" [(ngModel)]="model.email" required>
+        <input type="email" id="email" name="email" [(ngModel)]="model.email" required />
         <show-error control="email" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="comments">Comments</label>
-        <textarea id="comments" name="comments" [(ngModel)]="model.comments">
-        </textarea>
+        <textarea id="comments" name="comments" [(ngModel)]="model.comments"> </textarea>
       </p>
 
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
-  `
+  `,
 })
 export class TemplateDrivenForms {
   model = new CheckoutModel();
@@ -175,9 +175,8 @@ export class TemplateDrivenForms {
 @NgModule({
   declarations: [TemplateDrivenForms, CreditCardValidator, ShowError],
   bootstrap: [TemplateDrivenForms],
-  imports: [BrowserModule, FormsModule]
+  imports: [BrowserModule, FormsModule],
 })
-export class ExampleModule {
-}
+export class ExampleModule {}
 
 platformBrowserDynamic().bootstrapModule(ExampleModule);

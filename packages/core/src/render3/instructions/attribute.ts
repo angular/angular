@@ -10,8 +10,6 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {elementAttributeInternal, storePropertyBindingMetadata} from './shared';
 
-
-
 /**
  * Updates the value of or removes a bound attribute on an Element.
  *
@@ -26,8 +24,11 @@ import {elementAttributeInternal, storePropertyBindingMetadata} from './shared';
  * @codeGenApi
  */
 export function ɵɵattribute(
-    name: string, value: any, sanitizer?: SanitizerFn|null,
-    namespace?: string): typeof ɵɵattribute {
+  name: string,
+  value: any,
+  sanitizer?: SanitizerFn | null,
+  namespace?: string,
+): typeof ɵɵattribute {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {

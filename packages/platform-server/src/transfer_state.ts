@@ -7,16 +7,33 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {APP_ID, NgModule, Provider, TransferState} from '@angular/core';
+import {APP_ID, Provider, TransferState} from '@angular/core';
 
 import {BEFORE_APP_SERIALIZED} from './tokens';
 
-export const TRANSFER_STATE_SERIALIZATION_PROVIDERS: Provider[] = [{
-  provide: BEFORE_APP_SERIALIZED,
-  useFactory: serializeTransferStateFactory,
-  deps: [DOCUMENT, APP_ID, TransferState],
-  multi: true,
-}];
+export const TRANSFER_STATE_SERIALIZATION_PROVIDERS: Provider[] = [
+  {
+    provide: BEFORE_APP_SERIALIZED,
+    useFactory: serializeTransferStateFactory,
+    deps: [DOCUMENT, APP_ID, TransferState],
+    multi: true,
+  },
+];
+
+/** TODO: Move this to a utils folder and convert to use SafeValues. */
+export function createScript(
+  doc: Document,
+  textContent: string,
+  nonce: string | null,
+): HTMLScriptElement {
+  const script = doc.createElement('script');
+  script.textContent = textContent;
+  if (nonce) {
+    script.setAttribute('nonce', nonce);
+  }
+
+  return script;
+}
 
 function serializeTransferStateFactory(doc: Document, appId: string, transferStore: TransferState) {
   return () => {
@@ -30,29 +47,21 @@ function serializeTransferStateFactory(doc: Document, appId: string, transferSto
       return;
     }
 
-    const script = doc.createElement('script');
+    const script = createScript(
+      doc,
+      content,
+      /**
+       * `nonce` is not required for 'application/json'
+       * See: https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type
+       */
+      null,
+    );
     script.id = appId + '-state';
     script.setAttribute('type', 'application/json');
-    script.textContent = content;
 
     // It is intentional that we add the script at the very bottom. Angular CLI script tags for
     // bundles are always `type="module"`. These are deferred by default and cause the transfer
     // transfer data to be queried only after the browser has finished parsing the DOM.
     doc.body.appendChild(script);
   };
-}
-
-/**
- * NgModule to install on the server side while using the `TransferState` to transfer state from
- * server to client.
- *
- * Note: this module is not needed if the `renderApplication` function is used.
- * The `renderApplication` makes all providers from this module available in the application.
- *
- * @publicApi
- * @deprecated no longer needed, you can inject the `TransferState` in an app without providing
- *     this module.
- */
-@NgModule({})
-export class ServerTransferStateModule {
 }

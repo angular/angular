@@ -29,25 +29,35 @@ export class AnimationEngine {
   public onRemovalComplete = (element: any, context: any) => {};
 
   constructor(
-      doc: Document, private _driver: AnimationDriver,
-      private _normalizer: AnimationStyleNormalizer) {
+    doc: Document,
+    private _driver: AnimationDriver,
+    private _normalizer: AnimationStyleNormalizer,
+  ) {
     this._transitionEngine = new TransitionAnimationEngine(doc.body, _driver, _normalizer);
     this._timelineEngine = new TimelineAnimationEngine(doc.body, _driver, _normalizer);
 
     this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
-        this.onRemovalComplete(element, context);
+      this.onRemovalComplete(element, context);
   }
 
   registerTrigger(
-      componentId: string, namespaceId: string, hostElement: any, name: string,
-      metadata: AnimationTriggerMetadata): void {
+    componentId: string,
+    namespaceId: string,
+    hostElement: any,
+    name: string,
+    metadata: AnimationTriggerMetadata,
+  ): void {
     const cacheKey = componentId + '-' + name;
     let trigger = this._triggerCache[cacheKey];
     if (!trigger) {
       const errors: Error[] = [];
       const warnings: string[] = [];
       const ast = buildAnimationAst(
-                      this._driver, metadata as AnimationMetadata, errors, warnings) as TriggerAst;
+        this._driver,
+        metadata as AnimationMetadata,
+        errors,
+        warnings,
+      ) as TriggerAst;
       if (errors.length) {
         throw triggerBuildFailed(name, errors);
       }
@@ -91,8 +101,12 @@ export class AnimationEngine {
   }
 
   listen(
-      namespaceId: string, element: any, eventName: string, eventPhase: string,
-      callback: (event: any) => any): () => any {
+    namespaceId: string,
+    element: any,
+    eventName: string,
+    eventPhase: string,
+    callback: (event: any) => any,
+  ): () => any {
     // @@listen
     if (eventName.charAt(0) == '@') {
       const [id, action] = parseTimelineCommand(eventName);
@@ -106,10 +120,7 @@ export class AnimationEngine {
   }
 
   get players(): AnimationPlayer[] {
-    return [
-      ...this._transitionEngine.players,
-      ...this._timelineEngine.players,
-    ];
+    return [...this._transitionEngine.players, ...this._timelineEngine.players];
   }
 
   whenRenderingDone(): Promise<any> {

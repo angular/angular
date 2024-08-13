@@ -6,12 +6,35 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Binary, BindingPipe, Call, Chain, Conditional, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafeCall, SafeKeyedRead, SafePropertyRead, Unary} from '../../../src/expression_parser/ast';
+import {
+  AST,
+  Binary,
+  BindingPipe,
+  Call,
+  Chain,
+  Conditional,
+  ImplicitReceiver,
+  Interpolation,
+  KeyedRead,
+  KeyedWrite,
+  LiteralArray,
+  LiteralMap,
+  LiteralPrimitive,
+  ParseSpan,
+  PrefixNot,
+  PropertyRead,
+  PropertyWrite,
+  RecursiveAstVisitor,
+  SafeCall,
+  SafeKeyedRead,
+  SafePropertyRead,
+  Unary,
+} from '../../../src/expression_parser/ast';
 
 import {unparse} from './unparser';
 
 class ASTValidator extends RecursiveAstVisitor {
-  private parentSpan: ParseSpan|undefined;
+  private parentSpan: ParseSpan | undefined;
 
   override visit(ast: AST) {
     this.parentSpan = undefined;
@@ -22,8 +45,11 @@ class ASTValidator extends RecursiveAstVisitor {
     if (!inSpan(ast.span, this.parentSpan)) {
       if (this.parentSpan) {
         const parentSpan = this.parentSpan as ParseSpan;
-        throw Error(`Invalid AST span [expected (${ast.span.start}, ${ast.span.end}) to be in (${
-            parentSpan.start},  ${parentSpan.end}) for ${unparse(ast)}`);
+        throw Error(
+          `Invalid AST span [expected (${ast.span.start}, ${ast.span.end}) to be in (${
+            parentSpan.start
+          },  ${parentSpan.end}) for ${unparse(ast)}`,
+        );
       } else {
         throw Error(`Invalid root AST span for ${unparse(ast)}`);
       }
@@ -111,7 +137,7 @@ class ASTValidator extends RecursiveAstVisitor {
   }
 }
 
-function inSpan(span: ParseSpan, parentSpan: ParseSpan|undefined): parentSpan is ParseSpan {
+function inSpan(span: ParseSpan, parentSpan: ParseSpan | undefined): parentSpan is ParseSpan {
   return !parentSpan || (span.start >= parentSpan.start && span.end <= parentSpan.end);
 }
 

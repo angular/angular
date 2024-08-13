@@ -21,7 +21,7 @@ class _Visitor implements IVisitor {
       return `<${tag.name}${strAttrs}/>`;
     }
 
-    const strChildren = tag.children.map(node => node.visit(this));
+    const strChildren = tag.children.map((node) => node.visit(this));
     return `<${tag.name}${strAttrs}>${strChildren.join('')}</${tag.name}>`;
   }
 
@@ -34,7 +34,9 @@ class _Visitor implements IVisitor {
   }
 
   private _serializeAttributes(attrs: {[k: string]: string}) {
-    const strAttrs = Object.keys(attrs).map((name: string) => `${name}="${attrs[name]}"`).join(' ');
+    const strAttrs = Object.keys(attrs)
+      .map((name: string) => `${name}="${attrs[name]}"`)
+      .join(' ');
     return strAttrs.length > 0 ? ' ' + strAttrs : '';
   }
 
@@ -68,7 +70,10 @@ export class Declaration implements Node {
 }
 
 export class Doctype implements Node {
-  constructor(public rootTag: string, public dtd: string) {}
+  constructor(
+    public rootTag: string,
+    public dtd: string,
+  ) {}
 
   visit(visitor: IVisitor): any {
     return visitor.visitDoctype(this);
@@ -79,8 +84,10 @@ export class Tag implements Node {
   public attrs: {[k: string]: string} = {};
 
   constructor(
-      public name: string, unescapedAttrs: {[k: string]: string} = {},
-      public children: Node[] = []) {
+    public name: string,
+    unescapedAttrs: {[k: string]: string} = {},
+    public children: Node[] = [],
+  ) {
     Object.keys(unescapedAttrs).forEach((k: string) => {
       this.attrs[k] = escapeXml(unescapedAttrs[k]);
     });
@@ -119,5 +126,7 @@ const _ESCAPED_CHARS: [RegExp, string][] = [
 // Escape `_ESCAPED_CHARS` characters in the given text with encoded entities
 export function escapeXml(text: string): string {
   return _ESCAPED_CHARS.reduce(
-      (text: string, entry: [RegExp, string]) => text.replace(entry[0], entry[1]), text);
+    (text: string, entry: [RegExp, string]) => text.replace(entry[0], entry[1]),
+    text,
+  );
 }

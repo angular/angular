@@ -46,6 +46,7 @@ const COMMENT_DELIMITER_ESCAPED = '\u200B$1\u200B';
  *     sequence.
  */
 export function escapeCommentText(value: string): string {
-  return value.replace(
-      COMMENT_DISALLOWED, (text) => text.replace(COMMENT_DELIMITER, COMMENT_DELIMITER_ESCAPED));
+  return value.replace(COMMENT_DISALLOWED, (text) =>
+    text.replace(COMMENT_DELIMITER, COMMENT_DELIMITER_ESCAPED),
+  );
 }

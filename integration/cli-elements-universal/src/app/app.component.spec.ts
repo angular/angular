@@ -1,19 +1,14 @@
-import { Component, Input } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
-import { AppComponent } from './app.component';
+import {Component, Input} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {RouterModule} from '@angular/router';
+import {AppComponent} from './app.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent,
-        TestTitleComponent,
-      ],
-      imports: [
-        RouterModule.forRoot([]),
-      ],
+      declarations: [AppComponent, TestTitleComponent],
+      imports: [RouterModule.forRoot([])],
     });
     await TestBed.compileComponents();
   });

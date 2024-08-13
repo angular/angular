@@ -16,7 +16,7 @@ import {TView} from './view';
  * An object representing query metadata extracted from query annotations.
  */
 export interface TQueryMetadata {
-  predicate: ProviderToken<unknown>|string[];
+  predicate: ProviderToken<unknown> | string[];
   read: any;
   flags: QueryFlags;
 }
@@ -87,7 +87,7 @@ export interface TQuery {
    * ng-template and ElementRef for other elements);
    * - a positive number - index of an injectable to be read from the element injector.
    */
-  matches: number[]|null;
+  matches: number[] | null;
 
   /**
    * A flag indicating if a given query crosses an <ng-template> element. This flag exists for
@@ -126,7 +126,7 @@ export interface TQuery {
    * @param tNode
    * @param childQueryIndex
    */
-  embeddedTView(tNode: TNode, childQueryIndex: number): TQuery|null;
+  embeddedTView(tNode: TNode, childQueryIndex: number): TQuery | null;
 }
 
 /**
@@ -179,7 +179,7 @@ export interface TQueries {
    * `embeddedTView` on each and every TQuery.
    * @param tNode
    */
-  embeddedTView(tNode: TNode): TQueries|null;
+  embeddedTView(tNode: TNode): TQueries | null;
 }
 
 /**
@@ -193,7 +193,7 @@ export interface LQuery<T> {
    * Materialized query matches for a given view only (!). Results are initialized lazily so the
    * array of matches is set to `null` initially.
    */
-  matches: (T|null)[]|null;
+  matches: (T | null)[] | null;
 
   /**
    * A QueryList where materialized query results should be reported.
@@ -226,7 +226,7 @@ export interface LQueries {
    * for a new embedded view is instantiated (cloned) from the declaration view.
    * @param tView
    */
-  createEmbeddedView(tView: TView): LQueries|null;
+  createEmbeddedView(tView: TView): LQueries | null;
 
   /**
    * A method called when an embedded view is inserted into a container. As a result all impacted
@@ -241,9 +241,13 @@ export interface LQueries {
    * @param tView
    */
   detachView(tView: TView): void;
+
+  /**
+   * A method called when a view finishes its creation pass. As a result all impacted
+   * `LQuery` objects (and associated `QueryList`) are marked as dirty. This additional dirty
+   * marking gives us a precise point in time where we can collect results for a given view in an
+   * atomic way.
+   * @param tView
+   */
+  finishViewCreation(tView: TView): void;
 }
-
-
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;

@@ -13,4 +13,4 @@ export interface NO_CHANGE {
 
 /** A special value which designates that a value has not changed. */
 export const NO_CHANGE: NO_CHANGE =
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? {__brand__: 'NO_CHANGE'} : ({} as NO_CHANGE);
+  typeof ngDevMode === 'undefined' || ngDevMode ? {__brand__: 'NO_CHANGE'} : ({} as NO_CHANGE);

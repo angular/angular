@@ -55,8 +55,12 @@ export class StringConcatBuiltinFn extends KnownFn {
     for (const arg of args) {
       const resolved = arg instanceof EnumValue ? arg.resolved : arg;
 
-      if (typeof resolved === 'string' || typeof resolved === 'number' ||
-          typeof resolved === 'boolean' || resolved == null) {
+      if (
+        typeof resolved === 'string' ||
+        typeof resolved === 'number' ||
+        typeof resolved === 'boolean' ||
+        resolved == null
+      ) {
         // Cast to `any`, because `concat` will convert
         // anything to a string, but TS only allows strings.
         result = result.concat(resolved as any);

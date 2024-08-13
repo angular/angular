@@ -20,6 +20,6 @@ export function matchesObjectWithOrder(expected: any): jasmine.AsymmetricMatcher
     },
     jasmineToString(prettyPrint: (value: any) => string): string {
       return prettyPrint(expected);
-    }
+    },
   };
 }

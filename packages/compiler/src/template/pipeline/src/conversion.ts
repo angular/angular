@@ -13,6 +13,7 @@ export const BINARY_OPERATORS = new Map([
   ['&&', o.BinaryOperator.And],
   ['>', o.BinaryOperator.Bigger],
   ['>=', o.BinaryOperator.BiggerEquals],
+  ['|', o.BinaryOperator.BitwiseOr],
   ['&', o.BinaryOperator.BitwiseAnd],
   ['/', o.BinaryOperator.Divide],
   ['==', o.BinaryOperator.Equals],
@@ -29,22 +30,28 @@ export const BINARY_OPERATORS = new Map([
   ['+', o.BinaryOperator.Plus],
 ]);
 
-export const NAMESPACES = new Map([['svg', ir.Namespace.SVG], ['math', ir.Namespace.Math]]);
-
-export function namespaceForKey(namespacePrefixKey: string|null): ir.Namespace {
+export function namespaceForKey(namespacePrefixKey: string | null): ir.Namespace {
+  const NAMESPACES = new Map([
+    ['svg', ir.Namespace.SVG],
+    ['math', ir.Namespace.Math],
+  ]);
   if (namespacePrefixKey === null) {
     return ir.Namespace.HTML;
   }
   return NAMESPACES.get(namespacePrefixKey) ?? ir.Namespace.HTML;
 }
 
-export function keyForNamespace(namespace: ir.Namespace): string|null {
+export function keyForNamespace(namespace: ir.Namespace): string | null {
+  const NAMESPACES = new Map([
+    ['svg', ir.Namespace.SVG],
+    ['math', ir.Namespace.Math],
+  ]);
   for (const [k, n] of NAMESPACES.entries()) {
     if (n === namespace) {
       return k;
     }
   }
-  return null;  // No namespace prefix for HTML
+  return null; // No namespace prefix for HTML
 }
 
 export function prefixWithNamespace(strippedTag: string, namespace: ir.Namespace): string {
@@ -54,9 +61,11 @@ export function prefixWithNamespace(strippedTag: string, namespace: ir.Namespace
   return `:${keyForNamespace(namespace)}:${strippedTag}`;
 }
 
-export function literalOrArrayLiteral(value: any): o.Expression {
+export type LiteralType = string | number | boolean | null | Array<LiteralType>;
+
+export function literalOrArrayLiteral(value: LiteralType): o.Expression {
   if (Array.isArray(value)) {
     return o.literalArr(value.map(literalOrArrayLiteral));
   }
-  return o.literal(value, o.INFERRED_TYPE);
+  return o.literal(value);
 }

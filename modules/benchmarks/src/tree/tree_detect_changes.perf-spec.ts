@@ -14,7 +14,7 @@ describe('tree benchmark detect changes perf', () => {
     await runTreeBenchmark({
       id: 'detectChanges',
       work: () => $('#detectChanges').click(),
-      setup: () => $('#destroyDom').click()
+      setup: () => $('#destroyDom').click(),
     });
   });
 });

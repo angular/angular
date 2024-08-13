@@ -27,13 +27,12 @@ import {NgModuleFactory} from './ng_module_factory';
  *
  * @deprecated
  * Ivy JIT mode doesn't require accessing this symbol.
- * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
- * additional context.
  */
 export class ModuleWithComponentFactories<T> {
   constructor(
-      public ngModuleFactory: NgModuleFactory<T>,
-      public componentFactories: ComponentFactory<any>[]) {}
+    public ngModuleFactory: NgModuleFactory<T>,
+    public componentFactories: ComponentFactory<any>[],
+  ) {}
 }
 
 /**
@@ -49,8 +48,6 @@ export class ModuleWithComponentFactories<T> {
  *
  * @deprecated
  * Ivy JIT mode doesn't require accessing this symbol.
- * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
- * additional context.
  */
 @Injectable({providedIn: 'root'})
 export class Compiler {
@@ -75,21 +72,23 @@ export class Compiler {
   compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
     const ngModuleFactory = this.compileModuleSync(moduleType);
     const moduleDef = getNgModuleDef(moduleType)!;
-    const componentFactories =
-        maybeUnwrapFn(moduleDef.declarations)
-            .reduce((factories: ComponentFactory<any>[], declaration: Type<any>) => {
-              const componentDef = getComponentDef(declaration);
-              componentDef && factories.push(new ComponentFactoryR3(componentDef));
-              return factories;
-            }, [] as ComponentFactory<any>[]);
+    const componentFactories = maybeUnwrapFn(moduleDef.declarations).reduce(
+      (factories: ComponentFactory<any>[], declaration: Type<any>) => {
+        const componentDef = getComponentDef(declaration);
+        componentDef && factories.push(new ComponentFactoryR3(componentDef));
+        return factories;
+      },
+      [] as ComponentFactory<any>[],
+    );
     return new ModuleWithComponentFactories(ngModuleFactory, componentFactories);
   }
 
   /**
    * Same as {@link #compileModuleAsync} but also creates ComponentFactories for all components.
    */
-  compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
-      Promise<ModuleWithComponentFactories<T>> {
+  compileModuleAndAllComponentsAsync<T>(
+    moduleType: Type<T>,
+  ): Promise<ModuleWithComponentFactories<T>> {
     return Promise.resolve(this.compileModuleAndAllComponentsSync(moduleType));
   }
 
@@ -106,7 +105,7 @@ export class Compiler {
   /**
    * Returns the id for a given NgModule, if one is defined and known to the compiler.
    */
-  getModuleId(moduleType: Type<any>): string|undefined {
+  getModuleId(moduleType: Type<any>): string | undefined {
     return undefined;
   }
 }
@@ -114,23 +113,12 @@ export class Compiler {
 /**
  * Options for creating a compiler.
  *
- * Note: the `useJit` and `missingTranslation` config options are not used in Ivy, passing them has
- * no effect. Those config options are deprecated since v13.
- *
  * @publicApi
  */
 export type CompilerOptions = {
-  /**
-   * @deprecated not used at all in Ivy, providing this config option has no effect.
-   */
-  useJit?: boolean,
-  defaultEncapsulation?: ViewEncapsulation,
-  providers?: StaticProvider[],
-  /**
-   * @deprecated not used at all in Ivy, providing this config option has no effect.
-   */
-  missingTranslation?: MissingTranslationStrategy,
-  preserveWhitespaces?: boolean,
+  defaultEncapsulation?: ViewEncapsulation;
+  providers?: StaticProvider[];
+  preserveWhitespaces?: boolean;
 };
 
 /**
@@ -138,7 +126,9 @@ export type CompilerOptions = {
  *
  * @publicApi
  */
-export const COMPILER_OPTIONS = new InjectionToken<CompilerOptions[]>('compilerOptions');
+export const COMPILER_OPTIONS = new InjectionToken<CompilerOptions[]>(
+  ngDevMode ? 'compilerOptions' : '',
+);
 
 /**
  * A factory for creating a Compiler
@@ -147,8 +137,6 @@ export const COMPILER_OPTIONS = new InjectionToken<CompilerOptions[]>('compilerO
  *
  * @deprecated
  * Ivy JIT mode doesn't require accessing this symbol.
- * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
- * additional context.
  */
 export abstract class CompilerFactory {
   abstract createCompiler(options?: CompilerOptions[]): Compiler;

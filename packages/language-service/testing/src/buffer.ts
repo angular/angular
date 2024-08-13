@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript';
 
 import {LanguageService} from '../../src/language_service';
 
@@ -17,8 +17,11 @@ export class OpenBuffer {
   private _cursor: number = 0;
 
   constructor(
-      private ngLS: LanguageService, private project: ts.server.Project,
-      private projectFileName: string, private scriptInfo: ts.server.ScriptInfo) {}
+    private ngLS: LanguageService,
+    private project: ts.server.Project,
+    private projectFileName: string,
+    private scriptInfo: ts.server.ScriptInfo,
+  ) {}
 
   get cursor(): number {
     return this._cursor;
@@ -65,25 +68,38 @@ export class OpenBuffer {
    * Execute the `getDefinitionAndBoundSpan` operation in the Language Service at the cursor
    * location in this buffer.
    */
-  getDefinitionAndBoundSpan(): ts.DefinitionInfoAndBoundSpan|undefined {
+  getDefinitionAndBoundSpan(): ts.DefinitionInfoAndBoundSpan | undefined {
     return this.ngLS.getDefinitionAndBoundSpan(this.scriptInfo.fileName, this._cursor);
   }
 
-  getCompletionsAtPosition(options?: ts.GetCompletionsAtPositionOptions):
-      ts.WithMetadata<ts.CompletionInfo>|undefined {
+  getCompletionsAtPosition(
+    options?: ts.GetCompletionsAtPositionOptions,
+  ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     return this.ngLS.getCompletionsAtPosition(this.scriptInfo.fileName, this._cursor, options);
   }
 
   getCompletionEntryDetails(
-      entryName: string, formatOptions?: ts.FormatCodeOptions|ts.FormatCodeSettings,
-      preferences?: ts.UserPreferences, data?: ts.CompletionEntryData): ts.CompletionEntryDetails
-      |undefined {
+    entryName: string,
+    formatOptions?: ts.FormatCodeOptions | ts.FormatCodeSettings,
+    preferences?: ts.UserPreferences,
+    data?: ts.CompletionEntryData,
+  ): ts.CompletionEntryDetails | undefined {
     return this.ngLS.getCompletionEntryDetails(
-        this.scriptInfo.fileName, this._cursor, entryName, formatOptions, preferences, data);
+      this.scriptInfo.fileName,
+      this._cursor,
+      entryName,
+      formatOptions,
+      preferences,
+      data,
+    );
   }
 
   getTcb() {
     return this.ngLS.getTcb(this.scriptInfo.fileName, this._cursor);
+  }
+
+  getOutliningSpans() {
+    return this.ngLS.getOutliningSpans(this.scriptInfo.fileName);
   }
 
   getTemplateLocationForComponent() {
@@ -119,7 +135,7 @@ export class OpenBuffer {
  * Given a text snippet which contains exactly one cursor symbol ('¦'), extract both the offset of
  * that cursor within the text as well as the text snippet without the cursor.
  */
-function extractCursorInfo(textWithCursor: string): {cursor: number, text: string} {
+function extractCursorInfo(textWithCursor: string): {cursor: number; text: string} {
   const cursor = textWithCursor.indexOf('¦');
   if (cursor === -1 || textWithCursor.indexOf('¦', cursor + 1) !== -1) {
     throw new Error(`Expected to find exactly one cursor symbol '¦'`);

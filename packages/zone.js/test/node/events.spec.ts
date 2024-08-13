@@ -9,8 +9,12 @@
 import {EventEmitter} from 'events';
 
 describe('nodejs EventEmitter', () => {
-  let zone: Zone, zoneA: Zone, zoneB: Zone, emitter: EventEmitter, expectZoneACount: number,
-      zoneResults: string[];
+  let zone: Zone,
+    zoneA: Zone,
+    zoneB: Zone,
+    emitter: EventEmitter,
+    expectZoneACount: number,
+    zoneResults: string[];
   beforeEach(() => {
     zone = Zone.current;
     zoneA = zone.fork({name: 'A'});
@@ -158,10 +162,10 @@ describe('nodejs EventEmitter', () => {
   });
   it('should trigger removeListener when remove listener', () => {
     zoneA.run(() => {
-      emitter.on('removeListener', function(type: string, handler: any) {
+      emitter.on('removeListener', function (type: string, handler: any) {
         zoneResults.push('remove' + type);
       });
-      emitter.on('newListener', function(type: string, handler: any) {
+      emitter.on('newListener', function (type: string, handler: any) {
         zoneResults.push('new' + type);
       });
       emitter.on('test', shouldNotRun);
@@ -171,7 +175,7 @@ describe('nodejs EventEmitter', () => {
   });
   it('should trigger removeListener when remove all listeners with eventname ', () => {
     zoneA.run(() => {
-      emitter.on('removeListener', function(type: string, handler: any) {
+      emitter.on('removeListener', function (type: string, handler: any) {
         zoneResults.push('remove' + type);
       });
       emitter.on('test', shouldNotRun);
@@ -183,7 +187,7 @@ describe('nodejs EventEmitter', () => {
   });
   it('should trigger removeListener when remove all listeners without eventname', () => {
     zoneA.run(() => {
-      emitter.on('removeListener', function(type: string, handler: any) {
+      emitter.on('removeListener', function (type: string, handler: any) {
         zoneResults.push('remove' + type);
       });
       emitter.on('test', shouldNotRun);
@@ -198,7 +202,7 @@ describe('nodejs EventEmitter', () => {
   it('should not enter endless loop when register uncaughtException to process', () => {
     require('domain');
     zoneA.run(() => {
-      process.on('uncaughtException', function() {});
+      process.on('uncaughtException', function () {});
     });
   });
   it('should be able to addEventListener with symbol eventName', () => {

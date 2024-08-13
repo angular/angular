@@ -18,7 +18,10 @@ export class FatalLinkerError extends Error {
    * @param node The AST node where the error occurred.
    * @param message A description of the error.
    */
-  constructor(public node: unknown, message: string) {
+  constructor(
+    public node: unknown,
+    message: string,
+  ) {
     super(message);
   }
 }

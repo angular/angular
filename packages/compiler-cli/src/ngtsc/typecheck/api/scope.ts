@@ -46,12 +46,12 @@ export interface PotentialDirective {
   /**
    * The module which declares the directive.
    */
-  ngModule: ClassDeclaration|null;
+  ngModule: ClassDeclaration | null;
 
   /**
    * The selector for the directive or component.
    */
-  selector: string|null;
+  selector: string | null;
 
   /**
    * `true` if this directive is a component.

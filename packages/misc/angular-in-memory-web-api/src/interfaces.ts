@@ -36,7 +36,7 @@ export abstract class InMemoryDbService {
    * The service calls it with the `RequestInfo` when it receives a POST `commands/resetDb` request.
    * Your InMemoryDbService can adjust its behavior accordingly.
    */
-  abstract createDb(reqInfo?: RequestInfo): {}|Observable<{}>|Promise<{}>;
+  abstract createDb(reqInfo?: RequestInfo): {} | Observable<{}> | Promise<{}>;
 }
 
 /**
@@ -70,7 +70,7 @@ export abstract class InMemoryBackendConfigArgs {
    */
   host?: string;
   /**
-   * false (default) should pass unrecognized request URL through to original backend; true: 404
+   * true, should pass unrecognized request URL through to original backend; false (default): 404
    */
   passThruUnknownUrl?: boolean;
   /**
@@ -108,22 +108,24 @@ export abstract class InMemoryBackendConfigArgs {
 export class InMemoryBackendConfig implements InMemoryBackendConfigArgs {
   constructor(config: InMemoryBackendConfigArgs = {}) {
     Object.assign(
-        this, {
-          // default config:
-          caseSensitiveSearch: false,
-          dataEncapsulation: false,   // do NOT wrap content within an object with a `data` property
-          delay: 500,                 // simulate latency by delaying response
-          delete404: false,           // don't complain if can't find entity to delete
-          passThruUnknownUrl: false,  // 404 if can't process URL
-          post204: true,              // don't return the item after a POST
-          post409: false,             // don't update existing item with that ID
-          put204: true,               // don't return the item after a PUT
-          put404: false,              // create new item if PUT item with that ID not found
-          apiBase: undefined,         // assumed to be the first path segment
-          host: undefined,     // default value is actually set in InMemoryBackendService ctor
-          rootPath: undefined  // default value is actually set in InMemoryBackendService ctor
-        },
-        config);
+      this,
+      {
+        // default config:
+        caseSensitiveSearch: false,
+        dataEncapsulation: false, // do NOT wrap content within an object with a `data` property
+        delay: 500, // simulate latency by delaying response
+        delete404: false, // don't complain if can't find entity to delete
+        passThruUnknownUrl: false, // 404 if can't process URL
+        post204: true, // don't return the item after a POST
+        post409: false, // don't update existing item with that ID
+        put204: true, // don't return the item after a PUT
+        put404: false, // create new item if PUT item with that ID not found
+        apiBase: undefined, // assumed to be the first path segment
+        host: undefined, // default value is actually set in InMemoryBackendService ctor
+        rootPath: undefined, // default value is actually set in InMemoryBackendService ctor
+      },
+      config,
+    );
   }
 }
 
@@ -132,9 +134,9 @@ export function parseUri(str: string): UriInfo {
   // Adapted from parseuri package - http://blog.stevenlevithan.com/archives/parseuri
   // tslint:disable-next-line:max-line-length
   const URL_REGEX =
-      /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
+    /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/;
   const m = URL_REGEX.exec(str);
-  const uri: UriInfo&{[key: string]: string} = {
+  const uri: UriInfo & {[key: string]: string} = {
     source: '',
     protocol: '',
     authority: '',
@@ -148,13 +150,13 @@ export function parseUri(str: string): UriInfo {
     directory: '',
     file: '',
     query: '',
-    anchor: ''
+    anchor: '',
   };
   const keys = Object.keys(uri);
   let i = keys.length;
 
   while (i--) {
-    uri[keys[i]] = m && m[i] || '';
+    uri[keys[i]] = (m && m[i]) || '';
   }
   return uri;
 }
@@ -170,12 +172,11 @@ export function parseUri(str: string): UriInfo {
  *     resourceUrl: 'http://localhost/api/customers/'
  */
 export interface ParsedRequestUrl {
-  apiBase: string;               // the slash-terminated "base" for api requests (e.g. `api/`)
-  collectionName: string;        // the name of the collection of data items (e.g.,`customers`)
-  id: string;                    // the (optional) id of the item in the collection (e.g., `42`)
-  query: Map<string, string[]>;  // the query parameters;
-  resourceUrl:
-      string;  // the effective URL for the resource (e.g., 'http://localhost/api/customers/')
+  apiBase: string; // the slash-terminated "base" for api requests (e.g. `api/`)
+  collectionName: string; // the name of the collection of data items (e.g.,`customers`)
+  id: string; // the (optional) id of the item in the collection (e.g., `42`)
+  query: Map<string, string[]>; // the query parameters;
+  resourceUrl: string; // the effective URL for the resource (e.g., 'http://localhost/api/customers/')
 }
 
 export interface PassThruBackend {
@@ -194,8 +195,8 @@ export function removeTrailingSlash(path: string) {
  *  Minimum definition needed by base class
  */
 export interface RequestCore {
-  url: string;             // request URL
-  urlWithParams?: string;  // request URL with query parameters added by `HttpParams`
+  url: string; // request URL
+  urlWithParams?: string; // request URL with query parameters added by `HttpParams`
 }
 
 /**
@@ -204,7 +205,7 @@ export interface RequestCore {
  * Also holds utility methods and configuration data from this service
  */
 export interface RequestInfo {
-  req: RequestCore;  // concrete type depends upon the Http library
+  req: RequestCore; // concrete type depends upon the Http library
   apiBase: string;
   collectionName: string;
   collection: any;
@@ -213,7 +214,7 @@ export interface RequestInfo {
   id: any;
   query: Map<string, string[]>;
   resourceUrl: string;
-  url: string;  // request URL
+  url: string; // request URL
   utils: RequestInfoUtilities;
 }
 
@@ -235,7 +236,7 @@ export interface RequestInfoUtilities {
    * @param collection
    * @param id
    */
-  findById<T extends {id: any}>(collection: T[], id: any): T|undefined;
+  findById<T extends {id: any}>(collection: T[], id: any): T | undefined;
 
   /** return the current, active configuration which is a blend of defaults and overrides */
   getConfig(): InMemoryBackendConfigArgs;
@@ -274,7 +275,7 @@ export interface ResponseOptions {
   /**
    * String, Object, ArrayBuffer or Blob representing the body of the {@link Response}.
    */
-  body?: string|Object|ArrayBuffer|Blob;
+  body?: string | Object | ArrayBuffer | Blob;
 
   /**
    * Response headers

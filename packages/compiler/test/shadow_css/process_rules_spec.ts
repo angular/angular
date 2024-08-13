@@ -48,17 +48,21 @@ describe('ShadowCss, processRules', () => {
 
   describe('modify rules', () => {
     it('should allow to change the selector while preserving whitespaces', () => {
-      expect(processRules(
-                 '@import a; b {c {d}} e {f}',
-                 (cssRule: CssRule) => new CssRule(cssRule.selector + '2', cssRule.content)))
-          .toEqual('@import a2; b2 {c {d}} e2 {f}');
+      expect(
+        processRules(
+          '@import a; b {c {d}} e {f}',
+          (cssRule: CssRule) => new CssRule(cssRule.selector + '2', cssRule.content),
+        ),
+      ).toEqual('@import a2; b2 {c {d}} e2 {f}');
     });
 
     it('should allow to change the content', () => {
       expect(
-          processRules(
-              'a {b}', (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content + '2')))
-          .toEqual('a {b2}');
+        processRules(
+          'a {b}',
+          (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content + '2'),
+        ),
+      ).toEqual('a {b2}');
     });
   });
 });

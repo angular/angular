@@ -9,8 +9,7 @@
 import {KeyValueDiffer, KeyValueDifferFactory, KeyValueDiffers, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-
-describe('KeyValueDiffers', function() {
+describe('KeyValueDiffers', function () {
   it('should support .extend in root NgModule', () => {
     const DIFFER: KeyValueDiffer<any, any> = {} as any;
     const log: string[] = [];
@@ -25,10 +24,8 @@ describe('KeyValueDiffers', function() {
       }
     }
 
-
     @NgModule({providers: [KeyValueDiffers.extend([new MyKeyValueDifferFactory()])]})
-    class MyModule {
-    }
+    class MyModule {}
 
     TestBed.configureTestingModule({imports: [MyModule]});
     const differs = TestBed.inject(KeyValueDiffers);

@@ -14,10 +14,6 @@ import {Routes} from '@angular/router';
   template: 'default exported',
   selector: 'test-route',
 })
-export class TestRoute {
-}
+export class TestRoute {}
 
-
-export default [
-  {path: '', pathMatch: 'full', component: TestRoute},
-] as Routes;
+export default [{path: '', pathMatch: 'full', component: TestRoute}] as Routes;

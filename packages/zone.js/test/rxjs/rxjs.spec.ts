@@ -5,10 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-(Object as any).setPrototypeOf = (Object as any).setPrototypeOf || function(obj: any, proto: any) {
-  obj.__proto__ = proto;
-  return obj;
-};
+(Object as any).setPrototypeOf =
+  (Object as any).setPrototypeOf ||
+  function (obj: any, proto: any) {
+    obj.__proto__ = proto;
+    return obj;
+  };
 import '../../lib/rxjs/rxjs';
 import './rxjs.common.spec';
 import './rxjs.asap.spec';

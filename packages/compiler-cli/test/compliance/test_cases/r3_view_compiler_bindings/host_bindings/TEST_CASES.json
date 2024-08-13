@@ -30,6 +30,34 @@
       ]
     },
     {
+      "description": "should support host class bindings with temporary expressions",
+      "inputFiles": [
+        "host_class_bindings_with_temporaries.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            "host_class_bindings_with_temporaries.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support host style bindings with temporary expressions",
+      "inputFiles": [
+        "host_style_bindings_with_temporaries.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            "host_style_bindings_with_temporaries.js"
+          ]
+        }
+      ]
+    },
+    {
       "description": "should support host bindings with pure functions",
       "inputFiles": [
         "host_bindings_with_pure_functions.ts"
@@ -41,8 +69,7 @@
             "host_bindings_with_pure_functions.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support host attribute bindings",
@@ -227,6 +254,20 @@
       ]
     },
     {
+      "description": "should allow $any in host binding expressions",
+      "inputFiles": [
+        "host_dollar_any.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            "host_dollar_any.js"
+          ]
+        }
+      ]
+    },
+    {
       "description": "should handle host bindings with the same name as a primitive value",
       "inputFiles": [
         "host_bindings_primitive_names.ts"
@@ -250,6 +291,96 @@
           "failureMessage": "Invalid host binding code",
           "files": [
             "host_bindings_quoted_names.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should sanitize dangerous bindings",
+      "inputFiles": [
+        "sanitization.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "sanitization.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle security-sensitive constant attributes",
+      "inputFiles": [
+        "security_sensitive_constant_attributes.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "security_sensitive_constant_attributes.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle security-sensitive style bindings",
+      "inputFiles": [
+        "security_sensitive_style_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "security_sensitive_style_bindings.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should properly compiler host listeners with an argument",
+      "inputFiles": [
+        "host_listeners.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            "host_listeners.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should properly compiler host bindings that read a TS wrapped node",
+      "inputFiles": [
+        "host_with_ts_expression_node.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            {
+              "expected": "host_with_ts_expression_node_template.js",
+              "generated": "host_with_ts_expression_node.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle deceptive attribute names",
+      "inputFiles": [
+        "deceptive_attrs.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": [
+            {
+              "generated": "deceptive_attrs.js",
+              "expected": "deceptive_attrs.pipeline.js"
+            }
           ]
         }
       ]

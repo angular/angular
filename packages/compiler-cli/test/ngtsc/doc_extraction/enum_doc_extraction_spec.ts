@@ -13,9 +13,9 @@ import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
-const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
+const testFiles = loadStandardTestFiles({fakeCommon: true});
 
-runInEachFileSystem(os => {
+runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
 
   describe('ngtsc enum docs extraction', () => {
@@ -25,7 +25,9 @@ runInEachFileSystem(os => {
     });
 
     it('should extract enum info without explicit values', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export enum PizzaTopping {
           /** It is cheese */
           Cheese,
@@ -33,7 +35,8 @@ runInEachFileSystem(os => {
           /** Or "tomato" if you are British */
           Tomato,
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -56,7 +59,9 @@ runInEachFileSystem(os => {
     });
 
     it('should extract enum info with explicit values', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export enum PizzaTopping {
           /** It is cheese */
           Cheese = 0,
@@ -64,7 +69,8 @@ runInEachFileSystem(os => {
           /** Or "tomato" if you are British */
           Tomato = "tomato",
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 

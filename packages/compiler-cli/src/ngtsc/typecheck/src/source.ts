@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
+import {
+  AbsoluteSourceSpan,
+  ParseLocation,
+  ParseSourceFile,
+  ParseSourceSpan,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {TemplateId, TemplateSourceMapping} from '../api';
@@ -20,9 +25,12 @@ import {TemplateSourceResolver} from './tcb_util';
  * used when translating parse offsets in diagnostics back to their original line/column location.
  */
 export class TemplateSource {
-  private lineStarts: number[]|null = null;
+  private lineStarts: number[] | null = null;
 
-  constructor(readonly mapping: TemplateSourceMapping, private file: ParseSourceFile) {}
+  constructor(
+    readonly mapping: TemplateSourceMapping,
+    private file: ParseSourceFile,
+  ) {}
 
   toParseSourceSpan(start: number, end: number): ParseSourceSpan {
     const startLoc = this.toParseLocation(start);
@@ -61,8 +69,11 @@ export class TemplateSourceManager implements TemplateSourceResolver {
     return getTemplateId(node);
   }
 
-  captureSource(node: ts.ClassDeclaration, mapping: TemplateSourceMapping, file: ParseSourceFile):
-      TemplateId {
+  captureSource(
+    node: ts.ClassDeclaration,
+    mapping: TemplateSourceMapping,
+    file: ParseSourceFile,
+  ): TemplateId {
     const id = getTemplateId(node);
     this.templateSources.set(id, new TemplateSource(mapping, file));
     return id;
@@ -75,7 +86,7 @@ export class TemplateSourceManager implements TemplateSourceResolver {
     return this.templateSources.get(id)!.mapping;
   }
 
-  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null {
+  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan | null {
     if (!this.templateSources.has(id)) {
       return null;
     }

@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ZoneType} from '../zone-impl';
+
 /**
  * A `TaskTrackingZoneSpec` allows one to track all outstanding Tasks.
  *
  * This is useful in tests. For example to see which tasks are preventing a test from completing
  * or an automated way of releasing all of the event listeners at the end of the test.
  */
-class TaskTrackingZoneSpec implements ZoneSpec {
+export class TaskTrackingZoneSpec implements ZoneSpec {
   name = 'TaskTrackingZone';
   microTasks: Task[] = [];
   macroTasks: Task[] = [];
@@ -35,16 +37,24 @@ class TaskTrackingZoneSpec implements ZoneSpec {
     throw new Error('Unknown task format: ' + type);
   }
 
-  onScheduleTask(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-      Task {
+  onScheduleTask(
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    task: Task,
+  ): Task {
     (task as any)['creationLocation'] = new Error(`Task '${task.type}' from '${task.source}'.`);
     const tasks = this.getTasksFor(task.type);
     tasks.push(task);
     return parentZoneDelegate.scheduleTask(targetZone, task);
   }
 
-  onCancelTask(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-      any {
+  onCancelTask(
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    task: Task,
+  ): any {
     const tasks = this.getTasksFor(task.type);
     for (let i = 0; i < tasks.length; i++) {
       if (tasks[i] == task) {
@@ -56,8 +66,13 @@ class TaskTrackingZoneSpec implements ZoneSpec {
   }
 
   onInvokeTask(
-      parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task,
-      applyThis: any, applyArgs: any): any {
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    task: Task,
+    applyThis: any,
+    applyArgs: any,
+  ): any {
     if (task.type === 'eventTask' || task.data?.isPeriodic)
       return parentZoneDelegate.invokeTask(targetZone, task, applyThis, applyArgs);
     const tasks = this.getTasksFor(task.type);
@@ -77,6 +92,8 @@ class TaskTrackingZoneSpec implements ZoneSpec {
   }
 }
 
-// Export the class so that new instances can be created with proper
-// constructor params.
-(Zone as any)['TaskTrackingZoneSpec'] = TaskTrackingZoneSpec;
+export function patchTaskTracking(Zone: ZoneType): void {
+  // Export the class so that new instances can be created with proper
+  // constructor params.
+  (Zone as any)['TaskTrackingZoneSpec'] = TaskTrackingZoneSpec;
+}

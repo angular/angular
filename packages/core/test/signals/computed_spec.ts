@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal, watch} from '@angular/core/src/signals';
+import {computed, signal} from '@angular/core';
+import {createWatch} from '@angular/core/primitives/signals';
 
 describe('computed', () => {
   it('should create computed', () => {
@@ -34,18 +35,17 @@ describe('computed', () => {
     expect(c()).toEqual(1);
   });
 
-  it('should not re-compute if the dependency is a primitive value and the value did not change',
-     () => {
-       const counter = signal(0);
+  it('should not re-compute if the dependency is a primitive value and the value did not change', () => {
+    const counter = signal(0);
 
-       let computedRunCount = 0;
-       const double = computed(() => `${counter() * 2}:${++computedRunCount}`);
+    let computedRunCount = 0;
+    const double = computed(() => `${counter() * 2}:${++computedRunCount}`);
 
-       expect(double()).toEqual('0:1');
+    expect(double()).toEqual('0:1');
 
-       counter.set(0);
-       expect(double()).toEqual('0:1');
-     });
+    counter.set(0);
+    expect(double()).toEqual('0:1');
+  });
 
   it('should chain computed', () => {
     const name = signal('abc');
@@ -64,8 +64,9 @@ describe('computed', () => {
     const show = signal(true);
 
     let computeCount = 0;
-    const displayName =
-        computed(() => `${show() ? `${name()} aged ${age()}` : 'anonymous'}:${++computeCount}`);
+    const displayName = computed(
+      () => `${show() ? `${name()} aged ${age()}` : 'anonymous'}:${++computeCount}`,
+    );
 
     expect(displayName()).toEqual('John aged 25:1');
 
@@ -107,7 +108,7 @@ describe('computed', () => {
     expect(c()).toEqual('OK');
   });
 
-  it('should not update dependencies of computations when dependencies don\'t change', () => {
+  it("should not update dependencies of computations when dependencies don't change", () => {
     const source = signal(0);
     const isEven = computed(() => source() % 2 === 0);
     let updateCounter = 0;
@@ -138,14 +139,15 @@ describe('computed', () => {
     const derived = computed(() => source().toUpperCase());
 
     let watchCount = 0;
-    const w = watch(
-        () => {
-          derived();
-        },
-        () => {
-          watchCount++;
-        },
-        false);
+    const w = createWatch(
+      () => {
+        derived();
+      },
+      () => {
+        watchCount++;
+      },
+      false,
+    );
 
     w.run();
     expect(watchCount).toEqual(0);
@@ -184,5 +186,11 @@ describe('computed', () => {
     });
 
     expect(illegal).toThrow();
+  });
+
+  it('should have a toString implementation', () => {
+    const counter = signal(1);
+    const double = computed(() => counter() * 2);
+    expect(double + '').toBe('[Computed: 2]');
   });
 });

@@ -21,7 +21,10 @@ class Todo {
     this._title = value.trim();
   }
 
-  constructor(title: string, public completed: boolean = false) {
+  constructor(
+    title: string,
+    public completed: boolean = false,
+  ) {
     this.editing = false;
     this.title = title;
   }
@@ -46,7 +49,7 @@ class TodoStore {
   }
 
   setAllTo(completed: boolean) {
-    this.todos.forEach((t: Todo) => t.completed = completed);
+    this.todos.forEach((t: Todo) => (t.completed = completed));
   }
 
   removeCompleted() {
@@ -77,13 +80,15 @@ class TodoStore {
 @Component({
   selector: 'todo-app',
   // TODO(misko): make this work with `[(ngModel)]`
-  styles: [`
+  styles: [
+    `
     .todo-list li.completed label {
       color: #d9d9d9;
       text-decoration: line-through;
       font-weight:bold;
     }
-  `],
+  `,
+  ],
   template: `
   <section class="todoapp">
     <header class="header">

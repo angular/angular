@@ -1,6 +1,6 @@
 decls: 7,
 vars: 5,
-consts: function() {
+consts: () => {
   __i18nMsg__('My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ one }}'}}, {})
   __i18nMsg__('My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ two | uppercase }}'}}, {})
   __i18nMsg__('My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ three + four + five }}'}}, {})
@@ -24,7 +24,7 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵi18nExp(ctx.one);
     $r3$.ɵɵi18nApply(1);
     $r3$.ɵɵadvance(3);

@@ -10,9 +10,14 @@ import {DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
 import {RNode} from '../render3/interfaces/renderer_dom';
 
 import {removeDehydratedViews} from './cleanup';
-import {DehydratedContainerView, MULTIPLIER, NUM_ROOT_NODES, SerializedContainerView, TEMPLATE_ID} from './interfaces';
+import {
+  DehydratedContainerView,
+  MULTIPLIER,
+  NUM_ROOT_NODES,
+  SerializedContainerView,
+  TEMPLATE_ID,
+} from './interfaces';
 import {siblingAfter} from './node_lookup_utils';
-
 
 /**
  * Given a current DOM node and a serialized information about the views
@@ -20,8 +25,9 @@ import {siblingAfter} from './node_lookup_utils';
  * dehydrated views.
  */
 export function locateDehydratedViewsInContainer(
-    currentRNode: RNode,
-    serializedViews: SerializedContainerView[]): [RNode, DehydratedContainerView[]] {
+  currentRNode: RNode,
+  serializedViews: SerializedContainerView[],
+): [RNode, DehydratedContainerView[]] {
   const dehydratedViews: DehydratedContainerView[] = [];
   for (const serializedView of serializedViews) {
     // Repeats a view multiple times as needed, based on the serialized information
@@ -53,8 +59,7 @@ export function locateDehydratedViewsInContainer(
  * stored on a given lContainer.
  * Returns `null` by default, when hydration is not enabled.
  */
-let _findMatchingDehydratedViewImpl: typeof findMatchingDehydratedViewImpl =
-    (lContainer: LContainer, template: string|null) => null;
+let _findMatchingDehydratedViewImpl: typeof findMatchingDehydratedViewImpl = () => null;
 
 /**
  * Retrieves the next dehydrated view from the LContainer and verifies that
@@ -66,9 +71,11 @@ let _findMatchingDehydratedViewImpl: typeof findMatchingDehydratedViewImpl =
  * in this container.
  */
 function findMatchingDehydratedViewImpl(
-    lContainer: LContainer, template: string|null): DehydratedContainerView|null {
-  const views = lContainer[DEHYDRATED_VIEWS] ?? [];
-  if (!template || views.length === 0) {
+  lContainer: LContainer,
+  template: string | null,
+): DehydratedContainerView | null {
+  const views = lContainer[DEHYDRATED_VIEWS];
+  if (!template || views === null || views.length === 0) {
     return null;
   }
   const view = views[0];
@@ -93,6 +100,8 @@ export function enableFindMatchingDehydratedViewImpl() {
 }
 
 export function findMatchingDehydratedView(
-    lContainer: LContainer, template: string|null): DehydratedContainerView|null {
+  lContainer: LContainer,
+  template: string | null,
+): DehydratedContainerView | null {
   return _findMatchingDehydratedViewImpl(lContainer, template);
 }

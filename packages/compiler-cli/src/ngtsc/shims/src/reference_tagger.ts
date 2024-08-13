@@ -36,15 +36,20 @@ export class ShimReferenceTagger {
   private enabled: boolean = true;
 
   constructor(shimExtensions: string[]) {
-    this.suffixes = shimExtensions.map(extension => `.${extension}.ts`);
+    this.suffixes = shimExtensions.map((extension) => `.${extension}.ts`);
   }
 
   /**
    * Tag `sf` with any needed references if it's not a shim itself.
    */
   tag(sf: ts.SourceFile): void {
-    if (!this.enabled || sf.isDeclarationFile || isShim(sf) || this.tagged.has(sf) ||
-        !isNonDeclarationTsPath(sf.fileName)) {
+    if (
+      !this.enabled ||
+      sf.isDeclarationFile ||
+      isShim(sf) ||
+      this.tagged.has(sf) ||
+      !isNonDeclarationTsPath(sf.fileName)
+    ) {
       return;
     }
 
@@ -57,7 +62,6 @@ export class ShimReferenceTagger {
     }
 
     const referencedFiles = [...ext.originalReferencedFiles];
-
 
     const sfPath = absoluteFromSourceFile(sf);
     for (const suffix of this.suffixes) {

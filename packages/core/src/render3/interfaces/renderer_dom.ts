@@ -22,31 +22,24 @@ export interface RNode {
   /**
    * Returns the parent Element, Document, or DocumentFragment
    */
-  parentNode: RNode|null;
-
+  parentNode: RNode | null;
 
   /**
    * Returns the parent Element if there is one
    */
-  parentElement: RElement|null;
+  parentElement: RElement | null;
 
   /**
    * Gets the Node immediately following this one in the parent's childNodes
    */
-  nextSibling: RNode|null;
-
-  /**
-   * Removes a child from the current node and returns the removed node
-   * @param oldChild the child node to remove
-   */
-  removeChild(oldChild: RNode): RNode;
+  nextSibling: RNode | null;
 
   /**
    * Insert a child node.
    *
    * Used exclusively for adding View root nodes into ViewAnchor location.
    */
-  insertBefore(newChild: RNode, refChild: RNode|null, isViewRoot: boolean): void;
+  insertBefore(newChild: RNode, refChild: RNode | null, isViewRoot: boolean): void;
 
   /**
    * Append a child node.
@@ -61,28 +54,30 @@ export interface RNode {
  * listeners on Element.
  */
 export interface RElement extends RNode {
-  firstChild: RNode|null;
+  firstChild: RNode | null;
   style: RCssStyleDeclaration;
   classList: RDomTokenList;
   className: string;
   tagName: string;
-  textContent: string|null;
+  textContent: string | null;
   hasAttribute(name: string): boolean;
-  getAttribute(name: string): string|null;
-  setAttribute(name: string, value: string|TrustedHTML|TrustedScript|TrustedScriptURL): void;
+  getAttribute(name: string): string | null;
+  setAttribute(name: string, value: string | TrustedHTML | TrustedScript | TrustedScriptURL): void;
   removeAttribute(name: string): void;
   setAttributeNS(
-      namespaceURI: string, qualifiedName: string,
-      value: string|TrustedHTML|TrustedScript|TrustedScriptURL): void;
+    namespaceURI: string,
+    qualifiedName: string,
+    value: string | TrustedHTML | TrustedScript | TrustedScriptURL,
+  ): void;
   addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
   removeEventListener(type: string, listener?: EventListener, options?: boolean): void;
-
+  remove(): void;
   setProperty?(name: string, value: any): void;
 }
 
 export interface RCssStyleDeclaration {
   removeProperty(propertyName: string): string;
-  setProperty(propertyName: string, value: string|null, priority?: string): void;
+  setProperty(propertyName: string, value: string | null, priority?: string): void;
 }
 
 export interface RDomTokenList {
@@ -91,18 +86,14 @@ export interface RDomTokenList {
 }
 
 export interface RText extends RNode {
-  textContent: string|null;
+  textContent: string | null;
 }
 
 export interface RComment extends RNode {
-  textContent: string|null;
+  textContent: string | null;
 }
 
 export interface RTemplate extends RElement {
   tagName: 'TEMPLATE';
   content: RNode;
 }
-
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;

@@ -10,6 +10,8 @@
 // about state in an instruction are correct before implementing any logic.
 // They are meant only to be called in dev mode as sanity checks.
 
+import {getActiveConsumer} from '@angular/core/primitives/signals';
+
 import {stringify} from './stringify';
 
 export function assertNumber(actual: any, msg: string): asserts actual is number {
@@ -19,7 +21,10 @@ export function assertNumber(actual: any, msg: string): asserts actual is number
 }
 
 export function assertNumberInRange(
-    actual: any, minInclusive: number, maxInclusive: number): asserts actual is number {
+  actual: any,
+  minInclusive: number,
+  maxInclusive: number,
+): asserts actual is number {
   assertNumber(actual, 'Expected a number');
   assertLessThanOrEqual(actual, maxInclusive, 'Expected number to be less than or equal to');
   assertGreaterThanOrEqual(actual, minInclusive, 'Expected number to be greater than or equal to');
@@ -80,7 +85,10 @@ export function assertGreaterThan<T>(actual: T, expected: T, msg: string): asser
 }
 
 export function assertGreaterThanOrEqual<T>(
-    actual: T, expected: T, msg: string): asserts actual is T {
+  actual: T,
+  expected: T,
+  msg: string,
+): asserts actual is T {
   if (!(actual >= expected)) {
     throwError(msg, actual, expected, '>=');
   }
@@ -92,7 +100,7 @@ export function assertNotDefined<T>(actual: T, msg: string) {
   }
 }
 
-export function assertDefined<T>(actual: T|null|undefined, msg: string): asserts actual is T {
+export function assertDefined<T>(actual: T | null | undefined, msg: string): asserts actual is T {
   if (actual == null) {
     throwError(msg, actual, null, '!=');
   }
@@ -102,8 +110,9 @@ export function throwError(msg: string): never;
 export function throwError(msg: string, actual: any, expected: any, comparison: string): never;
 export function throwError(msg: string, actual?: any, expected?: any, comparison?: string): never {
   throw new Error(
-      `ASSERTION ERROR: ${msg}` +
-      (comparison == null ? '' : ` [Expected=> ${expected} ${comparison} ${actual} <=Actual]`));
+    `ASSERTION ERROR: ${msg}` +
+      (comparison == null ? '' : ` [Expected=> ${expected} ${comparison} ${actual} <=Actual]`),
+  );
 }
 
 export function assertDomNode(node: any): asserts node is Node {
@@ -128,6 +137,13 @@ export function assertIndexInRange(arr: any[], index: number) {
 
 export function assertOneOf(value: any, ...validValues: any[]) {
   if (validValues.indexOf(value) !== -1) return true;
-  throwError(`Expected value to be one of ${JSON.stringify(validValues)} but was ${
-      JSON.stringify(value)}.`);
+  throwError(
+    `Expected value to be one of ${JSON.stringify(validValues)} but was ${JSON.stringify(value)}.`,
+  );
+}
+
+export function assertNotReactive(fn: string): void {
+  if (getActiveConsumer() !== null) {
+    throwError(`${fn}() should never be called in a reactive context.`);
+  }
 }

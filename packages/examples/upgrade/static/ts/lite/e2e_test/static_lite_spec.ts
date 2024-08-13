@@ -39,7 +39,7 @@ describe('upgrade/static (lite)', () => {
     // Verify the `<ng1-hero>` components.
     expect(ng1Heroes.count()).toBe(isShown ? ng1HeroCount : 0);
     if (isShown) {
-      ng1Heroes.each(ng1Hero => expect(ng1Hero).toBeAHero());
+      ng1Heroes.each((ng1Hero) => expect(ng1Hero).toBeAHero());
     }
   };
 

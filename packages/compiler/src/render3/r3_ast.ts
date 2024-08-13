@@ -7,7 +7,14 @@
  */
 
 import {SecurityContext} from '../core';
-import {AST, ASTWithSource, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast';
+import {
+  AST,
+  ASTWithSource,
+  BindingType,
+  BoundElementProperty,
+  ParsedEvent,
+  ParsedEventType,
+} from '../expression_parser/ast';
 import {I18nMeta} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 
@@ -23,21 +30,31 @@ export interface Node {
  * is true.
  */
 export class Comment implements Node {
-  constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+    public value: string,
+    public sourceSpan: ParseSourceSpan,
+  ) {}
   visit<Result>(_visitor: Visitor<Result>): Result {
     throw new Error('visit() not implemented for Comment');
   }
 }
 
 export class Text implements Node {
-  constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(
+    public value: string,
+    public sourceSpan: ParseSourceSpan,
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitText(this);
   }
 }
 
 export class BoundText implements Node {
-  constructor(public value: AST, public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
+  constructor(
+    public value: AST,
+    public sourceSpan: ParseSourceSpan,
+    public i18n?: I18nMeta,
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitBoundText(this);
   }
@@ -51,9 +68,13 @@ export class BoundText implements Node {
  */
 export class TextAttribute implements Node {
   constructor(
-      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      readonly keySpan: ParseSourceSpan|undefined, public valueSpan?: ParseSourceSpan,
-      public i18n?: I18nMeta) {}
+    public name: string,
+    public value: string,
+    public sourceSpan: ParseSourceSpan,
+    readonly keySpan: ParseSourceSpan | undefined,
+    public valueSpan?: ParseSourceSpan,
+    public i18n?: I18nMeta,
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitTextAttribute(this);
   }
@@ -61,20 +82,34 @@ export class TextAttribute implements Node {
 
 export class BoundAttribute implements Node {
   constructor(
-      public name: string, public type: BindingType, public securityContext: SecurityContext,
-      public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan,
-      readonly keySpan: ParseSourceSpan, public valueSpan: ParseSourceSpan|undefined,
-      public i18n: I18nMeta|undefined) {}
+    public name: string,
+    public type: BindingType,
+    public securityContext: SecurityContext,
+    public value: AST,
+    public unit: string | null,
+    public sourceSpan: ParseSourceSpan,
+    readonly keySpan: ParseSourceSpan,
+    public valueSpan: ParseSourceSpan | undefined,
+    public i18n: I18nMeta | undefined,
+  ) {}
 
   static fromBoundElementProperty(prop: BoundElementProperty, i18n?: I18nMeta): BoundAttribute {
     if (prop.keySpan === undefined) {
       throw new Error(
-          `Unexpected state: keySpan must be defined for bound attributes but was not for ${
-              prop.name}: ${prop.sourceSpan}`);
+        `Unexpected state: keySpan must be defined for bound attributes but was not for ${prop.name}: ${prop.sourceSpan}`,
+      );
     }
     return new BoundAttribute(
-        prop.name, prop.type, prop.securityContext, prop.value, prop.unit, prop.sourceSpan,
-        prop.keySpan, prop.valueSpan, i18n);
+      prop.name,
+      prop.type,
+      prop.securityContext,
+      prop.value,
+      prop.unit,
+      prop.sourceSpan,
+      prop.keySpan,
+      prop.valueSpan,
+      i18n,
+    );
   }
 
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -84,21 +119,36 @@ export class BoundAttribute implements Node {
 
 export class BoundEvent implements Node {
   constructor(
-      public name: string, public type: ParsedEventType, public handler: AST,
-      public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan,
-      public handlerSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan) {}
+    public name: string,
+    public type: ParsedEventType,
+    public handler: AST,
+    public target: string | null,
+    public phase: string | null,
+    public sourceSpan: ParseSourceSpan,
+    public handlerSpan: ParseSourceSpan,
+    readonly keySpan: ParseSourceSpan,
+  ) {}
 
   static fromParsedEvent(event: ParsedEvent) {
-    const target: string|null = event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
-    const phase: string|null =
-        event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
+    const target: string | null =
+      event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
+    const phase: string | null =
+      event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
     if (event.keySpan === undefined) {
-      throw new Error(`Unexpected state: keySpan must be defined for bound event but was not for ${
-          event.name}: ${event.sourceSpan}`);
+      throw new Error(
+        `Unexpected state: keySpan must be defined for bound event but was not for ${event.name}: ${event.sourceSpan}`,
+      );
     }
     return new BoundEvent(
-        event.name, event.type, event.handler, target, phase, event.sourceSpan, event.handlerSpan,
-        event.keySpan);
+      event.name,
+      event.type,
+      event.handler,
+      target,
+      phase,
+      event.sourceSpan,
+      event.handlerSpan,
+      event.keySpan,
+    );
   }
 
   visit<Result>(visitor: Visitor<Result>): Result {
@@ -108,17 +158,29 @@ export class BoundEvent implements Node {
 
 export class Element implements Node {
   constructor(
-      public name: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
-      public outputs: BoundEvent[], public children: Node[], public references: Reference[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nMeta) {}
+    public name: string,
+    public attributes: TextAttribute[],
+    public inputs: BoundAttribute[],
+    public outputs: BoundEvent[],
+    public children: Node[],
+    public references: Reference[],
+    public sourceSpan: ParseSourceSpan,
+    public startSourceSpan: ParseSourceSpan,
+    public endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta,
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitElement(this);
   }
 }
 
 export abstract class DeferredTrigger implements Node {
-  constructor(public sourceSpan: ParseSourceSpan) {}
+  constructor(
+    public nameSpan: ParseSourceSpan | null,
+    public sourceSpan: ParseSourceSpan,
+    public prefetchSpan: ParseSourceSpan | null,
+    public whenOrOnSourceSpan: ParseSourceSpan | null,
+  ) {}
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredTrigger(this);
@@ -126,8 +188,15 @@ export abstract class DeferredTrigger implements Node {
 }
 
 export class BoundDeferredTrigger extends DeferredTrigger {
-  constructor(public value: AST, sourceSpan: ParseSourceSpan) {
-    super(sourceSpan);
+  constructor(
+    public value: AST,
+    sourceSpan: ParseSourceSpan,
+    prefetchSpan: ParseSourceSpan | null,
+    whenSourceSpan: ParseSourceSpan,
+  ) {
+    // BoundDeferredTrigger is for 'when' triggers. These aren't really "triggers" and don't have a
+    // nameSpan. Trigger names are the built in event triggers like hover, interaction, etc.
+    super(/** nameSpan */ null, sourceSpan, prefetchSpan, whenSourceSpan);
   }
 }
 
@@ -136,54 +205,110 @@ export class IdleDeferredTrigger extends DeferredTrigger {}
 export class ImmediateDeferredTrigger extends DeferredTrigger {}
 
 export class HoverDeferredTrigger extends DeferredTrigger {
-  constructor(public reference: string, sourceSpan: ParseSourceSpan) {
-    super(sourceSpan);
+  constructor(
+    public reference: string | null,
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    prefetchSpan: ParseSourceSpan | null,
+    onSourceSpan: ParseSourceSpan | null,
+  ) {
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
 
 export class TimerDeferredTrigger extends DeferredTrigger {
-  constructor(public delay: number, sourceSpan: ParseSourceSpan) {
-    super(sourceSpan);
+  constructor(
+    public delay: number,
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    prefetchSpan: ParseSourceSpan | null,
+    onSourceSpan: ParseSourceSpan | null,
+  ) {
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
 
 export class InteractionDeferredTrigger extends DeferredTrigger {
-  constructor(public reference: string, sourceSpan: ParseSourceSpan) {
-    super(sourceSpan);
+  constructor(
+    public reference: string | null,
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    prefetchSpan: ParseSourceSpan | null,
+    onSourceSpan: ParseSourceSpan | null,
+  ) {
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
 
 export class ViewportDeferredTrigger extends DeferredTrigger {
-  constructor(public reference: string|null, sourceSpan: ParseSourceSpan) {
-    super(sourceSpan);
+  constructor(
+    public reference: string | null,
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    prefetchSpan: ParseSourceSpan | null,
+    onSourceSpan: ParseSourceSpan | null,
+  ) {
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
   }
 }
 
-export class DeferredBlockPlaceholder implements Node {
+export class BlockNode {
   constructor(
-      public children: Node[], public minimumTime: number|null, public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+    public nameSpan: ParseSourceSpan,
+    public sourceSpan: ParseSourceSpan,
+    public startSourceSpan: ParseSourceSpan,
+    public endSourceSpan: ParseSourceSpan | null,
+  ) {}
+}
+
+export class DeferredBlockPlaceholder extends BlockNode implements Node {
+  constructor(
+    public children: Node[],
+    public minimumTime: number | null,
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockPlaceholder(this);
   }
 }
 
-export class DeferredBlockLoading implements Node {
+export class DeferredBlockLoading extends BlockNode implements Node {
   constructor(
-      public children: Node[], public afterTime: number|null, public minimumTime: number|null,
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null) {}
+    public children: Node[],
+    public afterTime: number | null,
+    public minimumTime: number | null,
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockLoading(this);
   }
 }
 
-export class DeferredBlockError implements Node {
+export class DeferredBlockError extends BlockNode implements Node {
   constructor(
-      public children: Node[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+    public children: Node[],
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitDeferredBlockError(this);
@@ -200,18 +325,27 @@ export interface DeferredBlockTriggers {
   viewport?: ViewportDeferredTrigger;
 }
 
-export class DeferredBlock implements Node {
+export class DeferredBlock extends BlockNode implements Node {
   readonly triggers: Readonly<DeferredBlockTriggers>;
   readonly prefetchTriggers: Readonly<DeferredBlockTriggers>;
   private readonly definedTriggers: (keyof DeferredBlockTriggers)[];
   private readonly definedPrefetchTriggers: (keyof DeferredBlockTriggers)[];
 
   constructor(
-      public children: Node[], triggers: DeferredBlockTriggers,
-      prefetchTriggers: DeferredBlockTriggers, public placeholder: DeferredBlockPlaceholder|null,
-      public loading: DeferredBlockLoading|null, public error: DeferredBlockError|null,
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null) {
+    public children: Node[],
+    triggers: DeferredBlockTriggers,
+    prefetchTriggers: DeferredBlockTriggers,
+    public placeholder: DeferredBlockPlaceholder | null,
+    public loading: DeferredBlockLoading | null,
+    public error: DeferredBlockError | null,
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    public mainBlockSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
     this.triggers = triggers;
     this.prefetchTriggers = prefetchTriggers;
     // We cache the keys since we know that they won't change and we
@@ -228,105 +362,184 @@ export class DeferredBlock implements Node {
     this.visitTriggers(this.definedTriggers, this.triggers, visitor);
     this.visitTriggers(this.definedPrefetchTriggers, this.prefetchTriggers, visitor);
     visitAll(visitor, this.children);
-    this.placeholder && visitor.visitDeferredBlockPlaceholder(this.placeholder);
-    this.loading && visitor.visitDeferredBlockLoading(this.loading);
-    this.error && visitor.visitDeferredBlockError(this.error);
+    const remainingBlocks = [this.placeholder, this.loading, this.error].filter(
+      (x) => x !== null,
+    ) as Array<Node>;
+    visitAll(visitor, remainingBlocks);
   }
 
   private visitTriggers(
-      keys: (keyof DeferredBlockTriggers)[], triggers: DeferredBlockTriggers, visitor: Visitor) {
-    for (const key of keys) {
-      visitor.visitDeferredTrigger(triggers[key]!);
-    }
+    keys: (keyof DeferredBlockTriggers)[],
+    triggers: DeferredBlockTriggers,
+    visitor: Visitor,
+  ) {
+    visitAll(
+      visitor,
+      keys.map((k) => triggers[k]!),
+    );
   }
 }
 
-export class SwitchBlock implements Node {
+export class SwitchBlock extends BlockNode implements Node {
   constructor(
-      public expression: AST, public cases: SwitchBlockCase[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+    public expression: AST,
+    public cases: SwitchBlockCase[],
+    /**
+     * These blocks are only captured to allow for autocompletion in the language service. They
+     * aren't meant to be processed in any other way.
+     */
+    public unknownBlocks: UnknownBlock[],
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    nameSpan: ParseSourceSpan,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitSwitchBlock(this);
   }
 }
 
-export class SwitchBlockCase implements Node {
+export class SwitchBlockCase extends BlockNode implements Node {
   constructor(
-      public expression: AST|null, public children: Node[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan) {}
+    public expression: AST | null,
+    public children: Node[],
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    nameSpan: ParseSourceSpan,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitSwitchBlockCase(this);
   }
 }
 
-// Note: this is a weird way to define the properties, but we do it so that we can
-// get strong typing when the context is passed through `Object.values`.
-/** Context variables that can be used inside a `ForLoopBlock`. */
-export type ForLoopBlockContext =
-    Record<'$index'|'$first'|'$last'|'$even'|'$odd'|'$count', Variable>;
-
-export class ForLoopBlock implements Node {
+export class ForLoopBlock extends BlockNode implements Node {
   constructor(
-      public item: Variable, public expression: ASTWithSource, public trackBy: ASTWithSource,
-      public contextVariables: ForLoopBlockContext, public children: Node[],
-      public empty: ForLoopBlockEmpty|null, public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+    public item: Variable,
+    public expression: ASTWithSource,
+    public trackBy: ASTWithSource,
+    public trackKeywordSpan: ParseSourceSpan,
+    public contextVariables: Variable[],
+    public children: Node[],
+    public empty: ForLoopBlockEmpty | null,
+    sourceSpan: ParseSourceSpan,
+    public mainBlockSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    nameSpan: ParseSourceSpan,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlock(this);
   }
 }
 
-export class ForLoopBlockEmpty implements Node {
+export class ForLoopBlockEmpty extends BlockNode implements Node {
   constructor(
-      public children: Node[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan) {}
+    public children: Node[],
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    nameSpan: ParseSourceSpan,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitForLoopBlockEmpty(this);
   }
 }
 
-export class IfBlock implements Node {
+export class IfBlock extends BlockNode implements Node {
   constructor(
-      public branches: IfBlockBranch[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null) {}
+    public branches: IfBlockBranch[],
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    nameSpan: ParseSourceSpan,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitIfBlock(this);
   }
 }
 
-export class IfBlockBranch implements Node {
+export class IfBlockBranch extends BlockNode implements Node {
   constructor(
-      public expression: AST|null, public children: Node[], public expressionAlias: Variable|null,
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan) {}
+    public expression: AST | null,
+    public children: Node[],
+    public expressionAlias: Variable | null,
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    nameSpan: ParseSourceSpan,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
 
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitIfBlockBranch(this);
   }
 }
 
+export class UnknownBlock implements Node {
+  constructor(
+    public name: string,
+    public sourceSpan: ParseSourceSpan,
+    public nameSpan: ParseSourceSpan,
+  ) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitUnknownBlock(this);
+  }
+}
+
+export class LetDeclaration implements Node {
+  constructor(
+    public name: string,
+    public value: AST,
+    public sourceSpan: ParseSourceSpan,
+    public nameSpan: ParseSourceSpan,
+    public valueSpan: ParseSourceSpan,
+  ) {}
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitLetDeclaration(this);
+  }
+}
+
 export class Template implements Node {
   constructor(
-      // tagName is the name of the container element, if applicable.
-      // `null` is a special case for when there is a structural directive on an `ng-template` so
-      // the renderer can differentiate between the synthetic template and the one written in the
-      // file.
-      public tagName: string|null,
-      public attributes: TextAttribute[],
-      public inputs: BoundAttribute[],
-      public outputs: BoundEvent[],
-      public templateAttrs: (BoundAttribute|TextAttribute)[],
-      public children: Node[],
-      public references: Reference[],
-      public variables: Variable[],
-      public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null,
-      public i18n?: I18nMeta,
+    // tagName is the name of the container element, if applicable.
+    // `null` is a special case for when there is a structural directive on an `ng-template` so
+    // the renderer can differentiate between the synthetic template and the one written in the
+    // file.
+    public tagName: string | null,
+    public attributes: TextAttribute[],
+    public inputs: BoundAttribute[],
+    public outputs: BoundEvent[],
+    public templateAttrs: (BoundAttribute | TextAttribute)[],
+    public children: Node[],
+    public references: Reference[],
+    public variables: Variable[],
+    public sourceSpan: ParseSourceSpan,
+    public startSourceSpan: ParseSourceSpan,
+    public endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta,
   ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitTemplate(this);
@@ -337,8 +550,12 @@ export class Content implements Node {
   readonly name = 'ng-content';
 
   constructor(
-      public selector: string, public attributes: TextAttribute[],
-      public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
+    public selector: string,
+    public attributes: TextAttribute[],
+    public children: Node[],
+    public sourceSpan: ParseSourceSpan,
+    public i18n?: I18nMeta,
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitContent(this);
   }
@@ -346,8 +563,12 @@ export class Content implements Node {
 
 export class Variable implements Node {
   constructor(
-      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      readonly keySpan: ParseSourceSpan, public valueSpan?: ParseSourceSpan) {}
+    public name: string,
+    public value: string,
+    public sourceSpan: ParseSourceSpan,
+    readonly keySpan: ParseSourceSpan,
+    public valueSpan?: ParseSourceSpan,
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitVariable(this);
   }
@@ -355,8 +576,12 @@ export class Variable implements Node {
 
 export class Reference implements Node {
   constructor(
-      public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      readonly keySpan: ParseSourceSpan, public valueSpan?: ParseSourceSpan) {}
+    public name: string,
+    public value: string,
+    public sourceSpan: ParseSourceSpan,
+    readonly keySpan: ParseSourceSpan,
+    public valueSpan?: ParseSourceSpan,
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitReference(this);
   }
@@ -364,9 +589,11 @@ export class Reference implements Node {
 
 export class Icu implements Node {
   constructor(
-      public vars: {[name: string]: BoundText},
-      public placeholders: {[name: string]: Text|BoundText}, public sourceSpan: ParseSourceSpan,
-      public i18n?: I18nMeta) {}
+    public vars: {[name: string]: BoundText},
+    public placeholders: {[name: string]: Text | BoundText},
+    public sourceSpan: ParseSourceSpan,
+    public i18n?: I18nMeta,
+  ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitIcu(this);
   }
@@ -399,6 +626,8 @@ export interface Visitor<Result = any> {
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty): Result;
   visitIfBlock(block: IfBlock): Result;
   visitIfBlockBranch(block: IfBlockBranch): Result;
+  visitUnknownBlock(block: UnknownBlock): Result;
+  visitLetDeclaration(decl: LetDeclaration): Result;
 }
 
 export class RecursiveVisitor implements Visitor<void> {
@@ -436,10 +665,9 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.children);
   }
   visitForLoopBlock(block: ForLoopBlock): void {
-    block.item.visit(this);
-    visitAll(this, Object.values(block.contextVariables));
-    visitAll(this, block.children);
-    block.empty?.visit(this);
+    const blockItems = [block.item, ...block.contextVariables, ...block.children];
+    block.empty && blockItems.push(block.empty);
+    visitAll(this, blockItems);
   }
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty): void {
     visitAll(this, block.children);
@@ -448,10 +676,13 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.branches);
   }
   visitIfBlockBranch(block: IfBlockBranch): void {
-    visitAll(this, block.children);
-    block.expressionAlias?.visit(this);
+    const blockItems = block.children;
+    block.expressionAlias && blockItems.push(block.expressionAlias);
+    visitAll(this, blockItems);
   }
-  visitContent(content: Content): void {}
+  visitContent(content: Content): void {
+    visitAll(this, content.children);
+  }
   visitVariable(variable: Variable): void {}
   visitReference(reference: Reference): void {}
   visitTextAttribute(attribute: TextAttribute): void {}
@@ -461,8 +692,9 @@ export class RecursiveVisitor implements Visitor<void> {
   visitBoundText(text: BoundText): void {}
   visitIcu(icu: Icu): void {}
   visitDeferredTrigger(trigger: DeferredTrigger): void {}
+  visitUnknownBlock(block: UnknownBlock): void {}
+  visitLetDeclaration(decl: LetDeclaration): void {}
 }
-
 
 export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Result[] {
   const result: Result[] = [];

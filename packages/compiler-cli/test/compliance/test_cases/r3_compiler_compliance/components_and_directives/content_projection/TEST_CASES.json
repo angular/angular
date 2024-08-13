@@ -141,8 +141,35 @@
             "ng_content_with_structural_dir.js"
           ]
         }
+      ]
+    },
+    {
+      "description": "support projectAs on ng-content",
+      "inputFiles": [
+        "project_as_ng_content.ts"
       ],
-      "skipForTemplatePipeline": true
+      "expectations": [
+        {
+          "failureMessage": "Incorrect projection",
+          "files": [
+            "project_as_ng_content.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support fallback content in ng-content",
+      "inputFiles": [
+        "ng_content_fallback.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect projection",
+          "files": [
+            "ng_content_fallback.js"
+          ]
+        }
+      ]
     }
   ]
 }

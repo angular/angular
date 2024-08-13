@@ -84,16 +84,14 @@ describe('async', () => {
 
     timeout.$('.action').click();
 
-    whenAllStable().then((didWork: any) => {
+    whenAllStable().then(() => {
       // whenAllStable should only be called when all the async actions
       // finished, so the count should be 10 at this point.
       expect(timeout.$('.val').getText()).toEqual('10');
-      expect(didWork).toBeTruthy();  // Work was done.
     });
 
-    whenAllStable().then((didWork: any) => {
+    whenAllStable().then(() => {
       // whenAllStable should be called immediately since nothing is pending.
-      expect(didWork).toBeFalsy();  // No work was done.
       browser.ignoreSynchronization = false;
     });
   });

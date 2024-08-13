@@ -62,7 +62,7 @@ export interface AnalyzedIncrementalState {
    * All generated template type-checking files produced as part of this compilation, or `null` if
    * type-checking was not (yet) performed.
    */
-  typeCheckResults: Map<AbsoluteFsPath, FileTypeCheckingData>|null;
+  typeCheckResults: Map<AbsoluteFsPath, FileTypeCheckingData> | null;
 
   /**
    * Cumulative set of source file paths which were definitively emitted by this compilation or
@@ -73,7 +73,7 @@ export interface AnalyzedIncrementalState {
   /**
    * Map of source file paths to the version of this file as seen in the compilation.
    */
-  versions: Map<AbsoluteFsPath, string>|null;
+  versions: Map<AbsoluteFsPath, string> | null;
 }
 
 /**
@@ -111,4 +111,7 @@ export interface DeltaIncrementalState {
  *
  * Discriminated by the `IncrementalStateKind` enum.
  */
-export type IncrementalState = AnalyzedIncrementalState|DeltaIncrementalState|FreshIncrementalState;
+export type IncrementalState =
+  | AnalyzedIncrementalState
+  | DeltaIncrementalState
+  | FreshIncrementalState;

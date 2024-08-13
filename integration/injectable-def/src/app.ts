@@ -12,10 +12,6 @@ export class TestApp {}
 @NgModule({
   declarations: [TestApp],
   bootstrap: [TestApp],
-  imports: [
-    Lib2Module,
-    BrowserModule,
-    ServerModule,
-  ],
+  imports: [Lib2Module, BrowserModule, ServerModule],
 })
 export class AppModule {}

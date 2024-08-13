@@ -6,7 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, OnChanges, Output, Pipe, PipeTransform, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  Directive,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  Pipe,
+  PipeTransform,
+  SimpleChanges,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core';
 
 import {Hero} from './app.component';
 
@@ -44,7 +56,10 @@ class CounterDirectiveContext<T> {
 @Directive({selector: '[counterOf]'})
 export class CounterDirective implements OnChanges {
   // Object does not have an "$implicit" property.
-  constructor(private container: ViewContainerRef, private template: TemplateRef<Object>) {}
+  constructor(
+    private container: ViewContainerRef,
+    private template: TemplateRef<Object>,
+  ) {}
 
   @Input('counterOf') counter: number = 0;
   ngOnChanges(_changes: SimpleChanges) {
@@ -56,7 +71,7 @@ export class CounterDirective implements OnChanges {
 }
 
 interface WithContextDirectiveContext {
-  $implicit: {implicitPerson: Hero;};
+  $implicit: {implicitPerson: Hero};
   nonImplicitPerson: Hero;
 }
 
@@ -64,8 +79,10 @@ interface WithContextDirectiveContext {
 export class WithContextDirective {
   constructor(_template: TemplateRef<WithContextDirectiveContext>) {}
 
-  static ngTemplateContextGuard(dir: WithContextDirective, ctx: unknown):
-      ctx is WithContextDirectiveContext {
+  static ngTemplateContextGuard(
+    dir: WithContextDirective,
+    ctx: unknown,
+  ): ctx is WithContextDirectiveContext {
     return true;
   }
 }
@@ -86,7 +103,7 @@ export class EventSelectorDirective {
 export class TestPipe implements PipeTransform {
   transform(value: string, prefix: string): string;
   transform(value: number, prefix: number): number;
-  transform(value: string|number, prefix: string|number): string|number {
+  transform(value: string | number, prefix: string | number): string | number {
     if (typeof value === 'string') {
       return `${prefix} ${value}`;
     }
@@ -131,7 +148,7 @@ export class TemplateReference {
   readonlyHeroes: ReadonlyArray<Readonly<Hero>> = this.heroes;
   constNames = [{name: 'name'}] as const;
   private myField = 'My Field';
-  strOrNumber: string|number = '';
+  strOrNumber: string | number = '';
   setTitle(newTitle: string) {
     this.title = newTitle;
   }

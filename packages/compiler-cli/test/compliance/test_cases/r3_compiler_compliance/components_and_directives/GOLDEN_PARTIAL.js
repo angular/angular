@@ -8,7 +8,7 @@ export class HostBindingComp {
 HostBindingComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 HostBindingComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingComp, selector: "host-binding-comp", ngImport: i0, template: `
     <my-forward-directive></my-forward-directive>
-  `, isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(function () { return MyForwardDirective; }), selector: "my-forward-directive" }] });
+  `, isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(() => MyForwardDirective), selector: "my-forward-directive" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, decorators: [{
             type: Component,
             args: [{
@@ -60,7 +60,7 @@ export class HostBindingComp {
 HostBindingComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 HostBindingComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingComp, selector: "host-binding-comp", ngImport: i0, template: `
     <div [attr.style]="{} | my_forward_pipe">...</div>
-  `, isInline: true, dependencies: [{ kind: "pipe", type: i0.forwardRef(function () { return MyForwardPipe; }), name: "my_forward_pipe" }] });
+  `, isInline: true, dependencies: [{ kind: "pipe", type: i0.forwardRef(() => MyForwardPipe), name: "my_forward_pipe" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, decorators: [{
             type: Component,
             args: [{
@@ -616,5 +616,45 @@ export declare class TestModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<TestModule, [typeof TestComponent], [typeof i1.LibModule], never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<TestModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: debug_info.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Main {
+}
+Main.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Main, deps: [], target: i0.ɵɵFactoryTarget.Component });
+Main.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Main, selector: "ng-component", ngImport: i0, template: 'Hello Angular!', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Main, decorators: [{
+            type: Component,
+            args: [{
+                    template: 'Hello Angular!',
+                }]
+        }] });
+export class MainStandalone {
+}
+MainStandalone.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MainStandalone, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MainStandalone.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MainStandalone, isStandalone: true, selector: "ng-component", ngImport: i0, template: 'Hello Angular!', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MainStandalone, decorators: [{
+            type: Component,
+            args: [{
+                    standalone: true,
+                    template: 'Hello Angular!',
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: debug_info.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Main {
+    static ɵfac: i0.ɵɵFactoryDeclaration<Main, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<Main, "ng-component", never, {}, {}, never, never, false, never>;
+}
+export declare class MainStandalone {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MainStandalone, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MainStandalone, "ng-component", never, {}, {}, never, never, true, never>;
 }
 

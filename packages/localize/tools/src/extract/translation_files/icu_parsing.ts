@@ -55,8 +55,8 @@ export function extractIcuPlaceholders(text: string): string[] {
   const braces = /[{}]/g;
 
   let lastPos = 0;
-  let match: RegExpMatchArray|null;
-  while (match = braces.exec(text)) {
+  let match: RegExpMatchArray | null;
+  while ((match = braces.exec(text))) {
     if (match[0] == '{') {
       state.enterBlock();
     } else {
@@ -185,7 +185,7 @@ class StateStack {
     return this.stack[this.stack.length - 1];
   }
 }
-type ParserState = 'icu'|'case'|'placeholder'|undefined;
+type ParserState = 'icu' | 'case' | 'placeholder' | undefined;
 
 /**
  * Attempt to parse a simple placeholder name from a curly braced block.
@@ -197,7 +197,7 @@ type ParserState = 'icu'|'case'|'placeholder'|undefined;
  * @param start the index of the character in the `text` string where this placeholder may start.
  * @returns the placeholder name or `null` if it is not a placeholder.
  */
-function tryParsePlaceholder(text: string, start: number): string|null {
+function tryParsePlaceholder(text: string, start: number): string | null {
   for (let i = start; i < text.length; i++) {
     if (text[i] === ',') {
       break;

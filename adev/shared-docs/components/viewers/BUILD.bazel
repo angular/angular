@@ -1,0 +1,77 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module", "ts_library")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_module(
+    name = "viewers",
+    srcs = [
+        "docs-viewer/docs-viewer.component.ts",
+        "example-viewer/example-viewer.component.ts",
+    ],
+    assets = [
+        ":docs-viewer/docs-viewer.component.css",
+        ":example-viewer/example-viewer.component.css",
+        "example-viewer/example-viewer.component.html",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+    ],
+    deps = [
+        "//adev/shared-docs/components/breadcrumb",
+        "//adev/shared-docs/components/copy-source-code-button",
+        "//adev/shared-docs/components/table-of-contents",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/providers",
+        "//packages/common",
+        "//packages/core",
+        "//packages/router",
+        "@npm//@angular/cdk",
+        "@npm//@angular/material",
+        "@npm//@types/dom-view-transitions",
+    ],
+)
+
+sass_binary(
+    name = "example-viewer-style",
+    src = "example-viewer/example-viewer.component.scss",
+)
+
+sass_binary(
+    name = "docs-viewer-style",
+    src = "docs-viewer/docs-viewer.component.scss",
+    deps = [
+        "//adev/shared-docs/styles",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.spec.ts"],
+    ),
+    deps = [
+        ":viewers",
+        "//adev/shared-docs/components/breadcrumb",
+        "//adev/shared-docs/components/copy-source-code-button",
+        "//adev/shared-docs/components/icon",
+        "//adev/shared-docs/components/table-of-contents",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/services",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/router",
+        "//packages/router/testing",
+        "@npm//@angular/cdk",
+        "@npm//@angular/material",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

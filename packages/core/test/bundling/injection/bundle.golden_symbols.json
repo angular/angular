@@ -12,7 +12,7 @@
     "name": "EnvironmentInjector"
   },
   {
-    "name": "INJECTOR2"
+    "name": "INJECTOR"
   },
   {
     "name": "INJECTOR_DEF_TYPES"
@@ -75,6 +75,9 @@
     "name": "USE_VALUE"
   },
   {
+    "name": "_Injector"
+  },
+  {
     "name": "__forward_ref__"
   },
   {
@@ -84,7 +87,13 @@
     "name": "_injectImplementation"
   },
   {
+    "name": "activeConsumer"
+  },
+  {
     "name": "createInjector"
+  },
+  {
+    "name": "createLFrame"
   },
   {
     "name": "deepForEach"
@@ -129,6 +138,9 @@
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
+    "name": "instructionState"
+  },
+  {
     "name": "internalImportProvidersFrom"
   },
   {
@@ -148,6 +160,9 @@
   },
   {
     "name": "resolveForwardRef"
+  },
+  {
+    "name": "setActiveConsumer"
   },
   {
     "name": "setCurrentInjector"

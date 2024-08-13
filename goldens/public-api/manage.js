@@ -6,18 +6,17 @@ const argv = parser(process.argv.slice(2));
 // The command the user would like to run, either 'accept' or 'test'
 const USER_COMMAND = argv._[0];
 // The shell command to query for all Public API guard tests.
-const BAZEL_PUBLIC_API_TARGET_QUERY_CMD =
-    `yarn -s bazel query --output label 'kind(nodejs_test, ...) intersect attr("tags", "api_guard", ...)'`
+const BAZEL_PUBLIC_API_TARGET_QUERY_CMD = `yarn -s bazel query --output label 'kind(nodejs_test, ...) intersect attr("tags", "api_guard", ...)'`;
 // Bazel targets for testing Public API goldens
 process.stdout.write('Gathering all Public API targets');
 const ALL_PUBLIC_API_TESTS = exec(BAZEL_PUBLIC_API_TARGET_QUERY_CMD, {silent: true})
-                                 .trim()
-                                 .split('\n')
-                                 .map(test => test.trim());
+  .trim()
+  .split('\n')
+  .map((test) => test.trim());
 process.stdout.clearLine();
 process.stdout.cursorTo(0);
 // Bazel targets for generating Public API goldens
-const ALL_PUBLIC_API_ACCEPTS = ALL_PUBLIC_API_TESTS.map(test => `${test}.accept`);
+const ALL_PUBLIC_API_ACCEPTS = ALL_PUBLIC_API_TESTS.map((test) => `${test}.accept`);
 
 /**
  * Run the provided bazel commands on each provided target individually.

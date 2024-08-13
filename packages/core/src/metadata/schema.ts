@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * A schema definition associated with an NgModule.
  *
@@ -31,7 +30,7 @@ export interface SchemaMetadata {
  * @publicApi
  */
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
-  name: 'custom-elements'
+  name: 'custom-elements',
 };
 
 /**
@@ -44,5 +43,5 @@ export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
  * @publicApi
  */
 export const NO_ERRORS_SCHEMA: SchemaMetadata = {
-  name: 'no-errors-schema'
+  name: 'no-errors-schema',
 };

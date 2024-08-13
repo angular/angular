@@ -19,7 +19,10 @@ import {PerfPhase, PerfRecorder} from '../../perf';
 export class ImportGraph {
   private imports = new Map<ts.SourceFile, Set<ts.SourceFile>>();
 
-  constructor(private checker: ts.TypeChecker, private perf: PerfRecorder) {}
+  constructor(
+    private checker: ts.TypeChecker,
+    private perf: PerfRecorder,
+  ) {}
 
   /**
    * List the direct (not transitive) imports of a given `ts.SourceFile`.
@@ -44,7 +47,7 @@ export class ImportGraph {
    * @returns an array of source files that connect the `start` and `end` source files, or `null` if
    *     no path could be found.
    */
-  findPath(start: ts.SourceFile, end: ts.SourceFile): ts.SourceFile[]|null {
+  findPath(start: ts.SourceFile, end: ts.SourceFile): ts.SourceFile[] | null {
     if (start === end) {
       // Escape early for the case where `start` and `end` are the same.
       return [start];
@@ -86,13 +89,18 @@ export class ImportGraph {
       const imports = new Set<ts.SourceFile>();
       // Look through the source file for import and export statements.
       for (const stmt of sf.statements) {
-        if ((!ts.isImportDeclaration(stmt) && !ts.isExportDeclaration(stmt)) ||
-            stmt.moduleSpecifier === undefined) {
+        if (
+          (!ts.isImportDeclaration(stmt) && !ts.isExportDeclaration(stmt)) ||
+          stmt.moduleSpecifier === undefined
+        ) {
           continue;
         }
 
-        if (ts.isImportDeclaration(stmt) && stmt.importClause !== undefined &&
-            isTypeOnlyImportClause(stmt.importClause)) {
+        if (
+          ts.isImportDeclaration(stmt) &&
+          stmt.importClause !== undefined &&
+          isTypeOnlyImportClause(stmt.importClause)
+        ) {
           // Exclude type-only imports as they are always elided, so they don't contribute to
           // cycles.
           continue;
@@ -125,8 +133,11 @@ function isTypeOnlyImportClause(node: ts.ImportClause): boolean {
   }
 
   // All the specifiers in the cause are type-only (e.g. `import {type a, type b} from '...'`).
-  if (node.namedBindings !== undefined && ts.isNamedImports(node.namedBindings) &&
-      node.namedBindings.elements.every(specifier => specifier.isTypeOnly)) {
+  if (
+    node.namedBindings !== undefined &&
+    ts.isNamedImports(node.namedBindings) &&
+    node.namedBindings.elements.every((specifier) => specifier.isTypeOnly)
+  ) {
     return true;
   }
 
@@ -138,7 +149,10 @@ function isTypeOnlyImportClause(node: ts.ImportClause): boolean {
  * `getPath()` above.
  */
 class Found {
-  constructor(readonly sourceFile: ts.SourceFile, readonly parent: Found|null) {}
+  constructor(
+    readonly sourceFile: ts.SourceFile,
+    readonly parent: Found | null,
+  ) {}
 
   /**
    * Back track through this found SourceFile and its ancestors to generate an array of
@@ -146,7 +160,7 @@ class Found {
    */
   toPath(): ts.SourceFile[] {
     const array: ts.SourceFile[] = [];
-    let current: Found|null = this;
+    let current: Found | null = this;
     while (current !== null) {
       array.push(current.sourceFile);
       current = current.parent;

@@ -23,10 +23,10 @@ import type {CompilationJob} from '../compilation';
  *     is, the call is purely side-effectful).
  *   * No operations in between them uses the implicit context.
  */
-export function phaseMergeNextContext(job: CompilationJob): void {
+export function mergeNextContextExpressions(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Listener) {
+      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
         mergeNextContextsInOps(op.handlerOps);
       }
     }
@@ -37,8 +37,11 @@ export function phaseMergeNextContext(job: CompilationJob): void {
 function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     // Look for a candidate operation to maybe merge.
-    if (op.kind !== ir.OpKind.Statement || !(op.statement instanceof o.ExpressionStatement) ||
-        !(op.statement.expr instanceof ir.NextContextExpr)) {
+    if (
+      op.kind !== ir.OpKind.Statement ||
+      !(op.statement instanceof o.ExpressionStatement) ||
+      !(op.statement.expr instanceof ir.NextContextExpr)
+    ) {
       continue;
     }
 
@@ -46,8 +49,11 @@ function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
 
     // Try to merge this `ir.NextContextExpr`.
     let tryToMerge = true;
-    for (let candidate = op.next!; candidate.kind !== ir.OpKind.ListEnd && tryToMerge;
-         candidate = candidate.next!) {
+    for (
+      let candidate = op.next!;
+      candidate.kind !== ir.OpKind.ListEnd && tryToMerge;
+      candidate = candidate.next!
+    ) {
       ir.visitExpressionsInOp(candidate, (expr, flags) => {
         if (!ir.isIrExpression(expr)) {
           return expr;
@@ -72,6 +78,7 @@ function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
             break;
           case ir.ExpressionKind.GetCurrentView:
           case ir.ExpressionKind.Reference:
+          case ir.ExpressionKind.ContextLetReference:
             // Can't merge past a dependency on the context.
             tryToMerge = false;
             break;

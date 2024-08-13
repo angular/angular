@@ -9,7 +9,6 @@
 import '@angular/compiler';
 import {INJECTOR, ScopedService} from './usage';
 
-
 describe('functional test for injection system bundling', () => {
   it('should be able to inject the scoped service', () => {
     expect(INJECTOR.get(ScopedService) instanceof ScopedService).toBe(true);

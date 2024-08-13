@@ -17,11 +17,13 @@ import {ClassDeclaration, Decorator} from '../../../reflection';
 import {createValueHasWrongTypeError} from './diagnostics';
 import {isAngularCoreReference, unwrapExpression} from './util';
 
-
 export function resolveEnumValue(
-    evaluator: PartialEvaluator, metadata: Map<string, ts.Expression>, field: string,
-    enumSymbolName: string): number|null {
-  let resolved: number|null = null;
+  evaluator: PartialEvaluator,
+  metadata: Map<string, ts.Expression>,
+  field: string,
+  enumSymbolName: string,
+): number | null {
+  let resolved: number | null = null;
   if (metadata.has(field)) {
     const expr = metadata.get(field)!;
     const value = evaluator.evaluate(expr) as any;
@@ -29,7 +31,10 @@ export function resolveEnumValue(
       resolved = value.resolved as number;
     } else {
       throw createValueHasWrongTypeError(
-          expr, value, `${field} must be a member of ${enumSymbolName} enum from @angular/core`);
+        expr,
+        value,
+        `${field} must be a member of ${enumSymbolName} enum from @angular/core`,
+      );
     }
   }
   return resolved;
@@ -42,7 +47,7 @@ export function resolveEnumValue(
  * The static analysis is still needed in local compilation mode since the value of this enum will
  * be used later to decide the generated code for styles.
  */
-export function resolveEncapsulationEnumValueLocally(expr?: ts.Expression): number|null {
+export function resolveEncapsulationEnumValueLocally(expr?: ts.Expression): number | null {
   if (!expr) {
     return null;
   }
@@ -69,13 +74,16 @@ export function resolveEncapsulationEnumValueLocally(expr?: ts.Expression): numb
 
 /** Determines if the result of an evaluation is a string array. */
 export function isStringArray(resolvedValue: ResolvedValue): resolvedValue is string[] {
-  return Array.isArray(resolvedValue) && resolvedValue.every(elem => typeof elem === 'string');
+  return Array.isArray(resolvedValue) && resolvedValue.every((elem) => typeof elem === 'string');
 }
 
-export function isClassReferenceArray(resolvedValue: ResolvedValue):
-    resolvedValue is Reference<ClassDeclaration>[] {
-  return Array.isArray(resolvedValue) &&
-      resolvedValue.every(elem => elem instanceof Reference && ts.isClassDeclaration(elem.node));
+export function isClassReferenceArray(
+  resolvedValue: ResolvedValue,
+): resolvedValue is Reference<ClassDeclaration>[] {
+  return (
+    Array.isArray(resolvedValue) &&
+    resolvedValue.every((elem) => elem instanceof Reference && ts.isClassDeclaration(elem.node))
+  );
 }
 
 export function isArray(value: ResolvedValue): value is Array<ResolvedValue> {
@@ -83,21 +91,27 @@ export function isArray(value: ResolvedValue): value is Array<ResolvedValue> {
 }
 
 export function resolveLiteral(
-    decorator: Decorator,
-    literalCache: Map<Decorator, ts.ObjectLiteralExpression>): ts.ObjectLiteralExpression {
+  decorator: Decorator,
+  literalCache: Map<Decorator, ts.ObjectLiteralExpression>,
+): ts.ObjectLiteralExpression {
   if (literalCache.has(decorator)) {
     return literalCache.get(decorator)!;
   }
   if (decorator.args === null || decorator.args.length !== 1) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
-        `Incorrect number of arguments to @${decorator.name} decorator`);
+      ErrorCode.DECORATOR_ARITY_WRONG,
+      decorator.node,
+      `Incorrect number of arguments to @${decorator.name} decorator`,
+    );
   }
   const meta = unwrapExpression(decorator.args[0]);
 
   if (!ts.isObjectLiteralExpression(meta)) {
     throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARG_NOT_LITERAL, meta, `Decorator argument must be literal.`);
+      ErrorCode.DECORATOR_ARG_NOT_LITERAL,
+      meta,
+      `Decorator argument must be literal.`,
+    );
   }
 
   literalCache.set(decorator, meta);

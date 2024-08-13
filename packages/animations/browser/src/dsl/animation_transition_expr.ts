@@ -9,15 +9,22 @@
 import {invalidExpression, invalidTransitionAlias} from '../error_helpers';
 
 export const ANY_STATE = '*';
-export declare type TransitionMatcherFn =
-    (fromState: any, toState: any, element: any, params: {[key: string]: any}) => boolean;
+export declare type TransitionMatcherFn = (
+  fromState: any,
+  toState: any,
+  element: any,
+  params: {[key: string]: any},
+) => boolean;
 
 export function parseTransitionExpr(
-    transitionValue: string|TransitionMatcherFn, errors: Error[]): TransitionMatcherFn[] {
+  transitionValue: string | TransitionMatcherFn,
+  errors: Error[],
+): TransitionMatcherFn[] {
   const expressions: TransitionMatcherFn[] = [];
   if (typeof transitionValue == 'string') {
-    transitionValue.split(/\s*,\s*/).forEach(
-        str => parseInnerTransitionStr(str, expressions, errors));
+    transitionValue
+      .split(/\s*,\s*/)
+      .forEach((str) => parseInnerTransitionStr(str, expressions, errors));
   } else {
     expressions.push(<TransitionMatcherFn>transitionValue);
   }
@@ -25,7 +32,10 @@ export function parseTransitionExpr(
 }
 
 function parseInnerTransitionStr(
-    eventStr: string, expressions: TransitionMatcherFn[], errors: Error[]) {
+  eventStr: string,
+  expressions: TransitionMatcherFn[],
+  errors: Error[],
+) {
   if (eventStr[0] == ':') {
     const result = parseAnimationAlias(eventStr, errors);
     if (typeof result == 'function') {
@@ -53,7 +63,7 @@ function parseInnerTransitionStr(
   return;
 }
 
-function parseAnimationAlias(alias: string, errors: Error[]): string|TransitionMatcherFn {
+function parseAnimationAlias(alias: string, errors: Error[]): string | TransitionMatcherFn {
   switch (alias) {
     case ':enter':
       return 'void => *';

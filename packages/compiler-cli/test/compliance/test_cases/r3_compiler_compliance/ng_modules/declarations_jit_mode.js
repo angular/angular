@@ -7,7 +7,7 @@ BarDirective.ɵdir…
 QuxPipe.ɵfac…
 QuxPipe.ɵpipe…
 
-FooModule.ɵfac = function FooModule_Factory(t) { return new (t || FooModule)(); };
+FooModule.ɵfac = function FooModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || FooModule)(); };
 FooModule.ɵmod = /*@__PURE__*/ $i0$.ɵɵdefineNgModule({type: FooModule, bootstrap: [FooComponent], declarations: [FooComponent, BarDirective, QuxPipe]});
 FooModule.ɵinj = /*@__PURE__*/ $i0$.ɵɵdefineInjector({});
 …
@@ -15,5 +15,5 @@ FooModule.ɵinj = /*@__PURE__*/ $i0$.ɵɵdefineInjector({});
   (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(FooModule, [{
     type: NgModule,
     args: [{ declarations: [FooComponent, BarDirective, QuxPipe], bootstrap: [FooComponent] }]
-  }], null, null)
+  }], null, null);
 })();

@@ -71,10 +71,10 @@ interface R3NgModuleMetadataCommon {
   /**
    * The set of schemas that declare elements to be allowed in the NgModule.
    */
-  schemas: R3Reference[]|null;
+  schemas: R3Reference[] | null;
 
   /** Unique ID or expression representing the unique ID of an NgModule. */
-  id: o.Expression|null;
+  id: o.Expression | null;
 }
 
 /**
@@ -98,7 +98,7 @@ export interface R3NgModuleMetadataGlobal extends R3NgModuleMetadataCommon {
    * Those declarations which should be visible to downstream consumers. If not specified, all
    * declarations are made visible to downstream consumers.
    */
-  publicDeclarationTypes: o.Expression[]|null;
+  publicDeclarationTypes: o.Expression[] | null;
 
   /**
    * An array of expressions representing the imports of the module.
@@ -131,22 +131,22 @@ export interface R3NgModuleMetadataLocal extends R3NgModuleMetadataCommon {
   /**
    * The output expression representing the bootstrap components specified by the module.
    */
-  bootstrapExpression: o.Expression|null;
+  bootstrapExpression: o.Expression | null;
 
   /**
    * The output expression representing the declarations of the module.
    */
-  declarationsExpression: o.Expression|null;
+  declarationsExpression: o.Expression | null;
 
   /**
    * The output expression representing the imports of the module.
    */
-  importsExpression: o.Expression|null;
+  importsExpression: o.Expression | null;
 
   /**
    * The output expression representing the exports of the module.
    */
-  exportsExpression: o.Expression|null;
+  exportsExpression: o.Expression | null;
 
   /**
    * Local compilation mode always requires scope to be handled using side effect function calls.
@@ -157,7 +157,7 @@ export interface R3NgModuleMetadataLocal extends R3NgModuleMetadataCommon {
 /**
  * Metadata required by the module compiler to generate a module def (`ɵmod`) for a type.
  */
-export type R3NgModuleMetadata = R3NgModuleMetadataGlobal|R3NgModuleMetadataLocal;
+export type R3NgModuleMetadata = R3NgModuleMetadataGlobal | R3NgModuleMetadataLocal;
 
 /**
  * The shape of the object literal that is passed to the `ɵɵdefineNgModule()` call.
@@ -240,7 +240,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3CompiledExpression 
   }
 
   if (meta.schemas !== null && meta.schemas.length > 0) {
-    definitionMap.set('schemas', o.literalArr(meta.schemas.map(ref => ref.value)));
+    definitionMap.set('schemas', o.literalArr(meta.schemas.map((ref) => ref.value)));
   }
 
   if (meta.id !== null) {
@@ -249,11 +249,13 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3CompiledExpression 
     // Generate a side-effectful call to register this NgModule by its id, as per the semantics of
     // NgModule ids.
     statements.push(
-        o.importExpr(R3.registerNgModuleType).callFn([meta.type.value, meta.id]).toStmt());
+      o.importExpr(R3.registerNgModuleType).callFn([meta.type.value, meta.id]).toStmt(),
+    );
   }
 
-  const expression =
-      o.importExpr(R3.defineNgModule).callFn([definitionMap.toLiteralMap()], undefined, true);
+  const expression = o
+    .importExpr(R3.defineNgModule)
+    .callFn([definitionMap.toLiteralMap()], undefined, true);
   const type = createNgModuleType(meta);
 
   return {expression, type, statements};
@@ -298,16 +300,19 @@ export function createNgModuleType(meta: R3NgModuleMetadata): o.ExpressionType {
     exports,
     imports,
     includeImportTypes,
-    publicDeclarationTypes
+    publicDeclarationTypes,
   } = meta;
 
-  return new o.ExpressionType(o.importExpr(R3.NgModuleDeclaration, [
-    new o.ExpressionType(moduleType.type),
-    publicDeclarationTypes === null ? tupleTypeOf(declarations) :
-                                      tupleOfTypes(publicDeclarationTypes),
-    includeImportTypes ? tupleTypeOf(imports) : o.NONE_TYPE,
-    tupleTypeOf(exports),
-  ]));
+  return new o.ExpressionType(
+    o.importExpr(R3.NgModuleDeclaration, [
+      new o.ExpressionType(moduleType.type),
+      publicDeclarationTypes === null
+        ? tupleTypeOf(declarations)
+        : tupleOfTypes(publicDeclarationTypes),
+      includeImportTypes ? tupleTypeOf(imports) : o.NONE_TYPE,
+      tupleTypeOf(exports),
+    ]),
+  );
 }
 
 /**
@@ -316,12 +321,12 @@ export function createNgModuleType(meta: R3NgModuleMetadata): o.ExpressionType {
  * such that the references to declarations, imports and exports may be elided causing these
  * symbols to become tree-shakeable.
  */
-function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|null {
+function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement | null {
   const scopeMap = new DefinitionMap<{
-    declarations: o.Expression,
-    imports: o.Expression,
-    exports: o.Expression,
-    bootstrap: o.Expression
+    declarations: o.Expression;
+    imports: o.Expression;
+    exports: o.Expression;
+    bootstrap: o.Expression;
   }>();
 
   if (meta.kind === R3NgModuleMetadataKind.Global) {
@@ -364,31 +369,28 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|nul
 
   // setNgModuleScope(...)
   const fnCall = new o.InvokeFunctionExpr(
-      /* fn */ o.importExpr(R3.setNgModuleScope),
-      /* args */[meta.type.value, scopeMap.toLiteralMap()]);
+    /* fn */ o.importExpr(R3.setNgModuleScope),
+    /* args */ [meta.type.value, scopeMap.toLiteralMap()],
+  );
 
   // (ngJitMode guard) && setNgModuleScope(...)
   const guardedCall = jitOnlyGuardedExpression(fnCall);
 
   // function() { (ngJitMode guard) && setNgModuleScope(...); }
-  const iife = new o.FunctionExpr(
-      /* params */[],
-      /* statements */[guardedCall.toStmt()]);
+  const iife = new o.FunctionExpr(/* params */ [], /* statements */ [guardedCall.toStmt()]);
 
   // (function() { (ngJitMode guard) && setNgModuleScope(...); })()
-  const iifeCall = new o.InvokeFunctionExpr(
-      /* fn */ iife,
-      /* args */[]);
+  const iifeCall = new o.InvokeFunctionExpr(/* fn */ iife, /* args */ []);
 
   return iifeCall.toStmt();
 }
 
 function tupleTypeOf(exp: R3Reference[]): o.Type {
-  const types = exp.map(ref => o.typeofExpr(ref.type));
+  const types = exp.map((ref) => o.typeofExpr(ref.type));
   return exp.length > 0 ? o.expressionType(o.literalArr(types)) : o.NONE_TYPE;
 }
 
 function tupleOfTypes(types: o.Expression[]): o.Type {
-  const typeofTypes = types.map(type => o.typeofExpr(type));
+  const typeofTypes = types.map((type) => o.typeofExpr(type));
   return types.length > 0 ? o.expressionType(o.literalArr(typeofTypes)) : o.NONE_TYPE;
 }

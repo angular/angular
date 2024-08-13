@@ -8,8 +8,15 @@
 
 import ts from 'typescript';
 
-import {BazelAndG3Options, DiagnosticOptions, I18nOptions, LegacyNgcOptions, MiscOptions, StrictTemplateOptions, TargetOptions} from './public_options';
-
+import {
+  BazelAndG3Options,
+  DiagnosticOptions,
+  I18nOptions,
+  LegacyNgcOptions,
+  MiscOptions,
+  StrictTemplateOptions,
+  TargetOptions,
+} from './public_options';
 
 /**
  * Non-public options which are useful during testing of the compiler.
@@ -31,12 +38,10 @@ export interface TestOnlyOptions {
   _enableTemplateTypeChecker?: boolean;
 
   /**
-   * Names of the blocks that should be enabled. E.g. `_enabledBlockTypes: ['defer']`
-   * would allow usages of `@defer {}` in templates.
-   *
-   * @internal
+   * Whether components that are poisoned should still be processed.
+   * E.g. for generation of type check blocks and diagnostics.
    */
-  _enabledBlockTypes?: string[];
+  _compilePoisonedComponents?: boolean;
 
   /**
    * An option to enable ngtsc's internal performance tracing.
@@ -74,6 +79,30 @@ export interface InternalOptions {
    * @internal
    */
   supportJitMode?: boolean;
+
+  /**
+   * Whether block syntax is enabled in the compiler. Defaults to true.
+   * Used in the language service to disable the new syntax for projects that aren't on v17.
+   *
+   * @internal
+   */
+  _enableBlockSyntax?: boolean;
+
+  /**
+   * Whether `@let` syntax is enabled in the compiler.
+   * Defaults to false while the feature is being developed.
+   *
+   * @internal
+   */
+  _enableLetSyntax?: boolean;
+
+  /**
+   * Detected version of `@angular/core` in the workspace. Used by the
+   * compiler to adjust the output depending on the available symbols.
+   *
+   * @internal
+   */
+  _angularCoreVersion?: string;
 }
 
 /**
@@ -82,10 +111,17 @@ export interface InternalOptions {
  *
  * Also includes a few miscellaneous options.
  */
-export interface NgCompilerOptions extends ts.CompilerOptions, LegacyNgcOptions, BazelAndG3Options,
-                                           DiagnosticOptions, StrictTemplateOptions,
-                                           TestOnlyOptions, I18nOptions, TargetOptions,
-                                           InternalOptions, MiscOptions {
+export interface NgCompilerOptions
+  extends ts.CompilerOptions,
+    LegacyNgcOptions,
+    BazelAndG3Options,
+    DiagnosticOptions,
+    StrictTemplateOptions,
+    TestOnlyOptions,
+    I18nOptions,
+    TargetOptions,
+    InternalOptions,
+    MiscOptions {
   // Replace the index signature type from `ts.CompilerOptions` as it is more strict than it needs
   // to be and would conflict with some types from the other interfaces. This is ok because Angular
   // compiler options are actually separate from TS compiler options in the `tsconfig.json` and we

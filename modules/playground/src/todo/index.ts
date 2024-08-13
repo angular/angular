@@ -16,7 +16,10 @@ import {Store, Todo, TodoFactory} from './app/TodoStore';
 export class TodoApp {
   todoEdit: Todo = null;
 
-  constructor(public todoStore: Store<Todo>, public factory: TodoFactory) {}
+  constructor(
+    public todoStore: Store<Todo>,
+    public factory: TodoFactory,
+  ) {}
 
   enterTodo(inputElement: HTMLInputElement): void {
     this.addTodo(inputElement.value);
@@ -64,7 +67,6 @@ export class TodoApp {
 }
 
 @NgModule({declarations: [TodoApp], bootstrap: [TodoApp], imports: [BrowserModule]})
-export class ExampleModule {
-}
+export class ExampleModule {}
 
 platformBrowserDynamic().bootstrapModule(ExampleModule);

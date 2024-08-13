@@ -12,7 +12,15 @@ import {BaseVisitor} from '../base_visitor';
 
 import {serializeTranslationMessage} from './serialize_translation_message';
 import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, XmlTranslationParserHint} from './translation_utils';
+import {
+  addErrorsToBundle,
+  addParseDiagnostic,
+  addParseError,
+  canParseXml,
+  getAttribute,
+  isNamedElement,
+  XmlTranslationParserHint,
+} from './translation_utils';
 
 /**
  * A translation parser that can load XLIFF 1.2 files.
@@ -28,31 +36,43 @@ export class Xliff1TranslationParser implements TranslationParser<XmlTranslation
     return canParseXml(filePath, contents, 'xliff', {version: '1.2'});
   }
 
-  parse(filePath: string, contents: string, hint: XmlTranslationParserHint):
-      ParsedTranslationBundle {
+  parse(
+    filePath: string,
+    contents: string,
+    hint: XmlTranslationParserHint,
+  ): ParsedTranslationBundle {
     return this.extractBundle(hint);
   }
 
   private extractBundle({element, errors}: XmlTranslationParserHint): ParsedTranslationBundle {
     const diagnostics = new Diagnostics();
-    errors.forEach(e => addParseError(diagnostics, e));
+    errors.forEach((e) => addParseError(diagnostics, e));
 
     if (element.children.length === 0) {
       addParseDiagnostic(
-          diagnostics, element.sourceSpan, 'Missing expected <file> element',
-          ParseErrorLevel.WARNING);
+        diagnostics,
+        element.sourceSpan,
+        'Missing expected <file> element',
+        ParseErrorLevel.WARNING,
+      );
       return {locale: undefined, translations: {}, diagnostics};
     }
 
     const files = element.children.filter(isNamedElement('file'));
     if (files.length === 0) {
       addParseDiagnostic(
-          diagnostics, element.sourceSpan, 'No <file> elements found in <xliff>',
-          ParseErrorLevel.WARNING);
+        diagnostics,
+        element.sourceSpan,
+        'No <file> elements found in <xliff>',
+        ParseErrorLevel.WARNING,
+      );
     } else if (files.length > 1) {
       addParseDiagnostic(
-          diagnostics, files[1].sourceSpan, 'More than one <file> element found in <xliff>',
-          ParseErrorLevel.WARNING);
+        diagnostics,
+        files[1].sourceSpan,
+        'More than one <file> element found in <xliff>',
+        ParseErrorLevel.WARNING,
+      );
     }
 
     const bundle: ParsedTranslationBundle = {locale: undefined, translations: {}, diagnostics};
@@ -69,10 +89,13 @@ export class Xliff1TranslationParser implements TranslationParser<XmlTranslation
 
     if (localesFound.size > 1) {
       addParseDiagnostic(
-          diagnostics, element.sourceSpan,
-          `More than one locale found in translation file: ${
-              JSON.stringify(Array.from(localesFound))}. Using "${bundle.locale}"`,
-          ParseErrorLevel.WARNING);
+        diagnostics,
+        element.sourceSpan,
+        `More than one locale found in translation file: ${JSON.stringify(
+          Array.from(localesFound),
+        )}. Using "${bundle.locale}"`,
+        ParseErrorLevel.WARNING,
+      );
     }
 
     return bundle;
@@ -93,16 +116,22 @@ class XliffTranslationVisitor extends BaseVisitor {
     const id = getAttribute(element, 'id');
     if (id === undefined) {
       addParseDiagnostic(
-          bundle.diagnostics, element.sourceSpan,
-          `Missing required "id" attribute on <trans-unit> element.`, ParseErrorLevel.ERROR);
+        bundle.diagnostics,
+        element.sourceSpan,
+        `Missing required "id" attribute on <trans-unit> element.`,
+        ParseErrorLevel.ERROR,
+      );
       return;
     }
 
     // Error if there is already a translation with the same id
     if (bundle.translations[id] !== undefined) {
       addParseDiagnostic(
-          bundle.diagnostics, element.sourceSpan, `Duplicated translations for message "${id}"`,
-          ParseErrorLevel.ERROR);
+        bundle.diagnostics,
+        element.sourceSpan,
+        `Duplicated translations for message "${id}"`,
+        ParseErrorLevel.ERROR,
+      );
       return;
     }
 
@@ -110,24 +139,29 @@ class XliffTranslationVisitor extends BaseVisitor {
     if (targetMessage === undefined) {
       // Warn if there is no `<target>` child element
       addParseDiagnostic(
-          bundle.diagnostics, element.sourceSpan, 'Missing <target> element',
-          ParseErrorLevel.WARNING);
+        bundle.diagnostics,
+        element.sourceSpan,
+        'Missing <target> element',
+        ParseErrorLevel.WARNING,
+      );
 
       // Fallback to the `<source>` element if available.
       targetMessage = element.children.find(isNamedElement('source'));
       if (targetMessage === undefined) {
         // Error if there is neither `<target>` nor `<source>`.
         addParseDiagnostic(
-            bundle.diagnostics, element.sourceSpan,
-            'Missing required element: one of <target> or <source> is required',
-            ParseErrorLevel.ERROR);
+          bundle.diagnostics,
+          element.sourceSpan,
+          'Missing required element: one of <target> or <source> is required',
+          ParseErrorLevel.ERROR,
+        );
         return;
       }
     }
 
     const {translation, parseErrors, serializeErrors} = serializeTranslationMessage(targetMessage, {
       inlineElements: ['g', 'bx', 'ex', 'bpt', 'ept', 'ph', 'it', 'mrk'],
-      placeholder: {elementName: 'x', nameAttribute: 'id'}
+      placeholder: {elementName: 'x', nameAttribute: 'id'},
     });
     if (translation !== null) {
       bundle.translations[id] = translation;

@@ -15,10 +15,11 @@ import {ZoneUnawareIFrameMessageBus} from '../../zone-unaware-iframe-message-bus
 
 import {DemoAppComponent} from './demo-app.component';
 import {HeavyComponent} from './heavy.component';
+import {SamplePropertiesComponent} from './sample-properties.component';
 import {ZippyComponent} from './zippy.component';
 
 @NgModule({
-  declarations: [DemoAppComponent, HeavyComponent],
+  declarations: [DemoAppComponent, HeavyComponent, SamplePropertiesComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [DemoAppComponent],
   imports: [
@@ -43,5 +44,10 @@ export class DemoAppModule {
   }
 }
 
-initializeMessageBus(new ZoneUnawareIFrameMessageBus(
-    'angular-devtools-backend', 'angular-devtools', () => window.parent));
+initializeMessageBus(
+  new ZoneUnawareIFrameMessageBus(
+    'angular-devtools-backend',
+    'angular-devtools',
+    () => window.parent,
+  ),
+);

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,6 +11,7 @@ ng_module(
         ],
     ),
     deps = [
+        "//packages/common",
         "//packages/core",
     ],
 )
@@ -27,9 +28,7 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
-        "//aio:__pkg__",
-        "//aio/content/examples:__subpackages__",
-        "//aio/tools/examples:__pkg__",
+        "//adev:__pkg__",
         "//integration:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler/test:__pkg__",
@@ -58,8 +57,8 @@ api_golden_test(
         "//packages/animations",
         "//packages/animations/browser",
     ],
-    entry_point = "angular/packages/animations/browser/src/errors.d.ts",
-    golden = "angular/goldens/public-api/animations/errors.md",
+    entry_point = "angular/packages/animations/src/errors.d.ts",
+    golden = "angular/goldens/public-api/animations/errors.api.md",
 )
 
 filegroup(
@@ -68,4 +67,15 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "animations_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/animations",
 )

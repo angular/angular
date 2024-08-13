@@ -37,17 +37,19 @@ function init() {
 
   const appModule = createAppModule();
 
-  platformBrowserDynamic().bootstrapModule(appModule).then((ref) => {
-    const injector = ref.injector;
+  platformBrowserDynamic()
+    .bootstrapModule(appModule)
+    .then((ref) => {
+      const injector = ref.injector;
 
-    appRef = injector.get(ApplicationRef);
-    tree = appRef.components[0].instance;
+      appRef = injector.get(ApplicationRef);
+      tree = appRef.components[0].instance;
 
-    bindAction('#destroyDom', destroyDom);
-    bindAction('#createDom', createDom);
-    bindAction('#updateDomProfile', profile(createDom, noop, 'update'));
-    bindAction('#createDomProfile', profile(createDom, destroyDom, 'create'));
-  });
+      bindAction('#destroyDom', destroyDom);
+      bindAction('#createDom', createDom);
+      bindAction('#updateDomProfile', profile(createDom, noop, 'update'));
+      bindAction('#createDomProfile', profile(createDom, destroyDom, 'create'));
+    });
 }
 
 init();

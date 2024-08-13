@@ -16,7 +16,6 @@ ts_library(
     ],
     tsconfig = ":tsconfig",
     deps = [
-        "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
         "@npm//@schematics/angular",
     ],

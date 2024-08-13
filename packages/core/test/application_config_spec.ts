@@ -22,7 +22,7 @@ describe('ApplicationConfig', () => {
         {provide: FOO_TOKEN, useValue: 'foo'},
         {provide: BAR_TOKEN, useValue: 'bar'},
         {provide: BUZ_TOKEN, useValue: 'buz'},
-      ]
+      ],
     };
 
     it('should merge 2 configs from left to right', () => {
@@ -39,14 +39,10 @@ describe('ApplicationConfig', () => {
 
     it('should merge more than 2 configs from left to right', () => {
       const extraConfigOne: ApplicationConfig = {
-        providers: [
-          {provide: BAR_TOKEN, useValue: 'bar'},
-        ],
+        providers: [{provide: BAR_TOKEN, useValue: 'bar'}],
       };
       const extraConfigTwo: ApplicationConfig = {
-        providers: [
-          {provide: BUZ_TOKEN, useValue: 'buz'},
-        ],
+        providers: [{provide: BUZ_TOKEN, useValue: 'buz'}],
       };
 
       const config = mergeApplicationConfig(BASE_CONFIG, extraConfigOne, extraConfigTwo);

@@ -6,7 +6,7 @@ function MyComponent_span_2_Template(rf, ctx) {
   }
   if (rf & 2) {
     const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵi18nExp($ctx_r0$.age);
     $r3$.ɵɵi18nApply(0);
   }
@@ -14,10 +14,10 @@ function MyComponent_span_2_Template(rf, ctx) {
 …
 decls: 3,
 vars: 2,
-consts: function() {
+consts: () => {
   __i18nIcuMsg__('{VAR_SELECT, select, male {male} female {female} other {other}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]], {})
   __i18nIcuMsg__('{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}', [['VAR_SELECT', String.raw`\uFFFD0:1\uFFFD`]], {})
-  __i18nMsg__(' {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}', [['startTagSpan', String.raw`\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD`], ['closeTagSpan', String.raw`\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD`], ['icu', '$i18n_0$', '7670372064920373295'], ['icu_1', '$i18n_1$', '4590395557003415341']], {original_code: {'startTagSpan': '<span *ngIf="ageVisible">', 'closeTagSpan': '</span>', 'icu': '{gender, select, male {male} female {female} other {other}}', 'icu_1': '{age, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}'}}, {})
+  __i18nMsg__(' {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}', [['closeTagSpan', String.raw`\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD`], ['icu', '$i18n_0$', '7670372064920373295'], ['icu_1', '$i18n_1$', '4590395557003415341'], ['startTagSpan', String.raw`\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD`]], {original_code: {'closeTagSpan': '</span>', 'icu': '{gender, select, male {male} female {female} other {other}}', 'icu_1': '{age, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}', 'startTagSpan': '<span *ngIf="ageVisible">'}}, {})
   return [
     $i18n_2$,
     [__AttributeMarker.Template__, "ngIf"]

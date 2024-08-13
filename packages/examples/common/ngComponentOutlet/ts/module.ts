@@ -6,18 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, Injector, Input, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  Injectable,
+  Injector,
+  Input,
+  NgModule,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-
 
 // #docregion SimpleExample
 @Component({selector: 'hello-world', template: 'Hello World!'})
-export class HelloWorld {
-}
+export class HelloWorld {}
 
 @Component({
   selector: 'ng-component-outlet-simple-example',
-  template: `<ng-container *ngComponentOutlet="HelloWorld"></ng-container>`
+  template: `<ng-container *ngComponentOutlet="HelloWorld"></ng-container>`,
 })
 export class NgComponentOutletSimpleExample {
   // This field is necessary to expose HelloWorld to the template.
@@ -33,7 +41,7 @@ export class Greeter {
 
 @Component({
   selector: 'complete-component',
-  template: `{{ label }}: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`
+  template: `{{ label }}: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`,
 })
 export class CompleteComponent {
   @Input() label!: string;
@@ -43,13 +51,16 @@ export class CompleteComponent {
 
 @Component({
   selector: 'ng-component-outlet-complete-example',
-  template: `
-    <ng-template #ahoj>Ahoj</ng-template>
+  template: ` <ng-template #ahoj>Ahoj</ng-template>
     <ng-template #svet>Svet</ng-template>
-    <ng-container *ngComponentOutlet="CompleteComponent;
-                                      inputs: myInputs;
-                                      injector: myInjector;
-                                      content: myContent"></ng-container>`
+    <ng-container
+      *ngComponentOutlet="
+        CompleteComponent;
+        inputs: myInputs;
+        injector: myInjector;
+        content: myContent
+      "
+    ></ng-container>`,
 })
 export class NgComponentOutletCompleteExample implements OnInit {
   // This field is necessary to expose CompleteComponent to the template.
@@ -62,37 +73,42 @@ export class NgComponentOutletCompleteExample implements OnInit {
   @ViewChild('svet', {static: true}) svetTemplateRef!: TemplateRef<any>;
   myContent?: any[][];
 
-  constructor(injector: Injector, private vcr: ViewContainerRef) {
-    this.myInjector =
-        Injector.create({providers: [{provide: Greeter, deps: []}], parent: injector});
+  constructor(
+    injector: Injector,
+    private vcr: ViewContainerRef,
+  ) {
+    this.myInjector = Injector.create({
+      providers: [{provide: Greeter, deps: []}],
+      parent: injector,
+    });
   }
 
   ngOnInit() {
     // Create the projectable content from the templates
     this.myContent = [
       this.vcr.createEmbeddedView(this.ahojTemplateRef).rootNodes,
-      this.vcr.createEmbeddedView(this.svetTemplateRef).rootNodes
+      this.vcr.createEmbeddedView(this.svetTemplateRef).rootNodes,
     ];
   }
 }
 // #enddocregion
 
-
 @Component({
   selector: 'example-app',
   template: `<ng-component-outlet-simple-example></ng-component-outlet-simple-example>
-             <hr/>
-             <ng-component-outlet-complete-example></ng-component-outlet-complete-example>`
+    <hr />
+    <ng-component-outlet-complete-example></ng-component-outlet-complete-example>`,
 })
-export class AppComponent {
-}
+export class AppComponent {}
 
 @NgModule({
   imports: [BrowserModule],
   declarations: [
-    AppComponent, NgComponentOutletSimpleExample, NgComponentOutletCompleteExample, HelloWorld,
-    CompleteComponent
+    AppComponent,
+    NgComponentOutletSimpleExample,
+    NgComponentOutletCompleteExample,
+    HelloWorld,
+    CompleteComponent,
   ],
 })
-export class AppModule {
-}
+export class AppModule {}

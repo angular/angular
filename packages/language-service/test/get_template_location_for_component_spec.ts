@@ -8,7 +8,12 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {assertFileNames, createModuleAndProjectWithDeclarations, humanizeDocumentSpanLike, LanguageServiceTestEnv} from '../testing';
+import {
+  assertFileNames,
+  createModuleAndProjectWithDeclarations,
+  humanizeDocumentSpanLike,
+  LanguageServiceTestEnv,
+} from '../testing';
 
 describe('get template location for component', () => {
   beforeEach(() => {
@@ -25,7 +30,7 @@ describe('get template location for component', () => {
       })
       export class AppCmp {
         myProp!: string;
-      }`
+      }`,
     };
     const env = LanguageServiceTestEnv.setup();
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -49,7 +54,7 @@ describe('get template location for component', () => {
             export class AppCmp {
               myProp!: string;
             }`,
-      'app.html': '<div>{{ myProp }}</div>'
+      'app.html': '<div>{{ myProp }}</div>',
     };
     const env = LanguageServiceTestEnv.setup();
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -78,7 +83,7 @@ describe('get template location for component', () => {
       }
       `,
       'template1.html': '',
-      'template2.html': ''
+      'template2.html': '',
     };
     const env = LanguageServiceTestEnv.setup();
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);

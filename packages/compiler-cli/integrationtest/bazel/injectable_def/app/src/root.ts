@@ -17,27 +17,22 @@ import {LazyModule} from './root_lazy';
   selector: 'root-app',
   template: '<router-outlet></router-outlet>',
 })
-export class AppComponent {
-}
+export class AppComponent {}
 
 export function children(): any {
   console.error('children', LazyModule);
   return LazyModule;
 }
 
-
 @NgModule({
   imports: [
     BrowserModule,
     ServerModule,
-    RouterModule.forRoot(
-        [
-          {path: '', pathMatch: 'prefix', loadChildren: children},
-        ],
-        {initialNavigation: 'enabledBlocking'}),
+    RouterModule.forRoot([{path: '', pathMatch: 'prefix', loadChildren: children}], {
+      initialNavigation: 'enabledBlocking',
+    }),
   ],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
 })
-export class RootAppModule {
-}
+export class RootAppModule {}

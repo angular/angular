@@ -13,6 +13,8 @@
 
 /// <reference types="node"/>
 
+import {__symbol__} from '../zone-impl';
+
 // issue #989, to reduce bundle size, use short name
 /** Object.getOwnPropertyDescriptor */
 export const ObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
@@ -29,33 +31,37 @@ export const ADD_EVENT_LISTENER_STR = 'addEventListener';
 /** removeEventListener string const */
 export const REMOVE_EVENT_LISTENER_STR = 'removeEventListener';
 /** zoneSymbol addEventListener */
-export const ZONE_SYMBOL_ADD_EVENT_LISTENER = Zone.__symbol__(ADD_EVENT_LISTENER_STR);
+export const ZONE_SYMBOL_ADD_EVENT_LISTENER = __symbol__(ADD_EVENT_LISTENER_STR);
 /** zoneSymbol removeEventListener */
-export const ZONE_SYMBOL_REMOVE_EVENT_LISTENER = Zone.__symbol__(REMOVE_EVENT_LISTENER_STR);
+export const ZONE_SYMBOL_REMOVE_EVENT_LISTENER = __symbol__(REMOVE_EVENT_LISTENER_STR);
 /** true string const */
 export const TRUE_STR = 'true';
 /** false string const */
 export const FALSE_STR = 'false';
 /** Zone symbol prefix string const. */
-export const ZONE_SYMBOL_PREFIX = Zone.__symbol__('');
+export const ZONE_SYMBOL_PREFIX = __symbol__('');
 
 export function wrapWithCurrentZone<T extends Function>(callback: T, source: string): T {
   return Zone.current.wrap(callback, source);
 }
 
 export function scheduleMacroTaskWithCurrentZone(
-    source: string, callback: Function, data?: TaskData, customSchedule?: (task: Task) => void,
-    customCancel?: (task: Task) => void): MacroTask {
+  source: string,
+  callback: Function,
+  data?: TaskData,
+  customSchedule?: (task: Task) => void,
+  customCancel?: (task: Task) => void,
+): MacroTask {
   return Zone.current.scheduleMacroTask(source, callback, data, customSchedule, customCancel);
 }
 
 // Hack since TypeScript isn't compiling this for a worker.
 declare const WorkerGlobalScope: any;
 
-export const zoneSymbol = Zone.__symbol__;
+export const zoneSymbol = __symbol__;
 const isWindowExists = typeof window !== 'undefined';
 const internalWindow: any = isWindowExists ? window : undefined;
-const _global: any = isWindowExists && internalWindow || typeof self === 'object' && self || global;
+const _global: any = (isWindowExists && internalWindow) || globalThis;
 
 const REMOVE_ATTRIBUTE = 'removeAttribute';
 
@@ -79,7 +85,7 @@ export function patchPrototype(prototype: any, fnNames: string[]) {
         continue;
       }
       prototype[name] = ((delegate: Function) => {
-        const patched: any = function(this: unknown) {
+        const patched: any = function (this: unknown) {
           return delegate.apply(this, bindArguments(<any>arguments, source + '.' + name));
         };
         attachOriginToPatched(patched, delegate);
@@ -102,27 +108,32 @@ export function isPropertyWritable(propertyDesc: any) {
 }
 
 export const isWebWorker: boolean =
-    (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope);
+  typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
 
 // Make sure to access `process` through `_global` so that WebPack does not accidentally browserify
 // this code.
 export const isNode: boolean =
-    (!('nw' in _global) && typeof _global.process !== 'undefined' &&
-     {}.toString.call(_global.process) === '[object process]');
+  !('nw' in _global) &&
+  typeof _global.process !== 'undefined' &&
+  _global.process.toString() === '[object process]';
 
 export const isBrowser: boolean =
-    !isNode && !isWebWorker && !!(isWindowExists && internalWindow['HTMLElement']);
+  !isNode && !isWebWorker && !!(isWindowExists && internalWindow['HTMLElement']);
 
 // we are in electron of nw, so we are both browser and nodejs
 // Make sure to access `process` through `_global` so that WebPack does not accidentally browserify
 // this code.
-export const isMix: boolean = typeof _global.process !== 'undefined' &&
-    {}.toString.call(_global.process) === '[object process]' && !isWebWorker &&
-    !!(isWindowExists && internalWindow['HTMLElement']);
+export const isMix: boolean =
+  typeof _global.process !== 'undefined' &&
+  _global.process.toString() === '[object process]' &&
+  !isWebWorker &&
+  !!(isWindowExists && internalWindow['HTMLElement']);
 
 const zoneSymbolEventNames: {[eventName: string]: string} = {};
 
-const wrapFn = function(this: unknown, event: Event) {
+const enableBeforeunloadSymbol = zoneSymbol('enable_beforeunload');
+
+const wrapFn = function (this: unknown, event: Event) {
   // https://github.com/angular/zone.js/issues/911, in IE, sometimes
   // event will be undefined, so we need to use window.event
   event = event || _global.event;
@@ -141,16 +152,40 @@ const wrapFn = function(this: unknown, event: Event) {
     // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror#window.onerror
     // and onerror callback will prevent default when callback return true
     const errorEvent: ErrorEvent = event as any;
-    result = listener &&
-        listener.call(
-            this, errorEvent.message, errorEvent.filename, errorEvent.lineno, errorEvent.colno,
-            errorEvent.error);
+    result =
+      listener &&
+      listener.call(
+        this,
+        errorEvent.message,
+        errorEvent.filename,
+        errorEvent.lineno,
+        errorEvent.colno,
+        errorEvent.error,
+      );
     if (result === true) {
       event.preventDefault();
     }
   } else {
     result = listener && listener.apply(this, arguments);
-    if (result != undefined && !result) {
+    if (
+      // https://github.com/angular/angular/issues/47579
+      // https://www.w3.org/TR/2011/WD-html5-20110525/history.html#beforeunloadevent
+      // This is the only specific case we should check for. The spec defines that the
+      // `returnValue` attribute represents the message to show the user. When the event
+      // is created, this attribute must be set to the empty string.
+      event.type === 'beforeunload' &&
+      // To prevent any breaking changes resulting from this change, given that
+      // it was already causing a significant number of failures in G3, we have hidden
+      // that behavior behind a global configuration flag. Consumers can enable this
+      // flag explicitly if they want the `beforeunload` event to be handled as defined
+      // in the specification.
+      _global[enableBeforeunloadSymbol] &&
+      // The IDL event definition is `attribute DOMString returnValue`, so we check whether
+      // `typeof result` is a string.
+      typeof result === 'string'
+    ) {
+      (event as BeforeUnloadEvent).returnValue = result;
+    } else if (result != undefined && !result) {
       event.preventDefault();
     }
   }
@@ -196,7 +231,7 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
     eventNameSymbol = zoneSymbolEventNames[eventName] = zoneSymbol('ON_PROPERTY' + eventName);
   }
 
-  desc.set = function(this: EventSource, newValue) {
+  desc.set = function (this: EventSource, newValue) {
     // in some of windows's onproperty callback, this is undefined
     // so we need to check it
     let target = this;
@@ -223,7 +258,7 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
 
   // The getter would return undefined for unassigned properties but the default value of an
   // unassigned property is null
-  desc.get = function() {
+  desc.get = function () {
     // in some of windows's onproperty callback, this is undefined
     // so we need to check it
     let target: any = this;
@@ -260,7 +295,7 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
   obj[onPropPatchedSymbol] = true;
 }
 
-export function patchOnProperties(obj: any, properties: string[]|null, prototype?: any) {
+export function patchOnProperties(obj: any, properties: string[] | null, prototype?: any) {
   if (properties) {
     for (let i = 0; i < properties.length; i++) {
       patchProperty(obj, 'on' + properties[i], prototype);
@@ -287,7 +322,7 @@ export function patchClass(className: string) {
   // keep original class in global
   _global[zoneSymbol(className)] = OriginalClass;
 
-  _global[className] = function() {
+  _global[className] = function () {
     const a = bindArguments(<any>arguments, className);
     switch (a.length) {
       case 0:
@@ -313,20 +348,20 @@ export function patchClass(className: string) {
   // attach original delegate to patched function
   attachOriginToPatched(_global[className], OriginalClass);
 
-  const instance = new OriginalClass(function() {});
+  const instance = new OriginalClass(function () {});
 
   let prop;
   for (prop in instance) {
     // https://bugs.webkit.org/show_bug.cgi?id=44721
     if (className === 'XMLHttpRequest' && prop === 'responseBlob') continue;
-    (function(prop) {
+    (function (prop) {
       if (typeof instance[prop] === 'function') {
-        _global[className].prototype[prop] = function() {
+        _global[className].prototype[prop] = function () {
           return this[originalInstanceKey][prop].apply(this[originalInstanceKey], arguments);
         };
       } else {
         ObjectDefineProperty(_global[className].prototype, prop, {
-          set: function(fn) {
+          set: function (fn) {
             if (typeof fn === 'function') {
               this[originalInstanceKey][prop] = wrapWithCurrentZone(fn, className + '.' + prop);
               // keep callback in wrapped function so we can
@@ -337,12 +372,12 @@ export function patchClass(className: string) {
               this[originalInstanceKey][prop] = fn;
             }
           },
-          get: function() {
+          get: function () {
             return this[originalInstanceKey][prop];
-          }
+          },
         });
       }
-    }(prop));
+    })(prop);
   }
 
   for (prop in OriginalClass) {
@@ -360,10 +395,10 @@ export function copySymbolProperties(src: any, dest: any) {
   symbols.forEach((symbol: any) => {
     const desc = Object.getOwnPropertyDescriptor(src, symbol);
     Object.defineProperty(dest, symbol, {
-      get: function() {
+      get: function () {
         return src[symbol];
       },
-      set: function(value: any) {
+      set: function (value: any) {
         if (desc && (!desc.writable || typeof desc.set !== 'function')) {
           // if src[symbol] is not writable or not have a setter, just return
           return;
@@ -371,7 +406,7 @@ export function copySymbolProperties(src: any, dest: any) {
         src[symbol] = value;
       },
       enumerable: desc ? desc.enumerable : true,
-      configurable: desc ? desc.configurable : true
+      configurable: desc ? desc.configurable : true,
     });
   });
 }
@@ -383,9 +418,14 @@ export function setShouldCopySymbolProperties(flag: boolean) {
 }
 
 export function patchMethod(
-    target: any, name: string,
-    patchFn: (delegate: Function, delegateName: string, name: string) => (self: any, args: any[]) =>
-        any): Function|null {
+  target: any,
+  name: string,
+  patchFn: (
+    delegate: Function,
+    delegateName: string,
+    name: string,
+  ) => (self: any, args: any[]) => any,
+): Function | null {
   let proto = target;
   while (proto && !proto.hasOwnProperty(name)) {
     proto = ObjectGetPrototypeOf(proto);
@@ -396,7 +436,7 @@ export function patchMethod(
   }
 
   const delegateName = zoneSymbol(name);
-  let delegate: Function|null = null;
+  let delegate: Function | null = null;
   if (proto && (!(delegate = proto[delegateName]) || !proto.hasOwnProperty(delegateName))) {
     delegate = proto[delegateName] = proto[name];
     // check whether proto[name] is writable
@@ -404,7 +444,7 @@ export function patchMethod(
     const desc = proto && ObjectGetOwnPropertyDescriptor(proto, name);
     if (isPropertyWritable(desc)) {
       const patchDelegate = patchFn(delegate!, delegateName, name);
-      proto[name] = function() {
+      proto[name] = function () {
         return patchDelegate(this, arguments as any);
       };
       attachOriginToPatched(proto[name], delegate);
@@ -425,27 +465,35 @@ export interface MacroTaskMeta extends TaskData {
 
 // TODO: @JiaLiPassion, support cancel task later if necessary
 export function patchMacroTask(
-    obj: any, funcName: string, metaCreator: (self: any, args: any[]) => MacroTaskMeta) {
-  let setNative: Function|null = null;
+  obj: any,
+  funcName: string,
+  metaCreator: (self: any, args: any[]) => MacroTaskMeta,
+) {
+  let setNative: Function | null = null;
 
   function scheduleTask(task: Task) {
     const data = <MacroTaskMeta>task.data;
-    data.args[data.cbIdx] = function() {
+    data.args[data.cbIdx] = function () {
       task.invoke.apply(this, arguments);
     };
     setNative!.apply(data.target, data.args);
     return task;
   }
 
-  setNative = patchMethod(obj, funcName, (delegate: Function) => function(self: any, args: any[]) {
-    const meta = metaCreator(self, args);
-    if (meta.cbIdx >= 0 && typeof args[meta.cbIdx] === 'function') {
-      return scheduleMacroTaskWithCurrentZone(meta.name, args[meta.cbIdx], meta, scheduleTask);
-    } else {
-      // cause an error by calling it directly.
-      return delegate.apply(self, args);
-    }
-  });
+  setNative = patchMethod(
+    obj,
+    funcName,
+    (delegate: Function) =>
+      function (self: any, args: any[]) {
+        const meta = metaCreator(self, args);
+        if (meta.cbIdx >= 0 && typeof args[meta.cbIdx] === 'function') {
+          return scheduleMacroTaskWithCurrentZone(meta.name, args[meta.cbIdx], meta, scheduleTask);
+        } else {
+          // cause an error by calling it directly.
+          return delegate.apply(self, args);
+        }
+      },
+  );
 }
 
 export interface MicroTaskMeta extends TaskData {
@@ -456,27 +504,35 @@ export interface MicroTaskMeta extends TaskData {
 }
 
 export function patchMicroTask(
-    obj: any, funcName: string, metaCreator: (self: any, args: any[]) => MicroTaskMeta) {
-  let setNative: Function|null = null;
+  obj: any,
+  funcName: string,
+  metaCreator: (self: any, args: any[]) => MicroTaskMeta,
+) {
+  let setNative: Function | null = null;
 
   function scheduleTask(task: Task) {
     const data = <MacroTaskMeta>task.data;
-    data.args[data.cbIdx] = function() {
+    data.args[data.cbIdx] = function () {
       task.invoke.apply(this, arguments);
     };
     setNative!.apply(data.target, data.args);
     return task;
   }
 
-  setNative = patchMethod(obj, funcName, (delegate: Function) => function(self: any, args: any[]) {
-    const meta = metaCreator(self, args);
-    if (meta.cbIdx >= 0 && typeof args[meta.cbIdx] === 'function') {
-      return Zone.current.scheduleMicroTask(meta.name, args[meta.cbIdx], meta, scheduleTask);
-    } else {
-      // cause an error by calling it directly.
-      return delegate.apply(self, args);
-    }
-  });
+  setNative = patchMethod(
+    obj,
+    funcName,
+    (delegate: Function) =>
+      function (self: any, args: any[]) {
+        const meta = metaCreator(self, args);
+        if (meta.cbIdx >= 0 && typeof args[meta.cbIdx] === 'function') {
+          return Zone.current.scheduleMicroTask(meta.name, args[meta.cbIdx], meta, scheduleTask);
+        } else {
+          // cause an error by calling it directly.
+          return delegate.apply(self, args);
+        }
+      },
+  );
 }
 
 export function attachOriginToPatched(patched: Function, original: any) {
@@ -492,8 +548,7 @@ export function isIE() {
     if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident/') !== -1) {
       return true;
     }
-  } catch (error) {
-  }
+  } catch (error) {}
   return false;
 }
 
@@ -509,7 +564,14 @@ export function isIEOrEdge() {
     if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident/') !== -1 || ua.indexOf('Edge/') !== -1) {
       ieOrEdge = true;
     }
-  } catch (error) {
-  }
+  } catch (error) {}
   return ieOrEdge;
+}
+
+export function isFunction(value: unknown): value is Function {
+  return typeof value === 'function';
+}
+
+export function isNumber(value: unknown): value is number {
+  return typeof value === 'number';
 }

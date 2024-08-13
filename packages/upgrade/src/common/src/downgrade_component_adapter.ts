@@ -6,15 +6,35 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  ComponentFactory,
+  ComponentRef,
+  EventEmitter,
+  Injector,
+  OnChanges,
+  SimpleChange,
+  SimpleChanges,
+  StaticProvider,
+  Testability,
+  TestabilityRegistry,
+} from '@angular/core';
 
-import {IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
+import {
+  IAttributes,
+  IAugmentedJQuery,
+  ICompileService,
+  INgModelController,
+  IParseService,
+  IScope,
+} from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
 import {cleanData, getTypeName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
-  __UNINITIALIZED__: true
+  __UNINITIALIZED__: true,
 };
 
 export class DowngradeComponentAdapter {
@@ -24,22 +44,27 @@ export class DowngradeComponentAdapter {
   private componentScope: IScope;
 
   constructor(
-      private element: IAugmentedJQuery, private attrs: IAttributes, private scope: IScope,
-      private ngModel: INgModelController, private parentInjector: Injector,
-      private $compile: ICompileService, private $parse: IParseService,
-      private componentFactory: ComponentFactory<any>,
-      private wrapCallback: <T>(cb: () => T) => () => T) {
+    private element: IAugmentedJQuery,
+    private attrs: IAttributes,
+    private scope: IScope,
+    private ngModel: INgModelController,
+    private parentInjector: Injector,
+    private $compile: ICompileService,
+    private $parse: IParseService,
+    private componentFactory: ComponentFactory<any>,
+    private wrapCallback: <T>(cb: () => T) => () => T,
+  ) {
     this.componentScope = scope.$new();
   }
 
   compileContents(): Node[][] {
     const compiledProjectableNodes: Node[][] = [];
     const projectableNodes: Node[][] = this.groupProjectableNodes();
-    const linkFns = projectableNodes.map(nodes => this.$compile(nodes));
+    const linkFns = projectableNodes.map((nodes) => this.$compile(nodes));
 
     this.element.empty!();
 
-    linkFns.forEach(linkFn => {
+    linkFns.forEach((linkFn) => {
       linkFn(this.scope, (clone: Node[]) => {
         compiledProjectableNodes.push(clone);
         this.element.append!(clone);
@@ -50,8 +75,10 @@ export class DowngradeComponentAdapter {
   }
 
   createComponentAndSetup(
-      projectableNodes: Node[][], manuallyAttachView = false,
-      propagateDigest = true): ComponentRef<any> {
+    projectableNodes: Node[][],
+    manuallyAttachView = false,
+    propagateDigest = true,
+  ): ComponentRef<any> {
     const component = this.createComponent(projectableNodes);
     this.setupInputs(manuallyAttachView, propagateDigest, component);
     this.setupOutputs(component.componentRef);
@@ -62,11 +89,17 @@ export class DowngradeComponentAdapter {
 
   private createComponent(projectableNodes: Node[][]): ComponentInfo {
     const providers: StaticProvider[] = [{provide: $SCOPE, useValue: this.componentScope}];
-    const childInjector = Injector.create(
-        {providers: providers, parent: this.parentInjector, name: 'DowngradeComponentAdapter'});
+    const childInjector = Injector.create({
+      providers: providers,
+      parent: this.parentInjector,
+      name: 'DowngradeComponentAdapter',
+    });
 
-    const componentRef =
-        this.componentFactory.create(childInjector, projectableNodes, this.element[0]);
+    const componentRef = this.componentFactory.create(
+      childInjector,
+      projectableNodes,
+      this.element[0],
+    );
     const viewChangeDetector = componentRef.injector.get(ChangeDetectorRef);
     const changeDetector = componentRef.changeDetectorRef;
 
@@ -76,8 +109,9 @@ export class DowngradeComponentAdapter {
     // testability hook.
     const testability = componentRef.injector.get(Testability, null);
     if (testability) {
-      componentRef.injector.get(TestabilityRegistry)
-          .registerApplication(componentRef.location.nativeElement, testability);
+      componentRef.injector
+        .get(TestabilityRegistry)
+        .registerApplication(componentRef.location.nativeElement, testability);
     }
 
     hookupNgModel(this.ngModel, componentRef.instance);
@@ -86,16 +120,18 @@ export class DowngradeComponentAdapter {
   }
 
   private setupInputs(
-      manuallyAttachView: boolean, propagateDigest = true,
-      {componentRef, changeDetector, viewChangeDetector}: ComponentInfo): void {
+    manuallyAttachView: boolean,
+    propagateDigest = true,
+    {componentRef, changeDetector, viewChangeDetector}: ComponentInfo,
+  ): void {
     const attrs = this.attrs;
     const inputs = this.componentFactory.inputs || [];
     for (const input of inputs) {
       const inputBinding = new PropertyBinding(input.propName, input.templateName);
-      let expr: string|null = null;
+      let expr: string | null = null;
 
       if (attrs.hasOwnProperty(inputBinding.attr)) {
-        const observeFn = (prop => {
+        const observeFn = ((prop) => {
           let prevValue = INITIAL_VALUE;
           return (currValue: any) => {
             // Initially, both `$observe()` and `$watch()` will call this function.
@@ -114,7 +150,7 @@ export class DowngradeComponentAdapter {
         // Use `$watch()` (in addition to `$observe()`) in order to initialize the input in time
         // for `ngOnChanges()`. This is necessary if we are already in a `$digest`, which means that
         // `ngOnChanges()` (which is called by a watcher) will run before the `$observe()` callback.
-        let unwatch: Function|null = this.componentScope.$watch(() => {
+        let unwatch: Function | null = this.componentScope.$watch(() => {
           unwatch!();
           unwatch = null;
           observeFn(attrs[inputBinding.attr]);
@@ -129,9 +165,10 @@ export class DowngradeComponentAdapter {
         expr = attrs[inputBinding.bracketParenAttr];
       }
       if (expr != null) {
-        const watchFn =
-            ((prop) => (currValue: unknown, prevValue: unknown) =>
-                 this.updateInput(componentRef, prop, prevValue, currValue))(inputBinding.prop);
+        const watchFn = (
+          (prop) => (currValue: unknown, prevValue: unknown) =>
+            this.updateInput(componentRef, prop, prevValue, currValue)
+        )(inputBinding.prop);
         this.componentScope.$watch(expr, watchFn);
       }
     }
@@ -141,21 +178,24 @@ export class DowngradeComponentAdapter {
     const prototype = this.componentFactory.componentType.prototype;
     this.implementsOnChanges = !!(prototype && (<OnChanges>prototype).ngOnChanges);
 
-    this.componentScope.$watch(() => this.inputChangeCount, this.wrapCallback(() => {
-      // Invoke `ngOnChanges()`
-      if (this.implementsOnChanges) {
-        const inputChanges = this.inputChanges;
-        this.inputChanges = {};
-        (<OnChanges>componentRef.instance).ngOnChanges(inputChanges);
-      }
+    this.componentScope.$watch(
+      () => this.inputChangeCount,
+      this.wrapCallback(() => {
+        // Invoke `ngOnChanges()`
+        if (this.implementsOnChanges) {
+          const inputChanges = this.inputChanges;
+          this.inputChanges = {};
+          (<OnChanges>componentRef.instance).ngOnChanges(inputChanges);
+        }
 
-      viewChangeDetector.markForCheck();
+        viewChangeDetector.markForCheck();
 
-      // If opted out of propagating digests, invoke change detection when inputs change.
-      if (!propagateDigest) {
-        detectChanges();
-      }
-    }));
+        // If opted out of propagating digests, invoke change detection when inputs change.
+        if (!propagateDigest) {
+          detectChanges();
+        }
+      }),
+    );
 
     // If not opted out of propagating digests, invoke change detection on every digest
     if (propagateDigest) {
@@ -165,7 +205,7 @@ export class DowngradeComponentAdapter {
     // If necessary, attach the view so that it will be dirty-checked.
     // (Allow time for the initial input values to be set and `ngOnChanges()` to be called.)
     if (manuallyAttachView || !propagateDigest) {
-      let unwatch: Function|null = this.componentScope.$watch(() => {
+      let unwatch: Function | null = this.componentScope.$watch(() => {
         unwatch!();
         unwatch = null;
 
@@ -180,11 +220,14 @@ export class DowngradeComponentAdapter {
     const outputs = this.componentFactory.outputs || [];
     for (const output of outputs) {
       const outputBindings = new PropertyBinding(output.propName, output.templateName);
-      const bindonAttr =
-          outputBindings.bindonAttr.substring(0, outputBindings.bindonAttr.length - 6);
-      const bracketParenAttr = `[(${
-          outputBindings.bracketParenAttr.substring(
-              2, outputBindings.bracketParenAttr.length - 8)})]`;
+      const bindonAttr = outputBindings.bindonAttr.substring(
+        0,
+        outputBindings.bindonAttr.length - 6,
+      );
+      const bracketParenAttr = `[(${outputBindings.bracketParenAttr.substring(
+        2,
+        outputBindings.bracketParenAttr.length - 8,
+      )})]`;
       // order below is important - first update bindings then evaluate expressions
       if (attrs.hasOwnProperty(bindonAttr)) {
         this.subscribeToOutput(componentRef, outputBindings, attrs[bindonAttr], true);
@@ -202,8 +245,11 @@ export class DowngradeComponentAdapter {
   }
 
   private subscribeToOutput(
-      componentRef: ComponentRef<any>, output: PropertyBinding, expr: string,
-      isAssignment: boolean = false) {
+    componentRef: ComponentRef<any>,
+    output: PropertyBinding,
+    expr: string,
+    isAssignment: boolean = false,
+  ) {
     const getter = this.$parse(expr);
     const setter = getter.assign;
     if (isAssignment && !setter) {
@@ -212,13 +258,17 @@ export class DowngradeComponentAdapter {
     const emitter = componentRef.instance[output.prop] as EventEmitter<any>;
     if (emitter) {
       const subscription = emitter.subscribe({
-        next: isAssignment ? (v: any) => setter!(this.scope, v) :
-                             (v: any) => getter(this.scope, {'$event': v})
+        next: isAssignment
+          ? (v: any) => setter!(this.scope, v)
+          : (v: any) => getter(this.scope, {'$event': v}),
       });
       componentRef.onDestroy(() => subscription.unsubscribe());
     } else {
-      throw new Error(`Missing emitter '${output.prop}' on component '${
-          getTypeName(this.componentFactory.componentType)}'!`);
+      throw new Error(
+        `Missing emitter '${output.prop}' on component '${getTypeName(
+          this.componentFactory.componentType,
+        )}'!`,
+      );
     }
   }
 
@@ -260,7 +310,11 @@ export class DowngradeComponentAdapter {
   }
 
   private updateInput(
-      componentRef: ComponentRef<any>, prop: string, prevValue: any, currValue: any) {
+    componentRef: ComponentRef<any>,
+    prop: string,
+    prevValue: any,
+    currValue: any,
+  ) {
     if (this.implementsOnChanges) {
       this.inputChanges[prop] = new SimpleChange(prevValue, currValue, prevValue === currValue);
     }
@@ -296,7 +350,7 @@ export function groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]
   return projectableNodes;
 }
 
-function findMatchingNgContentIndex(element: any, ngContentSelectors: string[]): number|null {
+function findMatchingNgContentIndex(element: any, ngContentSelectors: string[]): number | null {
   const ngContentIndices: number[] = [];
   let wildcardNgContentIndex: number = -1;
   for (let i = 0; i < ngContentSelectors.length; i++) {
@@ -321,10 +375,9 @@ function matchesSelector(el: any, selector: string): boolean {
   const elProto = <any>Element.prototype;
 
   return el.nodeType === Node.ELEMENT_NODE
-      // matches is supported by all browsers from 2014 onwards except non-chromium edge
-      ?
-      (elProto.matches ?? elProto.msMatchesSelector).call(el, selector) :
-      false;
+    ? // matches is supported by all browsers from 2014 onwards except non-chromium edge
+      (elProto.matches ?? elProto.msMatchesSelector).call(el, selector)
+    : false;
 }
 
 interface ComponentInfo {

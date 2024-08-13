@@ -9,9 +9,9 @@
 import * as o from './output_ast';
 
 export type MapEntry = {
-  key: string,
-  quoted: boolean,
-  value: o.Expression
+  key: string;
+  quoted: boolean;
+  value: o.Expression;
 };
 
 export type MapLiteral = MapEntry[];
@@ -21,10 +21,14 @@ export function mapEntry(key: string, value: o.Expression): MapEntry {
 }
 
 export function mapLiteral(
-    obj: {[key: string]: o.Expression}, quoted: boolean = false): o.Expression {
-  return o.literalMap(Object.keys(obj).map(key => ({
-                                             key,
-                                             quoted,
-                                             value: obj[key],
-                                           })));
+  obj: {[key: string]: o.Expression},
+  quoted: boolean = false,
+): o.Expression {
+  return o.literalMap(
+    Object.keys(obj).map((key) => ({
+      key,
+      quoted,
+      value: obj[key],
+    })),
+  );
 }

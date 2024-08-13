@@ -76,8 +76,9 @@ export function isTI18n(obj: any): obj is TI18n {
 const ShapeOfTI18n: ShapeOf<TI18n> = {
   create: true,
   update: true,
+  ast: true,
+  parentTNodeIndex: true,
 };
-
 
 /**
  * Determines if `obj` matches the shape `TIcu`.
@@ -93,9 +94,8 @@ const ShapeOfTIcu: ShapeOf<TIcu> = {
   cases: true,
   create: true,
   remove: true,
-  update: true
+  update: true,
 };
-
 
 /**
  * Determines if `obj` matches the shape `TView`.
@@ -137,7 +137,6 @@ const ShapeOfTView: ShapeOf<TView> = {
   incompleteFirstPass: true,
   ssrId: true,
 };
-
 
 /**
  * Determines if `obj` matches the shape `TI18n`.

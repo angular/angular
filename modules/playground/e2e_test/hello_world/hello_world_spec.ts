@@ -9,19 +9,19 @@
 import {verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {browser} from 'protractor';
 
-describe('hello world', function() {
+describe('hello world', function () {
   afterEach(verifyNoBrowserErrors);
 
-  describe('hello world app', function() {
+  describe('hello world app', function () {
     const URL = '/';
 
-    it('should greet', function() {
+    it('should greet', function () {
       browser.get(URL);
 
       expect(getComponentText('hello-app', '.greeting')).toEqual('hello world!');
     });
 
-    it('should change greeting', function() {
+    it('should change greeting', function () {
       browser.get(URL);
 
       clickComponentButton('hello-app', '.changeButton');
@@ -32,10 +32,12 @@ describe('hello world', function() {
 
 function getComponentText(selector: string, innerSelector: string) {
   return browser.executeScript(
-      `return document.querySelector("${selector}").querySelector("${innerSelector}").textContent`);
+    `return document.querySelector("${selector}").querySelector("${innerSelector}").textContent`,
+  );
 }
 
 function clickComponentButton(selector: string, innerSelector: string) {
   return browser.executeScript(
-      `return document.querySelector("${selector}").querySelector("${innerSelector}").click()`);
+    `return document.querySelector("${selector}").querySelector("${innerSelector}").click()`,
+  );
 }

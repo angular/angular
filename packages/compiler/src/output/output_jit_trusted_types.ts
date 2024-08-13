@@ -41,27 +41,29 @@ export declare interface TrustedScript {
 }
 
 export declare interface TrustedTypePolicyFactory {
-  createPolicy(policyName: string, policyOptions: {
-    createScript?: (input: string) => string,
-  }): TrustedTypePolicy;
+  createPolicy(
+    policyName: string,
+    policyOptions: {
+      createScript?: (input: string) => string;
+    },
+  ): TrustedTypePolicy;
 }
 
 export declare interface TrustedTypePolicy {
   createScript(input: string): TrustedScript;
 }
 
-
 /**
  * The Trusted Types policy, or null if Trusted Types are not
  * enabled/supported, or undefined if the policy has not been created yet.
  */
-let policy: TrustedTypePolicy|null|undefined;
+let policy: TrustedTypePolicy | null | undefined;
 
 /**
  * Returns the Trusted Types policy, or null if Trusted Types are not
  * enabled/supported. The first call to this function will create the policy.
  */
-function getPolicy(): TrustedTypePolicy|null {
+function getPolicy(): TrustedTypePolicy | null {
   if (policy === undefined) {
     const trustedTypes = global['trustedTypes'] as TrustedTypePolicyFactory | undefined;
     policy = null;
@@ -89,7 +91,7 @@ function getPolicy(): TrustedTypePolicy|null {
  * never cause an XSS vulnerability if used in a context that will be
  * interpreted and executed as a script by a browser, e.g. when calling eval.
  */
-function trustedScriptFromString(script: string): TrustedScript|string {
+function trustedScriptFromString(script: string): TrustedScript | string {
   return getPolicy()?.createScript(script) || script;
 }
 

@@ -19,7 +19,7 @@ if (!process.env.KARMA_WEB_TEST_MODE && isBazel && process.env.TEST_TARGET.inclu
   process.env.KARMA_WEB_TEST_MODE = 'SL_REQUIRED';
 }
 
-module.exports = function(config) {
+module.exports = function (config) {
   const conf = {
     frameworks: ['jasmine'],
 
@@ -55,11 +55,7 @@ module.exports = function(config) {
 
     customLaunchers: browserProvidersConf.customLaunchers,
 
-    plugins: [
-      'karma-jasmine',
-      'karma-chrome-launcher',
-      'karma-sourcemap-loader',
-    ],
+    plugins: ['karma-jasmine', 'karma-chrome-launcher', 'karma-sourcemap-loader'],
 
     preprocessors: {
       '**/*.js': ['sourcemap'],
@@ -126,7 +122,7 @@ module.exports = function(config) {
       // This slows-down tests/browser restarting and can decrease stability.
       // https://github.com/karma-runner/karma-sauce-launcher/blob/59b0c5c877448e064ad56449cd906743721c6b62/src/launcher/launcher.ts#L72-L79.
       require('saucelabs').default.prototype.downloadJobAsset = () =>
-          Promise.resolve('<FAKE-LOGS>');
+        Promise.resolve('<FAKE-LOGS>');
     }
   }
 
@@ -155,7 +151,8 @@ module.exports = function(config) {
         break;
       default:
         throw new Error(
-            `Unrecognized process.env.KARMA_WEB_TEST_MODE: ${process.env.KARMA_WEB_TEST_MODE}`);
+          `Unrecognized process.env.KARMA_WEB_TEST_MODE: ${process.env.KARMA_WEB_TEST_MODE}`,
+        );
     }
   } else {
     // Run the test locally

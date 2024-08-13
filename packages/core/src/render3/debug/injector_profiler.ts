@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import type {FactoryProvider} from '../../di';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {InjectionToken} from '../../di/injection_token';
 import type {Injector} from '../../di/injector';
@@ -13,6 +14,8 @@ import {InjectFlags, InjectOptions, InternalInjectFlags} from '../../di/interfac
 import type {SingleProvider} from '../../di/provider_collection';
 import {Type} from '../../interface/type';
 import {throwError} from '../../util/assert';
+import type {TNode} from '../interfaces/node';
+import type {LView} from '../interfaces/view';
 
 /**
  * An enum describing the types of events that can be emitted from the injector profiler
@@ -31,7 +34,7 @@ export const enum InjectorProfilerEventType {
   /**
    * Emits when an injector configures a provider.
    */
-  ProviderConfigured
+  ProviderConfigured,
 }
 
 /**
@@ -50,9 +53,8 @@ export interface InjectorProfilerContext {
    *      - Example: if ModuleA --provides--> ServiceA --injects--> ServiceB
    *                 then inject(ServiceB) in ServiceA has ServiceA as a construction context
    */
-  token: Type<unknown>|null;
+  token: Type<unknown> | null;
 }
-
 
 export interface InjectedServiceEvent {
   type: InjectorProfilerEventType.Inject;
@@ -77,16 +79,20 @@ export interface ProviderConfiguredEvent {
  */
 
 export type InjectorProfilerEvent =
-    InjectedServiceEvent|InjectorCreatedInstanceEvent|ProviderConfiguredEvent;
+  | InjectedServiceEvent
+  | InjectorCreatedInstanceEvent
+  | ProviderConfiguredEvent;
 
 /**
  * An object that contains information about a provider that has been configured
+ *
+ * TODO: rename to indicate that it is a debug structure eg. ProviderDebugInfo.
  */
 export interface ProviderRecord {
   /**
    * DI token that this provider is configuring
    */
-  token: Type<unknown>;
+  token: Type<unknown> | InjectionToken<unknown>;
 
   /**
    * Determines if provider is configured as view provider.
@@ -122,7 +128,7 @@ export interface InjectedService {
   /**
    * DI token of the Service that is injected
    */
-  token?: Type<unknown>|InjectionToken<unknown>;
+  token?: Type<unknown> | InjectionToken<unknown>;
 
   /**
    * Value of the injected service
@@ -132,12 +138,17 @@ export interface InjectedService {
   /**
    * Flags that this service was injected with
    */
-  flags?: InternalInjectFlags|InjectFlags|InjectOptions;
+  flags?: InternalInjectFlags | InjectFlags | InjectOptions;
 
   /**
    * Injector that this service was provided in.
    */
   providedIn?: Injector;
+
+  /**
+   * In NodeInjectors, the LView and TNode that serviced this injection.
+   */
+  injectedIn?: {lView: LView; tNode: TNode};
 }
 
 export interface InjectorProfiler {
@@ -158,7 +169,7 @@ export function setInjectorProfilerContext(context: InjectorProfilerContext) {
   return previous;
 }
 
-let injectorProfilerCallback: InjectorProfiler|null = null;
+let injectorProfilerCallback: InjectorProfiler | null = null;
 
 /**
  * Sets the callback function which will be invoked during certain DI events within the
@@ -170,7 +181,7 @@ let injectorProfilerCallback: InjectorProfiler|null = null;
  *
  * @param profiler function provided by the caller or null value to disable profiling.
  */
-export const setInjectorProfiler = (injectorProfiler: InjectorProfiler|null) => {
+export const setInjectorProfiler = (injectorProfiler: InjectorProfiler | null) => {
   !ngDevMode && throwError('setInjectorProfiler should never be called in production mode');
   injectorProfilerCallback = injectorProfiler;
 };
@@ -192,20 +203,41 @@ function injectorProfiler(event: InjectorProfilerEvent): void {
  * Emits an InjectorProfilerEventType.ProviderConfigured to the injector profiler. The data in the
  * emitted event includes the raw provider, as well as the token that provider is providing.
  *
- * @param provider A provider object
+ * @param eventProvider A provider object
  */
 export function emitProviderConfiguredEvent(
-    provider: SingleProvider, isViewProvider: boolean = false): void {
+  eventProvider: SingleProvider,
+  isViewProvider: boolean = false,
+): void {
   !ngDevMode && throwError('Injector profiler should never be called in production mode');
+
+  let token;
+  // if the provider is a TypeProvider (typeof provider is function) then the token is the
+  // provider itself
+  if (typeof eventProvider === 'function') {
+    token = eventProvider;
+  }
+  // if the provider is an injection token, then the token is the injection token.
+  else if (eventProvider instanceof InjectionToken) {
+    token = eventProvider;
+  }
+  // in all other cases we can access the token via the `provide` property of the provider
+  else {
+    token = resolveForwardRef(eventProvider.provide);
+  }
+
+  let provider = eventProvider;
+  // Injection tokens may define their own default provider which gets attached to the token itself
+  // as `ɵprov`. In this case, we want to emit the provider that is attached to the token, not the
+  // token itself.
+  if (eventProvider instanceof InjectionToken) {
+    provider = (eventProvider.ɵprov as FactoryProvider) || eventProvider;
+  }
 
   injectorProfiler({
     type: InjectorProfilerEventType.ProviderConfigured,
     context: getInjectorProfilerContext(),
-    providerRecord: {
-      token: typeof provider === 'function' ? provider : resolveForwardRef(provider.provide),
-      provider,
-      isViewProvider
-    }
+    providerRecord: {token, provider, isViewProvider},
   });
 }
 
@@ -221,7 +253,7 @@ export function emitInstanceCreatedByInjectorEvent(instance: unknown): void {
   injectorProfiler({
     type: InjectorProfilerEventType.InstanceCreatedByInjector,
     context: getInjectorProfilerContext(),
-    instance: {value: instance}
+    instance: {value: instance},
   });
 }
 
@@ -236,14 +268,17 @@ export function emitInjectEvent(token: Type<unknown>, value: unknown, flags: Inj
   injectorProfiler({
     type: InjectorProfilerEventType.Inject,
     context: getInjectorProfilerContext(),
-    service: {token, value, flags}
+    service: {token, value, flags},
   });
 }
 
 export function runInInjectorProfilerContext(
-    injector: Injector, token: Type<unknown>, callback: () => void): void {
+  injector: Injector,
+  token: Type<unknown>,
+  callback: () => void,
+): void {
   !ngDevMode &&
-      throwError('runInInjectorProfilerContext should never be called in production mode');
+    throwError('runInInjectorProfilerContext should never be called in production mode');
 
   const prevInjectContext = setInjectorProfilerContext({injector, token});
   try {

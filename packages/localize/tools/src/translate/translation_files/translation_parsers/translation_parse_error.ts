@@ -12,8 +12,10 @@ import {ParseErrorLevel, ParseSourceSpan} from '@angular/compiler';
  */
 export class TranslationParseError extends Error {
   constructor(
-      public span: ParseSourceSpan, public msg: string,
-      public level: ParseErrorLevel = ParseErrorLevel.ERROR) {
+    public span: ParseSourceSpan,
+    public msg: string,
+    public level: ParseErrorLevel = ParseErrorLevel.ERROR,
+  ) {
     super(contextualMessage(span, msg, level));
   }
 }

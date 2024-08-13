@@ -13,7 +13,7 @@ import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loa
  */
 export const cloudinaryLoaderInfo: ImageLoaderInfo = {
   name: 'Cloudinary',
-  testUrl: isCloudinaryUrl
+  testUrl: isCloudinaryUrl,
 };
 
 const CLOUDINARY_LOADER_REGEX = /https?\:\/\/[^\/]+\.cloudinary\.com\/.+/;
@@ -37,22 +37,30 @@ function isCloudinaryUrl(url: string): boolean {
  * @publicApi
  */
 export const provideCloudinaryLoader = createImageLoader(
-    createCloudinaryUrl,
-    ngDevMode ?
-        [
-          'https://res.cloudinary.com/mysite', 'https://mysite.cloudinary.com',
-          'https://subdomain.mysite.com'
-        ] :
-        undefined);
+  createCloudinaryUrl,
+  ngDevMode
+    ? [
+        'https://res.cloudinary.com/mysite',
+        'https://mysite.cloudinary.com',
+        'https://subdomain.mysite.com',
+      ]
+    : undefined,
+);
 
 function createCloudinaryUrl(path: string, config: ImageLoaderConfig) {
   // Cloudinary image URLformat:
   // https://cloudinary.com/documentation/image_transformations#transformation_url_structure
   // Example of a Cloudinary image URL:
   // https://res.cloudinary.com/mysite/image/upload/c_scale,f_auto,q_auto,w_600/marketing/tile-topics-m.png
-  let params = `f_auto,q_auto`;  // sets image format and quality to "auto"
+
+  // For a placeholder image, we use the lowest image setting available to reduce the load time
+  // else we use the auto size
+  const quality = config.isPlaceholder ? 'q_auto:low' : 'q_auto';
+
+  let params = `f_auto,${quality}`;
   if (config.width) {
     params += `,w_${config.width}`;
   }
+
   return `${path}/image/upload/${params}/${config.src}`;
 }

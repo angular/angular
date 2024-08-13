@@ -7,22 +7,23 @@
  */
 
 const _SELECTOR_REGEXP = new RegExp(
-    '(\\:not\\()|' +               // 1: ":not("
-        '(([\\.\\#]?)[-\\w]+)|' +  // 2: "tag"; 3: "."/"#";
-        // "-" should appear first in the regexp below as FF31 parses "[.-\w]" as a range
-        // 4: attribute; 5: attribute_string; 6: attribute_value
-        '(?:\\[([-.\\w*\\\\$]+)(?:=([\"\']?)([^\\]\"\']*)\\5)?\\])|' +  // "[name]", "[name=value]",
-                                                                        // "[name="value"]",
-                                                                        // "[name='value']"
-        '(\\))|' +                                                      // 7: ")"
-        '(\\s*,\\s*)',                                                  // 8: ","
-    'g');
+  '(\\:not\\()|' + // 1: ":not("
+    '(([\\.\\#]?)[-\\w]+)|' + // 2: "tag"; 3: "."/"#";
+    // "-" should appear first in the regexp below as FF31 parses "[.-\w]" as a range
+    // 4: attribute; 5: attribute_string; 6: attribute_value
+    '(?:\\[([-.\\w*\\\\$]+)(?:=(["\']?)([^\\]"\']*)\\5)?\\])|' + // "[name]", "[name=value]",
+    // "[name="value"]",
+    // "[name='value']"
+    '(\\))|' + // 7: ")"
+    '(\\s*,\\s*)', // 8: ","
+  'g',
+);
 
 /**
  * These offsets should match the match-groups in `_SELECTOR_REGEXP` offsets.
  */
 const enum SelectorRegexp {
-  ALL = 0,  // The whole match
+  ALL = 0, // The whole match
   NOT = 1,
   TAG = 2,
   PREFIX = 3,
@@ -38,7 +39,7 @@ const enum SelectorRegexp {
  * of selecting subsets out of them.
  */
 export class CssSelector {
-  element: string|null = null;
+  element: string | null = null;
   classNames: string[] = [];
   /**
    * The selectors are encoded in pairs where:
@@ -57,18 +58,22 @@ export class CssSelector {
   static parse(selector: string): CssSelector[] {
     const results: CssSelector[] = [];
     const _addResult = (res: CssSelector[], cssSel: CssSelector) => {
-      if (cssSel.notSelectors.length > 0 && !cssSel.element && cssSel.classNames.length == 0 &&
-          cssSel.attrs.length == 0) {
+      if (
+        cssSel.notSelectors.length > 0 &&
+        !cssSel.element &&
+        cssSel.classNames.length == 0 &&
+        cssSel.attrs.length == 0
+      ) {
         cssSel.element = '*';
       }
       res.push(cssSel);
     };
     let cssSelector = new CssSelector();
-    let match: string[]|null;
+    let match: string[] | null;
     let current = cssSelector;
     let inNot = false;
     _SELECTOR_REGEXP.lastIndex = 0;
-    while (match = _SELECTOR_REGEXP.exec(selector)) {
+    while ((match = _SELECTOR_REGEXP.exec(selector))) {
       if (match[SelectorRegexp.NOT]) {
         if (inNot) {
           throw new Error('Nesting :not in a selector is not allowed');
@@ -95,7 +100,9 @@ export class CssSelector {
 
       if (attribute) {
         current.addAttribute(
-            current.unescapeAttribute(attribute), match[SelectorRegexp.ATTRIBUTE_VALUE]);
+          current.unescapeAttribute(attribute),
+          match[SelectorRegexp.ATTRIBUTE_VALUE],
+        );
       }
       if (match[SelectorRegexp.NOT_END]) {
         inNot = false;
@@ -134,8 +141,9 @@ export class CssSelector {
       }
       if (char === '$' && !escaping) {
         throw new Error(
-            `Error in attribute selector "${attr}". ` +
-            `Unescaped "$" is not supported. Please escape with "\\$".`);
+          `Error in attribute selector "${attr}". ` +
+            `Unescaped "$" is not supported. Please escape with "\\$".`,
+        );
       }
       escaping = false;
       result += char;
@@ -151,22 +159,26 @@ export class CssSelector {
    * [MDN web link for more
    * info](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors).
    * @param attr the attribute to escape.
-   * @returns the escaped string. 
+   * @returns the escaped string.
    */
   escapeAttribute(attr: string): string {
     return attr.replace(/\\/g, '\\\\').replace(/\$/g, '\\$');
   }
 
   isElementSelector(): boolean {
-    return this.hasElementSelector() && this.classNames.length == 0 && this.attrs.length == 0 &&
-        this.notSelectors.length === 0;
+    return (
+      this.hasElementSelector() &&
+      this.classNames.length == 0 &&
+      this.attrs.length == 0 &&
+      this.notSelectors.length === 0
+    );
   }
 
   hasElementSelector(): boolean {
     return !!this.element;
   }
 
-  setElement(element: string|null = null) {
+  setElement(element: string | null = null) {
     this.element = element;
   }
 
@@ -179,7 +191,7 @@ export class CssSelector {
   }
 
   addAttribute(name: string, value: string = '') {
-    this.attrs.push(name, value && value.toLowerCase() || '');
+    this.attrs.push(name, (value && value.toLowerCase()) || '');
   }
 
   addClassName(name: string) {
@@ -189,7 +201,7 @@ export class CssSelector {
   toString(): string {
     let res: string = this.element || '';
     if (this.classNames) {
-      this.classNames.forEach(klass => res += `.${klass}`);
+      this.classNames.forEach((klass) => (res += `.${klass}`));
     }
     if (this.attrs) {
       for (let i = 0; i < this.attrs.length; i += 2) {
@@ -198,7 +210,7 @@ export class CssSelector {
         res += `[${name}${value ? '=' + value : ''}]`;
       }
     }
-    this.notSelectors.forEach(notSelector => res += `:not(${notSelector})`);
+    this.notSelectors.forEach((notSelector) => (res += `:not(${notSelector})`));
     return res;
   }
 }
@@ -239,7 +251,10 @@ export class SelectorMatcher<T = any> {
    * @param callbackCtxt An opaque object that will be given to the callback of the `match` function
    */
   private _addSelectable(
-      cssSelector: CssSelector, callbackCtxt: T, listContext: SelectorListContext) {
+    cssSelector: CssSelector,
+    callbackCtxt: T,
+    listContext: SelectorListContext,
+  ) {
     let matcher: SelectorMatcher<T> = this;
     const element = cssSelector.element;
     const classNames = cssSelector.classNames;
@@ -294,7 +309,10 @@ export class SelectorMatcher<T = any> {
   }
 
   private _addTerminal(
-      map: Map<string, SelectorContext<T>[]>, name: string, selectable: SelectorContext<T>) {
+    map: Map<string, SelectorContext<T>[]>,
+    name: string,
+    selectable: SelectorContext<T>,
+  ) {
     let terminalList = map.get(name);
     if (!terminalList) {
       terminalList = [];
@@ -319,7 +337,10 @@ export class SelectorMatcher<T = any> {
    * @param matchedCallback This callback will be called with the object handed into `addSelectable`
    * @return boolean true if a match was found
    */
-  match(cssSelector: CssSelector, matchedCallback: ((c: CssSelector, a: T) => void)|null): boolean {
+  match(
+    cssSelector: CssSelector,
+    matchedCallback: ((c: CssSelector, a: T) => void) | null,
+  ): boolean {
     let result = false;
     const element = cssSelector.element!;
     const classNames = cssSelector.classNames;
@@ -330,17 +351,17 @@ export class SelectorMatcher<T = any> {
     }
 
     result = this._matchTerminal(this._elementMap, element, cssSelector, matchedCallback) || result;
-    result = this._matchPartial(this._elementPartialMap, element, cssSelector, matchedCallback) ||
-        result;
+    result =
+      this._matchPartial(this._elementPartialMap, element, cssSelector, matchedCallback) || result;
 
     if (classNames) {
       for (let i = 0; i < classNames.length; i++) {
         const className = classNames[i];
         result =
-            this._matchTerminal(this._classMap, className, cssSelector, matchedCallback) || result;
+          this._matchTerminal(this._classMap, className, cssSelector, matchedCallback) || result;
         result =
-            this._matchPartial(this._classPartialMap, className, cssSelector, matchedCallback) ||
-            result;
+          this._matchPartial(this._classPartialMap, className, cssSelector, matchedCallback) ||
+          result;
       }
     }
 
@@ -352,17 +373,17 @@ export class SelectorMatcher<T = any> {
         const terminalValuesMap = this._attrValueMap.get(name)!;
         if (value) {
           result =
-              this._matchTerminal(terminalValuesMap, '', cssSelector, matchedCallback) || result;
+            this._matchTerminal(terminalValuesMap, '', cssSelector, matchedCallback) || result;
         }
         result =
-            this._matchTerminal(terminalValuesMap, value, cssSelector, matchedCallback) || result;
+          this._matchTerminal(terminalValuesMap, value, cssSelector, matchedCallback) || result;
 
         const partialValuesMap = this._attrValuePartialMap.get(name)!;
         if (value) {
           result = this._matchPartial(partialValuesMap, '', cssSelector, matchedCallback) || result;
         }
         result =
-            this._matchPartial(partialValuesMap, value, cssSelector, matchedCallback) || result;
+          this._matchPartial(partialValuesMap, value, cssSelector, matchedCallback) || result;
       }
     }
     return result;
@@ -370,8 +391,11 @@ export class SelectorMatcher<T = any> {
 
   /** @internal */
   _matchTerminal(
-      map: Map<string, SelectorContext<T>[]>, name: string, cssSelector: CssSelector,
-      matchedCallback: ((c: CssSelector, a: any) => void)|null): boolean {
+    map: Map<string, SelectorContext<T>[]>,
+    name: string,
+    cssSelector: CssSelector,
+    matchedCallback: ((c: CssSelector, a: any) => void) | null,
+  ): boolean {
     if (!map || typeof name !== 'string') {
       return false;
     }
@@ -395,8 +419,11 @@ export class SelectorMatcher<T = any> {
 
   /** @internal */
   _matchPartial(
-      map: Map<string, SelectorMatcher<T>>, name: string, cssSelector: CssSelector,
-      matchedCallback: ((c: CssSelector, a: any) => void)|null): boolean {
+    map: Map<string, SelectorMatcher<T>>,
+    name: string,
+    cssSelector: CssSelector,
+    matchedCallback: ((c: CssSelector, a: any) => void) | null,
+  ): boolean {
     if (!map || typeof name !== 'string') {
       return false;
     }
@@ -412,7 +439,6 @@ export class SelectorMatcher<T = any> {
   }
 }
 
-
 export class SelectorListContext {
   alreadyMatched: boolean = false;
 
@@ -424,11 +450,14 @@ export class SelectorContext<T = any> {
   notSelectors: CssSelector[];
 
   constructor(
-      public selector: CssSelector, public cbContext: T, public listContext: SelectorListContext) {
+    public selector: CssSelector,
+    public cbContext: T,
+    public listContext: SelectorListContext,
+  ) {
     this.notSelectors = selector.notSelectors;
   }
 
-  finalize(cssSelector: CssSelector, callback: ((c: CssSelector, a: T) => void)|null): boolean {
+  finalize(cssSelector: CssSelector, callback: ((c: CssSelector, a: T) => void) | null): boolean {
     let result = true;
     if (this.notSelectors.length > 0 && (!this.listContext || !this.listContext.alreadyMatched)) {
       const notMatcher = SelectorMatcher.createNotMatcher(this.notSelectors);

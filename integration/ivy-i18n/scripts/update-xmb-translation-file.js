@@ -11,9 +11,10 @@ const contents = fs.readFileSync(filePath, 'utf8');
 
 // Write translated file
 const updatedFilePath = filePath.replace(/\.xmb$/, '.xtb');
-const updatedContents = contents.replace(/messagebundle/g, 'translationbundle>')
-                            .replace(/<translationbundle>/g, '<translationbundle lang="legacy">')
-                            .replace(/\bmsg\b/g, 'translation')
-                            .replace(/Hello/g, 'Bonjour')
-                            .replace(/<source>.*<\/source>/g, '');
+const updatedContents = contents
+  .replace(/messagebundle/g, 'translationbundle>')
+  .replace(/<translationbundle>/g, '<translationbundle lang="legacy">')
+  .replace(/\bmsg\b/g, 'translation')
+  .replace(/Hello/g, 'Bonjour')
+  .replace(/<source>.*<\/source>/g, '');
 fs.writeFileSync(updatedFilePath, updatedContents, 'utf8');

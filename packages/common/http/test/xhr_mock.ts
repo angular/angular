@@ -45,20 +45,20 @@ export class MockXMLHttpRequest {
   responseType: string = 'text';
 
   // Mocked response interface.
-  response: any|undefined = undefined;
-  responseText: string|undefined = undefined;
-  responseURL: string|null = null;
+  response: any | undefined = undefined;
+  responseText: string | undefined = undefined;
+  responseURL: string | null = null;
   status: number = 0;
   statusText: string = '';
   mockResponseHeaders: string = '';
 
   listeners: {
-    error?: (event: ProgressEvent) => void,
-    timeout?: (event: ProgressEvent) => void,
-    abort?: () => void,
-    load?: () => void,
-    progress?: (event: ProgressEvent) => void,
-    uploadProgress?: (event: ProgressEvent) => void,
+    error?: (event: ProgressEvent) => void;
+    timeout?: (event: ProgressEvent) => void;
+    abort?: () => void;
+    load?: () => void;
+    progress?: (event: ProgressEvent) => void;
+    uploadProgress?: (event: ProgressEvent) => void;
   } = {};
 
   upload = new MockXMLHttpRequestUpload(this);
@@ -73,12 +73,15 @@ export class MockXMLHttpRequest {
   }
 
   addEventListener(
-      event: 'error'|'timeout'|'load'|'progress'|'uploadProgress'|'abort',
-      handler: Function): void {
+    event: 'error' | 'timeout' | 'load' | 'progress' | 'uploadProgress' | 'abort',
+    handler: Function,
+  ): void {
     this.listeners[event] = handler as any;
   }
 
-  removeEventListener(event: 'error'|'timeout'|'load'|'progress'|'uploadProgress'|'abort'): void {
+  removeEventListener(
+    event: 'error' | 'timeout' | 'load' | 'progress' | 'uploadProgress' | 'abort',
+  ): void {
     delete this.listeners[event];
   }
 
@@ -90,7 +93,7 @@ export class MockXMLHttpRequest {
     return this.mockResponseHeaders;
   }
 
-  getResponseHeader(header: string): string|null {
+  getResponseHeader(header: string): string | null {
     return new HttpHeaders(this.mockResponseHeaders).get(header);
   }
 

@@ -6,10 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, createComponent, ElementRef, EmbeddedViewRef, EnvironmentInjector, Injector, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {InternalViewRef} from '@angular/core/src/linker/view_ref';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  ComponentRef,
+  createComponent,
+  ElementRef,
+  EmbeddedViewRef,
+  EnvironmentInjector,
+  Injector,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
+import {ViewRef as InternalViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
-
 
 describe('ViewRef', () => {
   it('should remove nodes from DOM when the view is detached from app ref', () => {
@@ -21,16 +33,19 @@ describe('ViewRef', () => {
     @Component({template: `<span></span>`})
     class App {
       componentRef!: ComponentRef<DynamicComponent>;
-      constructor(public appRef: ApplicationRef, private injector: EnvironmentInjector) {}
+      constructor(
+        public appRef: ApplicationRef,
+        private injector: EnvironmentInjector,
+      ) {}
 
       create() {
         this.componentRef = createComponent(DynamicComponent, {environmentInjector: this.injector});
-        (this.componentRef.hostView as InternalViewRef).attachToAppRef(this.appRef);
+        (this.componentRef.hostView as InternalViewRef<unknown>).attachToAppRef(this.appRef);
         document.body.appendChild(this.componentRef.instance.elRef.nativeElement);
       }
 
       destroy() {
-        (this.componentRef.hostView as InternalViewRef).detachFromAppRef();
+        (this.componentRef.hostView as InternalViewRef<unknown>).detachFromAppRef();
       }
     }
 
@@ -54,7 +69,7 @@ describe('ViewRef', () => {
     @Component({template: ''})
     class App {
       constructor(changeDetectorRef: ChangeDetectorRef) {
-        (changeDetectorRef as InternalViewRef).onDestroy(() => called = true);
+        (changeDetectorRef as InternalViewRef<unknown>).onDestroy(() => (called = true));
       }
     }
 

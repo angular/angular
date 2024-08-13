@@ -1,5 +1,5 @@
 # Enable debugging tests with --config=debug
-test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
+test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results --spawn_strategy=local
 
 # Do not attempt to de-flake locally.
 # On CI we might set this to `3` to run with deflaking.
@@ -56,31 +56,16 @@ build --enable_runfiles
 build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=release"
 build:release --stamp
 
-# Building AIO against local Angular deps requires stamping
-# versions in Angular packages due to CLI version checks.
-build:aio_local_deps --stamp
-build:aio_local_deps --workspace_status_command="yarn -s --cwd aio local-workspace-status"
-
 # Snapshots should also be stamped with version control information.
 build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
 
-##########################################################
-# AIO architect build configuration                      #
-# See aio/angular.json for available configurations.     #
-# To build with a partiular configuration:               #
-#   bazel build //aio:build --aio_build_config=<config>  #
-# Default config is `stable``.                           #
-##########################################################
-build --flag_alias=aio_build_config=//aio:flag_aio_build_config
-
-####################################
-# AIO first party dep substitution #
-# Turn on with                     #
-#  --config=aio_local_deps         #
-####################################
-
-build:aio_local_deps --//aio:flag_aio_local_deps
+# Angular DevTools for Firefox releases *cannot* be stamped and `--config snapshot-build-firefox` is a no-op.
+# This is because Mozilla requires add-on source code to be uploaded and then they manually reproduce the build.
+# If we stamp the build based on Git information such as the current commit, then reproducing the build would require
+# uploading the entire `.git` directory. We already must upload the entire monorepo, and uploading `.git` as well
+# exceeds the max source file size. To address this, we just *don't* stamp Firefox builds of Angular DevTools.
+build:snapshot-build-firefox --nostamp
 
 ###############################
 # Output                      #
@@ -117,10 +102,6 @@ build:remote --remote_timeout=600
 common:remote --jobs=200
 
 build:remote --google_default_credentials
-
-# Limit the number of test jobs for on an AIO local deps build. The example tests running
-# concurrently pushes the circleci executor RAM usage to its limits.
-test:aio_local_deps --jobs=24
 
 # Force remote exeuctions to consider the entire run as linux
 build:remote --cpu=k8
@@ -177,6 +158,9 @@ test:saucelabs --flaky_test_attempts=1
 
 # --ng_perf will ask the Ivy compiler to produce performance results for each build.
 build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
+# --adev_fast will run adev build/serve in a faster mode, skipping things like prerendering
+# for local development.
+build --flag_alias=fast_adev=//adev:fast_build_mode
 
 ####################################################
 # User bazel configuration

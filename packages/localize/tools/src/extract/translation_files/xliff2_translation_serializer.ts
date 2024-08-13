@@ -5,7 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
+import {
+  AbsoluteFsPath,
+  getFileSystem,
+  PathManipulation,
+} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
 import {FormatOptions, validateOptions} from './format_options';
@@ -28,18 +32,22 @@ const MAX_LEGACY_XLIFF_2_MESSAGE_LENGTH = 20;
 export class Xliff2TranslationSerializer implements TranslationSerializer {
   private currentPlaceholderId = 0;
   constructor(
-      private sourceLocale: string, private basePath: AbsoluteFsPath, private useLegacyIds: boolean,
-      private formatOptions: FormatOptions = {}, private fs: PathManipulation = getFileSystem()) {
+    private sourceLocale: string,
+    private basePath: AbsoluteFsPath,
+    private useLegacyIds: boolean,
+    private formatOptions: FormatOptions = {},
+    private fs: PathManipulation = getFileSystem(),
+  ) {
     validateOptions('Xliff1TranslationSerializer', [['xml:space', ['preserve']]], formatOptions);
   }
 
   serialize(messages: ɵParsedMessage[]): string {
-    const messageGroups = consolidateMessages(messages, message => this.getMessageId(message));
+    const messageGroups = consolidateMessages(messages, (message) => this.getMessageId(message));
     const xml = new XmlFile();
     xml.startTag('xliff', {
       'version': '2.0',
       'xmlns': 'urn:oasis:names:tc:xliff:document:2.0',
-      'srcLang': this.sourceLocale
+      'srcLang': this.sourceLocale,
     });
     // NOTE: the `original` property is set to the legacy `ng.template` value for backward
     // compatibility.
@@ -59,12 +67,16 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
         xml.startTag('notes');
 
         // Write all the locations
-        for (const {location: {file, start, end}} of messagesWithLocations) {
+        for (const {
+          location: {file, start, end},
+        } of messagesWithLocations) {
           const endLineString =
-              end !== undefined && end.line !== start.line ? `,${end.line + 1}` : '';
+            end !== undefined && end.line !== start.line ? `,${end.line + 1}` : '';
           this.serializeNote(
-              xml, 'location',
-              `${this.fs.relative(this.basePath, file)}:${start.line + 1}${endLineString}`);
+            xml,
+            'location',
+            `${this.fs.relative(this.basePath, file)}:${start.line + 1}${endLineString}`,
+          );
         }
 
         if (message.description) {
@@ -94,7 +106,7 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
       this.serializeTextPart(xml, message.messageParts[i]);
       const name = message.placeholderNames[i];
       const associatedMessageId =
-          message.associatedMessageIds && message.associatedMessageIds[name];
+        message.associatedMessageIds && message.associatedMessageIds[name];
       this.serializePlaceholder(xml, name, message.substitutionLocations, associatedMessageId);
     }
     this.serializeTextPart(xml, message.messageParts[length]);
@@ -111,15 +123,18 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
   }
 
   private serializePlaceholder(
-      xml: XmlFile, placeholderName: string,
-      substitutionLocations: Record<string, ɵSourceLocation|undefined>|undefined,
-      associatedMessageId: string|undefined): void {
+    xml: XmlFile,
+    placeholderName: string,
+    substitutionLocations: Record<string, ɵSourceLocation | undefined> | undefined,
+    associatedMessageId: string | undefined,
+  ): void {
     const text = substitutionLocations?.[placeholderName]?.text;
 
     if (placeholderName.startsWith('START_')) {
       // Replace the `START` with `CLOSE` and strip off any `_1` ids from the end.
-      const closingPlaceholderName =
-          placeholderName.replace(/^START/, 'CLOSE').replace(/_\d+$/, '');
+      const closingPlaceholderName = placeholderName
+        .replace(/^START/, 'CLOSE')
+        .replace(/_\d+$/, '');
       const closingText = substitutionLocations?.[closingPlaceholderName]?.text;
       const attrs: Record<string, string> = {
         id: `${this.currentPlaceholderId++}`,
@@ -179,11 +194,15 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
    * https://github.com/google/closure-compiler/blob/master/src/com/google/javascript/jscomp/GoogleJsMessageIdGenerator.java
    */
   private getMessageId(message: ɵParsedMessage): string {
-    return message.customId ||
-        this.useLegacyIds && message.legacyIds !== undefined &&
+    return (
+      message.customId ||
+      (this.useLegacyIds &&
+        message.legacyIds !== undefined &&
         message.legacyIds.find(
-            id => id.length <= MAX_LEGACY_XLIFF_2_MESSAGE_LENGTH && !/[^0-9]/.test(id)) ||
-        message.id;
+          (id) => id.length <= MAX_LEGACY_XLIFF_2_MESSAGE_LENGTH && !/[^0-9]/.test(id),
+        )) ||
+      message.id
+    );
   }
 }
 
@@ -194,7 +213,7 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
  * `other`. Certain formatting tags (e.g. bold, italic, etc) have type `fmt`. Line-breaks, images
  * and links are special cases.
  */
-function getTypeForPlaceholder(placeholder: string): string|null {
+function getTypeForPlaceholder(placeholder: string): string | null {
   const tag = placeholder.replace(/^(START_|CLOSE_)/, '').replace(/_\d+$/, '');
   switch (tag) {
     case 'BOLD_TEXT':

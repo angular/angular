@@ -684,3 +684,294 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: simple_two_way.js
+ ****************************************************************************************************/
+import { Component, Directive, EventEmitter, Input, NgModule, Output } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestCmp {
+    constructor() {
+        this.name = '';
+    }
+}
+TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: 'Name: <input [(ngModel)]="name">', isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(() => NgModelDirective), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'test-cmp',
+                    template: 'Name: <input [(ngModel)]="name">',
+                }]
+        }] });
+export class NgModelDirective {
+    constructor() {
+        this.ngModel = '';
+        this.ngModelChanges = new EventEmitter();
+    }
+}
+NgModelDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, selector: "[ngModel]", inputs: { ngModel: "ngModel" }, outputs: { ngModelChanges: "ngModelChanges" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, decorators: [{
+            type: Directive,
+            args: [{ selector: '[ngModel]' }]
+        }], propDecorators: { ngModel: [{
+                type: Input
+            }], ngModelChanges: [{
+                type: Output
+            }] } });
+export class AppModule {
+}
+AppModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+AppModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppModule, declarations: [TestCmp, NgModelDirective] });
+AppModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppModule });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [TestCmp, NgModelDirective] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: simple_two_way.d.ts
+ ****************************************************************************************************/
+import { EventEmitter } from '@angular/core';
+import * as i0 from "@angular/core";
+export declare class TestCmp {
+    name: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never>;
+}
+export declare class NgModelDirective {
+    ngModel: string;
+    ngModelChanges: EventEmitter<string>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; }; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
+}
+export declare class AppModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, [typeof TestCmp, typeof NgModelDirective], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: nested_two_way.js
+ ****************************************************************************************************/
+import { Component, Directive, EventEmitter, Input, NgModule, Output } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestCmp {
+    constructor() {
+        this.name = '';
+    }
+}
+TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: 'Name: <ng-template><input [(ngModel)]="name"></ng-template>', isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(() => NgModelDirective), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'test-cmp',
+                    template: 'Name: <ng-template><input [(ngModel)]="name"></ng-template>',
+                }]
+        }] });
+export class NgModelDirective {
+    constructor() {
+        this.ngModel = '';
+        this.ngModelChanges = new EventEmitter();
+    }
+}
+NgModelDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, selector: "[ngModel]", inputs: { ngModel: "ngModel" }, outputs: { ngModelChanges: "ngModelChanges" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, decorators: [{
+            type: Directive,
+            args: [{ selector: '[ngModel]' }]
+        }], propDecorators: { ngModel: [{
+                type: Input
+            }], ngModelChanges: [{
+                type: Output
+            }] } });
+export class AppModule {
+}
+AppModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+AppModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppModule, declarations: [TestCmp, NgModelDirective] });
+AppModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppModule });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [TestCmp, NgModelDirective] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: nested_two_way.d.ts
+ ****************************************************************************************************/
+import { EventEmitter } from '@angular/core';
+import * as i0 from "@angular/core";
+export declare class TestCmp {
+    name: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never>;
+}
+export declare class NgModelDirective {
+    ngModel: string;
+    ngModelChanges: EventEmitter<string>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; }; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
+}
+export declare class AppModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, [typeof TestCmp, typeof NgModelDirective], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: multiple_statements.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", host: { listeners: { "click": "$event.preventDefault(); $event.target.blur()" } }, ngImport: i0, template: `
+    <div (click)="$event.preventDefault(); $event.target.blur()"></div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-component',
+                    standalone: true,
+                    host: { '(click)': '$event.preventDefault(); $event.target.blur()' },
+                    template: `
+    <div (click)="$event.preventDefault(); $event.target.blur()"></div>
+  `
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: multiple_statements.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: mixed_one_way_two_way_listener_order.js
+ ****************************************************************************************************/
+import { Component, Directive, Input, Output } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Dir {
+}
+Dir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+Dir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Dir, isStandalone: true, selector: "[dir]", inputs: { a: "a", c: "c" }, outputs: { aChange: "aChange", b: "b", cChange: "cChange", d: "d" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dir, decorators: [{
+            type: Directive,
+            args: [{ standalone: true, selector: '[dir]' }]
+        }], propDecorators: { a: [{
+                type: Input
+            }], aChange: [{
+                type: Output
+            }], b: [{
+                type: Output
+            }], c: [{
+                type: Input
+            }], cChange: [{
+                type: Output
+            }], d: [{
+                type: Output
+            }] } });
+export class App {
+    constructor() {
+        this.value = 'hi';
+        this.noop = () => { };
+    }
+}
+App.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, deps: [], target: i0.ɵɵFactoryTarget.Component });
+App.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: App, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div dir [(a)]="value" (b)="noop()" [(c)]="value" (d)="noop()"></div>
+  `, isInline: true, dependencies: [{ kind: "directive", type: Dir, selector: "[dir]", inputs: ["a", "c"], outputs: ["aChange", "b", "cChange", "d"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, decorators: [{
+            type: Component,
+            args: [{
+                    standalone: true,
+                    imports: [Dir],
+                    template: `
+    <div dir [(a)]="value" (b)="noop()" [(c)]="value" (d)="noop()"></div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: mixed_one_way_two_way_listener_order.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Dir {
+    a: unknown;
+    aChange: unknown;
+    b: unknown;
+    c: unknown;
+    cChange: unknown;
+    d: unknown;
+    static ɵfac: i0.ɵɵFactoryDeclaration<Dir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Dir, "[dir]", never, { "a": { "alias": "a"; "required": false; }; "c": { "alias": "c"; "required": false; }; }, { "aChange": "aChange"; "b": "b"; "cChange": "cChange"; "d": "d"; }, never, never, true, never>;
+}
+export declare class App {
+    value: string;
+    noop: () => void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<App, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<App, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: two_way_binding_to_signal_loop_variable.js
+ ****************************************************************************************************/
+import { Component, Directive, model, signal } from '@angular/core';
+import * as i0 from "@angular/core";
+export class NgModelDirective {
+    constructor() {
+        this.ngModel = model.required();
+    }
+}
+NgModelDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, isStandalone: true, selector: "[ngModel]", inputs: { ngModel: { classPropertyName: "ngModel", publicName: "ngModel", isSignal: true, isRequired: true, transformFunction: null } }, outputs: { ngModel: "ngModelChange" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[ngModel]',
+                    standalone: true,
+                }]
+        }] });
+export class TestCmp {
+    constructor() {
+        this.names = [signal('Angular')];
+    }
+}
+TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @for (name of names; track $index) {
+      <input [(ngModel)]="name" />
+    }
+  `, isInline: true, dependencies: [{ kind: "directive", type: NgModelDirective, selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChange"] }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @for (name of names; track $index) {
+      <input [(ngModel)]="name" />
+    }
+  `,
+                    standalone: true,
+                    imports: [NgModelDirective],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: two_way_binding_to_signal_loop_variable.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class NgModelDirective {
+    ngModel: import("@angular/core").ModelSignal<string>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": true; "isSignal": true; }; }, { "ngModel": "ngModelChange"; }, never, never, true, never>;
+}
+export declare class TestCmp {
+    names: import("@angular/core").WritableSignal<string>[];
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

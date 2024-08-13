@@ -14,7 +14,6 @@ import {bootstrapApplication, provideClientHydration} from '@angular/platform-br
   selector: 'hello-world',
   template: 'Hello World!',
 })
-class HelloWorld {
-}
+class HelloWorld {}
 
 bootstrapApplication(HelloWorld, {providers: [provideClientHydration()]});

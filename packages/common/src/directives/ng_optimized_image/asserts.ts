@@ -18,8 +18,9 @@ import {RuntimeErrorCode} from '../../errors';
 export function assertDevMode(checkName: string) {
   if (!ngDevMode) {
     throw new RuntimeError(
-        RuntimeErrorCode.UNEXPECTED_DEV_MODE_CHECK_IN_PROD_MODE,
-        `Unexpected invocation of the ${checkName} in the prod mode. ` +
-            `Please make sure that the prod mode is enabled for production builds.`);
+      RuntimeErrorCode.UNEXPECTED_DEV_MODE_CHECK_IN_PROD_MODE,
+      `Unexpected invocation of the ${checkName} in the prod mode. ` +
+        `Please make sure that the prod mode is enabled for production builds.`,
+    );
   }
 }

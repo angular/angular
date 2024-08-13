@@ -6,15 +6,38 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentProviders, inject, InjectionToken, makeEnvironmentProviders, Provider} from '@angular/core';
+import {
+  EnvironmentProviders,
+  inject,
+  InjectionToken,
+  makeEnvironmentProviders,
+  Provider,
+} from '@angular/core';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
 import {FetchBackend} from './fetch';
-import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, HttpInterceptorHandler, legacyInterceptorFnFactory} from './interceptor';
-import {jsonpCallbackContext, JsonpCallbackContext, JsonpClientBackend, jsonpInterceptorFn} from './jsonp';
+import {
+  HTTP_INTERCEPTOR_FNS,
+  HttpInterceptorFn,
+  HttpInterceptorHandler,
+  legacyInterceptorFnFactory,
+} from './interceptor';
+import {
+  jsonpCallbackContext,
+  JsonpCallbackContext,
+  JsonpClientBackend,
+  jsonpInterceptorFn,
+} from './jsonp';
 import {HttpXhrBackend} from './xhr';
-import {HttpXsrfCookieExtractor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME, xsrfInterceptorFn} from './xsrf';
+import {
+  HttpXsrfCookieExtractor,
+  HttpXsrfTokenExtractor,
+  XSRF_COOKIE_NAME,
+  XSRF_ENABLED,
+  XSRF_HEADER_NAME,
+  xsrfInterceptorFn,
+} from './xsrf';
 
 /**
  * Identifies a particular kind of `HttpFeature`.
@@ -42,7 +65,9 @@ export interface HttpFeature<KindT extends HttpFeatureKind> {
 }
 
 function makeHttpFeature<KindT extends HttpFeatureKind>(
-    kind: KindT, providers: Provider[]): HttpFeature<KindT> {
+  kind: KindT,
+  providers: Provider[],
+): HttpFeature<KindT> {
   return {
     ɵkind: kind,
     ɵproviders: providers,
@@ -57,6 +82,19 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * feature functions to `provideHttpClient`. For example, HTTP interceptors can be added using the
  * `withInterceptors(...)` feature.
  *
+ * <div class="alert is-helpful">
+ *
+ * It's strongly recommended to enable
+ * [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) for applications that use
+ * Server-Side Rendering for better performance and compatibility. To enable `fetch`, add
+ * `withFetch()` feature to the `provideHttpClient()` call at the root of the application:
+ *
+ * ```
+ * provideHttpClient(withFetch());
+ * ```
+ *
+ * </div>
+ *
  * @see {@link withInterceptors}
  * @see {@link withInterceptorsFromDi}
  * @see {@link withXsrfConfiguration}
@@ -65,16 +103,20 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * @see {@link withRequestsMadeViaParent}
  * @see {@link withFetch}
  */
-export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]):
-    EnvironmentProviders {
+export function provideHttpClient(
+  ...features: HttpFeature<HttpFeatureKind>[]
+): EnvironmentProviders {
   if (ngDevMode) {
-    const featureKinds = new Set(features.map(f => f.ɵkind));
-    if (featureKinds.has(HttpFeatureKind.NoXsrfProtection) &&
-        featureKinds.has(HttpFeatureKind.CustomXsrfConfiguration)) {
+    const featureKinds = new Set(features.map((f) => f.ɵkind));
+    if (
+      featureKinds.has(HttpFeatureKind.NoXsrfProtection) &&
+      featureKinds.has(HttpFeatureKind.CustomXsrfConfiguration)
+    ) {
       throw new Error(
-          ngDevMode ?
-              `Configuration error: found both withXsrfConfiguration() and withNoXsrfProtection() in the same call to provideHttpClient(), which is a contradiction.` :
-              '');
+        ngDevMode
+          ? `Configuration error: found both withXsrfConfiguration() and withNoXsrfProtection() in the same call to provideHttpClient(), which is a contradiction.`
+          : '',
+      );
     }
   }
 
@@ -83,7 +125,12 @@ export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]):
     HttpXhrBackend,
     HttpInterceptorHandler,
     {provide: HttpHandler, useExisting: HttpInterceptorHandler},
-    {provide: HttpBackend, useExisting: HttpXhrBackend},
+    {
+      provide: HttpBackend,
+      useFactory: () => {
+        return inject(FetchBackend, {optional: true}) ?? inject(HttpXhrBackend);
+      },
+    },
     {
       provide: HTTP_INTERCEPTOR_FNS,
       useValue: xsrfInterceptorFn,
@@ -108,18 +155,24 @@ export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]):
  * @see {@link provideHttpClient}
  * @publicApi
  */
-export function withInterceptors(interceptorFns: HttpInterceptorFn[]):
-    HttpFeature<HttpFeatureKind.Interceptors> {
-  return makeHttpFeature(HttpFeatureKind.Interceptors, interceptorFns.map(interceptorFn => {
-    return {
-      provide: HTTP_INTERCEPTOR_FNS,
-      useValue: interceptorFn,
-      multi: true,
-    };
-  }));
+export function withInterceptors(
+  interceptorFns: HttpInterceptorFn[],
+): HttpFeature<HttpFeatureKind.Interceptors> {
+  return makeHttpFeature(
+    HttpFeatureKind.Interceptors,
+    interceptorFns.map((interceptorFn) => {
+      return {
+        provide: HTTP_INTERCEPTOR_FNS,
+        useValue: interceptorFn,
+        multi: true,
+      };
+    }),
+  );
 }
 
-const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>('LEGACY_INTERCEPTOR_FN');
+const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>(
+  ngDevMode ? 'LEGACY_INTERCEPTOR_FN' : '',
+);
 
 /**
  * Includes class-based interceptors configured using a multi-provider in the current injector into
@@ -147,7 +200,7 @@ export function withInterceptorsFromDi(): HttpFeature<HttpFeatureKind.LegacyInte
       provide: HTTP_INTERCEPTOR_FNS,
       useExisting: LEGACY_INTERCEPTOR_FN,
       multi: true,
-    }
+    },
   ]);
 }
 
@@ -158,9 +211,13 @@ export function withInterceptorsFromDi(): HttpFeature<HttpFeatureKind.LegacyInte
  *
  * @see {@link provideHttpClient}
  */
-export function withXsrfConfiguration(
-    {cookieName, headerName}: {cookieName?: string, headerName?: string}):
-    HttpFeature<HttpFeatureKind.CustomXsrfConfiguration> {
+export function withXsrfConfiguration({
+  cookieName,
+  headerName,
+}: {
+  cookieName?: string;
+  headerName?: string;
+}): HttpFeature<HttpFeatureKind.CustomXsrfConfiguration> {
   const providers: Provider[] = [];
   if (cookieName !== undefined) {
     providers.push({provide: XSRF_COOKIE_NAME, useValue: cookieName});
@@ -229,7 +286,8 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
         const handlerFromParent = inject(HttpHandler, {skipSelf: true, optional: true});
         if (ngDevMode && handlerFromParent === null) {
           throw new Error(
-              'withRequestsMadeViaParent() can only be used when the parent injector also configures HttpClient');
+            'withRequestsMadeViaParent() can only be used when the parent injector also configures HttpClient',
+          );
         }
         return handlerFromParent;
       },
@@ -237,27 +295,14 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
   ]);
 }
 
-
 /**
  * Configures the current `HttpClient` instance to make requests using the fetch API.
- *
- * This `FetchBackend` requires the support of the Fetch API which is available on all evergreen
- * browsers and on NodeJS from v18 onward.
  *
  * Note: The Fetch API doesn't support progress report on uploads.
  *
  * @publicApi
- * @developerPreview
  */
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
-  if ((typeof ngDevMode === 'undefined' || ngDevMode) && typeof fetch !== 'function') {
-    // TODO: Create a runtime error
-    // TODO: Use ENVIRONMENT_INITIALIZER to contextualize the error message (browser or server)
-    throw new Error(
-        'The `withFetch` feature of HttpClient requires the `fetch` API to be available. ' +
-        'If you run the code in a Node environment, make sure you use Node v18.10 or later.');
-  }
-
   return makeHttpFeature(HttpFeatureKind.Fetch, [
     FetchBackend,
     {provide: HttpBackend, useExisting: FetchBackend},

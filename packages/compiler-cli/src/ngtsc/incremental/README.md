@@ -65,7 +65,7 @@ in two ways:
 
 For example, a directive's selector may be determined via an imported constant:
 
-```typescript=
+```typescript
 import {Directive} from '@angular/core';
 import {DIR_SELECTOR} from './selectors';
 
@@ -138,7 +138,7 @@ never a reference from a component to its NgModule, or any of its directive or p
 
 In code, this looks like:
 
-```typescript=
+```typescript
 // dir.ts
 @Directive({selector: '[dir]'})
 export class Dir {}
@@ -161,7 +161,7 @@ export class Mod {}
 Here, `Cmp` never directly imports or refers to `Dir`, but it _does_ consume the directive in its
 template. During emit, `Cmp` would receive a `directiveDefs` array:
 
-```typescript=
+```typescript
 // cmp.js
 import * as i1 from './dir';
 

@@ -13,19 +13,20 @@ import type {CompilationJob} from '../compilation';
  * Generate `ir.AdvanceOp`s in between `ir.UpdateOp`s that ensure the runtime's implicit slot
  * context will be advanced correctly.
  */
-export function phaseGenerateAdvance(job: CompilationJob): void {
+export function generateAdvance(job: CompilationJob): void {
   for (const unit of job.units) {
     // First build a map of all of the declarations in the view that have assigned slots.
     const slotMap = new Map<ir.XrefId, number>();
     for (const op of unit.create) {
       if (!ir.hasConsumesSlotTrait(op)) {
         continue;
-      } else if (op.slot === null) {
+      } else if (op.handle.slot === null) {
         throw new Error(
-            `AssertionError: expected slots to have been allocated before generating advance() calls`);
+          `AssertionError: expected slots to have been allocated before generating advance() calls`,
+        );
       }
 
-      slotMap.set(op.xref, op.slot);
+      slotMap.set(op.xref, op.handle.slot);
     }
 
     // Next, step through the update operations and generate `ir.AdvanceOp`s as required to ensure
@@ -35,16 +36,29 @@ export function phaseGenerateAdvance(job: CompilationJob): void {
     // To do that, we track what the runtime's slot counter will be through the update operations.
     let slotContext = 0;
     for (const op of unit.update) {
-      if (!ir.hasDependsOnSlotContextTrait(op)) {
-        // `op` doesn't depend on the slot counter, so it can be skipped.
-        continue;
-      } else if (!slotMap.has(op.target)) {
-        // We expect ops that _do_ depend on the slot counter to point at declarations that exist in
-        // the `slotMap`.
-        throw new Error(`AssertionError: reference to unknown slot for var ${op.target}`);
+      let consumer: ir.DependsOnSlotContextOpTrait | null = null;
+
+      if (ir.hasDependsOnSlotContextTrait(op)) {
+        consumer = op;
+      } else {
+        ir.visitExpressionsInOp(op, (expr) => {
+          if (consumer === null && ir.hasDependsOnSlotContextTrait(expr)) {
+            consumer = expr;
+          }
+        });
       }
 
-      const slot = slotMap.get(op.target)!;
+      if (consumer === null) {
+        continue;
+      }
+
+      if (!slotMap.has(consumer.target)) {
+        // We expect ops that _do_ depend on the slot counter to point at declarations that exist in
+        // the `slotMap`.
+        throw new Error(`AssertionError: reference to unknown slot for target ${consumer.target}`);
+      }
+
+      const slot = slotMap.get(consumer.target)!;
 
       // Does the slot counter need to be adjusted?
       if (slotContext !== slot) {
@@ -54,8 +68,7 @@ export function phaseGenerateAdvance(job: CompilationJob): void {
           throw new Error(`AssertionError: slot counter should never need to move backwards`);
         }
 
-        ir.OpList.insertBefore<ir.UpdateOp>(
-            ir.createAdvanceOp(delta, (op as ir.DependsOnSlotContextOpTrait).sourceSpan), op);
+        ir.OpList.insertBefore<ir.UpdateOp>(ir.createAdvanceOp(delta, consumer.sourceSpan), op);
         slotContext = slot;
       }
     }

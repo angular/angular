@@ -7,9 +7,20 @@
  */
 
 import {retrieveHydrationInfo} from '../../hydration/utils';
-import {assertEqual} from '../../util/assert';
+import {assertEqual, assertNotReactive} from '../../util/assert';
 import {RenderFlags} from '../interfaces/definition';
-import {CONTEXT, FLAGS, HOST, HYDRATION, INJECTOR, LView, LViewFlags, TVIEW, TView} from '../interfaces/view';
+import {
+  CONTEXT,
+  FLAGS,
+  HOST,
+  HYDRATION,
+  INJECTOR,
+  LView,
+  LViewFlags,
+  QUERIES,
+  TVIEW,
+  TView,
+} from '../interfaces/view';
 import {enterView, leaveView} from '../state';
 import {getComponentLViewByIndex, isCreationMode} from '../util/view_utils';
 
@@ -72,6 +83,7 @@ export function syncViewWithBlueprint(tView: TView, lView: LView) {
  */
 export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
   ngDevMode && assertEqual(isCreationMode(lView), true, 'Should be run in creation mode');
+  ngDevMode && assertNotReactive(renderView.name);
   enterView(lView);
   try {
     const viewQuery = tView.viewQuery;
@@ -95,6 +107,10 @@ export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
       tView.firstCreatePass = false;
     }
 
+    // Mark all queries active in this view as dirty. This is necessary for signal-based queries to
+    // have a clear marking point where we can read query results atomically (for a given view).
+    lView[QUERIES]?.finishViewCreation(tView);
+
     // We resolve content queries specifically marked as `static` in creation mode. Dynamic
     // content queries are resolved during change detection (i.e. update mode), after embedded
     // views are refreshed (see block above).
@@ -114,7 +130,6 @@ export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
     if (components !== null) {
       renderChildComponents(lView, components);
     }
-
   } catch (error) {
     // If we didn't manage to get past the first template pass due to
     // an error, mark the view as corrupted so we can try to recover.

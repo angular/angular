@@ -7,7 +7,14 @@
  */
 
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, encodeUriFragment, encodeUriQuery, encodeUriSegment, serializePath, UrlSegmentGroup} from '../src/url_tree';
+import {
+  DefaultUrlSerializer,
+  encodeUriFragment,
+  encodeUriQuery,
+  encodeUriSegment,
+  serializePath,
+  UrlSegmentGroup,
+} from '../src/url_tree';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();
@@ -60,8 +67,9 @@ describe('url serializer', () => {
     const tree = url.parse('/path/to/something;query=file=test;query2=test2');
     expect(tree.root.children['primary'].segments[2].path).toEqual('something');
     expect(tree.root.children['primary'].segments[2].parameterMap.keys).toHaveSize(2);
-    expect(tree.root.children['primary'].segments[2].parameterMap.get('query'))
-        .toEqual('file=test');
+    expect(tree.root.children['primary'].segments[2].parameterMap.get('query')).toEqual(
+      'file=test',
+    );
     expect(tree.root.children['primary'].segments[2].parameterMap.get('query2')).toEqual('test2');
   });
 
@@ -86,8 +94,9 @@ describe('url serializer', () => {
   });
 
   it('should not parse empty path segments with params', () => {
-    expect(() => url.parse('/one/two/(;a=1//right:;b=2)'))
-        .toThrowError(/Empty path url segment cannot have parameters/);
+    expect(() => url.parse('/one/two/(;a=1//right:;b=2)')).toThrowError(
+      /Empty path url segment cannot have parameters/,
+    );
   });
 
   it('should parse scoped secondary segments', () => {
@@ -225,19 +234,23 @@ describe('url serializer', () => {
 
   describe('encoding/decoding', () => {
     it('should encode/decode path segments and parameters', () => {
-      const u = `/${encodeUriSegment('one two')};${encodeUriSegment('p 1')}=${
-          encodeUriSegment('v 1')};${encodeUriSegment('p 2')}=${encodeUriSegment('v 2')}`;
+      const u = `/${encodeUriSegment('one two')};${encodeUriSegment('p 1')}=${encodeUriSegment(
+        'v 1',
+      )};${encodeUriSegment('p 2')}=${encodeUriSegment('v 2')}`;
       const tree = url.parse(u);
 
       expect(tree.root.children[PRIMARY_OUTLET].segments[0].path).toEqual('one two');
-      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameters)
-          .toEqual({['p 1']: 'v 1', ['p 2']: 'v 2'});
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({
+        ['p 1']: 'v 1',
+        ['p 2']: 'v 2',
+      });
       expect(url.serialize(tree)).toEqual(u);
     });
 
     it('should encode/decode "slash" in path segments and parameters', () => {
-      const u = `/${encodeUriSegment('one/two')};${encodeUriSegment('p/1')}=${
-          encodeUriSegment('v/1')}/three`;
+      const u = `/${encodeUriSegment('one/two')};${encodeUriSegment('p/1')}=${encodeUriSegment(
+        'v/1',
+      )}/three`;
       const tree = url.parse(u);
       const segment = tree.root.children[PRIMARY_OUTLET].segments[0];
       expect(segment.path).toEqual('one/two');
@@ -248,8 +261,9 @@ describe('url serializer', () => {
     });
 
     it('should encode/decode query params', () => {
-      const u = `/one?${encodeUriQuery('p 1')}=${encodeUriQuery('v 1')}&${encodeUriQuery('p 2')}=${
-          encodeUriQuery('v 2')}`;
+      const u = `/one?${encodeUriQuery('p 1')}=${encodeUriQuery('v 1')}&${encodeUriQuery(
+        'p 2',
+      )}=${encodeUriQuery('v 2')}`;
       const tree = url.parse(u);
 
       expect(tree.queryParams).toEqual({'p 1': 'v 1', 'p 2': 'v 2'});
@@ -277,7 +291,7 @@ describe('url serializer', () => {
     it('should encode query params leaving sub-delimiters intact', () => {
       const percentChars = '/?#&+=[] ';
       const percentCharsEncoded = '%2F%3F%23%26%2B%3D%5B%5D%20';
-      const intactChars = '!$\'()*,;:';
+      const intactChars = "!$'()*,;:";
       const params = percentChars + intactChars;
       const paramsEncoded = percentCharsEncoded + intactChars;
       const mixedCaseString = 'sTrInG';
@@ -308,7 +322,6 @@ describe('url serializer', () => {
       const auxParsed = url.parse(auxRoutesUrl).root;
       const fooParsed = url.parse(fooValueUrl).root;
 
-
       // Test base case
       expect(auxParsed.children[PRIMARY_OUTLET].segments.length).toBe(1);
       expect(auxParsed.children[PRIMARY_OUTLET].segments[0].path).toBe('abc');
@@ -320,7 +333,7 @@ describe('url serializer', () => {
       expect(fooParsed.children[PRIMARY_OUTLET].segments.length).toBe(1);
       expect(fooParsed.children[PRIMARY_OUTLET].segments[0].path).toBe('abc');
       expect(fooParsed.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({
-        foo: '(other:val)'
+        foo: '(other:val)',
       });
     });
 
@@ -371,18 +384,17 @@ describe('url serializer', () => {
       expect(url.serialize(parsed)).toBe(`/foo#${notEncoded}${encoded}`);
     });
 
-    it('should encode minimal special characters plus parens and semi-colon in matrix params',
-       () => {
-         const notEncoded = unreserved + `:@!$'*,&`;
-         const encode = ` /%=#()[];?+`;
-         const encoded = `%20%2F%25%3D%23%28%29%5B%5D%3B%3F%2B`;
+    it('should encode minimal special characters plus parens and semi-colon in matrix params', () => {
+      const notEncoded = unreserved + `:@!$'*,&`;
+      const encode = ` /%=#()[];?+`;
+      const encoded = `%20%2F%25%3D%23%28%29%5B%5D%3B%3F%2B`;
 
-         const parsed = url.parse('/foo');
+      const parsed = url.parse('/foo');
 
-         parsed.root.children[PRIMARY_OUTLET].segments[0].parameters = {notEncoded, encode};
+      parsed.root.children[PRIMARY_OUTLET].segments[0].parameters = {notEncoded, encode};
 
-         expect(url.serialize(parsed)).toBe(`/foo;notEncoded=${notEncoded};encode=${encoded}`);
-       });
+      expect(url.serialize(parsed)).toBe(`/foo;notEncoded=${notEncoded};encode=${encoded}`);
+    });
 
     it('should encode special characters in the path the same as matrix params', () => {
       const notEncoded = unreserved + `:@!$'*,&`;
@@ -417,11 +429,14 @@ describe('url serializer', () => {
 });
 
 function expectSegment(
-    segment: UrlSegmentGroup, expected: string, hasChildren: boolean = false): void {
-  if (segment.segments.filter(s => s.path === '').length > 0) {
+  segment: UrlSegmentGroup,
+  expected: string,
+  hasChildren: boolean = false,
+): void {
+  if (segment.segments.filter((s) => s.path === '').length > 0) {
     throw new Error(`UrlSegments cannot be empty ${segment.segments}`);
   }
-  const p = segment.segments.map(p => serializePath(p)).join('/');
+  const p = segment.segments.map((p) => serializePath(p)).join('/');
   expect(p).toEqual(expected);
   expect(Object.keys(segment.children).length > 0).toEqual(hasChildren);
 }

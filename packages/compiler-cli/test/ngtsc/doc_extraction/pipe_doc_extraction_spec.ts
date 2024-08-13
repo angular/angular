@@ -13,9 +13,9 @@ import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
-const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
+const testFiles = loadStandardTestFiles({fakeCommon: true});
 
-runInEachFileSystem(os => {
+runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
 
   describe('ngtsc pipe docs extraction', () => {
@@ -25,7 +25,9 @@ runInEachFileSystem(os => {
     });
 
     it('should extract standalone pipe info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Pipe} from '@angular/core';
         @Pipe({
           standalone: true,
@@ -34,7 +36,8 @@ runInEachFileSystem(os => {
         export class ShortenPipe {
           transform(value: string): string { return ''; }
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -48,7 +51,9 @@ runInEachFileSystem(os => {
     });
 
     it('should extract NgModule pipe info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Pipe, NgModule} from '@angular/core';
         @Pipe({name: 'shorten'})
         export class ShortenPipe {
@@ -57,7 +62,8 @@ runInEachFileSystem(os => {
 
         @NgModule({declarations: [ShortenPipe]})
         export class PipeModule { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 

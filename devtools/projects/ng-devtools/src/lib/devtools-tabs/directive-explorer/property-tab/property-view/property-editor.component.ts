@@ -6,10 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewChecked, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output,} from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  ElementRef,
+  effect,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {ContainerType} from 'protocol';
 
-type EditorType = string|number|boolean;
-type EditorResult = EditorType|Array<EditorType>;
+type EditorType = string | number | boolean;
+type EditorResult = EditorType | Array<EditorType>;
 
 enum PropertyEditorState {
   Read,
@@ -28,63 +39,60 @@ const parseValue = (value: EditorResult): EditorResult => {
   templateUrl: './property-editor.component.html',
   selector: 'ng-property-editor',
   styleUrls: ['./property-editor.component.scss'],
+  standalone: true,
+  imports: [FormsModule],
 })
-export class PropertyEditorComponent implements AfterViewChecked, OnInit {
-  @Input() key: string;
-  @Input() initialValue: EditorResult;
-  @Output() updateValue = new EventEmitter<EditorResult>();
+export class PropertyEditorComponent {
+  readonly key = input.required<string>();
+  readonly initialValue = input.required<EditorResult>();
+  readonly containerType = input<ContainerType>();
+
+  readonly updateValue = output<EditorResult>();
+
+  readonly inputEl = viewChild<ElementRef<HTMLInputElement>>('inputEl');
 
   readState = PropertyEditorState.Read;
   writeState = PropertyEditorState.Write;
 
-  valueToSubmit: EditorResult;
-  currentPropertyState = this.readState;
+  readonly valueToSubmit = signal<EditorResult | undefined>(undefined);
+  readonly currentPropertyState = signal(this.readState);
 
-  constructor(private _cd: ChangeDetectorRef, private _elementRef: ElementRef) {}
+  constructor() {
+    afterNextRender({
+      read: () => {
+        this.valueToSubmit.set(this.initialValue());
+      },
+    });
 
-  ngOnInit(): void {
-    this.valueToSubmit = this.initialValue;
-  }
-
-  ngAfterViewChecked(): void {
-    if (this.currentPropertyState === this.writeState) {
-      this.editor.focus();
-    }
+    effect(() => {
+      const editor = this.inputEl()?.nativeElement;
+      if (editor && this.currentPropertyState() === this.writeState) {
+        editor.focus();
+        editor.select();
+      }
+    });
   }
 
   accept(): void {
-    const parsed = parseValue(this.valueToSubmit);
+    const parsed = parseValue(this.valueToSubmit()!);
     this.updateValue.emit(parsed);
-    this._transition(this.readState);
+    this.currentPropertyState.set(this.readState);
   }
 
   reject(): void {
-    this.valueToSubmit = this.initialValue;
-    this._transition(this.readState);
+    this.valueToSubmit.set(this.initialValue());
+    this.currentPropertyState.set(this.readState);
   }
 
   onClick(): void {
-    if (this.currentPropertyState === this.readState) {
-      this._transition(this.writeState);
+    if (this.currentPropertyState() === this.readState) {
+      this.currentPropertyState.set(this.writeState);
     }
   }
 
   onBlur(): void {
-    if (this.currentPropertyState === this.writeState) {
+    if (this.currentPropertyState() === this.writeState) {
       this.accept();
-    }
-  }
-
-  get editor(): HTMLInputElement {
-    return this._elementRef.nativeElement.querySelector('input');
-  }
-
-  private _transition(state: PropertyEditorState): void {
-    this.currentPropertyState = state;
-    if (this.currentPropertyState === this.writeState) {
-      this._cd.detectChanges();
-      this.editor.focus();
-      this.editor.select();
     }
   }
 }

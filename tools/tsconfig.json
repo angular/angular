@@ -1,4 +1,5 @@
 {
+  // This tsconfig is only used by IDEs, no actual builds.
   "compilerOptions": {
     "baseUrl": ".",
     "declaration": true,
@@ -10,8 +11,10 @@
     "outDir": "../dist/tools/",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
-    "paths": {},
-    "rootDir": ".",
+    "paths": {
+      "@angular/*": ["../packages/*"]
+    },
+    "rootDirs": [".", ".."],
     "sourceMap": true,
     "inlineSources": true,
     "lib": [

@@ -3,7 +3,9 @@ import {AppPage} from '../app.po';
 describe('cli-hello-world-ivy App', () => {
   let page: AppPage;
 
-  beforeEach(() => { page = new AppPage(); });
+  beforeEach(() => {
+    page = new AppPage();
+  });
 
   it('should display title', () => {
     page.navigateTo();
@@ -12,7 +14,7 @@ describe('cli-hello-world-ivy App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getParagraph('message')).toEqual('Bienvenue sur l\'application i18n.');
+    expect(page.getParagraph('message')).toEqual("Bienvenue sur l'application i18n.");
   });
 
   it('the percent pipe should work', () => {
@@ -20,7 +22,9 @@ describe('cli-hello-world-ivy App', () => {
     expect(page.getParagraph('pipe')).toEqual('100 % awesome');
   });
 
-  it('should display the locale', () => { expect(page.getParagraph('locale')).toEqual('fr'); });
+  it('should display the locale', () => {
+    expect(page.getParagraph('locale')).toEqual('fr');
+  });
 
   it('the date pipe should show the localized month', () => {
     page.navigateTo();

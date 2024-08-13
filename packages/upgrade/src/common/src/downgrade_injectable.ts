@@ -73,7 +73,7 @@ import {getTypeName, isFunction, validateInjectionKey} from './util';
  * @publicApi
  */
 export function downgradeInjectable(token: any, downgradedModule: string = ''): Function {
-  const factory = function($injector: IInjectorService) {
+  const factory = function ($injector: IInjectorService) {
     const injectorKey = `${INJECTOR_KEY}${downgradedModule}`;
     const injectableName = isFunction(token) ? getTypeName(token) : String(token);
     const attemptedAction = `instantiating injectable '${injectableName}'`;

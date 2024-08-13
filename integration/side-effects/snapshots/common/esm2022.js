@@ -1,1 +1,1 @@
-import "@angular/core";
+import '@angular/core';

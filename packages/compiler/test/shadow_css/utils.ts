@@ -14,31 +14,33 @@ export function shim(css: string, contentAttr: string, hostAttr: string = '') {
 }
 
 const shadowCssMatchers: jasmine.CustomMatcherFactories = {
-  toEqualCss: function(): jasmine.CustomMatcher {
+  toEqualCss: function (): jasmine.CustomMatcher {
     return {
-      compare: function(actual: string, expected: string): jasmine.CustomMatcherResult {
+      compare: function (actual: string, expected: string): jasmine.CustomMatcherResult {
         const actualCss = extractCssContent(actual);
         const expectedCss = extractCssContent(expected);
         const passes = actualCss === expectedCss;
         return {
           pass: passes,
-          message: passes ? 'CSS equals as expected' :
-                            `Expected '${actualCss}' to equal '${expectedCss}'`,
+          message: passes
+            ? 'CSS equals as expected'
+            : `Expected '${actualCss}' to equal '${expectedCss}'`,
         };
-      }
+      },
     };
-  }
+  },
 };
 
 function extractCssContent(css: string): string {
-  return css.replace(/^\n\s+/, '')
-      .replace(/\n\s+$/, '')
-      .replace(/\s+/g, ' ')
-      .replace(/:\s/g, ':')
-      .replace(/ }/g, '}');
+  return css
+    .replace(/^\n\s+/, '')
+    .replace(/\n\s+$/, '')
+    .replace(/\s+/g, ' ')
+    .replace(/:\s/g, ':')
+    .replace(/ }/g, '}');
 }
 
-beforeEach(function() {
+beforeEach(function () {
   jasmine.addMatchers(shadowCssMatchers);
 });
 

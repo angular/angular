@@ -76,9 +76,12 @@ export class ShimAdapter {
   readonly extensionPrefixes: string[] = [];
 
   constructor(
-      private delegate: Pick<ts.CompilerHost, 'getSourceFile'|'fileExists'>,
-      tsRootFiles: AbsoluteFsPath[], topLevelGenerators: TopLevelShimGenerator[],
-      perFileGenerators: PerFileShimGenerator[], oldProgram: ts.Program|null) {
+    private delegate: Pick<ts.CompilerHost, 'getSourceFile' | 'fileExists'>,
+    tsRootFiles: AbsoluteFsPath[],
+    topLevelGenerators: TopLevelShimGenerator[],
+    perFileGenerators: PerFileShimGenerator[],
+    oldProgram: ts.Program | null,
+  ) {
     // Initialize `this.generators` with a regex that matches each generator's paths.
     for (const gen of perFileGenerators) {
       // This regex matches paths for shims from this generator. The first (and only) capture group
@@ -141,7 +144,7 @@ export class ShimAdapter {
    * If `fileName` does not refer to a potential shim file, `null` is returned. If a corresponding
    * base file could not be determined, `undefined` is returned instead.
    */
-  maybeGenerate(fileName: AbsoluteFsPath): ts.SourceFile|null|undefined {
+  maybeGenerate(fileName: AbsoluteFsPath): ts.SourceFile | null | undefined {
     // Fast path: either this filename has been proven not to be a shim before, or it is a known
     // shim and no generation is required.
     if (this.notShims.has(fileName)) {
@@ -201,9 +204,11 @@ export class ShimAdapter {
   }
 
   private generateSpecific(
-      fileName: AbsoluteFsPath, generator: PerFileShimGenerator,
-      inputFile: ts.SourceFile): ts.SourceFile {
-    let priorShimSf: ts.SourceFile|null = null;
+    fileName: AbsoluteFsPath,
+    generator: PerFileShimGenerator,
+    inputFile: ts.SourceFile,
+  ): ts.SourceFile {
+    let priorShimSf: ts.SourceFile | null = null;
     if (this.priorShims.has(fileName)) {
       // In the previous program a shim with this name already existed. It's passed to the shim
       // generator which may reuse it instead of generating a fresh shim.

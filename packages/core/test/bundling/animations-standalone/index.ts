@@ -15,8 +15,9 @@ import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-brow
   template: `
     <div [@myAnimation]="exp"></div>
     `,
-  animations:
-      [trigger('myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])])],
+  animations: [
+    trigger('myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])]),
+  ],
   standalone: true,
 })
 class AnimationsComponent {
@@ -31,8 +32,6 @@ class AnimationsComponent {
   standalone: true,
   imports: [AnimationsComponent],
 })
-class RootComponent {
-}
-
+class RootComponent {}
 
 (window as any).waitForApp = bootstrapApplication(RootComponent, {providers: provideAnimations()});

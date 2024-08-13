@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -46,7 +45,7 @@ describe('entry_point reference graph', () => {
     expect(graph.pathFrom('beta', 'alpha')).toEqual(['beta', 'delta', 'alpha']);
   });
 
-  it('should not report a path that doesn\'t exist', () => {
+  it("should not report a path that doesn't exist", () => {
     expect(graph.pathFrom('gamma', 'beta')).toBeNull();
   });
 });

@@ -5,35 +5,40 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {parseFormatOptions, validateOptions} from '../../../src/extract/translation_files/format_options';
+import {
+  parseFormatOptions,
+  validateOptions,
+} from '../../../src/extract/translation_files/format_options';
 
 describe('format_options', () => {
   describe('validateOptions()', () => {
     it('should do nothing if there are no options', () => {
-      expect(() => validateOptions('TestSerializer', [['key', ['value1', 'value2']]], {}))
-          .not.toThrow();
+      expect(() =>
+        validateOptions('TestSerializer', [['key', ['value1', 'value2']]], {}),
+      ).not.toThrow();
     });
 
     it('should do nothing if the options are valid', () => {
-      expect(
-          () => validateOptions('TestSerializer', [['key', ['value1', 'value2']]], {key: 'value1'}))
-          .not.toThrow();
+      expect(() =>
+        validateOptions('TestSerializer', [['key', ['value1', 'value2']]], {key: 'value1'}),
+      ).not.toThrow();
     });
 
     it('should error if there is an unexpected option', () => {
-      expect(
-          () => validateOptions('TestSerializer', [['key', ['value1', 'value2']]], {wrong: 'xxx'}))
-          .toThrowError(
-              'Invalid format option for TestSerializer: "wrong".\n' +
-              'Allowed options are ["key"].');
+      expect(() =>
+        validateOptions('TestSerializer', [['key', ['value1', 'value2']]], {wrong: 'xxx'}),
+      ).toThrowError(
+        'Invalid format option for TestSerializer: "wrong".\n' + 'Allowed options are ["key"].',
+      );
     });
 
     it('should error if there is an unexpected option value', () => {
-      expect(
-          () => validateOptions('TestSerializer', [['key', ['value1', 'value2']]], {key: 'other'}))
-          .toThrowError(
-              'Invalid format option value for TestSerializer: "key".\n' +
-              'Allowed option values are ["value1","value2"] but received "other".');
+      expect(() =>
+        validateOptions('TestSerializer', [['key', ['value1', 'value2']]], {key: 'other'}),
+      ).toThrowError(
+        'Invalid format option value for TestSerializer: "key".\n' +
+          'Allowed option values are ["value1","value2"] but received "other".',
+      );
     });
   });
 

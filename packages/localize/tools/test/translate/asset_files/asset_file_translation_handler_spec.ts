@@ -5,7 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathSegment, relativeFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  FileSystem,
+  getFileSystem,
+  PathSegment,
+  relativeFrom,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import {Diagnostics} from '../../../src/diagnostics';
@@ -47,7 +54,13 @@ runInEachFileSystem(() => {
         ];
         const contents = Buffer.from('contents');
         handler.translate(
-            diagnostics, rootPath, filePath, contents, mockOutputPathFn, translations);
+          diagnostics,
+          rootPath,
+          filePath,
+          contents,
+          mockOutputPathFn,
+          translations,
+        );
 
         expect(fs.readFileBuffer(enTranslationPath)).toEqual(contents);
         expect(fs.readFileBuffer(frTranslationPath)).toEqual(contents);
@@ -60,8 +73,14 @@ runInEachFileSystem(() => {
         const contents = Buffer.from('contents');
         const sourceLocale = 'en-US';
         handler.translate(
-            diagnostics, rootPath, filePath, contents, mockOutputPathFn, translations,
-            sourceLocale);
+          diagnostics,
+          rootPath,
+          filePath,
+          contents,
+          mockOutputPathFn,
+          translations,
+          sourceLocale,
+        );
 
         expect(fs.readFileBuffer(enUSTranslationPath)).toEqual(contents);
       });

@@ -10,5 +10,4 @@ import {NgModule} from '@angular/core';
 import {a} from './secondary/secondarymodule';
 
 @NgModule({})
-export class MyModule {
-}
+export class MyModule {}

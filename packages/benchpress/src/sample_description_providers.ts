@@ -16,20 +16,31 @@ import {Metric} from './metric';
 import {SampleDescription} from './sample_description';
 import {Validator} from './validator';
 
-export const sampleDescriptionProviders = [{
-  provide: SampleDescription,
-  useFactory:
-      (metric: Metric, id: string, forceGc: boolean, userAgent: string, validator: Validator,
-       defaultDesc: {[key: string]: string}, userDesc: {[key: string]: string}) =>
-          new SampleDescription(
-              id,
-              [
-                {'forceGc': forceGc, 'userAgent': userAgent}, validator.describe(), defaultDesc,
-                userDesc
-              ],
-              metric.describe()),
-  deps: [
-    Metric, Options.SAMPLE_ID, Options.FORCE_GC, Options.USER_AGENT, Validator,
-    Options.DEFAULT_DESCRIPTION, Options.SAMPLE_DESCRIPTION
-  ]
-}];
+export const sampleDescriptionProviders = [
+  {
+    provide: SampleDescription,
+    useFactory: (
+      metric: Metric,
+      id: string,
+      forceGc: boolean,
+      userAgent: string,
+      validator: Validator,
+      defaultDesc: {[key: string]: string},
+      userDesc: {[key: string]: string},
+    ) =>
+      new SampleDescription(
+        id,
+        [{'forceGc': forceGc, 'userAgent': userAgent}, validator.describe(), defaultDesc, userDesc],
+        metric.describe(),
+      ),
+    deps: [
+      Metric,
+      Options.SAMPLE_ID,
+      Options.FORCE_GC,
+      Options.USER_AGENT,
+      Validator,
+      Options.DEFAULT_DESCRIPTION,
+      Options.SAMPLE_DESCRIPTION,
+    ],
+  },
+];

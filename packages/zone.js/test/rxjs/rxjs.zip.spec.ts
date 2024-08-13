@@ -26,7 +26,7 @@ describe('Observable.zip', () => {
     });
 
     const observable3: any = constructorZone1.run(() => {
-      return zip(observable1, observable2, function(n: number, str: string) {
+      return zip(observable1, observable2, function (n: number, str: string) {
         expect(Zone.current.name).toEqual(constructorZone1.name);
         return {n: n, str: str};
       });
@@ -34,17 +34,18 @@ describe('Observable.zip', () => {
 
     subscriptionZone.run(() => {
       observable3.subscribe(
-          (result: any) => {
-            log.push(result);
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            log.push('completed');
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          });
+        (result: any) => {
+          log.push(result);
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          log.push('completed');
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+      );
     });
 
     expect(log).toEqual([{n: 1, str: 'foo'}, {n: 2, str: 'bar'}, {n: 3, str: 'beer'}, 'completed']);

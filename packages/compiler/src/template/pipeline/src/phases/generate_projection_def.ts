@@ -17,7 +17,7 @@ import {literalOrArrayLiteral} from '../conversion';
  * populate `project` arguments, and generate the required `projectionDef` instruction for the job's
  * root view.
  */
-export function phaseGenerateProjectionDef(job: ComponentCompilationJob): void {
+export function generateProjectionDefs(job: ComponentCompilationJob): void {
   // TODO: Why does TemplateDefinitionBuilder force a shared constant?
   const share = job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder;
 
@@ -37,9 +37,9 @@ export function phaseGenerateProjectionDef(job: ComponentCompilationJob): void {
   if (selectors.length > 0) {
     // Create the projectionDef array. If we only found a single wildcard selector, then we use the
     // default behavior with no arguments instead.
-    let defExpr: o.Expression|null = null;
+    let defExpr: o.Expression | null = null;
     if (selectors.length > 1 || selectors[0] !== '*') {
-      const def = selectors.map(s => s === '*' ? s : parseSelectorToR3Selector(s));
+      const def = selectors.map((s) => (s === '*' ? s : parseSelectorToR3Selector(s)));
       defExpr = job.pool.getConstLiteral(literalOrArrayLiteral(def), share);
     }
 

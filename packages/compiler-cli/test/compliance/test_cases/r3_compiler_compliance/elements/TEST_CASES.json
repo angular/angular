@@ -194,8 +194,7 @@
           ],
           "failureMessage": "Incorrect generated template."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should reserve slots for pure functions in host binding function",
@@ -206,8 +205,7 @@
         {
           "failureMessage": "Incorrect `hostBindings` function."
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should bind to class and style names",
@@ -255,8 +253,29 @@
         {
           "failureMessage": "Incorrect generated template."
         }
+      ]
+    },
+    {
+      "description": "should validate iframe attributes",
+      "inputFiles": [
+        "iframe_attrs.ts"
       ],
-      "skipForTemplatePipeline": true
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should support namespaces on attributes",
+      "inputFiles": [
+        "namespace_attr.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
     }
   ]
 }

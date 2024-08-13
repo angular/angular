@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, forwardRef, ɵɵdefineNgModule, ɵɵgetComponentDepsFactory, ɵɵsetNgModuleScope} from '@angular/core';
+import {
+  Component,
+  forwardRef,
+  ɵɵdefineNgModule,
+  ɵɵgetComponentDepsFactory,
+  ɵɵsetNgModuleScope,
+} from '@angular/core';
 import {ComponentType} from '@angular/core/src/render3';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
 
 describe('component dependencies in local compilation', () => {
   it('should compute correct set of dependencies when importing ng-modules directly', () => {
     @Component({selector: 'sub'})
-    class SubComponent {
-    }
+    class SubComponent {}
 
     class SubModule {
       static ɵmod = ɵɵdefineNgModule({type: SubModule});
@@ -22,8 +27,7 @@ describe('component dependencies in local compilation', () => {
     ɵɵsetNgModuleScope(SubModule, {exports: [SubComponent]});
 
     @Component({})
-    class MainComponent {
-    }
+    class MainComponent {}
 
     class MainModule {
       static ɵmod = ɵɵdefineNgModule({type: MainModule});
@@ -35,35 +39,31 @@ describe('component dependencies in local compilation', () => {
     expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
   });
 
-  it('should compute correct set of dependencies when importing ng-modules - nested array case',
-     () => {
-       @Component({selector: 'sub'})
-       class SubComponent {
-       }
+  it('should compute correct set of dependencies when importing ng-modules - nested array case', () => {
+    @Component({selector: 'sub'})
+    class SubComponent {}
 
-       class SubModule {
-         static ɵmod = ɵɵdefineNgModule({type: SubModule});
-       }
-       ɵɵsetNgModuleScope(SubModule, {exports: [[[SubComponent]]]});
+    class SubModule {
+      static ɵmod = ɵɵdefineNgModule({type: SubModule});
+    }
+    ɵɵsetNgModuleScope(SubModule, {exports: [[[SubComponent]]]});
 
-       @Component({})
-       class MainComponent {
-       }
+    @Component({})
+    class MainComponent {}
 
-       class MainModule {
-         static ɵmod = ɵɵdefineNgModule({type: MainModule});
-       }
-       ɵɵsetNgModuleScope(MainModule, {imports: [[SubModule]], declarations: [[MainComponent]]});
+    class MainModule {
+      static ɵmod = ɵɵdefineNgModule({type: MainModule});
+    }
+    ɵɵsetNgModuleScope(MainModule, {imports: [[SubModule]], declarations: [[MainComponent]]});
 
-       const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
+    const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
 
-       expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
-     });
+    expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
+  });
 
   it('should compute correct set of dependencies when importing ng-modules with providers', () => {
     @Component({selector: 'sub'})
-    class SubComponent {
-    }
+    class SubComponent {}
 
     class SubModule {
       static ɵmod = ɵɵdefineNgModule({type: SubModule});
@@ -71,166 +71,151 @@ describe('component dependencies in local compilation', () => {
     ɵɵsetNgModuleScope(SubModule, {exports: [SubComponent]});
 
     @Component({})
-    class MainComponent {
-    }
+    class MainComponent {}
 
     class MainModule {
       static ɵmod = ɵɵdefineNgModule({type: MainModule});
     }
-    ɵɵsetNgModuleScope(
-        MainModule,
-        {imports: [{ngModule: SubModule, providers: []}], declarations: [MainComponent]});
+    ɵɵsetNgModuleScope(MainModule, {
+      imports: [{ngModule: SubModule, providers: []}],
+      declarations: [MainComponent],
+    });
 
     const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
 
     expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
   });
 
-  it('should compute correct set of dependencies when importing ng-modules with providers - nested array case',
-     () => {
-       @Component({selector: 'sub'})
-       class SubComponent {
-       }
+  it('should compute correct set of dependencies when importing ng-modules with providers - nested array case', () => {
+    @Component({selector: 'sub'})
+    class SubComponent {}
 
-       class SubModule {
-         static ɵmod = ɵɵdefineNgModule({type: SubModule});
-       }
-       ɵɵsetNgModuleScope(SubModule, {exports: [[[SubComponent]]]});
+    class SubModule {
+      static ɵmod = ɵɵdefineNgModule({type: SubModule});
+    }
+    ɵɵsetNgModuleScope(SubModule, {exports: [[[SubComponent]]]});
 
-       @Component({})
-       class MainComponent {
-       }
+    @Component({})
+    class MainComponent {}
 
-       class MainModule {
-         static ɵmod = ɵɵdefineNgModule({type: MainModule});
-       }
-       ɵɵsetNgModuleScope(
-           MainModule,
-           {imports: [[{ngModule: SubModule, providers: []}]], declarations: [[MainComponent]]});
+    class MainModule {
+      static ɵmod = ɵɵdefineNgModule({type: MainModule});
+    }
+    ɵɵsetNgModuleScope(MainModule, {
+      imports: [[{ngModule: SubModule, providers: []}]],
+      declarations: [[MainComponent]],
+    });
 
-       const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
+    const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
 
-       expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
-     });
+    expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
+  });
 
-  it('should compute correct set of dependencies when importing ng-modules using forward ref',
-     () => {
-       @Component({selector: 'sub'})
-       class SubComponent {
-       }
+  it('should compute correct set of dependencies when importing ng-modules using forward ref', () => {
+    @Component({selector: 'sub'})
+    class SubComponent {}
 
-       class SubModule {
-         static ɵmod = ɵɵdefineNgModule({type: SubModule});
-       }
-       ɵɵsetNgModuleScope(SubModule, {exports: [forwardRef(() => SubComponent)]});
+    class SubModule {
+      static ɵmod = ɵɵdefineNgModule({type: SubModule});
+    }
+    ɵɵsetNgModuleScope(SubModule, {exports: [forwardRef(() => SubComponent)]});
 
-       @Component({})
-       class MainComponent {
-       }
+    @Component({})
+    class MainComponent {}
 
-       class MainModule {
-         static ɵmod = ɵɵdefineNgModule({type: MainModule});
-       }
-       ɵɵsetNgModuleScope(MainModule, {
-         imports: [forwardRef(() => SubModule)],
-         declarations: [forwardRef(() => MainComponent)]
-       });
+    class MainModule {
+      static ɵmod = ɵɵdefineNgModule({type: MainModule});
+    }
+    ɵɵsetNgModuleScope(MainModule, {
+      imports: [forwardRef(() => SubModule)],
+      declarations: [forwardRef(() => MainComponent)],
+    });
 
-       const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
+    const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
 
-       expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
-     });
+    expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
+  });
 
-  it('should compute correct set of dependencies when importing ng-modules using forward ref - nested array case',
-     () => {
-       @Component({selector: 'sub'})
-       class SubComponent {
-       }
+  it('should compute correct set of dependencies when importing ng-modules using forward ref - nested array case', () => {
+    @Component({selector: 'sub'})
+    class SubComponent {}
 
-       class SubModule {
-         static ɵmod = ɵɵdefineNgModule({type: SubModule});
-       }
-       ɵɵsetNgModuleScope(SubModule, {exports: [[[forwardRef(() => SubComponent)]]]});
+    class SubModule {
+      static ɵmod = ɵɵdefineNgModule({type: SubModule});
+    }
+    ɵɵsetNgModuleScope(SubModule, {exports: [[[forwardRef(() => SubComponent)]]]});
 
-       @Component({})
-       class MainComponent {
-       }
+    @Component({})
+    class MainComponent {}
 
-       class MainModule {
-         static ɵmod = ɵɵdefineNgModule({type: MainModule});
-       }
-       ɵɵsetNgModuleScope(MainModule, {
-         imports: [[forwardRef(() => SubModule)]],
-         declarations: [[forwardRef(() => MainComponent)]]
-       });
+    class MainModule {
+      static ɵmod = ɵɵdefineNgModule({type: MainModule});
+    }
+    ɵɵsetNgModuleScope(MainModule, {
+      imports: [[forwardRef(() => SubModule)]],
+      declarations: [[forwardRef(() => MainComponent)]],
+    });
 
-       const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
+    const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
 
-       expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
-     });
+    expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
+  });
 
-  it('should compute correct set of dependencies when importing ng-modules with providers using forward ref',
-     () => {
-       @Component({selector: 'sub'})
-       class SubComponent {
-       }
+  it('should compute correct set of dependencies when importing ng-modules with providers using forward ref', () => {
+    @Component({selector: 'sub'})
+    class SubComponent {}
 
-       class SubModule {
-         static ɵmod = ɵɵdefineNgModule({type: SubModule});
-       }
-       ɵɵsetNgModuleScope(SubModule, {exports: [SubComponent]});
+    class SubModule {
+      static ɵmod = ɵɵdefineNgModule({type: SubModule});
+    }
+    ɵɵsetNgModuleScope(SubModule, {exports: [SubComponent]});
 
-       @Component({})
-       class MainComponent {
-       }
+    @Component({})
+    class MainComponent {}
 
-       class MainModule {
-         static ɵmod = ɵɵdefineNgModule({type: MainModule});
-       }
-       ɵɵsetNgModuleScope(MainModule, {
-         imports: [forwardRef(() => ({ngModule: SubModule, providers: []}))],
-         declarations: [MainComponent]
-       });
+    class MainModule {
+      static ɵmod = ɵɵdefineNgModule({type: MainModule});
+    }
+    ɵɵsetNgModuleScope(MainModule, {
+      imports: [forwardRef(() => ({ngModule: SubModule, providers: []}))],
+      declarations: [MainComponent],
+    });
 
-       const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
+    const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
 
-       expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
-     });
+    expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
+  });
 
-  it('should compute correct set of dependencies when importing ng-modules with providers using forward ref',
-     () => {
-       @Component({selector: 'sub'})
-       class SubComponent {
-       }
+  it('should compute correct set of dependencies when importing ng-modules with providers using forward ref', () => {
+    @Component({selector: 'sub'})
+    class SubComponent {}
 
-       class SubModule {
-         static ɵmod = ɵɵdefineNgModule({type: SubModule});
-       }
-       ɵɵsetNgModuleScope(SubModule, {exports: [[[SubComponent]]]});
+    class SubModule {
+      static ɵmod = ɵɵdefineNgModule({type: SubModule});
+    }
+    ɵɵsetNgModuleScope(SubModule, {exports: [[[SubComponent]]]});
 
-       @Component({})
-       class MainComponent {
-       }
+    @Component({})
+    class MainComponent {}
 
-       class MainModule {
-         static ɵmod = ɵɵdefineNgModule({type: MainModule});
-       }
-       ɵɵsetNgModuleScope(MainModule, {
-         imports: [[forwardRef(() => ({ngModule: SubModule, providers: []}))]],
-         declarations: [[MainComponent]]
-       });
+    class MainModule {
+      static ɵmod = ɵɵdefineNgModule({type: MainModule});
+    }
+    ɵɵsetNgModuleScope(MainModule, {
+      imports: [[forwardRef(() => ({ngModule: SubModule, providers: []}))]],
+      declarations: [[MainComponent]],
+    });
 
-       const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
+    const deps = ɵɵgetComponentDepsFactory(MainComponent as ComponentType<any>)();
 
-       expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
-     });
+    expect(deps).toEqual(jasmine.arrayWithExactContents([SubComponent, MainComponent]));
+  });
 });
 
 describe('component bootstrap info', () => {
   it('should include the bootstrap info in local compilation mode', () => {
     @Component({})
-    class MainComponent {
-    }
+    class MainComponent {}
 
     class MainModule {
       static ɵmod = ɵɵdefineNgModule({type: MainModule});
@@ -243,8 +228,7 @@ describe('component bootstrap info', () => {
 
   it('should flatten the bootstrap info in local compilation mode', () => {
     @Component({})
-    class MainComponent {
-    }
+    class MainComponent {}
 
     class MainModule {
       static ɵmod = ɵɵdefineNgModule({type: MainModule});
@@ -257,8 +241,7 @@ describe('component bootstrap info', () => {
 
   it('should include the bootstrap info in full compilation mode', () => {
     @Component({})
-    class MainComponent {
-    }
+    class MainComponent {}
 
     class MainModule {
       static ɵmod = ɵɵdefineNgModule({type: MainModule, bootstrap: [MainComponent]});

@@ -5,14 +5,22 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  FileSystem,
+  getFileSystem,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../../../src/diagnostics';
 import {TranslationLoader} from '../../../src/translate/translation_files/translation_loader';
 import {SimpleJsonTranslationParser} from '../../../src/translate/translation_files/translation_parsers/simple_json_translation_parser';
-import {ParseAnalysis, TranslationParser} from '../../../src/translate/translation_files/translation_parsers/translation_parser';
+import {
+  ParseAnalysis,
+  TranslationParser,
+} from '../../../src/translate/translation_files/translation_parsers/translation_parser';
 
 runInEachFileSystem(() => {
   describe('TranslationLoader', () => {
@@ -111,47 +119,41 @@ runInEachFileSystem(() => {
       });
 
       const allDiagnosticModes: DiagnosticHandlingStrategy[] = ['ignore', 'warning', 'error'];
-      allDiagnosticModes.forEach(
-          mode =>
-              it(`should ${mode} on duplicate messages when merging multiple translation files`,
-                 () => {
-                   const diagnostics = new Diagnostics();
-                   const loader = new TranslationLoader(fs, [jsonParser], mode, diagnostics);
-                   // Change the fs-extra file to have the same translations as fr.
-                   fs.writeFile(frExtraTranslationPath, frTranslationContent);
-                   const result =
-                       loader.loadBundles([[frTranslationPath, frExtraTranslationPath]], []);
-                   expect(result).toEqual([
-                     {
-                       locale: 'fr',
-                       translations: {'a': ɵparseTranslation('A')},
-                       diagnostics: jasmine.any(Diagnostics),
-                     },
-                   ]);
+      allDiagnosticModes.forEach((mode) =>
+        it(`should ${mode} on duplicate messages when merging multiple translation files`, () => {
+          const diagnostics = new Diagnostics();
+          const loader = new TranslationLoader(fs, [jsonParser], mode, diagnostics);
+          // Change the fs-extra file to have the same translations as fr.
+          fs.writeFile(frExtraTranslationPath, frTranslationContent);
+          const result = loader.loadBundles([[frTranslationPath, frExtraTranslationPath]], []);
+          expect(result).toEqual([
+            {
+              locale: 'fr',
+              translations: {'a': ɵparseTranslation('A')},
+              diagnostics: jasmine.any(Diagnostics),
+            },
+          ]);
 
-                   if (mode === 'error' || mode === 'warning') {
-                     expect(diagnostics.messages).toEqual([{
-                       type: mode,
-                       message: `Duplicate translations for message "a" when merging "${
-                           frExtraTranslationPath}".`
-                     }]);
-                   }
-                 }));
+          if (mode === 'error' || mode === 'warning') {
+            expect(diagnostics.messages).toEqual([
+              {
+                type: mode,
+                message: `Duplicate translations for message "a" when merging "${frExtraTranslationPath}".`,
+              },
+            ]);
+          }
+        }),
+      );
 
       it('should warn if the provided locales do not match the parsed locales', () => {
         const diagnostics = new Diagnostics();
         const loader = new TranslationLoader(fs, [jsonParser], 'error', diagnostics);
         loader.loadBundles([[enTranslationPath], [frTranslationPath]], [undefined, 'es']);
         expect(diagnostics.messages.length).toEqual(1);
-        expect(diagnostics.messages)
-            .toContain(
-                {
-                  type: 'warning',
-                  message:
-                      `The provided locale "es" does not match the target locale "fr" found in the translation file "${
-                          frTranslationPath}".`,
-                },
-            );
+        expect(diagnostics.messages).toContain({
+          type: 'warning',
+          message: `The provided locale "es" does not match the target locale "fr" found in the translation file "${frTranslationPath}".`,
+        });
       });
 
       it('should warn on differing target locales when merging multiple translation files', () => {
@@ -175,18 +177,20 @@ runInEachFileSystem(() => {
             translations: {
               'a': ɵparseTranslation('A'),
               'b': ɵparseTranslation('B'),
-              'c': ɵparseTranslation('C')
+              'c': ɵparseTranslation('C'),
             },
             diagnostics: jasmine.any(Diagnostics),
           },
         ]);
 
-        expect(diagnostics.messages).toEqual([{
-          type: 'warning',
-          message:
+        expect(diagnostics.messages).toEqual([
+          {
+            type: 'warning',
+            message:
               `When merging multiple translation files, the target locale "de" found in "${de}" ` +
-              `does not match the target locale "fr" found in earlier files ["${fr1}", "${fr2}"].`
-        }]);
+              `does not match the target locale "fr" found in earlier files ["${fr1}", "${fr2}"].`,
+          },
+        ]);
       });
 
       it('should throw an error if there is no provided nor parsed target locale', () => {
@@ -194,21 +198,22 @@ runInEachFileSystem(() => {
         const diagnostics = new Diagnostics();
         const parser = new MockTranslationParser(alwaysCanParse, undefined, translations);
         const loader = new TranslationLoader(fs, [parser], 'error', diagnostics);
-        expect(() => loader.loadBundles([[enTranslationPath]], []))
-            .toThrowError(`The translation file "${
-                enTranslationPath}" does not contain a target locale and no explicit locale was provided for this file.`);
+        expect(() => loader.loadBundles([[enTranslationPath]], [])).toThrowError(
+          `The translation file "${enTranslationPath}" does not contain a target locale and no explicit locale was provided for this file.`,
+        );
       });
 
       it('should error if none of the parsers can parse the file', () => {
         const diagnostics = new Diagnostics();
         const parser = new MockTranslationParser(neverCanParse);
         const loader = new TranslationLoader(fs, [parser], 'error', diagnostics);
-        expect(() => loader.loadBundles([[enTranslationPath], [frTranslationPath]], []))
-            .toThrowError(
-                `There is no "TranslationParser" that can parse this translation file: ${
-                    enTranslationPath}.\n` +
-                `MockTranslationParser cannot parse translation file.\n` +
-                `WARNINGS:\n - This is a mock failure warning.`);
+        expect(() =>
+          loader.loadBundles([[enTranslationPath], [frTranslationPath]], []),
+        ).toThrowError(
+          `There is no "TranslationParser" that can parse this translation file: ${enTranslationPath}.\n` +
+            `MockTranslationParser cannot parse translation file.\n` +
+            `WARNINGS:\n - This is a mock failure warning.`,
+        );
       });
     });
   });
@@ -216,15 +221,18 @@ runInEachFileSystem(() => {
   class MockTranslationParser implements TranslationParser {
     log: string[] = [];
     constructor(
-        private _canParse: (filePath: string) => boolean, private _locale?: string,
-        private _translations: Record<string, ɵParsedTranslation> = {}) {}
+      private _canParse: (filePath: string) => boolean,
+      private _locale?: string,
+      private _translations: Record<string, ɵParsedTranslation> = {},
+    ) {}
 
     analyze(filePath: string, fileContents: string): ParseAnalysis<true> {
       const diagnostics = new Diagnostics();
       diagnostics.warn('This is a mock failure warning.');
       this.log.push(`canParse(${filePath}, ${fileContents})`);
-      return this._canParse(filePath) ? {canParse: true, hint: true, diagnostics} :
-                                        {canParse: false, diagnostics};
+      return this._canParse(filePath)
+        ? {canParse: true, hint: true, diagnostics}
+        : {canParse: false, diagnostics};
     }
 
     parse(filePath: string, fileContents: string) {
@@ -232,7 +240,7 @@ runInEachFileSystem(() => {
       return {
         locale: this._locale,
         translations: this._translations,
-        diagnostics: new Diagnostics()
+        diagnostics: new Diagnostics(),
       };
     }
   }

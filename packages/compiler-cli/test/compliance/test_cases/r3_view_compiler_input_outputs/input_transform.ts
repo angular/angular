@@ -10,6 +10,7 @@ export class MyDirective {
 
   // There's an extra `_` parameter, because full compilation strips the parentheses around the
   // parameters while partial compilation keeps them. This ensures consistent output.
+  // @ts-ignore
   @Input({transform: (value: string|number, _: any) => value ? 1 : 0}) inlineFunctionInput: any;
 }
 

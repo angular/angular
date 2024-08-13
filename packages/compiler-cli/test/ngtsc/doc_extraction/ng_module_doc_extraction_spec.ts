@@ -13,9 +13,9 @@ import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
-const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
+const testFiles = loadStandardTestFiles({fakeCommon: true});
 
-runInEachFileSystem(os => {
+runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
 
   describe('ngtsc NgModule docs extraction', () => {
@@ -25,7 +25,9 @@ runInEachFileSystem(os => {
     });
 
     it('should extract NgModule info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Directive, NgModule} from '@angular/core';
 
         @Directive({selector: 'some-tag'})
@@ -33,7 +35,8 @@ runInEachFileSystem(os => {
 
         @NgModule({declarations: [SomeDirective]})
         export class SomeNgModule { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 

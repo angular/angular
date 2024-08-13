@@ -6,14 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, BoundTarget, DirectiveMeta, ParseSourceSpan, SchemaMetadata} from '@angular/compiler';
+import {
+  AbsoluteSourceSpan,
+  BoundTarget,
+  DirectiveMeta,
+  ParseSourceSpan,
+  SchemaMetadata,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode} from '../../diagnostics';
 import {Reference} from '../../imports';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta, HostDirectiveMeta, InputMapping} from '../../metadata';
+import {
+  ClassPropertyMapping,
+  DirectiveTypeCheckMeta,
+  HostDirectiveMeta,
+  InputMapping,
+  PipeMeta,
+} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
-
 
 /**
  * Extension of `DirectiveMeta` that includes additional information required to type-check the
@@ -26,11 +37,12 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveType
   outputs: ClassPropertyMapping;
   isStandalone: boolean;
   isSignal: boolean;
-  hostDirectives: HostDirectiveMeta[]|null;
-  decorator: ts.Decorator|null;
+  hostDirectives: HostDirectiveMeta[] | null;
+  decorator: ts.Decorator | null;
+  isExplicitlyDeferred: boolean;
 }
 
-export type TemplateId = string&{__brand: 'TemplateId'};
+export type TemplateId = string & {__brand: 'TemplateId'};
 
 /**
  * A `ts.Diagnostic` with additional information about the diagnostic related to template
@@ -51,7 +63,7 @@ export interface TemplateDiagnostic extends ts.Diagnostic {
 /**
  * A `TemplateDiagnostic` with a specific error code.
  */
-export type NgTemplateDiagnostic<T extends ErrorCode> = TemplateDiagnostic&{__ngCode: T};
+export type NgTemplateDiagnostic<T extends ErrorCode> = TemplateDiagnostic & {__ngCode: T};
 
 /**
  * Metadata required in addition to a component class in order to generate a type check block (TCB)
@@ -73,7 +85,7 @@ export interface TypeCheckBlockMetadata {
   /*
    * Pipes used in the template of the component.
    */
-  pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>;
+  pipes: Map<string, PipeMeta>;
 
   /**
    * Schemas that apply to this template.
@@ -84,6 +96,11 @@ export interface TypeCheckBlockMetadata {
    * A boolean indicating whether the component is standalone.
    */
   isStandalone: boolean;
+
+  /**
+   * A boolean indicating whether the component preserves whitespaces in its template.
+   */
+  preserveWhitespaces: boolean;
 }
 
 export interface TypeCtorMetadata {
@@ -100,7 +117,7 @@ export interface TypeCtorMetadata {
   /**
    * Input, output, and query field names in the type which should be included as constructor input.
    */
-  fields: {inputs: ClassPropertyMapping<InputMapping>; queries: string[];};
+  fields: {inputs: ClassPropertyMapping<InputMapping>; queries: string[]};
 
   /**
    * `Set` of field names which have type coercion enabled.
@@ -205,7 +222,6 @@ export interface TypeCheckingConfig {
    */
   checkTypeOfDomReferences: boolean;
 
-
   /**
    * Whether to infer the type of local references.
    *
@@ -274,6 +290,11 @@ export interface TypeCheckingConfig {
   checkQueries: false;
 
   /**
+   * Whether to check if control flow syntax will prevent a node from being projected.
+   */
+  controlFlowPreventingContentProjection: 'error' | 'warning' | 'suppress';
+
+  /**
    * Whether to use any generic types of the context component.
    *
    * If this is `true`, then if the context component has generic types, those will be mirrored in
@@ -319,11 +340,22 @@ export interface TypeCheckingConfig {
    * opportunities to improve their own developer experience.
    */
   suggestionsForSuboptimalTypeInference: boolean;
+
+  /**
+   * Whether the type of two-way bindings should be widened to allow `WritableSignal`.
+   */
+  allowSignalsInTwoWayBindings: boolean;
+
+  /**
+   * Whether to descend into the bodies of control flow blocks (`@if`, `@switch` and `@for`).
+   */
+  checkControlFlowBodies: boolean;
 }
 
-
 export type TemplateSourceMapping =
-    DirectTemplateSourceMapping|IndirectTemplateSourceMapping|ExternalTemplateSourceMapping;
+  | DirectTemplateSourceMapping
+  | IndirectTemplateSourceMapping
+  | ExternalTemplateSourceMapping;
 
 /**
  * A mapping to an inline template in a TS file.
@@ -333,7 +365,7 @@ export type TemplateSourceMapping =
  */
 export interface DirectTemplateSourceMapping {
   type: 'direct';
-  node: ts.StringLiteral|ts.NoSubstitutionTemplateLiteral;
+  node: ts.StringLiteral | ts.NoSubstitutionTemplateLiteral;
 }
 
 /**

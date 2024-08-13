@@ -76,9 +76,9 @@ const OBJECT = 'object';
 
 const SCHEMA: string[] = [
   '[Element]|textContent,%ariaAtomic,%ariaAutoComplete,%ariaBusy,%ariaChecked,%ariaColCount,%ariaColIndex,%ariaColSpan,%ariaCurrent,%ariaDescription,%ariaDisabled,%ariaExpanded,%ariaHasPopup,%ariaHidden,%ariaKeyShortcuts,%ariaLabel,%ariaLevel,%ariaLive,%ariaModal,%ariaMultiLine,%ariaMultiSelectable,%ariaOrientation,%ariaPlaceholder,%ariaPosInSet,%ariaPressed,%ariaReadOnly,%ariaRelevant,%ariaRequired,%ariaRoleDescription,%ariaRowCount,%ariaRowIndex,%ariaRowSpan,%ariaSelected,%ariaSetSize,%ariaSort,%ariaValueMax,%ariaValueMin,%ariaValueNow,%ariaValueText,%classList,className,elementTiming,id,innerHTML,*beforecopy,*beforecut,*beforepaste,*fullscreenchange,*fullscreenerror,*search,*webkitfullscreenchange,*webkitfullscreenerror,outerHTML,%part,#scrollLeft,#scrollTop,slot' +
-      /* added manually to avoid breaking changes */
-      ',*message,*mozfullscreenchange,*mozfullscreenerror,*mozpointerlockchange,*mozpointerlockerror,*webglcontextcreationerror,*webglcontextlost,*webglcontextrestored',
-  '[HTMLElement]^[Element]|accessKey,autocapitalize,!autofocus,contentEditable,dir,!draggable,enterKeyHint,!hidden,innerText,inputMode,lang,nonce,*abort,*animationend,*animationiteration,*animationstart,*auxclick,*beforexrselect,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*copy,*cuechange,*cut,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*formdata,*gotpointercapture,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*lostpointercapture,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*paste,*pause,*play,*playing,*pointercancel,*pointerdown,*pointerenter,*pointerleave,*pointermove,*pointerout,*pointerover,*pointerrawupdate,*pointerup,*progress,*ratechange,*reset,*resize,*scroll,*securitypolicyviolation,*seeked,*seeking,*select,*selectionchange,*selectstart,*slotchange,*stalled,*submit,*suspend,*timeupdate,*toggle,*transitioncancel,*transitionend,*transitionrun,*transitionstart,*volumechange,*waiting,*webkitanimationend,*webkitanimationiteration,*webkitanimationstart,*webkittransitionend,*wheel,outerText,!spellcheck,%style,#tabIndex,title,!translate,virtualKeyboardPolicy',
+    /* added manually to avoid breaking changes */
+    ',*message,*mozfullscreenchange,*mozfullscreenerror,*mozpointerlockchange,*mozpointerlockerror,*webglcontextcreationerror,*webglcontextlost,*webglcontextrestored',
+  '[HTMLElement]^[Element]|accessKey,autocapitalize,!autofocus,contentEditable,dir,!draggable,enterKeyHint,!hidden,!inert,innerText,inputMode,lang,nonce,*abort,*animationend,*animationiteration,*animationstart,*auxclick,*beforexrselect,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*copy,*cuechange,*cut,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*formdata,*gotpointercapture,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*lostpointercapture,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*paste,*pause,*play,*playing,*pointercancel,*pointerdown,*pointerenter,*pointerleave,*pointermove,*pointerout,*pointerover,*pointerrawupdate,*pointerup,*progress,*ratechange,*reset,*resize,*scroll,*securitypolicyviolation,*seeked,*seeking,*select,*selectionchange,*selectstart,*slotchange,*stalled,*submit,*suspend,*timeupdate,*toggle,*transitioncancel,*transitionend,*transitionrun,*transitionstart,*volumechange,*waiting,*webkitanimationend,*webkitanimationiteration,*webkitanimationstart,*webkittransitionend,*wheel,outerText,!spellcheck,%style,#tabIndex,title,!translate,virtualKeyboardPolicy',
   'abbr,address,article,aside,b,bdi,bdo,cite,content,code,dd,dfn,dt,em,figcaption,figure,footer,header,hgroup,i,kbd,main,mark,nav,noscript,rb,rp,rt,rtc,ruby,s,samp,section,small,strong,sub,sup,u,var,wbr^[HTMLElement]|accessKey,autocapitalize,!autofocus,contentEditable,dir,!draggable,enterKeyHint,!hidden,innerText,inputMode,lang,nonce,*abort,*animationend,*animationiteration,*animationstart,*auxclick,*beforexrselect,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*copy,*cuechange,*cut,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*formdata,*gotpointercapture,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*lostpointercapture,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*paste,*pause,*play,*playing,*pointercancel,*pointerdown,*pointerenter,*pointerleave,*pointermove,*pointerout,*pointerover,*pointerrawupdate,*pointerup,*progress,*ratechange,*reset,*resize,*scroll,*securitypolicyviolation,*seeked,*seeking,*select,*selectionchange,*selectstart,*slotchange,*stalled,*submit,*suspend,*timeupdate,*toggle,*transitioncancel,*transitionend,*transitionrun,*transitionstart,*volumechange,*waiting,*webkitanimationend,*webkitanimationiteration,*webkitanimationstart,*webkittransitionend,*wheel,outerText,!spellcheck,%style,#tabIndex,title,!translate,virtualKeyboardPolicy',
   'media^[HTMLElement]|!autoplay,!controls,%controlsList,%crossOrigin,#currentTime,!defaultMuted,#defaultPlaybackRate,!disableRemotePlayback,!loop,!muted,*encrypted,*waitingforkey,#playbackRate,preload,!preservesPitch,src,%srcObject,#volume',
   ':svg:^[HTMLElement]|!autofocus,nonce,*abort,*animationend,*animationiteration,*animationstart,*auxclick,*beforexrselect,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contextmenu,*copy,*cuechange,*cut,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*formdata,*gotpointercapture,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*lostpointercapture,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*paste,*pause,*play,*playing,*pointercancel,*pointerdown,*pointerenter,*pointerleave,*pointermove,*pointerout,*pointerover,*pointerrawupdate,*pointerup,*progress,*ratechange,*reset,*resize,*scroll,*securitypolicyviolation,*seeked,*seeking,*select,*selectionchange,*selectstart,*slotchange,*stalled,*submit,*suspend,*timeupdate,*toggle,*transitioncancel,*transitionend,*transitionrun,*transitionstart,*volumechange,*waiting,*webkitanimationend,*webkitanimationiteration,*webkitanimationstart,*webkittransitionend,*wheel,%style,#tabIndex',
@@ -229,39 +229,73 @@ const SCHEMA: string[] = [
   'summary^[HTMLElement]|',
   'time^[HTMLElement]|dateTime',
   ':svg:cursor^:svg:|',
+  ':math:^[HTMLElement]|!autofocus,nonce,*abort,*animationend,*animationiteration,*animationstart,*auxclick,*beforeinput,*beforematch,*beforetoggle,*beforexrselect,*blur,*cancel,*canplay,*canplaythrough,*change,*click,*close,*contentvisibilityautostatechange,*contextlost,*contextmenu,*contextrestored,*copy,*cuechange,*cut,*dblclick,*drag,*dragend,*dragenter,*dragleave,*dragover,*dragstart,*drop,*durationchange,*emptied,*ended,*error,*focus,*formdata,*gotpointercapture,*input,*invalid,*keydown,*keypress,*keyup,*load,*loadeddata,*loadedmetadata,*loadstart,*lostpointercapture,*mousedown,*mouseenter,*mouseleave,*mousemove,*mouseout,*mouseover,*mouseup,*mousewheel,*paste,*pause,*play,*playing,*pointercancel,*pointerdown,*pointerenter,*pointerleave,*pointermove,*pointerout,*pointerover,*pointerrawupdate,*pointerup,*progress,*ratechange,*reset,*resize,*scroll,*scrollend,*securitypolicyviolation,*seeked,*seeking,*select,*selectionchange,*selectstart,*slotchange,*stalled,*submit,*suspend,*timeupdate,*toggle,*transitioncancel,*transitionend,*transitionrun,*transitionstart,*volumechange,*waiting,*webkitanimationend,*webkitanimationiteration,*webkitanimationstart,*webkittransitionend,*wheel,%style,#tabIndex',
+  ':math:math^:math:|',
+  ':math:maction^:math:|',
+  ':math:menclose^:math:|',
+  ':math:merror^:math:|',
+  ':math:mfenced^:math:|',
+  ':math:mfrac^:math:|',
+  ':math:mi^:math:|',
+  ':math:mmultiscripts^:math:|',
+  ':math:mn^:math:|',
+  ':math:mo^:math:|',
+  ':math:mover^:math:|',
+  ':math:mpadded^:math:|',
+  ':math:mphantom^:math:|',
+  ':math:mroot^:math:|',
+  ':math:mrow^:math:|',
+  ':math:ms^:math:|',
+  ':math:mspace^:math:|',
+  ':math:msqrt^:math:|',
+  ':math:mstyle^:math:|',
+  ':math:msub^:math:|',
+  ':math:msubsup^:math:|',
+  ':math:msup^:math:|',
+  ':math:mtable^:math:|',
+  ':math:mtd^:math:|',
+  ':math:mtext^:math:|',
+  ':math:mtr^:math:|',
+  ':math:munder^:math:|',
+  ':math:munderover^:math:|',
+  ':math:semantics^:math:|',
 ];
 
-const _ATTR_TO_PROP = new Map(Object.entries({
-  'class': 'className',
-  'for': 'htmlFor',
-  'formaction': 'formAction',
-  'innerHtml': 'innerHTML',
-  'readonly': 'readOnly',
-  'tabindex': 'tabIndex',
-}));
+const _ATTR_TO_PROP = new Map(
+  Object.entries({
+    'class': 'className',
+    'for': 'htmlFor',
+    'formaction': 'formAction',
+    'innerHtml': 'innerHTML',
+    'readonly': 'readOnly',
+    'tabindex': 'tabIndex',
+  }),
+);
 
 // Invert _ATTR_TO_PROP.
-const _PROP_TO_ATTR =
-    Array.from(_ATTR_TO_PROP).reduce((inverted, [propertyName, attributeName]) => {
-      inverted.set(propertyName, attributeName);
-      return inverted;
-    }, new Map<string, string>());
+const _PROP_TO_ATTR = Array.from(_ATTR_TO_PROP).reduce(
+  (inverted, [propertyName, attributeName]) => {
+    inverted.set(propertyName, attributeName);
+    return inverted;
+  },
+  new Map<string, string>(),
+);
 
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   private _schema = new Map<string, Map<string, string>>();
   // We don't allow binding to events for security reasons. Allowing event bindings would almost
   // certainly introduce bad XSS vulnerabilities. Instead, we store events in a separate schema.
-  private _eventSchema = new Map<string, Set<string>>;
+  private _eventSchema = new Map<string, Set<string>>();
 
   constructor() {
     super();
-    SCHEMA.forEach(encodedType => {
+    SCHEMA.forEach((encodedType) => {
       const type = new Map<string, string>();
       const events: Set<string> = new Set();
       const [strType, strProperties] = encodedType.split('|');
       const properties = strProperties.split(',');
       const [typeNames, superName] = strType.split('^');
-      typeNames.split(',').forEach(tag => {
+      typeNames.split(',').forEach((tag) => {
         this._schema.set(tag.toLowerCase(), type);
         this._eventSchema.set(tag.toLowerCase(), events);
       });
@@ -315,7 +349,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     }
 
     const elementProperties =
-        this._schema.get(tagName.toLowerCase()) || this._schema.get('unknown')!;
+      this._schema.get(tagName.toLowerCase()) || this._schema.get('unknown')!;
     return elementProperties.has(propName);
   }
 
@@ -348,8 +382,11 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
    * above are assumed to have the 'NONE' security context, i.e. that they are safe inert
    * string values. Only specific well known attack vectors are assigned their appropriate context.
    */
-  override securityContext(tagName: string, propName: string, isAttribute: boolean):
-      SecurityContext {
+  override securityContext(
+    tagName: string,
+    propName: string,
+    isAttribute: boolean,
+  ): SecurityContext {
     if (isAttribute) {
       // NB: For security purposes, use the mapped property name, not the attribute name.
       propName = this.getMappedPropName(propName);
@@ -375,22 +412,24 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return 'ng-component';
   }
 
-  override validateProperty(name: string): {error: boolean, msg?: string} {
+  override validateProperty(name: string): {error: boolean; msg?: string} {
     if (name.toLowerCase().startsWith('on')) {
-      const msg = `Binding to event property '${name}' is disallowed for security reasons, ` +
-          `please use (${name.slice(2)})=...` +
-          `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
-          ` current module.`;
+      const msg =
+        `Binding to event property '${name}' is disallowed for security reasons, ` +
+        `please use (${name.slice(2)})=...` +
+        `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
+        ` current module.`;
       return {error: true, msg: msg};
     } else {
       return {error: false};
     }
   }
 
-  override validateAttribute(name: string): {error: boolean, msg?: string} {
+  override validateAttribute(name: string): {error: boolean; msg?: string} {
     if (name.toLowerCase().startsWith('on')) {
-      const msg = `Binding to event attribute '${name}' is disallowed for security reasons, ` +
-          `please use (${name.slice(2)})=...`;
+      const msg =
+        `Binding to event attribute '${name}' is disallowed for security reasons, ` +
+        `please use (${name.slice(2)})=...`;
       return {error: true, msg: msg};
     } else {
       return {error: false};
@@ -403,9 +442,9 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
   allKnownAttributesOfElement(tagName: string): string[] {
     const elementProperties =
-        this._schema.get(tagName.toLowerCase()) || this._schema.get('unknown')!;
+      this._schema.get(tagName.toLowerCase()) || this._schema.get('unknown')!;
     // Convert properties to attributes.
-    return Array.from(elementProperties.keys()).map(prop => _PROP_TO_ATTR.get(prop) ?? prop);
+    return Array.from(elementProperties.keys()).map((prop) => _PROP_TO_ATTR.get(prop) ?? prop);
   }
 
   allKnownEventsOfElement(tagName: string): string[] {
@@ -417,8 +456,10 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   override normalizeAnimationStyleValue(
-      camelCaseProp: string, userProvidedProp: string,
-      val: string|number): {error: string, value: string} {
+    camelCaseProp: string,
+    userProvidedProp: string,
+    val: string | number,
+  ): {error: string; value: string} {
     let unit: string = '';
     const strVal = val.toString().trim();
     let errorMsg: string = null!;

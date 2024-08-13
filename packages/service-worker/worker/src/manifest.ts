@@ -17,15 +17,15 @@ export interface Manifest {
   index: string;
   assetGroups?: AssetGroupConfig[];
   dataGroups?: DataGroupConfig[];
-  navigationUrls: {positive: boolean, regex: string}[];
-  navigationRequestStrategy: 'freshness'|'performance';
+  navigationUrls: {positive: boolean; regex: string}[];
+  navigationRequestStrategy: 'freshness' | 'performance';
   hashTable: {[url: string]: string};
 }
 
 export interface AssetGroupConfig {
   name: string;
-  installMode: 'prefetch'|'lazy';
-  updateMode: 'prefetch'|'lazy';
+  installMode: 'prefetch' | 'lazy';
+  updateMode: 'prefetch' | 'lazy';
   urls: string[];
   patterns: string[];
   cacheQueryOptions?: CacheQueryOptions;
@@ -34,7 +34,7 @@ export interface AssetGroupConfig {
 export interface DataGroupConfig {
   name: string;
   version: number;
-  strategy: 'freshness'|'performance';
+  strategy: 'freshness' | 'performance';
   patterns: string[];
   maxSize: number;
   maxAge: number;

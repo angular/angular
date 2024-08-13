@@ -7,15 +7,19 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ClassEntry, FunctionEntry, MethodEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {
+  ClassEntry,
+  FunctionEntry,
+  MethodEntry,
+} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
-const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
+const testFiles = loadStandardTestFiles({fakeCommon: true});
 
-runInEachFileSystem(os => {
+runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
 
   describe('ngtsc jsdoc extraction', () => {
@@ -25,16 +29,19 @@ runInEachFileSystem(os => {
     });
 
     it('should extract jsdoc from all types of top-level statement', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         /** This is a constant. */
         export const PI = 3.14;
-        
+
         /** This is a class. */
         export class UserProfile { }
-        
+
         /** This is a function. */
         export function save() { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(3);
@@ -46,7 +53,9 @@ runInEachFileSystem(os => {
     });
 
     it('should extract raw comment blocks', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         /** This is a constant. */
         export const PI = 3.14;
 
@@ -54,7 +63,7 @@ runInEachFileSystem(os => {
          * Long comment
          * with multiple lines.
          */
-        export class UserProfile { } 
+        export class UserProfile { }
 
         /**
          * This is a long JsDoc block
@@ -64,33 +73,41 @@ runInEachFileSystem(os => {
          * @experimental here is another one
          */
         export function save() { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(3);
 
       const [piEntry, userProfileEntry, saveEntry] = docs;
       expect(piEntry.rawComment).toBe('/** This is a constant. */');
-      expect(userProfileEntry.rawComment).toBe(`
+      expect(userProfileEntry.rawComment).toBe(
+        `
         /**
          * Long comment
          * with multiple lines.
-         */`.trim());
-      expect(saveEntry.rawComment).toBe(`
+         */`.trim(),
+      );
+      expect(saveEntry.rawComment).toBe(
+        `
         /**
          * This is a long JsDoc block
          * that extends multiple lines.
          *
          * @deprecated in includes multiple tags.
          * @experimental here is another one
-         */`.trim());
+         */`.trim(),
+      );
     });
 
     it('should extract a description from a single-line jsdoc', () => {
-      env.write('index.ts', `        
+      env.write(
+        'index.ts',
+        `
         /** Framework version. */
         export const VERSION = '16';
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -100,30 +117,37 @@ runInEachFileSystem(os => {
     });
 
     it('should extract a description from a multi-line jsdoc', () => {
-      env.write('index.ts', `        
+      env.write(
+        'index.ts',
+        `
         /**
          * This is a really long description that needs
-         * to wrap over multiple lines. 
-         */                
+         * to wrap over multiple lines.
+         */
         export const LONG_VERSION = '16.0.0';
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
-      expect(docs[0].description)
-          .toBe('This is a really long description that needs\nto wrap over multiple lines.');
+      expect(docs[0].description).toBe(
+        'This is a really long description that needs\nto wrap over multiple lines.',
+      );
       expect(docs[0].jsdocTags.length).toBe(0);
     });
 
     it('should extract jsdoc with an empty tag', () => {
-      env.write('index.ts', `        
+      env.write(
+        'index.ts',
+        `
         /**
          * Unsupported version.
          * @deprecated
-         */        
+         */
         export const OLD_VERSION = '1.0.0';
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -134,13 +158,16 @@ runInEachFileSystem(os => {
     });
 
     it('should extract jsdoc with a single-line tag', () => {
-      env.write('index.ts', `        
+      env.write(
+        'index.ts',
+        `
         /**
          * Unsupported version.
          * @deprecated Use the newer one.
-         */        
+         */
         export const OLD_VERSION = '1.0.0';
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -151,16 +178,19 @@ runInEachFileSystem(os => {
     });
 
     it('should extract jsdoc with a multi-line tags', () => {
-      env.write('index.ts', `        
+      env.write(
+        'index.ts',
+        `
         /**
          * Unsupported version.
          * @deprecated Use the newer one.
          *     Or use something else.
          * @experimental This is another
          *     long comment that wraps.
-         */        
+         */
         export const OLD_VERSION = '1.0.0';
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -180,14 +210,17 @@ runInEachFileSystem(os => {
     });
 
     it('should extract jsdoc with custom tags', () => {
-      env.write('index.ts', `        
+      env.write(
+        'index.ts',
+        `
         /**
          * Unsupported version.
          * @ancient Use the newer one.
          *     Or use something else.
-         */        
+         */
         export const OLD_VERSION = '1.0.0';
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -203,40 +236,43 @@ runInEachFileSystem(os => {
     it('should extract a @see jsdoc tag', () => {
       // "@see" has special behavior with links, so we have tests
       // specifically for this tag.
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Component} from '@angular/core';
-        
+
         /**
          * Future version.
          * @see {@link Component}
-         */        
+         */
         export const NEW_VERSION = '99.0.0';
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
 
       expect(docs[0].description).toBe('Future version.');
       expect(docs[0].jsdocTags.length).toBe(1);
-
-      // It's not clear why TypeScript's JsDoc handling puts a space after
-      // "Component" here, but we'll accept this as-is.
       expect(docs[0].jsdocTags[0]).toEqual({
         name: 'see',
-        comment: '{@link Component }',
+        comment: '{@link Component}',
       });
     });
 
     it('should extract function parameter descriptions', () => {
-      env.write('index.ts', `        
+      env.write(
+        'index.ts',
+        `
         /**
          * Save some data.
          * @param data The data to save.
          * @param timing Long description
          *     with multiple lines.
-         */        
+         */
         export function save(data: object, timing: number): void { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -250,7 +286,9 @@ runInEachFileSystem(os => {
     });
 
     it('should extract class member descriptions', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
           /** A user identifier. */
           userId: number = 0;
@@ -268,14 +306,15 @@ runInEachFileSystem(os => {
            */
           save(config: object): boolean { return false; }
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
       const classEntry = docs[0] as ClassEntry;
 
       expect(classEntry.members.length).toBe(4);
-      const [userIdEntry, nameGetterEntry, nameSetterEntry, ] = classEntry.members;
+      const [userIdEntry, nameGetterEntry, nameSetterEntry] = classEntry.members;
 
       expect(userIdEntry.description).toBe('A user identifier.');
       expect(nameGetterEntry.description).toBe('Name of the user');
@@ -287,6 +326,28 @@ runInEachFileSystem(os => {
       expect(saveEntry.params[0].description).toBe('Setting for saving.');
       expect(saveEntry.jsdocTags.length).toBe(2);
       expect(saveEntry.jsdocTags[1]).toEqual({name: 'returns', comment: 'Whether it succeeded'});
+    });
+
+    it('should escape decorator names', () => {
+      env.write(
+        'index.ts',
+        `
+        /**
+         * Save some data.
+         * @Component decorators are cool.
+         * @deprecated for some reason
+         */
+        export type s = string;
+      `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const entry = docs[0];
+      expect(entry.description).toBe('Save some data.\n@Component decorators are cool.');
+      expect(entry.jsdocTags.length).toBe(1);
+      expect(entry.jsdocTags[0].name).toBe('deprecated');
     });
   });
 });

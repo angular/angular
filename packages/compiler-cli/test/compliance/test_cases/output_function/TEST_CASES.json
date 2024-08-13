@@ -1,0 +1,50 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate an output mapping for the directive",
+      "inputFiles": ["output_in_directive.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "output_in_directive.js",
+              "generated": "output_in_directive.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    },
+    {
+      "description": "should generate an output mapping for the component",
+      "inputFiles": ["output_in_component.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "output_in_component.js",
+              "generated": "output_in_component.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    },
+    {
+      "description": "should handle a mix of decorator-based and initializer-based outputs",
+      "inputFiles": ["mixed_variants.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "mixed_variants.js",
+              "generated": "mixed_variants.js"
+            }
+          ],
+          "failureMessage": "Incorrect output"
+        }
+      ]
+    }
+  ]
+}

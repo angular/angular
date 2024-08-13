@@ -16,6 +16,7 @@ ts_library(
     ),
     deps = [
         "//packages:types",
+        "//packages/core/primitives/signals",
         "//packages/core/src/interface",
         "//packages/zone.js/lib:zone_d_ts",
         "@npm//rxjs",
@@ -33,4 +34,5 @@ filegroup(
     srcs = glob([
         "**/*.ts",
     ]),
+    visibility = ["//visibility:public"],
 )

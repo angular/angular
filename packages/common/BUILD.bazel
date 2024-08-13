@@ -1,6 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//packages/common/locales:index.bzl", "generate_base_currencies_file")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -46,9 +46,8 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
-        "//aio:__pkg__",
-        "//aio/content/examples:__subpackages__",
-        "//aio/tools/examples:__pkg__",
+        "//adev:__pkg__",
+        "//adev/shared-docs:__subpackages__",
         "//integration:__subpackages__",
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
@@ -84,7 +83,7 @@ api_golden_test(
         "//packages/common",
     ],
     entry_point = "angular/packages/common/src/errors.d.ts",
-    golden = "angular/goldens/public-api/common/errors.md",
+    golden = "angular/goldens/public-api/common/errors.api.md",
 )
 
 filegroup(
@@ -93,4 +92,16 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "common_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+        "//packages/platform-browser:files_for_docgen",
+        "//packages/platform-browser-dynamic:files_for_docgen",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/common",
 )

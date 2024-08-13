@@ -21,10 +21,10 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵelementEnd();
     }
     if (rf & 2) {
-      $r3$.ɵɵadvance(1);
+      $r3$.ɵɵadvance();
       $r3$.ɵɵproperty("forOf", ctx.items);
     }
   },
-  dependencies: function() { return [ForOfDirective]; },
+  dependencies: () => [ForOfDirective],
   encapsulation: 2
 });

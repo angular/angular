@@ -16,9 +16,12 @@ describe('shadydom', () => {
   document.body.appendChild(span);
   document.body.appendChild(fragment);
   const targets = [
-    {name: 'window', target: window}, {name: 'div', target: div}, {name: 'text', target: text},
-    {name: 'span', target: span}, {name: 'document', target: document},
-    {name: 'fragment', target: fragment}
+    {name: 'window', target: window},
+    {name: 'div', target: div},
+    {name: 'text', target: text},
+    {name: 'span', target: span},
+    {name: 'document', target: document},
+    {name: 'fragment', target: fragment},
   ];
   targets.forEach((t: any) => {
     it(`test for prototype ${t.name}`, () => {

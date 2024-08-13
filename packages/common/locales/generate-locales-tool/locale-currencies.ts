@@ -13,11 +13,13 @@ import {BaseCurrencies} from './locale-base-currencies';
  * To minimize the file even more, we only output the differences compared to the base currency
  */
 export function generateLocaleCurrencies(
-    localeData: CldrLocaleData, baseCurrencies: BaseCurrencies) {
+  localeData: CldrLocaleData,
+  baseCurrencies: BaseCurrencies,
+) {
   const currenciesData = localeData.main('numbers/currencies');
   const currencies: any = {};
 
-  Object.keys(currenciesData).forEach(code => {
+  Object.keys(currenciesData).forEach((code) => {
     let symbolsArray: any[] = [];
     const symbol = currenciesData[code].symbol;
     const symbolNarrow = currenciesData[code]['symbol-alt-narrow'];
@@ -36,8 +38,11 @@ export function generateLocaleCurrencies(
 
     // Jf locale data is equal to the one in the base currencies, skip this currency to
     // avoid unnecessary locale data that could be inferred from the base currency.
-    if (baseCurrencySymbols && baseCurrencySymbols[0] === symbolsArray[0] &&
-        baseCurrencySymbols[1] === symbolsArray[1]) {
+    if (
+      baseCurrencySymbols &&
+      baseCurrencySymbols[0] === symbolsArray[0] &&
+      baseCurrencySymbols[1] === symbolsArray[1]
+    ) {
       return;
     }
 
@@ -55,16 +60,17 @@ export function getCurrencySettings(localeName: string, localeData: CldrLocaleDa
 
   // find the currency currently used in this country
   const currencies: any[] =
-      localeData.get(`supplemental/currencyData/region/${localeData.attributes.territory}`) ||
-      localeData.get(
-          `supplemental/currencyData/region/${localeData.attributes.language.toUpperCase()}`);
+    localeData.get(`supplemental/currencyData/region/${localeData.attributes.territory}`) ||
+    localeData.get(
+      `supplemental/currencyData/region/${localeData.attributes.language.toUpperCase()}`,
+    );
 
   if (currencies) {
-    currencies.some(currency => {
+    currencies.some((currency) => {
       const keys = Object.keys(currency);
-      return keys.some(key => {
+      return keys.some((key) => {
         if (currency[key]._from && !currency[key]._to) {
-          return currentCurrency = key;
+          return (currentCurrency = key);
         }
         return false;
       });
@@ -79,8 +85,9 @@ export function getCurrencySettings(localeName: string, localeData: CldrLocaleDa
 
   if (currentCurrency) {
     currencySettings = [
-      currentCurrency, currencyInfo[currentCurrency].symbol,
-      currencyInfo[currentCurrency].displayName
+      currentCurrency,
+      currencyInfo[currentCurrency].symbol,
+      currencyInfo[currentCurrency].displayName,
     ];
   }
 

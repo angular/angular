@@ -10,103 +10,126 @@
  * @suppress {missingRequire}
  */
 
-Zone.__load_patch('fetch', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-  interface FetchTaskData extends TaskData {
-    fetchArgs?: any[];
-  }
-  let fetch = global['fetch'];
-  if (typeof fetch !== 'function') {
-    return;
-  }
-  const originalFetch = global[api.symbol('fetch')];
-  if (originalFetch) {
-    // restore unpatched fetch first
-    fetch = originalFetch;
-  }
-  const ZoneAwarePromise = global.Promise;
-  const symbolThenPatched = api.symbol('thenPatched');
-  const fetchTaskScheduling = api.symbol('fetchTaskScheduling');
-  const fetchTaskAborting = api.symbol('fetchTaskAborting');
-  const OriginalAbortController = global['AbortController'];
-  const supportAbort = typeof OriginalAbortController === 'function';
-  let abortNative: Function|null = null;
-  if (supportAbort) {
-    global['AbortController'] = function() {
-      const abortController = new OriginalAbortController();
-      const signal = abortController.signal;
-      signal.abortController = abortController;
-      return abortController;
-    };
-    abortNative = api.patchMethod(
-        OriginalAbortController.prototype, 'abort',
-        (delegate: Function) => (self: any, args: any) => {
-          if (self.task) {
-            return self.task.zone.cancelTask(self.task);
-          }
-          return delegate.apply(self, args);
-        });
-  }
-  const placeholder = function() {};
-  global['fetch'] = function() {
-    const args = Array.prototype.slice.call(arguments);
-    const options = args.length > 1 ? args[1] : null;
-    const signal = options && options.signal;
-    return new Promise((res, rej) => {
-      const task = Zone.current.scheduleMacroTask(
-          'fetch', placeholder, {fetchArgs: args} as FetchTaskData,
+import {ZoneType} from '../zone-impl';
+
+export function patchFetch(Zone: ZoneType): void {
+  Zone.__load_patch('fetch', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+    interface FetchTaskData extends TaskData {
+      fetchArgs?: any[];
+    }
+    let fetch = global['fetch'];
+    if (typeof fetch !== 'function') {
+      return;
+    }
+    const originalFetch = global[api.symbol('fetch')];
+    if (originalFetch) {
+      // restore unpatched fetch first
+      fetch = originalFetch;
+    }
+    const ZoneAwarePromise = global.Promise;
+    const symbolThenPatched = api.symbol('thenPatched');
+    const fetchTaskScheduling = api.symbol('fetchTaskScheduling');
+    const OriginalResponse = global.Response;
+    const placeholder = function () {};
+
+    const createFetchTask = (
+      source: string,
+      data: TaskData | undefined,
+      originalImpl: any,
+      self: any,
+      args: any[],
+      ac?: AbortController,
+    ) =>
+      new Promise((resolve, reject) => {
+        const task = Zone.current.scheduleMacroTask(
+          source,
+          placeholder,
+          data,
           () => {
-            let fetchPromise;
+            // The promise object returned by the original implementation passed into the
+            // function. This might be a `fetch` promise, `Response.prototype.json` promise,
+            // etc.
+            let implPromise;
             let zone = Zone.current;
+
             try {
               (zone as any)[fetchTaskScheduling] = true;
-              fetchPromise = fetch.apply(this, args);
+              implPromise = originalImpl.apply(self, args);
             } catch (error) {
-              rej(error);
+              reject(error);
               return;
             } finally {
               (zone as any)[fetchTaskScheduling] = false;
             }
 
-            if (!(fetchPromise instanceof ZoneAwarePromise)) {
-              let ctor = fetchPromise.constructor;
+            if (!(implPromise instanceof ZoneAwarePromise)) {
+              let ctor = implPromise.constructor;
               if (!ctor[symbolThenPatched]) {
                 api.patchThen(ctor);
               }
             }
-            fetchPromise.then(
-                (resource: any) => {
-                  if (task.state !== 'notScheduled') {
-                    task.invoke();
-                  }
-                  res(resource);
-                },
-                (error: any) => {
-                  if (task.state !== 'notScheduled') {
-                    task.invoke();
-                  }
-                  rej(error);
-                });
+
+            implPromise.then(
+              (resource: any) => {
+                if (task.state !== 'notScheduled') {
+                  task.invoke();
+                }
+                resolve(resource);
+              },
+              (error: any) => {
+                if (task.state !== 'notScheduled') {
+                  task.invoke();
+                }
+                reject(error);
+              },
+            );
           },
           () => {
-            if (!supportAbort) {
-              rej('No AbortController supported, can not cancel fetch');
-              return;
-            }
-            if (signal && signal.abortController && !signal.aborted &&
-                typeof signal.abortController.abort === 'function' && abortNative) {
-              try {
-                (Zone.current as any)[fetchTaskAborting] = true;
-                abortNative.call(signal.abortController);
-              } finally {
-                (Zone.current as any)[fetchTaskAborting] = false;
-              }
-            } else {
-              rej('cancel fetch need a AbortController.signal');
-            }
-          });
-      if (signal && signal.abortController) {
-        signal.abortController.task = task;
+            ac?.abort();
+          },
+        );
+      });
+
+    global['fetch'] = function () {
+      const args = Array.prototype.slice.call(arguments);
+      const options = args.length > 1 ? args[1] : {};
+      const signal: AbortSignal | undefined = options?.signal;
+      const ac = new AbortController();
+      const fetchSignal = ac.signal;
+      options.signal = fetchSignal;
+      args[1] = options;
+
+      if (signal) {
+        const nativeAddEventListener =
+          signal[Zone.__symbol__('addEventListener') as 'addEventListener'] ||
+          signal.addEventListener;
+
+        nativeAddEventListener.call(
+          signal,
+          'abort',
+          function () {
+            ac!.abort();
+          },
+          {once: true},
+        );
       }
-    });
-  };
-});
+
+      return createFetchTask('fetch', {fetchArgs: args} as FetchTaskData, fetch, this, args, ac);
+    };
+
+    if (OriginalResponse?.prototype) {
+      // https://fetch.spec.whatwg.org/#body-mixin
+      ['arrayBuffer', 'blob', 'formData', 'json', 'text']
+        // Safely check whether the method exists on the `Response` prototype before patching.
+        .filter((method) => typeof OriginalResponse.prototype[method] === 'function')
+        .forEach((method) => {
+          api.patchMethod(
+            OriginalResponse.prototype,
+            method,
+            (delegate: Function) => (self, args) =>
+              createFetchTask(`Response.${method}`, undefined, delegate, self, args, undefined),
+          );
+        });
+    }
+  });
+}

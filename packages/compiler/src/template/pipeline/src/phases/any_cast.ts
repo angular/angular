@@ -11,9 +11,10 @@ import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
 /**
- * Find any function calls to `$any`, excluding `this.$any`, and delete them.
+ * Find any function calls to `$any`, excluding `this.$any`, and delete them, since they have no
+ * runtime effects.
  */
-export function phaseFindAnyCasts(job: CompilationJob): void {
+export function deleteAnyCasts(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
       ir.transformExpressionsInOp(op, removeAnys, ir.VisitorContextFlag.None);
@@ -22,8 +23,11 @@ export function phaseFindAnyCasts(job: CompilationJob): void {
 }
 
 function removeAnys(e: o.Expression): o.Expression {
-  if (e instanceof o.InvokeFunctionExpr && e.fn instanceof ir.LexicalReadExpr &&
-      e.fn.name === '$any') {
+  if (
+    e instanceof o.InvokeFunctionExpr &&
+    e.fn instanceof ir.LexicalReadExpr &&
+    e.fn.name === '$any'
+  ) {
     if (e.args.length !== 1) {
       throw new Error('The $any builtin function expects exactly one argument.');
     }

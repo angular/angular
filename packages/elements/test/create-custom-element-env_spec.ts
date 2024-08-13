@@ -20,7 +20,7 @@ describe('createCustomElement with env injector', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(testContainer);
+    testContainer.remove();
     (testContainer as any) = null;
   });
 
@@ -29,8 +29,7 @@ describe('createCustomElement with env injector', () => {
       standalone: true,
       template: `Hello, standalone element!`,
     })
-    class TestStandaloneCmp {
-    }
+    class TestStandaloneCmp {}
 
     const appRef = await createApplication();
 

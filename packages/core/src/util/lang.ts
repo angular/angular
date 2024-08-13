@@ -20,6 +20,6 @@ export function isPromise<T = any>(obj: any): obj is Promise<T> {
 /**
  * Determine if the argument is a Subscribable
  */
-export function isSubscribable<T>(obj: any|Subscribable<T>): obj is Subscribable<T> {
+export function isSubscribable<T>(obj: any | Subscribable<T>): obj is Subscribable<T> {
   return !!obj && typeof obj.subscribe === 'function';
 }

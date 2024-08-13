@@ -19,7 +19,7 @@ describe('render tree extraction', () => {
     componentMap = new Map();
 
     (window as any).ng = {
-      getDirectiveMetadata(): void{},
+      getDirectiveMetadata(): void {},
       getComponent(element: Element): any {
         return componentMap.get(element);
       },
@@ -32,12 +32,12 @@ describe('render tree extraction', () => {
   afterEach(() => delete (window as any).ng);
 
   it('should detect Angular Ivy apps', () => {
-    expect(treeStrategy.supports({})).toBeTrue();
+    expect(treeStrategy.supports()).toBeTrue();
   });
 
   it('should fail with detection of non-Ivy apps', () => {
     delete (window as any).ng.getDirectiveMetadata;
-    expect(treeStrategy.supports({})).toBeFalse();
+    expect(treeStrategy.supports()).toBeFalse();
   });
 
   it('should extract render tree from an empty element', () => {

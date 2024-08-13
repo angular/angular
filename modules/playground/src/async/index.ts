@@ -13,26 +13,36 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 @Component({
   selector: 'async-app',
   template: `
-    <div id='increment'>
-      <span class='val'>{{val1}}</span>
-      <button class='action' (click)="increment()">Increment</button>
+    <div id="increment">
+      <span class="val">{{ val1 }}</span>
+      <button class="action" (click)="increment()">Increment</button>
     </div>
-    <div id='delayedIncrement'>
-      <span class='val'>{{val2}}</span>
-      <button class='action' (click)="delayedIncrement()">Delayed Increment</button>
-      <button class='cancel' *ngIf="timeoutId != null" (click)="cancelDelayedIncrement()">Cancel</button>
+    <div id="delayedIncrement">
+      <span class="val">{{ val2 }}</span>
+      <button class="action" (click)="delayedIncrement()">Delayed Increment</button>
+      <button class="cancel" *ngIf="timeoutId != null" (click)="cancelDelayedIncrement()">
+        Cancel
+      </button>
     </div>
-    <div id='multiDelayedIncrements'>
-      <span class='val'>{{val3}}</span>
-      <button class='action' (click)="multiDelayedIncrements(10)">10 Delayed Increments</button>
-      <button class='cancel' *ngIf="multiTimeoutId != null" (click)="cancelMultiDelayedIncrements()">Cancel</button>
+    <div id="multiDelayedIncrements">
+      <span class="val">{{ val3 }}</span>
+      <button class="action" (click)="multiDelayedIncrements(10)">10 Delayed Increments</button>
+      <button
+        class="cancel"
+        *ngIf="multiTimeoutId != null"
+        (click)="cancelMultiDelayedIncrements()"
+      >
+        Cancel
+      </button>
     </div>
-    <div id='periodicIncrement'>
-      <span class='val'>{{val4}}</span>
-      <button class='action' (click)="periodicIncrement()">Periodic Increment</button>
-      <button class='cancel' *ngIf="intervalId != null" (click)="cancelPeriodicIncrement()">Cancel</button>
+    <div id="periodicIncrement">
+      <span class="val">{{ val4 }}</span>
+      <button class="action" (click)="periodicIncrement()">Periodic Increment</button>
+      <button class="cancel" *ngIf="intervalId != null" (click)="cancelPeriodicIncrement()">
+        Cancel
+      </button>
     </div>
-  `
+  `,
 })
 class AsyncApplication {
   val1: number = 0;
@@ -100,9 +110,11 @@ class AsyncApplication {
   }
 }
 
-@NgModule(
-    {declarations: [AsyncApplication], bootstrap: [AsyncApplication], imports: [BrowserModule]})
-class ExampleModule {
-}
+@NgModule({
+  declarations: [AsyncApplication],
+  bootstrap: [AsyncApplication],
+  imports: [BrowserModule],
+})
+class ExampleModule {}
 
 platformBrowserDynamic().bootstrapModule(ExampleModule);

@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
-import {compileTest, getBuildOutputDirectory, initMockTestFileSystem} from '../test_helpers/compile_test';
+import {
+  compileTest,
+  getBuildOutputDirectory,
+  initMockTestFileSystem,
+} from '../test_helpers/compile_test';
 import {ComplianceTest, getComplianceTests} from '../test_helpers/get_compliance_tests';
 import {PartiallyCompiledFile, renderGoldenPartial} from '../test_helpers/golden_partials';
 
@@ -35,10 +39,18 @@ export function generateGoldenPartial(absTestConfigPath: AbsoluteFsPath): void {
  */
 function* compilePartials(fs: FileSystem, test: ComplianceTest): Generator<PartiallyCompiledFile> {
   const builtDirectory = getBuildOutputDirectory(fs);
-  for (const generatedPath of compileTest(fs, test.inputFiles, test.compilerOptions, {
-         compilationMode: 'partial',
-         ...test.angularCompilerOptions
-       }).emittedFiles) {
+  const result = compileTest(fs, test.inputFiles, test.compilerOptions, {
+    compilationMode: 'partial',
+    ...test.angularCompilerOptions,
+  });
+
+  if (result.errors.length > 0) {
+    throw new Error(
+      `Unexpected compilation errors: ${result.errors.map((e) => ` - ${e}`).join('\n')}`,
+    );
+  }
+
+  for (const generatedPath of result.emittedFiles) {
     yield {
       path: fs.relative(builtDirectory, generatedPath),
       content: fs.readFile(generatedPath),

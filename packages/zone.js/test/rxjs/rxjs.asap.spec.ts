@@ -20,51 +20,65 @@ describe('Scheduler.asap', () => {
     log = [];
   });
 
-  it('scheduler asap should run in correct zone', asyncTest((done: any) => {
-       let observable: any;
-       constructorZone.run(() => {
-         observable = of(1, 2, 3).pipe(observeOn(asapScheduler));
-       });
+  it(
+    'scheduler asap should run in correct zone',
+    asyncTest((done: any) => {
+      let observable: any;
+      constructorZone.run(() => {
+        observable = of(1, 2, 3).pipe(observeOn(asapScheduler));
+      });
 
-       const zone = Zone.current.fork({name: 'subscribeZone'});
+      const zone = Zone.current.fork({name: 'subscribeZone'});
 
-       zone.run(() => {
-         observable
-             .pipe(map((value: number) => {
-               return value;
-             }))
-             .subscribe(
-                 (value: number) => {
-                   expect(Zone.current.name).toEqual(zone.name);
-                   if (value === 3) {
-                     setTimeout(done);
-                   }
-                 },
-                 (err: any) => {
-                   fail('should not be here');
-                 });
-       });
-     }, Zone.root));
+      zone.run(() => {
+        observable
+          .pipe(
+            map((value: number) => {
+              return value;
+            }),
+          )
+          .subscribe(
+            (value: number) => {
+              expect(Zone.current.name).toEqual(zone.name);
+              if (value === 3) {
+                setTimeout(done);
+              }
+            },
+            (err: any) => {
+              fail('should not be here');
+            },
+          );
+      });
+    }, Zone.root),
+  );
 
-  it('scheduler asap error should run in correct zone', asyncTest((done: any) => {
-       let observable: any;
-       constructorZone.run(() => {
-         observable = of(1, 2, 3).pipe(observeOn(asapScheduler));
-       });
+  it(
+    'scheduler asap error should run in correct zone',
+    asyncTest((done: any) => {
+      let observable: any;
+      constructorZone.run(() => {
+        observable = of(1, 2, 3).pipe(observeOn(asapScheduler));
+      });
 
-       Zone.root.run(() => {
-         observable
-             .pipe(map((value: number) => {
-               if (value === 3) {
-                 throw new Error('oops');
-               }
-               return value;
-             }))
-             .subscribe((value: number) => {}, (err: any) => {
-               expect(err.message).toEqual('oops');
-               expect(Zone.current.name).toEqual('<root>');
-               done();
-             });
-       });
-     }, Zone.root));
+      Zone.root.run(() => {
+        observable
+          .pipe(
+            map((value: number) => {
+              if (value === 3) {
+                throw new Error('oops');
+              }
+              return value;
+            }),
+          )
+          .subscribe(
+            (value: number) => {},
+            (err: any) => {
+              expect(err.message).toEqual('oops');
+              expect(Zone.current.name).toEqual('<root>');
+              done();
+            },
+          );
+      });
+    }, Zone.root),
+  );
 });

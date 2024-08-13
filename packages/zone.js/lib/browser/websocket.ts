@@ -15,7 +15,7 @@ export function apply(api: _ZonePrivate, _global: any) {
   if (!(<any>_global).EventTarget) {
     api.patchEventTarget(_global, api, [WS.prototype]);
   }
-  (<any>_global).WebSocket = function(x: any, y: any) {
+  (<any>_global).WebSocket = function (x: any, y: any) {
     const socket = arguments.length > 1 ? new WS(x, y) : new WS(x);
     let proxySocket: any;
 
@@ -29,20 +29,21 @@ export function apply(api: _ZonePrivate, _global: any) {
       // but proxySocket not, so we will keep socket as prototype and pass it to
       // patchOnProperties method
       proxySocketProto = socket;
-      [ADD_EVENT_LISTENER_STR, REMOVE_EVENT_LISTENER_STR, 'send', 'close'].forEach(function(
-          propName) {
-        proxySocket[propName] = function() {
-          const args = api.ArraySlice.call(arguments);
-          if (propName === ADD_EVENT_LISTENER_STR || propName === REMOVE_EVENT_LISTENER_STR) {
-            const eventName = args.length > 0 ? args[0] : undefined;
-            if (eventName) {
-              const propertySymbol = Zone.__symbol__('ON_PROPERTY' + eventName);
-              socket[propertySymbol] = proxySocket[propertySymbol];
+      [ADD_EVENT_LISTENER_STR, REMOVE_EVENT_LISTENER_STR, 'send', 'close'].forEach(
+        function (propName) {
+          proxySocket[propName] = function () {
+            const args = api.ArraySlice.call(arguments);
+            if (propName === ADD_EVENT_LISTENER_STR || propName === REMOVE_EVENT_LISTENER_STR) {
+              const eventName = args.length > 0 ? args[0] : undefined;
+              if (eventName) {
+                const propertySymbol = Zone.__symbol__('ON_PROPERTY' + eventName);
+                socket[propertySymbol] = proxySocket[propertySymbol];
+              }
             }
-          }
-          return socket[propName].apply(socket, args);
-        };
-      });
+            return socket[propName].apply(socket, args);
+          };
+        },
+      );
     } else {
       // we can patch the real socket
       proxySocket = socket;

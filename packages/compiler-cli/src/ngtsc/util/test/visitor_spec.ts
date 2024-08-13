@@ -13,27 +13,29 @@ import {makeProgram} from '../../testing';
 import {visit, VisitListEntryResult, Visitor} from '../src/visitor';
 
 class TestAstVisitor extends Visitor {
-  override visitClassDeclaration(node: ts.ClassDeclaration):
-      VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
+  override visitClassDeclaration(
+    node: ts.ClassDeclaration,
+  ): VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     const name = node.name!.text;
-    const statics = node.members.filter(member => {
+    const statics = node.members.filter((member) => {
       const modifiers = ts.canHaveModifiers(member) ? ts.getModifiers(member) : undefined;
-      return (modifiers || []).some(mod => mod.kind === ts.SyntaxKind.StaticKeyword);
+      return (modifiers || []).some((mod) => mod.kind === ts.SyntaxKind.StaticKeyword);
     });
     const idStatic = statics.find(
-                         el => ts.isPropertyDeclaration(el) && ts.isIdentifier(el.name) &&
-                             el.name.text === 'id') as ts.PropertyDeclaration |
-        undefined;
+      (el) => ts.isPropertyDeclaration(el) && ts.isIdentifier(el.name) && el.name.text === 'id',
+    ) as ts.PropertyDeclaration | undefined;
     if (idStatic !== undefined) {
       return {
         node,
         before: [
-          ts.factory.createVariableStatement(
+          ts.factory.createVariableStatement(undefined, [
+            ts.factory.createVariableDeclaration(
+              `${name}_id`,
               undefined,
-              [
-                ts.factory.createVariableDeclaration(
-                    `${name}_id`, undefined, undefined, idStatic.initializer),
-              ]),
+              undefined,
+              idStatic.initializer,
+            ),
+          ]),
         ],
       };
     }
@@ -48,11 +50,12 @@ function testTransformerFactory(context: ts.TransformationContext): ts.Transform
 runInEachFileSystem(() => {
   describe('AST Visitor', () => {
     let _: typeof absoluteFrom;
-    beforeEach(() => _ = absoluteFrom);
+    beforeEach(() => (_ = absoluteFrom));
 
     it('should add a statement before class in plain file', () => {
-      const {program, host} =
-          makeProgram([{name: _('/main.ts'), contents: `class A { static id = 3; }`}]);
+      const {program, host} = makeProgram([
+        {name: _('/main.ts'), contents: `class A { static id = 3; }`},
+      ]);
       const sf = getSourceFileOrError(program, _('/main.ts'));
       program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
       const main = host.readFile('/main.js');
@@ -60,16 +63,18 @@ runInEachFileSystem(() => {
     });
 
     it('should add a statement before class inside function definition', () => {
-      const {program, host} = makeProgram([{
-        name: _('/main.ts'),
-        contents: `
+      const {program, host} = makeProgram([
+        {
+          name: _('/main.ts'),
+          contents: `
       export function foo() {
         var x = 3;
         class A { static id = 2; }
         return A;
       }
-    `
-      }]);
+    `,
+        },
+      ]);
       const sf = getSourceFileOrError(program, _('/main.ts'));
       program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
       const main = host.readFile(_('/main.js'));
@@ -77,9 +82,10 @@ runInEachFileSystem(() => {
     });
 
     it('handles nested statements', () => {
-      const {program, host} = makeProgram([{
-        name: _('/main.ts'),
-        contents: `
+      const {program, host} = makeProgram([
+        {
+          name: _('/main.ts'),
+          contents: `
       export class A {
         static id = 3;
 
@@ -89,8 +95,9 @@ runInEachFileSystem(() => {
           }
           return B;
         }
-    }`
-      }]);
+    }`,
+        },
+      ]);
       const sf = getSourceFileOrError(program, _('/main.ts'));
       program.emit(sf, undefined, undefined, undefined, {before: [testTransformerFactory]});
       const main = host.readFile(_('/main.js'));

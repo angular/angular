@@ -25,9 +25,10 @@ export class EmitScope<TStatement, TExpression> {
   readonly constantPool = new ConstantPool();
 
   constructor(
-      protected readonly ngImport: TExpression,
-      protected readonly translator: Translator<TStatement, TExpression>,
-      private readonly factory: AstFactory<TStatement, TExpression>) {}
+    protected readonly ngImport: TExpression,
+    protected readonly translator: Translator<TStatement, TExpression>,
+    private readonly factory: AstFactory<TStatement, TExpression>,
+  ) {}
 
   /**
    * Translate the given Output AST definition expression into a generic `TExpression`.
@@ -36,7 +37,9 @@ export class EmitScope<TStatement, TExpression> {
    */
   translateDefinition(definition: LinkedDefinition): TExpression {
     const expression = this.translator.translateExpression(
-        definition.expression, new LinkerImportGenerator(this.ngImport));
+      definition.expression,
+      new LinkerImportGenerator(this.factory, this.ngImport),
+    );
 
     if (definition.statements.length > 0) {
       // Definition statements must be emitted "after" the declaration for which the definition is
@@ -44,11 +47,13 @@ export class EmitScope<TStatement, TExpression> {
       // insert statements after definitions. To work around this, the linker transforms the
       // definition into an IIFE which executes the definition statements before returning the
       // definition expression.
-      const importGenerator = new LinkerImportGenerator(this.ngImport);
+      const importGenerator = new LinkerImportGenerator(this.factory, this.ngImport);
       return this.wrapInIifeWithStatements(
-          expression,
-          definition.statements.map(
-              statement => this.translator.translateStatement(statement, importGenerator)));
+        expression,
+        definition.statements.map((statement) =>
+          this.translator.translateStatement(statement, importGenerator),
+        ),
+      );
     } else {
       // Since there are no definition statements, just return the definition expression directly.
       return expression;
@@ -59,15 +64,16 @@ export class EmitScope<TStatement, TExpression> {
    * Return any constant statements that are shared between all uses of this `EmitScope`.
    */
   getConstantStatements(): TStatement[] {
-    const importGenerator = new LinkerImportGenerator(this.ngImport);
-    return this.constantPool.statements.map(
-        statement => this.translator.translateStatement(statement, importGenerator));
+    const importGenerator = new LinkerImportGenerator(this.factory, this.ngImport);
+    return this.constantPool.statements.map((statement) =>
+      this.translator.translateStatement(statement, importGenerator),
+    );
   }
 
   private wrapInIifeWithStatements(expression: TExpression, statements: TStatement[]): TExpression {
     const returnStatement = this.factory.createReturnStatement(expression);
     const body = this.factory.createBlock([...statements, returnStatement]);
-    const fn = this.factory.createFunctionExpression(/* name */ null, /* args */[], body);
-    return this.factory.createCallExpression(fn, /* args */[], /* pure */ false);
+    const fn = this.factory.createFunctionExpression(/* name */ null, /* args */ [], body);
+    return this.factory.createCallExpression(fn, /* args */ [], /* pure */ false);
   }
 }

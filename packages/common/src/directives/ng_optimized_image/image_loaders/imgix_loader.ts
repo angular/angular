@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {PLACEHOLDER_QUALITY} from './constants';
 import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
 
 /**
@@ -13,7 +14,7 @@ import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loa
  */
 export const imgixLoaderInfo: ImageLoaderInfo = {
   name: 'Imgix',
-  testUrl: isImgixUrl
+  testUrl: isImgixUrl,
 };
 
 const IMGIX_LOADER_REGEX = /https?\:\/\/[^\/]+\.imgix\.net\/.+/;
@@ -33,8 +34,10 @@ function isImgixUrl(url: string): boolean {
  *
  * @publicApi
  */
-export const provideImgixLoader =
-    createImageLoader(createImgixUrl, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);
+export const provideImgixLoader = createImageLoader(
+  createImgixUrl,
+  ngDevMode ? ['https://somepath.imgix.net/'] : undefined,
+);
 
 function createImgixUrl(path: string, config: ImageLoaderConfig) {
   const url = new URL(`${path}/${config.src}`);
@@ -42,6 +45,11 @@ function createImgixUrl(path: string, config: ImageLoaderConfig) {
   url.searchParams.set('auto', 'format');
   if (config.width) {
     url.searchParams.set('w', config.width.toString());
+  }
+
+  // When requesting a placeholder image we ask a low quality image to reduce the load time.
+  if (config.isPlaceholder) {
+    url.searchParams.set('q', PLACEHOLDER_QUALITY);
   }
   return url.href;
 }

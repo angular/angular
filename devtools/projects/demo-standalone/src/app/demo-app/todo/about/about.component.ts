@@ -18,7 +18,6 @@ import {RouterLink, RouterOutlet} from '@angular/router';
     <a [routerLink]="">Home</a>
     <a [routerLink]="">Home</a>
     <a [routerLink]="">Home</a>
-  `
+  `,
 })
-export class AboutComponent {
-}
+export class AboutComponent {}

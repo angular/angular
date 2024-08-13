@@ -10,7 +10,7 @@
 // correctly implementing its interfaces for backwards compatibility.
 
 import {ProviderToken} from '../di/provider_token';
-import {createElementRef, ElementRef as ViewEngine_ElementRef, unwrapElementRef} from '../linker/element_ref';
+import {createElementRef, ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {createContainerRef, ViewContainerRef} from '../linker/view_container_ref';
@@ -21,15 +21,20 @@ import {assertFirstCreatePass, assertLContainer} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from './interfaces/container';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {
+  TContainerNode,
+  TElementContainerNode,
+  TElementNode,
+  TNode,
+  TNodeType,
+} from './interfaces/node';
 import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata} from './interfaces/query';
 import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
-import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state';
-import {isCreationMode} from './util/view_utils';
+import {getCurrentTNode, getLView, getTView} from './state';
 
 class LQuery_<T> implements LQuery<T> {
-  matches: (T|null)[]|null = null;
+  matches: (T | null)[] | null = null;
   constructor(public queryList: QueryList<T>) {}
   clone(): LQuery<T> {
     return new LQuery_(this.queryList);
@@ -42,11 +47,11 @@ class LQuery_<T> implements LQuery<T> {
 class LQueries_ implements LQueries {
   constructor(public queries: LQuery<any>[] = []) {}
 
-  createEmbeddedView(tView: TView): LQueries|null {
+  createEmbeddedView(tView: TView): LQueries | null {
     const tQueries = tView.queries;
     if (tQueries !== null) {
       const noOfInheritedQueries =
-          tView.contentQueries !== null ? tView.contentQueries[0] : tQueries.length;
+        tView.contentQueries !== null ? tView.contentQueries[0] : tQueries.length;
       const viewLQueries: LQuery<any>[] = [];
 
       // An embedded view has queries propagated from a declaration view at the beginning of the
@@ -73,6 +78,10 @@ class LQueries_ implements LQueries {
     this.dirtyQueriesWithMatches(tView);
   }
 
+  finishViewCreation(tView: TView): void {
+    this.dirtyQueriesWithMatches(tView);
+  }
+
   private dirtyQueriesWithMatches(tView: TView) {
     for (let i = 0; i < this.queries.length; i++) {
       if (getTQuery(tView, i).matches !== null) {
@@ -82,10 +91,20 @@ class LQueries_ implements LQueries {
   }
 }
 
-class TQueryMetadata_ implements TQueryMetadata {
+export class TQueryMetadata_ implements TQueryMetadata {
+  public predicate: ProviderToken<unknown> | string[];
   constructor(
-      public predicate: ProviderToken<unknown>|string[], public flags: QueryFlags,
-      public read: any = null) {}
+    predicate: ProviderToken<unknown> | string[] | string,
+    public flags: QueryFlags,
+    public read: any = null,
+  ) {
+    // Compiler might not be able to pre-optimize and split multiple selectors.
+    if (typeof predicate === 'string') {
+      this.predicate = splitQueryMultiSelectors(predicate);
+    } else {
+      this.predicate = predicate;
+    }
+  }
 }
 
 class TQueries_ implements TQueries {
@@ -93,8 +112,10 @@ class TQueries_ implements TQueries {
 
   elementStart(tView: TView, tNode: TNode): void {
     ngDevMode &&
-        assertFirstCreatePass(
-            tView, 'Queries should collect results on the first template pass only');
+      assertFirstCreatePass(
+        tView,
+        'Queries should collect results on the first template pass only',
+      );
     for (let i = 0; i < this.queries.length; i++) {
       this.queries[i].elementStart(tView, tNode);
     }
@@ -104,8 +125,8 @@ class TQueries_ implements TQueries {
       this.queries[i].elementEnd(tNode);
     }
   }
-  embeddedTView(tNode: TNode): TQueries|null {
-    let queriesForTemplateRef: TQuery[]|null = null;
+  embeddedTView(tNode: TNode): TQueries | null {
+    let queriesForTemplateRef: TQuery[] | null = null;
 
     for (let i = 0; i < this.length; i++) {
       const childQueryIndex = queriesForTemplateRef !== null ? queriesForTemplateRef.length : 0;
@@ -126,8 +147,10 @@ class TQueries_ implements TQueries {
 
   template(tView: TView, tNode: TNode): void {
     ngDevMode &&
-        assertFirstCreatePass(
-            tView, 'Queries should collect results on the first template pass only');
+      assertFirstCreatePass(
+        tView,
+        'Queries should collect results on the first template pass only',
+      );
     for (let i = 0; i < this.queries.length; i++) {
       this.queries[i].template(tView, tNode);
     }
@@ -148,7 +171,7 @@ class TQueries_ implements TQueries {
 }
 
 class TQuery_ implements TQuery {
-  matches: number[]|null = null;
+  matches: number[] | null = null;
   indexInDeclarationView = -1;
   crossesNgTemplate = false;
 
@@ -166,7 +189,10 @@ class TQuery_ implements TQuery {
    */
   private _appliesToNextNode = true;
 
-  constructor(public metadata: TQueryMetadata, nodeIndex: number = -1) {
+  constructor(
+    public metadata: TQueryMetadata,
+    nodeIndex: number = -1,
+  ) {
     this._declarationNodeIndex = nodeIndex;
   }
 
@@ -186,7 +212,7 @@ class TQuery_ implements TQuery {
     this.elementStart(tView, tNode);
   }
 
-  embeddedTView(tNode: TNode, childQueryIndex: number): TQuery|null {
+  embeddedTView(tNode: TNode, childQueryIndex: number): TQuery | null {
     if (this.isApplyingToNode(tNode)) {
       this.crossesNgTemplate = true;
       // A marker indicating a `<ng-template>` element (a placeholder for query results from
@@ -198,8 +224,10 @@ class TQuery_ implements TQuery {
   }
 
   private isApplyingToNode(tNode: TNode): boolean {
-    if (this._appliesToNextNode &&
-        (this.metadata.flags & QueryFlags.descendants) !== QueryFlags.descendants) {
+    if (
+      this._appliesToNextNode &&
+      (this.metadata.flags & QueryFlags.descendants) !== QueryFlags.descendants
+    ) {
       const declarationNodeIdx = this._declarationNodeIndex;
       let parent = tNode.parent;
       // Determine if a given TNode is a "direct" child of a node on which a content query was
@@ -212,8 +240,11 @@ class TQuery_ implements TQuery {
       // - <needs-target><ng-container><i #target></i></ng-container></needs-target>: here we need
       // to go past `<ng-container>` to determine <i #target> parent node (but we shouldn't traverse
       // up past the query's host node!).
-      while (parent !== null && (parent.type & TNodeType.ElementContainer) &&
-             parent.index !== declarationNodeIdx) {
+      while (
+        parent !== null &&
+        parent.type & TNodeType.ElementContainer &&
+        parent.index !== declarationNodeIdx
+      ) {
         parent = parent.parent;
       }
       return declarationNodeIdx === (parent !== null ? parent.index : -1);
@@ -229,7 +260,10 @@ class TQuery_ implements TQuery {
         this.matchTNodeWithReadOption(tView, tNode, getIdxOfMatchingSelector(tNode, name));
         // Also try matching the name to a provider since strings can be used as DI tokens too.
         this.matchTNodeWithReadOption(
-            tView, tNode, locateDirectiveOrProvider(tNode, tView, name, false, false));
+          tView,
+          tNode,
+          locateDirectiveOrProvider(tNode, tView, name, false, false),
+        );
       }
     } else {
       if ((predicate as any) === ViewEngine_TemplateRef) {
@@ -238,21 +272,32 @@ class TQuery_ implements TQuery {
         }
       } else {
         this.matchTNodeWithReadOption(
-            tView, tNode, locateDirectiveOrProvider(tNode, tView, predicate, false, false));
+          tView,
+          tNode,
+          locateDirectiveOrProvider(tNode, tView, predicate, false, false),
+        );
       }
     }
   }
 
-  private matchTNodeWithReadOption(tView: TView, tNode: TNode, nodeMatchIdx: number|null): void {
+  private matchTNodeWithReadOption(tView: TView, tNode: TNode, nodeMatchIdx: number | null): void {
     if (nodeMatchIdx !== null) {
       const read = this.metadata.read;
       if (read !== null) {
-        if (read === ViewEngine_ElementRef || read === ViewContainerRef ||
-            read === ViewEngine_TemplateRef && (tNode.type & TNodeType.Container)) {
+        if (
+          read === ViewEngine_ElementRef ||
+          read === ViewContainerRef ||
+          (read === ViewEngine_TemplateRef && tNode.type & TNodeType.Container)
+        ) {
           this.addMatch(tNode.index, -2);
         } else {
-          const directiveOrProviderIdx =
-              locateDirectiveOrProvider(tNode, tView, read, false, false);
+          const directiveOrProviderIdx = locateDirectiveOrProvider(
+            tNode,
+            tView,
+            read,
+            false,
+            false,
+          );
           if (directiveOrProviderIdx !== null) {
             this.addMatch(tNode.index, directiveOrProviderIdx);
           }
@@ -280,7 +325,7 @@ class TQuery_ implements TQuery {
  * @param selector selector to match
  * @returns directive index, -1 or null if a selector didn't match any of the local names
  */
-function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
+function getIdxOfMatchingSelector(tNode: TNode, selector: string): number | null {
   const localNames = tNode.localNames;
   if (localNames !== null) {
     for (let i = 0; i < localNames.length; i += 2) {
@@ -292,7 +337,6 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
   return null;
 }
 
-
 function createResultByTNodeType(tNode: TNode, currentView: LView): any {
   if (tNode.type & (TNodeType.AnyRNode | TNodeType.ElementContainer)) {
     return createElementRef(tNode, currentView);
@@ -301,7 +345,6 @@ function createResultByTNodeType(tNode: TNode, currentView: LView): any {
   }
   return null;
 }
-
 
 function createResultForNode(lView: LView, tNode: TNode, matchingIdx: number, read: any): any {
   if (matchingIdx === -1) {
@@ -324,12 +367,16 @@ function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
   } else if (read === ViewContainerRef) {
     ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
     return createContainerRef(
-        tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
+      tNode as TElementNode | TContainerNode | TElementContainerNode,
+      lView,
+    );
   } else {
     ngDevMode &&
-        throwError(
-            `Special token to read should be one of ElementRef, TemplateRef or ViewContainerRef but got ${
-                stringify(read)}.`);
+      throwError(
+        `Special token to read should be one of ElementRef, TemplateRef or ViewContainerRef but got ${stringify(
+          read,
+        )}.`,
+      );
   }
 }
 
@@ -339,13 +386,17 @@ function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
  * doesn't change).
  */
 function materializeViewResults<T>(
-    tView: TView, lView: LView, tQuery: TQuery, queryIndex: number): (T|null)[] {
+  tView: TView,
+  lView: LView,
+  tQuery: TQuery,
+  queryIndex: number,
+): T[] {
   const lQuery = lView[QUERIES]!.queries![queryIndex];
   if (lQuery.matches === null) {
     const tViewData = tView.data;
-    const tQueryMatches = tQuery.matches!;
-    const result: T|null[] = [];
-    for (let i = 0; i < tQueryMatches.length; i += 2) {
+    const tQueryMatches = tQuery.matches;
+    const result: Array<T | null> = [];
+    for (let i = 0; tQueryMatches !== null && i < tQueryMatches.length; i += 2) {
       const matchedNodeIdx = tQueryMatches[i];
       if (matchedNodeIdx < 0) {
         // we at the <ng-template> marker which might have results in views created based on this
@@ -407,52 +458,34 @@ function collectQueryResults<T>(tView: TView, lView: LView, queryIndex: number, 
   return result;
 }
 
-/**
- * Refreshes a query by combining matches from all active views and removing matches from deleted
- * views.
- *
- * @returns `true` if a query got dirty during change detection or if this is a static query
- * resolving in creation mode, `false` otherwise.
- *
- * @codeGenApi
- */
-export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
-  const lView = getLView();
-  const tView = getTView();
-  const queryIndex = getCurrentQueryIndex();
-
-  setCurrentQueryIndex(queryIndex + 1);
-
-  const tQuery = getTQuery(tView, queryIndex);
-  if (queryList.dirty &&
-      (isCreationMode(lView) ===
-       ((tQuery.metadata.flags & QueryFlags.isStatic) === QueryFlags.isStatic))) {
-    if (tQuery.matches === null) {
-      queryList.reset([]);
-    } else {
-      const result = tQuery.crossesNgTemplate ?
-          collectQueryResults(tView, lView, queryIndex, []) :
-          materializeViewResults(tView, lView, tQuery, queryIndex);
-      queryList.reset(result, unwrapElementRef);
-      queryList.notifyOnChanges();
-    }
-    return true;
-  }
-
-  return false;
+export function loadQueryInternal<T>(lView: LView, queryIndex: number): QueryList<T> {
+  ngDevMode &&
+    assertDefined(lView[QUERIES], 'LQueries should be defined when trying to load a query');
+  ngDevMode && assertIndexInRange(lView[QUERIES]!.queries, queryIndex);
+  return lView[QUERIES]!.queries[queryIndex].queryList;
 }
 
 /**
- * Creates new QueryList, stores the reference in LView and returns QueryList.
+ * Creates a new instance of LQuery and returns its index in the collection of LQuery objects.
  *
- * @param predicate The type for which the query will search
- * @param flags Flags associated with the query
- * @param read What to save in the query
- *
- * @codeGenApi
+ * @returns index in the collection of LQuery objects
  */
-export function ɵɵviewQuery<T>(
-    predicate: ProviderToken<unknown>|string[], flags: QueryFlags, read?: any): void {
+function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags): number {
+  const queryList = new QueryList<T>(
+    (flags & QueryFlags.emitDistinctChangesOnly) === QueryFlags.emitDistinctChangesOnly,
+  );
+
+  storeCleanupWithContext(tView, lView, queryList, queryList.destroy);
+
+  const lQueries = (lView[QUERIES] ??= new LQueries_()).queries;
+  return lQueries.push(new LQuery_(queryList)) - 1;
+}
+
+export function createViewQuery<T>(
+  predicate: ProviderToken<unknown> | string[] | string,
+  flags: QueryFlags,
+  read?: any,
+): number {
   ngDevMode && assertNumber(flags, 'Expecting flags');
   const tView = getTView();
   if (tView.firstCreatePass) {
@@ -461,24 +494,16 @@ export function ɵɵviewQuery<T>(
       tView.staticViewQueries = true;
     }
   }
-  createLQuery<T>(tView, getLView(), flags);
+
+  return createLQuery<T>(tView, getLView(), flags);
 }
 
-/**
- * Registers a QueryList, associated with a content query, for later refresh (part of a view
- * refresh).
- *
- * @param directiveIndex Current directive index
- * @param predicate The type for which the query will search
- * @param flags Flags associated with the query
- * @param read What to save in the query
- * @returns QueryList<T>
- *
- * @codeGenApi
- */
-export function ɵɵcontentQuery<T>(
-    directiveIndex: number, predicate: ProviderToken<unknown>|string[], flags: QueryFlags,
-    read?: any): void {
+export function createContentQuery<T>(
+  directiveIndex: number,
+  predicate: ProviderToken<unknown> | string[] | string,
+  flags: QueryFlags,
+  read?: ProviderToken<T>,
+): number {
   ngDevMode && assertNumber(flags, 'Expecting flags');
   const tView = getTView();
   if (tView.firstCreatePass) {
@@ -490,49 +515,43 @@ export function ɵɵcontentQuery<T>(
     }
   }
 
-  createLQuery<T>(tView, getLView(), flags);
+  return createLQuery<T>(tView, getLView(), flags);
 }
 
-/**
- * Loads a QueryList corresponding to the current view or content query.
- *
- * @codeGenApi
- */
-export function ɵɵloadQuery<T>(): QueryList<T> {
-  return loadQueryInternal<T>(getLView(), getCurrentQueryIndex());
+/** Splits multiple selectors in the locator. */
+function splitQueryMultiSelectors(locator: string): string[] {
+  return locator.split(',').map((s) => s.trim());
 }
 
-function loadQueryInternal<T>(lView: LView, queryIndex: number): QueryList<T> {
-  ngDevMode &&
-      assertDefined(lView[QUERIES], 'LQueries should be defined when trying to load a query');
-  ngDevMode && assertIndexInRange(lView[QUERIES]!.queries, queryIndex);
-  return lView[QUERIES]!.queries[queryIndex].queryList;
-}
-
-function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags) {
-  const queryList = new QueryList<T>(
-      (flags & QueryFlags.emitDistinctChangesOnly) === QueryFlags.emitDistinctChangesOnly);
-  storeCleanupWithContext(tView, lView, queryList, queryList.destroy);
-
-  if (lView[QUERIES] === null) lView[QUERIES] = new LQueries_();
-  lView[QUERIES]!.queries.push(new LQuery_(queryList));
-}
-
-function createTQuery(tView: TView, metadata: TQueryMetadata, nodeIndex: number): void {
+export function createTQuery(tView: TView, metadata: TQueryMetadata, nodeIndex: number): void {
   if (tView.queries === null) tView.queries = new TQueries_();
   tView.queries.track(new TQuery_(metadata, nodeIndex));
 }
 
-function saveContentQueryAndDirectiveIndex(tView: TView, directiveIndex: number) {
+export function saveContentQueryAndDirectiveIndex(tView: TView, directiveIndex: number) {
   const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
-  const lastSavedDirectiveIndex =
-      tViewContentQueries.length ? tViewContentQueries[tViewContentQueries.length - 1] : -1;
+  const lastSavedDirectiveIndex = tViewContentQueries.length
+    ? tViewContentQueries[tViewContentQueries.length - 1]
+    : -1;
   if (directiveIndex !== lastSavedDirectiveIndex) {
     tViewContentQueries.push(tView.queries!.length - 1, directiveIndex);
   }
 }
 
-function getTQuery(tView: TView, index: number): TQuery {
+export function getTQuery(tView: TView, index: number): TQuery {
   ngDevMode && assertDefined(tView.queries, 'TQueries must be defined to retrieve a TQuery');
   return tView.queries!.getByIndex(index);
+}
+
+/**
+ * A helper function collecting results from all the views where a given query was active.
+ * @param lView
+ * @param queryIndex
+ */
+export function getQueryResults<V>(lView: LView, queryIndex: number): V[] {
+  const tView = lView[TVIEW];
+  const tQuery = getTQuery(tView, queryIndex);
+  return tQuery.crossesNgTemplate
+    ? collectQueryResults<V>(tView, lView, queryIndex, [])
+    : materializeViewResults<V>(tView, lView, tQuery, queryIndex);
 }

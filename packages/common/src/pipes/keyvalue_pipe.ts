@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, Pipe, PipeTransform} from '@angular/core';
+import {
+  KeyValueChangeRecord,
+  KeyValueChanges,
+  KeyValueDiffer,
+  KeyValueDiffers,
+  Pipe,
+  PipeTransform,
+} from '@angular/core';
 
 function makeKeyValuePair<K, V>(key: K, value: V): KeyValue<K, V> {
   return {key: key, value: value};
@@ -61,41 +68,45 @@ export class KeyValuePipe implements PipeTransform {
    * compared/returned as `string`s.
    */
   transform<K, V>(
-      input: ReadonlyMap<K, V>,
-      compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>;
+    input: ReadonlyMap<K, V>,
+    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+  ): Array<KeyValue<K, V>>;
   transform<K extends number, V>(
-      input: Record<K, V>, compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number):
-      Array<KeyValue<string, V>>;
+    input: Record<K, V>,
+    compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number,
+  ): Array<KeyValue<string, V>>;
   transform<K extends string, V>(
-      input: Record<K, V>|ReadonlyMap<K, V>,
-      compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>;
+    input: Record<K, V> | ReadonlyMap<K, V>,
+    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+  ): Array<KeyValue<K, V>>;
   transform(
-      input: null|undefined,
-      compareFn?: (a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number): null;
+    input: null | undefined,
+    compareFn?: (a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number,
+  ): null;
   transform<K, V>(
-      input: ReadonlyMap<K, V>|null|undefined,
-      compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>|null;
+    input: ReadonlyMap<K, V> | null | undefined,
+    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+  ): Array<KeyValue<K, V>> | null;
   transform<K extends number, V>(
-      input: Record<K, V>|null|undefined,
-      compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number):
-      Array<KeyValue<string, V>>|null;
+    input: Record<K, V> | null | undefined,
+    compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number,
+  ): Array<KeyValue<string, V>> | null;
   transform<K extends string, V>(
-      input: Record<K, V>|ReadonlyMap<K, V>|null|undefined,
-      compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>|null;
+    input: Record<K, V> | ReadonlyMap<K, V> | null | undefined,
+    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+  ): Array<KeyValue<K, V>> | null;
   transform<K, V>(
-      input: undefined|null|{[key: string]: V, [key: number]: V}|ReadonlyMap<K, V>,
-      compareFn: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number = defaultComparator):
-      Array<KeyValue<K, V>>|null {
+    input: undefined | null | {[key: string]: V; [key: number]: V} | ReadonlyMap<K, V>,
+    compareFn: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number = defaultComparator,
+  ): Array<KeyValue<K, V>> | null {
     if (!input || (!(input instanceof Map) && typeof input !== 'object')) {
       return null;
     }
 
-    if (!this.differ) {
-      // make a differ for whatever type we've been passed in
-      this.differ = this.differs.find(input).create();
-    }
+    // make a differ for whatever type we've been passed in
+    this.differ ??= this.differs.find(input).create();
 
-    const differChanges: KeyValueChanges<K, V>|null = this.differ.diff(input as any);
+    const differChanges: KeyValueChanges<K, V> | null = this.differ.diff(input as any);
     const compareFnChanged = compareFn !== this.compareFn;
 
     if (differChanges) {
@@ -113,7 +124,9 @@ export class KeyValuePipe implements PipeTransform {
 }
 
 export function defaultComparator<K, V>(
-    keyValueA: KeyValue<K, V>, keyValueB: KeyValue<K, V>): number {
+  keyValueA: KeyValue<K, V>,
+  keyValueB: KeyValue<K, V>,
+): number {
   const a = keyValueA.key;
   const b = keyValueB.key;
   // if same exit with 0;

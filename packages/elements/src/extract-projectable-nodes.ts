@@ -42,7 +42,7 @@ function findMatchingIndex(node: Node, selectors: string[], defaultIndex: number
 
   if (isElement(node)) {
     selectors.some((selector, i) => {
-      if ((selector !== '*') && matchesSelector(node, selector)) {
+      if (selector !== '*' && matchesSelector(node, selector)) {
         matchingIndex = i;
         return true;
       }

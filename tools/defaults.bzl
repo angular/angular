@@ -1,7 +1,7 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
-load("@build_bazel_rules_nodejs//:index.bzl", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
+load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/concatjs:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
@@ -14,12 +14,13 @@ load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "ka
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
-load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
+load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config", _esbuild_esm_bundle = "esbuild_esm_bundle")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
@@ -29,6 +30,7 @@ _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL = "//packages/bazel/src/ng_packa
 _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package/rollup"
 
 esbuild_config = _esbuild_config
+esbuild_esm_bundle = _esbuild_esm_bundle
 http_server = _http_server
 extract_types = _extract_types
 
@@ -338,6 +340,10 @@ def karma_web_test_suite(
             tags = tags + [
                 "manual",
                 "no-remote-exec",
+                # Requires network to be able to access saucelabs daemon
+                "requires-network",
+                # Prevent the sandbox from being used so that it can communicate with the saucelabs daemon
+                "no-sandbox",
                 "saucelabs",
             ],
             configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
@@ -406,7 +412,7 @@ def nodejs_test(name, templated_args = [], enable_linker = False, **kwargs):
     )
 
 def _node_modules_workspace_name():
-    return "npm" if not native.package_name().startswith("aio") else "aio_npm"
+    return "npm"
 
 def npm_package_bin(args = [], **kwargs):
     _npm_package_bin(
@@ -433,6 +439,40 @@ def zone_compatible_jasmine_node_test(name, external = [], srcs = [], deps = [],
     jasmine_node_test(
         name = name,
         deps = [":%s_bundle" % name],
+        **kwargs
+    )
+
+def esbuild_jasmine_node_test(name, specs = [], external = [], bootstrap = [], **kwargs):
+    templated_args = kwargs.pop("templated_args", []) + [
+        # TODO: Disable the linker fully here. Currently it is needed for ESM.
+        "--bazel_patch_module_resolver",
+    ]
+
+    deps = kwargs.pop("deps", []) + [
+        "@npm//chokidar",
+        "@npm//domino",
+        "@npm//jasmine-core",
+        "@npm//reflect-metadata",
+        "@npm//source-map-support",
+        "@npm//tslib",
+        "@npm//xhr2",
+    ]
+
+    spec_bundle(
+        name = "%s_test_bundle" % name,
+        platform = "node",
+        target = "es2020",
+        bootstrap = bootstrap,
+        deps = specs + deps,
+        external = external,
+    )
+
+    _jasmine_node_test(
+        name = name,
+        srcs = [":%s_test_bundle" % name],
+        use_direct_specs = True,
+        templated_args = templated_args,
+        deps = deps,
         **kwargs
     )
 
@@ -606,6 +646,60 @@ def esbuild(args = None, **kwargs):
     _esbuild(
         args = args if args else {
             "resolveExtensions": [".mjs", ".js", ".json"],
+        },
+        **kwargs
+    )
+
+def esbuild_checked_in(name, **kwargs):
+    esbuild_esm_bundle(
+        name = "%s_generated" % name,
+        # Unfortunately we need to omit source maps from the checked-in files as these
+        # will vary based on the platform. See more details below in the sanitization
+        # genrule transformation. It is acceptable not having source-maps for the checked-in
+        # files as those are not minified and its to debug, the checked-in file can be visited.
+        sourcemap = "external",
+        # We always disable minification for checked-in files as otherwise it will
+        # become difficult determining potential differences. e.g. on Windows ESBuild
+        # accidentally included `source-map-support` due to the missing sandbox.
+        minify = False,
+        **kwargs
+    )
+
+    # ESBuild adds comments and function identifiers with the name of their module
+    # location. e.g. `"bazel-out/x64_windows-fastbuild/bin/node_modules/a"function(exports)`.
+    # We strip all of these paths as that would break approval of the he checked-in files within
+    # different platforms (e.g. RBE running with K8). Additionally these paths depend
+    # on the non-deterministic hoisting of the package manager across all platforms.
+    native.genrule(
+        name = "%s_sanitized" % name,
+        srcs = ["%s_generated.js" % name],
+        outs = ["%s_sanitized.js" % name],
+        cmd = """cat $< | sed -E "s#(bazel-out|node_modules)/[^\\"']+##g" > $@""",
+    )
+
+    generated_file_test(
+        name = name,
+        src = "%s.js" % name,
+        generated = "%s_sanitized.js" % name,
+    )
+
+def generate_api_docs(**kwargs):
+    _generate_api_docs(
+        # We need to specify import mappings for Angular packages that import other Angular
+        # packages.
+        import_map = {
+            # We only need to specify top-level entry-points, and only those that
+            # are imported from other packages.
+            "//packages/animations:index.ts": "@angular/animations",
+            "//packages/common:index.ts": "@angular/common",
+            "//packages/core:index.ts": "@angular/core",
+            "//packages/forms:index.ts": "@angular/forms",
+            "//packages/localize:index.ts": "@angular/localize",
+            "//packages/platform-browser-dynamic:index.ts": "@angular/platform-browser-dynamic",
+            "//packages/platform-browser:index.ts": "@angular/platform-browser",
+            "//packages/platform-server:index.ts": "@angular/platform-server",
+            "//packages/router:index.ts": "@angular/router",
+            "//packages/upgrade:index.ts": "@angular/upgrade",
         },
         **kwargs
     )

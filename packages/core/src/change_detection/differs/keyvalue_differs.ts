@@ -11,7 +11,6 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 
 import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ';
 
-
 /**
  * A differ that tracks changes made to an object over time.
  *
@@ -25,7 +24,7 @@ export interface KeyValueDiffer<K, V> {
    * @returns an object describing the difference. The return value is only valid until the next
    * `diff()` invocation.
    */
-  diff(object: Map<K, V>): KeyValueChanges<K, V>|null;
+  diff(object: Map<K, V>): KeyValueChanges<K, V> | null;
 
   /**
    * Compute a difference between the previous state and the new `object` state.
@@ -34,7 +33,7 @@ export interface KeyValueDiffer<K, V> {
    * @returns an object describing the difference. The return value is only valid until the next
    * `diff()` invocation.
    */
-  diff(object: {[key: string]: V}): KeyValueChanges<string, V>|null;
+  diff(object: {[key: string]: V}): KeyValueChanges<string, V> | null;
   // TODO(TS2.1): diff<KP extends string>(this: KeyValueDiffer<KP, V>, object: Record<KP, V>):
   // KeyValueDiffer<KP, V>;
 }
@@ -88,12 +87,12 @@ export interface KeyValueChangeRecord<K, V> {
   /**
    * Current value for the key or `null` if removed.
    */
-  readonly currentValue: V|null;
+  readonly currentValue: V | null;
 
   /**
    * Previous value for the key or `null` if added.
    */
-  readonly previousValue: V|null;
+  readonly previousValue: V | null;
 }
 
 /**
@@ -124,8 +123,11 @@ export function defaultKeyValueDiffersFactory() {
  */
 export class KeyValueDiffers {
   /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable(
-      {token: KeyValueDiffers, providedIn: 'root', factory: defaultKeyValueDiffersFactory});
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+    token: KeyValueDiffers,
+    providedIn: 'root',
+    factory: defaultKeyValueDiffersFactory,
+  });
 
   /**
    * @deprecated v4.0.0 - Should be private.
@@ -174,17 +176,18 @@ export class KeyValueDiffers {
         return KeyValueDiffers.create(factories, parent || defaultKeyValueDiffersFactory());
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
-      deps: [[KeyValueDiffers, new SkipSelf(), new Optional()]]
+      deps: [[KeyValueDiffers, new SkipSelf(), new Optional()]],
     };
   }
 
   find(kv: any): KeyValueDifferFactory {
-    const factory = this.factories.find(f => f.supports(kv));
+    const factory = this.factories.find((f) => f.supports(kv));
     if (factory) {
       return factory;
     }
     throw new RuntimeError(
-        RuntimeErrorCode.NO_SUPPORTING_DIFFER_FACTORY,
-        ngDevMode && `Cannot find a differ supporting object '${kv}'`);
+      RuntimeErrorCode.NO_SUPPORTING_DIFFER_FACTORY,
+      ngDevMode && `Cannot find a differ supporting object '${kv}'`,
+    );
   }
 }

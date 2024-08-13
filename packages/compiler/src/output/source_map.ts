@@ -14,31 +14,31 @@ const VERSION = 3;
 const JS_B64_PREFIX = '# sourceMappingURL=data:application/json;base64,';
 
 type Segment = {
-  col0: number,
-  sourceUrl?: string,
-  sourceLine0?: number,
-  sourceCol0?: number,
+  col0: number;
+  sourceUrl?: string;
+  sourceLine0?: number;
+  sourceCol0?: number;
 };
 
 export type SourceMap = {
-  version: number,
-  file?: string,
-      sourceRoot: string,
-      sources: string[],
-      sourcesContent: (string|null)[],
-      mappings: string,
+  version: number;
+  file?: string;
+  sourceRoot: string;
+  sources: string[];
+  sourcesContent: (string | null)[];
+  mappings: string;
 };
 
 export class SourceMapGenerator {
-  private sourcesContent: Map<string, string|null> = new Map();
+  private sourcesContent: Map<string, string | null> = new Map();
   private lines: Segment[][] = [];
   private lastCol0: number = 0;
   private hasMappings = false;
 
-  constructor(private file: string|null = null) {}
+  constructor(private file: string | null = null) {}
 
   // The content is `null` when the content is expected to be loaded using the URL
-  addSource(url: string, content: string|null = null): this {
+  addSource(url: string, content: string | null = null): this {
     if (!this.sourcesContent.has(url)) {
       this.sourcesContent.set(url, content);
     }
@@ -78,18 +78,18 @@ export class SourceMapGenerator {
    * @internal strip this from published d.ts files due to
    * https://github.com/microsoft/TypeScript/issues/36216
    */
-  private get currentLine(): Segment[]|null {
+  private get currentLine(): Segment[] | null {
     return this.lines.slice(-1)[0];
   }
 
-  toJSON(): SourceMap|null {
+  toJSON(): SourceMap | null {
     if (!this.hasMappings) {
       return null;
     }
 
     const sourcesIndex = new Map<string, number>();
     const sources: string[] = [];
-    const sourcesContent: (string|null)[] = [];
+    const sourcesContent: (string | null)[] = [];
 
     Array.from(this.sourcesContent.keys()).forEach((url: string, i: number) => {
       sourcesIndex.set(url, i);
@@ -103,31 +103,30 @@ export class SourceMapGenerator {
     let lastSourceLine0: number = 0;
     let lastSourceCol0: number = 0;
 
-    this.lines.forEach(segments => {
+    this.lines.forEach((segments) => {
       lastCol0 = 0;
 
       mappings += segments
-                      .map(segment => {
-                        // zero-based starting column of the line in the generated code
-                        let segAsStr = toBase64VLQ(segment.col0 - lastCol0);
-                        lastCol0 = segment.col0;
+        .map((segment) => {
+          // zero-based starting column of the line in the generated code
+          let segAsStr = toBase64VLQ(segment.col0 - lastCol0);
+          lastCol0 = segment.col0;
 
-                        if (segment.sourceUrl != null) {
-                          // zero-based index into the “sources” list
-                          segAsStr +=
-                              toBase64VLQ(sourcesIndex.get(segment.sourceUrl)! - lastSourceIndex);
-                          lastSourceIndex = sourcesIndex.get(segment.sourceUrl)!;
-                          // the zero-based starting line in the original source
-                          segAsStr += toBase64VLQ(segment.sourceLine0! - lastSourceLine0);
-                          lastSourceLine0 = segment.sourceLine0!;
-                          // the zero-based starting column in the original source
-                          segAsStr += toBase64VLQ(segment.sourceCol0! - lastSourceCol0);
-                          lastSourceCol0 = segment.sourceCol0!;
-                        }
+          if (segment.sourceUrl != null) {
+            // zero-based index into the “sources” list
+            segAsStr += toBase64VLQ(sourcesIndex.get(segment.sourceUrl)! - lastSourceIndex);
+            lastSourceIndex = sourcesIndex.get(segment.sourceUrl)!;
+            // the zero-based starting line in the original source
+            segAsStr += toBase64VLQ(segment.sourceLine0! - lastSourceLine0);
+            lastSourceLine0 = segment.sourceLine0!;
+            // the zero-based starting column in the original source
+            segAsStr += toBase64VLQ(segment.sourceCol0! - lastSourceCol0);
+            lastSourceCol0 = segment.sourceCol0!;
+          }
 
-                        return segAsStr;
-                      })
-                      .join(',');
+          return segAsStr;
+        })
+        .join(',');
       mappings += ';';
     });
 
@@ -144,15 +143,16 @@ export class SourceMapGenerator {
   }
 
   toJsComment(): string {
-    return this.hasMappings ? '//' + JS_B64_PREFIX + toBase64String(JSON.stringify(this, null, 0)) :
-                              '';
+    return this.hasMappings
+      ? '//' + JS_B64_PREFIX + toBase64String(JSON.stringify(this, null, 0))
+      : '';
   }
 }
 
 export function toBase64String(value: string): string {
   let b64 = '';
   const encoded = utf8Encode(value);
-  for (let i = 0; i < encoded.length;) {
+  for (let i = 0; i < encoded.length; ) {
     const i1 = encoded[i++];
     const i2 = i < encoded.length ? encoded[i++] : null;
     const i3 = i < encoded.length ? encoded[i++] : null;
@@ -166,7 +166,7 @@ export function toBase64String(value: string): string {
 }
 
 function toBase64VLQ(value: number): string {
-  value = value < 0 ? ((-value) << 1) + 1 : value << 1;
+  value = value < 0 ? (-value << 1) + 1 : value << 1;
 
   let out = '';
   do {

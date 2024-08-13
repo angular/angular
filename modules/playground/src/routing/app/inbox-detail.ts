@@ -17,7 +17,7 @@ export class InboxDetailCmp {
   private ready: boolean = false;
 
   constructor(db: DbService, route: ActivatedRoute) {
-    route.paramMap.forEach(p => {
+    route.paramMap.forEach((p) => {
       db.email(p.get('id')).then((data) => {
         this.record.setData(data);
       });
@@ -27,7 +27,6 @@ export class InboxDetailCmp {
 
 @NgModule({
   declarations: [InboxDetailCmp],
-  imports: [RouterModule.forChild([{path: ':id', component: InboxDetailCmp}])]
+  imports: [RouterModule.forChild([{path: ':id', component: InboxDetailCmp}])],
 })
-export default class InboxDetailModule {
-}
+export default class InboxDetailModule {}

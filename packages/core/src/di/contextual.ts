@@ -7,14 +7,18 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {InjectorProfilerContext, setInjectorProfilerContext} from '../render3/debug/injector_profiler';
+import {
+  InjectorProfilerContext,
+  setInjectorProfilerContext,
+} from '../render3/debug/injector_profiler';
+
+import {getInjectImplementation, setInjectImplementation} from './inject_switch';
 import type {Injector} from './injector';
 import {getCurrentInjector, setCurrentInjector} from './injector_compatibility';
-import {getInjectImplementation, setInjectImplementation} from './inject_switch';
 import {R3Injector} from './r3_injector';
 
 /**
- * Runs the given function in the [context](guide/dependency-injection-context) of the given
+ * Runs the given function in the [context](guide/di/dependency-injection-context) of the given
  * `Injector`.
  *
  * Within the function's stack frame, [`inject`](api/core/inject) can be used to inject dependencies
@@ -48,8 +52,14 @@ export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => Ret
 }
 
 /**
+ * Whether the current stack frame is inside an injection context.
+ */
+export function isInInjectionContext(): boolean {
+  return getInjectImplementation() !== undefined || getCurrentInjector() != null;
+}
+/**
  * Asserts that the current stack frame is within an [injection
- * context](guide/dependency-injection-context) and has access to `inject`.
+ * context](guide/di/dependency-injection-context) and has access to `inject`.
  *
  * @param debugFn a reference to the function making the assertion (used for the error message).
  *
@@ -58,11 +68,12 @@ export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => Ret
 export function assertInInjectionContext(debugFn: Function): void {
   // Taking a `Function` instead of a string name here prevents the unminified name of the function
   // from being retained in the bundle regardless of minification.
-  if (!getInjectImplementation() && !getCurrentInjector()) {
+  if (!isInInjectionContext()) {
     throw new RuntimeError(
-        RuntimeErrorCode.MISSING_INJECTION_CONTEXT,
-        ngDevMode &&
-            (debugFn.name +
-             '() can only be used within an injection context such as a constructor, a factory function, a field initializer, or a function used with `runInInjectionContext`'));
+      RuntimeErrorCode.MISSING_INJECTION_CONTEXT,
+      ngDevMode &&
+        debugFn.name +
+          '() can only be used within an injection context such as a constructor, a factory function, a field initializer, or a function used with `runInInjectionContext`',
+    );
   }
 }

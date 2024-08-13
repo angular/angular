@@ -5,28 +5,40 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-(function(_global: any) {
+
+import {__symbol__, ZoneType} from '../zone-impl';
+
+const __global: any =
+  (typeof window !== 'undefined' && window) || (typeof self !== 'undefined' && self) || global;
 class AsyncTestZoneSpec implements ZoneSpec {
-  static symbolParentUnresolved = Zone.__symbol__('parentUnresolved');
+  // Needs to be a getter and not a plain property in order run this just-in-time. Otherwise
+  // `__symbol__` would be evaluated during top-level execution prior to the Zone prefix being
+  // changed for tests.
+  static get symbolParentUnresolved(): string {
+    return __symbol__('parentUnresolved');
+  }
 
   _pendingMicroTasks: boolean = false;
   _pendingMacroTasks: boolean = false;
   _alreadyErrored: boolean = false;
   _isSync: boolean = false;
-  _existingFinishTimer: ReturnType<typeof setTimeout>|null = null;
+  _existingFinishTimer: ReturnType<typeof setTimeout> | null = null;
 
-  entryFunction: Function|null = null;
+  entryFunction: Function | null = null;
   runZone = Zone.current;
   unresolvedChainedPromiseCount = 0;
 
   supportWaitUnresolvedChainedPromise = false;
 
   constructor(
-      private finishCallback: Function, private failCallback: Function, namePrefix: string) {
+    private finishCallback: Function,
+    private failCallback: Function,
+    namePrefix: string,
+  ) {
     this.name = 'asyncTestZone for ' + namePrefix;
     this.properties = {'AsyncTestZoneSpec': this};
     this.supportWaitUnresolvedChainedPromise =
-        _global[Zone.__symbol__('supportWaitUnResolvedChainedPromise')] === true;
+      __global[__symbol__('supportWaitUnResolvedChainedPromise')] === true;
   }
 
   isUnresolvedChainedPromisePending() {
@@ -53,8 +65,13 @@ class AsyncTestZoneSpec implements ZoneSpec {
       this._existingFinishTimer = null;
     }
 
-    if (!(this._pendingMicroTasks || this._pendingMacroTasks ||
-          (this.supportWaitUnresolvedChainedPromise && this.isUnresolvedChainedPromisePending()))) {
+    if (
+      !(
+        this._pendingMicroTasks ||
+        this._pendingMacroTasks ||
+        (this.supportWaitUnresolvedChainedPromise && this.isUnresolvedChainedPromisePending())
+      )
+    ) {
       // We wait until the next tick because we would like to catch unhandled promises which could
       // cause test logic to be executed. In such cases we cannot finish with tasks pending then.
       this.runZone.run(() => {
@@ -108,8 +125,13 @@ class AsyncTestZoneSpec implements ZoneSpec {
   }
 
   onInvokeTask(
-      delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
-      applyArgs: any) {
+    delegate: ZoneDelegate,
+    current: Zone,
+    target: Zone,
+    task: Task,
+    applyThis: any,
+    applyArgs: any,
+  ) {
     if (task.type !== 'eventTask') {
       this._isSync = false;
     }
@@ -129,8 +151,14 @@ class AsyncTestZoneSpec implements ZoneSpec {
   // updated by(JiaLiPassion), only call finish callback when no task
   // was scheduled/invoked/canceled.
   onInvoke(
-      parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, delegate: Function,
-      applyThis: any, applyArgs?: any[], source?: string): any {
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    delegate: Function,
+    applyThis: any,
+    applyArgs?: any[],
+    source?: string,
+  ): any {
     if (!this.entryFunction) {
       this.entryFunction = delegate;
     }
@@ -154,8 +182,12 @@ class AsyncTestZoneSpec implements ZoneSpec {
     }
   }
 
-  onHandleError(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, error: any):
-      boolean {
+  onHandleError(
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    error: any,
+  ): boolean {
     // Let the parent try to handle the error.
     const result = parentZoneDelegate.handleError(targetZone, error);
     if (result) {
@@ -192,76 +224,82 @@ class AsyncTestZoneSpec implements ZoneSpec {
   }
 }
 
-// Export the class so that new instances can be created with proper
-// constructor params.
-(Zone as any)['AsyncTestZoneSpec'] = AsyncTestZoneSpec;
-})(typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global);
+export function patchAsyncTest(Zone: ZoneType): void {
+  // Export the class so that new instances can be created with proper
+  // constructor params.
+  (Zone as any)['AsyncTestZoneSpec'] = AsyncTestZoneSpec;
 
-Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-  /**
-   * Wraps a test function in an asynchronous test zone. The test will automatically
-   * complete when all asynchronous calls within this zone are done.
-   */
-  (Zone as any)[api.symbol('asyncTest')] = function asyncTest(fn: Function): (done: any) => any {
-    // If we're running using the Jasmine test framework, adapt to call the 'done'
-    // function when asynchronous activity is finished.
-    if (global.jasmine) {
-      // Not using an arrow function to preserve context passed from call site
-      return function(this: unknown, done: any) {
-        if (!done) {
-          // if we run beforeEach in @angular/core/testing/testing_internal then we get no done
-          // fake it here and assume sync.
-          done = function() {};
-          done.fail = function(e: any) {
-            throw e;
-          };
-        }
-        runInTestZone(fn, this, done, (err: any) => {
-          if (typeof err === 'string') {
-            return done.fail(new Error(err));
-          } else {
-            done.fail(err);
+  Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+    /**
+     * Wraps a test function in an asynchronous test zone. The test will automatically
+     * complete when all asynchronous calls within this zone are done.
+     */
+    (Zone as any)[api.symbol('asyncTest')] = function asyncTest(fn: Function): (done: any) => any {
+      // If we're running using the Jasmine test framework, adapt to call the 'done'
+      // function when asynchronous activity is finished.
+      if (global.jasmine) {
+        // Not using an arrow function to preserve context passed from call site
+        return function (this: unknown, done: any) {
+          if (!done) {
+            // if we run beforeEach in @angular/core/testing/testing_internal then we get no done
+            // fake it here and assume sync.
+            done = function () {};
+            done.fail = function (e: any) {
+              throw e;
+            };
           }
+          runInTestZone(fn, this, done, (err: any) => {
+            if (typeof err === 'string') {
+              return done.fail(new Error(err));
+            } else {
+              done.fail(err);
+            }
+          });
+        };
+      }
+      // Otherwise, return a promise which will resolve when asynchronous activity
+      // is finished. This will be correctly consumed by the Mocha framework with
+      // it('...', async(myFn)); or can be used in a custom framework.
+      // Not using an arrow function to preserve context passed from call site
+      return function (this: unknown) {
+        return new Promise<void>((finishCallback, failCallback) => {
+          runInTestZone(fn, this, finishCallback, failCallback);
         });
       };
-    }
-    // Otherwise, return a promise which will resolve when asynchronous activity
-    // is finished. This will be correctly consumed by the Mocha framework with
-    // it('...', async(myFn)); or can be used in a custom framework.
-    // Not using an arrow function to preserve context passed from call site
-    return function(this: unknown) {
-      return new Promise<void>((finishCallback, failCallback) => {
-        runInTestZone(fn, this, finishCallback, failCallback);
-      });
     };
-  };
 
-  function runInTestZone(
-      fn: Function, context: any, finishCallback: Function, failCallback: Function) {
-    const currentZone = Zone.current;
-    const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
-    if (AsyncTestZoneSpec === undefined) {
-      throw new Error(
+    function runInTestZone(
+      fn: Function,
+      context: any,
+      finishCallback: Function,
+      failCallback: Function,
+    ) {
+      const currentZone = Zone.current;
+      const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
+      if (AsyncTestZoneSpec === undefined) {
+        throw new Error(
           'AsyncTestZoneSpec is needed for the async() test helper but could not be found. ' +
-          'Please make sure that your environment includes zone.js/plugins/async-test');
-    }
-    const ProxyZoneSpec = (Zone as any)['ProxyZoneSpec'] as {
-      get(): {setDelegate(spec: ZoneSpec): void; getDelegate(): ZoneSpec;};
-      assertPresent: () => void;
-    };
-    if (!ProxyZoneSpec) {
-      throw new Error(
+            'Please make sure that your environment includes zone.js/plugins/async-test',
+        );
+      }
+      const ProxyZoneSpec = (Zone as any)['ProxyZoneSpec'] as {
+        get(): {setDelegate(spec: ZoneSpec): void; getDelegate(): ZoneSpec};
+        assertPresent: () => void;
+      };
+      if (!ProxyZoneSpec) {
+        throw new Error(
           'ProxyZoneSpec is needed for the async() test helper but could not be found. ' +
-          'Please make sure that your environment includes zone.js/plugins/proxy');
-    }
-    const proxyZoneSpec = ProxyZoneSpec.get();
-    ProxyZoneSpec.assertPresent();
-    // We need to create the AsyncTestZoneSpec outside the ProxyZone.
-    // If we do it in ProxyZone then we will get to infinite recursion.
-    const proxyZone = Zone.current.getZoneWith('ProxyZoneSpec');
-    const previousDelegate = proxyZoneSpec.getDelegate();
-    proxyZone!.parent!.run(() => {
-      const testZoneSpec: ZoneSpec = new AsyncTestZoneSpec(
+            'Please make sure that your environment includes zone.js/plugins/proxy',
+        );
+      }
+      const proxyZoneSpec = ProxyZoneSpec.get();
+      ProxyZoneSpec.assertPresent();
+      // We need to create the AsyncTestZoneSpec outside the ProxyZone.
+      // If we do it in ProxyZone then we will get to infinite recursion.
+      const proxyZone = Zone.current.getZoneWith('ProxyZoneSpec');
+      const previousDelegate = proxyZoneSpec.getDelegate();
+      proxyZone!.parent!.run(() => {
+        const testZoneSpec: ZoneSpec = new AsyncTestZoneSpec(
           () => {
             // Need to restore the original zone.
             if (proxyZoneSpec.getDelegate() == testZoneSpec) {
@@ -286,10 +324,12 @@ Zone.__load_patch('asynctest', (global: any, Zone: ZoneType, api: _ZonePrivate) 
               failCallback(error);
             });
           },
-          'test');
-      proxyZoneSpec.setDelegate(testZoneSpec);
-      (testZoneSpec as any).patchPromiseForTest();
-    });
-    return Zone.current.runGuarded(fn, context);
-  }
-});
+          'test',
+        );
+        proxyZoneSpec.setDelegate(testZoneSpec);
+        (testZoneSpec as any).patchPromiseForTest();
+      });
+      return Zone.current.runGuarded(fn, context);
+    }
+  });
+}

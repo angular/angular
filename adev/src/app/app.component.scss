@@ -1,0 +1,86 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+:host {
+  max-width: 2560px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  min-height: 100vh;
+
+  @include mq.for-tablet-landscape-down {
+    flex-direction: column;
+  }
+  // If navs are open, render a blurry background over content
+  &:has(.docs-nav-secondary--open),
+  &:has(.adev-nav-primary--open) {
+    .docs-app-main-content {
+      &::after {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+  }
+
+  &:has(.adev-home) {
+    .adev-nav {
+      width: 0;
+      height: 0;
+    }
+
+    @include mq.for-tablet-landscape-up {
+      footer {
+        margin-left: var(--primary-nav-width);
+      }
+    }
+  }
+}
+
+.adev-skip {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1000;
+  background: var(--primary-contrast);
+  color: var(--page-background);
+  border: 1px solid var(--vivid-pink);
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  transform: translateY(-150%);
+  transition: transform 0.3s ease-out;
+  &:focus {
+    transform: translateY(0);
+  }
+}
+
+.docs-app-main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+
+  // If navs are open, render a blurry background over content
+  ::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(2px);
+    background-color: color-mix(in srgb, var(--gray-1000) 5%, transparent);
+    z-index: 50;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  @include mq.for-tablet {
+    width: 100%;
+  }
+}
+
+footer {
+  margin-top: auto;
+}

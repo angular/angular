@@ -37,10 +37,16 @@ export function getRendererFactory2(document: any): RendererFactory2 {
   const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
   const appId = 'appid';
   const rendererFactory = new ɵDomRendererFactory2(
-      eventManager, new ɵSharedStylesHost(document, appId), appId, true, document,
-      isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID, fakeNgZone);
+    eventManager,
+    new ɵSharedStylesHost(document, appId),
+    appId,
+    true,
+    document,
+    isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID,
+    fakeNgZone,
+  );
   const origCreateRenderer = rendererFactory.createRenderer;
-  rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
+  rendererFactory.createRenderer = function (element: any, type: RendererType2 | null) {
     const renderer = origCreateRenderer.call(this, element, type);
     renderer.destroyNode = () => {};
     return renderer;

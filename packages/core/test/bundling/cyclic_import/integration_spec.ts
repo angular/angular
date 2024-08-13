@@ -23,24 +23,31 @@ describe('treeshaking with uglify', () => {
   });
 
   describe('functional test in domino', () => {
-    it('should render hello world when not minified', withBody('<trigger></trigger>', async () => {
-         await import(path.join(PACKAGE, 'bundle.js'));
-         await (window as any).appReady;
-         expect(document.body.textContent).toEqual('dep');
-       }));
+    it(
+      'should render hello world when not minified',
+      withBody('<trigger></trigger>', async () => {
+        await import(path.join(PACKAGE, 'bundle.js'));
+        await (window as any).appReady;
+        expect(document.body.textContent).toEqual('dep');
+      }),
+    );
 
-    it('should render hello world when debug minified',
-       withBody('<trigger></trigger>', async () => {
-         await import(path.join(PACKAGE, 'bundle.debug.min.js'));
-         await (window as any).appReady;
-         expect(document.body.textContent).toEqual('dep');
-       }));
+    it(
+      'should render hello world when debug minified',
+      withBody('<trigger></trigger>', async () => {
+        await import(path.join(PACKAGE, 'bundle.debug.min.js'));
+        await (window as any).appReady;
+        expect(document.body.textContent).toEqual('dep');
+      }),
+    );
 
-    it('should render hello world when fully minified',
-       withBody('<trigger></trigger>', async () => {
-         await import(path.join(PACKAGE, 'bundle.min.js'));
-         await (window as any).appReady;
-         expect(document.body.textContent).toEqual('dep');
-       }));
+    it(
+      'should render hello world when fully minified',
+      withBody('<trigger></trigger>', async () => {
+        await import(path.join(PACKAGE, 'bundle.min.js'));
+        await (window as any).appReady;
+        expect(document.body.textContent).toEqual('dep');
+      }),
+    );
   });
 });

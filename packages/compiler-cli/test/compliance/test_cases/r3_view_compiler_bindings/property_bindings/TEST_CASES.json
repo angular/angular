@@ -69,8 +69,7 @@
             "temporary_variables.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple property bindings into a single instruction",
@@ -166,6 +165,48 @@
           "failureMessage": "Incorrect template",
           "files": [
             "chain_multiple_bindings_with_child_elements.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate synthetic bindings and listeners on structural directives",
+      "inputFiles": [
+        "synthetic_bindings_and_listeners_on_structural.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "synthetic_bindings_and_listeners_on_structural.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should sanitize dangerous bindings",
+      "inputFiles": [
+        "sanitization.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "sanitization.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should maintain the binding order between one-way and two-way properties",
+      "inputFiles": [
+        "mixed_one_way_two_way_property_order.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "mixed_one_way_two_way_property_order.js"
           ]
         }
       ]

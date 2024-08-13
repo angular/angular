@@ -21,16 +21,17 @@ export function validateOptions(name: string, validOptions: ValidOptions, option
   for (const option in options) {
     if (!validOptionsMap.has(option)) {
       throw new Error(
-          `Invalid format option for ${name}: "${option}".\n` +
-          `Allowed options are ${JSON.stringify(Array.from(validOptionsMap.keys()))}.`);
+        `Invalid format option for ${name}: "${option}".\n` +
+          `Allowed options are ${JSON.stringify(Array.from(validOptionsMap.keys()))}.`,
+      );
     }
     const validOptionValues = validOptionsMap.get(option)!;
     const optionValue = options[option];
     if (!validOptionValues.includes(optionValue)) {
       throw new Error(
-          `Invalid format option value for ${name}: "${option}".\n` +
-          `Allowed option values are ${JSON.stringify(validOptionValues)} but received "${
-              optionValue}".`);
+        `Invalid format option value for ${name}: "${option}".\n` +
+          `Allowed option values are ${JSON.stringify(validOptionValues)} but received "${optionValue}".`,
+      );
     }
   }
 }

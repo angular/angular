@@ -12,10 +12,10 @@ export class TestPipe {
     <div>
       {{message}}
       @switch (value() | test) {
-        @case (0) {
+        @case (0 | test) {
           case 0
         }
-        @case (1) {
+        @case (1 | test) {
           case 1
         }
         @default {

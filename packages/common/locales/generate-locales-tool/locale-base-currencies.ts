@@ -10,12 +10,14 @@ import {CldrLocaleData} from './cldr-data';
 import {fileHeader} from './file-header';
 import {stringify} from './object-stringify';
 
-export type BaseCurrencySymbols = [
-  string
-]|[string | undefined, string]|[string, undefined, number]|[string | undefined, string, number];
+export type BaseCurrencySymbols =
+  | [string]
+  | [string | undefined, string]
+  | [string, undefined, number]
+  | [string | undefined, string, number];
 
 export type BaseCurrencies = {
-  [code: string]: BaseCurrencySymbols|undefined;
+  [code: string]: BaseCurrencySymbols | undefined;
 };
 
 /**
@@ -28,8 +30,9 @@ export function generateBaseCurrenciesFile(baseLocaleData: CldrLocaleData) {
 export type CurrenciesSymbols = [string] | [string | undefined, string];
 
 /** @internal */
-export const CURRENCIES_EN: {[code: string]: CurrenciesSymbols | [string | undefined, string | undefined, number]} = ${
-      stringify(baseCurrencies)};
+export const CURRENCIES_EN: {[code: string]: CurrenciesSymbols | [string | undefined, string | undefined, number]} = ${stringify(
+    baseCurrencies,
+  )};
 `;
 }
 
@@ -42,7 +45,7 @@ export function generateBaseCurrencies(localeData: CldrLocaleData) {
   const fractions = localeData.get(`supplemental/currencyData/fractions`);
   const currencies: BaseCurrencies = {};
 
-  Object.keys(currenciesData).forEach(key => {
+  Object.keys(currenciesData).forEach((key) => {
     const symbolsArray: any[] = [];
     const symbol = currenciesData[key].symbol;
     const symbolNarrow = currenciesData[key]['symbol-alt-narrow'];

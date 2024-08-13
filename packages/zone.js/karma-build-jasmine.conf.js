@@ -1,5 +1,4 @@
-
-module.exports = function(config) {
+module.exports = function (config) {
   require('./karma-build.conf.js')(config);
 
   config.plugins.push(require('karma-jasmine'));

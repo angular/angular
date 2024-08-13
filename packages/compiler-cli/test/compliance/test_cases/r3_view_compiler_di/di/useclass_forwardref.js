@@ -1,7 +1,5 @@
 SomeProvider.ɵprov = /*@__PURE__*/ $r3$.ɵɵdefineInjectable({
   token: SomeProvider,
-  factory: function(t) {
-    return SomeProviderImpl.ɵfac(t);
-  },
+  factory: __ngFactoryType__ => SomeProviderImpl.ɵfac(__ngFactoryType__),
   providedIn: 'root'
 });

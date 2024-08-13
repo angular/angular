@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Component, NgModule} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Component({
@@ -35,7 +42,7 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
       </div>
       <button (click)="addCity()">Add City</button>
     </form>
-  `
+  `,
 })
 class ReactiveFormsComponent {
   profileForm!: FormGroup;
@@ -78,14 +85,13 @@ class ReactiveFormsComponent {
   selector: 'app-root',
   template: `
     <app-reactive-forms></app-reactive-forms>
-  `
+  `,
 })
-class RootComponent {
-}
+class RootComponent {}
 
 @NgModule({
   declarations: [RootComponent, ReactiveFormsComponent],
-  imports: [BrowserModule, ReactiveFormsModule]
+  imports: [BrowserModule, ReactiveFormsModule],
 })
 class FormsExampleModule {
   ngDoBootstrap(app: any) {

@@ -19,7 +19,7 @@ import {ComponentScope, ComponentScopeReader, LocalModuleScope, RemoteScope} fro
 export class CompoundComponentScopeReader implements ComponentScopeReader {
   constructor(private readers: ComponentScopeReader[]) {}
 
-  getScopeForComponent(clazz: ClassDeclaration): ComponentScope|null {
+  getScopeForComponent(clazz: ClassDeclaration): ComponentScope | null {
     for (const reader of this.readers) {
       const meta = reader.getScopeForComponent(clazz);
       if (meta !== null) {
@@ -29,7 +29,7 @@ export class CompoundComponentScopeReader implements ComponentScopeReader {
     return null;
   }
 
-  getRemoteScope(clazz: ClassDeclaration): RemoteScope|null {
+  getRemoteScope(clazz: ClassDeclaration): RemoteScope | null {
     for (const reader of this.readers) {
       const remoteScope = reader.getRemoteScope(clazz);
       if (remoteScope !== null) {

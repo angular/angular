@@ -49,28 +49,33 @@ describe('Zone.js npm_package', () => {
 
   describe('check npm_package root folder', () => {
     describe('typescript support', () => {
-      it('should have an zone.d.ts file', () => {
-        expect(shx.cat('zone.d.ts')).toContain('declare const');
-        expect(shx.cat('zone.d.ts')).toContain('interface EventTarget');
-        expect(shx.cat('zone.d.ts')).toContain('ZoneGlobalConfigurations');
-      });
-    });
+      it('should include types', () => {
+        // Root `zone.d.ts` file imports globals and extensions.
+        expect(shx.cat('zone.d.ts')).toContain('lib/zone');
+        expect(shx.cat('zone.d.ts')).toContain('lib/zone.api.extensions');
+        expect(shx.cat('zone.d.ts')).toContain('lib/zone.configurations.api');
 
-    describe('closure', () => {
-      it('should contain externs', () => {
-        expect(shx.cat('zone_externs.js')).toContain('Externs for zone.js');
+        // Defines globals.
+        expect(shx.cat('lib/zone.d.ts')).toContain('declare global {');
+        expect(shx.cat('lib/zone.d.ts')).toContain('const Zone');
+
+        // Defines extensions.
+        expect(shx.cat('lib/zone.api.extensions.d.ts')).toContain('interface EventTarget');
+        expect(shx.cat('lib/zone.configurations.api.d.ts')).toContain('ZoneGlobalConfigurations');
       });
     });
 
     describe('rxjs patch', () => {
       it('should not contain rxjs source', () => {
         checkInSubFolder('./bundles', () => {
-          expect(shx.cat('zone-patch-rxjs.umd.js'))
-              .not.toContain('_enable_super_gross_mode_that_will_cause_bad_things');
+          expect(shx.cat('zone-patch-rxjs.umd.js')).not.toContain(
+            '_enable_super_gross_mode_that_will_cause_bad_things',
+          );
         });
         checkInSubFolder('./fesm2015', () => {
-          expect(shx.cat('zone-patch-rxjs.js'))
-              .not.toContain('_enable_super_gross_mode_that_will_cause_bad_things');
+          expect(shx.cat('zone-patch-rxjs.js')).not.toContain(
+            '_enable_super_gross_mode_that_will_cause_bad_things',
+          );
         });
       });
     });
@@ -109,6 +114,13 @@ describe('Zone.js npm_package', () => {
       it('zone.js(es2015) should contain use strict', () => {
         checkInSubFolder('./fesm2015', () => {
           expect(shx.cat('zone.js')).toMatch(/^\s*'use strict';/);
+        });
+      });
+
+      it('zone-patch-rxjs.js should have rxjs external', () => {
+        checkInSubFolder('./fesm2015', () => {
+          expect(shx.cat('zone-patch-rxjs.js')).toContain(` from 'rxjs'`);
+          expect(shx.cat('zone-patch-rxjs.js')).toContain(`Zone.__load_patch('rxjs',`);
         });
       });
     });

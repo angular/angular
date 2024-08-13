@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runBenchmark, verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {
+  runBenchmark,
+  verifyNoBrowserErrors,
+} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {$} from 'protractor';
 
 interface Worker {
@@ -18,7 +21,7 @@ interface Worker {
 const Create1KWorker: Worker = {
   id: 'create1K',
   prepare: () => $('#deleteAll').click(),
-  work: () => $('#create1KRows').click()
+  work: () => $('#create1KRows').click(),
 };
 
 const Delete1KWorker: Worker = {
@@ -26,7 +29,15 @@ const Delete1KWorker: Worker = {
   prepare: () => $('#create1KRows').click(),
   work: () => {
     $('#deleteAll').click();
-  }
+  },
+};
+
+const SelectWorker: Worker = {
+  id: 'select',
+  prepare: () => $('#create1KRows').click(),
+  work: () => {
+    $('tbody>tr:nth-of-type(2)>td:nth-of-type(2)>a').click();
+  },
 };
 
 const UpdateWorker: Worker = {
@@ -34,7 +45,7 @@ const UpdateWorker: Worker = {
   prepare: () => $('#create1KRows').click(),
   work: () => {
     $('#update').click();
-  }
+  },
 };
 
 const SwapWorker: Worker = {
@@ -42,7 +53,7 @@ const SwapWorker: Worker = {
   prepare: () => $('#create1KRows').click(),
   work: () => {
     $('#swap').click();
-  }
+  },
 };
 
 // In order to make sure that we don't change the ids of the benchmarks, we need to
@@ -56,28 +67,32 @@ const testPackageName = process.env['BAZEL_TARGET']!.split(':')[0].split('/').po
 describe('js-web-frameworks benchmark perf', () => {
   afterEach(verifyNoBrowserErrors);
 
-  [Create1KWorker, Delete1KWorker, UpdateWorker, SwapWorker].forEach((worker) => {
+  [Create1KWorker, Delete1KWorker, UpdateWorker, SelectWorker, SwapWorker].forEach((worker) => {
     describe(worker.id, () => {
       it(`should run benchmark for ${testPackageName}`, async () => {
         await runTableBenchmark({
           id: `js-web-frameworks.${testPackageName}.${worker.id}`,
           url: '/',
           ignoreBrowserSynchronization: true,
-          worker: worker
+          worker: worker,
         });
       });
     });
   });
 });
 
-function runTableBenchmark(
-    config: {id: string, url: string, ignoreBrowserSynchronization?: boolean, worker: Worker}) {
+function runTableBenchmark(config: {
+  id: string;
+  url: string;
+  ignoreBrowserSynchronization?: boolean;
+  worker: Worker;
+}) {
   return runBenchmark({
     id: config.id,
     url: config.url,
     ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
     params: [],
     prepare: config.worker.prepare,
-    work: config.worker.work
+    work: config.worker.work,
   });
 }

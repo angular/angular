@@ -11,12 +11,18 @@ import {Writable} from '../../interface/type';
 import {isListLikeIterable, iterateListLike} from '../../util/iterable';
 import {stringify} from '../../util/stringify';
 
-import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
-
+import {
+  IterableChangeRecord,
+  IterableChanges,
+  IterableDiffer,
+  IterableDifferFactory,
+  NgIterable,
+  TrackByFunction,
+} from './iterable_differs';
 
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
   constructor() {}
-  supports(obj: Object|null|undefined): boolean {
+  supports(obj: Object | null | undefined): boolean {
     return isListLikeIterable(obj);
   }
 
@@ -34,23 +40,23 @@ const trackByIdentity = (index: number, item: any) => item;
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
   public readonly length: number = 0;
   // TODO: confirm the usage of `collection` as it's unused, readonly and on a non public API.
-  public readonly collection!: V[]|Iterable<V>|null;
+  public readonly collection!: V[] | Iterable<V> | null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
-  private _linkedRecords: _DuplicateMap<V>|null = null;
+  private _linkedRecords: _DuplicateMap<V> | null = null;
   // Keeps track of the removed records at any point in time during `_check()` calls.
-  private _unlinkedRecords: _DuplicateMap<V>|null = null;
-  private _previousItHead: IterableChangeRecord_<V>|null = null;
-  private _itHead: IterableChangeRecord_<V>|null = null;
-  private _itTail: IterableChangeRecord_<V>|null = null;
-  private _additionsHead: IterableChangeRecord_<V>|null = null;
-  private _additionsTail: IterableChangeRecord_<V>|null = null;
-  private _movesHead: IterableChangeRecord_<V>|null = null;
-  private _movesTail: IterableChangeRecord_<V>|null = null;
-  private _removalsHead: IterableChangeRecord_<V>|null = null;
-  private _removalsTail: IterableChangeRecord_<V>|null = null;
+  private _unlinkedRecords: _DuplicateMap<V> | null = null;
+  private _previousItHead: IterableChangeRecord_<V> | null = null;
+  private _itHead: IterableChangeRecord_<V> | null = null;
+  private _itTail: IterableChangeRecord_<V> | null = null;
+  private _additionsHead: IterableChangeRecord_<V> | null = null;
+  private _additionsTail: IterableChangeRecord_<V> | null = null;
+  private _movesHead: IterableChangeRecord_<V> | null = null;
+  private _movesTail: IterableChangeRecord_<V> | null = null;
+  private _removalsHead: IterableChangeRecord_<V> | null = null;
+  private _removalsTail: IterableChangeRecord_<V> | null = null;
   // Keeps track of records where custom track by is the same, but item identity has changed
-  private _identityChangesHead: IterableChangeRecord_<V>|null = null;
-  private _identityChangesTail: IterableChangeRecord_<V>|null = null;
+  private _identityChangesHead: IterableChangeRecord_<V> | null = null;
+  private _identityChangesTail: IterableChangeRecord_<V> | null = null;
   private _trackByFn: TrackByFunction<V>;
 
   constructor(trackByFn?: TrackByFunction<V>) {
@@ -58,28 +64,32 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   }
 
   forEachItem(fn: (record: IterableChangeRecord_<V>) => void) {
-    let record: IterableChangeRecord_<V>|null;
+    let record: IterableChangeRecord_<V> | null;
     for (record = this._itHead; record !== null; record = record._next) {
       fn(record);
     }
   }
 
   forEachOperation(
-      fn: (item: IterableChangeRecord<V>, previousIndex: number|null, currentIndex: number|null) =>
-          void) {
+    fn: (
+      item: IterableChangeRecord<V>,
+      previousIndex: number | null,
+      currentIndex: number | null,
+    ) => void,
+  ) {
     let nextIt = this._itHead;
     let nextRemove = this._removalsHead;
     let addRemoveOffset = 0;
-    let moveOffsets: number[]|null = null;
+    let moveOffsets: number[] | null = null;
     while (nextIt || nextRemove) {
       // Figure out which is the next record to process
       // Order: remove, add, move
-      const record: IterableChangeRecord<V> = !nextRemove ||
-              nextIt &&
-                  nextIt.currentIndex! <
-                      getPreviousIndex(nextRemove, addRemoveOffset, moveOffsets) ?
-          nextIt! :
-          nextRemove;
+      const record: IterableChangeRecord<V> =
+        !nextRemove ||
+        (nextIt &&
+          nextIt.currentIndex! < getPreviousIndex(nextRemove, addRemoveOffset, moveOffsets))
+          ? nextIt!
+          : nextRemove;
       const adjPreviousIndex = getPreviousIndex(record, addRemoveOffset, moveOffsets);
       const currentIndex = record.currentIndex;
 
@@ -117,48 +127,48 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   }
 
   forEachPreviousItem(fn: (record: IterableChangeRecord_<V>) => void) {
-    let record: IterableChangeRecord_<V>|null;
+    let record: IterableChangeRecord_<V> | null;
     for (record = this._previousItHead; record !== null; record = record._nextPrevious) {
       fn(record);
     }
   }
 
   forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void) {
-    let record: IterableChangeRecord_<V>|null;
+    let record: IterableChangeRecord_<V> | null;
     for (record = this._additionsHead; record !== null; record = record._nextAdded) {
       fn(record);
     }
   }
 
   forEachMovedItem(fn: (record: IterableChangeRecord_<V>) => void) {
-    let record: IterableChangeRecord_<V>|null;
+    let record: IterableChangeRecord_<V> | null;
     for (record = this._movesHead; record !== null; record = record._nextMoved) {
       fn(record);
     }
   }
 
   forEachRemovedItem(fn: (record: IterableChangeRecord_<V>) => void) {
-    let record: IterableChangeRecord_<V>|null;
+    let record: IterableChangeRecord_<V> | null;
     for (record = this._removalsHead; record !== null; record = record._nextRemoved) {
       fn(record);
     }
   }
 
   forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void) {
-    let record: IterableChangeRecord_<V>|null;
+    let record: IterableChangeRecord_<V> | null;
     for (record = this._identityChangesHead; record !== null; record = record._nextIdentityChange) {
       fn(record);
     }
   }
 
-  diff(collection: NgIterable<V>|null|undefined): DefaultIterableDiffer<V>|null {
+  diff(collection: NgIterable<V> | null | undefined): DefaultIterableDiffer<V> | null {
     if (collection == null) collection = [];
     if (!isListLikeIterable(collection)) {
       throw new RuntimeError(
-          RuntimeErrorCode.INVALID_DIFFER_INPUT,
-          ngDevMode &&
-              `Error trying to diff '${
-                  stringify(collection)}'. Only arrays and iterables are allowed`);
+        RuntimeErrorCode.INVALID_DIFFER_INPUT,
+        ngDevMode &&
+          `Error trying to diff '${stringify(collection)}'. Only arrays and iterables are allowed`,
+      );
     }
 
     if (this.check(collection)) {
@@ -173,7 +183,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   check(collection: NgIterable<V>): boolean {
     this._reset();
 
-    let record: IterableChangeRecord_<V>|null = this._itHead;
+    let record: IterableChangeRecord_<V> | null = this._itHead;
     let mayBeDirty: boolean = false;
     let index: number;
     let item: V;
@@ -226,8 +236,12 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
    * changes.
    */
   get isDirty(): boolean {
-    return this._additionsHead !== null || this._movesHead !== null ||
-        this._removalsHead !== null || this._identityChangesHead !== null;
+    return (
+      this._additionsHead !== null ||
+      this._movesHead !== null ||
+      this._removalsHead !== null ||
+      this._identityChangesHead !== null
+    );
   }
 
   /**
@@ -240,7 +254,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
    */
   _reset() {
     if (this.isDirty) {
-      let record: IterableChangeRecord_<V>|null;
+      let record: IterableChangeRecord_<V> | null;
 
       for (record = this._previousItHead = this._itHead; record !== null; record = record._next) {
         record._nextPrevious = record._next;
@@ -273,10 +287,14 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
    *
    * @internal
    */
-  _mismatch(record: IterableChangeRecord_<V>|null, item: V, itemTrackBy: any, index: number):
-      IterableChangeRecord_<V> {
+  _mismatch(
+    record: IterableChangeRecord_<V> | null,
+    item: V,
+    itemTrackBy: any,
+    index: number,
+  ): IterableChangeRecord_<V> {
     // The previous record after which we will append the current one.
-    let previousRecord: IterableChangeRecord_<V>|null;
+    let previousRecord: IterableChangeRecord_<V> | null;
 
     if (record === null) {
       previousRecord = this._itTail;
@@ -306,8 +324,11 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
         this._moveAfter(record, previousRecord, index);
       } else {
         // It is a new item: add it.
-        record =
-            this._addAfter(new IterableChangeRecord_<V>(item, itemTrackBy), previousRecord, index);
+        record = this._addAfter(
+          new IterableChangeRecord_<V>(item, itemTrackBy),
+          previousRecord,
+          index,
+        );
       }
     }
     return record;
@@ -340,10 +361,14 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
    *
    * @internal
    */
-  _verifyReinsertion(record: IterableChangeRecord_<V>, item: V, itemTrackBy: any, index: number):
-      IterableChangeRecord_<V> {
-    let reinsertRecord: IterableChangeRecord_<V>|null =
-        this._unlinkedRecords === null ? null : this._unlinkedRecords.get(itemTrackBy, null);
+  _verifyReinsertion(
+    record: IterableChangeRecord_<V>,
+    item: V,
+    itemTrackBy: any,
+    index: number,
+  ): IterableChangeRecord_<V> {
+    let reinsertRecord: IterableChangeRecord_<V> | null =
+      this._unlinkedRecords === null ? null : this._unlinkedRecords.get(itemTrackBy, null);
     if (reinsertRecord !== null) {
       record = this._reinsertAfter(reinsertRecord, record._prev!, index);
     } else if (record.currentIndex != index) {
@@ -360,10 +385,10 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
    *
    * @internal
    */
-  _truncate(record: IterableChangeRecord_<V>|null) {
+  _truncate(record: IterableChangeRecord_<V> | null) {
     // Anything after that needs to be removed;
     while (record !== null) {
-      const nextRecord: IterableChangeRecord_<V>|null = record._next;
+      const nextRecord: IterableChangeRecord_<V> | null = record._next;
       this._addToRemovals(this._unlink(record));
       record = nextRecord;
     }
@@ -390,8 +415,10 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 
   /** @internal */
   _reinsertAfter(
-      record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>|null,
-      index: number): IterableChangeRecord_<V> {
+    record: IterableChangeRecord_<V>,
+    prevRecord: IterableChangeRecord_<V> | null,
+    index: number,
+  ): IterableChangeRecord_<V> {
     if (this._unlinkedRecords !== null) {
       this._unlinkedRecords.remove(record);
     }
@@ -416,8 +443,10 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 
   /** @internal */
   _moveAfter(
-      record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>|null,
-      index: number): IterableChangeRecord_<V> {
+    record: IterableChangeRecord_<V>,
+    prevRecord: IterableChangeRecord_<V> | null,
+    index: number,
+  ): IterableChangeRecord_<V> {
     this._unlink(record);
     this._insertAfter(record, prevRecord, index);
     this._addToMoves(record, index);
@@ -426,8 +455,10 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 
   /** @internal */
   _addAfter(
-      record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>|null,
-      index: number): IterableChangeRecord_<V> {
+    record: IterableChangeRecord_<V>,
+    prevRecord: IterableChangeRecord_<V> | null,
+    index: number,
+  ): IterableChangeRecord_<V> {
     this._insertAfter(record, prevRecord, index);
 
     if (this._additionsTail === null) {
@@ -445,15 +476,17 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 
   /** @internal */
   _insertAfter(
-      record: IterableChangeRecord_<V>, prevRecord: IterableChangeRecord_<V>|null,
-      index: number): IterableChangeRecord_<V> {
+    record: IterableChangeRecord_<V>,
+    prevRecord: IterableChangeRecord_<V> | null,
+    index: number,
+  ): IterableChangeRecord_<V> {
     // TODO(vicb):
     // assert(record != prevRecord);
     // assert(record._next === null);
     // assert(record._prev === null);
 
-    const next: IterableChangeRecord_<V>|null =
-        prevRecord === null ? this._itHead : prevRecord._next;
+    const next: IterableChangeRecord_<V> | null =
+      prevRecord === null ? this._itHead : prevRecord._next;
     // TODO(vicb):
     // assert(next != record);
     // assert(prevRecord != record);
@@ -569,40 +602,42 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 }
 
 export class IterableChangeRecord_<V> implements IterableChangeRecord<V> {
-  currentIndex: number|null = null;
-  previousIndex: number|null = null;
+  currentIndex: number | null = null;
+  previousIndex: number | null = null;
 
   /** @internal */
-  _nextPrevious: IterableChangeRecord_<V>|null = null;
+  _nextPrevious: IterableChangeRecord_<V> | null = null;
   /** @internal */
-  _prev: IterableChangeRecord_<V>|null = null;
+  _prev: IterableChangeRecord_<V> | null = null;
   /** @internal */
-  _next: IterableChangeRecord_<V>|null = null;
+  _next: IterableChangeRecord_<V> | null = null;
   /** @internal */
-  _prevDup: IterableChangeRecord_<V>|null = null;
+  _prevDup: IterableChangeRecord_<V> | null = null;
   /** @internal */
-  _nextDup: IterableChangeRecord_<V>|null = null;
+  _nextDup: IterableChangeRecord_<V> | null = null;
   /** @internal */
-  _prevRemoved: IterableChangeRecord_<V>|null = null;
+  _prevRemoved: IterableChangeRecord_<V> | null = null;
   /** @internal */
-  _nextRemoved: IterableChangeRecord_<V>|null = null;
+  _nextRemoved: IterableChangeRecord_<V> | null = null;
   /** @internal */
-  _nextAdded: IterableChangeRecord_<V>|null = null;
+  _nextAdded: IterableChangeRecord_<V> | null = null;
   /** @internal */
-  _nextMoved: IterableChangeRecord_<V>|null = null;
+  _nextMoved: IterableChangeRecord_<V> | null = null;
   /** @internal */
-  _nextIdentityChange: IterableChangeRecord_<V>|null = null;
+  _nextIdentityChange: IterableChangeRecord_<V> | null = null;
 
-
-  constructor(public item: V, public trackById: any) {}
+  constructor(
+    public item: V,
+    public trackById: any,
+  ) {}
 }
 
 // A linked list of IterableChangeRecords with the same IterableChangeRecord_.item
 class _DuplicateItemRecordList<V> {
   /** @internal */
-  _head: IterableChangeRecord_<V>|null = null;
+  _head: IterableChangeRecord_<V> | null = null;
   /** @internal */
-  _tail: IterableChangeRecord_<V>|null = null;
+  _tail: IterableChangeRecord_<V> | null = null;
 
   /**
    * Append the record to the list of duplicates.
@@ -627,11 +662,13 @@ class _DuplicateItemRecordList<V> {
 
   // Returns a IterableChangeRecord_ having IterableChangeRecord_.trackById == trackById and
   // IterableChangeRecord_.currentIndex >= atOrAfterIndex
-  get(trackById: any, atOrAfterIndex: number|null): IterableChangeRecord_<V>|null {
-    let record: IterableChangeRecord_<V>|null;
+  get(trackById: any, atOrAfterIndex: number | null): IterableChangeRecord_<V> | null {
+    let record: IterableChangeRecord_<V> | null;
     for (record = this._head; record !== null; record = record._nextDup) {
-      if ((atOrAfterIndex === null || atOrAfterIndex <= record.currentIndex!) &&
-          Object.is(record.trackById, trackById)) {
+      if (
+        (atOrAfterIndex === null || atOrAfterIndex <= record.currentIndex!) &&
+        Object.is(record.trackById, trackById)
+      ) {
         return record;
       }
     }
@@ -653,8 +690,8 @@ class _DuplicateItemRecordList<V> {
     //  return false;
     //});
 
-    const prev: IterableChangeRecord_<V>|null = record._prevDup;
-    const next: IterableChangeRecord_<V>|null = record._nextDup;
+    const prev: IterableChangeRecord_<V> | null = record._prevDup;
+    const next: IterableChangeRecord_<V> | null = record._nextDup;
     if (prev === null) {
       this._head = next;
     } else {
@@ -690,7 +727,7 @@ class _DuplicateMap<V> {
    * Use case: `[a, b, c, a, a]` if we are at index `3` which is the second `a` then asking if we
    * have any more `a`s needs to return the second `a`.
    */
-  get(trackById: any, atOrAfterIndex: number|null): IterableChangeRecord_<V>|null {
+  get(trackById: any, atOrAfterIndex: number | null): IterableChangeRecord_<V> | null {
     const key = trackById;
     const recordList = this.map.get(key);
     return recordList ? recordList.get(trackById, atOrAfterIndex) : null;
@@ -720,7 +757,11 @@ class _DuplicateMap<V> {
   }
 }
 
-function getPreviousIndex(item: any, addRemoveOffset: number, moveOffsets: number[]|null): number {
+function getPreviousIndex(
+  item: any,
+  addRemoveOffset: number,
+  moveOffsets: number[] | null,
+): number {
   const previousIndex = item.previousIndex;
   if (previousIndex === null) return previousIndex;
   let moveOffset = 0;

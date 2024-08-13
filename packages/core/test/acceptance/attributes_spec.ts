@@ -15,8 +15,7 @@ describe('attribute creation', () => {
     @Component({
       template: `<div id="test" title="Hello"></div>`,
     })
-    class Comp {
-    }
+    class Comp {}
 
     TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
@@ -30,13 +29,11 @@ describe('attribute creation', () => {
     @Component({
       template: `<div id="test" xlink:href="bar" title="Hello"></div>`,
     })
-    class Comp {
-    }
+    class Comp {}
 
     TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
-
 
     const div = fixture.debugElement.query(By.css('div')).nativeElement;
     const attrs = div.attributes;
@@ -137,7 +134,6 @@ describe('attribute binding', () => {
     expect(button.getAttribute('title')).toBe('hello');
   });
 
-
   it('should be able to bind attributes both to parent and child nodes', () => {
     @Component({
       template: `
@@ -176,7 +172,7 @@ describe('attribute binding', () => {
       template: `<a [attr.href]="badUrl"></a>`,
     })
     class Comp {
-      badUrl: string|SafeUrl = 'javascript:true';
+      badUrl: string | SafeUrl = 'javascript:true';
     }
 
     TestBed.configureTestingModule({declarations: [Comp]});
@@ -188,8 +184,9 @@ describe('attribute binding', () => {
     expect(a.href.indexOf('unsafe:')).toBe(0);
 
     const domSanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
-    fixture.componentInstance.badUrl =
-        domSanitizer.bypassSecurityTrustUrl('javascript:alert("this is fine")');
+    fixture.componentInstance.badUrl = domSanitizer.bypassSecurityTrustUrl(
+      'javascript:alert("this is fine")',
+    );
     fixture.detectChanges();
 
     // should not start with `unsafe:`.
@@ -211,7 +208,7 @@ describe('attribute interpolation', () => {
         <div attr.title="a{{a}}b{{b}}c"></div>
         <div attr.title="a{{a}}b"></div>
         <div attr.title="{{a}}"></div>
-      `
+      `,
     })
     class App {
       a = 1;
@@ -233,7 +230,7 @@ describe('attribute interpolation', () => {
 
     const divs = fixture.debugElement.queryAll(By.css('div[title]'));
 
-    expect(divs.map(el => el.nativeElement.getAttribute('title'))).toEqual([
+    expect(divs.map((el) => el.nativeElement.getAttribute('title'))).toEqual([
       'a1b2c3d4e5f6g7h8i9j',
       'a1b2c3d4e5f6g7h8i',
       'a1b2c3d4e5f6g7h',

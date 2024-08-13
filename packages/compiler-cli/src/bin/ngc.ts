@@ -22,7 +22,7 @@ async function runNgcComamnd() {
   process.exitCode = main(args, undefined, undefined, undefined, undefined, undefined);
 }
 
-runNgcComamnd().catch(e => {
+runNgcComamnd().catch((e) => {
   console.error(e);
   process.exitCode = 1;
 });

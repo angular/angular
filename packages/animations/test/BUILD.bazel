@@ -4,7 +4,9 @@ load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 circular_dependency_test(
     name = "circular_deps_test",
     entry_point = "angular/packages/animations/index.mjs",
-    deps = ["//packages/animations"],
+    deps = [
+        "//packages/animations",
+    ],
 )
 
 ts_library(
@@ -14,7 +16,16 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/core",
         "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/animations/async",
+        "//packages/platform-browser/testing",
     ],
 )
 

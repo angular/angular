@@ -9,6 +9,9 @@ def to_package_label(package_name):
     if package_name == "angular-in-memory-web-api":
         return "//packages/misc/angular-in-memory-web-api:npm_package"
 
+    if package_name == "@angular/docs":
+        return "//adev/shared-docs:npm_package"
+
     return "//packages/{package_name}:npm_package".format(package_name = package_name.replace("@angular/", ""))
 
 def _exclude_pkgs(packages, *args):
@@ -18,7 +21,7 @@ def _exclude_pkgs(packages, *args):
     return modified_packages
 
 # All framework packages published to NPM.
-ALL_PACKAGES = [
+PUBLISHED_PACKAGES = [
     "@angular/animations",
     "@angular/benchpress",
     "@angular/common",
@@ -39,14 +42,17 @@ ALL_PACKAGES = [
     "zone.js",
 ]
 
-# Packages used by integration tests
-INTEGRATION_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "angular-in-memory-web-api")
+# All packages in the repository which are not published to NPM
+UNPUBLISHED_PACKAGES = [
+    "@angular/docs",
+]
 
-# Packages used by example e2e tests
-AIO_EXAMPLE_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "@angular/benchpress")
+ALL_PACKAGES = PUBLISHED_PACKAGES + UNPUBLISHED_PACKAGES
+
+# Packages used by integration tests
+INTEGRATION_PACKAGES = _exclude_pkgs(PUBLISHED_PACKAGES, "angular-in-memory-web-api")
 
 # Package names under //packages that have `files_for_docgen` targets
-# including files needed for AIO doc generation.
 DOCS_ENTRYPOINTS = [
     "animations",
     "animations/browser",
@@ -63,7 +69,6 @@ DOCS_ENTRYPOINTS = [
     "core/src/di/interface",
     "core/src/interface",
     "core/src/reflection",
-    "core/src/signals",
     "core/src/util",
     "core/testing",
     "elements",
@@ -93,6 +98,7 @@ DOCS_ENTRYPOINTS = [
     "platform-browser-dynamic",
     "platform-browser-dynamic/testing",
     "platform-browser/animations",
+    "platform-browser/animations/async",
     "platform-browser/testing",
     "platform-server",
     "platform-server/init",

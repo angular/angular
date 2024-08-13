@@ -43,7 +43,11 @@ export function computeLineStartsMap(text: string): number[] {
 
 /** Finds the closest line start for the given position. */
 function findClosestLineStartPosition<T>(
-    linesMap: T[], position: T, low = 0, high = linesMap.length - 1) {
+  linesMap: T[],
+  position: T,
+  low = 0,
+  high = linesMap.length - 1,
+) {
   while (low <= high) {
     const pivotIdx = Math.floor((low + high) / 2);
     const pivotEl = linesMap[pivotIdx];

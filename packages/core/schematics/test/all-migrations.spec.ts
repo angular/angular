@@ -22,8 +22,9 @@ describe('all migrations', () => {
   let previousWorkingDir: string;
 
   const migrationCollectionPath = runfiles.resolvePackageRelative('../migrations.json');
-  const allMigrationSchematics =
-      Object.keys((JSON.parse(fs.readFileSync(migrationCollectionPath, 'utf8')) as any).schematics);
+  const allMigrationSchematics = Object.keys(
+    (JSON.parse(fs.readFileSync(migrationCollectionPath, 'utf8')) as any).schematics,
+  );
 
   beforeEach(() => {
     runner = new SchematicTestRunner('test', migrationCollectionPath);
@@ -31,12 +32,14 @@ describe('all migrations', () => {
     tree = new UnitTestTree(new HostTree(host));
 
     writeFile('/node_modules/@angular/core/index.d.ts', `export const MODULE: any;`);
-    writeFile('/angular.json', JSON.stringify({
-      version: 1,
-      projects: {t: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
-    }));
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {t: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}}},
+      }),
+    );
     writeFile('/tsconfig.json', `{}`);
-
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
@@ -63,21 +66,24 @@ describe('all migrations', () => {
     throw Error('No migration schematics found.');
   }
 
-  allMigrationSchematics.forEach(name => {
+  allMigrationSchematics.forEach((name) => {
     describe(name, () => createTests(name));
   });
 
   function createTests(migrationName: string) {
     // Regression test for: https://github.com/angular/angular/issues/36346.
     it('should not throw if non-existent symbols are imported with rootDirs', async () => {
-      writeFile(`/tsconfig.json`, JSON.stringify({
-        compilerOptions: {
-          rootDirs: [
-            './generated',
-          ]
-        }
-      }));
-      writeFile('/index.ts', `
+      writeFile(
+        `/tsconfig.json`,
+        JSON.stringify({
+          compilerOptions: {
+            rootDirs: ['./generated'],
+          },
+        }),
+      );
+      writeFile(
+        '/index.ts',
+        `
       import {Renderer} from '@angular/core';
 
       const variableDecl: Renderer = null;
@@ -85,7 +91,8 @@ describe('all migrations', () => {
       export class Test {
         constructor(renderer: Renderer) {}
       }
-    `);
+    `,
+      );
 
       let error: any = null;
       try {

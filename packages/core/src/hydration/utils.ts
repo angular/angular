@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -8,7 +7,8 @@
  */
 
 import {Injector} from '../di/injector';
-import {ViewRef} from '../linker/view_ref';
+import type {ViewRef} from '../linker/view_ref';
+import {getComponent} from '../render3/util/discovery_utils';
 import {LContainer} from '../render3/interfaces/container';
 import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
@@ -16,14 +16,25 @@ import {isRootView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
+import type {HydrationContext} from './annotate';
 
-import {CONTAINERS, DehydratedView, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NUM_ROOT_NODES, SerializedContainerView, SerializedView} from './interfaces';
+import {
+  CONTAINERS,
+  DehydratedView,
+  DISCONNECTED_NODES,
+  ELEMENT_CONTAINERS,
+  MULTIPLIER,
+  NUM_ROOT_NODES,
+  SerializedContainerView,
+  SerializedElementContainers,
+  SerializedView,
+} from './interfaces';
 
 /**
  * The name of the key used in the TransferState collection,
  * where hydration information is located.
  */
-const TRANSFER_STATE_TOKEN_ID = '__ɵnghData__';
+const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 
 /**
  * Lookup key used to reference DOM hydration data (ngh) in `TransferState`.
@@ -43,7 +54,6 @@ export const NGH_ATTR_NAME = 'ngh';
 export const SSR_CONTENT_INTEGRITY_MARKER = 'nghm';
 
 export const enum TextNodeMarker {
-
   /**
    * The contents of the text comment added to nodes that would otherwise be
    * empty when serialized by the server and passed to the client. The empty
@@ -72,11 +82,13 @@ export const enum TextNodeMarker {
  * @param injector Injector that this component has access to.
  * @param isRootView Specifies whether we trying to read hydration info for the root view.
  */
-let _retrieveHydrationInfoImpl: typeof retrieveHydrationInfoImpl =
-    (rNode: RElement, injector: Injector, isRootView?: boolean) => null;
+let _retrieveHydrationInfoImpl: typeof retrieveHydrationInfoImpl = () => null;
 
 export function retrieveHydrationInfoImpl(
-    rNode: RElement, injector: Injector, isRootView = false): DehydratedView|null {
+  rNode: RElement,
+  injector: Injector,
+  isRootView = false,
+): DehydratedView | null {
   let nghAttrValue = rNode.getAttribute(NGH_ATTR_NAME);
   if (nghAttrValue == null) return null;
 
@@ -96,7 +108,8 @@ export function retrieveHydrationInfoImpl(
 
   // We've read one of the ngh ids, keep the remaining one, so that
   // we can set it back on the DOM element.
-  const remainingNgh = isRootView ? componentViewNgh : (rootViewNgh ? `|${rootViewNgh}` : '');
+  const rootNgh = rootViewNgh ? `|${rootViewNgh}` : '';
+  const remainingNgh = isRootView ? componentViewNgh : rootNgh;
 
   let data: SerializedView = {};
   // An element might have an empty `ngh` attribute value (e.g. `<comp ngh="" />`),
@@ -168,7 +181,10 @@ export function enableRetrieveHydrationInfoImpl() {
  * and accessing a corresponding slot in TransferState storage.
  */
 export function retrieveHydrationInfo(
-    rNode: RElement, injector: Injector, isRootView = false): DehydratedView|null {
+  rNode: RElement,
+  injector: Injector,
+  isRootView = false,
+): DehydratedView | null {
   return _retrieveHydrationInfoImpl(rNode, injector, isRootView);
 }
 
@@ -178,7 +194,7 @@ export function retrieveHydrationInfo(
  *  - an LContainer for cases when component acts as a ViewContainerRef anchor
  *  - `null` in case of an embedded view
  */
-export function getLNodeForHydration(viewRef: ViewRef): LView|LContainer|null {
+export function getLNodeForHydration(viewRef: ViewRef): LView | LContainer | null {
   // Reading an internal field from `ViewRef` instance.
   let lView = (viewRef as any)._lView as LView;
   const tView = lView[TVIEW];
@@ -196,7 +212,7 @@ export function getLNodeForHydration(viewRef: ViewRef): LView|LContainer|null {
   return lView;
 }
 
-function getTextNodeContent(node: Node): string|undefined {
+function getTextNodeContent(node: Node): string | undefined {
   return node.textContent?.replace(/\s/gm, '');
 }
 
@@ -215,9 +231,9 @@ export function processTextNodeMarkersBeforeHydration(node: HTMLElement) {
     acceptNode(node) {
       const content = getTextNodeContent(node);
       const isTextNodeMarker =
-          content === TextNodeMarker.EmptyNode || content === TextNodeMarker.Separator;
+        content === TextNodeMarker.EmptyNode || content === TextNodeMarker.Separator;
       return isTextNodeMarker ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-    }
+    },
   });
   let currentNode: Comment;
   // We cannot modify the DOM while using the commentIterator,
@@ -226,7 +242,7 @@ export function processTextNodeMarkersBeforeHydration(node: HTMLElement) {
   // applying the changes to the DOM: either inserting an empty node
   // or just removing the marker if it was used as a separator.
   const nodes = [];
-  while (currentNode = commentNodesIterator.nextNode() as Comment) {
+  while ((currentNode = commentNodesIterator.nextNode() as Comment)) {
     nodes.push(currentNode);
   }
   for (const node of nodes) {
@@ -242,9 +258,35 @@ export function processTextNodeMarkersBeforeHydration(node: HTMLElement) {
  * Internal type that represents a claimed node.
  * Only used in dev mode.
  */
-type ClaimedNode = {
-  __claimed?: boolean;
+export enum HydrationStatus {
+  Hydrated = 'hydrated',
+  Skipped = 'skipped',
+  Mismatched = 'mismatched',
+}
+
+export type HydrationInfo =
+  | {
+      status: HydrationStatus.Hydrated | HydrationStatus.Skipped;
+    }
+  | {
+      status: HydrationStatus.Mismatched;
+      actualNodeDetails: string | null;
+      expectedNodeDetails: string | null;
+    };
+
+const HYDRATION_INFO_KEY = '__ngDebugHydrationInfo__';
+
+export type HydratedNode = {
+  [HYDRATION_INFO_KEY]?: HydrationInfo;
 };
+
+function patchHydrationInfo(node: RNode, info: HydrationInfo) {
+  (node as HydratedNode)[HYDRATION_INFO_KEY] = info;
+}
+
+export function readHydrationInfo(node: RNode): HydrationInfo | null {
+  return (node as HydratedNode)[HYDRATION_INFO_KEY] ?? null;
+}
 
 /**
  * Marks a node as "claimed" by hydration process.
@@ -254,27 +296,70 @@ type ClaimedNode = {
 export function markRNodeAsClaimedByHydration(node: RNode, checkIfAlreadyClaimed = true) {
   if (!ngDevMode) {
     throw new Error(
-        'Calling `markRNodeAsClaimedByHydration` in prod mode ' +
-        'is not supported and likely a mistake.');
+      'Calling `markRNodeAsClaimedByHydration` in prod mode ' +
+        'is not supported and likely a mistake.',
+    );
   }
   if (checkIfAlreadyClaimed && isRNodeClaimedForHydration(node)) {
     throw new Error('Trying to claim a node, which was claimed already.');
   }
-  (node as ClaimedNode).__claimed = true;
+  patchHydrationInfo(node, {status: HydrationStatus.Hydrated});
   ngDevMode.hydratedNodes++;
 }
 
+export function markRNodeAsSkippedByHydration(node: RNode) {
+  if (!ngDevMode) {
+    throw new Error(
+      'Calling `markRNodeAsSkippedByHydration` in prod mode ' +
+        'is not supported and likely a mistake.',
+    );
+  }
+  patchHydrationInfo(node, {status: HydrationStatus.Skipped});
+  ngDevMode.componentsSkippedHydration++;
+}
+
+export function markRNodeAsHavingHydrationMismatch(
+  node: RNode,
+  expectedNodeDetails: string | null = null,
+  actualNodeDetails: string | null = null,
+) {
+  if (!ngDevMode) {
+    throw new Error(
+      'Calling `markRNodeAsMismatchedByHydration` in prod mode ' +
+        'is not supported and likely a mistake.',
+    );
+  }
+
+  // The RNode can be a standard HTMLElement (not an Angular component or directive)
+  // The devtools component tree only displays Angular components & directives
+  // Therefore we attach the debug info to the closest component/directive
+  while (node && !getComponent(node as Element)) {
+    node = node?.parentNode as RNode;
+  }
+
+  if (node) {
+    patchHydrationInfo(node, {
+      status: HydrationStatus.Mismatched,
+      expectedNodeDetails,
+      actualNodeDetails,
+    });
+  }
+}
+
 export function isRNodeClaimedForHydration(node: RNode): boolean {
-  return !!(node as ClaimedNode).__claimed;
+  return readHydrationInfo(node)?.status === HydrationStatus.Hydrated;
 }
 
 export function setSegmentHead(
-    hydrationInfo: DehydratedView, index: number, node: RNode|null): void {
+  hydrationInfo: DehydratedView,
+  index: number,
+  node: RNode | null,
+): void {
   hydrationInfo.segmentHeads ??= {};
   hydrationInfo.segmentHeads[index] = node;
 }
 
-export function getSegmentHead(hydrationInfo: DehydratedView, index: number): RNode|null {
+export function getSegmentHead(hydrationInfo: DehydratedView, index: number): RNode | null {
   return hydrationInfo.segmentHeads?.[index] ?? null;
 }
 
@@ -285,7 +370,7 @@ export function getSegmentHead(hydrationInfo: DehydratedView, index: number): RN
  * container (in case this `<ng-container>` was also used as a view
  * container host node, e.g. <ng-container *ngIf>).
  */
-export function getNgContainerSize(hydrationInfo: DehydratedView, index: number): number|null {
+export function getNgContainerSize(hydrationInfo: DehydratedView, index: number): number | null {
   const data = hydrationInfo.data;
   let size = data[ELEMENT_CONTAINERS]?.[index] ?? null;
   // If there is no serialized information available in the `ELEMENT_CONTAINERS` slot,
@@ -298,8 +383,17 @@ export function getNgContainerSize(hydrationInfo: DehydratedView, index: number)
   return size;
 }
 
+export function isSerializedElementContainer(
+  hydrationInfo: DehydratedView,
+  index: number,
+): boolean {
+  return hydrationInfo.data[ELEMENT_CONTAINERS]?.[index] !== undefined;
+}
+
 export function getSerializedContainerViews(
-    hydrationInfo: DehydratedView, index: number): SerializedContainerView[]|null {
+  hydrationInfo: DehydratedView,
+  index: number,
+): SerializedContainerView[] | null {
   return hydrationInfo.data[CONTAINERS]?.[index] ?? null;
 }
 
@@ -317,6 +411,19 @@ export function calcSerializedContainerSize(hydrationInfo: DehydratedView, index
 }
 
 /**
+ * Attempt to initialize the `disconnectedNodes` field of the given
+ * `DehydratedView`. Returns the initialized value.
+ */
+export function initDisconnectedNodes(hydrationInfo: DehydratedView): Set<number> | null {
+  // Check if we are processing disconnected info for the first time.
+  if (typeof hydrationInfo.disconnectedNodes === 'undefined') {
+    const nodeIds = hydrationInfo.data[DISCONNECTED_NODES];
+    hydrationInfo.disconnectedNodes = nodeIds ? new Set(nodeIds) : null;
+  }
+  return hydrationInfo.disconnectedNodes;
+}
+
+/**
  * Checks whether a node is annotated as "disconnected", i.e. not present
  * in the DOM at serialization time. We should not attempt hydration for
  * such nodes and instead, use a regular "creation mode".
@@ -325,7 +432,52 @@ export function isDisconnectedNode(hydrationInfo: DehydratedView, index: number)
   // Check if we are processing disconnected info for the first time.
   if (typeof hydrationInfo.disconnectedNodes === 'undefined') {
     const nodeIds = hydrationInfo.data[DISCONNECTED_NODES];
-    hydrationInfo.disconnectedNodes = nodeIds ? (new Set(nodeIds)) : null;
+    hydrationInfo.disconnectedNodes = nodeIds ? new Set(nodeIds) : null;
   }
-  return !!hydrationInfo.disconnectedNodes?.has(index);
+  return !!initDisconnectedNodes(hydrationInfo)?.has(index);
+}
+
+/**
+ * Helper function to prepare text nodes for serialization by ensuring
+ * that seperate logical text blocks in the DOM remain separate after
+ * serialization.
+ */
+export function processTextNodeBeforeSerialization(context: HydrationContext, node: RNode) {
+  // Handle cases where text nodes can be lost after DOM serialization:
+  //  1. When there is an *empty text node* in DOM: in this case, this
+  //     node would not make it into the serialized string and as a result,
+  //     this node wouldn't be created in a browser. This would result in
+  //     a mismatch during the hydration, where the runtime logic would expect
+  //     a text node to be present in live DOM, but no text node would exist.
+  //     Example: `<span>{{ name }}</span>` when the `name` is an empty string.
+  //     This would result in `<span></span>` string after serialization and
+  //     in a browser only the `span` element would be created. To resolve that,
+  //     an extra comment node is appended in place of an empty text node and
+  //     that special comment node is replaced with an empty text node *before*
+  //     hydration.
+  //  2. When there are 2 consecutive text nodes present in the DOM.
+  //     Example: `<div>Hello <ng-container *ngIf="true">world</ng-container></div>`.
+  //     In this scenario, the live DOM would look like this:
+  //       <div>#text('Hello ') #text('world') #comment('container')</div>
+  //     Serialized string would look like this: `<div>Hello world<!--container--></div>`.
+  //     The live DOM in a browser after that would be:
+  //       <div>#text('Hello world') #comment('container')</div>
+  //     Notice how 2 text nodes are now "merged" into one. This would cause hydration
+  //     logic to fail, since it'd expect 2 text nodes being present, not one.
+  //     To fix this, we insert a special comment node in between those text nodes, so
+  //     serialized representation is: `<div>Hello <!--ngtns-->world<!--container--></div>`.
+  //     This forces browser to create 2 text nodes separated by a comment node.
+  //     Before running a hydration process, this special comment node is removed, so the
+  //     live DOM has exactly the same state as it was before serialization.
+
+  // Collect this node as required special annotation only when its
+  // contents is empty. Otherwise, such text node would be present on
+  // the client after server-side rendering and no special handling needed.
+  const el = node as HTMLElement;
+  const corruptedTextNodes = context.corruptedTextNodes;
+  if (el.textContent === '') {
+    corruptedTextNodes.set(el, TextNodeMarker.EmptyNode);
+  } else if (el.nextSibling?.nodeType === Node.TEXT_NODE) {
+    corruptedTextNodes.set(el, TextNodeMarker.Separator);
+  }
 }

@@ -1,0 +1,11 @@
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "ngmodules",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+    ],
+    visibility = ["//adev:__subpackages__"],
+)

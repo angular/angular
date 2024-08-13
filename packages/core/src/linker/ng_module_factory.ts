@@ -7,11 +7,10 @@
  */
 
 import {Injector} from '../di/injector';
-import {EnvironmentInjector} from '../di/r3_injector';
+import {EnvironmentInjector, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 
 import {ComponentFactoryResolver} from './component_factory_resolver';
-
 
 /**
  * Represents an instance of an `NgModule` created by an `NgModuleFactory`.
@@ -57,6 +56,7 @@ export interface InternalNgModuleRef<T> extends NgModuleRef<T> {
   // Note: we are using the prefix _ as NgModuleData is an NgModuleRef and therefore directly
   // exposed to the user.
   _bootstrapComponents: Type<any>[];
+  resolveInjectorInitializers(): void;
 }
 
 /**
@@ -64,13 +64,12 @@ export interface InternalNgModuleRef<T> extends NgModuleRef<T> {
  *
  * @deprecated
  * This class was mostly used as a part of ViewEngine-based JIT API and is no longer needed in Ivy
- * JIT mode. See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes)
- * for additional context. Angular provides APIs that accept NgModule classes directly (such as
+ * JIT mode. Angular provides APIs that accept NgModule classes directly (such as
  * [PlatformRef.bootstrapModule](api/core/PlatformRef#bootstrapModule) and
  * [createNgModule](api/core/createNgModule)), consider switching to those APIs instead of
  * using factory-based ones.
  */
 export abstract class NgModuleFactory<T> {
   abstract get moduleType(): Type<T>;
-  abstract create(parentInjector: Injector|null): NgModuleRef<T>;
+  abstract create(parentInjector: Injector | null): NgModuleRef<T>;
 }

@@ -23,8 +23,10 @@ export class TypeCheckShimGenerator implements PerFileShimGenerator {
   readonly shouldEmit = false;
 
   generateShimForFile(
-      sf: ts.SourceFile, genFilePath: AbsoluteFsPath,
-      priorShimSf: ts.SourceFile|null): ts.SourceFile {
+    sf: ts.SourceFile,
+    genFilePath: AbsoluteFsPath,
+    priorShimSf: ts.SourceFile | null,
+  ): ts.SourceFile {
     if (priorShimSf !== null) {
       // If this shim existed in the previous program, reuse it now. It might not be correct, but
       // reusing it in the main program allows the shape of its imports to potentially remain the
@@ -34,8 +36,12 @@ export class TypeCheckShimGenerator implements PerFileShimGenerator {
       return priorShimSf;
     }
     return ts.createSourceFile(
-        genFilePath, 'export const USED_FOR_NG_TYPE_CHECKING = true;', ts.ScriptTarget.Latest, true,
-        ts.ScriptKind.TS);
+      genFilePath,
+      'export const USED_FOR_NG_TYPE_CHECKING = true;',
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TS,
+    );
   }
 
   static shimFor(fileName: AbsoluteFsPath): AbsoluteFsPath {

@@ -9,7 +9,6 @@
 import {NgModule} from '@angular/core';
 
 @NgModule({})
-export class PortalModule {
-}
+export class PortalModule {}
 
 export const a = 1;

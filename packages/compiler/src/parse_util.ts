@@ -10,8 +10,11 @@ import {stringify} from './util';
 
 export class ParseLocation {
   constructor(
-      public file: ParseSourceFile, public offset: number, public line: number,
-      public col: number) {}
+    public file: ParseSourceFile,
+    public offset: number,
+    public line: number,
+    public col: number,
+  ) {}
 
   toString(): string {
     return this.offset != null ? `${this.file.url}@${this.line}:${this.col}` : this.file.url;
@@ -29,8 +32,9 @@ export class ParseLocation {
       const ch = source.charCodeAt(offset);
       if (ch == chars.$LF) {
         line--;
-        const priorLine =
-            source.substring(0, offset - 1).lastIndexOf(String.fromCharCode(chars.$LF));
+        const priorLine = source
+          .substring(0, offset - 1)
+          .lastIndexOf(String.fromCharCode(chars.$LF));
         col = priorLine > 0 ? offset - priorLine : offset;
       } else {
         col--;
@@ -52,7 +56,7 @@ export class ParseLocation {
 
   // Return the source around the location
   // Up to `maxChars` or `maxLines` on each side of the location
-  getContext(maxChars: number, maxLines: number): {before: string, after: string}|null {
+  getContext(maxChars: number, maxLines: number): {before: string; after: string} | null {
     const content = this.file.content;
     let startOffset = this.offset;
 
@@ -97,7 +101,10 @@ export class ParseLocation {
 }
 
 export class ParseSourceFile {
-  constructor(public content: string, public url: string) {}
+  constructor(
+    public content: string,
+    public url: string,
+  ) {}
 }
 
 export class ParseSourceSpan {
@@ -125,8 +132,11 @@ export class ParseSourceSpan {
    * Additional information (such as identifier names) that should be associated with the span.
    */
   constructor(
-      public start: ParseLocation, public end: ParseLocation,
-      public fullStart: ParseLocation = start, public details: string|null = null) {}
+    public start: ParseLocation,
+    public end: ParseLocation,
+    public fullStart: ParseLocation = start,
+    public details: string | null = null,
+  ) {}
 
   toString(): string {
     return this.start.file.content.substring(this.start.offset, this.end.offset);
@@ -140,13 +150,16 @@ export enum ParseErrorLevel {
 
 export class ParseError {
   constructor(
-      public span: ParseSourceSpan, public msg: string,
-      public level: ParseErrorLevel = ParseErrorLevel.ERROR) {}
+    public span: ParseSourceSpan,
+    public msg: string,
+    public level: ParseErrorLevel = ParseErrorLevel.ERROR,
+  ) {}
 
   contextualMessage(): string {
     const ctx = this.span.start.getContext(100, 3);
-    return ctx ? `${this.msg} ("${ctx.before}[${ParseErrorLevel[this.level]} ->]${ctx.after}")` :
-                 this.msg;
+    return ctx
+      ? `${this.msg} ("${ctx.before}[${ParseErrorLevel[this.level]} ->]${ctx.after}")`
+      : this.msg;
   }
 
   toString(): string {
@@ -164,17 +177,23 @@ export class ParseError {
  * @returns instance of ParseSourceSpan that represent a given Component or Directive.
  */
 export function r3JitTypeSourceSpan(
-    kind: string, typeName: string, sourceUrl: string): ParseSourceSpan {
+  kind: string,
+  typeName: string,
+  sourceUrl: string,
+): ParseSourceSpan {
   const sourceFileName = `in ${kind} ${typeName} in ${sourceUrl}`;
   const sourceFile = new ParseSourceFile('', sourceFileName);
   return new ParseSourceSpan(
-      new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
+    new ParseLocation(sourceFile, -1, -1, -1),
+    new ParseLocation(sourceFile, -1, -1, -1),
+  );
 }
 
 let _anonymousTypeIndex = 0;
 
-export function identifierName(compileIdentifier: CompileIdentifierMetadata|null|undefined): string|
-    null {
+export function identifierName(
+  compileIdentifier: CompileIdentifierMetadata | null | undefined,
+): string | null {
   if (!compileIdentifier || !compileIdentifier.reference) {
     return null;
   }

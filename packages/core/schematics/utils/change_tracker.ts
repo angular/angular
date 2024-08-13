@@ -7,8 +7,7 @@
  */
 
 import ts from 'typescript';
-
-import {ImportManager} from './import_manager';
+import {ImportManager} from '@angular/compiler-cli/private/migrations';
 
 /** Function that can be used to remap a generated import. */
 export type ImportRemapper = (moduleName: string, inFile: string) => string;
@@ -29,19 +28,25 @@ export interface PendingChange {
   text: string;
 }
 
+/** Supported quotes for generated imports. */
+const enum QuoteKind {
+  SINGLE,
+  DOUBLE,
+}
+
 /** Tracks changes that have to be made for specific files. */
 export class ChangeTracker {
   private readonly _changes = new Map<ts.SourceFile, PendingChange[]>();
   private readonly _importManager: ImportManager;
+  private readonly _quotesCache = new WeakMap<ts.SourceFile, QuoteKind>();
 
-  constructor(private _printer: ts.Printer, private _importRemapper?: ImportRemapper) {
-    this._importManager = new ImportManager(
-        currentFile => ({
-          addNewImport: (start, text) => this.insertText(currentFile, start, text),
-          updateExistingImport: (namedBindings, text) => this.replaceText(
-              currentFile, namedBindings.getStart(), namedBindings.getWidth(), text),
-        }),
-        this._printer);
+  constructor(
+    private _printer: ts.Printer,
+    private _importRemapper?: ImportRemapper,
+  ) {
+    this._importManager = new ImportManager({
+      shouldUseSingleQuotes: (file) => this._getQuoteKind(file) === QuoteKind.SINGLE,
+    });
   }
 
   /**
@@ -75,12 +80,18 @@ export class ChangeTracker {
    * without it.
    */
   replaceNode(
-      oldNode: ts.Node, newNode: ts.Node, emitHint = ts.EmitHint.Unspecified,
-      sourceFileWhenPrinting?: ts.SourceFile): void {
+    oldNode: ts.Node,
+    newNode: ts.Node,
+    emitHint = ts.EmitHint.Unspecified,
+    sourceFileWhenPrinting?: ts.SourceFile,
+  ): void {
     const sourceFile = oldNode.getSourceFile();
     this.replaceText(
-        sourceFile, oldNode.getStart(), oldNode.getWidth(),
-        this._printer.printNode(emitHint, newNode, sourceFileWhenPrinting || sourceFile));
+      sourceFile,
+      oldNode.getStart(),
+      oldNode.getWidth(),
+      this._printer.printNode(emitHint, newNode, sourceFileWhenPrinting || sourceFile),
+    );
   }
 
   /**
@@ -88,8 +99,11 @@ export class ChangeTracker {
    * @param node Node whose text should be removed.
    */
   removeNode(node: ts.Node): void {
-    this._trackChange(
-        node.getSourceFile(), {start: node.getStart(), removeLength: node.getWidth(), text: ''});
+    this._trackChange(node.getSourceFile(), {
+      start: node.getStart(),
+      removeLength: node.getWidth(),
+      text: '',
+    });
   }
 
   /**
@@ -97,10 +111,14 @@ export class ChangeTracker {
    * @param sourceFile File to which to add the import.
    * @param symbolName Symbol being imported.
    * @param moduleName Module from which the symbol is imported.
+   * @param alias Alias to use for the import.
    */
   addImport(
-      sourceFile: ts.SourceFile, symbolName: string, moduleName: string,
-      alias: string|null = null): ts.Expression {
+    sourceFile: ts.SourceFile,
+    symbolName: string,
+    moduleName: string,
+    alias?: string,
+  ): ts.Expression {
     if (this._importRemapper) {
       moduleName = this._importRemapper(moduleName, sourceFile.fileName);
     }
@@ -110,7 +128,35 @@ export class ChangeTracker {
     // paths will also cause TS to escape the forward slashes.
     moduleName = normalizePath(moduleName);
 
-    return this._importManager.addImportToSourceFile(sourceFile, symbolName, moduleName, alias);
+    if (!this._changes.has(sourceFile)) {
+      this._changes.set(sourceFile, []);
+    }
+
+    return this._importManager.addImport({
+      requestedFile: sourceFile,
+      exportSymbolName: symbolName,
+      exportModuleSpecifier: moduleName,
+      unsafeAliasOverride: alias,
+    });
+  }
+
+  /**
+   * Removes an import from a file.
+   * @param sourceFile File from which to remove the import.
+   * @param symbolName Original name of the symbol to be removed. Used even if the import is aliased.
+   * @param moduleName Module from which the symbol is imported.
+   */
+  removeImport(sourceFile: ts.SourceFile, symbolName: string, moduleName: string): void {
+    // It's common for paths to be manipulated with Node's `path` utilties which
+    // can yield a path with back slashes. Normalize them since outputting such
+    // paths will also cause TS to escape the forward slashes.
+    moduleName = normalizePath(moduleName);
+
+    if (!this._changes.has(sourceFile)) {
+      this._changes.set(sourceFile, []);
+    }
+
+    this._importManager.removeImport(sourceFile, symbolName, moduleName);
   }
 
   /**
@@ -118,8 +164,15 @@ export class ChangeTracker {
    * The changes are sorted in the order in which they should be applied.
    */
   recordChanges(): ChangesByFile {
-    this._importManager.recordChanges();
+    this._recordImports();
     return this._changes;
+  }
+
+  /**
+   * Clear the tracked changes
+   */
+  clearChanges(): void {
+    this._changes.clear();
   }
 
   /**
@@ -134,7 +187,7 @@ export class ChangeTracker {
       // Insert the changes in reverse so that they're applied in reverse order.
       // This ensures that the offsets of subsequent changes aren't affected by
       // previous changes changing the file's text.
-      const insertIndex = changes.findIndex(current => current.start <= change.start);
+      const insertIndex = changes.findIndex((current) => current.start <= change.start);
 
       if (insertIndex === -1) {
         changes.push(change);
@@ -143,6 +196,65 @@ export class ChangeTracker {
       }
     } else {
       this._changes.set(file, [change]);
+    }
+  }
+
+  /** Determines what kind of quotes to use for a specific file. */
+  private _getQuoteKind(sourceFile: ts.SourceFile): QuoteKind {
+    if (this._quotesCache.has(sourceFile)) {
+      return this._quotesCache.get(sourceFile)!;
+    }
+
+    let kind = QuoteKind.SINGLE;
+
+    for (const statement of sourceFile.statements) {
+      if (ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier)) {
+        kind = statement.moduleSpecifier.getText()[0] === '"' ? QuoteKind.DOUBLE : QuoteKind.SINGLE;
+        this._quotesCache.set(sourceFile, kind);
+        break;
+      }
+    }
+
+    return kind;
+  }
+
+  /** Records the pending import changes from the import manager. */
+  private _recordImports(): void {
+    const {newImports, updatedImports, deletedImports} = this._importManager.finalize();
+
+    for (const [original, replacement] of updatedImports) {
+      this.replaceNode(original, replacement);
+    }
+
+    for (const node of deletedImports) {
+      this.removeNode(node);
+    }
+
+    for (const [sourceFile] of this._changes) {
+      const importsToAdd = newImports.get(sourceFile.fileName);
+
+      if (!importsToAdd) {
+        continue;
+      }
+
+      const importLines: string[] = [];
+      let lastImport: ts.ImportDeclaration | null = null;
+
+      for (const statement of sourceFile.statements) {
+        if (ts.isImportDeclaration(statement)) {
+          lastImport = statement;
+        }
+      }
+
+      for (const decl of importsToAdd) {
+        importLines.push(this._printer.printNode(ts.EmitHint.Unspecified, decl, sourceFile));
+      }
+
+      this.insertText(
+        sourceFile,
+        lastImport ? lastImport.getEnd() : 0,
+        (lastImport ? '\n' : '') + importLines.join('\n'),
+      );
     }
   }
 }

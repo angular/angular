@@ -11,7 +11,7 @@ import {ɵangular1 as angular, ɵconstants} from '@angular/upgrade/static';
 
 import {UpgradeAppType} from '../../../src/common/src/util';
 
-let $injector: angular.IInjectorService|null = null;
+let $injector: angular.IInjectorService | null = null;
 let injector: Injector;
 
 export function $injectorFactory() {
@@ -91,10 +91,13 @@ export class AngularTestingModule {
  * @publicApi
  */
 export function createAngularTestingModule(
-    angularJSModules: string[], strictDi?: boolean): Type<any> {
-  angular.module_('$$angularJSTestingModule', angularJSModules)
-      .constant(ɵconstants.UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
-      .factory(ɵconstants.INJECTOR_KEY, () => injector);
+  angularJSModules: string[],
+  strictDi?: boolean,
+): Type<any> {
+  angular
+    .module_('$$angularJSTestingModule', angularJSModules)
+    .constant(ɵconstants.UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
+    .factory(ɵconstants.INJECTOR_KEY, () => injector);
   $injector = angular.injector(['ng', '$$angularJSTestingModule'], strictDi);
   return AngularTestingModule;
 }

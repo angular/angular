@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {openBrowser, verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {
+  openBrowser,
+  verifyNoBrowserErrors,
+} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {$, By, element} from 'protractor';
 
 describe('largeform benchmark', () => {
@@ -19,8 +22,9 @@ describe('largeform benchmark', () => {
       ignoreBrowserSynchronization: true,
     });
     await $('#createDom').click();
-    expect(await element.all(By.css('input[name=value0]')).get(0).getAttribute('value'))
-        .toBe('someValue0');
+    expect(await element.all(By.css('input[name=value0]')).get(0).getAttribute('value')).toBe(
+      'someValue0',
+    );
     await $('#destroyDom').click();
     expect(await element.all(By.css('input[name=value0]')).count()).toBe(0);
   });

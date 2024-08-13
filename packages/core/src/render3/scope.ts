@@ -14,7 +14,12 @@ import {EMPTY_ARRAY} from '../util/empty';
 
 import {extractDefListOrFactory, getNgModuleDef} from './definition';
 import {depsTracker} from './deps_tracker/deps_tracker';
-import {ComponentDef, ComponentType, NgModuleScopeInfoFromDecorator, RawScopeInfoFromDecorator} from './interfaces/definition';
+import {
+  ComponentDef,
+  ComponentType,
+  NgModuleScopeInfoFromDecorator,
+  RawScopeInfoFromDecorator,
+} from './interfaces/definition';
 import {isModuleWithProviders} from './jit/util';
 
 /**
@@ -27,8 +32,10 @@ import {isModuleWithProviders} from './jit/util';
  * @codeGenApi
  */
 export function ɵɵsetComponentScope(
-    type: ComponentType<any>, directives: Type<any>[]|(() => Type<any>[]),
-    pipes: Type<any>[]|(() => Type<any>[])): void {
+  type: ComponentType<any>,
+  directives: Type<any>[] | (() => Type<any>[]),
+  pipes: Type<any>[] | (() => Type<any>[]),
+): void {
   const def = type.ɵcmp as ComponentDef<any>;
   def.directiveDefs = extractDefListOrFactory(directives, /* pipeDef */ false);
   def.pipeDefs = extractDefListOrFactory(pipes, /* pipeDef */ true);
@@ -60,8 +67,9 @@ export function ɵɵsetNgModuleScope(type: any, scope: NgModuleScopeInfoFromDeco
   });
 }
 
-function convertToTypeArray(values: Type<any>[]|(() => Type<any>[])|
-                            RawScopeInfoFromDecorator[]): Type<any>[]|(() => Type<any>[]) {
+function convertToTypeArray(
+  values: Type<any>[] | (() => Type<any>[]) | RawScopeInfoFromDecorator[],
+): Type<any>[] | (() => Type<any>[]) {
   if (typeof values === 'function') {
     return values;
   }
@@ -76,5 +84,5 @@ function convertToTypeArray(values: Type<any>[]|(() => Type<any>[])|
 }
 
 function maybeUnwrapModuleWithProviders(value: any): Type<any> {
-  return isModuleWithProviders(value) ? value.ngModule : value as Type<any>;
+  return isModuleWithProviders(value) ? value.ngModule : (value as Type<any>);
 }

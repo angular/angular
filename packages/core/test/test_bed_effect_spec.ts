@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, effect, inject, Injector} from '@angular/core';
+import {Component, effect, inject, Injector, NgZone, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('effects in TestBed', () => {
@@ -34,13 +34,19 @@ describe('effects in TestBed', () => {
     TestBed.createComponent(Cmp).detectChanges();
 
     expect(log).toEqual([
+      // The component gets constructed, which creates the effect. Since the effect is created in a
+      // component, it doesn't get scheduled until the component is first change detected.
       'Ctor',
-      'Effect',
+
+      // Next, the first change detection (update pass) happens.
       'DoCheck',
+
+      // Then the effect runs.
+      'Effect',
     ]);
   });
 
-  it('created in ngOnInit should not run with detectChanges()', () => {
+  it('created in ngOnInit should run with detectChanges()', () => {
     const log: string[] = [];
     @Component({
       selector: 'test-cmp',
@@ -55,9 +61,12 @@ describe('effects in TestBed', () => {
       }
 
       ngOnInit() {
-        effect(() => {
-          log.push('Effect');
-        }, {injector: this.injector});
+        effect(
+          () => {
+            log.push('Effect');
+          },
+          {injector: this.injector},
+        );
       }
 
       ngDoCheck() {
@@ -68,12 +77,41 @@ describe('effects in TestBed', () => {
     TestBed.createComponent(Cmp).detectChanges();
 
     expect(log).toEqual([
-      // B: component bootstrapped
+      // The component gets constructed.
       'Ctor',
-      // ngDoCheck runs before ngOnInit
-      'DoCheck',
-    ]);
 
-    // effect should not have executed.
+      // Next, the first change detection (update pass) happens, which creates the effect and
+      // schedules it for execution.
+      'DoCheck',
+
+      // Then the effect runs.
+      'Effect',
+    ]);
+  });
+
+  it('will flush effects automatically when using autoDetectChanges', async () => {
+    const val = signal('initial');
+    let observed = '';
+    @Component({
+      selector: 'test-cmp',
+      standalone: true,
+      template: '',
+    })
+    class Cmp {
+      constructor() {
+        effect(() => {
+          observed = val();
+        });
+      }
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.autoDetectChanges();
+
+    expect(observed).toBe('initial');
+    val.set('new');
+    expect(observed).toBe('initial');
+    await fixture.whenStable();
+    expect(observed).toBe('new');
   });
 });

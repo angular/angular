@@ -8,12 +8,13 @@
 
 import {ConstantPool} from '../../../constant_pool';
 import * as o from '../../../output/output_ast';
+import {R3ComponentDeferMetadata} from '../../../render3/view/api';
 import * as ir from '../ir';
 
 export enum CompilationJobKind {
   Tmpl,
   Host,
-  Both,  // A special value used to indicate that some logic applies to both compilation types
+  Both, // A special value used to indicate that some logic applies to both compilation types
 }
 
 /**
@@ -22,8 +23,10 @@ export enum CompilationJobKind {
  */
 export abstract class CompilationJob {
   constructor(
-      readonly componentName: string, readonly pool: ConstantPool,
-      readonly compatibility: ir.CompatibilityMode) {}
+    readonly componentName: string,
+    readonly pool: ConstantPool,
+    readonly compatibility: ir.CompatibilityMode,
+  ) {}
 
   kind: CompilationJobKind = CompilationJobKind.Both;
 
@@ -63,8 +66,14 @@ export abstract class CompilationJob {
  */
 export class ComponentCompilationJob extends CompilationJob {
   constructor(
-      componentName: string, pool: ConstantPool, compatibility: ir.CompatibilityMode,
-      readonly relativeContextFilePath: string, readonly i18nUseExternalIds: boolean) {
+    componentName: string,
+    pool: ConstantPool,
+    compatibility: ir.CompatibilityMode,
+    readonly relativeContextFilePath: string,
+    readonly i18nUseExternalIds: boolean,
+    readonly deferMeta: R3ComponentDeferMetadata,
+    readonly allDeferrableDepsFn: o.ReadVarExpr | null,
+  ) {
     super(componentName, pool, compatibility);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);
@@ -85,7 +94,7 @@ export class ComponentCompilationJob extends CompilationJob {
    * Causes ngContentSelectors to be emitted, for content projection slots in the view. Possibly a
    * reference into the constant pool.
    */
-  public contentSelectors: o.Expression|null = null;
+  public contentSelectors: o.Expression | null = null;
 
   /**
    * Add a `ViewCompilation` for a new embedded view to this compilation.
@@ -159,23 +168,23 @@ export abstract class CompilationUnit {
    *
    * May be `null` if not yet determined.
    */
-  fnName: string|null = null;
+  fnName: string | null = null;
 
   /**
    * Number of variable slots used within this view, or `null` if variables have not yet been
    * counted.
    */
-  vars: number|null = null;
+  vars: number | null = null;
 
   /**
    * Iterate over all `ir.Op`s within this view.
    *
    * Some operations may have child operations, which this iterator will visit.
    */
-  * ops(): Generator<ir.CreateOp|ir.UpdateOp> {
+  *ops(): Generator<ir.CreateOp | ir.UpdateOp> {
     for (const op of this.create) {
       yield op;
-      if (op.kind === ir.OpKind.Listener) {
+      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
         for (const listenerOp of op.handlerOps) {
           yield listenerOp;
         }
@@ -192,7 +201,10 @@ export abstract class CompilationUnit {
  */
 export class ViewCompilationUnit extends CompilationUnit {
   constructor(
-      readonly job: ComponentCompilationJob, xref: ir.XrefId, readonly parent: ir.XrefId|null) {
+    readonly job: ComponentCompilationJob,
+    xref: ir.XrefId,
+    readonly parent: ir.XrefId | null,
+  ) {
     super(xref);
   }
 
@@ -203,10 +215,16 @@ export class ViewCompilationUnit extends CompilationUnit {
   readonly contextVariables = new Map<string, string>();
 
   /**
+   * Set of aliases available within this view. An alias is a variable whose provided expression is
+   * inlined at every location it is used. It may also depend on context variables, by name.
+   */
+  readonly aliases = new Set<ir.AliasVariable>();
+
+  /**
    * Number of declaration slots used within this view, or `null` if slots have not yet been
    * allocated.
    */
-  decls: number|null = null;
+  decls: number | null = null;
 }
 
 /**
@@ -237,5 +255,5 @@ export class HostBindingCompilationUnit extends CompilationUnit {
   /**
    * Much like an element can have attributes, so can a host binding function.
    */
-  attributes: o.LiteralArrayExpr|null = null;
+  attributes: o.LiteralArrayExpr | null = null;
 }

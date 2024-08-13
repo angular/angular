@@ -10,7 +10,6 @@ import {Component, Inject, Injectable, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
 
-
 @Component({
   selector: 'string-app',
   template: '{{data}}',
@@ -23,16 +22,12 @@ export class AppComponent {
 }
 
 @NgModule({
-  imports: [
-    BrowserModule,
-    ServerModule,
-  ],
+  imports: [BrowserModule, ServerModule],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
   providers: [{provide: 'someStringToken', useValue: 'works'}],
 })
-export class StringAppModule {
-}
+export class StringAppModule {}
 
 @Injectable({providedIn: StringAppModule})
 export class Service {

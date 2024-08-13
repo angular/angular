@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Injector, runInInjectionContext, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable, of, throwError} from 'rxjs';
 
 import {RuntimeErrorCode} from './errors';
 import {NavigationCancellationCode} from './events';
-import {LoadedRouterConfig, Route} from './models';
+import {LoadedRouterConfig, RedirectFunction, Route} from './models';
 import {navigationCancelingError} from './navigation_canceling_error';
+import {ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 
-
 export class NoMatch {
-  public segmentGroup: UrlSegmentGroup|null;
+  public segmentGroup: UrlSegmentGroup | null;
 
   constructor(segmentGroup?: UrlSegmentGroup) {
     this.segmentGroup = segmentGroup || null;
@@ -40,30 +40,30 @@ export function absoluteRedirect(newTree: UrlTree): Observable<any> {
 }
 
 export function namedOutletsRedirect(redirectTo: string): Observable<any> {
-  return throwError(new RuntimeError(
+  return throwError(
+    new RuntimeError(
       RuntimeErrorCode.NAMED_OUTLET_REDIRECT,
       (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          `Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`));
+        `Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`,
+    ),
+  );
 }
 
 export function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
-  return throwError(navigationCancelingError(
+  return throwError(
+    navigationCancelingError(
       (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          `Cannot load children because the guard of the route "path: '${
-              route.path}'" returned false`,
-      NavigationCancellationCode.GuardRejected));
+        `Cannot load children because the guard of the route "path: '${route.path}'" returned false`,
+      NavigationCancellationCode.GuardRejected,
+    ),
+  );
 }
 
-
 export class ApplyRedirects {
-  constructor(private urlSerializer: UrlSerializer, private urlTree: UrlTree) {}
-
-  noMatchError(e: NoMatch): any {
-    return new RuntimeError(
-        RuntimeErrorCode.NO_MATCH,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
-            `Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
-  }
+  constructor(
+    private urlSerializer: UrlSerializer,
+    private urlTree: UrlTree,
+  ) {}
 
   lineralizeSegments(route: Route, urlTree: UrlTree): Observable<UrlSegment[]> {
     let res: UrlSegment[] = [];
@@ -75,7 +75,7 @@ export class ApplyRedirects {
       }
 
       if (c.numberOfChildren > 1 || !c.children[PRIMARY_OUTLET]) {
-        return namedOutletsRedirect(route.redirectTo!);
+        return namedOutletsRedirect(`${route.redirectTo!}`);
       }
 
       c = c.children[PRIMARY_OUTLET];
@@ -83,28 +83,56 @@ export class ApplyRedirects {
   }
 
   applyRedirectCommands(
-      segments: UrlSegment[], redirectTo: string, posParams: {[k: string]: UrlSegment}): UrlTree {
+    segments: UrlSegment[],
+    redirectTo: string | RedirectFunction,
+    posParams: {[k: string]: UrlSegment},
+    currentSnapshot: ActivatedRouteSnapshot,
+    injector: Injector,
+  ): UrlTree {
+    if (typeof redirectTo !== 'string') {
+      const redirectToFn = redirectTo;
+      const {queryParams, fragment, routeConfig, url, outlet, params, data, title} =
+        currentSnapshot;
+      const newRedirect = runInInjectionContext(injector, () =>
+        redirectToFn({params, data, queryParams, fragment, routeConfig, url, outlet, title}),
+      );
+      if (newRedirect instanceof UrlTree) {
+        throw new AbsoluteRedirect(newRedirect);
+      }
+
+      redirectTo = newRedirect;
+    }
+
     const newTree = this.applyRedirectCreateUrlTree(
-        redirectTo, this.urlSerializer.parse(redirectTo), segments, posParams);
-    if (redirectTo.startsWith('/')) {
+      redirectTo,
+      this.urlSerializer.parse(redirectTo),
+      segments,
+      posParams,
+    );
+    if (redirectTo[0] === '/') {
       throw new AbsoluteRedirect(newTree);
     }
     return newTree;
   }
 
   applyRedirectCreateUrlTree(
-      redirectTo: string, urlTree: UrlTree, segments: UrlSegment[],
-      posParams: {[k: string]: UrlSegment}): UrlTree {
+    redirectTo: string,
+    urlTree: UrlTree,
+    segments: UrlSegment[],
+    posParams: {[k: string]: UrlSegment},
+  ): UrlTree {
     const newRoot = this.createSegmentGroup(redirectTo, urlTree.root, segments, posParams);
     return new UrlTree(
-        newRoot, this.createQueryParams(urlTree.queryParams, this.urlTree.queryParams),
-        urlTree.fragment);
+      newRoot,
+      this.createQueryParams(urlTree.queryParams, this.urlTree.queryParams),
+      urlTree.fragment,
+    );
   }
 
   createQueryParams(redirectToParams: Params, actualParams: Params): Params {
     const res: Params = {};
     Object.entries(redirectToParams).forEach(([k, v]) => {
-      const copySourceValue = typeof v === 'string' && v.startsWith(':');
+      const copySourceValue = typeof v === 'string' && v[0] === ':';
       if (copySourceValue) {
         const sourceName = v.substring(1);
         res[k] = actualParams[sourceName];
@@ -116,8 +144,11 @@ export class ApplyRedirects {
   }
 
   createSegmentGroup(
-      redirectTo: string, group: UrlSegmentGroup, segments: UrlSegment[],
-      posParams: {[k: string]: UrlSegment}): UrlSegmentGroup {
+    redirectTo: string,
+    group: UrlSegmentGroup,
+    segments: UrlSegment[],
+    posParams: {[k: string]: UrlSegment},
+  ): UrlSegmentGroup {
     const updatedSegments = this.createSegments(redirectTo, group.segments, segments, posParams);
 
     let children: {[n: string]: UrlSegmentGroup} = {};
@@ -129,22 +160,30 @@ export class ApplyRedirects {
   }
 
   createSegments(
-      redirectTo: string, redirectToSegments: UrlSegment[], actualSegments: UrlSegment[],
-      posParams: {[k: string]: UrlSegment}): UrlSegment[] {
-    return redirectToSegments.map(
-        s => s.path.startsWith(':') ? this.findPosParam(redirectTo, s, posParams) :
-                                      this.findOrReturn(s, actualSegments));
+    redirectTo: string,
+    redirectToSegments: UrlSegment[],
+    actualSegments: UrlSegment[],
+    posParams: {[k: string]: UrlSegment},
+  ): UrlSegment[] {
+    return redirectToSegments.map((s) =>
+      s.path[0] === ':'
+        ? this.findPosParam(redirectTo, s, posParams)
+        : this.findOrReturn(s, actualSegments),
+    );
   }
 
   findPosParam(
-      redirectTo: string, redirectToUrlSegment: UrlSegment,
-      posParams: {[k: string]: UrlSegment}): UrlSegment {
+    redirectTo: string,
+    redirectToUrlSegment: UrlSegment,
+    posParams: {[k: string]: UrlSegment},
+  ): UrlSegment {
     const pos = posParams[redirectToUrlSegment.path.substring(1)];
     if (!pos)
       throw new RuntimeError(
-          RuntimeErrorCode.MISSING_REDIRECT,
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
-              `Cannot redirect to '${redirectTo}'. Cannot find '${redirectToUrlSegment.path}'.`);
+        RuntimeErrorCode.MISSING_REDIRECT,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          `Cannot redirect to '${redirectTo}'. Cannot find '${redirectToUrlSegment.path}'.`,
+      );
     return pos;
   }
 

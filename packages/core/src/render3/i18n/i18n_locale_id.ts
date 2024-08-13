@@ -9,7 +9,6 @@
 import {DEFAULT_LOCALE_ID} from '../../i18n/localization';
 import {assertDefined} from '../../util/assert';
 
-
 /**
  * The locale id that the application is currently using (for translations and ICU expressions).
  * This is the ivy version of `LOCALE_ID` that was defined as an injection token for the view engine
@@ -25,7 +24,7 @@ let LOCALE_ID = DEFAULT_LOCALE_ID;
  * @param localeId
  */
 export function setLocaleId(localeId: string) {
-  assertDefined(localeId, `Expected localeId to be defined`);
+  ngDevMode && assertDefined(localeId, `Expected localeId to be defined`);
   if (typeof localeId === 'string') {
     LOCALE_ID = localeId.toLowerCase().replace(/_/g, '-');
   }

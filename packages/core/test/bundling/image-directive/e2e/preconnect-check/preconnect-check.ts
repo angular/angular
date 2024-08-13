@@ -18,10 +18,12 @@ import {Component, Inject} from '@angular/core';
     <img ngSrc="/e2e/b.png" width="50" height="50" priority>
     <img ngSrc="/e2e/c.png" width="50" height="50">
   `,
-  providers: [{
-    provide: IMAGE_LOADER,
-    useValue: (config: {src: string}) => `https://angular.io/assets/images/${config.src}`
-  }],
+  providers: [
+    {
+      provide: IMAGE_LOADER,
+      useValue: (config: {src: string}) => `https://angular.io/assets/images/${config.src}`,
+    },
+  ],
 })
 export class PreconnectCheckComponent {
   constructor(@Inject(DOCUMENT) private doc: Document) {

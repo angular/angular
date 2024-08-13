@@ -5,9 +5,6 @@
 .git
 node_modules
 dist
-aio/node_modules
-aio/tools/examples/shared/node_modules
-aio/tools/examples/shared/example-scaffold
 
 # All integration test node_modules folders
 integration/animations/node_modules
@@ -16,6 +13,9 @@ integration/cli-hello-world/node_modules
 integration/cli-hello-world-ivy-i18n/node_modules
 integration/cli-hello-world-lazy/node_modules
 integration/cli-hello-world-mocha/node_modules
+integration/cli-signal-inputs/node_modules
+integration/platform-server-hydration/node_modules
+integration/defer/node_modules
 integration/dynamic-compiler/node_modules
 integration/forms/node_modules
 integration/injectable-def/node_modules

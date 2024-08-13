@@ -38,7 +38,7 @@ export class TemplateFormsComponent {
   }
 
   addCity() {
-    this.addresses.push(({city: ''}));
+    this.addresses.push({city: ''});
   }
 }
 
@@ -110,5 +110,4 @@ export class ReactiveFormsComponent {
   selector: 'app-root',
   templateUrl: './app.component.html',
 })
-export class AppComponent {
-}
+export class AppComponent {}

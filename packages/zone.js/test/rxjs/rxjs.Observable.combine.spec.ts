@@ -18,69 +18,82 @@ describe('Observable.combine', () => {
     log = [];
   });
 
-  it('combineAll func callback should run in the correct zone', asyncTest((done: any) => {
-       const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
-       const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
-       observable1 = constructorZone1.run(() => {
-         const source = of(1, 2);
-         const highOrder = source.pipe(map((src: any) => {
-           expect(Zone.current.name).toEqual(constructorZone1.name);
-           return of(src);
-         }));
-         return highOrder.pipe(combineAll());
-       });
+  it(
+    'combineAll func callback should run in the correct zone',
+    asyncTest((done: any) => {
+      const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
+      const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
+      observable1 = constructorZone1.run(() => {
+        const source = of(1, 2);
+        const highOrder = source.pipe(
+          map((src: any) => {
+            expect(Zone.current.name).toEqual(constructorZone1.name);
+            return of(src);
+          }),
+        );
+        return highOrder.pipe(combineAll());
+      });
 
-       subscriptionZone.run(() => {
-         const subscriber = observable1.subscribe(
-             (result: any) => {
-               expect(Zone.current.name).toEqual(subscriptionZone.name);
-               log.push(result);
-             },
-             () => {
-               fail('should not call error');
-             },
-             () => {
-               log.push('completed');
-               expect(Zone.current.name).toEqual(subscriptionZone.name);
-               expect(log).toEqual([[1, 2], 'completed']);
-               done();
-             });
-       });
-     }, Zone.root));
+      subscriptionZone.run(() => {
+        const subscriber = observable1.subscribe(
+          (result: any) => {
+            expect(Zone.current.name).toEqual(subscriptionZone.name);
+            log.push(result);
+          },
+          () => {
+            fail('should not call error');
+          },
+          () => {
+            log.push('completed');
+            expect(Zone.current.name).toEqual(subscriptionZone.name);
+            expect(log).toEqual([[1, 2], 'completed']);
+            done();
+          },
+        );
+      });
+    }, Zone.root),
+  );
 
-  it('combineAll func callback should run in the correct zone with project function',
-     asyncTest((done: any) => {
-       const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
-       const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
-       observable1 = constructorZone1.run(() => {
-         const source = of(1, 2, 3);
-         const highOrder = source.pipe(map((src: any) => {
-           expect(Zone.current.name).toEqual(constructorZone1.name);
-           return of(src);
-         }));
-         return highOrder.pipe(combineAll((x: any, y: any) => {
-           expect(Zone.current.name).toEqual(constructorZone1.name);
-           return {x: x, y: y};
-         }));
-       });
+  it(
+    'combineAll func callback should run in the correct zone with project function',
+    asyncTest((done: any) => {
+      const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
+      const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
+      observable1 = constructorZone1.run(() => {
+        const source = of(1, 2, 3);
+        const highOrder = source.pipe(
+          map((src: any) => {
+            expect(Zone.current.name).toEqual(constructorZone1.name);
+            return of(src);
+          }),
+        );
+        return highOrder.pipe(
+          combineAll((x: any, y: any) => {
+            expect(Zone.current.name).toEqual(constructorZone1.name);
+            return {x: x, y: y};
+          }),
+        );
+      });
 
-       subscriptionZone.run(() => {
-         const subscriber = observable1.subscribe(
-             (result: any) => {
-               expect(Zone.current.name).toEqual(subscriptionZone.name);
-               log.push(result);
-             },
-             () => {
-               fail('should not call error');
-             },
-             () => {
-               log.push('completed');
-               expect(Zone.current.name).toEqual(subscriptionZone.name);
-               expect(log).toEqual([{x: 1, y: 2}, 'completed']);
-               done();
-             });
-       });
-     }, Zone.root));
+      subscriptionZone.run(() => {
+        const subscriber = observable1.subscribe(
+          (result: any) => {
+            expect(Zone.current.name).toEqual(subscriptionZone.name);
+            log.push(result);
+          },
+          () => {
+            fail('should not call error');
+          },
+          () => {
+            log.push('completed');
+            expect(Zone.current.name).toEqual(subscriptionZone.name);
+            expect(log).toEqual([{x: 1, y: 2}, 'completed']);
+            done();
+          },
+        );
+      });
+    }, Zone.root),
+  );
 
   it('combineLatest func callback should run in the correct zone', () => {
     const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
@@ -93,17 +106,18 @@ describe('Observable.combine', () => {
 
     subscriptionZone.run(() => {
       const subscriber = observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            log.push('completed');
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          log.push('completed');
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+      );
     });
 
     expect(log).toEqual([[3, 4], [3, 5], [3, 6], 'completed']);
@@ -122,17 +136,18 @@ describe('Observable.combine', () => {
 
     subscriptionZone.run(() => {
       const subscriber = observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            log.push('completed');
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          log.push('completed');
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+      );
     });
 
     expect(log).toEqual([7, 8, 9, 'completed']);

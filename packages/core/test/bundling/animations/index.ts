@@ -15,8 +15,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
   template: `
     <div [@myAnimation]="exp"></div>
     `,
-  animations:
-      [trigger('myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])])]
+  animations: [
+    trigger('myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])]),
+  ],
 })
 class AnimationsComponent {
   exp: any = false;
@@ -26,10 +27,9 @@ class AnimationsComponent {
   selector: 'app-root',
   template: `
      <app-animations></app-animations>
-   `
+   `,
 })
-class RootComponent {
-}
+class RootComponent {}
 
 @NgModule({
   declarations: [RootComponent, AnimationsComponent],
@@ -41,5 +41,6 @@ class AnimationsExampleModule {
   }
 }
 
-(window as any).waitForApp =
-    platformBrowser().bootstrapModule(AnimationsExampleModule, {ngZone: 'noop'});
+(window as any).waitForApp = platformBrowser().bootstrapModule(AnimationsExampleModule, {
+  ngZone: 'noop',
+});

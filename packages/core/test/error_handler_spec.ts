@@ -21,7 +21,7 @@ function errorToString(error: any) {
   const errorHandler = new ErrorHandler();
   (errorHandler as any)._console = logger as any;
   errorHandler.handleError(error);
-  return logger.res.map(line => line.map(x => `${x}`).join('#')).join('\n');
+  return logger.res.map((line) => line.map((x) => `${x}`).join('#')).join('\n');
 }
 
 describe('ErrorHandler', () => {

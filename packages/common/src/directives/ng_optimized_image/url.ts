@@ -20,7 +20,7 @@ export function isAbsoluteUrl(src: string): boolean {
 // Given a URL, extract the hostname part.
 // If a URL is a relative one - the URL is returned as is.
 export function extractHostname(url: string): string {
-  return isAbsoluteUrl(url) ? (new URL(url)).hostname : url;
+  return isAbsoluteUrl(url) ? new URL(url).hostname : url;
 }
 
 export function isValidPath(path: unknown): boolean {

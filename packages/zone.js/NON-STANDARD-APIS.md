@@ -186,7 +186,7 @@ In electron, we patched the following APIs with `zone.js`
 
 1. Browser API
 2. NodeJS
-3. Electorn Native API
+3. Electron Native API
 
 ## Usage.
 
@@ -198,7 +198,7 @@ import 'zone.js/mix'; // add zone-mix to patch both Browser and Nodejs
 import 'zone.js/plugins/zone-patch-electron'; // add zone-patch-electron to patch Electron native API
 ```
 
-there is a sampel repo [zone-electron](https://github.com/JiaLiPassion/zone-electron).
+there is a sample repo [zone-electron](https://github.com/JiaLiPassion/zone-electron).
 
 * socket.io-client
 
@@ -224,7 +224,7 @@ detail usage.
 provide a helper method to patch jsonp. Because jsonp has a lot of implementation, so
 user need to provide the information to let json `send` and `callback` in zone.
 
-there is a sampel repo [zone-jsonp](https://github.com/JiaLiPassion/test-zone-js-with-jsonp) here,
+there is a sample repo [zone-jsonp](https://github.com/JiaLiPassion/test-zone-js-with-jsonp) here,
 sample usage is:
 
 ```javascript

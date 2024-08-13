@@ -60,7 +60,9 @@ describe('render3 setClassMetadata()', () => {
     const Foo = metadataOf(class Foo {});
     Foo.propDecorators = {initial: [{type: 'first'}]};
     setClassMetadata(Foo, null, null, {field: [{type: 'test', args: ['arg']}]});
-    expect(Foo.propDecorators)
-        .toEqual({field: [{type: 'test', args: ['arg']}], initial: [{type: 'first'}]});
+    expect(Foo.propDecorators).toEqual({
+      field: [{type: 'test', args: ['arg']}],
+      initial: [{type: 'first'}],
+    });
   });
 });

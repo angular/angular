@@ -19,14 +19,14 @@ if (isBrowser) {
       resourceLoader = new ResourceLoaderImpl();
     });
 
-    it('should resolve the Promise with the file content on success', done => {
+    it('should resolve the Promise with the file content on success', (done) => {
       resourceLoader.get(url200).then((text) => {
         expect(text.trim()).toEqual('<p>hey</p>');
         done();
       });
     }, 10000);
 
-    it('should reject the Promise on failure', done => {
+    it('should reject the Promise on failure', (done) => {
       resourceLoader.get(url404).catch((e) => {
         expect(e).toEqual(`Failed to load ${url404}`);
         done();

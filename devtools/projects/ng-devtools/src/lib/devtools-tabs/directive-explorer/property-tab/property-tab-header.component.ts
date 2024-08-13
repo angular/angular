@@ -6,17 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 
 import {IndexedNode} from '../directive-forest/index-forest';
+import {ComponentMetadataComponent} from './component-metadata.component';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @Component({
   templateUrl: './property-tab-header.component.html',
   selector: 'ng-property-tab-header',
   styleUrls: ['./property-tab-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [MatExpansionModule, ComponentMetadataComponent],
 })
 export class PropertyTabHeaderComponent {
-  @Input() currentSelectedElement: IndexedNode;
-  @Input() currentDirectives: string[]|undefined;
+  currentSelectedElement = input.required<IndexedNode>();
 }

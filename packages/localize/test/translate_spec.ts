@@ -14,13 +14,15 @@ import {computeMsgId, MessageId, TargetMessage} from '../src/utils';
 describe('$localize tag with translations', () => {
   describe('identities', () => {
     beforeEach(() => {
-      loadTranslations(computeIds({
-        'abc': 'abc',
-        'abc{$PH}': 'abc{$PH}',
-        'abc{$PH}def': 'abc{$PH}def',
-        'abc{$PH}def{$PH_1}': 'abc{$PH}def{$PH_1}',
-        'Hello, {$PH}!': 'Hello, {$PH}!',
-      }));
+      loadTranslations(
+        computeIds({
+          'abc': 'abc',
+          'abc{$PH}': 'abc{$PH}',
+          'abc{$PH}def': 'abc{$PH}def',
+          'abc{$PH}def{$PH_1}': 'abc{$PH}def{$PH_1}',
+          'Hello, {$PH}!': 'Hello, {$PH}!',
+        }),
+      );
     });
     afterEach(() => {
       clearTranslations();
@@ -38,13 +40,15 @@ describe('$localize tag with translations', () => {
 
   describe('to upper-case messageParts', () => {
     beforeEach(() => {
-      loadTranslations(computeIds({
-        'abc': 'ABC',
-        'abc{$PH}': 'ABC{$PH}',
-        'abc{$PH}def': 'ABC{$PH}DEF',
-        'abc{$PH}def{$PH_1}': 'ABC{$PH}DEF{$PH_1}',
-        'Hello, {$PH}!': 'HELLO, {$PH}!',
-      }));
+      loadTranslations(
+        computeIds({
+          'abc': 'ABC',
+          'abc{$PH}': 'ABC{$PH}',
+          'abc{$PH}def': 'ABC{$PH}DEF',
+          'abc{$PH}def{$PH_1}': 'ABC{$PH}DEF{$PH_1}',
+          'Hello, {$PH}!': 'HELLO, {$PH}!',
+        }),
+      );
     });
     afterEach(() => {
       clearTranslations();
@@ -62,9 +66,11 @@ describe('$localize tag with translations', () => {
 
   describe('to reverse expressions', () => {
     beforeEach(() => {
-      loadTranslations(computeIds({
-        'abc{$PH}def{$PH_1} - Hello, {$PH_2}!': 'abc{$PH_2}def{$PH_1} - Hello, {$PH}!',
-      }));
+      loadTranslations(
+        computeIds({
+          'abc{$PH}def{$PH_1} - Hello, {$PH_2}!': 'abc{$PH_2}def{$PH_1} - Hello, {$PH}!',
+        }),
+      );
     });
     afterEach(() => {
       clearTranslations();
@@ -72,16 +78,19 @@ describe('$localize tag with translations', () => {
 
     it('should render template literals with expressions reversed', () => {
       const getName = () => 'World';
-      expect($localize`abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`)
-          .toEqual('abcWorlddef15 - Hello, 6!');
+      expect($localize`abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`).toEqual(
+        'abcWorlddef15 - Hello, 6!',
+      );
     });
   });
 
   describe('to remove expressions', () => {
     beforeEach(() => {
-      loadTranslations(computeIds({
-        'abc{$PH}def{$PH_1} - Hello, {$PH_2}!': 'abc{$PH} - Hello, {$PH_2}!',
-      }));
+      loadTranslations(
+        computeIds({
+          'abc{$PH}def{$PH_1} - Hello, {$PH_2}!': 'abc{$PH} - Hello, {$PH_2}!',
+        }),
+      );
     });
     afterEach(() => {
       clearTranslations();
@@ -89,15 +98,19 @@ describe('$localize tag with translations', () => {
 
     it('should render template literals with expressions removed', () => {
       const getName = () => 'World';
-      expect($localize`abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`)
-          .toEqual('abc6 - Hello, World!');
+      expect($localize`abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`).toEqual(
+        'abc6 - Hello, World!',
+      );
     });
   });
 });
 
-function computeIds(translations: Record<MessageId, TargetMessage>):
-    Record<MessageId, TargetMessage> {
+function computeIds(
+  translations: Record<MessageId, TargetMessage>,
+): Record<MessageId, TargetMessage> {
   const processed: Record<MessageId, TargetMessage> = {};
-  Object.keys(translations).forEach(key => processed[computeMsgId(key, '')] = translations[key]);
+  Object.keys(translations).forEach(
+    (key) => (processed[computeMsgId(key, '')] = translations[key]),
+  );
   return processed;
 }

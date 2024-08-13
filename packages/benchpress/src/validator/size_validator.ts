@@ -19,7 +19,7 @@ export class SizeValidator extends Validator {
   static SAMPLE_SIZE = new InjectionToken('SizeValidator.sampleSize');
   static PROVIDERS = [
     {provide: SizeValidator, deps: [SizeValidator.SAMPLE_SIZE]},
-    {provide: SizeValidator.SAMPLE_SIZE, useValue: 10}
+    {provide: SizeValidator.SAMPLE_SIZE, useValue: 10},
   ];
 
   constructor(@Inject(SizeValidator.SAMPLE_SIZE) private _sampleSize: number) {
@@ -30,7 +30,7 @@ export class SizeValidator extends Validator {
     return {'sampleSize': this._sampleSize};
   }
 
-  override validate(completeSample: MeasureValues[]): MeasureValues[]|null {
+  override validate(completeSample: MeasureValues[]): MeasureValues[] | null {
     if (completeSample.length >= this._sampleSize) {
       return completeSample.slice(completeSample.length - this._sampleSize, completeSample.length);
     } else {

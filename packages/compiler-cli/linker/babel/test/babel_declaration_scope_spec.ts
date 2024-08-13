@@ -6,27 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {types as t} from '@babel/core';
-import parser from '@babel/parser';
-import _traverse, {NodePath} from '@babel/traverse';
+import {NodePath, parse, traverse, types as t} from '@babel/core';
 
 import {BabelDeclarationScope} from '../src/babel_declaration_scope';
-
-// Babel is a CJS package and misuses the `default` named binding:
-// https://github.com/babel/babel/issues/15269.
-const traverse = (_traverse as any)['default'] as typeof _traverse;
 
 describe('BabelDeclarationScope', () => {
   describe('getConstantScopeRef()', () => {
     it('should return a path to the ES module where the expression was imported', () => {
-      const ast = parser.parse(
-                      [
-                        'import * as core from \'@angular/core\';',
-                        'function foo() {',
-                        '  var TEST = core;',
-                        '}',
-                      ].join('\n'),
-                      {sourceType: 'module'}) as t.File;
+      const ast = parse(
+        [
+          "import * as core from '@angular/core';",
+          'function foo() {',
+          '  var TEST = core;',
+          '}',
+        ].join('\n'),
+        {sourceType: 'module'},
+      ) as t.File;
       const nodePath = findVarDeclaration(ast, 'TEST');
       const scope = new BabelDeclarationScope(nodePath.scope);
       const constantScope = scope.getConstantScopeRef(nodePath.get('init').node);
@@ -35,14 +30,10 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return a path to the ES Module where the expression is declared', () => {
-      const ast = parser.parse(
-                      [
-                        'var core;',
-                        'export function foo() {',
-                        '  var TEST = core;',
-                        '}',
-                      ].join('\n'),
-                      {sourceType: 'module'}) as t.File;
+      const ast = parse(
+        ['var core;', 'export function foo() {', '  var TEST = core;', '}'].join('\n'),
+        {sourceType: 'module'},
+      ) as t.File;
       const nodePath = findVarDeclaration(ast, 'TEST');
       const scope = new BabelDeclarationScope(nodePath.scope);
       const constantScope = scope.getConstantScopeRef(nodePath.get('init').node);
@@ -51,14 +42,9 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return null if the file is not an ES module', () => {
-      const ast = parser.parse(
-                      [
-                        'var core;',
-                        'function foo() {',
-                        '  var TEST = core;',
-                        '}',
-                      ].join('\n'),
-                      {sourceType: 'script'}) as t.File;
+      const ast = parse(['var core;', 'function foo() {', '  var TEST = core;', '}'].join('\n'), {
+        sourceType: 'script',
+      }) as t.File;
       const nodePath = findVarDeclaration(ast, 'TEST');
       const scope = new BabelDeclarationScope(nodePath.scope);
       const constantScope = scope.getConstantScopeRef(nodePath.get('init').node);
@@ -66,17 +52,18 @@ describe('BabelDeclarationScope', () => {
     });
 
     it('should return the IIFE factory function where the expression is a parameter', () => {
-      const ast = parser.parse(
-                      [
-                        'var core;',
-                        '(function(core) {',
-                        '  var BLOCK = \'block\';',
-                        '  function foo() {',
-                        '    var TEST = core;',
-                        '  }',
-                        '})(core);',
-                      ].join('\n'),
-                      {sourceType: 'script'}) as t.File;
+      const ast = parse(
+        [
+          'var core;',
+          '(function(core) {',
+          "  var BLOCK = 'block';",
+          '  function foo() {',
+          '    var TEST = core;',
+          '  }',
+          '})(core);',
+        ].join('\n'),
+        {sourceType: 'script'},
+      ) as t.File;
       const nodePath = findVarDeclaration(ast, 'TEST');
       const fnPath = findFirstFunction(ast);
       const scope = new BabelDeclarationScope(nodePath.scope);
@@ -94,11 +81,13 @@ describe('BabelDeclarationScope', () => {
  * Note: the `init` property is explicitly omitted to workaround a performance cliff in the
  * TypeScript type checker.
  */
-type InitializedVariableDeclarator = Omit<t.VariableDeclarator, 'init'>&{init: t.Expression};
+type InitializedVariableDeclarator = Omit<t.VariableDeclarator, 'init'> & {init: t.Expression};
 
 function findVarDeclaration(
-    file: t.File, varName: string): NodePath<InitializedVariableDeclarator> {
-  let varDecl: NodePath<t.VariableDeclarator>|undefined = undefined;
+  file: t.File,
+  varName: string,
+): NodePath<InitializedVariableDeclarator> {
+  let varDecl: NodePath<t.VariableDeclarator> | undefined = undefined;
   traverse(file, {
     VariableDeclarator: (path: NodePath<t.VariableDeclarator>) => {
       const id = path.get('id');
@@ -106,7 +95,7 @@ function findVarDeclaration(
         varDecl = path;
         path.stop();
       }
-    }
+    },
   });
   if (varDecl === undefined) {
     throw new Error(`TEST BUG: expected to find variable declaration for ${varName}.`);
@@ -115,12 +104,12 @@ function findVarDeclaration(
 }
 
 function findFirstFunction(file: t.File): NodePath<t.Function> {
-  let fn: NodePath<t.Function>|undefined = undefined;
+  let fn: NodePath<t.Function> | undefined = undefined;
   traverse(file, {
     Function: (path) => {
       fn = path;
       path.stop();
-    }
+    },
   });
   if (fn === undefined) {
     throw new Error(`TEST BUG: expected to find a function.`);

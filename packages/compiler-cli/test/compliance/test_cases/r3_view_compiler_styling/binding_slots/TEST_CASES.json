@@ -41,8 +41,7 @@
             "host_binding_slots.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

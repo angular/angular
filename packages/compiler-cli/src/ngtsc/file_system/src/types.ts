@@ -12,7 +12,7 @@
  * A `string` is not assignable to a `BrandedPath`, but a `BrandedPath` is assignable to a `string`.
  * Two `BrandedPath`s with different brands are not mutually assignable.
  */
-export type BrandedPath<B extends string> = string&{
+export type BrandedPath<B extends string> = string & {
   _brand: B;
 };
 
@@ -32,11 +32,11 @@ export type PathSegment = BrandedPath<'PathSegment'>;
  * An abstraction over the path manipulation aspects of a file-system.
  */
 export interface PathManipulation {
-  extname(path: AbsoluteFsPath|PathSegment): string;
+  extname(path: AbsoluteFsPath | PathSegment): string;
   isRoot(path: AbsoluteFsPath): boolean;
   isRooted(path: string): boolean;
   dirname<T extends PathString>(file: T): T;
-  extname(path: AbsoluteFsPath|PathSegment): string;
+  extname(path: AbsoluteFsPath | PathSegment): string;
   join<T extends PathString>(basePath: T, ...paths: string[]): T;
   /**
    * Compute the relative path between `from` and `to`.
@@ -45,7 +45,7 @@ export interface PathManipulation {
    * "relative" (i.e. `PathSegment`). For example, Windows can have multiple drives :
    * `relative('c:/a/b', 'd:/a/c')` would be `d:/a/c'.
    */
-  relative<T extends PathString>(from: T, to: T): PathSegment|AbsoluteFsPath;
+  relative<T extends PathString>(from: T, to: T): PathSegment | AbsoluteFsPath;
   basename(filePath: string, extension?: string): PathSegment;
   normalize<T extends PathString>(path: T): T;
   resolve(...paths: string[]): AbsoluteFsPath;
@@ -75,7 +75,7 @@ export interface ReadonlyFileSystem extends PathManipulation {
  * but also to create clever file-systems that have features such as caching.
  */
 export interface FileSystem extends ReadonlyFileSystem {
-  writeFile(path: AbsoluteFsPath, data: string|Uint8Array, exclusive?: boolean): void;
+  writeFile(path: AbsoluteFsPath, data: string | Uint8Array, exclusive?: boolean): void;
   removeFile(path: AbsoluteFsPath): void;
   symlink(target: AbsoluteFsPath, path: AbsoluteFsPath): void;
   copyFile(from: AbsoluteFsPath, to: AbsoluteFsPath): void;
@@ -84,7 +84,7 @@ export interface FileSystem extends ReadonlyFileSystem {
   removeDeep(path: AbsoluteFsPath): void;
 }
 
-export type PathString = string|AbsoluteFsPath|PathSegment;
+export type PathString = string | AbsoluteFsPath | PathSegment;
 
 /**
  * Information about an object in the FileSystem.

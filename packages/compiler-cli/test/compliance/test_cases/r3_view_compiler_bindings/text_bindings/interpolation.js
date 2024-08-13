@@ -6,7 +6,7 @@ template:function MyComponent_Template(rf, $ctx$){
     $i0$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $i0$.ɵɵtextInterpolate1("Hello ", $ctx$.name, "");
   }
 }

@@ -19,31 +19,29 @@ import {InjectableDecoratorHandler} from '../src/injectable';
 runInEachFileSystem(() => {
   describe('InjectableDecoratorHandler', () => {
     describe('compile()', () => {
-      it('should produce a diagnostic when injectable already has a static ɵprov property (with errorOnDuplicateProv true)',
-         () => {
-           const {handler, TestClass, ɵprov, analysis} =
-               setupHandler(/* errorOnDuplicateProv */ true);
-           try {
-             handler.compileFull(TestClass, analysis);
-             return fail('Compilation should have failed');
-           } catch (err) {
-             if (!(err instanceof FatalDiagnosticError)) {
-               return fail('Error should be a FatalDiagnosticError');
-             }
-             const diag = err.toDiagnostic();
-             expect(diag.code).toEqual(ngErrorCode(ErrorCode.INJECTABLE_DUPLICATE_PROV));
-             expect(diag.file.fileName.endsWith('entry.ts')).toBe(true);
-             expect(diag.start).toBe(ɵprov.nameNode!.getStart());
-           }
-         });
+      it('should produce a diagnostic when injectable already has a static ɵprov property (with errorOnDuplicateProv true)', () => {
+        const {handler, TestClass, ɵprov, analysis} = setupHandler(/* errorOnDuplicateProv */ true);
+        try {
+          handler.compileFull(TestClass, analysis);
+          return fail('Compilation should have failed');
+        } catch (err) {
+          if (!(err instanceof FatalDiagnosticError)) {
+            return fail('Error should be a FatalDiagnosticError');
+          }
+          const diag = err.toDiagnostic();
+          expect(diag.code).toEqual(ngErrorCode(ErrorCode.INJECTABLE_DUPLICATE_PROV));
+          expect(diag.file.fileName.endsWith('entry.ts')).toBe(true);
+          expect(diag.start).toBe(ɵprov.nameNode!.getStart());
+        }
+      });
 
-      it('should not add new ɵprov property when injectable already has one (with errorOnDuplicateProv false)',
-         () => {
-           const {handler, TestClass, ɵprov, analysis} =
-               setupHandler(/* errorOnDuplicateProv */ false);
-           const res = handler.compileFull(TestClass, analysis);
-           expect(res).not.toContain(jasmine.objectContaining({name: 'ɵprov'}));
-         });
+      it('should not add new ɵprov property when injectable already has one (with errorOnDuplicateProv false)', () => {
+        const {handler, TestClass, ɵprov, analysis} = setupHandler(
+          /* errorOnDuplicateProv */ false,
+        );
+        const res = handler.compileFull(TestClass, analysis);
+        expect(res).not.toContain(jasmine.objectContaining({name: 'ɵprov'}));
+      });
     });
   });
 });
@@ -64,7 +62,7 @@ function setupHandler(errorOnDuplicateProv: boolean) {
         @Injectable({providedIn: 'module'})
         export class TestClass {
           static ɵprov = ɵɵdefineInjectable({ factory: () => {}, token: TestClassToken, providedIn: "module" });
-        }`
+        }`,
     },
   ]);
   const checker = program.getTypeChecker();
@@ -72,11 +70,20 @@ function setupHandler(errorOnDuplicateProv: boolean) {
   const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
   const evaluator = new PartialEvaluator(reflectionHost, checker, null);
   const handler = new InjectableDecoratorHandler(
-      reflectionHost, evaluator, /* isCore */ false,
-      /* strictCtorDeps */ false, injectableRegistry, NOOP_PERF_RECORDER, true,
-      /*compilationMode */ CompilationMode.FULL, errorOnDuplicateProv);
+    reflectionHost,
+    evaluator,
+    /* isCore */ false,
+    /* strictCtorDeps */ false,
+    injectableRegistry,
+    NOOP_PERF_RECORDER,
+    true,
+    /*compilationMode */ CompilationMode.FULL,
+    errorOnDuplicateProv,
+  );
   const TestClass = getDeclaration(program, ENTRY_FILE, 'TestClass', isNamedClassDeclaration);
-  const ɵprov = reflectionHost.getMembersOfClass(TestClass).find(member => member.name === 'ɵprov');
+  const ɵprov = reflectionHost
+    .getMembersOfClass(TestClass)
+    .find((member) => member.name === 'ɵprov');
   if (ɵprov === undefined) {
     throw new Error('TestClass did not contain a `ɵprov` member');
   }

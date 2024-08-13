@@ -6,7 +6,39 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, ParseSourceSpan, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {
+  AST,
+  ASTWithSource,
+  ParseSourceSpan,
+  RecursiveAstVisitor,
+  TmplAstBoundAttribute,
+  TmplAstBoundDeferredTrigger,
+  TmplAstBoundEvent,
+  TmplAstBoundText,
+  TmplAstContent,
+  TmplAstDeferredBlock,
+  TmplAstDeferredBlockError,
+  TmplAstDeferredBlockLoading,
+  TmplAstDeferredBlockPlaceholder,
+  TmplAstDeferredTrigger,
+  TmplAstElement,
+  TmplAstForLoopBlock,
+  TmplAstForLoopBlockEmpty,
+  TmplAstIcu,
+  TmplAstIfBlock,
+  TmplAstIfBlockBranch,
+  TmplAstLetDeclaration,
+  TmplAstNode,
+  TmplAstRecursiveVisitor,
+  TmplAstReference,
+  TmplAstSwitchBlock,
+  TmplAstSwitchBlockCase,
+  TmplAstTemplate,
+  TmplAstText,
+  TmplAstTextAttribute,
+  TmplAstUnknownBlock,
+  TmplAstVariable,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {NgCompilerOptions} from '../../../core/api';
@@ -22,8 +54,11 @@ export interface TemplateCheck<Code extends ErrorCode> {
   code: Code;
 
   /** Runs check and returns information about the diagnostics to be generated. */
-  run(ctx: TemplateContext<Code>, component: ts.ClassDeclaration,
-      template: TmplAstNode[]): NgTemplateDiagnostic<Code>[];
+  run(
+    ctx: TemplateContext<Code>,
+    component: ts.ClassDeclaration,
+    template: TmplAstNode[],
+  ): NgTemplateDiagnostic<Code>[];
 }
 
 /**
@@ -43,12 +78,16 @@ export interface TemplateContext<Code extends ErrorCode> {
    * Creates a template diagnostic with the given information for the template being processed and
    * using the diagnostic category configured for the extended template diagnostic.
    */
-  makeTemplateDiagnostic(sourceSpan: ParseSourceSpan, message: string, relatedInformation?: {
-    text: string,
-    start: number,
-    end: number,
-    sourceFile: ts.SourceFile,
-  }[]): NgTemplateDiagnostic<Code>;
+  makeTemplateDiagnostic(
+    sourceSpan: ParseSourceSpan,
+    message: string,
+    relatedInformation?: {
+      text: string;
+      start: number;
+      end: number;
+      sourceFile: ts.SourceFile;
+    }[],
+  ): NgTemplateDiagnostic<Code>;
 }
 
 /**
@@ -61,22 +100,37 @@ export interface TemplateCheckFactory<
 > {
   code: Code;
   name: Name;
-  create(options: NgCompilerOptions): TemplateCheck<Code>|null;
+  create(options: NgCompilerOptions): TemplateCheck<Code> | null;
 }
 
 /**
  * This abstract class provides a base implementation for the run method.
  */
-export abstract class TemplateCheckWithVisitor<Code extends ErrorCode> implements
-    TemplateCheck<Code> {
+export abstract class TemplateCheckWithVisitor<Code extends ErrorCode>
+  implements TemplateCheck<Code>
+{
+  /**
+   * When extended diagnostics were first introduced, the visitor wasn't implemented correctly
+   * which meant that it wasn't visiting the `templateAttrs` of structural directives (e.g.
+   * the expression of `*ngIf`). Fixing the issue causes a lot of internal breakages and will likely
+   * need to be done in a major version to avoid external breakages. This flag is used to opt out
+   * pre-existing diagnostics from the correct behavior until the breakages have been fixed while
+   * ensuring that newly-written diagnostics are correct from the beginning.
+   * TODO(crisbeto): remove this flag and fix the internal brekages.
+   */
+  readonly canVisitStructuralAttributes: boolean = true;
+
   abstract code: Code;
 
   /**
    * Base implementation for run function, visits all nodes in template and calls
    * `visitNode()` for each one.
    */
-  run(ctx: TemplateContext<Code>, component: ts.ClassDeclaration,
-      template: TmplAstNode[]): NgTemplateDiagnostic<Code>[] {
+  run(
+    ctx: TemplateContext<Code>,
+    component: ts.ClassDeclaration,
+    template: TmplAstNode[],
+  ): NgTemplateDiagnostic<Code>[] {
     const visitor = new TemplateVisitor<Code>(ctx, component, this);
     return visitor.getDiagnostics(template);
   }
@@ -86,24 +140,30 @@ export abstract class TemplateCheckWithVisitor<Code extends ErrorCode> implement
    * method to implement the check and return diagnostics.
    */
   abstract visitNode(
-      ctx: TemplateContext<Code>, component: ts.ClassDeclaration,
-      node: TmplAstNode|AST): NgTemplateDiagnostic<Code>[];
+    ctx: TemplateContext<Code>,
+    component: ts.ClassDeclaration,
+    node: TmplAstNode | AST,
+  ): NgTemplateDiagnostic<Code>[];
 }
 
 /**
  * Visits all nodes in a template (TmplAstNode and AST) and calls `visitNode` for each one.
  */
-class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implements
-    TmplAstRecursiveVisitor {
+class TemplateVisitor<Code extends ErrorCode>
+  extends RecursiveAstVisitor
+  implements TmplAstRecursiveVisitor
+{
   diagnostics: NgTemplateDiagnostic<Code>[] = [];
 
   constructor(
-      private readonly ctx: TemplateContext<Code>, private readonly component: ts.ClassDeclaration,
-      private readonly check: TemplateCheckWithVisitor<Code>) {
+    private readonly ctx: TemplateContext<Code>,
+    private readonly component: ts.ClassDeclaration,
+    private readonly check: TemplateCheckWithVisitor<Code>,
+  ) {
     super();
   }
 
-  override visit(node: AST|TmplAstNode, context?: any) {
+  override visit(node: AST | TmplAstNode, context?: any) {
     this.diagnostics.push(...this.check.visitNode(this.ctx, this.component, node));
     node.visit(this);
   }
@@ -130,23 +190,34 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
   }
 
   visitTemplate(template: TmplAstTemplate) {
+    const isInlineTemplate = template.tagName === 'ng-template';
     this.visitAllNodes(template.attributes);
-    if (template.tagName === 'ng-template') {
-      // Only visit input/outputs/templateAttrs if this isn't an inline template node
-      // generated for a structural directive (like `<div *ngIf></div>`). These nodes
-      // would be visited when the underlying element of an inline template node is processed.
+
+    if (isInlineTemplate) {
+      // Only visit input/outputs if this isn't an inline template node generated for a structural
+      // directive (like `<div *ngIf></div>`). These nodes would be visited when the underlying
+      // element of an inline template node is processed.
       this.visitAllNodes(template.inputs);
       this.visitAllNodes(template.outputs);
+    }
+
+    // TODO(crisbeto): remove this condition when deleting `canVisitStructuralAttributes`.
+    if (this.check.canVisitStructuralAttributes || isInlineTemplate) {
+      // `templateAttrs` aren't transferred over to the inner element so we always have to visit them.
       this.visitAllNodes(template.templateAttrs);
     }
+
     this.visitAllNodes(template.variables);
     this.visitAllNodes(template.references);
     this.visitAllNodes(template.children);
   }
-  visitContent(content: TmplAstContent): void {}
+  visitContent(content: TmplAstContent): void {
+    this.visitAllNodes(content.children);
+  }
   visitVariable(variable: TmplAstVariable): void {}
   visitReference(reference: TmplAstReference): void {}
   visitTextAttribute(attribute: TmplAstTextAttribute): void {}
+  visitUnknownBlock(block: TmplAstUnknownBlock): void {}
   visitBoundAttribute(attribute: TmplAstBoundAttribute): void {
     this.visitAst(attribute.value);
   }
@@ -158,7 +229,6 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
     this.visitAst(text.value);
   }
   visitIcu(icu: TmplAstIcu): void {}
-
 
   visitDeferredBlock(deferred: TmplAstDeferredBlock): void {
     deferred.visitAll(this);
@@ -194,7 +264,7 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
 
   visitForLoopBlock(block: TmplAstForLoopBlock): void {
     block.item.visit(this);
-    this.visitAllNodes(Object.values(block.contextVariables));
+    this.visitAllNodes(block.contextVariables);
     this.visitAst(block.expression);
     this.visitAllNodes(block.children);
     block.empty?.visit(this);
@@ -212,6 +282,10 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
     block.expression && this.visitAst(block.expression);
     block.expressionAlias?.visit(this);
     this.visitAllNodes(block.children);
+  }
+
+  visitLetDeclaration(decl: TmplAstLetDeclaration): void {
+    this.visitAst(decl.value);
   }
 
   getDiagnostics(template: TmplAstNode[]): NgTemplateDiagnostic<Code>[] {

@@ -5,7 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Attribute, Block, BlockParameter, Comment, Element, Expansion, ExpansionCase, Text, Visitor} from '@angular/compiler';
+import {
+  Attribute,
+  Block,
+  BlockParameter,
+  Comment,
+  Element,
+  Expansion,
+  ExpansionCase,
+  LetDeclaration,
+  Text,
+  Visitor,
+} from '@angular/compiler';
 
 /**
  * A simple base class for the  `Visitor` interface, which is a noop for every method.
@@ -21,4 +32,5 @@ export class BaseVisitor implements Visitor {
   visitExpansionCase(_expansionCase: ExpansionCase, _context: any): any {}
   visitBlock(_block: Block, _context: any) {}
   visitBlockParameter(_parameter: BlockParameter, _context: any) {}
+  visitLetDeclaration(_decl: LetDeclaration, _context: any) {}
 }

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -38,9 +38,7 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
-        "//aio:__pkg__",
-        "//aio/content/examples:__subpackages__",
-        "//aio/tools/examples:__pkg__",
+        "//adev:__pkg__",
         "//integration:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
@@ -48,6 +46,7 @@ ng_package(
     deps = [
         ":platform-browser",
         "//packages/platform-browser/animations",
+        "//packages/platform-browser/animations/async",
         "//packages/platform-browser/testing",
     ],
 )
@@ -69,7 +68,7 @@ api_golden_test(
         "//packages/platform-browser",
     ],
     entry_point = "angular/packages/platform-browser/src/errors.d.ts",
-    golden = "angular/goldens/public-api/platform-browser/errors.md",
+    golden = "angular/goldens/public-api/platform-browser/errors.api.md",
 )
 
 filegroup(
@@ -78,4 +77,14 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "platform-browser_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/platform-browser",
 )

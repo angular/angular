@@ -12,7 +12,6 @@ ng_module(
     name = "directive-forest",
     srcs = [
         "directive-forest.component.ts",
-        "directive-forest.module.ts",
         "directive-forest-utils.ts",
     ],
     angular_assets = [
@@ -29,6 +28,7 @@ ng_module(
         "//devtools/projects/protocol",
         "//packages/common",
         "//packages/core",
+        "//packages/core/rxjs-interop",
         "@npm//@angular/cdk",
         "@npm//@angular/material",
         "@npm//@types",

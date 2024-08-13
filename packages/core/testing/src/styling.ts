@@ -47,7 +47,7 @@ export function getSortedStyle(element: Element): string {
   const names: string[] = Object.keys(styles);
   names.sort();
   let sorted = '';
-  names.forEach(key => {
+  names.forEach((key) => {
     const value = styles[key];
     if (value != null && value !== '') {
       if (sorted !== '') sorted += ' ';

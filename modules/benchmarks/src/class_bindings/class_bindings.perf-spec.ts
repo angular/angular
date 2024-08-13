@@ -18,7 +18,7 @@ describe('class bindings perf', () => {
       ignoreBrowserSynchronization: true,
       params: [],
       prepare: () => $('#destroy').click(),
-      work: () => $('#create').click()
+      work: () => $('#create').click(),
     });
   });
 
@@ -30,7 +30,7 @@ describe('class bindings perf', () => {
       ignoreBrowserSynchronization: true,
       params: [],
       prepare: () => $('#create').click(),
-      work: () => $('#update').click()
+      work: () => $('#update').click(),
     });
   });
 });

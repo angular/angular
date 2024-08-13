@@ -1,4 +1,5 @@
 /**
+ *
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -10,111 +11,158 @@ import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
 
-import {CompilationJobKind as Kind, type ComponentCompilationJob, type HostBindingCompilationJob, type ViewCompilationUnit, CompilationJob} from './compilation';
+import {
+  CompilationJob,
+  CompilationJobKind as Kind,
+  type ComponentCompilationJob,
+  type HostBindingCompilationJob,
+  type ViewCompilationUnit,
+} from './compilation';
 
-import {phaseAlignPipeVariadicVarOffset} from './phases/align_pipe_variadic_var_offset';
-import {phaseFindAnyCasts} from './phases/any_cast';
-import {phaseAttributeExtraction} from './phases/attribute_extraction';
-import {phaseBindingSpecialization} from './phases/binding_specialization';
-import {phaseChaining} from './phases/chaining';
-import {phaseConditionals} from './phases/conditionals';
-import {phaseConstCollection} from './phases/const_collection';
-import {phaseEmptyElements} from './phases/empty_elements';
-import {phaseExpandSafeReads} from './phases/expand_safe_reads';
-import {phaseGenerateAdvance} from './phases/generate_advance';
-import {phaseGenerateI18nBlocks} from './phases/generate_i18n_blocks';
-import {phaseGenerateVariables} from './phases/generate_variables';
-import {phaseHostStylePropertyParsing} from './phases/host_style_property_parsing';
-import {phaseI18nMessageExtraction} from './phases/i18n_message_extraction';
-import {phaseI18nTextExtraction} from './phases/i18n_text_extraction';
-import {phaseLocalRefs} from './phases/local_refs';
-import {phaseNamespace} from './phases/namespace';
-import {phaseNaming} from './phases/naming';
-import {phaseMergeNextContext} from './phases/next_context_merging';
-import {phaseNgContainer} from './phases/ng_container';
-import {phaseNoListenersOnTemplates} from './phases/no_listeners_on_templates';
-import {phaseNonbindable} from './phases/nonbindable';
-import {phaseNullishCoalescing} from './phases/nullish_coalescing';
-import {phaseParseExtractedStyles} from './phases/parse_extracted_styles';
-import {phasePipeCreation} from './phases/pipe_creation';
-import {phasePipeVariadic} from './phases/pipe_variadic';
-import {phaseOrdering} from './phases/ordering';
-import {phasePureFunctionExtraction} from './phases/pure_function_extraction';
-import {phasePureLiteralStructures} from './phases/pure_literal_structures';
-import {phaseReify} from './phases/reify';
-import {phaseRemoveEmptyBindings} from './phases/remove_empty_bindings';
-import {phaseResolveContexts} from './phases/resolve_contexts';
-import {phaseResolveDollarEvent} from './phases/resolve_dollar_event';
-import {phaseResolveI18nPlaceholders} from './phases/resolve_i18n_placeholders';
-import {phaseResolveNames} from './phases/resolve_names';
-import {phaseResolveSanitizers} from './phases/resolve_sanitizers';
-import {phaseSaveRestoreView} from './phases/save_restore_view';
-import {phaseSlotAllocation} from './phases/slot_allocation';
-import {phaseStyleBindingSpecialization} from './phases/style_binding_specialization';
-import {phaseTemporaryVariables} from './phases/temporary_variables';
-import {phaseVarCounting} from './phases/var_counting';
-import {phaseVariableOptimization} from './phases/variable_optimization';
-import {phaseGenerateProjectionDef} from './phases/generate_projection_def';
-import {phaseI18nConstCollection} from './phases/i18n_const_collection';
-import {phaseRemoveContentSelectors} from './phases/phase_remove_content_selectors';
+import {deleteAnyCasts} from './phases/any_cast';
+import {applyI18nExpressions} from './phases/apply_i18n_expressions';
+import {assignI18nSlotDependencies} from './phases/assign_i18n_slot_dependencies';
+import {extractAttributes} from './phases/attribute_extraction';
+import {specializeBindings} from './phases/binding_specialization';
+import {chain} from './phases/chaining';
+import {collapseSingletonInterpolations} from './phases/collapse_singleton_interpolations';
+import {generateConditionalExpressions} from './phases/conditionals';
+import {collectElementConsts} from './phases/const_collection';
+import {convertI18nBindings} from './phases/convert_i18n_bindings';
+import {resolveDeferDepsFns} from './phases/resolve_defer_deps_fns';
+import {createI18nContexts} from './phases/create_i18n_contexts';
+import {deduplicateTextBindings} from './phases/deduplicate_text_bindings';
+import {configureDeferInstructions} from './phases/defer_configs';
+import {resolveDeferTargetNames} from './phases/defer_resolve_targets';
+import {collapseEmptyInstructions} from './phases/empty_elements';
+import {expandSafeReads} from './phases/expand_safe_reads';
+import {extractI18nMessages} from './phases/extract_i18n_messages';
+import {generateAdvance} from './phases/generate_advance';
+import {generateProjectionDefs} from './phases/generate_projection_def';
+import {generateVariables} from './phases/generate_variables';
+import {collectConstExpressions} from './phases/has_const_expression_collection';
+import {parseHostStyleProperties} from './phases/host_style_property_parsing';
+import {collectI18nConsts} from './phases/i18n_const_collection';
+import {convertI18nText} from './phases/i18n_text_extraction';
+import {liftLocalRefs} from './phases/local_refs';
+import {emitNamespaceChanges} from './phases/namespace';
+import {nameFunctionsAndVariables} from './phases/naming';
+import {mergeNextContextExpressions} from './phases/next_context_merging';
+import {generateNgContainerOps} from './phases/ng_container';
+import {disableBindings} from './phases/nonbindable';
+import {generateNullishCoalesceExpressions} from './phases/nullish_coalescing';
+import {orderOps} from './phases/ordering';
+import {parseExtractedStyles} from './phases/parse_extracted_styles';
+import {removeContentSelectors} from './phases/phase_remove_content_selectors';
+import {createPipes} from './phases/pipe_creation';
+import {createVariadicPipes} from './phases/pipe_variadic';
+import {propagateI18nBlocks} from './phases/propagate_i18n_blocks';
+import {extractPureFunctions} from './phases/pure_function_extraction';
+import {generatePureLiteralStructures} from './phases/pure_literal_structures';
+import {reify} from './phases/reify';
+import {removeEmptyBindings} from './phases/remove_empty_bindings';
+import {removeI18nContexts} from './phases/remove_i18n_contexts';
+import {removeUnusedI18nAttributesOps} from './phases/remove_unused_i18n_attrs';
+import {resolveContexts} from './phases/resolve_contexts';
+import {resolveDollarEvent} from './phases/resolve_dollar_event';
+import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
+import {resolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
+import {resolveNames} from './phases/resolve_names';
+import {resolveSanitizers} from './phases/resolve_sanitizers';
+import {transformTwoWayBindingSet} from './phases/transform_two_way_binding_set';
+import {saveAndRestoreView} from './phases/save_restore_view';
+import {allocateSlots} from './phases/slot_allocation';
+import {specializeStyleBindings} from './phases/style_binding_specialization';
+import {generateTemporaryVariables} from './phases/temporary_variables';
+import {generateTrackFns} from './phases/track_fn_generation';
+import {optimizeTrackFns} from './phases/track_fn_optimization';
+import {generateTrackVariables} from './phases/track_variables';
+import {countVariables} from './phases/var_counting';
+import {optimizeVariables} from './phases/variable_optimization';
+import {wrapI18nIcus} from './phases/wrap_icus';
+import {optimizeStoreLet} from './phases/store_let_optimization';
+import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
+import {generateLocalLetReferences} from './phases/generate_local_let_references';
 
-type Phase = {
-  fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
-}|{
-  fn: (job: ComponentCompilationJob) => void;
-  kind: Kind.Tmpl;
-}
-|{
-  fn: (job: HostBindingCompilationJob) => void;
-  kind: Kind.Host;
-};
+type Phase =
+  | {
+      fn: (job: CompilationJob) => void;
+      kind: Kind.Both | Kind.Host | Kind.Tmpl;
+    }
+  | {
+      fn: (job: ComponentCompilationJob) => void;
+      kind: Kind.Tmpl;
+    }
+  | {
+      fn: (job: HostBindingCompilationJob) => void;
+      kind: Kind.Host;
+    };
 
 const phases: Phase[] = [
-  {kind: Kind.Tmpl, fn: phaseRemoveContentSelectors},
-  {kind: Kind.Tmpl, fn: phaseGenerateI18nBlocks},
-  {kind: Kind.Tmpl, fn: phaseI18nTextExtraction},
-  {kind: Kind.Host, fn: phaseHostStylePropertyParsing},
-  {kind: Kind.Tmpl, fn: phaseNamespace},
-  {kind: Kind.Both, fn: phaseStyleBindingSpecialization},
-  {kind: Kind.Both, fn: phaseBindingSpecialization},
-  {kind: Kind.Both, fn: phaseAttributeExtraction},
-  {kind: Kind.Both, fn: phaseParseExtractedStyles},
-  {kind: Kind.Tmpl, fn: phaseRemoveEmptyBindings},
-  {kind: Kind.Tmpl, fn: phaseConditionals},
-  {kind: Kind.Tmpl, fn: phaseNoListenersOnTemplates},
-  {kind: Kind.Tmpl, fn: phasePipeCreation},
-  {kind: Kind.Tmpl, fn: phasePipeVariadic},
-  {kind: Kind.Both, fn: phasePureLiteralStructures},
-  {kind: Kind.Tmpl, fn: phaseGenerateProjectionDef},
-  {kind: Kind.Tmpl, fn: phaseGenerateVariables},
-  {kind: Kind.Tmpl, fn: phaseSaveRestoreView},
-  {kind: Kind.Tmpl, fn: phaseFindAnyCasts},
-  {kind: Kind.Both, fn: phaseResolveDollarEvent},
-  {kind: Kind.Both, fn: phaseResolveNames},
-  {kind: Kind.Both, fn: phaseResolveContexts},
-  {kind: Kind.Tmpl, fn: phaseResolveSanitizers},  // TODO: run in both
-  {kind: Kind.Tmpl, fn: phaseLocalRefs},
-  {kind: Kind.Both, fn: phaseNullishCoalescing},
-  {kind: Kind.Both, fn: phaseExpandSafeReads},
-  {kind: Kind.Both, fn: phaseTemporaryVariables},
-  {kind: Kind.Tmpl, fn: phaseSlotAllocation},
-  {kind: Kind.Tmpl, fn: phaseResolveI18nPlaceholders},
-  {kind: Kind.Tmpl, fn: phaseI18nMessageExtraction},
-  {kind: Kind.Tmpl, fn: phaseI18nConstCollection},
-  {kind: Kind.Both, fn: phaseConstCollection},
-  {kind: Kind.Both, fn: phaseVarCounting},
-  {kind: Kind.Tmpl, fn: phaseGenerateAdvance},
-  {kind: Kind.Both, fn: phaseVariableOptimization},
-  {kind: Kind.Both, fn: phaseNaming},
-  {kind: Kind.Tmpl, fn: phaseMergeNextContext},
-  {kind: Kind.Tmpl, fn: phaseNgContainer},
-  {kind: Kind.Tmpl, fn: phaseEmptyElements},
-  {kind: Kind.Tmpl, fn: phaseNonbindable},
-  {kind: Kind.Both, fn: phasePureFunctionExtraction},
-  {kind: Kind.Tmpl, fn: phaseAlignPipeVariadicVarOffset},
-  {kind: Kind.Both, fn: phaseOrdering},
-  {kind: Kind.Both, fn: phaseReify},
-  {kind: Kind.Both, fn: phaseChaining},
+  {kind: Kind.Tmpl, fn: removeContentSelectors},
+  {kind: Kind.Host, fn: parseHostStyleProperties},
+  {kind: Kind.Tmpl, fn: emitNamespaceChanges},
+  {kind: Kind.Tmpl, fn: propagateI18nBlocks},
+  {kind: Kind.Tmpl, fn: wrapI18nIcus},
+  {kind: Kind.Both, fn: deduplicateTextBindings},
+  {kind: Kind.Both, fn: specializeStyleBindings},
+  {kind: Kind.Both, fn: specializeBindings},
+  {kind: Kind.Both, fn: extractAttributes},
+  {kind: Kind.Tmpl, fn: createI18nContexts},
+  {kind: Kind.Both, fn: parseExtractedStyles},
+  {kind: Kind.Tmpl, fn: removeEmptyBindings},
+  {kind: Kind.Both, fn: collapseSingletonInterpolations},
+  {kind: Kind.Both, fn: orderOps},
+  {kind: Kind.Tmpl, fn: generateConditionalExpressions},
+  {kind: Kind.Tmpl, fn: createPipes},
+  {kind: Kind.Tmpl, fn: configureDeferInstructions},
+  {kind: Kind.Tmpl, fn: convertI18nText},
+  {kind: Kind.Tmpl, fn: convertI18nBindings},
+  {kind: Kind.Tmpl, fn: removeUnusedI18nAttributesOps},
+  {kind: Kind.Tmpl, fn: assignI18nSlotDependencies},
+  {kind: Kind.Tmpl, fn: applyI18nExpressions},
+  {kind: Kind.Tmpl, fn: createVariadicPipes},
+  {kind: Kind.Both, fn: generatePureLiteralStructures},
+  {kind: Kind.Tmpl, fn: generateProjectionDefs},
+  {kind: Kind.Tmpl, fn: generateLocalLetReferences},
+  {kind: Kind.Tmpl, fn: generateVariables},
+  {kind: Kind.Tmpl, fn: saveAndRestoreView},
+  {kind: Kind.Both, fn: deleteAnyCasts},
+  {kind: Kind.Both, fn: resolveDollarEvent},
+  {kind: Kind.Tmpl, fn: generateTrackVariables},
+  {kind: Kind.Tmpl, fn: removeIllegalLetReferences},
+  {kind: Kind.Both, fn: resolveNames},
+  {kind: Kind.Tmpl, fn: resolveDeferTargetNames},
+  {kind: Kind.Tmpl, fn: transformTwoWayBindingSet},
+  {kind: Kind.Tmpl, fn: optimizeTrackFns},
+  {kind: Kind.Both, fn: resolveContexts},
+  {kind: Kind.Both, fn: resolveSanitizers},
+  {kind: Kind.Tmpl, fn: liftLocalRefs},
+  {kind: Kind.Both, fn: generateNullishCoalesceExpressions},
+  {kind: Kind.Both, fn: expandSafeReads},
+  {kind: Kind.Both, fn: generateTemporaryVariables},
+  {kind: Kind.Both, fn: optimizeVariables},
+  {kind: Kind.Both, fn: optimizeStoreLet},
+  {kind: Kind.Tmpl, fn: allocateSlots},
+  {kind: Kind.Tmpl, fn: resolveI18nElementPlaceholders},
+  {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
+  {kind: Kind.Tmpl, fn: extractI18nMessages},
+  {kind: Kind.Tmpl, fn: generateTrackFns},
+  {kind: Kind.Tmpl, fn: collectI18nConsts},
+  {kind: Kind.Tmpl, fn: collectConstExpressions},
+  {kind: Kind.Both, fn: collectElementConsts},
+  {kind: Kind.Tmpl, fn: removeI18nContexts},
+  {kind: Kind.Both, fn: countVariables},
+  {kind: Kind.Tmpl, fn: generateAdvance},
+  {kind: Kind.Both, fn: nameFunctionsAndVariables},
+  {kind: Kind.Tmpl, fn: resolveDeferDepsFns},
+  {kind: Kind.Tmpl, fn: mergeNextContextExpressions},
+  {kind: Kind.Tmpl, fn: generateNgContainerOps},
+  {kind: Kind.Tmpl, fn: collapseEmptyInstructions},
+  {kind: Kind.Tmpl, fn: disableBindings},
+  {kind: Kind.Both, fn: extractPureFunctions},
+  {kind: Kind.Both, fn: reify},
+  {kind: Kind.Both, fn: chain},
 ];
 
 /**
@@ -167,16 +215,22 @@ function emitView(view: ViewCompilationUnit): o.FunctionExpr {
   const createStatements: o.Statement[] = [];
   for (const op of view.create) {
     if (op.kind !== ir.OpKind.Statement) {
-      throw new Error(`AssertionError: expected all create ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+      throw new Error(
+        `AssertionError: expected all create ops to have been compiled, but got ${
+          ir.OpKind[op.kind]
+        }`,
+      );
     }
     createStatements.push(op.statement);
   }
   const updateStatements: o.Statement[] = [];
   for (const op of view.update) {
     if (op.kind !== ir.OpKind.Statement) {
-      throw new Error(`AssertionError: expected all update ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+      throw new Error(
+        `AssertionError: expected all update ops to have been compiled, but got ${
+          ir.OpKind[op.kind]
+        }`,
+      );
     }
     updateStatements.push(op.statement);
   }
@@ -184,15 +238,12 @@ function emitView(view: ViewCompilationUnit): o.FunctionExpr {
   const createCond = maybeGenerateRfBlock(1, createStatements);
   const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
-      [
-        new o.FnParam('rf'),
-        new o.FnParam('ctx'),
-      ],
-      [
-        ...createCond,
-        ...updateCond,
-      ],
-      /* type */ undefined, /* sourceSpan */ undefined, view.fnName);
+    [new o.FnParam('rf'), new o.FnParam('ctx')],
+    [...createCond, ...updateCond],
+    /* type */ undefined,
+    /* sourceSpan */ undefined,
+    view.fnName,
+  );
 }
 
 function maybeGenerateRfBlock(flag: number, statements: o.Statement[]): o.Statement[] {
@@ -202,12 +253,13 @@ function maybeGenerateRfBlock(flag: number, statements: o.Statement[]): o.Statem
 
   return [
     o.ifStmt(
-        new o.BinaryOperatorExpr(o.BinaryOperator.BitwiseAnd, o.variable('rf'), o.literal(flag)),
-        statements),
+      new o.BinaryOperatorExpr(o.BinaryOperator.BitwiseAnd, o.variable('rf'), o.literal(flag)),
+      statements,
+    ),
   ];
 }
 
-export function emitHostBindingFunction(job: HostBindingCompilationJob): o.FunctionExpr|null {
+export function emitHostBindingFunction(job: HostBindingCompilationJob): o.FunctionExpr | null {
   if (job.root.fnName === null) {
     throw new Error(`AssertionError: host binding function is unnamed`);
   }
@@ -215,16 +267,22 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
   const createStatements: o.Statement[] = [];
   for (const op of job.root.create) {
     if (op.kind !== ir.OpKind.Statement) {
-      throw new Error(`AssertionError: expected all create ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+      throw new Error(
+        `AssertionError: expected all create ops to have been compiled, but got ${
+          ir.OpKind[op.kind]
+        }`,
+      );
     }
     createStatements.push(op.statement);
   }
   const updateStatements: o.Statement[] = [];
   for (const op of job.root.update) {
     if (op.kind !== ir.OpKind.Statement) {
-      throw new Error(`AssertionError: expected all update ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+      throw new Error(
+        `AssertionError: expected all update ops to have been compiled, but got ${
+          ir.OpKind[op.kind]
+        }`,
+      );
     }
     updateStatements.push(op.statement);
   }
@@ -236,13 +294,10 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
   const createCond = maybeGenerateRfBlock(1, createStatements);
   const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
-      [
-        new o.FnParam('rf'),
-        new o.FnParam('ctx'),
-      ],
-      [
-        ...createCond,
-        ...updateCond,
-      ],
-      /* type */ undefined, /* sourceSpan */ undefined, job.root.fnName);
+    [new o.FnParam('rf'), new o.FnParam('ctx')],
+    [...createCond, ...updateCond],
+    /* type */ undefined,
+    /* sourceSpan */ undefined,
+    job.root.fnName,
+  );
 }

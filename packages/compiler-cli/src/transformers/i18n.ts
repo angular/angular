@@ -30,9 +30,13 @@ export function i18nGetExtension(formatName: string): string {
 }
 
 export function i18nExtract(
-    formatName: string|null, outFile: string|null, host: ts.CompilerHost, options: CompilerOptions,
-    bundle: MessageBundle,
-    pathResolve: (...segments: string[]) => string = path.resolve): string[] {
+  formatName: string | null,
+  outFile: string | null,
+  host: ts.CompilerHost,
+  options: CompilerOptions,
+  bundle: MessageBundle,
+  pathResolve: (...segments: string[]) => string = path.resolve,
+): string[] {
   formatName = formatName || 'xlf';
   // Checks the format and returns the extension
   const ext = i18nGetExtension(formatName);
@@ -44,7 +48,10 @@ export function i18nExtract(
 }
 
 export function i18nSerialize(
-    bundle: MessageBundle, formatName: string, options: CompilerOptions): string {
+  bundle: MessageBundle,
+  formatName: string,
+  options: CompilerOptions,
+): string {
   const format = formatName.toLowerCase();
   let serializer: Serializer;
 

@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, createComponent, createEnvironmentInjector, EnvironmentInjector, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  createComponent,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  NgModule,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('standalone injector', () => {
@@ -18,14 +26,13 @@ describe('standalone injector', () => {
     }
 
     @NgModule({providers: [Service]})
-    class ModuleWithAService {
-    }
+    class ModuleWithAService {}
 
     @Component({
       selector: 'standalone',
       standalone: true,
       imports: [ModuleWithAService],
-      template: `({{service.value}})`
+      template: `({{service.value}})`,
     })
     class TestComponent {
       constructor(readonly service: Service) {}
@@ -66,27 +73,27 @@ describe('standalone injector', () => {
     }
 
     @NgModule({providers: [Service]})
-    class ModuleWithAService {
-    }
+    class ModuleWithAService {}
 
     @Component({
       selector: 'standalone',
       standalone: true,
       imports: [ModuleWithAService],
-      template: `{{service.value}}`
+      template: `{{service.value}}`,
     })
     class DynamicComponent {
       constructor(readonly service: Service) {}
     }
 
     @Component({})
-    class AppComponent {
-    }
+    class AppComponent {}
 
     const fixture = TestBed.createComponent(AppComponent);
 
-    const environmentInjector =
-        createEnvironmentInjector([Service], TestBed.inject(EnvironmentInjector));
+    const environmentInjector = createEnvironmentInjector(
+      [Service],
+      TestBed.inject(EnvironmentInjector),
+    );
     const componentRef = createComponent(DynamicComponent, {environmentInjector});
     componentRef.changeDetectorRef.detectChanges();
 

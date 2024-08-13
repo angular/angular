@@ -5,7 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, Logger, PathManipulation} from '@angular/compiler-cli/private/localize';
+import {
+  AbsoluteFsPath,
+  FileSystem,
+  Logger,
+  PathManipulation,
+} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage} from '@angular/localize';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
@@ -20,7 +25,6 @@ import {TranslationSerializer} from './translation_files/translation_serializer'
 import {Xliff1TranslationSerializer} from './translation_files/xliff1_translation_serializer';
 import {Xliff2TranslationSerializer} from './translation_files/xliff2_translation_serializer';
 import {XmbTranslationSerializer} from './translation_files/xmb_translation_serializer';
-
 
 export interface ExtractTranslationsOptions {
   /**
@@ -100,7 +104,14 @@ export function extractTranslations({
 
   const outputPath = fs.resolve(rootPath, output);
   const serializer = getSerializer(
-      format, sourceLocale, fs.dirname(outputPath), useLegacyIds, formatOptions, fs, diagnostics);
+    format,
+    sourceLocale,
+    fs.dirname(outputPath),
+    useLegacyIds,
+    formatOptions,
+    fs,
+    diagnostics,
+  );
   const translationFile = serializer.serialize(messages);
   fs.ensureDir(fs.dirname(outputPath));
   fs.writeFile(outputPath, translationFile);
@@ -111,20 +122,35 @@ export function extractTranslations({
 }
 
 function getSerializer(
-    format: string, sourceLocale: string, rootPath: AbsoluteFsPath, useLegacyIds: boolean,
-    formatOptions: FormatOptions = {}, fs: PathManipulation,
-    diagnostics: Diagnostics): TranslationSerializer {
+  format: string,
+  sourceLocale: string,
+  rootPath: AbsoluteFsPath,
+  useLegacyIds: boolean,
+  formatOptions: FormatOptions = {},
+  fs: PathManipulation,
+  diagnostics: Diagnostics,
+): TranslationSerializer {
   switch (format) {
     case 'xlf':
     case 'xlif':
     case 'xliff':
       return new Xliff1TranslationSerializer(
-          sourceLocale, rootPath, useLegacyIds, formatOptions, fs);
+        sourceLocale,
+        rootPath,
+        useLegacyIds,
+        formatOptions,
+        fs,
+      );
     case 'xlf2':
     case 'xlif2':
     case 'xliff2':
       return new Xliff2TranslationSerializer(
-          sourceLocale, rootPath, useLegacyIds, formatOptions, fs);
+        sourceLocale,
+        rootPath,
+        useLegacyIds,
+        formatOptions,
+        fs,
+      );
     case 'xmb':
       return new XmbTranslationSerializer(rootPath, useLegacyIds, fs);
     case 'json':

@@ -34,27 +34,30 @@ import {makeProgram} from '../../testing';
  *
  * An import can be suffixed with ! to make it a type-only import.
  */
-export function makeProgramFromGraph(fs: PathManipulation, graph: string): {
-  program: ts.Program,
-  host: ts.CompilerHost,
-  options: ts.CompilerOptions,
+export function makeProgramFromGraph(
+  fs: PathManipulation,
+  graph: string,
+): {
+  program: ts.Program;
+  host: ts.CompilerHost;
+  options: ts.CompilerOptions;
 } {
-  const files: TestFile[] = graph.split(';').map(fileSegment => {
+  const files: TestFile[] = graph.split(';').map((fileSegment) => {
     const [name, importList] = fileSegment.split(':');
-    const contents = (importList ? importList.split(',') : [])
-                         .map(i => {
-                           if (i.startsWith('*')) {
-                             const sym = i.slice(1);
-                             return `export {${sym}} from './${sym}';`;
-                           } else if (i.endsWith('!')) {
-                             const sym = i.slice(0, -1);
-                             return `import type {${sym}} from './${sym}';`;
-                           } else {
-                             return `import {${i}} from './${i}';`;
-                           }
-                         })
-                         .join('\n') +
-        `export const ${name} = '${name}';\n`;
+    const contents =
+      (importList ? importList.split(',') : [])
+        .map((i) => {
+          if (i.startsWith('*')) {
+            const sym = i.slice(1);
+            return `export {${sym}} from './${sym}';`;
+          } else if (i.endsWith('!')) {
+            const sym = i.slice(0, -1);
+            return `import type {${sym}} from './${sym}';`;
+          } else {
+            return `import {${i}} from './${i}';`;
+          }
+        })
+        .join('\n') + `export const ${name} = '${name}';\n`;
     return {
       name: fs.resolve(`/${name}.ts`),
       contents,
@@ -65,5 +68,5 @@ export function makeProgramFromGraph(fs: PathManipulation, graph: string): {
 
 export function importPath(files: ts.SourceFile[]): string {
   const fs = getFileSystem();
-  return files.map(sf => fs.basename(sf.fileName).replace('.ts', '')).join(',');
+  return files.map((sf) => fs.basename(sf.fileName).replace('.ts', '')).join(',');
 }

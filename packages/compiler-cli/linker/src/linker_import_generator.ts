@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ImportGenerator, NamedImport} from '../../src/ngtsc/translator';
+import {AstFactory, ImportGenerator, ImportRequest} from '../../src/ngtsc/translator';
 
 import {FatalLinkerError} from './fatal_linker_error';
 
@@ -17,23 +17,30 @@ import {FatalLinkerError} from './fatal_linker_error';
  * must be achieved by property access on an `ng` namespace identifier, which is passed in via the
  * constructor.
  */
-export class LinkerImportGenerator<TExpression> implements ImportGenerator<TExpression> {
-  constructor(private ngImport: TExpression) {}
+export class LinkerImportGenerator<TStatement, TExpression>
+  implements ImportGenerator<null, TExpression>
+{
+  constructor(
+    private factory: AstFactory<TStatement, TExpression>,
+    private ngImport: TExpression,
+  ) {}
 
-  generateNamespaceImport(moduleName: string): TExpression {
-    this.assertModuleName(moduleName);
-    return this.ngImport;
-  }
+  addImport(request: ImportRequest<null>): TExpression {
+    this.assertModuleName(request.exportModuleSpecifier);
 
-  generateNamedImport(moduleName: string, originalSymbol: string): NamedImport<TExpression> {
-    this.assertModuleName(moduleName);
-    return {moduleImport: this.ngImport, symbol: originalSymbol};
+    if (request.exportSymbolName === null) {
+      return this.ngImport;
+    }
+
+    return this.factory.createPropertyAccess(this.ngImport, request.exportSymbolName);
   }
 
   private assertModuleName(moduleName: string): void {
     if (moduleName !== '@angular/core') {
       throw new FatalLinkerError(
-          this.ngImport, `Unable to import from anything other than '@angular/core'`);
+        this.ngImport,
+        `Unable to import from anything other than '@angular/core'`,
+      );
     }
   }
 }

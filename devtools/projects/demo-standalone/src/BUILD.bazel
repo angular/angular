@@ -70,13 +70,6 @@ pkg_web(
         ":bundle",
         "@npm//:node_modules/tslib/tslib.js",
     ],
-    # Currently, ibazel doesn't allow passing in flags to bazel run.
-    # This means we are not able to use --config snapshot-build
-    # to access the current commit SHA.
-    # Since we still want to be able to use ibazel to speed up
-    # local development, we supply an empty string for the SHA substitution.
-    # This does not effect production builds.
-    substitutions = {"BUILD_SCM_COMMIT_SHA": ""},
 )
 
 http_server(

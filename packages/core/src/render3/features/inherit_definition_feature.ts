@@ -10,18 +10,27 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type, Writable} from '../../interface/type';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
 import {fillProperties} from '../../util/property';
-import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
+import {
+  ComponentDef,
+  ContentQueriesFunction,
+  DirectiveDef,
+  DirectiveDefFeature,
+  HostBindingsFunction,
+  RenderFlags,
+  ViewQueriesFunction,
+} from '../interfaces/definition';
 import {TAttributes} from '../interfaces/node';
 import {isComponentDef} from '../interfaces/type_checks';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {stringifyForError} from '../util/stringify_utils';
 
-export function getSuperType(type: Type<any>): Type<any>&
-    {ɵcmp?: ComponentDef<any>, ɵdir?: DirectiveDef<any>} {
+export function getSuperType(
+  type: Type<any>,
+): Type<any> & {ɵcmp?: ComponentDef<any>; ɵdir?: DirectiveDef<any>} {
   return Object.getPrototypeOf(type.prototype).constructor;
 }
 
-type WritableDef = Writable<DirectiveDef<any>|ComponentDef<any>>;
+type WritableDef = Writable<DirectiveDef<any> | ComponentDef<any>>;
 
 /**
  * Merges the definition from a super class to a sub class.
@@ -29,24 +38,27 @@ type WritableDef = Writable<DirectiveDef<any>|ComponentDef<any>>;
  *
  * @codeGenApi
  */
-export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|ComponentDef<any>): void {
+export function ɵɵInheritDefinitionFeature(
+  definition: DirectiveDef<any> | ComponentDef<any>,
+): void {
   let superType = getSuperType(definition.type);
   let shouldInheritFields = true;
   const inheritanceChain: WritableDef[] = [definition];
 
   while (superType) {
-    let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
+    let superDef: DirectiveDef<any> | ComponentDef<any> | undefined = undefined;
     if (isComponentDef(definition)) {
       // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
       superDef = superType.ɵcmp || superType.ɵdir;
     } else {
       if (superType.ɵcmp) {
         throw new RuntimeError(
-            RuntimeErrorCode.INVALID_INHERITANCE,
-            ngDevMode &&
-                `Directives cannot inherit Components. Directive ${
-                    stringifyForError(definition.type)} is attempting to extend component ${
-                    stringifyForError(superType)}`);
+          RuntimeErrorCode.INVALID_INHERITANCE,
+          ngDevMode &&
+            `Directives cannot inherit Components. Directive ${stringifyForError(
+              definition.type,
+            )} is attempting to extend component ${stringifyForError(superType)}`,
+        );
       }
       // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
       superDef = superType.ɵdir;
@@ -74,16 +86,8 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|Compo
         superContentQueries && inheritContentQueries(definition, superContentQueries);
 
         // Merge inputs and outputs
-        fillProperties(definition.inputs, superDef.inputs);
-        fillProperties(definition.declaredInputs, superDef.declaredInputs);
+        mergeInputsWithTransforms(definition, superDef);
         fillProperties(definition.outputs, superDef.outputs);
-
-        if (superDef.inputTransforms !== null) {
-          if (writeableDef.inputTransforms === null) {
-            writeableDef.inputTransforms = {};
-          }
-          fillProperties(writeableDef.inputTransforms, superDef.inputTransforms);
-        }
 
         // Merge animations metadata.
         // If `superDef` is a Component, the `data` field is present (defaults to an empty object).
@@ -122,6 +126,38 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|Compo
   mergeHostAttrsAcrossInheritance(inheritanceChain);
 }
 
+function mergeInputsWithTransforms<T>(target: WritableDef, source: DirectiveDef<any>) {
+  for (const key in source.inputs) {
+    if (!source.inputs.hasOwnProperty(key)) {
+      continue;
+    }
+    if (target.inputs.hasOwnProperty(key)) {
+      continue;
+    }
+    const value = source.inputs[key];
+    if (value === undefined) {
+      continue;
+    }
+
+    target.inputs[key] = value;
+    target.declaredInputs[key] = source.declaredInputs[key];
+
+    // If the input is inherited, and we have a transform for it, we also inherit it.
+    // Note that transforms should not be inherited if the input has its own metadata
+    // in the `source` directive itself already (i.e. the input is re-declared/overridden).
+    if (source.inputTransforms !== null) {
+      // Note: transforms are stored with their minified names.
+      // Perf: only access the minified name when there are source transforms.
+      const minifiedName = Array.isArray(value) ? value[0] : value;
+      if (!source.inputTransforms.hasOwnProperty(minifiedName)) {
+        continue;
+      }
+      target.inputTransforms ??= {};
+      target.inputTransforms[minifiedName] = source.inputTransforms[minifiedName];
+    }
+  }
+}
+
 /**
  * Merge the `hostAttrs` and `hostVars` from the inherited parent to the base class.
  *
@@ -131,15 +167,17 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|Compo
  */
 function mergeHostAttrsAcrossInheritance(inheritanceChain: WritableDef[]) {
   let hostVars: number = 0;
-  let hostAttrs: TAttributes|null = null;
+  let hostAttrs: TAttributes | null = null;
   // We process the inheritance order from the base to the leaves here.
   for (let i = inheritanceChain.length - 1; i >= 0; i--) {
     const def = inheritanceChain[i];
     // For each `hostVars`, we need to add the superclass amount.
-    def.hostVars = (hostVars += def.hostVars);
+    def.hostVars = hostVars += def.hostVars;
     // for each `hostAttrs` we need to merge it with superclass.
-    def.hostAttrs =
-        mergeHostAttrs(def.hostAttrs, hostAttrs = mergeHostAttrs(hostAttrs, def.hostAttrs));
+    def.hostAttrs = mergeHostAttrs(
+      def.hostAttrs,
+      (hostAttrs = mergeHostAttrs(hostAttrs, def.hostAttrs)),
+    );
   }
 }
 
@@ -168,7 +206,9 @@ function inheritViewQuery(definition: WritableDef, superViewQuery: ViewQueriesFu
 }
 
 function inheritContentQueries(
-    definition: WritableDef, superContentQueries: ContentQueriesFunction<any>) {
+  definition: WritableDef,
+  superContentQueries: ContentQueriesFunction<any>,
+) {
   const prevContentQueries = definition.contentQueries;
   if (prevContentQueries) {
     definition.contentQueries = (rf, ctx, directiveIndex) => {
@@ -181,7 +221,9 @@ function inheritContentQueries(
 }
 
 function inheritHostBindings(
-    definition: WritableDef, superHostBindings: HostBindingsFunction<any>) {
+  definition: WritableDef,
+  superHostBindings: HostBindingsFunction<any>,
+) {
   const prevHostBindings = definition.hostBindings;
   if (prevHostBindings) {
     definition.hostBindings = (rf: RenderFlags, ctx: any) => {

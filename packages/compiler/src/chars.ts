@@ -76,7 +76,7 @@ export const $AT = 64;
 export const $BT = 96;
 
 export function isWhitespace(code: number): boolean {
-  return (code >= $TAB && code <= $SPACE) || (code == $NBSP);
+  return (code >= $TAB && code <= $SPACE) || code == $NBSP;
 }
 
 export function isDigit(code: number): boolean {
@@ -84,11 +84,11 @@ export function isDigit(code: number): boolean {
 }
 
 export function isAsciiLetter(code: number): boolean {
-  return code >= $a && code <= $z || code >= $A && code <= $Z;
+  return (code >= $a && code <= $z) || (code >= $A && code <= $Z);
 }
 
 export function isAsciiHexDigit(code: number): boolean {
-  return code >= $a && code <= $f || code >= $A && code <= $F || isDigit(code);
+  return (code >= $a && code <= $f) || (code >= $A && code <= $F) || isDigit(code);
 }
 
 export function isNewLine(code: number): boolean {

@@ -13,26 +13,29 @@ function supportsGeolocation() {
 }
 (<any>supportsGeolocation).message = 'Geolocation';
 
-describe('Geolocation', ifEnvSupports(supportsGeolocation, function() {
-           const testZone = Zone.current.fork({name: 'geotest'});
+describe(
+  'Geolocation',
+  ifEnvSupports(supportsGeolocation, function () {
+    const testZone = Zone.current.fork({name: 'geotest'});
 
-           it('should work for getCurrentPosition', function(done) {
-             testZone.run(function() {
-               navigator.geolocation.getCurrentPosition(function(pos) {
-                 expect(Zone.current).toBe(testZone);
-                 done();
-               });
-             });
-           }, 10000);
+    it('should work for getCurrentPosition', function (done) {
+      testZone.run(function () {
+        navigator.geolocation.getCurrentPosition(function (pos) {
+          expect(Zone.current).toBe(testZone);
+          done();
+        });
+      });
+    }, 10000);
 
-           it('should work for watchPosition', function(done) {
-             testZone.run(function() {
-               let watchId: number;
-               watchId = navigator.geolocation.watchPosition(function(pos) {
-                 expect(Zone.current).toBe(testZone);
-                 navigator.geolocation.clearWatch(watchId);
-                 done();
-               });
-             });
-           }, 10000);
-         }));
+    it('should work for watchPosition', function (done) {
+      testZone.run(function () {
+        let watchId: number;
+        watchId = navigator.geolocation.watchPosition(function (pos) {
+          expect(Zone.current).toBe(testZone);
+          navigator.geolocation.clearWatch(watchId);
+          done();
+        });
+      });
+    }, 10000);
+  }),
+);

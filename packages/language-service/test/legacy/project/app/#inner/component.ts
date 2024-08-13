@@ -12,5 +12,4 @@ import {Component} from '@angular/core';
   selector: 'inner',
   templateUrl: './inner.html',
 })
-export class InnerComponent {
-}
+export class InnerComponent {}

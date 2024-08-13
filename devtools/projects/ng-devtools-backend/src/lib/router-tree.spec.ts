@@ -10,7 +10,7 @@ import {parseRoutes} from './router-tree';
 
 describe('parseRoutes', () => {
   it('should work without any routes', () => {
-    const routes = [];
+    const routes: any[] = [];
     const parsedRoutes = parseRoutes(routes as any);
     expect(parsedRoutes).toEqual({
       handler: 'no-name',

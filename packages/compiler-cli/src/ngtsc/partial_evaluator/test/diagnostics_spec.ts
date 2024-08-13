@@ -20,7 +20,7 @@ import {DynamicValue} from '../src/dynamic';
 import {PartialEvaluator} from '../src/interface';
 import {EnumValue, ResolvedModule} from '../src/result';
 
-runInEachFileSystem(os => {
+runInEachFileSystem((os) => {
   describe('partial evaluator', () => {
     describe('describeResolvedType()', () => {
       it('should describe primitives', () => {
@@ -34,8 +34,14 @@ runInEachFileSystem(os => {
 
       it('should describe objects limited to a single level', () => {
         expect(describeResolvedType(new Map())).toBe('{}');
-        expect(describeResolvedType(new Map<string, any>([['a', 0], ['b', true]])))
-            .toBe('{ a: number; b: boolean }');
+        expect(
+          describeResolvedType(
+            new Map<string, any>([
+              ['a', 0],
+              ['b', true],
+            ]),
+          ),
+        ).toBe('{ a: number; b: boolean }');
         expect(describeResolvedType(new Map([['a', new Map()]]))).toBe('{ a: object }');
         expect(describeResolvedType(new Map([['a', [1, 2, 3]]]))).toBe('{ a: Array }');
       });
@@ -43,40 +49,44 @@ runInEachFileSystem(os => {
       it('should describe arrays limited to a single level', () => {
         expect(describeResolvedType([])).toBe('[]');
         expect(describeResolvedType([1, 2, 3])).toBe('[number, number, number]');
-        expect(describeResolvedType([[1, 2], [3, 4]])).toBe('[Array, Array]');
+        expect(
+          describeResolvedType([
+            [1, 2],
+            [3, 4],
+          ]),
+        ).toBe('[Array, Array]');
         expect(describeResolvedType([new Map([['a', 0]])])).toBe('[object]');
       });
 
       it('should describe references', () => {
         const namedFn = ts.factory.createFunctionDeclaration(
-            /* modifiers */ undefined,
-            /* asteriskToken */ undefined,
-            /* name */ 'test',
-            /* typeParameters */ undefined,
-            /* parameters */[],
-            /* type */ undefined,
-            /* body */ undefined,
+          /* modifiers */ undefined,
+          /* asteriskToken */ undefined,
+          /* name */ 'test',
+          /* typeParameters */ undefined,
+          /* parameters */ [],
+          /* type */ undefined,
+          /* body */ undefined,
         );
         expect(describeResolvedType(new Reference(namedFn))).toBe('test');
 
         const anonymousFn = ts.factory.createFunctionDeclaration(
-            /* modifiers */ undefined,
-            /* asteriskToken */ undefined,
-            /* name */ undefined,
-            /* typeParameters */ undefined,
-            /* parameters */[],
-            /* type */ undefined,
-            /* body */ undefined,
+          /* modifiers */ undefined,
+          /* asteriskToken */ undefined,
+          /* name */ undefined,
+          /* typeParameters */ undefined,
+          /* parameters */ [],
+          /* type */ undefined,
+          /* body */ undefined,
         );
         expect(describeResolvedType(new Reference(anonymousFn))).toBe('(anonymous)');
       });
 
       it('should describe enum values', () => {
         const decl = ts.factory.createEnumDeclaration(
-            /* modifiers */ undefined,
-            /* name */ 'MyEnum',
-            /* members */[ts.factory.createEnumMember(
-                'member', ts.factory.createNumericLiteral(1))],
+          /* modifiers */ undefined,
+          /* name */ 'MyEnum',
+          /* members */ [ts.factory.createEnumMember('member', ts.factory.createNumericLiteral(1))],
         );
         const ref = new Reference(decl);
         expect(describeResolvedType(new EnumValue(ref, 'member', 1))).toBe('MyEnum');
@@ -84,8 +94,9 @@ runInEachFileSystem(os => {
 
       it('should describe dynamic values', () => {
         const node = ts.factory.createObjectLiteralExpression();
-        expect(describeResolvedType(DynamicValue.fromUnsupportedSyntax(node)))
-            .toBe('(not statically analyzable)');
+        expect(describeResolvedType(DynamicValue.fromUnsupportedSyntax(node))).toBe(
+          '(not statically analyzable)',
+        );
       });
 
       it('should describe known functions', () => {
@@ -93,8 +104,9 @@ runInEachFileSystem(os => {
       });
 
       it('should describe external modules', () => {
-        expect(describeResolvedType(new ResolvedModule(new Map(), () => undefined)))
-            .toBe('(module)');
+        expect(describeResolvedType(new ResolvedModule(new Map(), () => undefined))).toBe(
+          '(module)',
+        );
       });
     });
 
@@ -138,9 +150,10 @@ runInEachFileSystem(os => {
           // Dynamic values exist for each node that has been visited, but only the initial dynamic
           // value within a statement is included in the trace.
           const trace = traceExpression(
-              `const firstChild = document.body.childNodes[0];
+            `const firstChild = document.body.childNodes[0];
              const child = firstChild.firstChild;`,
-              'child !== undefined');
+            'child !== undefined',
+          );
 
           expect(trace.length).toBe(4);
           expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
@@ -155,9 +168,9 @@ runInEachFileSystem(os => {
           expect(absoluteFromSourceFile(trace[2].file!)).toBe(_('/entry.ts'));
           expect(getSourceCode(trace[2])).toBe('document.body');
 
-          expect(trace[3].messageText)
-              .toBe(
-                  `A value for 'document' cannot be determined statically, as it is an external declaration.`);
+          expect(trace[3].messageText).toBe(
+            `A value for 'document' cannot be determined statically, as it is an external declaration.`,
+          );
           expect(absoluteFromSourceFile(trace[3].file!)).toBe(_('/lib.d.ts'));
           expect(getSourceCode(trace[3])).toBe('document: any');
         });
@@ -186,22 +199,23 @@ runInEachFileSystem(os => {
           expect(trace.length).toBe(1);
           expect(trace[0].messageText).toBe('This syntax is not supported.');
           expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
-          expect(getSourceCode(trace[0])).toBe('new String(\'test\')');
+          expect(getSourceCode(trace[0])).toBe("new String('test')");
         });
 
         it('should trace complex function invocations', () => {
           const trace = traceExpression(
-              `
+            `
           function complex() {
             console.log('test');
             return true;
           }`,
-              'complex()');
+            'complex()',
+          );
 
           expect(trace.length).toBe(2);
-          expect(trace[0].messageText)
-              .toBe(
-                  'Unable to evaluate function call of complex function. A function must have exactly one return statement.');
+          expect(trace[0].messageText).toBe(
+            'Unable to evaluate function call of complex function. A function must have exactly one return statement.',
+          );
           expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
           expect(getSourceCode(trace[0])).toBe('complex()');
 
@@ -218,32 +232,36 @@ runInEachFileSystem(os => {
           expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
           expect(getSourceCode(trace[0])).toBe('body: {firstChild}');
 
-          expect(trace[1].messageText)
-              .toBe(
-                  `A value for 'document' cannot be determined statically, as it is an external declaration.`);
+          expect(trace[1].messageText).toBe(
+            `A value for 'document' cannot be determined statically, as it is an external declaration.`,
+          );
           expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/lib.d.ts'));
           expect(getSourceCode(trace[1])).toBe('document: any');
         });
 
         it('should trace deep object destructuring of external reference', () => {
-          const trace =
-              traceExpression('const {doc: {body: {firstChild}}} = {doc: document};', 'firstChild');
+          const trace = traceExpression(
+            'const {doc: {body: {firstChild}}} = {doc: document};',
+            'firstChild',
+          );
 
           expect(trace.length).toBe(2);
           expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
           expect(absoluteFromSourceFile(trace[0].file!)).toBe(_('/entry.ts'));
           expect(getSourceCode(trace[0])).toBe('body: {firstChild}');
 
-          expect(trace[1].messageText)
-              .toBe(
-                  `A value for 'document' cannot be determined statically, as it is an external declaration.`);
+          expect(trace[1].messageText).toBe(
+            `A value for 'document' cannot be determined statically, as it is an external declaration.`,
+          );
           expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/lib.d.ts'));
           expect(getSourceCode(trace[1])).toBe('document: any');
         });
 
         it('should trace array destructuring of dynamic value', () => {
-          const trace =
-              traceExpression('const [firstChild] = document.body.childNodes;', 'firstChild');
+          const trace = traceExpression(
+            'const [firstChild] = document.body.childNodes;',
+            'firstChild',
+          );
 
           expect(trace.length).toBe(3);
           expect(trace[0].messageText).toBe('Unable to evaluate this expression statically.');
@@ -254,9 +272,9 @@ runInEachFileSystem(os => {
           expect(absoluteFromSourceFile(trace[1].file!)).toBe(_('/entry.ts'));
           expect(getSourceCode(trace[1])).toBe('document.body');
 
-          expect(trace[2].messageText)
-              .toBe(
-                  `A value for 'document' cannot be determined statically, as it is an external declaration.`);
+          expect(trace[2].messageText).toBe(
+            `A value for 'document' cannot be determined statically, as it is an external declaration.`,
+          );
           expect(absoluteFromSourceFile(trace[2].file!)).toBe(_('/lib.d.ts'));
           expect(getSourceCode(trace[2])).toBe('document: any');
         });
@@ -272,11 +290,14 @@ function getSourceCode(diag: ts.DiagnosticRelatedInformation): string {
 
 function traceExpression(code: string, expr: string): ts.DiagnosticRelatedInformation[] {
   const {program} = makeProgram(
-      [
-        {name: _('/entry.ts'), contents: `${code}; const target$ = ${expr};`},
-        {name: _('/lib.d.ts'), contents: `declare const document: any;`},
-      ],
-      /* options */ undefined, /* host */ undefined, /* checkForErrors */ false);
+    [
+      {name: _('/entry.ts'), contents: `${code}; const target$ = ${expr};`},
+      {name: _('/lib.d.ts'), contents: `declare const document: any;`},
+    ],
+    /* options */ undefined,
+    /* host */ undefined,
+    /* checkForErrors */ false,
+  );
   const checker = program.getTypeChecker();
   const decl = getDeclaration(program, _('/entry.ts'), 'target$', ts.isVariableDeclaration);
   const valueExpr = decl.initializer!;

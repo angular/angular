@@ -10,19 +10,25 @@ import {Xliff} from '@angular/compiler/src/i18n/serializers/xliff';
 import {waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {configureCompiler, createComponent, HTML, serializeTranslations, validateHtml} from './integration_common';
+import {
+  configureCompiler,
+  createComponent,
+  HTML,
+  serializeTranslations,
+  validateHtml,
+} from './integration_common';
 
 // TODO(alxhub): figure out if this test is still relevant.
 xdescribe('i18n XLIFF integration spec', () => {
   describe('(with LF line endings)', () => {
-    beforeEach(
-        waitForAsync(() => configureCompiler(XLIFF_TOMERGE + LF_LINE_ENDING_XLIFF_TOMERGE, 'xlf')));
+    beforeEach(waitForAsync(() =>
+      configureCompiler(XLIFF_TOMERGE + LF_LINE_ENDING_XLIFF_TOMERGE, 'xlf')));
 
     it('should extract from templates', () => {
       const serializer = new Xliff();
       const serializedXliff = serializeTranslations(HTML, serializer);
 
-      XLIFF_EXTRACTED.forEach(x => {
+      XLIFF_EXTRACTED.forEach((x) => {
         expect(serializedXliff).toContain(x);
       });
       expect(serializedXliff).toContain(LF_LINE_ENDING_XLIFF_EXTRACTED);
@@ -35,14 +41,14 @@ xdescribe('i18n XLIFF integration spec', () => {
   });
 
   describe('(with CRLF line endings', () => {
-    beforeEach(waitForAsync(
-        () => configureCompiler(XLIFF_TOMERGE + CRLF_LINE_ENDING_XLIFF_TOMERGE, 'xlf')));
+    beforeEach(waitForAsync(() =>
+      configureCompiler(XLIFF_TOMERGE + CRLF_LINE_ENDING_XLIFF_TOMERGE, 'xlf')));
 
     it('should extract from templates (with CRLF line endings)', () => {
       const serializer = new Xliff();
       const serializedXliff = serializeTranslations(HTML.replace(/\n/g, '\r\n'), serializer);
 
-      XLIFF_EXTRACTED.forEach(x => {
+      XLIFF_EXTRACTED.forEach((x) => {
         expect(serializedXliff).toContain(x);
       });
       expect(serializedXliff).toContain(CRLF_LINE_ENDING_XLIFF_EXTRACTED);
@@ -166,15 +172,13 @@ const XLIFF_TOMERGE = `
         <target><x id="MAP NAME"/></target>
       </trans-unit>`;
 
-const LF_LINE_ENDING_XLIFF_TOMERGE =
-    `      <trans-unit id="2370d995bdcc1e7496baa32df20654aff65c2d10" datatype="html">
+const LF_LINE_ENDING_XLIFF_TOMERGE = `      <trans-unit id="2370d995bdcc1e7496baa32df20654aff65c2d10" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION" equiv-text="{{response.getItemsList().length}}"/> results} }</source>
         <target>{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {Une réponse} other {<x id="INTERPOLATION"/> réponses} }</target>
         <note priority="1" from="description">desc</note>
       </trans-unit>`;
 
-const CRLF_LINE_ENDING_XLIFF_TOMERGE =
-    `      <trans-unit id="73a09babbde7a003ece74b02acfd22057507717b" datatype="html">
+const CRLF_LINE_ENDING_XLIFF_TOMERGE = `      <trans-unit id="73a09babbde7a003ece74b02acfd22057507717b" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION" equiv-text="{{response.getItemsList().length}}"/> results} }</source>
         <target>{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {Une réponse} other {<x id="INTERPOLATION"/> réponses} }</target>
         <note priority="1" from="description">desc</note>
@@ -362,11 +366,10 @@ const XLIFF_EXTRACTED: string[] = [
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">56</context>
         </context-group>
-      </trans-unit>`
+      </trans-unit>`,
 ];
 
-const LF_LINE_ENDING_XLIFF_EXTRACTED =
-    `      <trans-unit id="2370d995bdcc1e7496baa32df20654aff65c2d10" datatype="html">
+const LF_LINE_ENDING_XLIFF_EXTRACTED = `      <trans-unit id="2370d995bdcc1e7496baa32df20654aff65c2d10" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION" equiv-text="{{response.getItemsList().length}}"/> results} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
@@ -375,8 +378,7 @@ const LF_LINE_ENDING_XLIFF_EXTRACTED =
         <note priority="1" from="description">desc</note>
       </trans-unit>`;
 
-const CRLF_LINE_ENDING_XLIFF_EXTRACTED =
-    `      <trans-unit id="73a09babbde7a003ece74b02acfd22057507717b" datatype="html">
+const CRLF_LINE_ENDING_XLIFF_EXTRACTED = `      <trans-unit id="73a09babbde7a003ece74b02acfd22057507717b" datatype="html">
         <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION" equiv-text="{{response.getItemsList().length}}"/> results} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>

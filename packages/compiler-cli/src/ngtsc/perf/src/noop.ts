@@ -23,5 +23,4 @@ class NoopPerfRecorder implements PerfRecorder {
   reset(): void {}
 }
 
-
 export const NOOP_PERF_RECORDER: PerfRecorder = new NoopPerfRecorder();

@@ -12,53 +12,51 @@ import {TestBed} from '@angular/core/testing';
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-{
-  describe('title service', () => {
-    let doc: Document;
-    let initialTitle: string;
-    let titleService: Title;
+describe('title service', () => {
+  let doc: Document;
+  let initialTitle: string;
+  let titleService: Title;
 
-    beforeEach(() => {
-      doc = getDOM().createHtmlDocument();
-      initialTitle = doc.title;
-      titleService = new Title(doc);
-    });
+  beforeEach(() => {
+    doc = getDOM().createHtmlDocument();
+    initialTitle = doc.title;
+    titleService = new Title(doc);
+  });
 
-    afterEach(() => {
-      doc.title = initialTitle;
-    });
+  afterEach(() => {
+    doc.title = initialTitle;
+  });
 
-    it('should allow reading initial title', () => {
-      expect(titleService.getTitle()).toEqual(initialTitle);
-    });
+  it('should allow reading initial title', () => {
+    expect(titleService.getTitle()).toEqual(initialTitle);
+  });
 
-    it('should set a title on the injected document', () => {
-      titleService.setTitle('test title');
-      expect(doc.title).toEqual('test title');
-      expect(titleService.getTitle()).toEqual('test title');
-    });
+  it('should set a title on the injected document', () => {
+    titleService.setTitle('test title');
+    expect(doc.title).toEqual('test title');
+    expect(titleService.getTitle()).toEqual('test title');
+  });
 
-    it('should reset title to empty string if title not provided', () => {
-      titleService.setTitle(null!);
-      expect(doc.title).toEqual('');
+  it('should reset title to empty string if title not provided', () => {
+    titleService.setTitle(null!);
+    expect(doc.title).toEqual('');
+  });
+});
+
+describe('integration test', () => {
+  @Injectable()
+  class DependsOnTitle {
+    constructor(public title: Title) {}
+  }
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [BrowserModule],
+      providers: [DependsOnTitle],
     });
   });
 
-  describe('integration test', () => {
-    @Injectable()
-    class DependsOnTitle {
-      constructor(public title: Title) {}
-    }
-
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        imports: [BrowserModule],
-        providers: [DependsOnTitle],
-      });
-    });
-
-    it('should inject Title service when using BrowserModule', () => {
-      expect(TestBed.inject(DependsOnTitle).title).toBeInstanceOf(Title);
-    });
+  it('should inject Title service when using BrowserModule', () => {
+    expect(TestBed.inject(DependsOnTitle).title).toBeInstanceOf(Title);
   });
-}
+});

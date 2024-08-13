@@ -9,8 +9,21 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
 
 import {HTTP_INTERCEPTORS} from './interceptor';
-import {provideHttpClient, withInterceptorsFromDi, withJsonpSupport, withNoXsrfProtection, withXsrfConfiguration} from './provider';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_DEFAULT_COOKIE_NAME, XSRF_DEFAULT_HEADER_NAME, XSRF_ENABLED} from './xsrf';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+  withJsonpSupport,
+  withNoXsrfProtection,
+  withXsrfConfiguration,
+} from './provider';
+import {
+  HttpXsrfCookieExtractor,
+  HttpXsrfInterceptor,
+  HttpXsrfTokenExtractor,
+  XSRF_DEFAULT_COOKIE_NAME,
+  XSRF_DEFAULT_HEADER_NAME,
+  XSRF_ENABLED,
+} from './xsrf';
 
 /**
  * Configures XSRF protection support for outgoing requests.
@@ -23,6 +36,8 @@ import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XS
  * and the default header name is `X-XSRF-TOKEN`.
  *
  * @publicApi
+ * @deprecated Use withXsrfConfiguration({cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN'}) as
+ *     providers instead or `withNoXsrfProtection` if you want to disabled XSRF protection.
  */
 @NgModule({
   providers: [
@@ -43,9 +58,7 @@ export class HttpClientXsrfModule {
   static disable(): ModuleWithProviders<HttpClientXsrfModule> {
     return {
       ngModule: HttpClientXsrfModule,
-      providers: [
-        withNoXsrfProtection().ɵproviders,
-      ],
+      providers: [withNoXsrfProtection().ɵproviders],
     };
   }
 
@@ -57,10 +70,12 @@ export class HttpClientXsrfModule {
    * - Header name default is `X-XSRF-TOKEN`.
    *
    */
-  static withOptions(options: {
-    cookieName?: string,
-    headerName?: string,
-  } = {}): ModuleWithProviders<HttpClientXsrfModule> {
+  static withOptions(
+    options: {
+      cookieName?: string;
+      headerName?: string;
+    } = {},
+  ): ModuleWithProviders<HttpClientXsrfModule> {
     return {
       ngModule: HttpClientXsrfModule,
       providers: withXsrfConfiguration(options).ɵproviders,
@@ -69,38 +84,34 @@ export class HttpClientXsrfModule {
 }
 
 /**
- * Configures the [dependency injector](guide/glossary#injector) for `HttpClient`
+ * Configures the dependency injector for `HttpClient`
  * with supporting services for XSRF. Automatically imported by `HttpClientModule`.
  *
  * You can add interceptors to the chain behind `HttpClient` by binding them to the
- * multiprovider for built-in [DI token](guide/glossary#di-token) `HTTP_INTERCEPTORS`.
+ * multiprovider for built-in DI token `HTTP_INTERCEPTORS`.
  *
  * @publicApi
+ * @deprecated use `provideHttpClient(withInterceptorsFromDi())` as providers instead
  */
 @NgModule({
   /**
-   * Configures the [dependency injector](guide/glossary#injector) where it is imported
+   * Configures the dependency injector where it is imported
    * with supporting services for HTTP communications.
    */
-  providers: [
-    provideHttpClient(withInterceptorsFromDi()),
-  ],
+  providers: [provideHttpClient(withInterceptorsFromDi())],
 })
-export class HttpClientModule {
-}
+export class HttpClientModule {}
 
 /**
- * Configures the [dependency injector](guide/glossary#injector) for `HttpClient`
+ * Configures the dependency injector for `HttpClient`
  * with supporting services for JSONP.
  * Without this module, Jsonp requests reach the backend
  * with method JSONP, where they are rejected.
  *
  * @publicApi
+ * @deprecated `withJsonpSupport()` as providers instead
  */
 @NgModule({
-  providers: [
-    withJsonpSupport().ɵproviders,
-  ],
+  providers: [withJsonpSupport().ɵproviders],
 })
-export class HttpClientJsonpModule {
-}
+export class HttpClientJsonpModule {}

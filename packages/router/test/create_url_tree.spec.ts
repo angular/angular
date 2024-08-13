@@ -11,12 +11,13 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {By} from '@angular/platform-browser';
 
 import {createUrlTreeFromSnapshot} from '../src/create_url_tree';
-import {Routes} from '../src/models';
+import {QueryParamsHandling, Routes} from '../src/models';
 import {Router} from '../src/router';
 import {RouterModule} from '../src/router_module';
 import {ActivatedRoute, ActivatedRouteSnapshot} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
+import {provideRouter, withRouterConfig} from '../src';
 
 describe('createUrlTree', async () => {
   const serializer = new DefaultUrlSerializer();
@@ -29,7 +30,7 @@ describe('createUrlTree', async () => {
         children: [
           {path: 'child', component: class {}},
           {path: '**', outlet: 'secondary', component: class {}},
-        ]
+        ],
       },
       {
         path: 'a',
@@ -37,7 +38,7 @@ describe('createUrlTree', async () => {
           {path: '**', component: class {}},
           {path: '**', outlet: 'right', component: class {}},
           {path: '**', outlet: 'left', component: class {}},
-        ]
+        ],
       },
       {path: '**', component: class {}},
       {path: '**', outlet: 'right', component: class {}},
@@ -89,9 +90,9 @@ describe('createUrlTree', async () => {
 
   it('should error when navigating to the root segment with params', async () => {
     const p = serializer.parse('/');
-    await expectAsync(createRoot(p, [
-      '/', {p: 11}
-    ])).toBeRejectedWithError(/Root segment cannot have matrix parameters/);
+    await expectAsync(createRoot(p, ['/', {p: 11}])).toBeRejectedWithError(
+      /Root segment cannot have matrix parameters/,
+    );
   });
 
   it('should support nested segments', async () => {
@@ -155,14 +156,13 @@ describe('createUrlTree', async () => {
       expect(serializer.serialize(t)).toEqual('/parent/(child//secondary:popup)');
     });
 
-    it('should support updating two outlets at the same time relative to non-root segment',
-       async () => {
-         await router.navigateByUrl('/parent/child');
-         const t = create(
-             router.routerState.root.children[0],
-             [{outlets: {primary: 'child', secondary: 'popup'}}]);
-         expect(serializer.serialize(t)).toEqual('/parent/(child//secondary:popup)');
-       });
+    it('should support updating two outlets at the same time relative to non-root segment', async () => {
+      await router.navigateByUrl('/parent/child');
+      const t = create(router.routerState.root.children[0], [
+        {outlets: {primary: 'child', secondary: 'popup'}},
+      ]);
+      expect(serializer.serialize(t)).toEqual('/parent/(child//secondary:popup)');
+    });
 
     it('should support adding multiple outlets with prefix', async () => {
       const p = serializer.parse('');
@@ -205,63 +205,68 @@ describe('createUrlTree', async () => {
       expect(serializer.serialize(t)).toEqual('/parent/child(rootSecondary:rootPopup)');
     });
 
-    it('works with named children of empty path primary, relative to non-empty parent',
-       async () => {
-         router.resetConfig([{
-           path: 'case',
-           component: class {},
-           children: [
-             {
-               path: '',
-               component: class {},
-               children: [
-                 {path: 'foo', outlet: 'foo', children: []},
-               ],
-             },
-           ]
-         }]);
-         await router.navigateByUrl('/case');
-         expect(router.url).toEqual('/case');
-         expect(router
-                    .createUrlTree(
-                        [{outlets: {'foo': ['foo']}}],
-                        // relative to the 'case' route
-                        {relativeTo: router.routerState.root.firstChild})
-                    .toString())
-             .toEqual('/case/(foo:foo)');
-       });
+    it('works with named children of empty path primary, relative to non-empty parent', async () => {
+      router.resetConfig([
+        {
+          path: 'case',
+          component: class {},
+          children: [
+            {
+              path: '',
+              component: class {},
+              children: [{path: 'foo', outlet: 'foo', children: []}],
+            },
+          ],
+        },
+      ]);
+      await router.navigateByUrl('/case');
+      expect(router.url).toEqual('/case');
+      expect(
+        router
+          .createUrlTree(
+            [{outlets: {'foo': ['foo']}}],
+            // relative to the 'case' route
+            {relativeTo: router.routerState.root.firstChild},
+          )
+          .toString(),
+      ).toEqual('/case/(foo:foo)');
+    });
 
     it('can change both primary and named outlets under an empty path', async () => {
-      router.resetConfig([{
-        path: 'foo',
-        children: [
-          {
-            path: '',
-            component: class {},
-            children: [
-              {path: 'bar', component: class {}},
-              {path: 'baz', component: class {}, outlet: 'other'},
-            ],
-          },
-        ]
-      }]);
+      router.resetConfig([
+        {
+          path: 'foo',
+          children: [
+            {
+              path: '',
+              component: class {},
+              children: [
+                {path: 'bar', component: class {}},
+                {path: 'baz', component: class {}, outlet: 'other'},
+              ],
+            },
+          ],
+        },
+      ]);
 
       await router.navigateByUrl('/foo/(bar//other:baz)');
       expect(router.url).toEqual('/foo/(bar//other:baz)');
-      expect(router
-                 .createUrlTree(
-                     [
-                       {
-                         outlets: {
-                           other: null,
-                           primary: ['bar'],
-                         },
-                       },
-                     ],
-                     // relative to the root '' route
-                     {relativeTo: router.routerState.root.firstChild})
-                 .toString())
-          .toEqual('/foo/bar');
+      expect(
+        router
+          .createUrlTree(
+            [
+              {
+                outlets: {
+                  other: null,
+                  primary: ['bar'],
+                },
+              },
+            ],
+            // relative to the root '' route
+            {relativeTo: router.routerState.root.firstChild},
+          )
+          .toString(),
+      ).toEqual('/foo/bar');
     });
 
     describe('absolute navigations', () => {
@@ -269,15 +274,14 @@ describe('createUrlTree', async () => {
         router.resetConfig([
           {
             path: '',
-            children: [
-              {path: '**', outlet: 'left', component: class {}},
-            ],
+            children: [{path: '**', outlet: 'left', component: class {}}],
           },
         ]);
         await router.navigateByUrl('(left:search)');
         expect(router.url).toEqual('/(left:search)');
-        expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
-            .toEqual('/(left:projects/123)');
+        expect(
+          router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString(),
+        ).toEqual('/(left:projects/123)');
       });
       it('empty path parent and sibling with a path', async () => {
         router.resetConfig([
@@ -291,22 +295,27 @@ describe('createUrlTree', async () => {
         ]);
         await router.navigateByUrl('/x(left:search)');
         expect(router.url).toEqual('/x(left:search)');
-        expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
-            .toEqual('/x(left:projects/123)');
-        expect(router
-                   .createUrlTree([
-                     '/', {
-                       outlets: {
-                         'primary': [{
-                           outlets: {
-                             'left': ['projects', '123'],
-                           }
-                         }]
-                       }
-                     }
-                   ])
-                   .toString())
-            .toEqual('/x(left:projects/123)');
+        expect(
+          router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString(),
+        ).toEqual('/x(left:projects/123)');
+        expect(
+          router
+            .createUrlTree([
+              '/',
+              {
+                outlets: {
+                  'primary': [
+                    {
+                      outlets: {
+                        'left': ['projects', '123'],
+                      },
+                    },
+                  ],
+                },
+              },
+            ])
+            .toString(),
+        ).toEqual('/x(left:projects/123)');
       });
 
       it('empty path parent and sibling', async () => {
@@ -322,49 +331,52 @@ describe('createUrlTree', async () => {
         ]);
         await router.navigateByUrl('/(left:search//right:define)');
         expect(router.url).toEqual('/(left:search//right:define)');
-        expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
-            .toEqual('/(left:projects/123//right:define)');
+        expect(
+          router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString(),
+        ).toEqual('/(left:projects/123//right:define)');
       });
       it('two pathless parents', async () => {
         router.resetConfig([
           {
             path: '',
-            children: [{
-              path: '',
-              children: [
-                {path: '**', outlet: 'left', component: class {}},
-              ]
-            }],
+            children: [
+              {
+                path: '',
+                children: [{path: '**', outlet: 'left', component: class {}}],
+              },
+            ],
           },
         ]);
         await router.navigateByUrl('(left:search)');
         expect(router.url).toEqual('/(left:search)');
-        expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
-            .toEqual('/(left:projects/123)');
+        expect(
+          router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString(),
+        ).toEqual('/(left:projects/123)');
       });
 
       it('maintains structure when primary outlet is not pathless', async () => {
         router.resetConfig([
           {
             path: 'a',
-            children: [
-              {path: '**', outlet: 'left', component: class {}},
-            ],
+            children: [{path: '**', outlet: 'left', component: class {}}],
           },
           {path: '**', outlet: 'left', component: class {}},
         ]);
         await router.navigateByUrl('/a/(left:search)');
         expect(router.url).toEqual('/a/(left:search)');
-        expect(router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString())
-            .toEqual('/a/(left:search)(left:projects/123)');
+        expect(
+          router.createUrlTree(['/', {outlets: {'left': ['projects', '123']}}]).toString(),
+        ).toEqual('/a/(left:search)(left:projects/123)');
       });
     });
   });
 
   it('can navigate to nested route where commands is string', async () => {
     const p = serializer.parse('/');
-    const t = await createRoot(
-        p, ['/', {outlets: {primary: ['child', {outlets: {primary: 'nested-primary'}}]}}]);
+    const t = await createRoot(p, [
+      '/',
+      {outlets: {primary: ['child', {outlets: {primary: 'nested-primary'}}]}},
+    ]);
     expect(serializer.serialize(t)).toEqual('/child/nested-primary');
   });
 
@@ -522,8 +534,9 @@ describe('createUrlTree', async () => {
 
     it('should support updating secondary segments', async () => {
       await router.navigateByUrl('/a/b');
-      const t =
-          create(router.routerState.root.children[0].children[0], [{outlets: {right: ['c']}}]);
+      const t = create(router.routerState.root.children[0].children[0], [
+        {outlets: {right: ['c']}},
+      ]);
       expect(serializer.serialize(t)).toEqual('/a/b/(right:c)');
     });
   });
@@ -548,7 +561,13 @@ describe('createUrlTree', async () => {
 
   it('should support pathless child of pathless root', async () => {
     router.resetConfig([
-      {path: '', children: [{path: '', component: class {}}, {path: 'lazy', component: class {}}]}
+      {
+        path: '',
+        children: [
+          {path: '', component: class {}},
+          {path: 'lazy', component: class {}},
+        ],
+      },
     ]);
     await router.navigateByUrl('/');
     const t = create(router.routerState.root.children[0].children[0], ['lazy']);
@@ -556,118 +575,171 @@ describe('createUrlTree', async () => {
   });
 });
 
+describe('defaultQueryParamsHandling', () => {
+  async function setupRouter(defaultQueryParamsHandling: QueryParamsHandling): Promise<Router> {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [{path: '**', component: class {}}],
+          withRouterConfig({
+            defaultQueryParamsHandling,
+          }),
+        ),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/initial?a=1');
+    return router;
+  }
+
+  it('can use "merge" as the default', async () => {
+    const router = await setupRouter('merge');
+    await router.navigate(['new'], {queryParams: {'b': 2}});
+    expect(router.url).toEqual('/new?a=1&b=2');
+  });
+
+  it('can use "perserve" as the default', async () => {
+    const router = await setupRouter('preserve');
+    await router.navigate(['new'], {queryParams: {'b': 2}});
+    expect(router.url).toEqual('/new?a=1');
+  });
+
+  it('can override the default by providing a new option', async () => {
+    const router = await setupRouter('preserve');
+    await router.navigate(['new'], {queryParams: {'b': 2}, queryParamsHandling: 'merge'});
+    expect(router.url).toEqual('/new?a=1&b=2');
+    await router.navigate(['replace'], {queryParamsHandling: 'replace'});
+    expect(router.url).toEqual('/replace');
+  });
+});
+
 async function createRoot(
-    tree: UrlTree, commands: any[], queryParams?: Params, fragment?: string): Promise<UrlTree> {
+  tree: UrlTree,
+  commands: any[],
+  queryParams?: Params,
+  fragment?: string,
+): Promise<UrlTree> {
   const router = TestBed.inject(Router);
   await router.navigateByUrl(tree);
-  return router.createUrlTree(
-      commands, {relativeTo: router.routerState.root, queryParams, fragment});
+  return router.createUrlTree(commands, {
+    relativeTo: router.routerState.root,
+    queryParams,
+    fragment,
+  });
 }
 
 function create(
-    relativeTo: ActivatedRoute, commands: any[], queryParams?: Params, fragment?: string) {
+  relativeTo: ActivatedRoute,
+  commands: any[],
+  queryParams?: Params,
+  fragment?: string,
+) {
   return TestBed.inject(Router).createUrlTree(commands, {relativeTo, queryParams, fragment});
 }
 
 describe('createUrlTreeFromSnapshot', async () => {
   it('can create a UrlTree relative to empty path named parent', fakeAsync(() => {
-       @Component({
-         template: `<router-outlet></router-outlet>`,
-         standalone: true,
-         imports: [RouterModule],
-       })
-       class MainPageComponent {
-         constructor(private route: ActivatedRoute, private router: Router) {}
+    @Component({
+      template: `<router-outlet></router-outlet>`,
+      standalone: true,
+      imports: [RouterModule],
+    })
+    class MainPageComponent {
+      constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+      ) {}
 
-         navigate() {
-           this.router.navigateByUrl(
-               createUrlTreeFromSnapshot(this.route.snapshot, ['innerRoute'], null, null));
-         }
-       }
+      navigate() {
+        this.router.navigateByUrl(
+          createUrlTreeFromSnapshot(this.route.snapshot, ['innerRoute'], null, null),
+        );
+      }
+    }
 
-       @Component({template: 'child works!'})
-       class ChildComponent {
-       }
+    @Component({template: 'child works!'})
+    class ChildComponent {}
 
-       @Component({
-         template: '<router-outlet name="main-page"></router-outlet>',
-         standalone: true,
-         imports: [RouterModule]
-       })
-       class RootCmp {
-       }
+    @Component({
+      template: '<router-outlet name="main-page"></router-outlet>',
+      standalone: true,
+      imports: [RouterModule],
+    })
+    class RootCmp {}
 
-       const routes: Routes = [{
-         path: '',
-         component: MainPageComponent,
-         outlet: 'main-page',
-         children: [{path: 'innerRoute', component: ChildComponent}]
-       }];
+    const routes: Routes = [
+      {
+        path: '',
+        component: MainPageComponent,
+        outlet: 'main-page',
+        children: [{path: 'innerRoute', component: ChildComponent}],
+      },
+    ];
 
-       TestBed.configureTestingModule({imports: [RouterModule.forRoot(routes)]});
-       const router = TestBed.inject(Router);
-       const fixture = TestBed.createComponent(RootCmp);
+    TestBed.configureTestingModule({imports: [RouterModule.forRoot(routes)]});
+    const router = TestBed.inject(Router);
+    const fixture = TestBed.createComponent(RootCmp);
 
-       router.initialNavigation();
-       advance(fixture);
-       fixture.debugElement.query(By.directive(MainPageComponent)).componentInstance.navigate();
-       advance(fixture);
-       expect(fixture.nativeElement.innerHTML).toContain('child works!');
-     }));
+    router.initialNavigation();
+    advance(fixture);
+    fixture.debugElement.query(By.directive(MainPageComponent)).componentInstance.navigate();
+    advance(fixture);
+    expect(fixture.nativeElement.innerHTML).toContain('child works!');
+  }));
 
   it('can navigate to relative to `ActivatedRouteSnapshot` in guard', fakeAsync(() => {
-       @Injectable({providedIn: 'root'})
-       class Guard {
-         constructor(private readonly router: Router) {}
-         canActivate(snapshot: ActivatedRouteSnapshot) {
-           this.router.navigateByUrl(
-               createUrlTreeFromSnapshot(snapshot, ['../sibling'], null, null));
-         }
-       }
+    @Injectable({providedIn: 'root'})
+    class Guard {
+      constructor(private readonly router: Router) {}
+      canActivate(snapshot: ActivatedRouteSnapshot) {
+        this.router.navigateByUrl(createUrlTreeFromSnapshot(snapshot, ['../sibling'], null, null));
+      }
+    }
 
-       @Component({
-         template: `main`,
-         standalone: true,
-         imports: [RouterModule],
-       })
-       class GuardedComponent {
-       }
+    @Component({
+      template: `main`,
+      standalone: true,
+      imports: [RouterModule],
+    })
+    class GuardedComponent {}
 
-       @Component({template: 'sibling', standalone: true})
-       class SiblingComponent {
-       }
+    @Component({template: 'sibling', standalone: true})
+    class SiblingComponent {}
 
-       @Component(
-           {template: '<router-outlet></router-outlet>', standalone: true, imports: [RouterModule]})
-       class RootCmp {
-       }
+    @Component({
+      template: '<router-outlet></router-outlet>',
+      standalone: true,
+      imports: [RouterModule],
+    })
+    class RootCmp {}
 
-       const routes: Routes = [
-         {
-           path: 'parent',
-           component: RootCmp,
-           children: [
-             {
-               path: 'guarded',
-               component: GuardedComponent,
-               canActivate: [Guard],
-             },
-             {
-               path: 'sibling',
-               component: SiblingComponent,
-             }
-           ],
-         },
-       ];
+    const routes: Routes = [
+      {
+        path: 'parent',
+        component: RootCmp,
+        children: [
+          {
+            path: 'guarded',
+            component: GuardedComponent,
+            canActivate: [Guard],
+          },
+          {
+            path: 'sibling',
+            component: SiblingComponent,
+          },
+        ],
+      },
+    ];
 
-       TestBed.configureTestingModule({imports: [RouterModule.forRoot(routes)]});
-       const router = TestBed.inject(Router);
-       const fixture = TestBed.createComponent(RootCmp);
+    TestBed.configureTestingModule({imports: [RouterModule.forRoot(routes)]});
+    const router = TestBed.inject(Router);
+    const fixture = TestBed.createComponent(RootCmp);
 
-       router.navigateByUrl('parent/guarded');
-       advance(fixture);
-       expect(router.url).toEqual('/parent/sibling');
-     }));
+    router.navigateByUrl('parent/guarded');
+    advance(fixture);
+    expect(router.url).toEqual('/parent/sibling');
+  }));
 });
 
 function advance(fixture: ComponentFixture<unknown>) {

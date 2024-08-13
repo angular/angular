@@ -14,8 +14,8 @@ const callbacks = [];
 const size = 100000;
 for (let i = 0; i < size; i++) {
   const emitter = new EventEmitter();
-  const callback = (function(i) {
-    return function() {
+  const callback = (function (i) {
+    return function () {
       console.log(i);
     };
   })(i);
@@ -29,19 +29,15 @@ function addRemoveCallback(reuse, useZone) {
   for (let i = 0; i < size; i++) {
     const emitter = emitters[i];
     if (!reuse) callback = callbacks[i];
-    if (useZone)
-      emitter.on('msg', callback);
-    else
-      emitter.__zone_symbol__addListener('msg', callback);
+    if (useZone) emitter.on('msg', callback);
+    else emitter.__zone_symbol__addListener('msg', callback);
   }
 
   for (let i = 0; i < size; i++) {
     const emitter = emitters[i];
     if (!reuse) callback = callbacks[i];
-    if (useZone)
-      emitter.removeListener('msg', callback);
-    else
-      emitter.__zone_symbol__removeListener('msg', callback);
+    if (useZone) emitter.removeListener('msg', callback);
+    else emitter.__zone_symbol__removeListener('msg', callback);
   }
   const end = new Date();
   console.log(useZone ? 'use zone' : 'native', reuse ? 'reuse' : 'new');

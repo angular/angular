@@ -5,7 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
+import {
+  AbsoluteFsPath,
+  getFileSystem,
+  PathManipulation,
+} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
 import {FormatOptions, validateOptions} from './format_options';
@@ -28,13 +32,17 @@ const LEGACY_XLIFF_MESSAGE_LENGTH = 40;
  */
 export class Xliff1TranslationSerializer implements TranslationSerializer {
   constructor(
-      private sourceLocale: string, private basePath: AbsoluteFsPath, private useLegacyIds: boolean,
-      private formatOptions: FormatOptions = {}, private fs: PathManipulation = getFileSystem()) {
+    private sourceLocale: string,
+    private basePath: AbsoluteFsPath,
+    private useLegacyIds: boolean,
+    private formatOptions: FormatOptions = {},
+    private fs: PathManipulation = getFileSystem(),
+  ) {
     validateOptions('Xliff1TranslationSerializer', [['xml:space', ['preserve']]], formatOptions);
   }
 
   serialize(messages: ɵParsedMessage[]): string {
-    const messageGroups = consolidateMessages(messages, message => this.getMessageId(message));
+    const messageGroups = consolidateMessages(messages, (message) => this.getMessageId(message));
     const xml = new XmlFile();
     xml.startTag('xliff', {'version': '1.2', 'xmlns': 'urn:oasis:names:tc:xliff:document:1.2'});
     // NOTE: the `original` property is set to the legacy `ng2.template` value for backward
@@ -86,7 +94,7 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
       const name = message.placeholderNames[i];
       const location = message.substitutionLocations?.[name];
       const associatedMessageId =
-          message.associatedMessageIds && message.associatedMessageIds[name];
+        message.associatedMessageIds && message.associatedMessageIds[name];
       this.serializePlaceholder(xml, name, location?.text, associatedMessageId);
     }
     this.serializeTextPart(xml, message.messageParts[length]);
@@ -103,7 +111,11 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
   }
 
   private serializePlaceholder(
-      xml: XmlFile, id: string, text: string|undefined, associatedId: string|undefined): void {
+    xml: XmlFile,
+    id: string,
+    text: string | undefined,
+    associatedId: string | undefined,
+  ): void {
     const attrs: Record<string, string> = {id};
     const ctype = getCtypeForPlaceholder(id);
     if (ctype !== null) {
@@ -127,9 +139,10 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
   private serializeLocation(xml: XmlFile, location: ɵSourceLocation): void {
     xml.startTag('context-group', {purpose: 'location'});
     this.renderContext(xml, 'sourcefile', this.fs.relative(this.basePath, location.file));
-    const endLineString = location.end !== undefined && location.end.line !== location.start.line ?
-        `,${location.end.line + 1}` :
-        '';
+    const endLineString =
+      location.end !== undefined && location.end.line !== location.start.line
+        ? `,${location.end.line + 1}`
+        : '';
     this.renderContext(xml, 'linenumber', `${location.start.line + 1}${endLineString}`);
     xml.endTag('context-group');
   }
@@ -154,10 +167,13 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
    * https://csrc.nist.gov/csrc/media/publications/fips/180/4/final/documents/fips180-4-draft-aug2014.pdf
    */
   private getMessageId(message: ɵParsedMessage): string {
-    return message.customId ||
-        this.useLegacyIds && message.legacyIds !== undefined &&
-        message.legacyIds.find(id => id.length === LEGACY_XLIFF_MESSAGE_LENGTH) ||
-        message.id;
+    return (
+      message.customId ||
+      (this.useLegacyIds &&
+        message.legacyIds !== undefined &&
+        message.legacyIds.find((id) => id.length === LEGACY_XLIFF_MESSAGE_LENGTH)) ||
+      message.id
+    );
   }
 }
 
@@ -176,7 +192,7 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
  *
  * Line breaks and images are special cases.
  */
-function getCtypeForPlaceholder(placeholder: string): string|null {
+function getCtypeForPlaceholder(placeholder: string): string | null {
   const tag = placeholder.replace(/^(START_|CLOSE_)/, '');
   switch (tag) {
     case 'LINE_BREAK':
@@ -184,9 +200,9 @@ function getCtypeForPlaceholder(placeholder: string): string|null {
     case 'TAG_IMG':
       return 'image';
     default:
-      const element = tag.startsWith('TAG_') ?
-          tag.replace(/^TAG_(.+)/, (_, tagName: string) => tagName.toLowerCase()) :
-          TAG_MAP[tag];
+      const element = tag.startsWith('TAG_')
+        ? tag.replace(/^TAG_(.+)/, (_, tagName: string) => tagName.toLowerCase())
+        : TAG_MAP[tag];
       if (element === undefined) {
         return null;
       }

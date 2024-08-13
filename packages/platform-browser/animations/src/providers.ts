@@ -6,13 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationBuilder} from '@angular/animations';
-import {AnimationDriver, NoopAnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationRendererFactory as AnimationRendererFactory, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer} from '@angular/animations/browser';
+import {
+  AnimationDriver,
+  NoopAnimationDriver,
+  ɵAnimationEngine as AnimationEngine,
+  ɵAnimationRendererFactory as AnimationRendererFactory,
+  ɵAnimationStyleNormalizer as AnimationStyleNormalizer,
+  ɵWebAnimationsDriver as WebAnimationsDriver,
+  ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer,
+} from '@angular/animations/browser';
 import {DOCUMENT} from '@angular/common';
-import {ANIMATION_MODULE_TYPE, ApplicationRef, Inject, Injectable, NgZone, OnDestroy, Provider, RendererFactory2} from '@angular/core';
+import {
+  ANIMATION_MODULE_TYPE,
+  inject,
+  Inject,
+  Injectable,
+  NgZone,
+  OnDestroy,
+  Provider,
+  RendererFactory2,
+  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
+} from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
-
-import {BrowserAnimationBuilder} from './animation_builder';
 
 @Injectable()
 export class InjectableAnimationEngine extends AnimationEngine implements OnDestroy {
@@ -20,8 +35,10 @@ export class InjectableAnimationEngine extends AnimationEngine implements OnDest
   // Since the `ApplicationRef` should be created earlier before the `AnimationEngine`, they
   // both have `ngOnDestroy` hooks and `flush()` must be called after all views are destroyed.
   constructor(
-      @Inject(DOCUMENT) doc: Document, driver: AnimationDriver,
-      normalizer: AnimationStyleNormalizer, appRef: ApplicationRef) {
+    @Inject(DOCUMENT) doc: Document,
+    driver: AnimationDriver,
+    normalizer: AnimationStyleNormalizer,
+  ) {
     super(doc, driver, normalizer);
   }
 
@@ -35,18 +52,21 @@ export function instantiateDefaultStyleNormalizer() {
 }
 
 export function instantiateRendererFactory(
-    renderer: DomRendererFactory2, engine: AnimationEngine, zone: NgZone) {
+  renderer: DomRendererFactory2,
+  engine: AnimationEngine,
+  zone: NgZone,
+) {
   return new AnimationRendererFactory(renderer, engine, zone);
 }
 
 const SHARED_ANIMATION_PROVIDERS: Provider[] = [
-  {provide: AnimationBuilder, useClass: BrowserAnimationBuilder},
   {provide: AnimationStyleNormalizer, useFactory: instantiateDefaultStyleNormalizer},
-  {provide: AnimationEngine, useClass: InjectableAnimationEngine}, {
+  {provide: AnimationEngine, useClass: InjectableAnimationEngine},
+  {
     provide: RendererFactory2,
     useFactory: instantiateRendererFactory,
-    deps: [DomRendererFactory2, AnimationEngine, NgZone]
-  }
+    deps: [DomRendererFactory2, AnimationEngine, NgZone],
+  },
 ];
 
 /**
@@ -55,7 +75,8 @@ const SHARED_ANIMATION_PROVIDERS: Provider[] = [
  */
 export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
   {provide: AnimationDriver, useFactory: () => new WebAnimationsDriver()},
-  {provide: ANIMATION_MODULE_TYPE, useValue: 'BrowserAnimations'}, ...SHARED_ANIMATION_PROVIDERS
+  {provide: ANIMATION_MODULE_TYPE, useValue: 'BrowserAnimations'},
+  ...SHARED_ANIMATION_PROVIDERS,
 ];
 
 /**
@@ -64,5 +85,6 @@ export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
  */
 export const BROWSER_NOOP_ANIMATIONS_PROVIDERS: Provider[] = [
   {provide: AnimationDriver, useClass: NoopAnimationDriver},
-  {provide: ANIMATION_MODULE_TYPE, useValue: 'NoopAnimations'}, ...SHARED_ANIMATION_PROVIDERS
+  {provide: ANIMATION_MODULE_TYPE, useValue: 'NoopAnimations'},
+  ...SHARED_ANIMATION_PROVIDERS,
 ];

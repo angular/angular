@@ -36,7 +36,7 @@ export interface LinkerOptions {
    *
    * The default is `error`.
    */
-  unknownDeclarationVersionHandling: 'ignore'|'warn'|'error';
+  unknownDeclarationVersionHandling: 'ignore' | 'warn' | 'error';
 }
 
 /**

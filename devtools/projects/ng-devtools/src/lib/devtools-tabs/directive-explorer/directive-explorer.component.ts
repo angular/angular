@@ -6,18 +6,48 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
-import {ComponentExplorerView, ComponentExplorerViewQuery, DevToolsNode, DirectivePosition, ElementPosition, Events, MessageBus, PropertyQuery, PropertyQueryTypes,} from 'protocol';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
+import {
+  ComponentExplorerView,
+  ComponentExplorerViewQuery,
+  DevToolsNode,
+  DirectivePosition,
+  ElementPosition,
+  Events,
+  MessageBus,
+  PropertyQuery,
+  PropertyQueryTypes,
+} from 'protocol';
 
 import {SplitComponent} from '../../../lib/vendor/angular-split/public_api';
 import {ApplicationOperations} from '../../application-operations/index';
+import {FrameManager} from '../../frame_manager';
 
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {FlatNode} from './directive-forest/component-data-source';
 import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
 import {IndexedNode} from './directive-forest/index-forest';
 import {constructPathOfKeysToPropertyValue} from './property-resolver/directive-property-resolver';
-import {ElementPropertyResolver, FlatNode as PropertyFlatNode} from './property-resolver/element-property-resolver';
+import {
+  ElementPropertyResolver,
+  FlatNode as PropertyFlatNode,
+} from './property-resolver/element-property-resolver';
+import {PropertyTabComponent} from './property-tab/property-tab.component';
+import {SplitAreaDirective} from '../../vendor/angular-split/lib/component/splitArea.directive';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {FormsModule} from '@angular/forms';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -45,43 +75,62 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
       useClass: ElementPropertyResolver,
     },
   ],
+  standalone: true,
+  imports: [
+    SplitComponent,
+    SplitAreaDirective,
+    DirectiveForestComponent,
+    BreadcrumbsComponent,
+    PropertyTabComponent,
+    MatSlideToggle,
+    FormsModule,
+  ],
 })
 export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   @Input() showCommentNodes = false;
+  @Input() isHydrationEnabled = false;
   @Output() toggleInspector = new EventEmitter<void>();
 
-  @ViewChild(DirectiveForestComponent) directiveForest: DirectiveForestComponent;
-  @ViewChild(BreadcrumbsComponent) breadcrumbs: BreadcrumbsComponent;
-  @ViewChild(SplitComponent, {static: true, read: ElementRef}) splitElementRef: ElementRef;
+  @ViewChild(DirectiveForestComponent) directiveForest!: DirectiveForestComponent;
+  @ViewChild(BreadcrumbsComponent) breadcrumbs!: BreadcrumbsComponent;
+  @ViewChild(SplitComponent, {static: true, read: ElementRef}) splitElementRef!: ElementRef;
   @ViewChild('directiveForestSplitArea', {static: true, read: ElementRef})
-  directiveForestSplitArea: ElementRef;
+  directiveForestSplitArea!: ElementRef;
 
-  currentSelectedElement: IndexedNode|null = null;
-  forest: DevToolsNode[];
-  splitDirection: 'horizontal'|'vertical' = 'horizontal';
-  parents: FlatNode[]|null = null;
+  currentSelectedElement: IndexedNode | null = null;
+  forest!: DevToolsNode[];
+  splitDirection: 'horizontal' | 'vertical' = 'horizontal';
+  parents: FlatNode[] | null = null;
+  showHydrationNodeHighlights: boolean = false;
 
-  private _resizeObserver = new ResizeObserver((entries) => this._ngZone.run(() => {
-    const resizedEntry = entries[0];
+  private _resizeObserver = new ResizeObserver((entries) =>
+    this._ngZone.run(() => {
+      this.refreshHydrationNodeHighlightsIfNeeded();
 
-    if (resizedEntry.target === this.splitElementRef.nativeElement) {
-      this.splitDirection = resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal';
-    }
+      const resizedEntry = entries[0];
+      if (resizedEntry.target === this.splitElementRef.nativeElement) {
+        this.splitDirection = resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal';
+      }
 
-    if (!this.breadcrumbs) {
-      return;
-    }
+      if (!this.breadcrumbs) {
+        return;
+      }
 
-    this.breadcrumbs.updateScrollButtonVisibility();
-  }));
+      this.breadcrumbs.updateScrollButtonVisibility();
+    }),
+  );
 
-  private _clickedElement: IndexedNode|null = null;
-  private _refreshRetryTimeout: any = null;
+  private _clickedElement: IndexedNode | null = null;
+  private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
 
   constructor(
-      private _appOperations: ApplicationOperations, private _messageBus: MessageBus<Events>,
-      private _propResolver: ElementPropertyResolver, private _cdr: ChangeDetectorRef,
-      private _ngZone: NgZone) {}
+    private readonly _appOperations: ApplicationOperations,
+    private readonly _messageBus: MessageBus<Events>,
+    private readonly _propResolver: ElementPropertyResolver,
+    private readonly _cdr: ChangeDetectorRef,
+    private readonly _ngZone: NgZone,
+    private readonly _frameManager: FrameManager,
+  ) {}
 
   ngOnInit(): void {
     this.subscribeToBackendEvents();
@@ -95,7 +144,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     this._resizeObserver.unobserve(this.directiveForestSplitArea.nativeElement);
   }
 
-  handleNodeSelection(node: IndexedNode|null): void {
+  handleNodeSelection(node: IndexedNode | null): void {
     if (node) {
       // We want to guarantee that we're not reusing any of the previous properties.
       // That's possible if the user has selected an NgForOf and after that
@@ -125,11 +174,12 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   }
 
   refresh(): void {
-    const success =
-        this._messageBus.emit('getLatestComponentExplorerView', [this._constructViewQuery()]);
+    const success = this._messageBus.emit('getLatestComponentExplorerView', [
+      this._constructViewQuery(),
+    ]);
     // If the event was not throttled, we no longer need to retry.
     if (success) {
-      clearTimeout(this._refreshRetryTimeout);
+      this._refreshRetryTimeout && clearTimeout(this._refreshRetryTimeout);
       this._refreshRetryTimeout = null;
       return;
     }
@@ -137,6 +187,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     if (!this._refreshRetryTimeout) {
       this._refreshRetryTimeout = setTimeout(() => this.refresh(), 500);
     }
+    this.refreshHydrationNodeHighlightsIfNeeded();
   }
 
   viewSource(directiveName: string): void {
@@ -147,20 +198,40 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     }
 
     const directiveIndex = this.currentSelectedElement.directives.findIndex(
-        directive => directive.name === directiveName);
+      (directive) => directive.name === directiveName,
+    );
 
-    if (directiveIndex === -1) {
-      // view the component definition
-      this._appOperations.viewSource(this.currentSelectedElement.position);
+    const selectedFrame = this._frameManager.selectedFrame;
+    if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
+      this._messageBus.emit('log', [
+        {
+          level: 'warn',
+          message: `The currently inspected frame does not have a unique url on this page. Cannot view source.`,
+        },
+      ]);
       return;
     }
 
-    // view the directive definition
-    this._appOperations.viewSource(this.currentSelectedElement.position, directiveIndex);
+    this._appOperations.viewSource(
+      this.currentSelectedElement.position,
+      directiveIndex !== -1 ? directiveIndex : undefined,
+      new URL(selectedFrame!.url),
+    );
   }
 
   handleSelectDomElement(node: IndexedNode): void {
-    this._appOperations.selectDomElement(node.position);
+    const selectedFrame = this._frameManager.selectedFrame;
+    if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
+      this._messageBus.emit('log', [
+        {
+          level: 'warn',
+          message: `The currently inspected frame does not have a unique url on this page. Cannot select DOM element.`,
+        },
+      ]);
+      return;
+    }
+
+    this._appOperations.selectDomElement(node.position, new URL(selectedFrame!.url));
   }
 
   highlight(node: FlatNode): void {
@@ -174,7 +245,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     this._messageBus.emit('removeHighlightOverlay');
   }
 
-  private _constructViewQuery(): ComponentExplorerViewQuery|undefined {
+  private _constructViewQuery(): ComponentExplorerViewQuery | undefined {
     if (!this._clickedElement) {
       return;
     }
@@ -189,8 +260,11 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     // We check if we're dealing with the same instance (i.e., if we have the same
     // set of directives and component on it), if we do, we want to get the same
     // set of properties which are already expanded.
-    if (!this._clickedElement || !this.currentSelectedElement ||
-        !sameDirectives(this._clickedElement, this.currentSelectedElement)) {
+    if (
+      !this._clickedElement ||
+      !this.currentSelectedElement ||
+      !sameDirectives(this._clickedElement, this.currentSelectedElement)
+    ) {
       return {
         type: PropertyQueryTypes.All,
       };
@@ -213,14 +287,46 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     this.directiveForest.handleSelect(node);
   }
 
-  handleSetParents(parents: FlatNode[]|null): void {
+  handleSetParents(parents: FlatNode[] | null): void {
     this.parents = parents;
     this._cdr.detectChanges();
   }
 
-  inspect({node, directivePosition}:
-              {node: PropertyFlatNode; directivePosition: DirectivePosition}): void {
+  inspect({
+    node,
+    directivePosition,
+  }: {
+    node: PropertyFlatNode;
+    directivePosition: DirectivePosition;
+  }): void {
     const objectPath = constructPathOfKeysToPropertyValue(node.prop);
-    this._appOperations.inspect(directivePosition, objectPath);
+
+    const selectedFrame = this._frameManager.selectedFrame;
+    if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
+      this._messageBus.emit('log', [
+        {
+          level: 'warn',
+          message: `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`,
+        },
+      ]);
+      return;
+    }
+
+    this._appOperations.inspect(directivePosition, objectPath, new URL(selectedFrame!.url));
+  }
+
+  hightlightHydrationNodes() {
+    this._messageBus.emit('createHydrationOverlay');
+  }
+
+  removeHydrationNodesHightlights() {
+    this._messageBus.emit('removeHydrationOverlay');
+  }
+
+  refreshHydrationNodeHighlightsIfNeeded() {
+    if (this.showHydrationNodeHighlights) {
+      this.removeHydrationNodesHightlights();
+      this.hightlightHydrationNodes();
+    }
   }
 }

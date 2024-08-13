@@ -34,7 +34,6 @@
       "inputFiles": [
         "important.ts"
       ],
-      "skipForTemplatePipeline": true,
       "expectations": [
         {
           "failureMessage": "Incorrect template",
@@ -95,6 +94,17 @@
           "files": [
             "multiple_directives.js"
           ]
+        }
+      ]
+    },
+    {
+      "description": "should not mangle css custom property names",
+      "inputFiles": [
+        "css_custom_properties.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code"
         }
       ]
     }
