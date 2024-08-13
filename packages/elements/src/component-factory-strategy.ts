@@ -20,7 +20,7 @@ import {
   isSignal,
   reflectComponentType,
 } from '@angular/core';
-import {isObservable, merge, Observable, ReplaySubject} from 'rxjs';
+import {merge, Observable, ReplaySubject} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 import {
@@ -63,9 +63,6 @@ export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
 
   /** Reference to the component that was created on connect. */
   private componentRef: ComponentRef<T> | null = null;
-
-  /** Whether a change detection has been scheduled to run on the component. */
-  private scheduledChangeDetectionFn: (() => void) | null = null;
 
   /** Callback function that when called will cancel a scheduled destruction on the component. */
   private scheduledDestroyFn: (() => void) | null = null;
@@ -153,7 +150,7 @@ export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
    * Sets the input value for the property. If the component has not yet been created, the value is
    * cached and set when the component is created.
    */
-  setInputValue(property: string, value: any, transform?: (value: any) => any, init = false): void {
+  setInputValue(property: string, value: any, transform?: (value: any) => any): void {
     this.runInZone(() => {
       if (transform) {
         value = transform.call(this.componentRef?.instance, value);
@@ -161,19 +158,10 @@ export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
 
       if (this.componentRef === null) {
         this.initialInputValues.set(property, value);
-        return;
+      } else {
+        // Update the component instance and schedule change detection.
+        this.componentRef.setInput(property, value);
       }
-
-      // Ignore the value if the component has already been initialized and the value is strictly
-      // equal to the current value. This is because getInputValue does not work for required
-      // inputs before they have been set.
-      if (!init && Object.is(value, this.getInputValue(property))) {
-        return;
-      }
-
-      // Update the component instance and schedule change detection.
-      this.componentRef.setInput(property, value);
-      this.scheduleDetectChanges();
     });
   }
 
@@ -209,8 +197,8 @@ export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
     this.componentMirror?.inputs.forEach(({propName, transform}) => {
       if (this.initialInputValues.has(propName)) {
         // Call `setInputValue()` now that the component has been instantiated to update its
-        // properties and fire `ngOnChanges()`.
-        this.setInputValue(propName, this.initialInputValues.get(propName), transform, true);
+        // properties.
+        this.setInputValue(propName, this.initialInputValues.get(propName), transform);
       }
     });
 
@@ -223,29 +211,11 @@ export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
       ? this.componentMirror.outputs.map(({propName, templateName}) => {
           const emitter: EventEmitter<unknown> | OutputEmitterRef<unknown> =
             componentRef.instance[propName];
-          const emitterObservable: Observable<unknown> = isObservable(emitter)
-            ? emitter
-            : outputToObservable(emitter);
-          return emitterObservable.pipe(map((value) => ({name: templateName, value})));
+          return outputToObservable(emitter).pipe(map((value) => ({name: templateName, value})));
         })
       : [];
 
     this.eventEmitters.next(eventEmitters);
-  }
-
-  /**
-   * Schedules change detection to run on the component.
-   * Ignores subsequent calls if already scheduled.
-   */
-  protected scheduleDetectChanges(): void {
-    if (this.scheduledChangeDetectionFn) {
-      return;
-    }
-
-    this.scheduledChangeDetectionFn = scheduler.scheduleBeforeRender(() => {
-      this.scheduledChangeDetectionFn = null;
-      this.detectChanges();
-    });
   }
 
   /** Runs change detection on the component. */
