@@ -11,7 +11,6 @@ import {MigrationResult} from '../result';
 import {Replacement} from '../replacement';
 import {convertToSignalInput} from '../convert-input/convert_to_signal';
 import assert from 'assert';
-import {MigrationHost} from '../migration_host';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {ImportManager} from '../../../../../../compiler-cli/src/ngtsc/translator';
 
@@ -20,7 +19,6 @@ import {ImportManager} from '../../../../../../compiler-cli/src/ngtsc/translator
  * manages imports within the given file.
  */
 export function pass6__migrateInputDeclarations(
-  host: MigrationHost,
   checker: ts.TypeChecker,
   result: MigrationResult,
   knownInputs: KnownInputs,
@@ -46,7 +44,7 @@ export function pass6__migrateInputDeclarations(
       new Replacement(
         input.node.getStart(),
         input.node.getEnd(),
-        convertToSignalInput(host, input.node, metadata, checker, importManager),
+        convertToSignalInput(input.node, metadata, checker, importManager),
       ),
     );
   }
