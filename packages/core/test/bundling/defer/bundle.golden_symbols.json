@@ -9,7 +9,10 @@
     "name": "APP_INITIALIZER"
   },
   {
-    "name": "AfterRenderEventManager"
+    "name": "AfterRenderManager"
+  },
+  {
+    "name": "AfterRenderPhase"
   },
   {
     "name": "AnonymousSubject"
@@ -511,6 +514,9 @@
   },
   {
     "name": "ZoneStablePendingTask"
+  },
+  {
+    "name": "_AfterRenderImpl"
   },
   {
     "name": "_ComponentFactoryResolver"
@@ -1059,9 +1065,6 @@
     "name": "init_advance"
   },
   {
-    "name": "init_after_render_hooks"
-  },
-  {
     "name": "init_all"
   },
   {
@@ -1075,6 +1078,9 @@
   },
   {
     "name": "init_api3"
+  },
+  {
+    "name": "init_api4"
   },
   {
     "name": "init_api_flags"
@@ -1488,6 +1494,9 @@
     "name": "init_hooks"
   },
   {
+    "name": "init_hooks2"
+  },
+  {
     "name": "init_host_attribute_token"
   },
   {
@@ -1678,6 +1687,9 @@
   },
   {
     "name": "init_lview_tracking"
+  },
+  {
+    "name": "init_manager"
   },
   {
     "name": "init_map"
@@ -1882,9 +1894,6 @@
   },
   {
     "name": "init_query_reactive"
-  },
-  {
-    "name": "init_queue_state_update"
   },
   {
     "name": "init_r3_injector"

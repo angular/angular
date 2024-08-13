@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertInInjectionContext} from '../../di';
+import {Injector} from '../../di/injector';
+import {inject} from '../../di/injector_compatibility';
+import {DestroyRef} from '../../linker/destroy_ref';
+import {performanceMarkFeature} from '../../util/performance';
+import {assertNotInReactiveContext} from '../reactivity/asserts';
+import {isPlatformBrowser} from '../util/misc_utils';
+import {AfterRenderPhase, AfterRenderRef} from './api';
 import {
-  ChangeDetectionScheduler,
-  NotificationSource,
-} from '../change_detection/scheduling/zoneless_scheduling';
-import {Injector, assertInInjectionContext, runInInjectionContext, ɵɵdefineInjectable} from '../di';
-import {inject} from '../di/injector_compatibility';
-import {ErrorHandler} from '../error_handler';
-import {DestroyRef} from '../linker/destroy_ref';
-import {assertNotInReactiveContext} from '../render3/reactivity/asserts';
-import {performanceMarkFeature} from '../util/performance';
-import {NgZone} from '../zone/ng_zone';
-
-import {isPlatformBrowser} from './util/misc_utils';
+  AfterRenderHooks,
+  AfterRenderImpl,
+  AfterRenderManager,
+  AfterRenderSequence,
+} from './manager';
 
 /**
  * An argument list containing the first non-never type in the given type array, or an empty
@@ -29,71 +30,6 @@ export type ɵFirstAvailable<T extends unknown[]> = T extends [infer H, ...infer
     ? ɵFirstAvailable<R>
     : [H]
   : [];
-
-/**
- * The phase to run an `afterRender` or `afterNextRender` callback in.
- *
- * Callbacks in the same phase run in the order they are registered. Phases run in the
- * following order after each render:
- *
- *   1. `AfterRenderPhase.EarlyRead`
- *   2. `AfterRenderPhase.Write`
- *   3. `AfterRenderPhase.MixedReadWrite`
- *   4. `AfterRenderPhase.Read`
- *
- * Angular is unable to verify or enforce that phases are used correctly, and instead
- * relies on each developer to follow the guidelines documented for each value and
- * carefully choose the appropriate one, refactoring their code if necessary. By doing
- * so, Angular is better able to minimize the performance degradation associated with
- * manual DOM access, ensuring the best experience for the end users of your application
- * or library.
- *
- * @deprecated Specify the phase for your callback to run in by passing a spec-object as the first
- *   parameter to `afterRender` or `afterNextRender` instead of a function.
- */
-export enum AfterRenderPhase {
-  /**
-   * Use `AfterRenderPhase.EarlyRead` for callbacks that only need to **read** from the
-   * DOM before a subsequent `AfterRenderPhase.Write` callback, for example to perform
-   * custom layout that the browser doesn't natively support. Prefer the
-   * `AfterRenderPhase.EarlyRead` phase if reading can wait until after the write phase.
-   * **Never** write to the DOM in this phase.
-   *
-   * <div class="alert is-important">
-   *
-   * Using this value can degrade performance.
-   * Instead, prefer using built-in browser functionality when possible.
-   *
-   * </div>
-   */
-  EarlyRead,
-
-  /**
-   * Use `AfterRenderPhase.Write` for callbacks that only **write** to the DOM. **Never**
-   * read from the DOM in this phase.
-   */
-  Write,
-
-  /**
-   * Use `AfterRenderPhase.MixedReadWrite` for callbacks that read from or write to the
-   * DOM, that haven't been refactored to use a different phase. **Never** use this phase if
-   * it is possible to divide the work among the other phases instead.
-   *
-   * <div class="alert is-critical">
-   *
-   * Using this value can **significantly** degrade performance.
-   * Instead, prefer dividing work into the appropriate phase callbacks.
-   *
-   * </div>
-   */
-  MixedReadWrite,
-
-  /**
-   * Use `AfterRenderPhase.Read` for callbacks that only **read** from the DOM. **Never**
-   * write to the DOM in this phase.
-   */
-  Read,
-}
 
 /**
  * Options passed to `afterRender` and `afterNextRender`.
@@ -122,70 +58,6 @@ export interface AfterRenderOptions {
    *   parameter to `afterRender` or `afterNextRender` instead of a function.
    */
   phase?: AfterRenderPhase;
-}
-
-/**
- * A callback that runs after render.
- *
- * @developerPreview
- */
-export interface AfterRenderRef {
-  /**
-   * Shut down the callback, preventing it from being called again.
-   */
-  destroy(): void;
-}
-
-/**
- * Options passed to `internalAfterNextRender`.
- */
-export interface InternalAfterNextRenderOptions {
-  /**
-   * The `Injector` to use during creation.
-   *
-   * If this is not provided, the current injection context will be used instead (via `inject`).
-   */
-  injector?: Injector;
-  /**
-   * When true, the hook will execute both on client and on the server.
-   *
-   * When false or undefined, the hook only executes in the browser.
-   */
-  runOnServer?: boolean;
-}
-
-/** `AfterRenderRef` that does nothing. */
-const NOOP_AFTER_RENDER_REF: AfterRenderRef = {
-  destroy() {},
-};
-
-/**
- * Register a callback to run once before any userspace `afterRender` or
- * `afterNextRender` callbacks.
- *
- * This function should almost always be used instead of `afterRender` or
- * `afterNextRender` for implementing framework functionality. Consider:
- *
- *   1.) `AfterRenderPhase.EarlyRead` is intended to be used for implementing
- *       custom layout. If the framework itself mutates the DOM after *any*
- *       `AfterRenderPhase.EarlyRead` callbacks are run, the phase can no
- *       longer reliably serve its purpose.
- *
- *   2.) Importing `afterRender` in the framework can reduce the ability for it
- *       to be tree-shaken, and the framework shouldn't need much of the behavior.
- */
-export function internalAfterNextRender(
-  callback: VoidFunction,
-  options?: InternalAfterNextRenderOptions,
-) {
-  const injector = options?.injector ?? inject(Injector);
-
-  // Similarly to the public `afterNextRender` function, an internal one
-  // is only invoked in a browser as long as the runOnServer option is not set.
-  if (!options?.runOnServer && !isPlatformBrowser(injector)) return;
-
-  const afterRenderEventManager = injector.get(AfterRenderEventManager);
-  afterRenderEventManager.internalCallbacks.push(callback);
 }
 
 /**
@@ -347,7 +219,7 @@ export function afterRender(
         'callback inside the component constructor`.',
     );
 
-  !options && assertInInjectionContext(afterRender);
+  !options?.injector && assertInInjectionContext(afterRender);
   const injector = options?.injector ?? inject(Injector);
 
   if (!isPlatformBrowser(injector)) {
@@ -356,12 +228,7 @@ export function afterRender(
 
   performanceMarkFeature('NgAfterRender');
 
-  return afterRenderImpl(
-    callbackOrSpec,
-    injector,
-    /* once */ false,
-    options?.phase ?? AfterRenderPhase.MixedReadWrite,
-  );
+  return afterRenderImpl(callbackOrSpec, injector, options, /* once */ false);
 }
 
 /**
@@ -522,7 +389,7 @@ export function afterNextRender(
       },
   options?: AfterRenderOptions,
 ): AfterRenderRef {
-  !options && assertInInjectionContext(afterNextRender);
+  !options?.injector && assertInInjectionContext(afterNextRender);
   const injector = options?.injector ?? inject(Injector);
 
   if (!isPlatformBrowser(injector)) {
@@ -531,15 +398,10 @@ export function afterNextRender(
 
   performanceMarkFeature('NgAfterNextRender');
 
-  return afterRenderImpl(
-    callbackOrSpec,
-    injector,
-    /* once */ true,
-    options?.phase ?? AfterRenderPhase.MixedReadWrite,
-  );
+  return afterRenderImpl(callbackOrSpec, injector, options, /* once */ true);
 }
 
-function getSpec(
+function getHooks(
   callbackOrSpec:
     | VoidFunction
     | {
@@ -549,20 +411,19 @@ function getSpec(
         read?: (r?: unknown) => void;
       },
   phase: AfterRenderPhase,
-) {
+): AfterRenderHooks {
   if (callbackOrSpec instanceof Function) {
-    switch (phase) {
-      case AfterRenderPhase.EarlyRead:
-        return {earlyRead: callbackOrSpec};
-      case AfterRenderPhase.Write:
-        return {write: callbackOrSpec};
-      case AfterRenderPhase.MixedReadWrite:
-        return {mixedReadWrite: callbackOrSpec};
-      case AfterRenderPhase.Read:
-        return {read: callbackOrSpec};
-    }
+    const hooks: AfterRenderHooks = [undefined, undefined, undefined, undefined];
+    hooks[phase] = callbackOrSpec;
+    return hooks;
+  } else {
+    return [
+      callbackOrSpec.earlyRead,
+      callbackOrSpec.write,
+      callbackOrSpec.mixedReadWrite,
+      callbackOrSpec.read,
+    ];
   }
-  return callbackOrSpec;
 }
 
 /**
@@ -578,206 +439,26 @@ function afterRenderImpl(
         read?: (r?: unknown) => void;
       },
   injector: Injector,
+  options: AfterRenderOptions | undefined,
   once: boolean,
-  phase: AfterRenderPhase,
 ): AfterRenderRef {
-  const spec = getSpec(callbackOrSpec, phase);
-  const afterRenderEventManager = injector.get(AfterRenderEventManager);
+  const manager = injector.get(AfterRenderManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
-  const callbackHandler = (afterRenderEventManager.handler ??=
-    new AfterRenderCallbackHandlerImpl());
+  manager.impl ??= injector.get(AfterRenderImpl);
 
-  const pipelinedArgs: [] | [unknown] = [];
-  const instances: AfterRenderCallback[] = [];
-
-  const destroy = () => {
-    for (const instance of instances) {
-      callbackHandler.unregister(instance);
-    }
-    unregisterFn();
-  };
-  const unregisterFn = injector.get(DestroyRef).onDestroy(destroy);
-  let callbacksLeftToRun = 0;
-
-  const registerCallback = (
-    phase: AfterRenderPhase,
-    phaseCallback: undefined | ((...args: unknown[]) => unknown),
-  ) => {
-    if (!phaseCallback) {
-      return;
-    }
-    const callback = once
-      ? (...args: [unknown]) => {
-          callbacksLeftToRun--;
-          if (callbacksLeftToRun < 1) {
-            destroy();
-          }
-          return phaseCallback(...args);
-        }
-      : phaseCallback;
-
-    const instance = runInInjectionContext(
-      injector,
-      () => new AfterRenderCallback(phase, pipelinedArgs, callback),
-    );
-    callbackHandler.register(instance);
-    instances.push(instance);
-    callbacksLeftToRun++;
-  };
-
-  registerCallback(AfterRenderPhase.EarlyRead, spec.earlyRead);
-  registerCallback(AfterRenderPhase.Write, spec.write);
-  registerCallback(AfterRenderPhase.MixedReadWrite, spec.mixedReadWrite);
-  registerCallback(AfterRenderPhase.Read, spec.read);
-
-  return {destroy};
+  const hooks = options?.phase ?? AfterRenderPhase.MixedReadWrite;
+  const sequence = new AfterRenderSequence(
+    manager.impl,
+    getHooks(callbackOrSpec, hooks),
+    once,
+    injector.get(DestroyRef),
+  );
+  manager.impl.register(sequence);
+  return sequence;
 }
 
-/**
- * A wrapper around a function to be used as an after render callback.
- */
-class AfterRenderCallback {
-  private zone = inject(NgZone);
-  private errorHandler = inject(ErrorHandler, {optional: true});
-
-  constructor(
-    readonly phase: AfterRenderPhase,
-    private pipelinedArgs: [] | [unknown],
-    private callbackFn: (...args: unknown[]) => unknown,
-  ) {
-    // Registering a callback will notify the scheduler.
-    inject(ChangeDetectionScheduler, {optional: true})?.notify(NotificationSource.NewRenderHook);
-  }
-
-  invoke() {
-    try {
-      const result = this.zone.runOutsideAngular(() =>
-        this.callbackFn.apply(null, this.pipelinedArgs as [unknown]),
-      );
-      // Clear out the args and add the result which will be passed to the next phase.
-      this.pipelinedArgs.splice(0, this.pipelinedArgs.length, result);
-    } catch (err) {
-      this.errorHandler?.handleError(err);
-    }
-  }
-}
-
-/**
- * Implements `afterRender` and `afterNextRender` callback handler logic.
- */
-interface AfterRenderCallbackHandler {
-  /**
-   * Register a new callback.
-   */
-  register(callback: AfterRenderCallback): void;
-
-  /**
-   * Unregister an existing callback.
-   */
-  unregister(callback: AfterRenderCallback): void;
-
-  /**
-   * Execute callbacks. Returns `true` if any callbacks were executed.
-   */
-  execute(): void;
-
-  /**
-   * Perform any necessary cleanup.
-   */
-  destroy(): void;
-}
-
-/**
- * Core functionality for `afterRender` and `afterNextRender`. Kept separate from
- * `AfterRenderEventManager` for tree-shaking.
- */
-class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
-  private executingCallbacks = false;
-  private buckets = {
-    // Note: the order of these keys controls the order the phases are run.
-    [AfterRenderPhase.EarlyRead]: new Set<AfterRenderCallback>(),
-    [AfterRenderPhase.Write]: new Set<AfterRenderCallback>(),
-    [AfterRenderPhase.MixedReadWrite]: new Set<AfterRenderCallback>(),
-    [AfterRenderPhase.Read]: new Set<AfterRenderCallback>(),
-  };
-  private deferredCallbacks = new Set<AfterRenderCallback>();
-
-  register(callback: AfterRenderCallback): void {
-    // If we're currently running callbacks, new callbacks should be deferred
-    // until the next render operation.
-    const target = this.executingCallbacks ? this.deferredCallbacks : this.buckets[callback.phase];
-    target.add(callback);
-  }
-
-  unregister(callback: AfterRenderCallback): void {
-    this.buckets[callback.phase].delete(callback);
-    this.deferredCallbacks.delete(callback);
-  }
-
-  execute(): void {
-    this.executingCallbacks = true;
-    for (const bucket of Object.values(this.buckets)) {
-      for (const callback of bucket) {
-        callback.invoke();
-      }
-    }
-    this.executingCallbacks = false;
-
-    for (const callback of this.deferredCallbacks) {
-      this.buckets[callback.phase].add(callback);
-    }
-    this.deferredCallbacks.clear();
-  }
-
-  destroy(): void {
-    for (const bucket of Object.values(this.buckets)) {
-      bucket.clear();
-    }
-    this.deferredCallbacks.clear();
-  }
-}
-
-/**
- * Implements core timing for `afterRender` and `afterNextRender` events.
- * Delegates to an optional `AfterRenderCallbackHandler` for implementation.
- */
-export class AfterRenderEventManager {
-  /* @internal */
-  handler: AfterRenderCallbackHandler | null = null;
-
-  /* @internal */
-  internalCallbacks: VoidFunction[] = [];
-
-  /**
-   * Executes internal and user-provided callbacks.
-   */
-  execute(): void {
-    this.executeInternalCallbacks();
-    this.handler?.execute();
-  }
-
-  executeInternalCallbacks() {
-    // Note: internal callbacks power `internalAfterNextRender`. Since internal callbacks
-    // are fairly trivial, they are kept separate so that `AfterRenderCallbackHandlerImpl`
-    // can still be tree-shaken unless used by the application.
-    const callbacks = [...this.internalCallbacks];
-    this.internalCallbacks.length = 0;
-    for (const callback of callbacks) {
-      callback();
-    }
-  }
-
-  ngOnDestroy() {
-    this.handler?.destroy();
-    this.handler = null;
-    this.internalCallbacks.length = 0;
-  }
-
-  /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
-    token: AfterRenderEventManager,
-    providedIn: 'root',
-    factory: () => new AfterRenderEventManager(),
-  });
-}
+/** `AfterRenderRef` that does nothing. */
+const NOOP_AFTER_RENDER_REF: AfterRenderRef = {
+  destroy() {},
+};

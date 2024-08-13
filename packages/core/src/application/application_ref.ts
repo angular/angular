@@ -31,7 +31,7 @@ import {NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
 import {PendingTasks} from '../pending_tasks';
 import {RendererFactory2} from '../render/api';
-import {AfterRenderEventManager} from '../render3/after_render_hooks';
+import {AfterRenderManager} from '../render3/after_render/manager';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
 import {ChangeDetectionMode, detectChangesInternal} from '../render3/instructions/change_detection';
@@ -308,7 +308,7 @@ export class ApplicationRef {
   /** @internal */
   _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
-  private readonly afterRenderEffectManager = inject(AfterRenderEventManager);
+  private readonly afterRenderManager = inject(AfterRenderManager);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
 
   /**
@@ -663,7 +663,7 @@ export class ApplicationRef {
 
       // Check all potentially dirty views.
       this.beforeRender.next(useGlobalCheck);
-      for (let {_lView, notifyErrorHandler} of this.allViews) {
+      for (let {_lView, notifyErrorHandler} of this._views) {
         detectChangesInViewIfRequired(
           _lView,
           notifyErrorHandler,
@@ -676,6 +676,13 @@ export class ApplicationRef {
       // flag. We clear the flag here because, for backwards compatibility, `markForCheck()`
       // during view checking doesn't cause the view to be re-checked.
       this.dirtyFlags &= ~ApplicationRefDirtyFlags.ViewTreeCheck;
+
+      // Check if any views are still dirty after checking and we need to loop back.
+      this.syncDirtyFlagsWithViews();
+      if (this.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeAny) {
+        // If any views are still dirty after checking, loop back before running render hooks.
+        return;
+      }
     } else {
       // If we skipped refreshing views above, there might still be unflushed animations
       // because we never called `detectChangesInternal` on the views.
@@ -686,32 +693,32 @@ export class ApplicationRef {
     // Even if there were no dirty views, afterRender hooks might still be dirty.
     if (this.dirtyFlags & ApplicationRefDirtyFlags.AfterRender) {
       this.dirtyFlags &= ~ApplicationRefDirtyFlags.AfterRender;
+      this.afterRenderManager.execute();
 
-      this.afterRenderEffectManager.executeInternalCallbacks();
-
-      // If we have a newly dirty view after running internal callbacks, recheck the views again
-      // before running user-provided callbacks
-      if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
-        // Should be a no-op, but just in case:
-        this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
-        return;
-      }
-
-      this.afterRenderEffectManager.execute();
-
-      if (this.dirtyFlags & ApplicationRefDirtyFlags.AfterRender) {
-        // If an afterRender hook schedules new afterRender hooks, we don't immediately loop, but
-        // instead queue them to run in the next synchronization pass, whenever that is. Therefore
-        // we clear the `AfterRender` bit here, but add it to `deferredDirtyFlags` to be applied
-        // on the next pass.
-        this.dirtyFlags &= ~ApplicationRefDirtyFlags.AfterRender;
-        this.deferredDirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
-      }
+      // afterRender hooks might influence dirty flags.
     }
+    this.syncDirtyFlagsWithViews();
+  }
 
+  /**
+   * Checks `allViews` for views which require refresh/traversal, and updates `dirtyFlags`
+   * accordingly, with two potential behaviors:
+   *
+   * 1. If any of our views require updating, then this adds the `ViewTreeTraversal` dirty flag.
+   *    This _should_ be a no-op, since the scheduler should've added the flag at the same time the
+   *    view was marked as needing updating.
+   *
+   *    TODO(alxhub): figure out if this behavior is still needed for edge cases.
+   *
+   * 2. If none of our views require updating, then clear the view-related `dirtyFlag`s. This
+   *    happens when the scheduler is notified of a view becoming dirty, but the view itself isn't
+   *    reachable through traversal from our roots (e.g. it's detached from the CD tree).
+   */
+  private syncDirtyFlagsWithViews(): void {
     if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
       // If after running all afterRender callbacks new views are dirty, ensure we loop back.
       this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
+      return;
     } else {
       // Even though this flag may be set, none of _our_ views require traversal, and so the
       // `ApplicationRef` doesn't require any repeated checking.

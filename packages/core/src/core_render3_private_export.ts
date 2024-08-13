@@ -293,10 +293,7 @@ export {
 } from './sanitization/sanitization';
 export {ɵɵvalidateIframeAttribute} from './sanitization/iframe_attrs_validation';
 export {noSideEffects as ɵnoSideEffects} from './util/closure';
-export {
-  AfterRenderEventManager as ɵAfterRenderEventManager,
-  internalAfterNextRender as ɵinternalAfterNextRender,
-} from './render3/after_render_hooks';
+export {AfterRenderManager as ɵAfterRenderManager} from './render3/after_render/manager';
 export {
   depsTracker as ɵdepsTracker,
   USE_RUNTIME_DEPS_TRACKER_FOR_JIT as ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT,

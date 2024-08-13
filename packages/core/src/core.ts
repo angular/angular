@@ -98,14 +98,13 @@ export {
 } from './render3/ng_module_ref';
 export {createComponent, reflectComponentType, ComponentMirror} from './render3/component';
 export {isStandalone} from './render3/definition';
+export {AfterRenderPhase, AfterRenderRef} from './render3/after_render/api';
 export {
-  AfterRenderRef,
   AfterRenderOptions,
-  AfterRenderPhase,
   afterRender,
   afterNextRender,
   ɵFirstAvailable,
-} from './render3/after_render_hooks';
+} from './render3/after_render/hooks';
 export {ApplicationConfig, mergeApplicationConfig} from './application/application_config';
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
