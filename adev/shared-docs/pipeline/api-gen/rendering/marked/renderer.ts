@@ -30,8 +30,8 @@ export const renderer: Partial<Renderer> = {
     <img src="${href}" alt="${text}" title="${title}" class="docs-image">
     `;
   },
-  link({href, text}): string {
-    return `<a href="${href}">${text}</a>`;
+  link(this: Renderer, {href, tokens}): string {
+    return `<a href="${href}">${this.parser.parseInline(tokens)}</a>`;
   },
   list(this: Renderer, {items, ordered, start}) {
     if (ordered) {
