@@ -20,16 +20,16 @@ import {
 /** The style elements attribute name used to set value of `APP_ID` token. */
 const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
 
+interface UsageRecord<T> {
+  elements: T[];
+  usage: number;
+}
+
 @Injectable()
 export class SharedStylesHost implements OnDestroy {
   // Maps all registered host nodes to a list of style nodes that have been added to the host node.
-  private readonly styleRef = new Map<
-    string /** Style string */,
-    {
-      elements: HTMLStyleElement[];
-      usage: number;
-    }
-  >();
+  private readonly styleRef = new Map<string /** Style string */, UsageRecord<HTMLStyleElement>>();
+  private readonly externalUsages = new Map<string, UsageRecord<HTMLLinkElement>>();
   private readonly hostNodes = new Set<Node>();
   private readonly styleNodesInDOM: Map<string, HTMLStyleElement> | null;
   private readonly platformIsServer: boolean;
@@ -65,6 +65,61 @@ export class SharedStylesHost implements OnDestroy {
     }
   }
 
+  addExternalStyles(urls: string[]): void {
+    for (const url of urls) {
+      const record = this.ensureUsageRecord(this.externalUsages, url);
+
+      if (++record.usage === 1) {
+        for (const host of this.hostNodes) {
+          const linkElement = this.addLinkToHost(url, host);
+          record.elements.push(linkElement);
+        }
+      }
+    }
+  }
+
+  private addLinkToHost(url: string, host: Node): HTMLLinkElement {
+    const linkElement = this.doc.createElement('link');
+    linkElement.setAttribute('rel', 'stylesheet');
+    linkElement.setAttribute('href', url);
+
+    if (this.nonce) {
+      linkElement.setAttribute('nonce', this.nonce);
+    }
+
+    if (this.platformIsServer) {
+      linkElement.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
+    }
+
+    host.appendChild(linkElement);
+
+    return linkElement;
+  }
+
+  removeExternalStyles(urls: string[]): void {
+    for (const url of urls) {
+      const record = this.externalUsages.get(url);
+      if (record === undefined) {
+        continue;
+      }
+
+      if (--record.usage <= 0) {
+        record.elements.forEach((element) => element.remove());
+        this.externalUsages.delete(url);
+      }
+    }
+  }
+
+  private ensureUsageRecord<T>(usages: Map<string, UsageRecord<T>>, key: string): UsageRecord<T> {
+    let record = usages.get(key);
+    if (record === undefined) {
+      record = {usage: 0, elements: []};
+      usages.set(key, record);
+    }
+
+    return record;
+  }
+
   ngOnDestroy(): void {
     const styleNodesInDOM = this.styleNodesInDOM;
     if (styleNodesInDOM) {
@@ -76,6 +131,11 @@ export class SharedStylesHost implements OnDestroy {
       this.onStyleRemoved(style);
     }
 
+    for (const record of this.externalUsages.values()) {
+      record.elements.forEach((element) => element.remove());
+    }
+    this.externalUsages.clear();
+
     this.resetHostNodes();
   }
 
@@ -84,6 +144,10 @@ export class SharedStylesHost implements OnDestroy {
 
     for (const style of this.getAllStyles()) {
       this.addStyleToHost(hostNode, style);
+    }
+
+    for (const [url, record] of this.externalUsages) {
+      record.elements.push(this.addLinkToHost(url, hostNode));
     }
   }
 
