@@ -216,11 +216,8 @@ describe('ComponentFactoryNgElementStrategy', () => {
   });
 
   describe('when inputs change and is connected', () => {
-    let viewChangeDetectorRef: ChangeDetectorRef;
-
     beforeEach(() => {
       strategy.connect(document.createElement('div'));
-      viewChangeDetectorRef = componentRef.injector.get(ChangeDetectorRef);
     });
 
     it('should be set on the component instance', () => {
@@ -229,39 +226,15 @@ describe('ComponentFactoryNgElementStrategy', () => {
       expect(strategy.getInputValue('fooFoo')).toBe('fooFoo-1');
     });
 
-    it('should detect changes', fakeAsync(() => {
-      // Connect detected changes automatically
-      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
-
+    it('should call setInput on changes changes', fakeAsync(() => {
       strategy.setInputValue('fooFoo', 'fooFoo-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(2);
+      expect(componentRef.setInput).toHaveBeenCalledOnceWith('fooFoo', 'fooFoo-1');
     }));
 
-    it('should detect changes once for multiple input changes', fakeAsync(() => {
-      // Connect detected changes automatically
-      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
-
+    it('should call setInput once per change', fakeAsync(() => {
       strategy.setInputValue('fooFoo', 'fooFoo-1');
       strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(2);
-    }));
-
-    it('should not detect changes if the input is set to the same value', fakeAsync(() => {
-      (componentRef.changeDetectorRef.detectChanges as jasmine.Spy).calls.reset();
-
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
-
-      (componentRef.changeDetectorRef.detectChanges as jasmine.Spy).calls.reset();
-
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expect(componentRef.changeDetectorRef.detectChanges).not.toHaveBeenCalled();
+      expect(componentRef.setInput).toHaveBeenCalledTimes(2);
     }));
   });
 

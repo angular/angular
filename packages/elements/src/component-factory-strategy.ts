@@ -186,7 +186,7 @@ export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
     this.initializeInputs();
     this.initializeOutputs(this.componentRef);
 
-    this.detectChanges();
+    this.componentRef.changeDetectorRef.detectChanges();
 
     const applicationRef = this.injector.get<ApplicationRef>(ApplicationRef);
     applicationRef.attachView(this.componentRef.hostView);
@@ -216,15 +216,6 @@ export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
       : [];
 
     this.eventEmitters.next(eventEmitters);
-  }
-
-  /** Runs change detection on the component. */
-  protected detectChanges(): void {
-    if (this.componentRef === null) {
-      return;
-    }
-
-    this.componentRef.changeDetectorRef.detectChanges();
   }
 
   /** Runs in the angular zone, if present. */
