@@ -374,7 +374,7 @@ export class AppComponent {
   input = input<string | null>(null);
   bla = input.required<boolean, string | boolean>({ transform: disabledTransform });
   narrowableMultipleTimes = input<Vehicle | null>(null);
-  withUndefinedInput = input<string | undefined>(undefined);
+  withUndefinedInput = input<string>();
   @Input() incompatible: string | null = null;
 
   private _bla: any;
@@ -720,7 +720,7 @@ import { Directive, input } from '@angular/core';
 
 @Directive()
 class OptionalInput {
-  bla = input<string | undefined>(undefined);
+  bla = input<string>();
 }
 @@@@@@ problematic_type_reference.ts @@@@@@
 
@@ -1065,5 +1065,5 @@ class WithJsdoc {
    */
   simpleInput = input.required<string>();
 
-  withCommentInside = input</* intended */ boolean | undefined>(undefined);
+  withCommentInside = input</* intended */ boolean>();
 }
