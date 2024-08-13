@@ -27,7 +27,10 @@
     "name": "AbstractValidatorDirective"
   },
   {
-    "name": "AfterRenderEventManager"
+    "name": "AfterRenderManager"
+  },
+  {
+    "name": "AfterRenderPhase"
   },
   {
     "name": "AnonymousSubject"
@@ -637,6 +640,9 @@
   },
   {
     "name": "ZoneStablePendingTask"
+  },
+  {
+    "name": "_AfterRenderImpl"
   },
   {
     "name": "_ComponentFactoryResolver"

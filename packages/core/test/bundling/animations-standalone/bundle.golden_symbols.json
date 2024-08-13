@@ -15,7 +15,10 @@
     "name": "APP_INITIALIZER"
   },
   {
-    "name": "AfterRenderEventManager"
+    "name": "AfterRenderManager"
+  },
+  {
+    "name": "AfterRenderPhase"
   },
   {
     "name": "AnimationAstBuilderContext"
@@ -565,6 +568,9 @@
   },
   {
     "name": "ZoneStablePendingTask"
+  },
+  {
+    "name": "_AfterRenderImpl"
   },
   {
     "name": "_AnimationDriver"

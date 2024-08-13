@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {afterNextRender} from '../render3/after_render/hooks';
 import type {Injector} from '../di';
-import {internalAfterNextRender} from '../render3/after_render_hooks';
 import {assertLContainer, assertLView} from '../render3/assert';
 import {CONTAINER_HEADER_OFFSET} from '../render3/interfaces/container';
 import {TNode} from '../render3/interfaces/node';
@@ -279,6 +279,7 @@ export function registerDomTrigger(
   type: TriggerType,
 ) {
   const injector = initialLView[INJECTOR]!;
+  const zone = injector.get(NgZone);
   function pollDomTrigger() {
     // If the initial view was destroyed, we don't need to do anything.
     if (isDestroyed(initialLView)) {
@@ -300,7 +301,7 @@ export function registerDomTrigger(
 
     // Keep polling until we resolve the trigger's LView.
     if (!triggerLView) {
-      internalAfterNextRender(pollDomTrigger, {injector});
+      afterNextRender({read: pollDomTrigger}, {injector});
       return;
     }
 
@@ -313,10 +314,14 @@ export function registerDomTrigger(
     const cleanup = registerFn(
       element,
       () => {
-        if (initialLView !== triggerLView) {
-          removeLViewOnDestroy(triggerLView, cleanup);
-        }
-        callback();
+        // `pollDomTrigger` runs outside the zone (because of `afterNextRender`) and registers its
+        // listeners outside the zone, so we jump back into the zone prior to running the callback.
+        zone.run(() => {
+          if (initialLView !== triggerLView) {
+            removeLViewOnDestroy(triggerLView, cleanup);
+          }
+          callback();
+        });
       },
       injector,
     );
@@ -334,5 +339,5 @@ export function registerDomTrigger(
   }
 
   // Begin polling for the trigger.
-  internalAfterNextRender(pollDomTrigger, {injector});
+  afterNextRender({read: pollDomTrigger}, {injector});
 }

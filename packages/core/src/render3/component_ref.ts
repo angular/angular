@@ -30,7 +30,7 @@ import {Renderer2, RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertGreaterThan, assertIndexInRange} from '../util/assert';
 
-import {AfterRenderEventManager} from './after_render_hooks';
+import {AfterRenderManager} from './after_render/manager';
 import {assertComponentType, assertNoDuplicateDirectives} from './assert';
 import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './definition';
@@ -260,7 +260,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       }
       const sanitizer = rootViewInjector.get(Sanitizer, null);
 
-      const afterRenderEventManager = rootViewInjector.get(AfterRenderEventManager, null);
       const changeDetectionScheduler = rootViewInjector.get(ChangeDetectionScheduler, null);
 
       const environment: LViewEnvironment = {
@@ -268,7 +267,6 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         sanitizer,
         // We don't use inline effects (yet).
         inlineEffectRunner: null,
-        afterRenderEventManager,
         changeDetectionScheduler,
       };
 

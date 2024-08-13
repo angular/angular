@@ -112,7 +112,6 @@ export {
   ProviderRecord as ɵProviderRecord,
   setInjectorProfilerContext as ɵsetInjectorProfilerContext,
 } from './render3/debug/injector_profiler';
-export {queueStateUpdate as ɵqueueStateUpdate} from './render3/queue_state_update';
 export {
   allowSanitizationBypassAndThrow as ɵallowSanitizationBypassAndThrow,
   BypassType as ɵBypassType,
