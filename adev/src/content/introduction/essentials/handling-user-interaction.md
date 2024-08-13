@@ -2,7 +2,7 @@
 Handle user interaction in your application.
 </docs-decorative-header>
 
-The ability to handle user interaction and then work with - it is one of the key aspects of building dynamic applications. In this guide, we'll take a look at simple user interaction - event handling.
+The ability to handle user interaction and then work with it is one of the key aspects of building dynamic applications. In this guide, we'll take a look at simple user interaction - event handling.
 
 ## Event Handling
 
