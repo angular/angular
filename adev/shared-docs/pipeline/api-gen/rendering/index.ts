@@ -11,6 +11,8 @@ import {initHighlighter} from './shiki/shiki';
 /** The JSON data file format for extracted API reference info. */
 interface EntryCollection {
   moduleName: string;
+  moduleLabel?: string;
+  normalizedModuleName: string;
   entries: DocEntry[];
 }
 
@@ -30,11 +32,13 @@ function parseEntryData(srcs: string[]): EntryCollection[] {
       return [
         {
           moduleName: 'unknown',
+          normalizedModuleName: 'unknown',
           entries: [fileContentJson as DocEntry],
         },
         ...command.subcommands!.map((subCommand) => {
           return {
             moduleName: 'unknown',
+            normalizedModuleName: 'unknown',
             entries: [{...subCommand, parentCommand: command} as any],
           };
         }),
@@ -43,13 +47,14 @@ function parseEntryData(srcs: string[]): EntryCollection[] {
 
     return {
       moduleName: 'unknown',
+      normalizedModuleName: 'unknown',
       entries: [fileContentJson as DocEntry], // TODO: fix the typing cli entries aren't DocEntry
     };
   });
 }
 
 /** Gets a normalized filename for a doc entry. */
-function getNormalizedFilename(moduleName: string, entry: DocEntry | CliCommand): string {
+function getNormalizedFilename(normalizedModuleName: string, entry: DocEntry | CliCommand): string {
   if (isCliEntry(entry)) {
     return entry.parentCommand
       ? `${entry.parentCommand.name}/${entry.name}.html`
@@ -57,9 +62,6 @@ function getNormalizedFilename(moduleName: string, entry: DocEntry | CliCommand)
   }
 
   entry = entry as DocEntry;
-  // Angular entry points all contain an "@" character, which we want to remove
-  // from the filename. We also swap `/` with an underscore.
-  const normalizedModuleName = moduleName.replace('@', '').replace(/\//g, '_');
 
   // Append entry type as suffix to prevent writing to file that only differs in casing or query string from already written file.
   // This will lead to a race-condition and corrupted files on case-insensitive file systems.
@@ -103,7 +105,10 @@ async function main() {
     const htmlOutputs = renderableEntries.map(renderEntry);
 
     for (let i = 0; i < htmlOutputs.length; i++) {
-      const filename = getNormalizedFilename(collection.moduleName, collection.entries[i]);
+      const filename = getNormalizedFilename(
+        collection.normalizedModuleName,
+        collection.entries[i],
+      );
       const outputPath = path.join(outputFilenameExecRootRelativePath, filename);
 
       // in case the output path is nested, ensure the directory exists

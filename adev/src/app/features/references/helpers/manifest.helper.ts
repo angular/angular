@@ -8,31 +8,23 @@
 
 import {Route} from '@angular/router';
 import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
-import {ApiManifest, ApiManifestItem} from '../interfaces/api-manifest';
+import {ApiManifest, ApiManifestEntry, ApiManifestPackage} from '../interfaces/api-manifest';
 import {PagePrefix} from '../../../core/enums/pages';
 import {NavigationItem, contentResolver} from '@angular/docs';
 
-export const ANGULAR_PACKAGE_PREFIX = '@angular/';
+const manifest = API_MANIFEST_JSON as ApiManifest;
 
 export function mapApiManifestToRoutes(): Route[] {
-  const manifest = API_MANIFEST_JSON as ApiManifest;
-  const packageNames = Object.keys(API_MANIFEST_JSON);
-
   const apiRoutes: Route[] = [];
 
-  for (const packageName of packageNames) {
-    const packageNameWithoutPrefix = packageName.replace(ANGULAR_PACKAGE_PREFIX, '');
-    const packageApis = manifest[packageName];
-
-    for (const api of packageApis) {
+  for (const packageEntry of manifest) {
+    for (const api of packageEntry.entries) {
       apiRoutes.push({
-        path: getApiUrl(packageNameWithoutPrefix, api.name),
+        path: getApiUrl(packageEntry, api.name),
         loadComponent: () =>
           import('./../api-reference-details-page/api-reference-details-page.component'),
         resolve: {
-          docContent: contentResolver(
-            `api/${getNormalizedFilename(packageNameWithoutPrefix, api)}`,
-          ),
+          docContent: contentResolver(`api/${getNormalizedFilename(packageEntry, api)}`),
         },
         data: {
           label: api.name,
@@ -46,20 +38,14 @@ export function mapApiManifestToRoutes(): Route[] {
 }
 
 export function getApiNavigationItems(): NavigationItem[] {
-  const manifest = API_MANIFEST_JSON as ApiManifest;
-  const packageNames = Object.keys(API_MANIFEST_JSON);
-
   const apiNavigationItems: NavigationItem[] = [];
 
-  for (const packageName of packageNames) {
-    const packageNameWithoutPrefix = packageName.replace(ANGULAR_PACKAGE_PREFIX, '');
-    const packageApis = manifest[packageName];
-
+  for (const packageEntry of manifest) {
     const packageNavigationItem: NavigationItem = {
-      label: packageNameWithoutPrefix,
-      children: packageApis
+      label: packageEntry.moduleLabel,
+      children: packageEntry.entries
         .map((api) => ({
-          path: getApiUrl(packageNameWithoutPrefix, api.name),
+          path: getApiUrl(packageEntry, api.name),
           label: api.name,
         }))
         .sort((a, b) => a.label.localeCompare(b.label)),
@@ -71,12 +57,13 @@ export function getApiNavigationItems(): NavigationItem[] {
   return apiNavigationItems;
 }
 
-export function getApiUrl(packageNameWithoutPrefix: string, apiName: string): string {
-  return `${PagePrefix.API}/${packageNameWithoutPrefix}/${apiName}`;
+export function getApiUrl(packageEntry: ApiManifestPackage, apiName: string): string {
+  return `${PagePrefix.API}/${packageEntry.normalizedModuleName}/${apiName}`;
 }
 
-function getNormalizedFilename(moduleName: string, entry: ApiManifestItem): string {
-  // Angular entry points can contain `/`, we would like to swap `/` with an underscore
-  const normalizedModuleName = moduleName.replace(/\//g, '_');
-  return `angular_${normalizedModuleName}_${entry.name}_${entry.type}.html`;
+function getNormalizedFilename(
+  manifestPackage: ApiManifestPackage,
+  entry: ApiManifestEntry,
+): string {
+  return `${manifestPackage.normalizedModuleName}_${entry.name}_${entry.type}.html`;
 }

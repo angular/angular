@@ -1,5 +1,6 @@
 import {readFileSync, writeFileSync} from 'fs';
-import {EntryCollection, generateManifest} from './generate_manifest';
+import {generateManifest} from './generate_manifest';
+import type {EntryCollection} from '@angular/compiler-cli';
 
 function main() {
   const [paramFilePath] = process.argv.slice(2);
