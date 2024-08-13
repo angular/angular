@@ -24,7 +24,7 @@ import {
 } from '../../../../../../compiler-cli/src/ngtsc/partial_evaluator';
 import {
   ClassDeclaration,
-  DecoratorIdentifier,
+  Decorator,
   ReflectionHost,
 } from '../../../../../../compiler-cli/src/ngtsc/reflection';
 import {CompilationMode} from '../../../../../../compiler-cli/src/ngtsc/transform';
@@ -34,6 +34,7 @@ import {InputNode, isInputContainerNode} from '../input_detection/input_node';
 /** Metadata extracted of an input declaration (in `.ts` or `.d.ts` files). */
 export interface ExtractedInput extends InputMapping {
   inSourceFile: boolean;
+  inputDecorator: Decorator | null;
 }
 
 /** Attempts to extract metadata of a potential TypeScript `@Input()` declaration. */
@@ -86,6 +87,7 @@ function extractDtsInput(node: ts.Node, metadataReader: DtsMetadataReader): Extr
     ? null
     : {
         ...inputMapping,
+        inputDecorator: null,
         inSourceFile: false,
       };
 }
@@ -150,6 +152,7 @@ function extractSourceCodeInput(
     isSignal: false,
     inSourceFile: true,
     transform: transformResult,
+    inputDecorator,
   };
 }
 
