@@ -13,7 +13,7 @@ import {ProviderToken} from '../../di/provider_token';
 import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import type {AfterRenderEventManager} from '../after_render_hooks';
+import type {AfterRenderManager} from '../after_render/manager';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
 import type {EffectScheduler} from '../reactivity/effect';
 
@@ -374,9 +374,6 @@ export interface LViewEnvironment {
 
   /** Container for reactivity system `effect`s. */
   inlineEffectRunner: EffectScheduler | null;
-
-  /** Container for after render hooks */
-  afterRenderEventManager: AfterRenderEventManager | null;
 
   /** Scheduler for change detection to notify when application state changes. */
   changeDetectionScheduler: ChangeDetectionScheduler | null;
