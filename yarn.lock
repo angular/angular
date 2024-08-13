@@ -347,7 +347,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#f924f27af2bb902b05fcd47028a4c13f8d03ab33":
   version "0.0.0-d30a56c19bafaac67cf44e605ed8c2c0e45b0a51"
-  uid f924f27af2bb902b05fcd47028a4c13f8d03ab33
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#f924f27af2bb902b05fcd47028a4c13f8d03ab33"
   dependencies:
     "@angular/benchpress" "0.3.0"
@@ -557,7 +556,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#806cbfc987d0df61f2ed90a24e2d4176e8a50a5b":
   version "0.0.0-03b8a7dffd1205e061f0bee949024ebefc2a6592"
-  uid "806cbfc987d0df61f2ed90a24e2d4176e8a50a5b"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#806cbfc987d0df61f2ed90a24e2d4176e8a50a5b"
   dependencies:
     "@octokit/rest" "20.1.1"
@@ -8392,8 +8390,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af":
-  version "2.1.6+git"
-  uid "8f228f8862540c6ccd14f76b5a1d9bb5458618af"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af"
 
 dompurify@^3.0.5:
@@ -12209,6 +12206,11 @@ marked-terminal@^5.1.1:
     cli-table3 "^0.6.3"
     node-emoji "^1.11.0"
     supports-hyperlinks "^2.3.0"
+
+marked@14:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-14.0.0.tgz#79a1477358a59e0660276f8fec76de2c33f35d83"
+  integrity sha512-uIj4+faQ+MgHgwUW1l2PsPglZLOLOT1uErt06dAPtx2kjteLAkbsd/0FiYg/MGS+i7ZKLb7w2WClxHkzOOuryQ==
 
 marked@^12.0.0:
   version "12.0.2"
