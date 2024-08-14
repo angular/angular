@@ -95,7 +95,7 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
 
           const newProperty = ts.factory.createPropertyDeclaration(
             cloneModifiers(property.modifiers),
-            property.name,
+            cloneName(property.name),
             property.questionToken,
             property.type,
             initializer,
@@ -625,4 +625,27 @@ function cloneModifiers(modifiers: ts.ModifierLike[] | ts.NodeArray<ts.ModifierL
       ? ts.factory.createDecorator(modifier.expression)
       : ts.factory.createModifier(modifier.kind);
   });
+}
+
+/**
+ * Clones the name of a property. Can be useful to strip away
+ * the comments of a property without modifiers.
+ */
+function cloneName(node: ts.PropertyName): ts.PropertyName {
+  switch (node.kind) {
+    case ts.SyntaxKind.Identifier:
+      return ts.factory.createIdentifier(node.text);
+    case ts.SyntaxKind.StringLiteral:
+      return ts.factory.createStringLiteral(node.text, node.getText()[0] === `'`);
+    case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
+      return ts.factory.createNoSubstitutionTemplateLiteral(node.text, node.rawText);
+    case ts.SyntaxKind.NumericLiteral:
+      return ts.factory.createNumericLiteral(node.text);
+    case ts.SyntaxKind.ComputedPropertyName:
+      return ts.factory.createComputedPropertyName(node.expression);
+    case ts.SyntaxKind.PrivateIdentifier:
+      return ts.factory.createPrivateIdentifier(node.text);
+    default:
+      return node;
+  }
 }
