@@ -160,9 +160,12 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching
  * [here](guide/ssr#caching-data-when-using-httpclient).
  *
- * These functions allow you to disable some of the default features or configure features
+ * These functions allow you to disable some of the default features or enable new ones:
+ *
  * * {@link withNoHttpTransferCache} to disable HTTP transfer cache
  * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options
+ * * {@link withI18nSupport} to enable hydration support for i18n blocks
+ * * {@link withEventReplay} to enable support for replaying user events
  *
  * @usageNotes
  *
@@ -187,6 +190,8 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  *
  * @see {@link withNoHttpTransferCache}
  * @see {@link withHttpTransferCacheOptions}
+ * @see {@link withI18nSupport}
+ * @see {@link withEventReplay}
  *
  * @param features Optional features to configure additional router behaviors.
  * @returns A set of providers to enable hydration.
