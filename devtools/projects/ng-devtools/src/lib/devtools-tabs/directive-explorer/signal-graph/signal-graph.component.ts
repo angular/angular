@@ -22,24 +22,32 @@ import {signalBroker} from './MessageBroker';
 })
 export class SignalGraphComponent {
   ngOnInit() {
-    const nodes = [1, 2, 3, 4, 5].map((ID) => ({
-      type: 'SIGNAL',
-      ID,
-      innerValue: 'the value',
-      getValue: undefined,
-      setValue: undefined,
-      dependents: new Set(),
-      signalHandle: undefined,
-    }));
-    for (const node of nodes) {
-      signalBroker.publish('node-add', node);
-    }
-
-    signalBroker.publish('link-add', {provider: nodes[0], consumer: nodes[1]});
-    signalBroker.publish('link-add', {provider: nodes[0], consumer: nodes[2]});
-    signalBroker.publish('link-add', {provider: nodes[2], consumer: nodes[3]});
-    signalBroker.publish('link-add', {provider: nodes[2], consumer: nodes[4]});
-
     initializeGraph(signalBroker);
+
+    const exampleGraphDefinition = {
+      edges: [
+        {from: 0, to: 1},
+        {from: 0, to: 2},
+        {from: 0, to: 3},
+        {from: 2, to: 1},
+        {from: 3, to: 4},
+        {from: 3, to: 2},
+        {from: 3, to: 5},
+        {from: 6, to: 1},
+        {from: 6, to: 2},
+      ],
+      nodes: [
+        {label: 'app-sample-properties', value: 'ref to Component', type: 'TEMPLATE'},
+        {label: 'basicSignal', value: 123, type: 'SIGNAL'},
+        {label: 'computedSignal', value: 15129, type: 'COMPUTED'},
+        {label: 'computedObject', value: {value: 123}, type: 'COMPUTED'},
+        {label: 'signalObject', value: {another: 'value'}, type: 'SIGNAL'},
+        {label: 'outsideSignal', value: 'signal located outside of the component', type: 'SIGNAL'},
+        {label: 'effect', value: 'ref to Effect', type: 'EFFECT'},
+      ],
+    };
+
+    signalBroker.publish('nodes-set', exampleGraphDefinition.nodes);
+    signalBroker.publish('edges-set', exampleGraphDefinition.edges);
   }
 }

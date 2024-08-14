@@ -1,7 +1,21 @@
 import * as d3 from 'd3';
 
-// DEEP WIP
+// TODO: type-safety
 type ANY_TODO = any;
+
+interface SignalGraphNode {
+  label: string;
+  value: unknown;
+  type: 'SIGNAL' | 'COMPUTED' | 'EFFECT' | 'TEMPLATE';
+}
+interface SignalGraphEdge {
+  from: number;
+  to: number;
+}
+interface SignalGraphDefinition {
+  nodes: SignalGraphNode[];
+  edges: SignalGraphEdge[];
+}
 
 const visualConfig = {
   area: {
@@ -18,6 +32,7 @@ const visualConfig = {
       SIGNAL: '#FF85BE',
       COMPUTED: '#85CEFF',
       EFFECT: '#BFA6DD',
+      TEMPLATE: '#FFD285',
     },
   },
   edge: {
@@ -26,29 +41,23 @@ const visualConfig = {
   },
 };
 
-export function initializeGraph(broker: ANY_TODO) {
+export function initializeGraph(broker: any) {
   // set up initial nodes and links
   //  - nodes are known by 'id', not by index in array.
-  //  - links are always source < target; edge directions are set by 'left' and 'right'.
-  const nodes: ANY_TODO = [];
-  const links: ANY_TODO = [];
+  //  - edges are always source < target; edge directions are set by 'left' and 'right'.
+  let nodes: SignalGraphNode[] = [];
+  let edges: SignalGraphEdge[] = [];
 
-  const nodeDataCache: ANY_TODO = {};
-
-  function nodeLabel(node: ANY_TODO) {
-    const hasValue = ['SIGNAL', 'COMPUTED'].includes(node.type);
-    return hasValue ? `${node.ID} (${node.innerValue})` : node.ID;
-  }
-
-  const isDefined = (value: ANY_TODO) => value !== undefined;
+  // d3 types?
+  const d3Nodes: ANY_TODO[] = [];
+  const d3Links: ANY_TODO[] = [];
 
   function tooltipMarkup(d: ANY_TODO) {
-    const type = nodeDataCache[d.id].type;
-    const labels = [`<div><strong>type</strong>: ${type}</div>`];
-    const innerValue = nodeDataCache[d.id]?.innerValue;
-    if (isDefined(innerValue)) {
-      labels.push(`<div><strong>value</strong>: ${innerValue}</div>`);
-    }
+    const node = nodes[d.id];
+    const labels = [
+      `<div><strong>type</strong>: ${node.type}</div>`,
+      `<div><strong>value</strong>: ${node.value}</div>`,
+    ];
     return labels.join('');
   }
 
@@ -62,10 +71,11 @@ export function initializeGraph(broker: ANY_TODO) {
   }
 
   function circleStrokeColor(d: ANY_TODO) {
-    const isDirty = nodeDataCache[d.id]?.dirty;
-    return isDirty == true
-      ? visualConfig.node.borderDirty
-      : d3.rgb(getBaseColor(d)).darker().toString();
+    // const isDirty = nodes[d.id]?.dirty;
+    // return isDirty == true
+    //   ? visualConfig.node.borderDirty
+    //   : d3.rgb(getBaseColor(d)).darker().toString();
+    return d3.rgb(getBaseColor(d)).darker().toString();
   }
 
   function handleZoom(e: ANY_TODO) {
@@ -169,7 +179,7 @@ export function initializeGraph(broker: ANY_TODO) {
   // update graph (called when needed)
   function restart() {
     // path (link) group
-    path = path.data(links);
+    path = path.data(d3Links);
 
     // update existing links
     path
@@ -191,7 +201,7 @@ export function initializeGraph(broker: ANY_TODO) {
 
     // circle (node) group
     // NB: the function arg is crucial here! nodes are known by id, not by index!
-    circle = circle.data(nodes, (d: ANY_TODO) => d.id);
+    circle = circle.data(d3Nodes, (d: ANY_TODO) => d.id) as ANY_TODO;
 
     // remove old nodes
     circle.exit().remove();
@@ -230,41 +240,70 @@ export function initializeGraph(broker: ANY_TODO) {
       .attr('y', 4)
       .attr('class', 'id')
       .attr('id', (d: ANY_TODO) => `label-${d.id}`)
-      .text((d: ANY_TODO) => nodeLabel(nodeDataCache[d.id]))
+      .text((d: ANY_TODO) => nodes[d.id].label)
       .attr('fill', visualConfig.edge.color);
 
     circle = g.merge(circle);
 
     // set the graph in motion
-    (force as ANY_TODO).nodes(nodes).force('link').links(links);
+    (force as ANY_TODO).nodes(d3Nodes).force('link').links(d3Links);
 
     force.alphaTarget(0.3).restart();
   }
 
-  broker.subscribe('node-add', (node: ANY_TODO) => {
-    const graphNode = {
-      id: node.ID,
-      type: node.type,
-    };
-    nodes.push(graphNode);
-    nodeDataCache[node.ID] = node;
+  broker.subscribe('nodes-set', (newNodes: any[]) => {
+    while (d3Nodes.length) {
+      d3Nodes.pop();
+    }
+    newNodes.forEach((node: any, idx) => {
+      d3Nodes.push({
+        id: idx,
+        type: node.type,
+      });
+    });
+    nodes = newNodes;
     restart();
   });
 
-  broker.subscribe('node-data', ({node}: ANY_TODO) => {
-    d3.select(`#label-${node.ID}`).text(nodeLabel(node));
-    d3.select(`#circle-${node.ID}`).style('stroke', (d) => circleStrokeColor(d));
-    nodeDataCache[node.ID] = node;
+  broker.subscribe('edges-set', (newEdges: SignalGraphEdge[]) => {
+    while (d3Links.length) {
+      d3Links.pop();
+    }
+    for (const edge of newEdges) {
+      d3Links.push({
+        source: edge.from,
+        target: edge.to,
+        left: false,
+        right: true,
+      });
+    }
+    edges = newEdges;
+    restart();
   });
 
-  broker.subscribe('link-add', ({consumer, provider}: ANY_TODO) => {
-    links.push({
-      source: provider.ID,
-      target: consumer.ID,
+  broker.subscribe('node-add', (node: SignalGraphNode, idx: number) => {
+    d3Nodes.push({
+      id: idx,
+      type: node.type,
+    });
+    nodes[idx] = node;
+    restart();
+  });
+
+  broker.subscribe('link-add', ({from, to}: SignalGraphEdge) => {
+    d3Links.push({
+      source: from,
+      target: to,
       left: false,
       right: true,
     });
     restart();
+  });
+
+  broker.subscribe('node-update', ({node}: ANY_TODO) => {
+    d3.select(`#label-${node.idx}`).text(node.label);
+    d3.select(`#circle-${node.idx}`).style('stroke', (d) => circleStrokeColor(d));
+    nodes[node.idx] = node;
   });
 
   restart();

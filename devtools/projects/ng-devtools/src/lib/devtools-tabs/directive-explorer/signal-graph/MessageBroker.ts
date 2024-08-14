@@ -1,4 +1,4 @@
-export class MessageBroker<TChannelEventMap extends {[channel: string]: unknown}> {
+export class MessageBroker<TChannelEventMap extends {[channel: string]: any} = {}> {
   #subscribers = new Map();
 
   subscribe<TChannel extends string>(
@@ -29,11 +29,13 @@ export class MessageBroker<TChannelEventMap extends {[channel: string]: unknown}
   }
 }
 
-export const signalBroker = new MessageBroker<{
-  'new-effect': {target: string; getValue: () => unknown};
-  'destroy-effect': {target: string; destroy: () => void};
-  'debug': 'nodes' | 'links';
-  'execute': {nodeId: string; executeFn: (signal: any) => void};
-}>();
+export const signalBroker = new MessageBroker();
+// export const signalBroker = new MessageBroker<{
+// 'node-add': { node: Record<'type' | 'value' | 'label', any>; idx: string | number };
+// 'new-effect': {target: string; getValue: () => unknown};
+// 'destroy-effect': {target: string; destroy: () => void};
+// 'debug': 'nodes' | 'links';
+// 'execute': {nodeId: string; executeFn: (signal: any) => void};
+// }>();
 
 (window as any).signalBroker = signalBroker;
