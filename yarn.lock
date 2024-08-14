@@ -5122,6 +5122,7 @@
   integrity sha512-XISRgDJ2Tc5q4TRqvgJtzsRkFYNJzZrhTdtMoGVBttwzzQJkPnS3WWTFc7kuDRoPtPakl+T+OfdEUjYJj7Jbow==
 
 "@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.25", "@types/selenium-webdriver@^4.1.21":
+  name "@types/selenium-webdriver4"
   version "4.1.25"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.25.tgz#9f04cbe716529f74b3d86a445c000aedec7813a6"
   integrity sha512-Jnlg7h7WDq4k8N2p/zp1ax6qizvU9Pn37I/HR/KX8k5TIU1wfUAuBy8CA6x8drAqa9PY3kYykmmyNHU4tX91LQ==
@@ -15022,10 +15023,10 @@ sass@1.77.8:
     immutable "^4.0.0"
     source-map-js ">=0.6.2 <2.0.0"
 
-saucelabs@7.5.0, saucelabs@^1.5.0, saucelabs@^4.6.3:
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/saucelabs/-/saucelabs-7.5.0.tgz#75c88a95e1519a63b79978d146a764a2eecb4f0e"
-  integrity sha512-wq89BtE7xb4ns7ApbgAshaUgXHlPoseytPTNwaVQNPwAaD+0klYpBrsCy/Lj77EJ+kf/vKvX1tjhRT67eDyCXg==
+saucelabs@8.0.0, saucelabs@^1.5.0, saucelabs@^4.6.3:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/saucelabs/-/saucelabs-8.0.0.tgz#63084768ce5950107db988797e4db8d52297d725"
+  integrity sha512-Rj9m4OCniYk+c4MFuZGqvz64RPX6oRzMqt0bTr9T27IXGnA7Ic7Ms/VHgPtRcJFP6H3sQ169WOzazPZcW4BIAg==
   dependencies:
     change-case "^4.1.2"
     compressing "^1.10.0"
