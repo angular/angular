@@ -11,8 +11,12 @@ import {Renderer, Tokens} from 'marked';
 import {getHeaderId} from '../state';
 import {getPageTitle} from '../utils';
 
-export function headingRender({text, depth}: Tokens.Heading): string;
-export function headingRender(this: Renderer, {text, depth}: Tokens.Heading): string {
+export function headingRender(this: Renderer, {depth, tokens}: Tokens.Heading): string {
+  const text = this?.parser.parseInline(tokens);
+  return formatHeading({text, depth});
+}
+
+export function formatHeading({text, depth}: {text: string; depth: number}): string {
   if (depth === 1) {
     return `
     <header class="docs-header">
