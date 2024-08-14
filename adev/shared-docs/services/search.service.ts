@@ -11,7 +11,7 @@ import {ENVIRONMENT} from '../providers/index';
 import {SearchResult} from '../interfaces/index';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {debounceTime, filter, from, of, switchMap} from 'rxjs';
-import algoliasearch, {SearchClient} from 'algoliasearch/lite';
+import {liteClient as algoliasearch} from 'algoliasearch/lite';
 import {NavigationEnd, Router} from '@angular/router';
 
 export const SEARCH_DELAY = 200;
@@ -27,11 +27,7 @@ export class Search {
 
   private readonly router = inject(Router);
   private readonly config = inject(ENVIRONMENT);
-  private readonly client: SearchClient = (algoliasearch as any)(
-    this.config.algolia.appId,
-    this.config.algolia.apiKey,
-  );
-  private readonly index = this.client.initIndex(this.config.algolia.indexName);
+  private readonly client = algoliasearch(this.config.algolia.appId, this.config.algolia.apiKey);
 
   searchQuery = this._searchQuery.asReadonly();
   searchResults = this._searchResults.asReadonly();
@@ -41,35 +37,42 @@ export class Search {
     switchMap((query) => {
       return !!query
         ? from(
-            this.index.search(query, {
-              maxValuesPerFacet: MAX_VALUE_PER_FACET,
-              attributesToRetrieve: [
-                'hierarchy.lvl0',
-                'hierarchy.lvl1',
-                'hierarchy.lvl2',
-                'hierarchy.lvl3',
-                'hierarchy.lvl4',
-                'hierarchy.lvl5',
-                'hierarchy.lvl6',
-                'content',
-                'type',
-                'url',
-              ],
-              hitsPerPage: 20,
-              snippetEllipsisText: '…',
-              highlightPreTag: '<ɵ>',
-              highlightPostTag: '</ɵ>',
-              attributesToHighlight: [],
-              attributesToSnippet: [
-                'hierarchy.lvl1:10',
-                'hierarchy.lvl2:10',
-                'hierarchy.lvl3:10',
-                'hierarchy.lvl4:10',
-                'hierarchy.lvl5:10',
-                'hierarchy.lvl6:10',
-                'content:10',
-              ],
-            }),
+            this.client.search([
+              {
+                indexName: this.config.algolia.indexName,
+                params: {
+                  query: query,
+                  maxValuesPerFacet: MAX_VALUE_PER_FACET,
+                  attributesToRetrieve: [
+                    'hierarchy.lvl0',
+                    'hierarchy.lvl1',
+                    'hierarchy.lvl2',
+                    'hierarchy.lvl3',
+                    'hierarchy.lvl4',
+                    'hierarchy.lvl5',
+                    'hierarchy.lvl6',
+                    'content',
+                    'type',
+                    'url',
+                  ],
+                  hitsPerPage: 20,
+                  snippetEllipsisText: '…',
+                  highlightPreTag: '<ɵ>',
+                  highlightPostTag: '</ɵ>',
+                  attributesToHighlight: [],
+                  attributesToSnippet: [
+                    'hierarchy.lvl1:10',
+                    'hierarchy.lvl2:10',
+                    'hierarchy.lvl3:10',
+                    'hierarchy.lvl4:10',
+                    'hierarchy.lvl5:10',
+                    'hierarchy.lvl6:10',
+                    'content:10',
+                  ],
+                },
+                type: 'default',
+              },
+            ]),
           )
         : of(undefined);
     }),
@@ -89,7 +92,7 @@ export class Search {
   private listenToSearchResults(): void {
     this.searchResults$.subscribe((response: any) => {
       this._searchResults.set(
-        response ? this.getUniqueSearchResultItems(response.hits) : undefined,
+        response ? this.getUniqueSearchResultItems(response.results[0].hits) : undefined,
       );
     });
   }

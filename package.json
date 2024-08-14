@@ -94,7 +94,7 @@
     "@types/yargs": "^17.0.3",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
-    "algoliasearch": "^4.23.3",
+    "algoliasearch": "^5.0.0",
     "angular-1.5": "npm:angular@1.5",
     "angular-1.6": "npm:angular@1.6",
     "angular-1.7": "npm:angular@1.7",
