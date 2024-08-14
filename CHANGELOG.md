@@ -1,3 +1,44 @@
+<a name="19.0.0-next.0"></a>
+# 19.0.0-next.0 (2024-08-14)
+## Breaking Changes
+### core
+- Errors that are thrown during `ApplicationRef.tick`
+  will now be rethrown when using `TestBed`. These errors should be
+  resolved by ensuring the test environment is set up correctly to
+  complete change detection successfully. There are two alternatives to
+  catch the errors:
+  
+  * Instead of waiting for automatic change detection to happen, trigger
+    it synchronously and expect the error. For example, a jasmine test
+    could write `expect(() => TestBed.inject(ApplicationRef).tick()).toThrow()`
+  * `TestBed` will reject any outstanding `ComponentFixture.whenStable` promises. A jasmine test,
+  for example, could write `expectAsync(fixture.whenStable()).toBeRejected()`.
+  
+  As a last resort, you can configure errors to _not_ be rethrown by
+  setting `rethrowApplicationErrors` to `false` in `TestBed.configureTestingModule`.
+### router
+- The `Router.errorHandler` property has been removed.
+  Adding an error handler should be configured in either
+  `withNavigationErrorHandler` with `provideRouter` or the `errorHandler`
+  property in the extra options of `RouterModule.forRoot`. In addition,
+  the error handler cannot be used to change the return value of the
+  router navigation promise or prevent it from rejecting. Instead, if you
+  want to prevent the promise from rejecting, use `resolveNavigationPromiseOnError`.
+- The return type of the `Resolve` interface now includes
+  `RedirectCommand`.
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [468d3fb9b1](https://github.com/angular/angular/commit/468d3fb9b1c3dd6dff86afcb6d8f89cc4c29b24b) | fix | rethrow errors during ApplicationRef.tick in TestBed ([#57200](https://github.com/angular/angular/pull/57200)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f271021e19](https://github.com/angular/angular/commit/f271021e190ede70bfd181d46f0a468a8e7fa144) | feat | Add `routerOutletData` input to `RouterOutlet` directive ([#57051](https://github.com/angular/angular/pull/57051)) |
+| [b2790813a6](https://github.com/angular/angular/commit/b2790813a62e4dfdd77e27d1bb82201788476d06) | fix | Align RouterModule.forRoot errorHandler with provider error handler ([#57050](https://github.com/angular/angular/pull/57050)) |
+| [7436d3180e](https://github.com/angular/angular/commit/7436d3180ea5ad2c0b58d920bd45f8641a14cc8d) | fix | Update Resolve interface to include RedirectCommand like ResolveFn ([#57309](https://github.com/angular/angular/pull/57309)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.0"></a>
 # 18.2.0 (2024-08-14)
 ## Breaking Changes
