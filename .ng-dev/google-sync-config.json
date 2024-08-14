@@ -24,7 +24,6 @@
     "packages/compiler-cli/private/bazel.ts",
     "packages/compiler-cli/private/localize.ts",
     "packages/compiler-cli/private/tooling.ts",
-    "packages/compiler-cli/private/babel.d.ts",
     "packages/compiler-cli/src/bin/**",
     "packages/docs/**",
     "packages/elements/schematics/**",
