@@ -7,7 +7,7 @@
  */
 
 import {Token, Tokens, RendererThis, TokenizerThis} from 'marked';
-import {headingRender} from '../../tranformations/heading';
+import {formatHeading, headingRender} from '../../tranformations/heading';
 
 interface DocsStepToken extends Tokens.Generic {
   type: 'docs-step';
@@ -51,7 +51,7 @@ export const docsStepExtension = {
     return `
     <li>
       <span class="docs-step-number" aria-hidden="true"></span>
-      ${headingRender({text: token.title, depth: 3, type: 'heading', raw: token.title, tokens: []})}
+      ${formatHeading({text: token.title, depth: 3})}
       ${this.parser.parse(token.tokens)}
     </li>
     `;
