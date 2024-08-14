@@ -1,3 +1,20 @@
+<a name="18.1.5"></a>
+# 18.1.5 (2024-08-14)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5401332b0e](https://github.com/angular/angular/commit/5401332b0ef1ec398a5e9767ca73cec544635c93) | fix | generate valid TS 5.6 type checking code ([#57303](https://github.com/angular/angular/pull/57303)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e39b22a932](https://github.com/angular/angular/commit/e39b22a932384f228e97414c44d10c7e158dfd2f) | fix | Account for addEventListener to be passed a Window or Document. ([#57282](https://github.com/angular/angular/pull/57282)) |
+| [db65bc25ca](https://github.com/angular/angular/commit/db65bc25cab413221fef1c2cdaf7c53f569219c8) | fix | Account for addEventListener to be passed a Window or Document. ([#57354](https://github.com/angular/angular/pull/57354)) |
+| [0e024ecc27](https://github.com/angular/angular/commit/0e024ecc27815c308feef0dbdf36d4d751af4436) | fix | complete post-hydration cleanup in components that use ViewContainerRef ([#57300](https://github.com/angular/angular/pull/57300)) |
+| [822db64b93](https://github.com/angular/angular/commit/822db64b937db8a581ec9612cf9e3e6e149c820f) | fix | skip hydration for i18n nodes that were not projected ([#57356](https://github.com/angular/angular/pull/57356)) |
+| [810f76f574](https://github.com/angular/angular/commit/810f76f57416853d5bc006e57bea070416117e79) | fix | take skip hydration flag into account while hydrating i18n blocks ([#57299](https://github.com/angular/angular/pull/57299)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.0-rc.0"></a>
 # 18.2.0-rc.0 (2024-08-07)
 ## Breaking Changes
