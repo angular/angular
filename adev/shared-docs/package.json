@@ -9,7 +9,7 @@
     "@angular/material": "^18.0.0-next.6 || ^18.1.0-next || ^18.2.0-next",
     "@angular/platform-browser": "^18.0.0-next.6 || ^18.1.0-next || ^18.2.0-next",
     "@angular/router": "^18.0.0-next.6 || ^18.1.0-next || ^18.2.0-next",
-    "algoliasearch": "^4.20.0",
+    "algoliasearch": "^5.0.0",
     "rxjs": "^7.8.1"
   },
   "dependencies": {
