@@ -114,7 +114,7 @@ describe('inject migration', () => {
       ``,
       `@Directive()`,
       `class MyDir {`,
-      `  private foo = inject(FOO_TOKEN);`,
+      `  private foo = inject<Foo>(FOO_TOKEN);`,
       `}`,
     ]);
   });
@@ -271,7 +271,7 @@ describe('inject migration', () => {
       `  ]`,
       `})`,
       `class MyDir {`,
-      `  private foo = inject(FOO_TOKEN, { optional: true });`,
+      `  private foo = inject<Foo>(FOO_TOKEN, { optional: true });`,
       `}`,
     ]);
   });
@@ -1431,7 +1431,7 @@ describe('inject migration', () => {
         `@Directive()`,
         `class MyDir {`,
         `  private foo = inject(Foo);`,
-        `  readonly bar = inject(BAR_TOKEN);`,
+        `  readonly bar = inject<Bar>(BAR_TOKEN);`,
         ``,
         `  private value: number = this.foo.getValue();`,
         `  private otherValue: string = this.bar.getOtherValue();`,
@@ -1470,7 +1470,7 @@ describe('inject migration', () => {
         `@Directive()`,
         `class MyDir {`,
         `  private foo = inject(Foo);`,
-        `  readonly bar = inject(BAR_TOKEN);`,
+        `  readonly bar = inject<Bar>(BAR_TOKEN);`,
         ``,
         `  private value: number = this.foo.getValue();`,
         `  private otherValue: string;`,
@@ -1599,7 +1599,7 @@ describe('inject migration', () => {
         `@Directive()`,
         `class MyDir {`,
         `  private foo = inject(Foo);`,
-        `  readonly bar = inject(BAR_TOKEN);`,
+        `  readonly bar = inject<Bar>(BAR_TOKEN);`,
         ``,
         `  private 'my-value': number = this.foo.getValue();`,
         `  private 'my-other-value': string = this.bar.getOtherValue();`,
