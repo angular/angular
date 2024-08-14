@@ -83,4 +83,15 @@ describe('markdown to html', () => {
     expect(h2HeaderId).toBe('my-custom-id');
     expect(h2AnchorHref).toBe(`#${h2HeaderId}`);
   });
+
+  it('should be able to parse heading with a valid tag in a code block', () => {
+    const h2List = markdownDocument.querySelectorAll('h2');
+    const h2 = h2List[6];
+
+    // The anchor element should be to only child
+    expect(h2.children.length).toBe(1);
+    expect(h2.firstElementChild?.tagName).toBe('A');
+
+    expect(h2.firstElementChild!.innerHTML).toBe('Query for the <code>&lt;h1&gt;</code>');
+  });
 });
