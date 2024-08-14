@@ -5685,6 +5685,72 @@ describe('platform-server hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
 
+        it('should support cases when some element nodes are not projected', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app-dropdown-content',
+            template: `<ng-content />`,
+          })
+          class DropdownContentComponent {}
+
+          @Component({
+            standalone: true,
+            selector: 'app-dropdown',
+            template: `
+              @if (false) {
+                <ng-content select="app-dropdown-content" />
+              }
+            `,
+          })
+          class DropdownComponent {}
+
+          @Component({
+            standalone: true,
+            imports: [DropdownComponent, DropdownContentComponent],
+            selector: 'app-menu',
+            template: `
+              <app-dropdown>
+                <app-dropdown-content>
+                  <ng-content />
+                </app-dropdown-content>
+              </app-dropdown>
+            `,
+          })
+          class MenuComponent {}
+
+          @Component({
+            selector: 'app',
+            standalone: true,
+            imports: [MenuComponent],
+            template: `
+              <app-menu>
+                Menu Content
+              </app-menu>
+            `,
+          })
+          class SimpleComponent {}
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(
+            SimpleComponent,
+            MenuComponent,
+            DropdownComponent,
+            DropdownContentComponent,
+          );
+
+          const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
         it('should support cases when view containers are not projected', async () => {
           @Component({
             standalone: true,

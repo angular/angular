@@ -583,6 +583,12 @@ function conditionallyAnnotateNodePath(
   lView: LView<unknown>,
   excludedParentNodes: Set<number> | null,
 ) {
+  if (isProjectionTNode(tNode)) {
+    // Do not annotate projection nodes (<ng-content />), since
+    // they don't have a corresponding DOM node representing them.
+    return;
+  }
+
   // Handle case #1 described above.
   if (
     tNode.projectionNext &&
