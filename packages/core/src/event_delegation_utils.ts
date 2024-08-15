@@ -118,12 +118,15 @@ export class GlobalEventDelegation implements OnDestroy {
 export const initGlobalEventDelegation = (
   eventContractDetails: EventContractDetails,
   injector: Injector,
+  hostSelector?: string,
 ) => {
   if (injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT)) {
     return;
   }
   const eventContract = (eventContractDetails.instance = new EventContract(
-    new EventContractContainer(document.body),
+    new EventContractContainer(
+      hostSelector ? document.querySelector(hostSelector)! : document.body,
+    ),
   ));
   const dispatcher = new EventDispatcher(invokeRegisteredListeners, /** clickModSupport */ false);
   registerDispatcher(eventContract, dispatcher);
