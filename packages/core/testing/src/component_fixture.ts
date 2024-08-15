@@ -34,6 +34,7 @@ import {TestBedApplicationErrorHandler} from './application_error_handler';
 
 interface TestAppRef {
   externalTestViews: Set<ViewRef>;
+  skipCheckNoChangesForExternalTestViews: Set<ViewRef>;
 }
 
 /**
@@ -131,27 +132,27 @@ export class ComponentFixture<T> {
    * Trigger a change detection cycle for the component.
    */
   detectChanges(checkNoChanges = true): void {
-    if (this.zonelessEnabled && !checkNoChanges) {
-      throw new Error(
-        'Cannot disable `checkNoChanges` in this configuration. ' +
-          'Use `fixture.componentRef.hostView.changeDetectorRef.detectChanges()` instead.',
-      );
-    }
-
     this._effectRunner.flush();
-    if (this.zonelessEnabled) {
-      this._appRef.tick();
-    } else {
-      // Run the change detection inside the NgZone so that any async tasks as part of the change
-      // detection are captured by the zone and can be waited for in isStable.
-      // Run any effects that were created/dirtied during change detection. Such effects might become
-      // dirty in response to input signals changing.
-      this._ngZone.run(() => {
-        this.changeDetectorRef.detectChanges();
-        if (checkNoChanges) {
+    const originalCheckNoChanges = this.componentRef.changeDetectorRef.checkNoChanges;
+    try {
+      if (!checkNoChanges) {
+        this.componentRef.changeDetectorRef.checkNoChanges = () => {};
+      }
+
+      if (this.zonelessEnabled) {
+        this._appRef.tick();
+      } else {
+        // Run the change detection inside the NgZone so that any async tasks as part of the change
+        // detection are captured by the zone and can be waited for in isStable.
+        // Run any effects that were created/dirtied during change detection. Such effects might become
+        // dirty in response to input signals changing.
+        this._ngZone.run(() => {
+          this.changeDetectorRef.detectChanges();
           this.checkNoChanges();
-        }
-      });
+        });
+      }
+    } finally {
+      this.componentRef.changeDetectorRef.checkNoChanges = originalCheckNoChanges;
     }
     this._effectRunner.flush();
   }
