@@ -32,6 +32,10 @@ import {DeferBlockFixture} from './defer';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
 import {TestBedApplicationErrorHandler} from './application_error_handler';
 
+interface TestAppRef {
+  externalTestViews: Set<ViewRef>;
+}
+
 /**
  * Fixture for debugging and testing a component.
  *
@@ -79,14 +83,14 @@ export abstract class ComponentFixture<T> {
   // behavior.
   /** @internal */
   protected readonly _appRef = inject(ApplicationRef);
-  /** @internal */
-  protected readonly _testAppRef = this._appRef as unknown as TestAppRef;
+  private readonly _testAppRef = this._appRef as unknown as TestAppRef;
   private readonly pendingTasks = inject(PendingTasks);
   private readonly appErrorHandler = inject(TestBedApplicationErrorHandler);
   /** @internal */
   protected abstract _autoDetect: boolean;
   private readonly scheduler = inject(ɵChangeDetectionScheduler, {optional: true});
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
+  private subscriptions = new Subscription();
 
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
@@ -110,6 +114,17 @@ export abstract class ComponentFixture<T> {
     }
     this.componentRef.hostView.onDestroy(() => {
       this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+    });
+    // Create subscriptions outside the NgZone so that the callbacks run outside
+    // of NgZone.
+    this._ngZone.runOutsideAngular(() => {
+      this.subscriptions.add(
+        this._ngZone.onError.subscribe({
+          next: (error: any) => {
+            throw error;
+          },
+        }),
+      );
     });
   }
 
@@ -213,6 +228,7 @@ export abstract class ComponentFixture<T> {
    * Trigger component destruction.
    */
   destroy(): void {
+    this.subscriptions.unsubscribe();
     this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
     if (!this._isDestroyed) {
       this.componentRef.destroy();
@@ -244,32 +260,12 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   }
 }
 
-interface TestAppRef {
-  externalTestViews: Set<ViewRef>;
-}
-
 /**
  * ComponentFixture behavior that attempts to act as a "mini application".
  */
 export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
-  private _subscriptions = new Subscription();
   /** @internal */
   override _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
-
-  override initialize(): void {
-    super.initialize();
-    // Create subscriptions outside the NgZone so that the callbacks run outside
-    // of NgZone.
-    this._ngZone.runOutsideAngular(() => {
-      this._subscriptions.add(
-        this._ngZone.onError.subscribe({
-          next: (error: any) => {
-            throw error;
-          },
-        }),
-      );
-    });
-  }
 
   override detectChanges(checkNoChanges = true): void {
     this._effectRunner.flush();
@@ -284,10 +280,5 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
     // Run any effects that were created/dirtied during change detection. Such effects might become
     // dirty in response to input signals changing.
     this._effectRunner.flush();
-  }
-
-  override destroy(): void {
-    this._subscriptions.unsubscribe();
-    super.destroy();
   }
 }
