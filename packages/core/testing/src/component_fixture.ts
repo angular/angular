@@ -23,9 +23,10 @@ import {
   ɵEffectScheduler as EffectScheduler,
   ɵgetDeferBlocks as getDeferBlocks,
   ɵNoopNgZone as NoopNgZone,
+  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵPendingTasks as PendingTasks,
 } from '@angular/core';
-import {Subject, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 
 import {DeferBlockFixture} from './defer';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
@@ -85,6 +86,7 @@ export abstract class ComponentFixture<T> {
   /** @internal */
   protected abstract _autoDetect: boolean;
   private readonly scheduler = inject(ɵChangeDetectionScheduler, {optional: true});
+  private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
 
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
@@ -104,6 +106,7 @@ export abstract class ComponentFixture<T> {
     if (this._autoDetect) {
       this._testAppRef.externalTestViews.add(this.componentRef.hostView);
       this.scheduler?.notify(ɵNotificationSource.ViewAttached);
+      this.scheduler?.notify(ɵNotificationSource.MarkAncestorsForTraversal);
     }
     this.componentRef.hostView.onDestroy(() => {
       this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
@@ -127,7 +130,22 @@ export abstract class ComponentFixture<T> {
    *
    * Also runs detectChanges once so that any existing change is detected.
    */
-  abstract autoDetectChanges(autoDetect?: boolean): void;
+  autoDetectChanges(autoDetect = true): void {
+    if (this._noZoneOptionIsSet && !this.zonelessEnabled) {
+      throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
+    }
+
+    if (autoDetect !== this._autoDetect) {
+      if (autoDetect) {
+        this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+      } else {
+        this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+      }
+    }
+
+    this._autoDetect = autoDetect;
+    this.detectChanges();
+  }
 
   /**
    * Return whether the fixture is currently stable or has async tasks that have not been completed
@@ -213,13 +231,6 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   /** @internal */
   protected override _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? true;
 
-  override initialize(): void {
-    super.initialize();
-    if (this._autoDetect) {
-      this._appRef.attachView(this.componentRef.hostView);
-    }
-  }
-
   override detectChanges(checkNoChanges = true): void {
     if (!checkNoChanges) {
       throw new Error(
@@ -230,19 +241,6 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
     this._effectRunner.flush();
     this._appRef.tick();
     this._effectRunner.flush();
-  }
-
-  override autoDetectChanges(autoDetect = true): void {
-    if (!autoDetect) {
-      throw new Error(
-        'Cannot disable autoDetect after it has been enabled when using the zoneless scheduler. ' +
-          'To disable autoDetect, add `{provide: ComponentFixtureAutoDetect, useValue: false}` to the TestBed providers.',
-      );
-    } else if (!this._autoDetect) {
-      this._autoDetect = autoDetect;
-      this._appRef.attachView(this.componentRef.hostView);
-    }
-    this.detectChanges();
   }
 }
 
@@ -259,13 +257,7 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   override _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
 
   override initialize(): void {
-    if (this._autoDetect) {
-      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
-    }
-    this.componentRef.hostView.onDestroy(() => {
-      this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
-    });
-
+    super.initialize();
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
     this._ngZone.runOutsideAngular(() => {
@@ -292,23 +284,6 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
     // Run any effects that were created/dirtied during change detection. Such effects might become
     // dirty in response to input signals changing.
     this._effectRunner.flush();
-  }
-
-  override autoDetectChanges(autoDetect = true): void {
-    if (this._noZoneOptionIsSet) {
-      throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
-    }
-
-    if (autoDetect !== this._autoDetect) {
-      if (autoDetect) {
-        this._testAppRef.externalTestViews.add(this.componentRef.hostView);
-      } else {
-        this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
-      }
-    }
-
-    this._autoDetect = autoDetect;
-    this.detectChanges();
   }
 
   override destroy(): void {

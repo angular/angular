@@ -331,7 +331,6 @@ export class ApplicationRef {
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
   private externalTestViews: Set<InternalViewRef<unknown>> = new Set();
-  private beforeRender = new Subject<boolean>();
   /** @internal */
   afterTick = new Subject<void>();
   /** @internal */
@@ -662,7 +661,6 @@ export class ApplicationRef {
       this.dirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
 
       // Check all potentially dirty views.
-      this.beforeRender.next(useGlobalCheck);
       for (let {_lView, notifyErrorHandler} of this.allViews) {
         detectChangesInViewIfRequired(
           _lView,
