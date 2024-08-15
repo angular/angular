@@ -67,8 +67,7 @@ enum TranslationType {
  * or an [ISO date-time string](https://www.w3.org/TR/NOTE-datetime).
  * @param format The date-time components to include. See `DatePipe` for details.
  * @param locale A locale code for the locale format rules to use.
- * @param timezone The time zone. A time zone offset from GMT (such as `'+0430'`),
- * or a standard UTC/GMT or continental US time zone abbreviation.
+ * @param timezone The time zone. A time zone offset from GMT (such as `'+0430'`).
  * If not specified, uses host system settings.
  *
  * @returns The formatted date string.
