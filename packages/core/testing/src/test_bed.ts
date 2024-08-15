@@ -39,14 +39,9 @@ import {
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
-  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
 } from '@angular/core';
 
-import {
-  ComponentFixture,
-  PseudoApplicationComponentFixture,
-  ScheduledComponentFixture,
-} from './component_fixture';
+import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {
   ComponentFixtureNoNgZone,
@@ -699,14 +694,7 @@ export class TestBedImpl implements TestBed {
         `#${rootElId}`,
         this.testModuleRef,
       ) as ComponentRef<T>;
-      return this.runInInjectionContext(() => {
-        const isZoneless = this.inject(ZONELESS_ENABLED);
-        const fixture = isZoneless
-          ? new ScheduledComponentFixture(componentRef)
-          : new PseudoApplicationComponentFixture(componentRef);
-        fixture.initialize();
-        return fixture;
-      });
+      return this.runInInjectionContext(() => new ComponentFixture(componentRef));
     };
     const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
     const ngZone = noNgZone ? null : this.inject(NgZone, null);
