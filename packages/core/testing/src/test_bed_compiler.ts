@@ -51,7 +51,6 @@ import {
   ɵNG_INJ_DEF as NG_INJ_DEF,
   ɵNG_MOD_DEF as NG_MOD_DEF,
   ɵNG_PIPE_DEF as NG_PIPE_DEF,
-  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵNgModuleFactory as R3NgModuleFactory,
   ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes,
   ɵNgModuleType as NgModuleType,
