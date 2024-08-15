@@ -1,3 +1,20 @@
+# [0.15.0](https://github.com/angular/angular/compare/zone.js-0.14.10...zone.js-0.15.0) (2024-08-15)
+
+
+### Bug Fixes
+
+* **zone.js:** Add support for addition jest functions. ([#57280](https://github.com/angular/angular/issues/57280)) ([e1240c6](https://github.com/angular/angular/commit/e1240c6f5d9a3d68ccef7ffbf0a0646ad1164cd8)), closes [#57277](https://github.com/angular/angular/issues/57277)
+* **zone.js:** Update the default behavior of fakeAsync to flush after the test ([#57240](https://github.com/angular/angular/issues/57240)) ([70e8b40](https://github.com/angular/angular/commit/70e8b40750e894bc1439713cd508d8bd9fafb7a4))
+
+
+### BREAKING CHANGES
+
+* **zone.js:** `fakeAsync` will now flush pending timers at the end of
+the given function by default. To opt-out of this, you can use `{flush:
+false}` in options parameter of `fakeAsync`
+
+
+
 ## [0.14.10](https://github.com/angular/angular/compare/zone.js-0.14.8...zone.js-0.14.10) (2024-08-05)
 
 

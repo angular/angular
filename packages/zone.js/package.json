@@ -1,6 +1,6 @@
 {
   "name": "zone.js",
-  "version": "0.14.10",
+  "version": "0.15.0",
   "description": "Zones for JavaScript",
   "main": "./bundles/zone.umd.js",
   "module": "./fesm2015/zone.js",
