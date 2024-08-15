@@ -41,11 +41,6 @@
 
 <a name="18.2.0"></a>
 # 18.2.0 (2024-08-14)
-## Breaking Changes
-### zone.js
-- `fakeAsync` will now flush pending timers at the end of
-  the given function by default. To opt-out of this, you can use `{flush:
-  false}` in options parameter of `fakeAsync`
 ### compiler
 | Commit | Type | Description |
 | -- | -- | -- |
