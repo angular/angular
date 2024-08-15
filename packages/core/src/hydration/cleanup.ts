@@ -34,7 +34,10 @@ export function removeDehydratedViews(lContainer: LContainer) {
   const renderer = parentLView[RENDERER];
   const retainedViews = [];
   for (const view of views) {
-    if (view.data[DEFER_BLOCK_ID]) {
+    // Do not clean up contents of `@defer` blocks.
+    // The cleanup for this content would happen once a given block
+    // is triggered and hydrated.
+    if (view.data[DEFER_BLOCK_ID] !== undefined) {
       retainedViews.push(view);
     } else {
       removeDehydratedView(view, renderer);
@@ -70,7 +73,7 @@ function removeDehydratedView(dehydratedView: DehydratedContainerView, renderer:
  * Walks over all views within this LContainer invokes dehydrated views
  * cleanup function for each one.
  */
-function cleanupLContainer(lContainer: LContainer) {
+export function cleanupLContainer(lContainer: LContainer) {
   removeDehydratedViews(lContainer);
 
   // The host could be an LView if this container is on a component node.

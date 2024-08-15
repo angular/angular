@@ -247,6 +247,9 @@ export interface DehydratedView {
    */
   dehydratedIcuData?: Map<number, DehydratedIcuData>;
 
+  /**
+   * A mapping of defer block unique ids to the defer block data
+   */
   dehydratedDeferBlockData?: Record<string, SerializedDeferBlock>;
 }
 

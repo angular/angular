@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di';
 import {
   HYDRATE_TRIGGER_CLEANUP_FNS,
   LDeferBlockDetails,
@@ -45,6 +44,8 @@ export function invokeTriggerCleanupFns(type: TriggerType, lDetails: LDeferBlock
   let key = TRIGGER_CLEANUP_FNS;
   if (type === TriggerType.Prefetch) {
     key = PREFETCH_TRIGGER_CLEANUP_FNS;
+  } else if (type === TriggerType.Hydrate) {
+    key = HYDRATE_TRIGGER_CLEANUP_FNS;
   }
   const cleanupFns = lDetails[key] as VoidFunction[];
   if (cleanupFns !== null) {

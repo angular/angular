@@ -5586,7 +5586,7 @@ describe('platform-server full application hydration integration', () => {
             DropdownContentComponent,
           );
 
-          const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
 

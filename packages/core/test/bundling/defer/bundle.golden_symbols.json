@@ -228,6 +228,9 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
+    "name": "HYDRATE_TRIGGER_CLEANUP_FNS"
+  },
+  {
     "name": "INJECTOR"
   },
   {

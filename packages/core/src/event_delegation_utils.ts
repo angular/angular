@@ -48,7 +48,7 @@ export function setJSActionAttributes(
   eventTypes: string[],
   parentDeferBlockId: string | null = null,
 ) {
-  if (!eventTypes.length) {
+  if (!eventTypes.length || nativeElement.nodeType !== Node.ELEMENT_NODE) {
     return;
   }
   const existingAttr = nativeElement.getAttribute(Attribute.JSACTION);

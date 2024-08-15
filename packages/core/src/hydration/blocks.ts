@@ -12,6 +12,12 @@ import {NGH_DEFER_BLOCKS_KEY} from './utils';
 import {Injector} from '../di';
 import {TransferState} from '../transfer_state';
 import {removeListenersFromBlocks} from '../event_delegation_utils';
+import {cleanupLContainer} from './cleanup';
+import {TNode} from '../render3/interfaces/node';
+import {HEADER_OFFSET, LView, TView} from '../render3/interfaces/view';
+import {LContainer} from '../render3/interfaces/container';
+import {TDeferBlockDetails} from '../defer/interfaces';
+import {getDeferBlockDataIndex, getTDeferBlockDetails, isTDeferBlockDetails} from '../defer/utils';
 
 /**
  * Finds first hydrated parent `@defer` block for a given block id.
@@ -40,11 +46,11 @@ async function hydrateFromBlockNameImpl(
   blockName: string,
   hydratedBlocks: Set<string>,
   onTriggerFn: (deferBlock: any) => void,
-): Promise<void> {
+): Promise<{lView: LView; tNode: TNode; lContainer: LContainer} | null> {
   const deferBlockRegistry = injector.get(DeferBlockRegistry);
 
   // Make sure we don't hydrate/trigger the same thing multiple times
-  if (deferBlockRegistry.hydrating.has(blockName)) return;
+  if (deferBlockRegistry.hydrating.has(blockName)) return null;
 
   const {blockId, deferBlock, dehydratedBlocks} = findFirstKnownParentDeferBlock(
     blockName,
@@ -58,8 +64,10 @@ async function hydrateFromBlockNameImpl(
     for (const dehydratedBlock of dehydratedBlocks) {
       await hydrateFromBlockNameImpl(injector, dehydratedBlock, hydratedBlocks, onTriggerFn);
     }
+    return deferBlock;
   } else {
     // TODO: this is likely an error, consider producing a `console.error`.
+    return null;
   }
 }
 
@@ -67,15 +75,26 @@ export async function hydrateFromBlockName(
   injector: Injector,
   blockName: string,
   onTriggerFn: (deferBlock: any) => void,
-): Promise<Set<string>> {
+): Promise<{
+  deferBlock: {lView: LView; tNode: TNode; lContainer: LContainer} | null;
+  hydratedBlocks: Set<string>;
+}> {
   const deferBlockRegistry = injector.get(DeferBlockRegistry);
   const hydratedBlocks = new Set<string>();
 
   // Make sure we don't hydrate/trigger the same thing multiple times
-  if (deferBlockRegistry.hydrating.has(blockName)) return hydratedBlocks;
+  if (deferBlockRegistry.hydrating.has(blockName)) return {deferBlock: null, hydratedBlocks};
 
-  await hydrateFromBlockNameImpl(injector, blockName, hydratedBlocks, onTriggerFn);
-  return hydratedBlocks;
+  const deferBlock = await hydrateFromBlockNameImpl(
+    injector,
+    blockName,
+    hydratedBlocks,
+    onTriggerFn,
+  );
+  if (deferBlock) {
+    cleanupLContainer(deferBlock.lContainer);
+  }
+  return {deferBlock, hydratedBlocks};
 }
 
 export async function partialHydrateFromBlockName(
@@ -83,6 +102,26 @@ export async function partialHydrateFromBlockName(
   blockName: string,
   triggerFn: (deferBlock: any) => void,
 ): Promise<void> {
-  const hydratedBlocks = await hydrateFromBlockName(injector, blockName, triggerFn);
+  const {deferBlock, hydratedBlocks} = await hydrateFromBlockName(injector, blockName, triggerFn);
   removeListenersFromBlocks([...hydratedBlocks], injector);
+  // cleanupDehydratedViews(injector.get(ApplicationRef));
+  // TODO: add `await whenStable(appRef);` call here
+  if (deferBlock) {
+    cleanupLContainer(deferBlock.lContainer);
+  }
+}
+
+/**
+ * Whether a given TNode represents a defer block.
+ */
+export function isDeferBlock(tView: TView, tNode: TNode): boolean {
+  let tDetails: TDeferBlockDetails | null = null;
+  const slotIndex = getDeferBlockDataIndex(tNode.index);
+  // Check if a slot index is in the reasonable range.
+  // Note: we do `-1` on the right border, since defer block details are stored
+  // in the `n+1` slot, see `getDeferBlockDataIndex` for more info.
+  if (HEADER_OFFSET < slotIndex && slotIndex < tView.bindingStartIndex) {
+    tDetails = getTDeferBlockDetails(tView, tNode);
+  }
+  return !!tDetails && isTDeferBlockDetails(tDetails);
 }

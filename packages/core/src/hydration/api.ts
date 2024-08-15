@@ -29,7 +29,7 @@ import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {TransferState} from '../transfer_state';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
-import {withEventReplay} from './event_replay';
+import {appendDeferBlocksToJSActionMap, withEventReplay} from './event_replay';
 
 import {cleanupDehydratedViews} from './cleanup';
 import {
@@ -290,6 +290,7 @@ export function withI18nSupport(): Provider[] {
  */
 export function withPartialHydration(): Provider[] {
   return [
+    withEventReplay(),
     {
       provide: IS_PARTIAL_HYDRATION_ENABLED,
       useValue: true,
@@ -308,13 +309,13 @@ export function withPartialHydration(): Provider[] {
           const injector = inject(Injector);
           return () => {
             bootstrapPartialHydration(getDocument(), injector);
+            appendDeferBlocksToJSActionMap(getDocument(), injector);
           };
         }
         return () => {}; // noop for the server code
       },
       multi: true,
     },
-    withEventReplay(),
   ];
 }
 

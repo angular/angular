@@ -78,7 +78,7 @@
     "@types/babel__core": "7.20.5",
     "@types/babel__generator": "7.6.8",
     "@types/bluebird": "^3.5.27",
-    "@types/chrome": "^0.0.270",
+    "@types/chrome": "^0.0.269",
     "@types/convert-source-map": "^2.0.0",
     "@types/diff": "^5.0.0",
     "@types/dom-view-transitions": "^1.0.1",

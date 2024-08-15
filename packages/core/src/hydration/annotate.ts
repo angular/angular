@@ -50,11 +50,7 @@ import {unwrapLView, unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
-import {
-  appendBlocksToJSActionMap,
-  collectDomEventsInfo,
-  convertHydrateTriggersToJsAction,
-} from './event_replay';
+import {collectDomEventsInfo, convertHydrateTriggersToJsAction} from './event_replay';
 import {setJSActionAttributes} from '../event_delegation_utils';
 import {
   getOrComputeI18nChildren,
@@ -97,6 +93,7 @@ import {
   TextNodeMarker,
 } from './utils';
 import {Injector} from '../di';
+import {isDeferBlock} from './blocks';
 
 /**
  * A collection that tracks all serialized views (`ngh` DOM annotations)
@@ -333,21 +330,6 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
 }
 
 /**
- * Whether a given TNode represents a defer block.
- */
-function isDeferBlock(tView: TView, tNode: TNode): boolean {
-  let tDetails: TDeferBlockDetails | null = null;
-  const slotIndex = getDeferBlockDataIndex(tNode.index);
-  // Check if a slot index is in the reasonable range.
-  // Note: we do `-1` on the right border, since defer block details are stored
-  // in the `n+1` slot, see `getDeferBlockDataIndex` for more info.
-  if (HEADER_OFFSET < slotIndex && slotIndex < tView.bindingStartIndex) {
-    tDetails = getTDeferBlockDetails(tView, tNode);
-  }
-  return !!tDetails && isTDeferBlockDetails(tDetails);
-}
-
-/**
  * Retrives the Defer Block unique SSR ID, if it exists
  */
 function getDeferBlockId(tNode: TNode, lView: LView): string | null {
@@ -463,7 +445,7 @@ function serializeLContainer(
           for (let et of actionList) {
             context.eventTypesToReplay.regular.add(et);
           }
-          annotateDeferBlockRootNodesWithJsAction(actionList, rootNodes, deferBlockId, injector);
+          annotateDeferBlockRootNodesWithJsAction(actionList, rootNodes, deferBlockId);
         }
 
         // Use current block id as parent for nested routes.
@@ -894,12 +876,13 @@ function annotateDeferBlockRootNodesWithJsAction(
   actionList: string[],
   rootNodes: any[],
   parentDeferBlockId: string,
-  injector: Injector,
 ) {
   if (actionList.length > 0) {
-    for (let rNode of rootNodes) {
+    const elementNodes = (rootNodes as HTMLElement[]).filter(
+      (rn) => rn.nodeType === Node.ELEMENT_NODE,
+    );
+    for (let rNode of elementNodes) {
       setJSActionAttributes(rNode, actionList, parentDeferBlockId);
-      appendBlocksToJSActionMap(rNode as RElement, injector);
     }
   }
 }

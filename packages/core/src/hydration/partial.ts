@@ -127,6 +127,9 @@ function processAndInitTriggers(
       let currentNode: Comment | HTMLElement = commentNode;
       for (let i = 0; i < numRootNodes; i++) {
         currentNode = currentNode.previousSibling as HTMLElement;
+        if (currentNode.nodeType !== Node.ELEMENT_NODE) {
+          continue;
+        }
         const et: ElementTrigger = {el: currentNode, blockName: blockId};
         // hydrate
         if (blockSummary.hydrate.idle) {
@@ -154,7 +157,6 @@ function processAndInitTriggers(
 
 async function setIdleTriggers(injector: Injector, ets: ElementTrigger[]) {
   if (ets.length > 0) {
-    const registry = injector.get(DeferBlockRegistry);
     for (const elementTrigger of ets) {
       const registry = injector.get(DeferBlockRegistry);
       const onInvoke = () =>

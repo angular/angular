@@ -293,7 +293,7 @@ export function ɵɵdefer(
 
   if (uniqueId !== null) {
     // Also store this defer block in the registry.
-    registry.add(uniqueId, {lView, tNode});
+    registry.add(uniqueId, {lView, tNode, lContainer});
   }
 
   const cleanupTriggersFn = () => invokeAllTriggerCleanupFns(lDetails, registry);
@@ -989,6 +989,7 @@ function findMatchingDehydratedViewForDeferBlock(
   lContainer: LContainer,
   lDetails: LDeferBlockDetails,
 ): DehydratedContainerView | null {
+  // TODO(thePunderWoman): extract into a separate util function and use in relevant places.
   const views = lContainer[DEHYDRATED_VIEWS];
   if (views === null || views.length === 0) {
     return null;
@@ -1049,7 +1050,9 @@ function applyDeferBlockState(
     // Render either when we don't have dehydrated views at all (e.g. client rendering)
     // or when dehydrated view is found (in which case we hydrate).
     // Otherwise, do nothing, since we'd end up erasing SSR'ed content.
-    const isClientOnly = !lContainer[DEHYDRATED_VIEWS];
+    // TODO(thePunderWoman): Use the util function for checking dehydrated views mentioned above
+    const isClientOnly =
+      lContainer[DEHYDRATED_VIEWS] === null || lContainer[DEHYDRATED_VIEWS].length === 0;
     if (isClientOnly || dehydratedView) {
       // Erase dehydrated view info, so that it's not removed later
       // by post-hydration cleanup process.

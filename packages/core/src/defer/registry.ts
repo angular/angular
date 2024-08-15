@@ -5,12 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Injector, ɵɵdefineInjectable} from '../di';
+import {ɵɵdefineInjectable} from '../di';
+import {LContainer} from '../render3/interfaces/container';
 import {TNode} from '../render3/interfaces/node';
 import {LView} from '../render3/interfaces/view';
 
 export class DeferBlockRegistry {
-  private registry = new Map<string, {lView: LView; tNode: TNode}>();
+  private registry = new Map<string, {lView: LView; tNode: TNode; lContainer: LContainer}>();
   private cleanupFns = new Map<string, Function[]>();
   add(id: string, info: any) {
     this.registry.set(id, info);

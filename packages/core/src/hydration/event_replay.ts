@@ -37,7 +37,6 @@ import {
 import {
   sharedStashFunction,
   sharedMapFunction,
-  removeListeners,
   BLOCKNAME_ATTRIBUTE,
   EventContractDetails,
   JSACTION_EVENT_CONTRACT,
@@ -48,6 +47,8 @@ import {performanceMarkFeature} from '../util/performance';
 import {hydrateFromBlockName, findFirstKnownParentDeferBlock} from './blocks';
 import {HydrateTrigger, Trigger} from '../defer/interfaces';
 import {triggerAndWaitForCompletion} from '../defer/instructions';
+import {cleanupDehydratedViews} from './cleanup';
+import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
 
 /**
  * A set of in progress hydrating blocks
@@ -253,7 +254,7 @@ async function triggerBlockHydration(injector: Injector, blockName: string) {
   for (let block of dehydratedBlocks) {
     hydratingBlocks.add(block);
   }
-  const hydratedBlocks = await hydrateFromBlockName(injector, blockName, (deferBlock: any) =>
+  const {hydratedBlocks} = await hydrateFromBlockName(injector, blockName, (deferBlock: any) =>
     triggerAndWaitForCompletion(deferBlock),
   );
   hydratedBlocks.add(blockName);
@@ -275,6 +276,7 @@ function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector
     }
   }
   removeListenersFromBlocks([...hydratedBlocks], injector);
+  cleanupDehydratedViews(injector.get(ApplicationRef));
 }
 
 export function convertHydrateTriggersToJsAction(
@@ -283,10 +285,10 @@ export function convertHydrateTriggersToJsAction(
   let actionList: string[] = [];
   if (triggers !== null) {
     if (triggers.includes(Trigger.Hover)) {
-      actionList.push('mouseover', 'focusin');
+      actionList.push(...hoverEventNames);
     }
     if (triggers.includes(Trigger.Interaction)) {
-      actionList.push('click', 'keydown');
+      actionList.push(...interactionEventNames);
     }
   }
   return actionList;
@@ -295,4 +297,27 @@ export function convertHydrateTriggersToJsAction(
 export function appendBlocksToJSActionMap(el: RElement, injector: Injector) {
   const jsActionMap = injector.get(BLOCK_ELEMENT_MAP);
   sharedMapFunction(el, jsActionMap);
+}
+
+function gatherDeferBlocksByJSActionAttribute(doc: Document): Set<HTMLElement> {
+  const jsactionNodes = doc.body.querySelectorAll('[jsaction]');
+  const blockMap = new Set<HTMLElement>();
+  for (let node of jsactionNodes) {
+    const attr = node.getAttribute('jsaction');
+    const blockId = node.getAttribute('ngb');
+    const eventTypes = [...hoverEventNames.join(':;'), ...interactionEventNames.join(':;')].join(
+      '|',
+    );
+    if (attr?.match(eventTypes) && blockId !== null) {
+      blockMap.add(node as HTMLElement);
+    }
+  }
+  return blockMap;
+}
+
+export function appendDeferBlocksToJSActionMap(doc: Document, injector: Injector) {
+  const blockMap = gatherDeferBlocksByJSActionAttribute(doc);
+  for (let rNode of blockMap) {
+    appendBlocksToJSActionMap(rNode as RElement, injector);
+  }
 }

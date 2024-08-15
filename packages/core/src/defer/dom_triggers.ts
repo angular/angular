@@ -47,10 +47,10 @@ const interactionTriggers = new WeakMap<Element, DeferEventEntry>();
 const viewportTriggers = new WeakMap<Element, DeferEventEntry>();
 
 /** Names of the events considered as interaction events. */
-const interactionEventNames = ['click', 'keydown'] as const;
+export const interactionEventNames = ['click', 'keydown'] as const;
 
 /** Names of the events considered as hover events. */
-const hoverEventNames = ['mouseenter', 'focusin'] as const;
+export const hoverEventNames = ['mouseenter', 'mouseover', 'focusin'] as const;
 
 /** `IntersectionObserver` used to observe `viewport` triggers. */
 let intersectionObserver: IntersectionObserver | null = null;

@@ -9,7 +9,11 @@
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {validateMatchingNode} from '../hydration/error_handling';
-import {CONTAINERS} from '../hydration/interfaces';
+import {
+  CONTAINERS,
+  DehydratedContainerView,
+  SerializedContainerView,
+} from '../hydration/interfaces';
 import {isInSkipHydrationBlock} from '../hydration/skip_hydration';
 import {
   getSegmentHead,
@@ -832,6 +836,7 @@ function populateDehydratedViewsInLContainerImpl(
   const [commentNode, dehydratedViews] = locateDehydratedViewsInContainer(
     currentRNode!,
     serializedViews!,
+    hydrationInfo,
   );
 
   if (ngDevMode) {

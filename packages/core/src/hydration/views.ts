@@ -12,6 +12,7 @@ import {RNode} from '../render3/interfaces/renderer_dom';
 import {removeDehydratedViews} from './cleanup';
 import {
   DehydratedContainerView,
+  DehydratedView,
   MULTIPLIER,
   NUM_ROOT_NODES,
   SerializedContainerView,
@@ -27,8 +28,10 @@ import {siblingAfter} from './node_lookup_utils';
 export function locateDehydratedViewsInContainer(
   currentRNode: RNode,
   serializedViews: SerializedContainerView[],
+  hydrationInfo: DehydratedView | DehydratedContainerView,
 ): [RNode, DehydratedContainerView[]] {
   const dehydratedViews: DehydratedContainerView[] = [];
+  // const isDeferBlockInstance = isDeferBlock(tView, tNode);
   for (const serializedView of serializedViews) {
     // Repeats a view multiple times as needed, based on the serialized information
     // (for example, for *ngFor-produced views).
