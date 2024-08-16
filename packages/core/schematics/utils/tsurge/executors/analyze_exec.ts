@@ -7,7 +7,6 @@
  */
 
 import {TsurgeMigration} from '../migration';
-import {NodeJSFileSystem} from '../../../../../compiler-cli/src/ngtsc/file_system';
 import {Serializable} from '../helpers/serializable';
 
 /**
@@ -20,9 +19,7 @@ export async function executeAnalyzePhase<UnitData, GlobalData>(
   migration: TsurgeMigration<UnitData, GlobalData>,
   tsconfigAbsolutePath: string,
 ): Promise<Serializable<UnitData>> {
-  const fs = new NodeJSFileSystem();
-
-  const baseInfo = migration.createProgram(tsconfigAbsolutePath, fs);
+  const baseInfo = migration.createProgram(tsconfigAbsolutePath);
   const info = migration.prepareProgram(baseInfo);
 
   return await migration.analyze(info);

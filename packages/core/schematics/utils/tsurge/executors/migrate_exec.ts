@@ -7,7 +7,6 @@
  */
 
 import {TsurgeMigration} from '../migration';
-import {NodeJSFileSystem} from '../../../../../compiler-cli/src/ngtsc/file_system';
 import {Replacement} from '../replacement';
 
 /**
@@ -24,9 +23,7 @@ export async function executeMigratePhase<UnitData, GlobalData>(
   globalMetadata: GlobalData,
   tsconfigAbsolutePath: string,
 ): Promise<Replacement[]> {
-  const fs = new NodeJSFileSystem();
-
-  const baseInfo = migration.createProgram(tsconfigAbsolutePath, fs);
+  const baseInfo = migration.createProgram(tsconfigAbsolutePath);
   const info = migration.prepareProgram(baseInfo);
 
   return await migration.migrate(globalMetadata, info);

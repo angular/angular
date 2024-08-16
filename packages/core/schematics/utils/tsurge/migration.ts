@@ -51,7 +51,7 @@ export abstract class TsurgeMigration<
   FullProgramInfo extends ProgramInfo<TsProgramType> = ProgramInfo<TsProgramType>,
 > {
   // By default, ngtsc programs are being created.
-  createProgram(tsconfigAbsPath: string, fs: FileSystem): BaseProgramInfo<TsProgramType> {
+  createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo<TsProgramType> {
     return createNgtscProgram(tsconfigAbsPath, fs) as BaseProgramInfo<TsProgramType>;
   }
 
