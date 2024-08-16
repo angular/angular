@@ -1336,9 +1336,9 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toContain(
-          `Type 'import("${absoluteFrom(
+          `Property 'b' is missing in type 'import("${absoluteFrom(
             '/node_modules/foo-a/index',
-          )}").Foo' is not assignable to type 'import("${absoluteFrom(
+          )}").Foo' but required in type 'import("${absoluteFrom(
             '/node_modules/foo-b/index',
           )}").Foo'.`,
         );

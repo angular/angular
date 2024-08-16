@@ -126,8 +126,10 @@ export class QuickInfoBuilder {
   private getQuickInfoForElementSymbol(symbol: ElementSymbol): ts.QuickInfo {
     const {templateNode} = symbol;
     const matches = getDirectiveMatchesForElementTag(templateNode, symbol.directives);
-    if (matches.size > 0) {
-      return this.getQuickInfoForDirectiveSymbol(matches.values().next().value, templateNode);
+    const directiveSymbol = matches.size > 0 ? matches.values().next().value : null;
+
+    if (directiveSymbol) {
+      return this.getQuickInfoForDirectiveSymbol(directiveSymbol, templateNode);
     }
 
     return createQuickInfo(
@@ -202,11 +204,9 @@ export class QuickInfoBuilder {
       symbol.host.templateNode,
       symbol.host.directives,
     );
-    if (directives.size === 0) {
-      return undefined;
-    }
 
-    return this.getQuickInfoForDirectiveSymbol(directives.values().next().value);
+    const directiveSymbol = directives.size > 0 ? directives.values().next().value : null;
+    return directiveSymbol ? this.getQuickInfoForDirectiveSymbol(directiveSymbol) : undefined;
   }
 
   private getQuickInfoForDirectiveSymbol(
