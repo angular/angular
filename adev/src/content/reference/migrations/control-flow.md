@@ -1,9 +1,10 @@
 # Migration to Control Flow syntax
 
+[Control flow syntax](guide/templates/control-flow) is available from Angular v17. The new syntax is baked into the template, so you don't need to import `CommonModule` anymore.
 
-[Control flow syntax](guide/templates/control-flow) is available from Angular 17 and simplified way to use the control-flow directives like *ngFor, *ngIf and *ngSwitch. 
+This schematic migrates all existing code in your application to use new Control Flow Syntax.
 
-The new syntax is baked into the template, so you don't need to import `CommonModule` anymore. But wait there is more to it, there is an migration available for migrating all your old code to use new Control Flow Syntax with Angular 17 release. Run the schematic with the following command:
+Run the schematic using the following command:
 
 <docs-code language="shell">
 
