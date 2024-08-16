@@ -347,44 +347,61 @@ export class ComponentDecoratorHandler
       this.defaultPreserveWhitespaces,
       this.extractTemplateOptions,
       this.compilationMode,
-    ).then((template: ParsedTemplateWithSource | null): Promise<void> | undefined => {
-      if (template === null) {
-        return undefined;
-      }
+    ).then(
+      (template): {templateUrl?: string; templateStyles: string[]; templateStyleUrls: string[]} => {
+        if (template === null) {
+          return {templateStyles: [], templateStyleUrls: []};
+        }
 
-      return Promise.all(template.styleUrls.map((styleUrl) => resolveStyleUrl(styleUrl))).then(
-        () => undefined,
-      );
-    });
+        let templateUrl;
+        if (template.sourceMapping.type === 'external') {
+          templateUrl = template.sourceMapping.templateUrl;
+        }
+
+        return {
+          templateUrl,
+          templateStyles: template.styles,
+          templateStyleUrls: template.styleUrls,
+        };
+      },
+    );
 
     // Extract all the styleUrls in the decorator.
     const componentStyleUrls = extractComponentStyleUrls(this.evaluator, component);
 
-    // Extract inline styles, process, and cache for use in synchronous analyze phase
-    let inlineStyles;
-    if (component.has('styles')) {
-      const litStyles = parseDirectiveStyles(component, this.evaluator, this.compilationMode);
-      if (litStyles === null) {
-        this.preanalyzeStylesCache.set(node, null);
-      } else {
-        inlineStyles = Promise.all(
-          litStyles.map((style) =>
+    return templateAndTemplateStyleResources.then(async (templateInfo) => {
+      // Extract inline styles, process, and cache for use in synchronous analyze phase
+      let styles: string[] | null = null;
+      const rawStyles = parseDirectiveStyles(component, this.evaluator, this.compilationMode);
+      if (rawStyles?.length) {
+        styles = await Promise.all(
+          rawStyles.map((style) =>
             this.resourceLoader.preprocessInline(style, {type: 'style', containingFile}),
           ),
-        ).then((styles) => {
-          this.preanalyzeStylesCache.set(node, styles);
-        });
+        );
       }
-    } else {
-      this.preanalyzeStylesCache.set(node, null);
-    }
+      if (templateInfo.templateStyles) {
+        styles ??= [];
+        styles.push(
+          ...(await Promise.all(
+            templateInfo.templateStyles.map((style) =>
+              this.resourceLoader.preprocessInline(style, {
+                type: 'style',
+                containingFile: templateInfo.templateUrl ?? containingFile,
+              }),
+            ),
+          )),
+        );
+      }
 
-    // Wait for both the template and all styleUrl resources to resolve.
-    return Promise.all([
-      templateAndTemplateStyleResources,
-      inlineStyles,
-      ...componentStyleUrls.map((styleUrl) => resolveStyleUrl(styleUrl.url)),
-    ]).then(() => undefined);
+      this.preanalyzeStylesCache.set(node, styles);
+
+      // Wait for both the template and all styleUrl resources to resolve.
+      await Promise.all([
+        ...componentStyleUrls.map((styleUrl) => resolveStyleUrl(styleUrl.url)),
+        ...templateInfo.templateStyleUrls.map((url) => resolveStyleUrl(url)),
+      ]);
+    });
   }
 
   analyze(
@@ -743,9 +760,10 @@ export class ComponentDecoratorHandler
           styles.push(...litStyles);
         }
       }
-    }
-    if (template.styles.length > 0) {
-      styles.push(...template.styles);
+
+      if (template.styles.length > 0) {
+        styles.push(...template.styles);
+      }
     }
 
     // Collect all explicitly deferred symbols from the `@Component.deferredImports` field
