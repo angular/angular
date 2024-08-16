@@ -398,6 +398,97 @@ runInEachFileSystem(() => {
       expect(analysis?.inlineStyles).toEqual(jasmine.arrayWithExactContents(['.xyz {}']));
     });
 
+    it('should replace template style element content for inline template with transformed content', async () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '<style>.abc {}</style>',
+          }) class TestCmp {}
+      `,
+        },
+      ]);
+      const {reflectionHost, handler, resourceLoader} = setup(program, options, host);
+      resourceLoader.canPreload = true;
+      resourceLoader.canPreprocess = true;
+      resourceLoader.preprocessInline = async function (data, context) {
+        expect(data).toBe('.abc {}');
+        expect(context.containingFile).toBe(_('/entry.ts').toLowerCase());
+        expect(context.type).toBe('style');
+
+        return '.xyz {}';
+      };
+
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+
+      await handler.preanalyze(TestCmp, detected.metadata);
+
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      expect(analysis?.inlineStyles).toEqual(jasmine.arrayWithExactContents(['.xyz {}']));
+    });
+
+    it('should replace template style element content for external template with transformed content', async () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/component.ng.html'),
+          contents: '<style>.abc {}</style>',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            templateUrl: '/component.ng.html',
+          }) class TestCmp {}
+      `,
+        },
+      ]);
+      const {reflectionHost, handler, resourceLoader} = setup(program, options, host);
+      resourceLoader.canPreload = true;
+      resourceLoader.canPreprocess = true;
+      resourceLoader.resolve = function (v) {
+        return _(v).toLowerCase();
+      };
+      resourceLoader.load = function (v) {
+        return host.readFile(v) ?? '';
+      };
+      resourceLoader.preload = () => Promise.resolve();
+      resourceLoader.preprocessInline = async function (data, context) {
+        expect(data).toBe('.abc {}');
+        expect(context.containingFile).toBe(_('/component.ng.html').toLowerCase());
+        expect(context.type).toBe('style');
+
+        return '.xyz {}';
+      };
+
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+
+      await handler.preanalyze(TestCmp, detected.metadata);
+
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      expect(analysis?.inlineStyles).toEqual(jasmine.arrayWithExactContents(['.xyz {}']));
+    });
+
     it('should error if canPreprocess is true and async analyze is not used', async () => {
       const {program, options, host} = makeProgram([
         {
