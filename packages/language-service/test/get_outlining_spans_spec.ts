@@ -107,11 +107,11 @@ describe('get outlining spans', () => {
 
         @Component({
           template: \`
-          @if (1) {
+          @if (val1) {
             if1
-          } @else if (2) {
+          } @else if (val2) {
             elseif2
-          } @else if (3) {
+          } @else if (val3) {
             elseif3
           } @else {
             else block
@@ -119,6 +119,9 @@ describe('get outlining spans', () => {
           \`
         })
         export class AppCmp {
+          val1: any;
+          val2: any;
+          val3: any;
         }`,
     };
     const env = LanguageServiceTestEnv.setup();

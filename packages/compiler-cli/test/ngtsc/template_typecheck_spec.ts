@@ -535,7 +535,9 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toEqual(
-        `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
+        jasmine.objectContaining({
+          messageText: `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
+        }),
       );
     });
 
@@ -1486,7 +1488,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toContain(
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toContain(
         `is not assignable to type 'TrackByFunction<UnrelatedType>'.`,
       );
     });
