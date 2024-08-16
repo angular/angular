@@ -5,8 +5,6 @@ Learn about how you can migrate your existing angular project to the latest feat
 <docs-card-container>
   <docs-card title="Standalone" link="Migrate now" href="reference/migrations/standalone">
     Standalone components provide a simplified way to build Angular applications. Standalone components specify their dependencies directly instead of getting them through NgModules.
-
-    Standalone components, directives, and pipes aim to streamline the authoring experience by reducing the need for NgModules.
   </docs-card>
   <docs-card title="Control Flow Syntax" link="Migrate now" href="reference/migrations/control-flow">
     Control Flow Syntax is available with Angular 17 release and allows you to use more ergonomic syntax which is close to javascript, better type checking and lazy load part of the component. It replaces the need to imports CommonModule to use functionalities like `*ngFor`, `*ngIf`.

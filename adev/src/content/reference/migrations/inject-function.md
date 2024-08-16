@@ -1,8 +1,10 @@
 # Migration to the `inject` function
 
-Angular's `inject` function offers more accurate types and better compatibility with standard
-decorators, compared to constructor-based injection. You can convert your application to it by
-running the following command:
+Angular's `inject` function offers more accurate types and better compatibility with standard decorators, compared to constructor-based injection.
+
+This schematic converts constructor-based injection in your classes to use the `inject` function instead.
+
+Run the schematic using the following command:
 
 <docs-code language="shell">
 
