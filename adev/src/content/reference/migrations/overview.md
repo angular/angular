@@ -7,9 +7,12 @@ Learn about how you can migrate your existing angular project to the latest feat
     Standalone components provide a simplified way to build Angular applications. Standalone components specify their dependencies directly instead of getting them through NgModules.
   </docs-card>
   <docs-card title="Control Flow Syntax" link="Migrate now" href="reference/migrations/control-flow">
-    Control Flow Syntax is available with Angular 17 release and allows you to use more ergonomic syntax which is close to javascript, better type checking and lazy load part of the component. It replaces the need to imports CommonModule to use functionalities like `*ngFor`, `*ngIf`.
+    Built-in Control Flow Syntax allows you to use more ergonomic syntax which is close to JavaScript and has better type checking. It replaces the need to import `CommonModule` to use functionality like `*ngFor`, `*ngIf` and `*ngSwitch`.
   </docs-card>
   <docs-card title="inject() Function" link="Migrate now" href="reference/migrations/inject-function">
     Angular's `inject` function offers more accurate types and better compatibility with standard decorators, compared to constructor-based injection.
+  </docs-card>
+  <docs-card title="Lazy-loaded routes" link="Migrate now" href="reference/migrations/route-lazy-loading">
+    Convert eagerly loaded component routes to lazy loaded ones. This allows the build process to split production bundles into smaller chunks, to load less JavaScript at initial page load.
   </docs-card>
 </docs-card-container>
