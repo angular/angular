@@ -1,4 +1,5 @@
 load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", "http_server")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
@@ -113,27 +114,27 @@ copy_to_bin(
 )
 
 bool_flag(
-    name = "fast_build_mode",
+    name = "prerender_adev",
     build_setting_default = False,
 )
 
 config_setting(
-    name = "fast",
+    name = "no_prerender",
     flag_values = {
-        ":fast_build_mode": "true",
+        ":prerender_adev": "false",
     },
 )
 
 config_setting(
-    name = "full",
+    name = "prerender",
     flag_values = {
-        ":fast_build_mode": "false",
+        ":prerender_adev": "true",
     },
 )
 
 config_based_architect_flags = select({
-    ":fast": ["--no-prerender"],
-    ":full": ["--prerender"],
+    ":no_prerender": ["--no-prerender"],
+    ":prerender": ["--prerender"],
 })
 
 architect(
@@ -154,21 +155,13 @@ architect(
     ],
 )
 
-architect(
+http_server(
     name = "serve",
-    args = [
-        "angular-dev:serve",
-        "--poll=1000",
-        "--live-reload",
-        "--watch",
+    additional_root_paths = [
+        "angular/adev/build/browser",
     ],
-    chdir = package_name(),
-    data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
-        ":application_files_bin",
-    ],
-    tags = [
-        "no-remote-exec",
-    ],
+    enable_dev_ui = True,
+    deps = [":build"],
 )
 
 architect_test(
