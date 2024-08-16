@@ -7,13 +7,9 @@
  */
 
 /** Branded type indicating that the given data `T` is serializable. */
-export type Serializable<T> = {__serializable: true; T: T; data: T};
+export type Serializable<T> = T & {__serializable: true};
 
 /** Confirms that the given data `T` is serializable. */
 export function confirmAsSerializable<T>(data: T): Serializable<T> {
-  return {
-    __serializable: true,
-    T: null!, // Just for type.
-    data,
-  };
+  return data as Serializable<T>;
 }

@@ -60,8 +60,8 @@ export async function runTsurgeMigration<UnitData, GlobalData>(
   const info = migration.prepareProgram(baseInfo);
 
   const unitData = await migration.analyze(info);
-  const merged = await migration.merge([unitData.data]);
-  const replacements = await migration.migrate(merged.data, info);
+  const merged = await migration.merge([unitData]);
+  const replacements = await migration.migrate(merged, info);
   const updates = groupReplacementsByFile(replacements);
 
   for (const [filePath, changes] of updates.entries()) {

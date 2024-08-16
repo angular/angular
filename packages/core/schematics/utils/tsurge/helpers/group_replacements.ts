@@ -20,11 +20,10 @@ export function groupReplacementsByFile(
 ): Map<AbsoluteFsPath, TextUpdate[]> {
   const result = new Map<AbsoluteFsPath, TextUpdate[]>();
   for (const {absoluteFilePath, update} of replacements) {
-    if (result.has(absoluteFilePath)) {
-      result.get(absoluteFilePath)!.push(update);
-    } else {
-      result.set(absoluteFilePath, [update]);
+    if (!result.has(absoluteFilePath)) {
+      result.set(absoluteFilePath, []);
     }
+    result.get(absoluteFilePath)!.push(update);
   }
   return result;
 }
