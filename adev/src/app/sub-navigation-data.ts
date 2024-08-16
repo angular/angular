@@ -1472,6 +1472,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'reference/migrations/inject-function',
         contentPath: 'reference/migrations/inject-function',
       },
+      {
+        label: 'Lazy-loaded routes',
+        path: 'reference/migrations/route-lazy-loading',
+        contentPath: 'reference/migrations/route-lazy-loading',
+      },
     ],
   },
   {
