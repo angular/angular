@@ -1463,11 +1463,6 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/migrations/standalone',
       },
       {
-        label: 'ModuleWithProviders',
-        path: 'reference/migrations/module-with-providers',
-        contentPath: 'reference/migrations/module-with-providers',
-      },
-      {
         label: 'Typed Forms',
         path: 'reference/migrations/typed-forms',
         contentPath: 'reference/migrations/typed-forms',
