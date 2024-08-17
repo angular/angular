@@ -1109,6 +1109,8 @@ export interface CanMatch {
  * If all guards return `true`, navigation continues and the `Router` will use the `Route` during
  * activation. If any guard returns `false`, the `Route` is skipped for matching and other `Route`
  * configurations are processed instead.
+ * 
+ * Segments array will only include parts not already consumed in previous parent route evaluations.
  *
  * The following example implements and uses a `CanMatchFn` that checks whether the
  * current user has permission to access the team page.
@@ -1117,6 +1119,7 @@ export interface CanMatch {
  *
  * @publicApi
  * @see {@link Route}
+ * @see {@link UrlSegment}
  */
 export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
 
