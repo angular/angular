@@ -33,6 +33,7 @@ rollup_bundle(
         "//packages/core/schematics/ng-generate/inject-migration:index.ts": "inject-migration",
         "//packages/core/schematics/ng-generate/route-lazy-loading:index.ts": "route-lazy-loading",
         "//packages/core/schematics/ng-generate/standalone-migration:index.ts": "standalone-migration",
+        "//packages/core/schematics/migrations/explicit-standalone-flag:index.ts": "explicit-standalone-flag",
     },
     format = "cjs",
     link_workspace_root = True,
@@ -42,6 +43,7 @@ rollup_bundle(
         "//packages/core/schematics/test:__pkg__",
     ],
     deps = [
+        "//packages/core/schematics/migrations/explicit-standalone-flag",
         "//packages/core/schematics/ng-generate/control-flow-migration",
         "//packages/core/schematics/ng-generate/inject-migration",
         "//packages/core/schematics/ng-generate/route-lazy-loading",
