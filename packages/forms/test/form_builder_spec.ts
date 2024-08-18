@@ -196,6 +196,30 @@ import {of} from 'rxjs';
       expect(g.asyncValidator).toBe(asyncValidator);
     });
 
+    it('should create groups that is disabled', () => {
+      const g = b.group({'login': 'some value'}, {disable: true});
+
+      expect(g.disabled).toBe(true);
+    });
+
+    it('should create groups that is not disabled when disable is not provided', () => {
+      const g = b.group({'login': 'some value'});
+
+      expect(g.enabled).toBe(true);
+    });
+
+    it('should create groups that is not disabled when disable is false', () => {
+      const g = b.group({'login': 'some value'}, {disable: false});
+
+      expect(g.enabled).toBe(true);
+    });
+
+    it('should throw error when disable is not a boolean', () => {
+      expect(() => {
+        b.group({'login': 'some value'}, {disable: 'true'});
+      }).toThrowError(`Expected 'disable' to be a boolean value.`);
+    });
+
     it('should create groups with null options', () => {
       const g = b.group({'login': 'some value'}, null);
 
