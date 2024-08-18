@@ -119,12 +119,18 @@ export function splitInjectorPathsIntoElementAndEnvironmentPaths(injectorPaths: 
   const startingElementToEnvironmentPath = new Map<string, SerializedInjector[]>();
 
   injectorPaths.forEach(({node, path}) => {
-    const firstElementIndex = path.findIndex((injector) => injector.type === 'element');
-
     // split the path into two paths,
     // one for the element injector and one for the environment injector
-    const environmentPath = path.slice(0, firstElementIndex);
-    const elementPath = path.slice(firstElementIndex);
+    let environmentPath: SerializedInjector[] = [];
+    let elementPath: SerializedInjector[] = [];
+    const firstElementIndex = path.findIndex((injector) => injector.type === 'element');
+    if (firstElementIndex === -1) {
+      environmentPath = path;
+      elementPath = [];
+    } else {
+      environmentPath = path.slice(0, firstElementIndex);
+      elementPath = path.slice(firstElementIndex);
+    }
 
     elementPaths.push({
       node,
