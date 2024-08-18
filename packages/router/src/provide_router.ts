@@ -622,7 +622,7 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
  * ```
  *
  * @see {@link provideRouter}
- * @see {@link HashLocationStrategy}
+ * @see [HashLocationStrategy](api/common/HashLocationStrategy)
  *
  * @returns A set of providers for use with `provideRouter`.
  *
