@@ -1,0 +1,15 @@
+@if (!hasClosed()) {
+  @if (link()) {
+    <a [href]="link()" class="docs-top-level-banner">
+      <h1 tabindex="-1" class="docs-top-level-banner-cta">{{ text() }}</h1>
+    </a>
+  } @else {
+    <div class="docs-top-level-banner">
+      <h1 tabindex="-1" class="docs-top-level-banner-cta">{{ text() }}</h1>
+    </div>
+  }
+
+  <button class="docs-top-level-banner-close" type="button" (click)="close()">
+    <docs-icon class="docs-icon_high-contrast">close</docs-icon>
+  </button>
+}
