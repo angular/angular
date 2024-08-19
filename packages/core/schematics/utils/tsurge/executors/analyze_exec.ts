@@ -8,6 +8,8 @@
 
 import {TsurgeMigration} from '../migration';
 import {Serializable} from '../helpers/serializable';
+import ts from 'typescript';
+import {NgtscProgram} from '../../../../../compiler-cli/src/ngtsc/program';
 
 /**
  * Executes the analyze phase of the given migration against
@@ -15,8 +17,12 @@ import {Serializable} from '../helpers/serializable';
  *
  * @returns the serializable migration unit data.
  */
-export async function executeAnalyzePhase<UnitData, GlobalData>(
-  migration: TsurgeMigration<UnitData, GlobalData>,
+export async function executeAnalyzePhase<
+  UnitData,
+  GlobalData,
+  TsProgramType extends ts.Program | NgtscProgram,
+>(
+  migration: TsurgeMigration<UnitData, GlobalData, TsProgramType, unknown>,
   tsconfigAbsolutePath: string,
 ): Promise<Serializable<UnitData>> {
   const baseInfo = migration.createProgram(tsconfigAbsolutePath);
