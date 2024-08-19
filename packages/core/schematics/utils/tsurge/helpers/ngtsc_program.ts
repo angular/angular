@@ -59,6 +59,7 @@ export function createNgtscProgram(
   return {
     program: ngtscProgram,
     userOptions: tsconfig.options,
+    programAbsoluteRootPaths: tsconfig.rootNames,
     tsconfigAbsolutePath: absoluteTsconfigPath,
   };
 }

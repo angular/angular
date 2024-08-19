@@ -48,7 +48,7 @@ export abstract class TsurgeMigration<
   UnitAnalysisMetadata,
   CombinedGlobalMetadata,
   TsProgramType extends ts.Program | NgtscProgram = NgtscProgram,
-  FullProgramInfo extends ProgramInfo<TsProgramType> = ProgramInfo<TsProgramType>,
+  PreparationInfo = ProgramInfo<TsProgramType>,
 > {
   // By default, ngtsc programs are being created.
   createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo<TsProgramType> {
@@ -57,7 +57,7 @@ export abstract class TsurgeMigration<
 
   // Optional function to prepare the base `ProgramInfo` even further,
   // for the analyze and migrate phases. E.g. determining source files.
-  prepareProgram(info: BaseProgramInfo<TsProgramType>): FullProgramInfo {
+  prepareProgram(info: BaseProgramInfo<TsProgramType>): PreparationInfo {
     assert(info.program instanceof NgtscProgram);
 
     const userProgram = info.program.getTsProgram();
@@ -78,11 +78,11 @@ export abstract class TsurgeMigration<
       sourceFiles,
       fullProgramSourceFiles,
       projectDirAbsPath,
-    } as FullProgramInfo;
+    } as PreparationInfo;
   }
 
   /** Analyzes the given TypeScript project and returns serializable compilation unit data. */
-  abstract analyze(program: FullProgramInfo): Promise<Serializable<UnitAnalysisMetadata>>;
+  abstract analyze(program: PreparationInfo): Promise<Serializable<UnitAnalysisMetadata>>;
 
   /** Merges all compilation unit data from previous analysis phases into a global metadata. */
   abstract merge(units: UnitAnalysisMetadata[]): Promise<Serializable<CombinedGlobalMetadata>>;
@@ -93,6 +93,6 @@ export abstract class TsurgeMigration<
    */
   abstract migrate(
     globalMetadata: CombinedGlobalMetadata,
-    program: FullProgramInfo,
+    program: PreparationInfo,
   ): Promise<Replacement[]>;
 }

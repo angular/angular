@@ -4,7 +4,7 @@ ts_library(
     name = "tsurge",
     srcs = glob(["**/*.ts"]),
     visibility = [
-        "//packages/core/schematics/utils/tsurge/test:__pkg__",
+        "//packages/core/schematics:__subpackages__",
     ],
     deps = [
         "//packages/compiler-cli",
