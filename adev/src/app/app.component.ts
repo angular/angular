@@ -25,6 +25,7 @@ import {
   getActivatedRouteSnapshotFromRouter,
   IS_SEARCH_DIALOG_OPEN,
   SearchDialog,
+  TopLevelBannerComponent,
 } from '@angular/docs';
 import {Footer} from './core/layout/footer/footer.component';
 import {Navigation} from './core/layout/navigation/navigation.component';
@@ -46,6 +47,7 @@ import {HeaderService} from './core/services/header.service';
     RouterLink,
     SearchDialog,
     ProgressBarComponent,
+    TopLevelBannerComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],

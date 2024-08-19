@@ -1,0 +1,76 @@
+:host {
+  &:not(:empty) {
+    z-index: 50;
+    position: fixed;
+    height: 2rem;
+    width: 100vw;
+    border-bottom: 1px solid var(--septenary-contrast);
+    text-align: center;
+    align-content: center;
+    backdrop-filter: blur(16px);
+    background-color: color-mix(in srgb, var(--page-background) 70%, transparent);
+  }
+
+  a.docs-top-level-banner {
+    width: 100%;
+    display: inherit;
+  }
+
+  h1.docs-top-level-banner-cta {
+    display: inline;
+    position: relative;
+    font-size: 0.875rem;
+    margin: 0;
+    background-image: var(--red-to-pink-to-purple-horizontal-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    width: fit-content;
+    font-weight: 500;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      transform: scaleX(0);
+      height: 1px;
+      bottom: -2px;
+      left: 0;
+      background: var(--tertiary-contrast);
+      animation-name: shimmer;
+      -webkit-animation-duration: 5s;
+      -moz-animation-duration: 5s;
+      animation-duration: 5s;
+      -webkit-animation-iteration-count: infinite;
+      -moz-animation-iteration-count: infinite;
+      animation-iteration-count: infinite;
+    }
+  }
+
+  &:hover {
+    h1.docs-top-level-banner-cta {
+      &::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+      }
+    }
+  }
+
+  .docs-top-level-banner-close {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.5rem;
+    color: var(--primary-contrast);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: scaleX(0);
+    transform-origin: bottom right;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+}

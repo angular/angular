@@ -18,6 +18,7 @@ ng_module(
         "//adev/shared-docs/components/navigation-list:__pkg__",
         "//adev/shared-docs/components/table-of-contents:__pkg__",
         "//adev/shared-docs/components/text-field:__pkg__",
+        "//adev/shared-docs/components/top-level-banner:__pkg__",
         "//adev/shared-docs/components/viewers:__pkg__",
     ],
     deps = [
