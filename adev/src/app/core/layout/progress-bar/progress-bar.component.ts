@@ -15,7 +15,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
-import {NgProgressComponent} from 'ngx-progressbar';
+import {NgProgressbar} from 'ngx-progressbar';
 import {
   NavigationCancel,
   NavigationEnd,
@@ -32,7 +32,7 @@ export const PROGRESS_BAR_DELAY = 30;
 @Component({
   selector: 'adev-progress-bar',
   standalone: true,
-  imports: [NgProgressComponent],
+  imports: [NgProgressbar],
   template: `
     <ng-progress aria-label="Page load progress" />
   `,
@@ -41,7 +41,7 @@ export const PROGRESS_BAR_DELAY = 30;
 export class ProgressBarComponent implements OnInit {
   private readonly router = inject(Router);
 
-  @ViewChild(NgProgressComponent, {static: true}) progressBar!: NgProgressComponent;
+  @ViewChild(NgProgressbar, {static: true}) progressBar!: NgProgressbar;
 
   isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
