@@ -26,6 +26,8 @@ import {
 } from './angular1';
 import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $INJECTOR, $TEMPLATE_CACHE} from './constants';
 import {cleanData, controllerKey, directiveNormalize, isFunction} from './util';
+import {TrustedHTML} from './security/trusted_types_defs';
+import {trustedHTMLFromLegacyTemplate} from './security/trusted_types';
 
 // Constants
 const REQUIRE_PREFIX_RE = /^(\^\^?)?(\?)?(\^\^?)?/;
@@ -91,16 +93,16 @@ export class UpgradeHelper {
     directive: IDirective,
     fetchRemoteTemplate = false,
     $element?: IAugmentedJQuery,
-  ): string | Promise<string> {
+  ): string | TrustedHTML | Promise<string | TrustedHTML> {
     if (directive.template !== undefined) {
-      return getOrCall<string>(directive.template, $element);
+      return trustedHTMLFromLegacyTemplate(getOrCall<string>(directive.template, $element));
     } else if (directive.templateUrl) {
       const $templateCache = $injector.get($TEMPLATE_CACHE) as ITemplateCacheService;
       const url = getOrCall<string>(directive.templateUrl, $element);
       const template = $templateCache.get(url);
 
       if (template !== undefined) {
-        return template;
+        return trustedHTMLFromLegacyTemplate(template);
       } else if (!fetchRemoteTemplate) {
         throw new Error('loading directive templates asynchronously is not supported');
       }
@@ -109,7 +111,7 @@ export class UpgradeHelper {
         const $httpBackend = $injector.get($HTTP_BACKEND) as IHttpBackendService;
         $httpBackend('GET', url, null, (status: number, response: string) => {
           if (status === 200) {
-            resolve($templateCache.put(url, response));
+            resolve(trustedHTMLFromLegacyTemplate($templateCache.put(url, response)));
           } else {
             reject(`GET component template from '${url}' returned '${status}: ${response}'`);
           }
@@ -131,14 +133,11 @@ export class UpgradeHelper {
     return controller;
   }
 
-  compileTemplate(template?: string): ILinkFn {
+  compileTemplate(template?: string | TrustedHTML): ILinkFn {
     if (template === undefined) {
-      template = UpgradeHelper.getTemplate(
-        this.$injector,
-        this.directive,
-        false,
-        this.$element,
-      ) as string;
+      template = UpgradeHelper.getTemplate(this.$injector, this.directive, false, this.$element) as
+        | string
+        | TrustedHTML;
     }
 
     return this.compileHtml(template);
@@ -251,7 +250,7 @@ export class UpgradeHelper {
     return requiredControllers;
   }
 
-  private compileHtml(html: string): ILinkFn {
+  private compileHtml(html: string | TrustedHTML): ILinkFn {
     this.element.innerHTML = html;
     return this.$compile(this.element.childNodes);
   }
