@@ -54,4 +54,4 @@ export interface CompilationUnitData {
 }
 
 // TODO: Remove when 1P code uses go/tsurge.
-export {CompilationUnitData as MetadataFile};
+export type {CompilationUnitData as MetadataFile};

@@ -20,7 +20,7 @@ import {CompilationUnitData, IncompatibilityType, MetadataFile} from './metadata
  */
 export function migrateTarget(_absoluteTsconfigPath: string, _mergedMetadata: MetadataFile) {
   return {
-    replacements: new Map(),
+    replacements: new Map<string, Array<{pos: number; end: number; toInsert: string}>>(),
   };
 }
 
