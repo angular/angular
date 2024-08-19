@@ -7,7 +7,7 @@
  */
 
 import {isShim} from '../../../../../compiler-cli/src/ngtsc/shims';
-import {AnalysisProgramInfo} from './create_program';
+import {AnalysisProgramInfo} from './analysis_deps';
 import {KnownInputs} from './input_detection/known_inputs';
 import {MigrationHost} from './migration_host';
 import {pass1__IdentifySourceFileAndDeclarationInputs} from './passes/1_identify_inputs';
@@ -16,6 +16,7 @@ import {pass2_IdentifySourceFileReferences} from './passes/2_find_source_file_re
 import {MigrationResult} from './result';
 import {InheritanceGraph} from './utils/inheritance_graph';
 import {GroupedTsAstVisitor} from './utils/grouped_ts_ast_visitor';
+import {nonIgnorableIncompatibilities} from './input_detection/incompatibility';
 
 /**
  * Executes the analysis phase of the migration.

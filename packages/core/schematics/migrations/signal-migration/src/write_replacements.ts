@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript';
 import fs from 'fs';
-import {applyReplacements} from './replacement';
-import {MigrationResult} from './result';
+import {applyTextUpdates, Replacement} from '../../../utils/tsurge/replacement';
+import {groupReplacementsByFile} from '../../../utils/tsurge/helpers/group_replacements';
 
 /** Applies the migration result and applies it to the file system. */
-export function writeMigrationReplacements(tsHost: ts.CompilerHost, result: MigrationResult) {
-  for (const filePath of result.replacements.keys()) {
-    const fileText = tsHost.readFile(filePath)!;
-    const newText = applyReplacements(fileText, result.replacements.get(filePath)!);
+export function writeMigrationReplacements(replacements: Replacement[]) {
+  for (const [filePath, updates] of groupReplacementsByFile(replacements)) {
+    const fileText = fs.readFileSync(filePath, 'utf8')!;
+    const newText = applyTextUpdates(fileText, updates);
 
     fs.writeFileSync(filePath, newText, 'utf8');
   }

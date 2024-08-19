@@ -6,33 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import path from 'path';
 import ts from 'typescript';
 
-import {NodeJSFileSystem, setFileSystem} from '../../../../../compiler-cli/src/ngtsc/file_system';
 import {DtsMetadataReader, MetadataReader} from '../../../../../compiler-cli/src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../../../compiler-cli/src/ngtsc/partial_evaluator';
 import {NgtscProgram} from '../../../../../compiler-cli/src/ngtsc/program';
 import {TypeScriptReflectionHost} from '../../../../../compiler-cli/src/ngtsc/reflection';
 
 import assert from 'assert';
+import {ProgramInfo} from '../../../utils/tsurge/program_info';
 import {ResourceLoader} from '../../../../../compiler-cli/src/ngtsc/annotations';
 import {NgCompiler} from '../../../../../compiler-cli/src/ngtsc/core';
 import {ReferenceEmitter} from '../../../../../compiler-cli/src/ngtsc/imports';
 import {isShim} from '../../../../../compiler-cli/src/ngtsc/shims';
 import {TemplateTypeChecker} from '../../../../../compiler-cli/src/ngtsc/typecheck/api';
-import {
-  ParsedConfiguration,
-  readConfiguration,
-} from '../../../../../compiler-cli/src/perform_compile';
 
 /**
  * Interface containing the analysis information
  * for an Angular program to be migrated.
  */
-export interface AnalysisProgramInfo {
+export interface AnalysisProgramInfo extends ProgramInfo<NgtscProgram> {
   // List of source files in the program.
-  sourceFiles: readonly ts.SourceFile[];
+  sourceFiles: ts.SourceFile[];
   // List of all files in the program, including external `d.ts`.
   programFiles: readonly ts.SourceFile[];
   reflector: TypeScriptReflectionHost;
@@ -45,56 +40,6 @@ export interface AnalysisProgramInfo {
   resourceLoader: ResourceLoader;
 }
 
-/** Creates and prepares analysis for the given TypeScript project. */
-export function createAndPrepareAnalysisProgram(
-  absoluteTsconfigPath: string,
-): AnalysisProgramInfo & {
-  tsHost: ts.CompilerHost;
-  basePath: string;
-  tsconfig: ParsedConfiguration;
-} {
-  setFileSystem(new NodeJSFileSystem());
-
-  const basePath = path.dirname(absoluteTsconfigPath);
-  const tsconfig = readConfiguration(absoluteTsconfigPath, {}, new NodeJSFileSystem());
-
-  if (tsconfig.errors.length > 0) {
-    throw new Error(
-      `Tsconfig could not be parsed or is invalid:\n\n` +
-        `${tsconfig.errors.map((e) => e.messageText)}`,
-    );
-  }
-
-  const tsHost = ts.createCompilerHost(tsconfig.options, true);
-  const ngtscProgram = new NgtscProgram(
-    tsconfig.rootNames,
-    {
-      ...tsconfig.options,
-      _enableTemplateTypeChecker: true,
-      _compilePoisonedComponents: true,
-      // We want to migrate non-exported classes too.
-      compileNonExportedClasses: true,
-      // Avoid checking libraries to speed up the migration.
-      skipLibCheck: true,
-      skipDefaultLibCheck: true,
-      // Always generate as much TCB code as possible.
-      // This allows us to check references in templates as much as possible.
-      // Note that this may yield more diagnostics, but we are not collecting these anyway.
-      strictTemplates: true,
-    },
-    tsHost,
-  );
-
-  const userProgram = ngtscProgram.getTsProgram();
-
-  return {
-    ...prepareAnalysisInfo(userProgram, ngtscProgram.compiler, tsconfig),
-    tsconfig,
-    basePath,
-    tsHost,
-  };
-}
-
 /**
  * Prepares migration analysis for the given program.
  *
@@ -104,7 +49,7 @@ export function createAndPrepareAnalysisProgram(
 export function prepareAnalysisInfo(
   userProgram: ts.Program,
   compiler: NgCompiler,
-  tsconfig?: ParsedConfiguration,
+  programAbsoluteRootPaths?: string[],
 ) {
   // Get template type checker & analyze sync.
   const templateTypeChecker = compiler.getTemplateTypeChecker();
@@ -120,11 +65,14 @@ export function prepareAnalysisInfo(
   const dtsMetadataReader = new DtsMetadataReader(typeChecker, reflector);
   const resourceLoader = compiler['resourceManager'];
 
+  // Optional filter for testing. Allows for simulation of parallel execution
+  // even if some tsconfig's have overlap due to sharing of TS sources.
+  // (this is commonly not the case in g3 where deps are `.d.ts` files).
   const limitToRootNamesOnly = process.env['LIMIT_TO_ROOT_NAMES_ONLY'] === '1';
   if (limitToRootNamesOnly) {
     assert(
-      tsconfig !== undefined,
-      'Expected a tsconfig to be specified when limiting to root names.',
+      programAbsoluteRootPaths !== undefined,
+      'Expected absolute root paths when limiting to root names.',
     );
   }
 
@@ -138,7 +86,7 @@ export function prepareAnalysisInfo(
       // Optional replacement filter. Allows parallel execution in case
       // some tsconfig's have overlap due to sharing of TS sources.
       // (this is commonly not the case in g3 where deps are `.d.ts` files).
-      (!limitToRootNamesOnly || tsconfig!.rootNames.includes(f.fileName)),
+      (!limitToRootNamesOnly || programAbsoluteRootPaths!.includes(f.fileName)),
   );
 
   return {

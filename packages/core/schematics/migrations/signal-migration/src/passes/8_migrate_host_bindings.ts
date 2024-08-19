@@ -7,7 +7,8 @@
  */
 
 import ts from 'typescript';
-import {Replacement} from '../replacement';
+import {absoluteFromSourceFile} from '../../../../../../compiler-cli/src/ngtsc/file_system';
+import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
 import {MigrationResult} from '../result';
 import {isHostBindingInputReference} from '../utils/input_reference';
 import {KnownInputs} from '../input_detection/known_inputs';
@@ -48,9 +49,11 @@ export function pass8__migrateHostBindings(result: MigrationResult, knownInputs:
       ? `: ${reference.from.read.name}()`
       : `()`;
 
-    result.addReplacement(
-      bindingField.getSourceFile().fileName,
-      new Replacement(readEndPos, readEndPos, appendText),
+    result.replacements.push(
+      new Replacement(
+        absoluteFromSourceFile(bindingField.getSourceFile()),
+        new TextUpdate({position: readEndPos, end: readEndPos, toInsert: appendText}),
+      ),
     );
   }
 }

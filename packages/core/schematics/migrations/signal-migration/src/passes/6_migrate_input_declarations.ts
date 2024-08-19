@@ -8,11 +8,12 @@
 
 import ts from 'typescript';
 import {MigrationResult} from '../result';
-import {Replacement} from '../replacement';
 import {convertToSignalInput} from '../convert-input/convert_to_signal';
 import assert from 'assert';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {ImportManager} from '../../../../../../compiler-cli/src/ngtsc/translator';
+import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
+import {absoluteFromSourceFile} from '../../../../../../compiler-cli/src/ngtsc/file_system';
 
 /**
  * Phase that migrates `@Input()` declarations to signal inputs and
@@ -39,12 +40,14 @@ export function pass6__migrateInputDeclarations(
     assert(!ts.isAccessor(input.node), 'Accessor inputs are incompatible.');
 
     filesWithMigratedInputs.add(sf);
-    result.addReplacement(
-      sf.fileName,
+    result.replacements.push(
       new Replacement(
-        input.node.getStart(),
-        input.node.getEnd(),
-        convertToSignalInput(input.node, metadata, checker, importManager),
+        absoluteFromSourceFile(sf),
+        new TextUpdate({
+          position: input.node.getStart(),
+          end: input.node.getEnd(),
+          toInsert: convertToSignalInput(input.node, metadata, checker, importManager),
+        }),
       ),
     );
   }
