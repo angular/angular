@@ -35,10 +35,10 @@ src
 ├── app
 │ ├── app.config.server.ts # server application configuration
 │ └── app-shell # app-shell component
-│ ├── app-shell.component.html
-│ ├── app-shell.component.scss
-│ ├── app-shell.component.spec.ts
-│ └── app-shell.component.ts
+│   ├── app-shell.component.html
+│   ├── app-shell.component.scss
+│   ├── app-shell.component.spec.ts
+│   └── app-shell.component.ts
 └── main.server.ts # main server application bootstrapping
 </docs-code>
 
