@@ -16,7 +16,7 @@ import {
   SafePropertyRead,
   ThisReceiver,
 } from '../../expression_parser/ast';
-import {SelectorMatcher} from '../../selector';
+import {CssSelector, SelectorMatcher} from '../../selector';
 import {
   BoundAttribute,
   BoundEvent,
@@ -59,7 +59,72 @@ import {
   TargetBinder,
   TemplateEntity,
 } from './t2_api';
+import {parseTemplate} from './template';
 import {createCssSelectorFromNode} from './util';
+
+/**
+ * Computes a difference between full list (first argument) and
+ * list of items that should be excluded from the full list (second
+ * argument).
+ */
+function diff(fullList: string[], itemsToExclude: string[]): string[] {
+  const exclude = new Set(itemsToExclude);
+  return fullList.filter((item) => !exclude.has(item));
+}
+
+/**
+ * Given a template string and a set of available directive selectors,
+ * computes a list of matching selectors and splits them into 2 buckets:
+ * (1) eagerly used in a template and (2) directives used only in defer
+ * blocks. Similarly, returns 2 lists of pipes (eager and deferrable).
+ *
+ * Note: deferrable directives selectors and pipes names used in `@defer`
+ * blocks are **candidates** and API caller should make sure that:
+ *
+ *  * A Component where a given template is defined is standalone
+ *  * Underlying dependency classes are also standalone
+ *  * Dependency class symbols are not eagerly used in a TS file
+ *    where a host component (that owns the template) is located
+ */
+export function findMatchingDirectivesAndPipes(template: string, directiveSelectors: string[]) {
+  const matcher = new SelectorMatcher<unknown[]>();
+  for (const selector of directiveSelectors) {
+    // Create a fake directive instance to account for the logic inside
+    // of the `R3TargetBinder` class (which invokes the `hasBindingPropertyName`
+    // function internally).
+    const fakeDirective = {
+      selector,
+      inputs: {
+        hasBindingPropertyName() {
+          return false;
+        },
+      },
+      outputs: {
+        hasBindingPropertyName() {
+          return false;
+        },
+      },
+    };
+    matcher.addSelectables(CssSelector.parse(selector), [fakeDirective]);
+  }
+  const parsedTemplate = parseTemplate(template, '' /* templateUrl */);
+  const binder = new R3TargetBinder(matcher as any);
+  const bound = binder.bind({template: parsedTemplate.nodes});
+
+  const eagerDirectiveSelectors = bound.getEagerlyUsedDirectives().map((dir) => dir.selector!);
+  const allMatchedDirectiveSelectors = bound.getUsedDirectives().map((dir) => dir.selector!);
+  const eagerPipes = bound.getEagerlyUsedPipes();
+  return {
+    directives: {
+      regular: eagerDirectiveSelectors,
+      deferCandidates: diff(allMatchedDirectiveSelectors, eagerDirectiveSelectors),
+    },
+    pipes: {
+      regular: eagerPipes,
+      deferCandidates: diff(bound.getUsedPipes(), eagerPipes),
+    },
+  };
+}
 
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
