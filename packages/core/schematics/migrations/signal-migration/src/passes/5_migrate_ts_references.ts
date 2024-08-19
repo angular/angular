@@ -9,12 +9,13 @@
 import ts from 'typescript';
 import {MigrationResult} from '../result';
 import {analyzeControlFlow} from '../flow_analysis';
-import {Replacement} from '../replacement';
+import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
 import {InputUniqueKey} from '../utils/input_id';
 import {isTsInputReference} from '../utils/input_reference';
 import {traverseAccess} from '../utils/traverse_access';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {UniqueNamesGenerator} from '../utils/unique_names';
+import {absoluteFromSourceFile} from '../../../../../../compiler-cli/src/ngtsc/file_system';
 
 /**
  * Phase that migrates TypeScript input references to be signal compatible.
@@ -92,9 +93,15 @@ export function pass5__migrateTypeScriptReferences(
       // Unwrap the signal directly.
       if (recommendedNode === 'preserve') {
         // Append `()` to unwrap the signal.
-        result.addReplacement(
-          sf.fileName,
-          new Replacement(originalNode.getEnd(), originalNode.getEnd(), '()'),
+        result.replacements.push(
+          new Replacement(
+            absoluteFromSourceFile(sf),
+            new TextUpdate({
+              position: originalNode.getEnd(),
+              end: originalNode.getEnd(),
+              toInsert: '()',
+            }),
+          ),
         );
         continue;
       }
@@ -103,13 +110,15 @@ export function pass5__migrateTypeScriptReferences(
       // with the temporary variable.
       if (typeof recommendedNode === 'number') {
         const replaceNode = traverseAccess(originalNode);
-        result.addReplacement(
-          sf.fileName,
+        result.replacements.push(
           new Replacement(
-            replaceNode.getStart(),
-            replaceNode.getEnd(),
-            // Extract the shared field name.
-            idToSharedField.get(recommendedNode)!,
+            absoluteFromSourceFile(sf),
+            new TextUpdate({
+              position: replaceNode.getStart(),
+              end: replaceNode.getEnd(),
+              // Extract the shared field name.
+              toInsert: idToSharedField.get(recommendedNode)!,
+            }),
           ),
         );
         continue;
@@ -136,18 +145,26 @@ export function pass5__migrateTypeScriptReferences(
 
       idToSharedField.set(id, fieldName);
 
-      result.addReplacement(
-        sf.fileName,
+      result.replacements.push(
         new Replacement(
-          previous.getStart(),
-          previous.getStart(),
-          `const ${fieldName} = ${replaceNode.getText()}();\n${' '.repeat(leadingSpace.character)}`,
+          absoluteFromSourceFile(sf),
+          new TextUpdate({
+            position: previous.getStart(),
+            end: previous.getStart(),
+            toInsert: `const ${fieldName} = ${replaceNode.getText()}();\n${' '.repeat(leadingSpace.character)}`,
+          }),
         ),
       );
 
-      result.addReplacement(
-        sf.fileName,
-        new Replacement(replaceNode.getStart(), replaceNode.getEnd(), fieldName),
+      result.replacements.push(
+        new Replacement(
+          absoluteFromSourceFile(sf),
+          new TextUpdate({
+            position: replaceNode.getStart(),
+            end: replaceNode.getEnd(),
+            toInsert: fieldName,
+          }),
+        ),
       );
     }
   }

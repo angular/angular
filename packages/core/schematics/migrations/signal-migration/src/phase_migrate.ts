@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnalysisProgramInfo} from './create_program';
+import {AnalysisProgramInfo} from './analysis_deps';
 import {KnownInputs} from './input_detection/known_inputs';
 import {MigrationHost} from './migration_host';
 import {pass5__migrateTypeScriptReferences} from './passes/5_migrate_ts_references';

@@ -6,39 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createAndPrepareAnalysisProgram} from '../create_program';
 import {KnownInputs} from '../input_detection/known_inputs';
-import {MigrationHost} from '../migration_host';
-import {pass4__checkInheritanceOfInputs} from '../passes/4_check_inheritance';
-import {executeAnalysisPhase} from '../phase_analysis';
-import {executeMigrationPhase} from '../phase_migrate';
-import {MigrationResult} from '../result';
 import {InputUniqueKey} from '../utils/input_id';
-import {writeMigrationReplacements} from '../write_replacements';
-import {IncompatibilityType, MetadataFile} from './metadata_file';
+import {CompilationUnitData, IncompatibilityType, MetadataFile} from './metadata_file';
 
 /**
  * Batch mode.
  *
  * Migrates the given compilation unit, leveraging the global analysis metadata
  * that was created as the merge of all individual project units.
+ *
+ * TODO: Remove when 1P code uses go/tsurge.
  */
-export function migrateTarget(absoluteTsconfigPath: string, mergedMetadata: MetadataFile) {
-  const analysisDeps = createAndPrepareAnalysisProgram(absoluteTsconfigPath);
-  const {tsHost, tsconfig, basePath, sourceFiles, metaRegistry} = analysisDeps;
-  const knownInputs = new KnownInputs();
-  const result = new MigrationResult();
-  const host = new MigrationHost(
-    /* projectDir */ tsconfig.options.rootDir ?? basePath,
-    /* isMigratingCore */ true,
-    tsconfig.options,
-    sourceFiles,
-  );
+export function migrateTarget(_absoluteTsconfigPath: string, _mergedMetadata: MetadataFile) {
+  return {
+    replacements: new Map<string, Array<{pos: number; end: number; toInsert: string}>>(),
+  };
+}
 
-  const {inheritanceGraph} = executeAnalysisPhase(host, knownInputs, result, analysisDeps);
-
+export function populateKnownInputsFromGlobalData(
+  knownInputs: KnownInputs,
+  globalData: CompilationUnitData,
+) {
   // Populate from batch metadata.
-  for (const [_key, info] of Object.entries(mergedMetadata.knownInputs)) {
+  for (const [_key, info] of Object.entries(globalData.knownInputs)) {
     const key = _key as unknown as InputUniqueKey;
 
     // irrelevant for this compilation unit.
@@ -61,12 +52,4 @@ export function migrateTarget(absoluteTsconfigPath: string, mergedMetadata: Meta
       }
     }
   }
-
-  pass4__checkInheritanceOfInputs(host, inheritanceGraph, metaRegistry, knownInputs);
-  executeMigrationPhase(host, knownInputs, result, analysisDeps);
-
-  return {
-    replacements: result.replacements,
-    apply: () => writeMigrationReplacements(tsHost, result),
-  };
 }
