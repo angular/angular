@@ -7,10 +7,10 @@
  */
 
 import ts from 'typescript';
-import {Replacement} from './replacement';
 import {InputDescriptor} from './utils/input_id';
 import {InputReference} from './utils/input_reference';
 import {ConvertInputPreparation} from './convert-input/prepare_and_check';
+import {Replacement} from '../../../utils/tsurge/replacement';
 
 /**
  * State of the migration that is passed between
@@ -30,17 +30,9 @@ export class MigrationResult {
   references: InputReference[] = [];
 
   // Execution data
-  replacements = new Map<string, Replacement[]>();
+  replacements: Replacement[] = [];
   inputDecoratorSpecifiers = new Map<
     ts.SourceFile,
     {node: ts.ImportSpecifier; kind: 'signal-input-import' | 'decorator-input-import'}[]
   >();
-
-  addReplacement(file: string, replacement: Replacement) {
-    if (this.replacements.has(file)) {
-      this.replacements.get(file)!.push(replacement);
-    } else {
-      this.replacements.set(file, [replacement]);
-    }
-  }
 }

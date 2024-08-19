@@ -7,24 +7,24 @@
  */
 
 import fs from 'fs';
-import {MetadataFile, SerializableForBatching} from './metadata_file';
+import {CompilationUnitData, SerializableForBatching} from './metadata_file';
 import {InputReference, InputReferenceKind} from '../utils/input_reference';
 
-/** Merges a list of metadata files into a combined global file. */
-export async function mergeMetadataFilesViaPath(absoluteMetadataFiles: string[]) {
-  mergeMetadataFiles(
-    await Promise.all(
-      absoluteMetadataFiles.map(
-        async (filePath) =>
-          JSON.parse(await fs.promises.readFile(filePath, 'utf8')) as MetadataFile,
-      ),
-    ),
-  );
+/**
+ * Merges a list of metadata files into a combined global file.
+ *
+ * TODO: Remove when 1P code uses go/tsurge.
+ */
+export async function mergeMetadataFiles(metadataFiles: CompilationUnitData[]) {
+  const result = mergeCompilationUnitData(metadataFiles);
+  process.stdout.write(JSON.stringify(result));
 }
 
-/** Merges a list of metadata files into a combined global file. */
-export function mergeMetadataFiles(metadataFiles: MetadataFile[]) {
-  const result: MetadataFile = {
+/** Merges a list of compilation units into a combined unit. */
+export function mergeCompilationUnitData(
+  metadataFiles: CompilationUnitData[],
+): CompilationUnitData {
+  const result: CompilationUnitData = {
     knownInputs: {},
     references: [],
   };
@@ -53,7 +53,7 @@ export function mergeMetadataFiles(metadataFiles: MetadataFile[]) {
     }
   }
 
-  process.stdout.write(JSON.stringify(result));
+  return result;
 }
 
 /** Computes a unique ID for the given reference. */

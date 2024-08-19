@@ -10,7 +10,8 @@ import ts from 'typescript';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationResult} from '../result';
 import {isTsInputClassTypeReference} from '../utils/input_reference';
-import {Replacement} from '../replacement';
+import {absoluteFromSourceFile} from '../../../../../../compiler-cli/src/ngtsc/file_system';
+import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
 import assert from 'assert';
 import {ImportManager} from '../../../../../../compiler-cli/src/ngtsc/translator';
 
@@ -55,17 +56,21 @@ export function pass9__migrateTypeScriptTypeReferences(
         requestedFile: sf,
       });
 
-      result.addReplacement(
-        sf.fileName,
+      result.replacements.push(
         new Replacement(
-          firstArg.getStart(),
-          firstArg.getStart(),
-          `${ts.createPrinter().printNode(ts.EmitHint.Unspecified, unwrapImportExpr, sf)}<`,
+          absoluteFromSourceFile(sf),
+          new TextUpdate({
+            position: firstArg.getStart(),
+            end: firstArg.getStart(),
+            toInsert: `${ts.createPrinter().printNode(ts.EmitHint.Unspecified, unwrapImportExpr, sf)}<`,
+          }),
         ),
       );
-      result.addReplacement(
-        sf.fileName,
-        new Replacement(firstArg.getEnd(), firstArg.getEnd(), '>'),
+      result.replacements.push(
+        new Replacement(
+          absoluteFromSourceFile(sf),
+          new TextUpdate({position: firstArg.getEnd(), end: firstArg.getEnd(), toInsert: '>'}),
+        ),
       );
     }
   }

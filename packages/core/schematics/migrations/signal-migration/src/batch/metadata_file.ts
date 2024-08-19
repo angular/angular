@@ -33,13 +33,13 @@ export enum IncompatibilityType {
 }
 
 /**
- * Type describing a serializable metadata file.
+ * Type describing a serializable compilation unit data.
  *
  * The metadata files are built for every compilation unit in batching
  * mode, and can be merged later, and then used as global analysis metadata
  * when migrating.
  */
-export interface MetadataFile {
+export interface CompilationUnitData {
   knownInputs: {
     // Use `string` here so that it's a usable index key.
     [inputIdKey: string]: {
@@ -52,3 +52,6 @@ export interface MetadataFile {
 
   references: SerializableForBatching<InputReference>[];
 }
+
+// TODO: Remove when 1P code uses go/tsurge.
+export type {CompilationUnitData as MetadataFile};

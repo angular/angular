@@ -7,10 +7,11 @@
  */
 
 import {MigrationHost} from '../migration_host';
-import {Replacement} from '../replacement';
+import {absoluteFrom} from '../../../../../../compiler-cli/src/ngtsc/file_system';
 import {MigrationResult} from '../result';
 import {isTemplateInputReference} from '../utils/input_reference';
 import {KnownInputs} from '../input_detection/known_inputs';
+import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
 
 /**
  * Phase that migrates Angular template references to
@@ -47,12 +48,14 @@ export function pass7__migrateTemplateReferences(
       ? `: ${reference.from.read.name}()`
       : `()`;
 
-    result.addReplacement(
-      host.idToFilePath(reference.from.templateFileId),
+    result.replacements.push(
       new Replacement(
-        reference.from.read.sourceSpan.end,
-        reference.from.read.sourceSpan.end,
-        appendText,
+        absoluteFrom(host.idToFilePath(reference.from.templateFileId)),
+        new TextUpdate({
+          position: reference.from.read.sourceSpan.end,
+          end: reference.from.read.sourceSpan.end,
+          toInsert: appendText,
+        }),
       ),
     );
   }
