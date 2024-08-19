@@ -36,6 +36,7 @@ import {
   UpgradeHelper,
 } from '../../common/src/upgrade_helper';
 import {isFunction, strictEquals} from '../../common/src/util';
+import {trustedHTMLFromLegacyTemplate} from '../../common/src/security/trusted_types';
 
 const CAMEL_CASE = /([A-Z])/g;
 const INITIAL_VALUE = {
@@ -230,7 +231,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   ngOnInit() {
     // Collect contents, insert and compile template
     const attachChildNodes: ILinkFn | undefined = this.helper.prepareTransclusion();
-    const linkFn = this.helper.compileTemplate(this.template);
+    const linkFn = this.helper.compileTemplate(trustedHTMLFromLegacyTemplate(this.template));
 
     // Instantiate controller (if not already done so)
     const controllerType = this.directive.controller;
