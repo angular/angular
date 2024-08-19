@@ -12,7 +12,7 @@ After a few changes, the `BannerComponent` presents a dynamic title by binding t
 
 As minimal as this is, you decide to add a test to confirm that component actually displays the right content where you think it should.
 
-### Query for the `<h1>`
+### Query for the `&lt;h1&gt;`
 
 You'll write a sequence of tests that inspect the value of the `<h1>` element that wraps the *title* property interpolation binding.
 
