@@ -153,6 +153,10 @@ export class HttpXhrBackend implements HttpBackend {
             }
           }
 
+          if (req.timeout) {
+            xhr.timeout = req.timeout;
+          }
+
           // Set the responseType if one was requested.
           if (req.responseType) {
             const responseType = req.responseType.toLowerCase();
@@ -294,6 +298,21 @@ export class HttpXhrBackend implements HttpBackend {
             observer.error(res);
           };
 
+          let onTimeout = onError;
+
+          if (req.timeout) {
+            onTimeout = (_: ProgressEvent) => {
+              const {url} = partialFromXhr();
+              const res = new HttpErrorResponse({
+                error: new DOMException('Request timed out', 'TimeoutError'),
+                status: xhr.status || 0,
+                statusText: xhr.statusText || 'Request timeout',
+                url: url || undefined,
+              });
+              observer.error(res);
+            };
+          }
+
           // The sentHeaders flag tracks whether the HttpResponseHeaders event
           // has been sent on the stream. This is necessary to track if progress
           // is enabled since the event will be sent on only the first download
@@ -355,7 +374,7 @@ export class HttpXhrBackend implements HttpBackend {
           // By default, register for load and error events.
           xhr.addEventListener('load', onLoad);
           xhr.addEventListener('error', onError);
-          xhr.addEventListener('timeout', onError);
+          xhr.addEventListener('timeout', onTimeout);
           xhr.addEventListener('abort', onError);
 
           // Progress events are only enabled if requested.
@@ -379,7 +398,7 @@ export class HttpXhrBackend implements HttpBackend {
             xhr.removeEventListener('error', onError);
             xhr.removeEventListener('abort', onError);
             xhr.removeEventListener('load', onLoad);
-            xhr.removeEventListener('timeout', onError);
+            xhr.removeEventListener('timeout', onTimeout);
 
             if (req.reportProgress) {
               xhr.removeEventListener('progress', onDownProgress);
