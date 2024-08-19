@@ -49,7 +49,7 @@ Inside `@for` contents, several implicit variables are always available:
 These variables are always available with these names, but can be aliased via a `let` segment:
 
 ```angular-html
-@for (item of items; track item.id; let idx = $index, e = $even) {
+@for (item of items; track item.id; let idx = $index, let e = $even) {
 Item #{{ idx }}: {{ item.name }}
 }
 ```
