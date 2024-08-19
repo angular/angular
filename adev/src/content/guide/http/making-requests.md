@@ -198,18 +198,38 @@ Each `HttpEvent` reported in the event stream has a `type` which distinguishes w
 
 ## Handling request failure
 
-There are two ways an HTTP request can fail:
+There are three ways an HTTP request can fail:
 
 * A network or connection error can prevent the request from reaching the backend server.
+* A request didn't respond in time when the timeout option was set.
 * The backend can receive the request but fail to process it, and return an error response.
 
-`HttpClient` captures both kinds of errors in an `HttpErrorResponse` which it returns through the `Observable`'s error channel. Network errors have a `status` code of `0` and an `error` which is an instance of [`ProgressEvent`](https://developer.mozilla.org/docs/Web/API/ProgressEvent). Backend errors have the failing `status` code returned by the backend, and the error response as the `error`. Inspect the response to identify the error's cause and the appropriate action to handle the error.
+`HttpClient` captures all of the above kinds of errors in an `HttpErrorResponse` which it returns through the `Observable`'s error channel. Network and timeout errors have a `status` code of `0` and an `error` which is an instance of [`ProgressEvent`](https://developer.mozilla.org/docs/Web/API/ProgressEvent). Backend errors have the failing `status` code returned by the backend, and the error response as the `error`. Inspect the response to identify the error's cause and the appropriate action to handle the error.
 
 The [RxJS library](https://rxjs.dev/) offers several operators which can be useful for error handling.
 
 You can use the `catchError` operator to transform an error response into a value for the UI. This value can tell the UI to display an error page or value, and capture the error's cause if necessary.
 
 Sometimes transient errors such as network interruptions can cause a request to fail unexpectedly, and simply retrying the request will allow it to succeed. RxJS provides several *retry* operators which automatically re-subscribe to a failed `Observable` under certain conditions. For example, the `retry()` operator will automatically attempt to re-subscribe a specified number of times.
+
+### Timeouts
+
+To set a timeout for a request, you can set the `timeout` option to a number of milliseconds along other request options. If the backend request does not complete within the specified time, the request will be aborted and an error will be emitted.
+
+NOTE: The timeout will only apply to the backend HTTP request itself. It is not a timeout for the entire request handling chain. Therefore, this option is not affected by any delay introduced by interceptors.
+
+<docs-code language="ts">
+http.get('/api/config', {
+  timeout: 3000,
+}).subscribe({
+  next: config => {
+    console.log('Config fetched successfully:', config);
+  },
+  error: err => {
+    // If the request times out, an error will have been emitted.
+  }
+});
+</docs-code>
 
 ## Http `Observable`s
 

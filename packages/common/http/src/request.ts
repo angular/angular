@@ -26,6 +26,7 @@ interface HttpRequestInit {
   keepalive?: boolean;
   priority?: RequestPriority;
   cache?: RequestCache;
+  timeout?: number;
 }
 
 /**
@@ -217,6 +218,11 @@ export class HttpRequest<T> {
    */
   readonly transferCache?: {includeHeaders?: string[]} | boolean;
 
+  /**
+   * The timeout for the backend HTTP request in ms.
+   */
+  readonly timeout?: number;
+
   constructor(
     method: 'GET' | 'HEAD',
     url: string,
@@ -239,6 +245,7 @@ export class HttpRequest<T> {
        * particular request
        */
       transferCache?: {includeHeaders?: string[]} | boolean;
+      timeout?: number;
     },
   );
   constructor(
@@ -254,6 +261,7 @@ export class HttpRequest<T> {
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
+      timeout?: number;
     },
   );
   constructor(
@@ -279,6 +287,7 @@ export class HttpRequest<T> {
        * particular request
        */
       transferCache?: {includeHeaders?: string[]} | boolean;
+      timeout?: number;
     },
   );
   constructor(
@@ -295,6 +304,7 @@ export class HttpRequest<T> {
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
+      timeout?: number;
     },
   );
   constructor(
@@ -320,6 +330,7 @@ export class HttpRequest<T> {
        * particular request
        */
       transferCache?: {includeHeaders?: string[]} | boolean;
+      timeout?: number;
     },
   );
   constructor(
@@ -338,6 +349,7 @@ export class HttpRequest<T> {
           priority?: RequestPriority;
           cache?: RequestCache;
           transferCache?: {includeHeaders?: string[]} | boolean;
+          timeout?: number;
         }
       | null,
     fourth?: {
@@ -351,6 +363,7 @@ export class HttpRequest<T> {
       priority?: RequestPriority;
       cache?: RequestCache;
       transferCache?: {includeHeaders?: string[]} | boolean;
+      timeout?: number;
     },
   ) {
     this.method = method.toUpperCase();
@@ -399,6 +412,17 @@ export class HttpRequest<T> {
 
       if (!!options.cache) {
         this.cache = options.cache;
+      }
+
+      if (typeof options.timeout === 'number') {
+        // XHR will ignore any value below 1. AbortSignals only accept unsigned integers.
+
+        if (options.timeout < 1 || !Number.isInteger(options.timeout)) {
+          // TODO: create a runtime error
+          throw new Error(ngDevMode ? '`timeout` must be a positive integer value' : '');
+        }
+
+        this.timeout = options.timeout;
       }
 
       // We do want to assign transferCache even if it's falsy (false is valid value)
@@ -530,6 +554,7 @@ export class HttpRequest<T> {
     priority?: RequestPriority;
     cache?: RequestCache;
     transferCache?: {includeHeaders?: string[]} | boolean;
+    timeout?: number;
     body?: T | null;
     method?: string;
     url?: string;
@@ -547,6 +572,7 @@ export class HttpRequest<T> {
     cache?: RequestCache;
     withCredentials?: boolean;
     transferCache?: {includeHeaders?: string[]} | boolean;
+    timeout?: number;
     body?: V | null;
     method?: string;
     url?: string;
@@ -565,6 +591,7 @@ export class HttpRequest<T> {
       priority?: RequestPriority;
       cache?: RequestCache;
       transferCache?: {includeHeaders?: string[]} | boolean;
+      timeout?: number;
       body?: any | null;
       method?: string;
       url?: string;
@@ -583,6 +610,8 @@ export class HttpRequest<T> {
     // Carefully handle the transferCache to differentiate between
     // `false` and `undefined` in the update args.
     const transferCache = update.transferCache ?? this.transferCache;
+
+    const timeout = update.timeout ?? this.timeout;
 
     // The body is somewhat special - a `null` value in update.body means
     // whatever current body is present is being overridden with an empty
@@ -633,6 +662,7 @@ export class HttpRequest<T> {
       keepalive,
       cache,
       priority,
+      timeout,
     });
   }
 }

@@ -38,6 +38,7 @@ function trackEvents(obs: Observable<any>): Promise<any[]> {
 
 const TEST_POST = new HttpRequest('POST', '/test', 'some body', {
   responseType: 'text',
+  timeout: 1000,
 });
 
 const TEST_POST_WITH_JSON_BODY = new HttpRequest(
@@ -284,7 +285,8 @@ describe('FetchBackend', async () => {
     backend.handle(TEST_POST).subscribe({
       error: (err: HttpErrorResponse) => {
         expect(err instanceof HttpErrorResponse).toBe(true);
-        expect(err.error instanceof DOMException).toBeTruthy();
+        expect(err.error instanceof DOMException).toBeTrue();
+        expect((err.error as DOMException).name).toBe('AbortError');
         done();
       },
     });
@@ -329,8 +331,19 @@ describe('FetchBackend', async () => {
         cache: 'only-if-cached',
       }),
     );
-
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
+  it('emits an error when a request times out', (done) => {
+    backend.handle(TEST_POST).subscribe({
+      error: (err: HttpErrorResponse) => {
+        expect(err instanceof HttpErrorResponse).toBe(true);
+        expect(err.error instanceof DOMException).toBeTrue();
+        expect((err.error as DOMException).name).toBe('TimeoutError');
+        done();
+      },
+    });
+    fetchMock.mockTimeoutEvent();
   });
 
   describe('progress events', () => {
@@ -576,10 +589,11 @@ export class MockFetchFactory extends FetchFactory {
   }
 
   mockAbortEvent() {
-    // When `abort()` is called, the fetch() promise rejects with an Error of type DOMException,
-    // with name AbortError. see
-    // https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort
     this.reject(new DOMException('', 'AbortError'));
+  }
+
+  mockTimeoutEvent() {
+    this.reject(new DOMException('', 'TimeoutError'));
   }
 
   resetFetchPromise() {

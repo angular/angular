@@ -1938,6 +1938,7 @@ export class HttpRequest<T> {
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
+        timeout?: number;
     });
     constructor(method: 'DELETE' | 'JSONP' | 'OPTIONS', url: string, init?: {
         headers?: HttpHeaders;
@@ -1949,6 +1950,7 @@ export class HttpRequest<T> {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        timeout?: number;
     });
     constructor(method: 'POST', url: string, body: T | null, init?: {
         headers?: HttpHeaders;
@@ -1963,6 +1965,7 @@ export class HttpRequest<T> {
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
+        timeout?: number;
     });
     constructor(method: 'PUT' | 'PATCH', url: string, body: T | null, init?: {
         headers?: HttpHeaders;
@@ -1974,6 +1977,7 @@ export class HttpRequest<T> {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        timeout?: number;
     });
     constructor(method: string, url: string, body: T | null, init?: {
         headers?: HttpHeaders;
@@ -1988,6 +1992,7 @@ export class HttpRequest<T> {
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
+        timeout?: number;
     });
     readonly body: T | null;
     readonly cache: RequestCache;
@@ -2007,6 +2012,7 @@ export class HttpRequest<T> {
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
+        timeout?: number;
         body?: T | null;
         method?: string;
         url?: string;
@@ -2031,6 +2037,7 @@ export class HttpRequest<T> {
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
+        timeout?: number;
         body?: V | null;
         method?: string;
         url?: string;
@@ -2051,6 +2058,7 @@ export class HttpRequest<T> {
     readonly reportProgress: boolean;
     readonly responseType: 'arraybuffer' | 'blob' | 'json' | 'text';
     serializeBody(): ArrayBuffer | Blob | FormData | URLSearchParams | string | null;
+    readonly timeout?: number;
     readonly transferCache?: {
         includeHeaders?: string[];
     } | boolean;
