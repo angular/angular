@@ -19,6 +19,7 @@ import ts from 'typescript';
 export interface BaseProgramInfo<T extends NgtscProgram | ts.Program> {
   program: T;
   userOptions: NgCompilerOptions;
+  programAbsoluteRootPaths: string[];
   tsconfigAbsolutePath: string;
 }
 
