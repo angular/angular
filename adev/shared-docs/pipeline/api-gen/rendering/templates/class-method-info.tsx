@@ -17,7 +17,7 @@ import {PARAM_KEYWORD_CLASS_NAME, REFERENCE_MEMBER_CARD_ITEM} from '../styling/c
 import {DeprecatedLabel} from './deprecated-label';
 import {Parameter} from './parameter';
 import {RawHtml} from './raw-html';
-import { EntryType } from '../entities';
+import {CodeSymbol} from './code-symbols';
 
 /**
  * Component to render the method-specific parts of a class's API reference.
@@ -25,8 +25,8 @@ import { EntryType } from '../entities';
 export function ClassMethodInfo(props: {
   entry: FunctionSignatureMetadataRenderable;
   options?: {
-    showUsageNotes?: boolean,
-  }
+    showUsageNotes?: boolean;
+  };
 }) {
   const entry = props.entry;
 
@@ -48,7 +48,7 @@ export function ClassMethodInfo(props: {
       ))}
       <div className={'docs-return-type'}>
         <span className={PARAM_KEYWORD_CLASS_NAME}>@returns</span>
-        <code>{entry.returnType}</code>
+        <CodeSymbol code={entry.returnType} />
       </div>
       {entry.htmlUsageNotes && props.options?.showUsageNotes ? (
         <div className={'docs-usage-notes'}>

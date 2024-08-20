@@ -20,7 +20,7 @@ export function getImportedSymbols(sourceFile: ts.SourceFile): Map<string, strin
     if (ts.isImportDeclaration(node)) {
       let moduleSpecifier = node.moduleSpecifier.getText(sourceFile).replace(/['"]/g, '');
 
-      if (moduleSpecifier.startsWith('@angular')) {
+      if (moduleSpecifier.startsWith('@angular/')) {
         const namedBindings = node.importClause?.namedBindings;
 
         if (namedBindings && ts.isNamedImports(namedBindings)) {

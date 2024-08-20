@@ -23,6 +23,7 @@ import {TabUsageNotes} from './tab-usage-notes';
 import {HighlightTypeScript} from './highlight-ts';
 import {printInitializerFunctionSignatureLine} from '../transforms/code-transforms';
 import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
+import {CodeSymbol} from './code-symbols';
 
 export const signatureCard = (
   name: string,
@@ -49,7 +50,7 @@ export const signatureCard = (
           <div className={REFERENCE_MEMBER_CARD_HEADER}>
             <h3>{name}</h3>
             <div>
-              <code>{signature.returnType}</code>
+              <CodeSymbol code={signature.returnType} />
             </div>
           </div>
         )}
