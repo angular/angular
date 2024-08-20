@@ -461,6 +461,27 @@ runInEachFileSystem(() => {
       expect(genericEntry.default).toBeUndefined();
     });
 
+    it('should extract inheritence/interface conformance', () => {
+      env.write(
+        'index.ts',
+        `
+          interface Foo {}
+          interface Bar {}
+
+          class Parent extends Ancestor {}
+
+          export class Child extends Parent implements Foo, Bar {}
+        `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.extends).toBe('Parent');
+      expect(classEntry.implements).toEqual(['Foo', 'Bar']);
+    });
+
     it('should extract inherited members', () => {
       env.write(
         'index.ts',
