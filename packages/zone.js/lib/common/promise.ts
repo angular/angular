@@ -83,7 +83,7 @@ export function patchPromise(Zone: ZoneType): void {
     }
 
     function isThenable(value: any): boolean {
-      return value && value.then;
+      return value && typeof value.then === 'function';
     }
 
     function forwardResolution(value: any): any {

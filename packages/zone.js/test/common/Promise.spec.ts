@@ -501,7 +501,6 @@ describe(
             (Promise as any)
               .race([Promise.reject('rejection1'), 'v1'])
               ['catch']((v: any) => (value = v));
-            // expect(Zone.current.get('queue').length).toEqual(2);
             flushMicrotasks();
             expect(value).toEqual('rejection1');
           });
@@ -513,7 +512,6 @@ describe(
             (Promise as any)
               .race([Promise.resolve('resolution'), 'v1'])
               .then((v: any) => (value = v));
-            // expect(Zone.current.get('queue').length).toEqual(2);
             flushMicrotasks();
             expect(value).toEqual('resolution');
           });
@@ -525,19 +523,8 @@ describe(
           queueZone.run(() => {
             let value: any = null;
             Promise.all([Promise.reject('rejection'), 'v1'])['catch']((v: any) => (value = v));
-            // expect(Zone.current.get('queue').length).toEqual(2);
             flushMicrotasks();
             expect(value).toEqual('rejection');
-          });
-        });
-
-        it('should resolve the value', () => {
-          queueZone.run(() => {
-            let value: any = null;
-            Promise.all([Promise.resolve('resolution'), 'v1']).then((v: any) => (value = v));
-            // expect(Zone.current.get('queue').length).toEqual(2);
-            flushMicrotasks();
-            expect(value).toEqual(['resolution', 'v1']);
           });
         });
 
@@ -555,7 +542,6 @@ describe(
               },
             };
             Promise.all([p1, 'v1', p2]).then((v: any) => (value = v));
-            // expect(Zone.current.get('queue').length).toEqual(2);
             flushMicrotasks();
             expect(value).toEqual(['p1', 'v1', 'p2']);
           });
@@ -578,13 +564,21 @@ describe(
                 Promise.all(generators()).then((val) => {
                   value = val;
                 });
-                // expect(Zone.current.get('queue').length).toEqual(2);
                 flushMicrotasks();
                 expect(value).toEqual([1, 2]);
               });
             },
           ),
         );
+
+        it('should handle object with a truthy `then property`', () => {
+          queueZone.run(() => {
+            let value: any = null;
+            Promise.all([{then: 123}]).then((v: any) => (value = v));
+            flushMicrotasks();
+            expect(value).toEqual([jasmine.objectContaining({then: 123})]);
+          });
+        });
       });
     });
 
