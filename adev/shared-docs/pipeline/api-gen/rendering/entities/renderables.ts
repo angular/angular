@@ -9,6 +9,7 @@
 import {
   ClassEntry,
   ConstantEntry,
+  DecoratorEntry,
   DocEntry,
   EnumEntry,
   FunctionEntry,
@@ -54,6 +55,12 @@ export type TypeAliasEntryRenderable = TypeAliasEntry & DocEntryRenderable & Has
 
 /** Documentation entity for a TypeScript class augmented transformed content for rendering. */
 export type ClassEntryRenderable = ClassEntry &
+  DocEntryRenderable &
+  HasRenderableToc & {
+    members: MemberEntryRenderable[];
+  };
+
+export type DecoratorEntryRenderable = DecoratorEntry &
   DocEntryRenderable &
   HasRenderableToc & {
     members: MemberEntryRenderable[];
