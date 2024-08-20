@@ -12,6 +12,7 @@ import {
   isClassEntry,
   isCliEntry,
   isConstantEntry,
+  isDecoratorEntry,
   isEnumEntry,
   isFunctionEntry,
   isInitializerApiFunctionEntry,
@@ -36,7 +37,7 @@ export function renderEntry(renderable: DocEntryRenderable | CliCommandRenderabl
     return render(CliCommandReference(renderable));
   }
 
-  if (isClassEntry(renderable) || isInterfaceEntry(renderable)) {
+  if (isClassEntry(renderable) || isInterfaceEntry(renderable) || isDecoratorEntry(renderable)) {
     return render(ClassReference(renderable));
   }
   if (isConstantEntry(renderable)) {

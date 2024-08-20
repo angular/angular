@@ -12,6 +12,7 @@ import {
   isClassEntry,
   isCliEntry,
   isConstantEntry,
+  isDecoratorEntry,
   isEnumEntry,
   isFunctionEntry,
   isInitializerApiFunctionEntry,
@@ -20,6 +21,7 @@ import {
 } from './entities/categorization';
 import {CliCommandRenderable, DocEntryRenderable} from './entities/renderables';
 import {getClassRenderable} from './transforms/class-transforms';
+import {getDecoratorRenderable} from './transforms/decorator-transforms';
 import {getCliRenderable} from './transforms/cli-transforms';
 import {getConstantRenderable} from './transforms/constant-transforms';
 import {getEnumRenderable} from './transforms/enum-transforms';
@@ -42,6 +44,9 @@ export function getRenderable(
 ): DocEntryRenderable | CliCommandRenderable {
   if (isClassEntry(entry)) {
     return getClassRenderable(entry, moduleName);
+  }
+  if (isDecoratorEntry(entry)) {
+    return getDecoratorRenderable(entry, moduleName);
   }
   if (isConstantEntry(entry)) {
     return getConstantRenderable(entry, moduleName);

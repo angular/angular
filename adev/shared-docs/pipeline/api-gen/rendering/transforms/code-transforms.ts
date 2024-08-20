@@ -19,6 +19,7 @@ import {
   isClassEntry,
   isClassMethodEntry,
   isConstantEntry,
+  isDecoratorEntry,
   isDeprecatedEntry,
   isEnumEntry,
   isFunctionEntry,
@@ -30,8 +31,8 @@ import {
 } from '../entities/categorization';
 import {CodeLineRenderable} from '../entities/renderables';
 import {HasModuleName, HasRenderableToc} from '../entities/traits';
-import {codeToHtml} from '../shiki/shiki';
 import {getModuleName} from '../symbol-context';
+import {codeToHtml, replaceKeywordFromShikiHtml} from '../shiki/shiki';
 
 import {filterLifecycleMethods, mergeGettersAndSetters} from './member-transforms';
 import {getLinkToModule} from './url-transforms';
@@ -65,9 +66,19 @@ export function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   const metadata = mapDocEntryToCode(entry);
   appendPrefixAndSuffix(entry, metadata);
 
-  const codeWithSyntaxHighlighting = codeToHtml(metadata.contents, 'typescript', {
+  let codeWithSyntaxHighlighting = codeToHtml(metadata.contents, 'typescript', {
     removeFunctionKeyword: true,
   });
+
+  if (isDecoratorEntry(entry)) {
+    // Shiki requires a keyword for correct formating of Decorators
+    // We use an interface and then replace it with a '@'
+    codeWithSyntaxHighlighting = replaceKeywordFromShikiHtml(
+      'interface',
+      codeWithSyntaxHighlighting,
+      '@',
+    );
+  }
 
   // shiki returns the lines wrapped by 2 node : 1 pre node, 1 code node.
   // As leveraging jsdom isn't trivial here, we rely on a regex to extract the line nodes
@@ -124,6 +135,10 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   if (isClassEntry(entry)) {
     const members = filterLifecycleMethods(mergeGettersAndSetters(entry.members));
     return getCodeTocData(members, true, isDeprecated);
+  }
+
+  if (isDecoratorEntry(entry)) {
+    return getCodeTocData(entry.members, true, isDeprecated);
   }
 
   if (isConstantEntry(entry)) {
@@ -454,8 +469,8 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
     appendFirstAndLastLines(codeTocData, `enum ${entry.name} {`, `}`);
   }
 
-  if (isInterfaceEntry(entry)) {
-    appendFirstAndLastLines(codeTocData, `interface ${entry.name} {`, `}`);
+  if (isDecoratorEntry(entry)) {
+    appendFirstAndLastLines(codeTocData, `interface ${entry.name} ({`, `})`);
   }
 }
 

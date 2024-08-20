@@ -37,18 +37,22 @@ export function codeToHtml(
   });
 
   if (options?.removeFunctionKeyword) {
-    return removeFunctionKeywordFromShikiHtml(html);
+    return replaceKeywordFromShikiHtml('function', html);
   }
   return html;
 }
 
-export function removeFunctionKeywordFromShikiHtml(shikiHtml: string): string {
+export function replaceKeywordFromShikiHtml(
+  keyword: string,
+  shikiHtml: string,
+  replaceWith = '',
+): string {
   return (
     shikiHtml
       // remove the leading space of the element after the "function" element
-      .replace(/(<[^>]*>function<\/\w+><[^>]*>)(\s)(\w+<\/\w+>)/g, '$1$3')
+      .replace(new RegExp(`(<[^>]*>${keyword}<\\/\\w+><[^>]*>)(\\s)(\\w+<\\/\\w+>)`, 'g'), '$1$3')
       // Shiki requires the keyword function for highlighting functions signatures
       // We don't want to display it so we remove elements with the keyword
-      .replace(/<[^>]*>function<\/\w+>/g, '')
+      .replace(new RegExp(`<[^>]*>${keyword}<\\/\\w+>`, 'g'), replaceWith)
   );
 }
