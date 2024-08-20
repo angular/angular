@@ -259,21 +259,25 @@ function getCodeTocData(members: MemberEntry[], hasPrefixLine: boolean): CodeTab
   let lineNumber = skip;
 
   return members.reduce((acc: CodeTableOfContentsData, curr: MemberEntry, index: number) => {
-    const setTocData = (content: string) => {
+    const setTocData = (entry: DocEntry | MemberEntry, content: string) => {
       acc.contents += `  ${content.trim()}\n`;
-      acc.codeLineNumbersWithIdentifiers.set(lineNumber, curr.name);
-      if (isDeprecatedEntry(curr)) {
+      acc.codeLineNumbersWithIdentifiers.set(lineNumber, entry.name);
+      if (isDeprecatedEntry(entry)) {
         acc.deprecatedLineNumbers.push(lineNumber);
       }
       lineNumber++;
     };
 
     if (isClassMethodEntry(curr)) {
-      curr.signatures.forEach((signature) => {
-        setTocData(getMethodCodeLine(signature, curr.memberTags));
-      });
+      if (curr.signatures.length > 0) {
+        curr.signatures.forEach((signature) => {
+          setTocData(signature, getMethodCodeLine(signature, curr.memberTags));
+        });
+      } else {
+        setTocData(curr, getMethodCodeLine(curr.implementation, curr.memberTags));
+      }
     } else {
-      setTocData(getCodeLine(curr));
+      setTocData(curr, getCodeLine(curr));
     }
     return acc;
   }, initialMetadata);
