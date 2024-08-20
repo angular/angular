@@ -38,15 +38,13 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
           const renderableMember = getFunctionMetadataRenderable(sig);
           return <ClassMethodInfo entry={renderableMember} options={{showUsageNotes: true}} />;
         })
-      ) : (
+      ) : props.member.htmlDescription || props.member.deprecationMessage ? (
         <div className={REFERENCE_MEMBER_CARD_ITEM}>
-          {props.member.deprecationMessage !== null ? (
-            <DeprecatedLabel entry={props.member} />
-          ) : (
-            <></>
-          )}
+          <DeprecatedLabel entry={props.member} />
           <RawHtml value={props.member.htmlDescription} />
         </div>
+      ) : (
+        <></>
       )}
     </div>
   );

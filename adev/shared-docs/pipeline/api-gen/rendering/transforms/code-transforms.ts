@@ -118,30 +118,31 @@ function groupCodeLines(lines: string[], metadata: CodeTableOfContentsData, entr
 }
 
 export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
+  const isDeprecated = isDeprecatedEntry(entry);
+  const deprecatedLineNumbers = isDeprecated ? [0] : [];
+
   if (isClassEntry(entry)) {
     const members = filterLifecycleMethods(mergeGettersAndSetters(entry.members));
-    return getCodeTocData(members, true);
+    return getCodeTocData(members, true, isDeprecated);
   }
 
   if (isConstantEntry(entry)) {
-    const isDeprecated = isDeprecatedEntry(entry);
     return {
       contents: `const ${entry.name}: ${entry.type};`,
       codeLineNumbersWithIdentifiers: new Map(),
-      deprecatedLineNumbers: isDeprecated ? [0] : [],
+      deprecatedLineNumbers,
     };
   }
 
   if (isEnumEntry(entry)) {
-    return getCodeTocData(entry.members, true);
+    return getCodeTocData(entry.members, true, isDeprecated);
   }
 
   if (isInterfaceEntry(entry)) {
-    return getCodeTocData(mergeGettersAndSetters(entry.members), true);
+    return getCodeTocData(mergeGettersAndSetters(entry.members), true, isDeprecated);
   }
 
   if (isFunctionEntry(entry)) {
-    const isDeprecated = isDeprecatedEntry(entry);
     const codeLineNumbersWithIdentifiers = new Map<number, string>();
     const hasSingleSignature = entry.signatures.length === 1;
 
@@ -149,7 +150,7 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
       const initialMetadata: CodeTableOfContentsData = {
         contents: '',
         codeLineNumbersWithIdentifiers: new Map<number, string>(),
-        deprecatedLineNumbers: [],
+        deprecatedLineNumbers,
       };
 
       return entry.signatures.reduce(
@@ -176,7 +177,7 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
       // It is important to add the function keyword as shiki will only highlight valid ts
       contents: `function ${getMethodCodeLine(entry.implementation, [], true)}`,
       codeLineNumbersWithIdentifiers,
-      deprecatedLineNumbers: isDeprecated ? [0] : [],
+      deprecatedLineNumbers,
     };
   }
 
@@ -221,15 +222,12 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
     return {
       contents: lines.join('\n'),
       codeLineNumbersWithIdentifiers,
-      deprecatedLineNumbers: [],
+      deprecatedLineNumbers,
     };
   }
 
   if (isTypeAliasEntry(entry)) {
-    const isDeprecated = isDeprecatedEntry(entry);
     const contents = `type ${entry.name} = ${entry.type}`;
-
-    let deprecatedLineNumbers = [];
 
     if (isDeprecated) {
       const numberOfLinesOfCode = getNumberOfLinesOfCode(contents);
@@ -249,16 +247,20 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   return {
     contents: '',
     codeLineNumbersWithIdentifiers: new Map(),
-    deprecatedLineNumbers: [],
+    deprecatedLineNumbers,
   };
 }
 
 /** Generate code ToC data for list of members. */
-function getCodeTocData(members: MemberEntry[], hasPrefixLine: boolean): CodeTableOfContentsData {
+function getCodeTocData(
+  members: MemberEntry[],
+  hasPrefixLine: boolean,
+  isDeprecated: boolean,
+): CodeTableOfContentsData {
   const initialMetadata: CodeTableOfContentsData = {
     contents: '',
     codeLineNumbersWithIdentifiers: new Map<number, string>(),
-    deprecatedLineNumbers: [],
+    deprecatedLineNumbers: isDeprecated ? [0] : [],
   };
   // In case when hasPrefixLine is true we should take it into account when we're generating
   // `codeLineNumbersWithIdentifiers` below.
@@ -272,6 +274,7 @@ function getCodeTocData(members: MemberEntry[], hasPrefixLine: boolean): CodeTab
       if (isDeprecatedEntry(entry)) {
         acc.deprecatedLineNumbers.push(lineNumber);
       }
+
       lineNumber++;
     };
 
