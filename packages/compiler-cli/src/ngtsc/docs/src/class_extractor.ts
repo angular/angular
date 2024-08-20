@@ -85,6 +85,8 @@ class ClassExtractor {
       description: extractJsDocDescription(this.declaration),
       jsdocTags: extractJsDocTags(this.declaration),
       rawComment: extractRawJsDoc(this.declaration),
+      extends: this.extractInheritance(this.declaration),
+      implements: this.extractInterfaceConformance(this.declaration),
     };
   }
 
@@ -173,6 +175,36 @@ class ClassExtractor {
       ...this.extractClassProperty(accessor),
       memberType: ts.isGetAccessor(accessor) ? MemberType.Getter : MemberType.Setter,
     };
+  }
+
+  protected extractInheritance(
+    declaration: ClassDeclaration & ClassDeclarationLike,
+  ): string | undefined {
+    if (!declaration.heritageClauses) {
+      return undefined;
+    }
+
+    for (const clause of declaration.heritageClauses) {
+      if (clause.token === ts.SyntaxKind.ExtendsKeyword) {
+        // We are assuming a single class can only extend one class.
+        const types = clause.types;
+        if (types.length > 0) {
+          const baseClass: ts.ExpressionWithTypeArguments = types[0];
+          return baseClass.getText();
+        }
+      }
+    }
+
+    return undefined;
+  }
+  protected extractInterfaceConformance(
+    declaration: ClassDeclaration & ClassDeclarationLike,
+  ): string[] {
+    const implementClause = declaration.heritageClauses?.find(
+      (clause) => clause.token === ts.SyntaxKind.ImplementsKeyword,
+    );
+
+    return implementClause?.types.map((m) => m.getText()) ?? [];
   }
 
   /** Gets the tags for a member (protected, readonly, static, etc.) */
