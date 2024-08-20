@@ -101,6 +101,8 @@ export interface ClassEntry extends DocEntry {
   isAbstract: boolean;
   members: MemberEntry[];
   generics: GenericEntry[];
+  extends?: string;
+  implements: string[];
 }
 
 // From an API doc perspective, class and interfaces are identical.

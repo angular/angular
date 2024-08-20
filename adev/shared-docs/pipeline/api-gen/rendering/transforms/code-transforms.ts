@@ -426,9 +426,28 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
     data.contents = `${firstLine}\n${data.contents}${lastLine}`;
   };
 
-  if (isClassEntry(entry)) {
-    const abstractPrefix = entry.isAbstract ? 'abstract ' : '';
-    appendFirstAndLastLines(codeTocData, `${abstractPrefix}class ${entry.name} {`, `}`);
+  if (isClassEntry(entry) || isInterfaceEntry(entry)) {
+    const generics =
+      entry.generics?.length > 0
+        ? `<${entry.generics
+            .map((g) => (g.constraint ? `${g.name} extends ${g.constraint}` : g.name))
+            .join(', ')}>`
+        : '';
+
+    const extendsStr = entry.extends ? ` extends ${entry.extends}` : '';
+    // TODO: remove the ? when we distinguish Class & Decorator entries
+    const implementsStr =
+      entry.implements?.length > 0 ? ` implements ${entry.implements.join(' ,')}` : '';
+
+    const signature = `${entry.name}${generics}${extendsStr}${implementsStr}`;
+    if (isClassEntry(entry)) {
+      const abstractPrefix = entry.isAbstract ? 'abstract ' : '';
+      appendFirstAndLastLines(codeTocData, `${abstractPrefix}class ${signature} {`, `}`);
+    }
+
+    if (isInterfaceEntry(entry)) {
+      appendFirstAndLastLines(codeTocData, `interface ${signature} {`, `}`);
+    }
   }
 
   if (isEnumEntry(entry)) {
