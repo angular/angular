@@ -901,6 +901,8 @@ export class NgCompiler {
    *
    * @param entryPoint Path to the entry point for the package for which API
    *     docs should be extracted.
+   *
+   * @returns A map of symbols with their associated module, eg: ApplicationRef => @angular/core
    */
   getApiDocumentation(entryPoint: string): {entries: DocEntry[]; symbols: Map<string, string>} {
     const compilation = this.ensureAnalyzed();

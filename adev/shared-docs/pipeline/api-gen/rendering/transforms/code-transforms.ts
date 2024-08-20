@@ -31,8 +31,10 @@ import {
 import {CodeLineRenderable} from '../entities/renderables';
 import {HasModuleName, HasRenderableToc} from '../entities/traits';
 import {codeToHtml} from '../shiki/shiki';
+import {getModuleName} from '../symbol-context';
 
 import {filterLifecycleMethods, mergeGettersAndSetters} from './member-transforms';
+import {getLinkToModule} from './url-transforms';
 
 // Allows to generate links for code lines.
 interface CodeTableOfContentsData {
@@ -78,7 +80,12 @@ export function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   const insideCode = match[2];
   const afterCode = match[3];
 
-  const lines = splitLines(insideCode);
+  // Note: Don't expect enum value in signatures to be linked correctly
+  // as skihi already splits them into separate span blocks.
+  // Only the enum itself will recieve a link
+  const codeWithLinks = addApiLinksToHtml(insideCode);
+
+  const lines = splitLines(codeWithLinks);
   const groups = groupCodeLines(lines, metadata, entry);
 
   return {
@@ -427,4 +434,32 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
   if (isInterfaceEntry(entry)) {
     appendFirstAndLastLines(codeTocData, `interface ${entry.name} {`, `}`);
   }
+}
+
+/**
+ * Replaces any code block that isn't already wrapped by an anchor element
+ * by a link if the symbol is known
+ */
+export function addApiLinksToHtml(htmlString: string): string {
+  const result = htmlString.replace(
+    // This regex looks for span/code blocks not wrapped by an anchor block.
+    // Their content are then replaced with a link if the symbol is known
+    //                   The captured content ==>  vvvvvvvv
+    /(?<!<a[^>]*>)(<(?:(?:span)|(?:code))[^>]*>\s*)([^<]*?)(\s*<\/(?:span|code)>)/g,
+    (type: string, span1: string, potentialSymbolName: string, span2: string) => {
+      let [symbol, subSymbol] = potentialSymbolName.split(/(?:#|\.)/) as [string, string?];
+
+      // mySymbol() => mySymbol
+      const symbolWithoutInvocation = symbol.replace(/\([^)]*\);?/g, '');
+      const moduleName = getModuleName(symbolWithoutInvocation)!;
+
+      if (moduleName) {
+        return `${span1}<a href="${getLinkToModule(moduleName, symbol, subSymbol)}">${potentialSymbolName}</a>${span2}`;
+      }
+
+      return type;
+    },
+  );
+
+  return result;
 }

@@ -28,6 +28,7 @@ import {ClassMethodInfo} from './class-method-info';
 import {DeprecatedLabel} from './deprecated-label';
 import {RawHtml} from './raw-html';
 import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
+import {CodeSymbol} from './code-symbols';
 
 export function ClassMember(props: {member: MemberEntryRenderable}) {
   const body = (
@@ -61,7 +62,7 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
             {isClassMethodEntry(props.member) && props.member.signatures.length > 1 ? (
               <span>{props.member.signatures.length} overloads</span>
             ) : returnType ? (
-              <code>{returnType}</code>
+              <CodeSymbol code={returnType} />
             ) : (
               <></>
             )}

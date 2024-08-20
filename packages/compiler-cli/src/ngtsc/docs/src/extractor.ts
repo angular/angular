@@ -31,9 +31,6 @@ import {getImportedSymbols} from './import_extractor';
 
 type DeclarationWithExportName = readonly [string, ts.Declaration];
 
-/** The modules here doesn't expose symbols publicly as they are considered private */
-const privateModules = new Set(['core/primitives/signals', 'core/primitives/event-dispatch']);
-
 /**
  * Extracts all information from a source file that may be relevant for generating
  * public API documentation.
@@ -71,16 +68,27 @@ export class DocsExtractor {
         const realSourceFile = node.getSourceFile();
 
         /**
-         * `sourceFile` is generaly a `export * from './public_api';` with no imports.
-         * It is necessary to pick-up every import from the real source files.
-         * This allows to include symbols from other packages (like @angular/core)
-         * By doing this, the generation remains independant from other packages
+         * The `sourceFile` from `extractAll` is the main entry-point file of a package.
+         * Usually following a format like `export * from './public_api';`, simply re-exporting.
+         * It is necessary to pick-up every import from the actual source files
+         * where declarations are living, so that we can determine what symbols
+         * are actually referenced in the context of that particular declaration
+         * By doing this, the generation remains independent from other packages
          */
         const importedSymbols = getImportedSymbols(realSourceFile);
         importedSymbols.forEach((moduleName, symbolName) => {
-          if (privateModules.has(moduleName) || symbolName.startsWith('ɵ')) {
+          // TODO: we probably want to filter out symbols from private modules (like core/primitives)
+          if (symbolName.startsWith('ɵ')) {
             return;
           }
+
+          if (symbols.has(symbolName) && symbols.get(symbolName) !== moduleName) {
+            // If this ever throws, we need to improve the symbol extraction strategy
+            throw new Error(
+              `Ambigous symbol \`${symbolName}\` exported by both ${symbols.get(symbolName)} & ${moduleName}`,
+            );
+          }
+
           symbols.set(symbolName, moduleName);
         });
 
