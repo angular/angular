@@ -61,7 +61,8 @@ function main() {
       return result.concat(JSON.parse(readFileSync(path, {encoding: 'utf8'})) as DocEntry[]);
     }, []);
 
-  const extractedEntries = program.getApiDocumentation(entryPointExecRootRelativePath);
+  const apiDoc = program.getApiDocumentation(entryPointExecRootRelativePath);
+  const extractedEntries = apiDoc.entries;
   const combinedEntries = extractedEntries.concat(extraEntries);
 
   const normalized = moduleName.replace('@', '').replace(/[\/]/g, '_');
@@ -71,7 +72,14 @@ function main() {
     moduleName: moduleName,
     normalizedModuleName: normalized,
     entries: combinedEntries,
-  } satisfies EntryCollection);
+    symbols: [
+      // Symbols referenced, originating from other packages
+      ...apiDoc.symbols.entries(),
+
+      // Exported symbols from the current package
+      ...apiDoc.entries.map((entry) => [entry.name, moduleName]),
+    ],
+  } as EntryCollection);
 
   writeFileSync(outputFilenameExecRootRelativePath, output, {encoding: 'utf8'});
 }

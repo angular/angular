@@ -9,12 +9,8 @@
 export const API_PREFIX = 'api';
 export const MODULE_NAME_PREFIX = '@angular/';
 
-export function removeAngularPrefixFromModule(moduleName: string): string {
-  return moduleName.replace(MODULE_NAME_PREFIX, '');
-}
-
-export function getLinkToModule(moduleName: string) {
-  return `${API_PREFIX}/${removeAngularPrefixFromModule(moduleName)}`;
+export function getLinkToModule(moduleName: string, symbol: string, subSymbol?: string) {
+  return `${API_PREFIX}/${moduleName}/${symbol}${subSymbol ? `#${subSymbol}` : ''}`;
 }
 
 export const normalizePath = (path: string): string => {

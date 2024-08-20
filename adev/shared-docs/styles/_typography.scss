@@ -81,6 +81,7 @@
   p > a,
   td > a,
   div > a:not(.docs-card),
+  code > a,
   li:not(.docs-faceted-list *) a {
     color: var(--bright-blue);
     &:hover {
