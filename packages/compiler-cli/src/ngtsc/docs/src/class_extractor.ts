@@ -110,7 +110,10 @@ class ClassExtractor {
   protected extractClassMember(memberDeclaration: MemberElement): MemberEntry | undefined {
     if (this.isMethod(memberDeclaration)) {
       return this.extractMethod(memberDeclaration);
-    } else if (this.isProperty(memberDeclaration)) {
+    } else if (
+      this.isProperty(memberDeclaration) &&
+      !this.hasPrivateComputedProperty(memberDeclaration)
+    ) {
       return this.extractClassProperty(memberDeclaration);
     } else if (ts.isAccessor(memberDeclaration)) {
       return this.extractGetterSetter(memberDeclaration);
@@ -374,6 +377,17 @@ class ClassExtractor {
   private isAbstract(): boolean {
     const modifiers = this.declaration.modifiers ?? [];
     return modifiers.some((mod) => mod.kind === ts.SyntaxKind.AbstractKeyword);
+  }
+
+  /**
+   * Check wether a member has a private computed property name like [ɵWRITABLE_SIGNAL]
+   *
+   * This will prevent exposing private computed properties in the docs.
+   */
+  private hasPrivateComputedProperty(property: PropertyLike) {
+    return (
+      ts.isComputedPropertyName(property.name) && property.name.expression.getText().startsWith('ɵ')
+    );
   }
 }
 
