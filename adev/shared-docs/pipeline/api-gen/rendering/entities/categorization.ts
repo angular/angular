@@ -1,6 +1,7 @@
 import {
   ClassEntry,
   ConstantEntry,
+  DecoratorEntry,
   DocEntry,
   EntryType,
   EnumEntry,
@@ -20,6 +21,7 @@ import {
   ClassEntryRenderable,
   CliCommandRenderable,
   ConstantEntryRenderable,
+  DecoratorEntryRenderable,
   DocEntryRenderable,
   EnumEntryRenderable,
   FunctionEntryRenderable,
@@ -42,9 +44,14 @@ export function isClassEntry(entry: DocEntry): entry is ClassEntry {
     entry.entryType === EntryType.Component ||
     entry.entryType === EntryType.Pipe ||
     entry.entryType === EntryType.NgModule ||
-    entry.entryType === EntryType.Directive ||
-    entry.entryType === EntryType.Decorator
+    entry.entryType === EntryType.Directive
   );
+}
+
+export function isDecoratorEntry(entry: DocEntryRenderable): entry is DecoratorEntryRenderable;
+export function isDecoratorEntry(entry: DocEntry): entry is DecoratorEntry;
+export function isDecoratorEntry(entry: DocEntry): entry is DecoratorEntry {
+  return entry.entryType === EntryType.Decorator;
 }
 
 /** Gets whether the given entry represents a constant */

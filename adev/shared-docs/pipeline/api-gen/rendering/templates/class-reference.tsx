@@ -7,7 +7,7 @@
  */
 
 import {Fragment, h} from 'preact';
-import {ClassEntryRenderable} from '../entities/renderables';
+import {ClassEntryRenderable, DecoratorEntryRenderable} from '../entities/renderables';
 import {ClassMemberList} from './class-member-list';
 import {HeaderApi} from './header-api';
 import {REFERENCE_MEMBERS_CONTAINER} from '../styling/css-classes';
@@ -16,20 +16,20 @@ import {TabUsageNotes} from './tab-usage-notes';
 import {TabApi} from './tab-api';
 
 /** Component to render a class API reference document. */
-export function ClassReference(entry: ClassEntryRenderable) {
+export function ClassReference(entry: ClassEntryRenderable | DecoratorEntryRenderable) {
   return (
     <div class="api">
       <HeaderApi entry={entry} />
       <TabApi entry={entry} />
       <TabDescription entry={entry} />
       <TabUsageNotes entry={entry} />
-      {
-        entry.members.length > 0
-          ? (<div class={REFERENCE_MEMBERS_CONTAINER}>
-              <ClassMemberList members={entry.members} />
-            </div>)
-          : (<></>)
-      }
+      {entry.members.length > 0 ? (
+        <div class={REFERENCE_MEMBERS_CONTAINER}>
+          <ClassMemberList members={entry.members} />
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
