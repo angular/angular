@@ -27,8 +27,12 @@ import {
   isInitializerApiFunction,
 } from './initializer_api_function_extractor';
 import {extractTypeAlias} from './type_alias_extractor';
+import {getImportedSymbols} from './import_extractor';
 
 type DeclarationWithExportName = readonly [string, ts.Declaration];
+
+/** The modules here doesn't expose symbols publicly as they are considered private */
+const privateModules = new Set(['core/primitives/signals', 'core/primitives/event-dispatch']);
 
 /**
  * Extracts all information from a source file that may be relevant for generating
@@ -46,8 +50,12 @@ export class DocsExtractor {
    *
    * @param sourceFile The file from which to extract documentable entries.
    */
-  extractAll(sourceFile: ts.SourceFile, rootDir: string): DocEntry[] {
+  extractAll(
+    sourceFile: ts.SourceFile,
+    rootDir: string,
+  ): {entries: DocEntry[]; symbols: Map<string, string>} {
     const entries: DocEntry[] = [];
+    const symbols = new Map<string, string>();
 
     const exportedDeclarations = this.getExportedDeclarations(sourceFile);
     for (const [exportName, node] of exportedDeclarations) {
@@ -61,6 +69,20 @@ export class DocsExtractor {
         // The source file parameter is the package entry: the index.ts
         // We want the real source file of the declaration.
         const realSourceFile = node.getSourceFile();
+
+        /**
+         * `sourceFile` is generaly a `export * from './public_api';` with no imports.
+         * It is necessary to pick-up every import from the real source files.
+         * This allows to include symbols from other packages (like @angular/core)
+         * By doing this, the generation remains independant from other packages
+         */
+        const importedSymbols = getImportedSymbols(realSourceFile);
+        importedSymbols.forEach((moduleName, symbolName) => {
+          if (privateModules.has(moduleName) || symbolName.startsWith('ɵ')) {
+            return;
+          }
+          symbols.set(symbolName, moduleName);
+        });
 
         // Set the source code references for the extracted entry.
         (entry as DocEntryWithSourceInfo).source = {
@@ -77,7 +99,7 @@ export class DocsExtractor {
       }
     }
 
-    return entries;
+    return {entries, symbols};
   }
 
   /** Extract the doc entry for a single declaration. */
