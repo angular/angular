@@ -10,6 +10,8 @@ import {
   ApplicationRef,
   ChangeDetectorRef,
   ComponentRef,
+  ɵChangeDetectionScheduler,
+  ɵNotificationSource,
   DebugElement,
   ElementRef,
   getDebugNode,
@@ -18,17 +20,16 @@ import {
   RendererFactory2,
   ViewRef,
   ɵDeferBlockDetails as DeferBlockDetails,
-  ɵdetectChangesInViewIfRequired,
   ɵEffectScheduler as EffectScheduler,
   ɵgetDeferBlocks as getDeferBlocks,
   ɵNoopNgZone as NoopNgZone,
   ɵPendingTasks as PendingTasks,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
-import {first} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
+import {TestBedApplicationErrorHandler} from './application_error_handler';
 
 /**
  * Fixture for debugging and testing a component.
@@ -80,6 +81,10 @@ export abstract class ComponentFixture<T> {
   /** @internal */
   protected readonly _testAppRef = this._appRef as unknown as TestAppRef;
   private readonly pendingTasks = inject(PendingTasks);
+  private readonly appErrorHandler = inject(TestBedApplicationErrorHandler);
+  /** @internal */
+  protected abstract _autoDetect: boolean;
+  private readonly scheduler = inject(ɵChangeDetectionScheduler, {optional: true});
 
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
@@ -92,6 +97,17 @@ export abstract class ComponentFixture<T> {
     this.componentInstance = componentRef.instance;
     this.nativeElement = this.elementRef.nativeElement;
     this.componentRef = componentRef;
+  }
+
+  /** @internal */
+  initialize(): void {
+    if (this._autoDetect) {
+      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+      this.scheduler?.notify(ɵNotificationSource.ViewAttached);
+    }
+    this.componentRef.hostView.onDestroy(() => {
+      this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+    });
   }
 
   /**
@@ -131,7 +147,14 @@ export abstract class ComponentFixture<T> {
     if (this.isStable()) {
       return Promise.resolve(false);
     }
-    return this._appRef.isStable.pipe(first((stable) => stable)).toPromise();
+
+    return new Promise((resolve, reject) => {
+      this.appErrorHandler.whenStableRejectFunctions.add(reject);
+      this._appRef.whenStable().then(() => {
+        this.appErrorHandler.whenStableRejectFunctions.delete(reject);
+        resolve(true);
+      });
+    });
   }
 
   /**
@@ -172,6 +195,7 @@ export abstract class ComponentFixture<T> {
    * Trigger component destruction.
    */
   destroy(): void {
+    this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
     if (!this._isDestroyed) {
       this.componentRef.destroy();
       this._isDestroyed = true;
@@ -186,9 +210,11 @@ export abstract class ComponentFixture<T> {
  * `ApplicationRef.isStable`, and `autoDetectChanges` cannot be disabled.
  */
 export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
-  private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? true;
+  /** @internal */
+  protected override _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? true;
 
-  initialize(): void {
+  override initialize(): void {
+    super.initialize();
     if (this._autoDetect) {
       this._appRef.attachView(this.componentRef.hostView);
     }
@@ -222,8 +248,6 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
 
 interface TestAppRef {
   externalTestViews: Set<ViewRef>;
-  beforeRender: Subject<boolean>;
-  afterTick: Subject<void>;
 }
 
 /**
@@ -231,17 +255,17 @@ interface TestAppRef {
  */
 export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   private _subscriptions = new Subscription();
-  private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
-  private afterTickSubscription: Subscription | undefined = undefined;
-  private beforeRenderSubscription: Subscription | undefined = undefined;
+  /** @internal */
+  override _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
 
-  initialize(): void {
+  override initialize(): void {
     if (this._autoDetect) {
-      this.subscribeToAppRefEvents();
+      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
     }
     this.componentRef.hostView.onDestroy(() => {
-      this.unsubscribeFromAppRefEvents();
+      this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
     });
+
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
     this._ngZone.runOutsideAngular(() => {
@@ -277,9 +301,9 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
 
     if (autoDetect !== this._autoDetect) {
       if (autoDetect) {
-        this.subscribeToAppRefEvents();
+        this._testAppRef.externalTestViews.add(this.componentRef.hostView);
       } else {
-        this.unsubscribeFromAppRefEvents();
+        this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
       }
     }
 
@@ -287,44 +311,7 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
     this.detectChanges();
   }
 
-  private subscribeToAppRefEvents() {
-    this._ngZone.runOutsideAngular(() => {
-      this.afterTickSubscription = this._testAppRef.afterTick.subscribe(() => {
-        this.checkNoChanges();
-      });
-      this.beforeRenderSubscription = this._testAppRef.beforeRender.subscribe((isFirstPass) => {
-        try {
-          ɵdetectChangesInViewIfRequired(
-            (this.componentRef.hostView as any)._lView,
-            (this.componentRef.hostView as any).notifyErrorHandler,
-            isFirstPass,
-            false /** zoneless enabled */,
-          );
-        } catch (e: unknown) {
-          // If an error occurred during change detection, remove the test view from the application
-          // ref tracking. Note that this isn't exactly desirable but done this way because of how
-          // things used to work with `autoDetect` and uncaught errors. Ideally we would surface
-          // this error to the error handler instead and continue refreshing the view like
-          // what would happen in the application.
-          this.unsubscribeFromAppRefEvents();
-
-          throw e;
-        }
-      });
-      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
-    });
-  }
-
-  private unsubscribeFromAppRefEvents() {
-    this.afterTickSubscription?.unsubscribe();
-    this.beforeRenderSubscription?.unsubscribe();
-    this.afterTickSubscription = undefined;
-    this.beforeRenderSubscription = undefined;
-    this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
-  }
-
   override destroy(): void {
-    this.unsubscribeFromAppRefEvents();
     this._subscriptions.unsubscribe();
     super.destroy();
   }

@@ -187,13 +187,12 @@ export interface OutOfBandDiagnosticRecorder {
   ): void;
 
   /**
-   * Reports a duplicate `@let` declaration within the same scope.
+   * Reports a `@let` declaration that conflicts with another symbol in the same scope.
    *
-   * @param templateId the template type-checking ID of the template which contains the duplicate
-   * declaration.
-   * @param current the `TmplAstLetDeclaration` which duplicates a previous declaration.
+   * @param templateId the template type-checking ID of the template which contains the declaration.
+   * @param current the `TmplAstLetDeclaration` which is invalid.
    */
-  duplicateLetDeclaration(templateId: TemplateId, current: TmplAstLetDeclaration): void;
+  conflictingDeclaration(templateId: TemplateId, current: TmplAstLetDeclaration): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -650,17 +649,17 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     );
   }
 
-  duplicateLetDeclaration(templateId: TemplateId, current: TmplAstLetDeclaration): void {
+  conflictingDeclaration(templateId: TemplateId, decl: TmplAstLetDeclaration): void {
     const mapping = this.resolver.getSourceMapping(templateId);
-    const errorMsg = `Cannot declare @let called '${current.name}' as there is another @let declaration with the same name.`;
+    const errorMsg = `Cannot declare @let called '${decl.name}' as there is another symbol in the template with the same name.`;
 
     this._diagnostics.push(
       makeTemplateDiagnostic(
         templateId,
         mapping,
-        current.sourceSpan,
+        decl.sourceSpan,
         ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.DUPLICATE_LET_DECLARATION),
+        ngErrorCode(ErrorCode.CONFLICTING_LET_DECLARATION),
         errorMsg,
       ),
     );

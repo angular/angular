@@ -131,7 +131,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRED_INPUT_NO_VALUE = -950,
     // (undocumented)
-    REQUIRED_MODEL_NO_VALUE = -952,
+    REQUIRED_MODEL_NO_VALUE = 952,
     // (undocumented)
     REQUIRED_QUERY_NO_VALUE = -951,
     // (undocumented)
@@ -148,6 +148,8 @@ export const enum RuntimeErrorCode {
     UNEXPECTED_ZONE_STATE = 909,
     // (undocumented)
     UNEXPECTED_ZONEJS_PRESENT_IN_ZONELESS_MODE = 914,
+    // (undocumented)
+    UNINITIALIZED_LET_ACCESS = 314,
     // (undocumented)
     UNKNOWN_BINDING = 303,
     // (undocumented)

@@ -15,6 +15,7 @@ import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
+import { InputSignal } from '@angular/core';
 import { LocationStrategy } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
@@ -27,6 +28,7 @@ import { ProviderToken } from '@angular/core';
 import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { RouterState as RouterState_2 } from '@angular/router';
+import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Type } from '@angular/core';
@@ -112,13 +114,13 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
     store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void;
 }
 
-// @public @deprecated
+// @public
 export interface CanActivate {
     // (undocumented)
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult>;
 }
 
-// @public @deprecated
+// @public
 export interface CanActivateChild {
     // (undocumented)
     canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult>;
@@ -130,7 +132,7 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
 // @public
 export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => MaybeAsync<GuardResult>;
 
-// @public @deprecated
+// @public
 export interface CanDeactivate<T> {
     // (undocumented)
     canDeactivate(component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): MaybeAsync<GuardResult>;
@@ -148,7 +150,7 @@ export interface CanLoad {
 // @public @deprecated
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
 
-// @public @deprecated
+// @public
 export interface CanMatch {
     // (undocumented)
     canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
@@ -183,7 +185,7 @@ export class ChildActivationStart {
 
 // @public
 export class ChildrenOutletContexts {
-    constructor(parentInjector: EnvironmentInjector);
+    constructor(rootInjector: EnvironmentInjector);
     // (undocumented)
     getContext(childName: string): OutletContext | null;
     // (undocumented)
@@ -298,8 +300,7 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
     bindToComponentInputs?: boolean;
     enableTracing?: boolean;
     enableViewTransitions?: boolean;
-    // @deprecated
-    errorHandler?: (error: any) => any;
+    errorHandler?: (error: any) => RedirectCommand | any;
     initialNavigation?: InitialNavigation;
     preloadingStrategy?: any;
     scrollOffset?: [number, number] | (() => [number, number]);
@@ -376,29 +377,19 @@ export type LoadChildren = LoadChildrenCallback;
 export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Routes | Observable<Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>> | Promise<NgModuleFactory<any> | Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>>;
 
 // @public
-export function mapToCanActivate(providers: Array<Type<{
-    canActivate: CanActivateFn;
-}>>): CanActivateFn[];
+export function mapToCanActivate(providers: Array<Type<CanActivate>>): CanActivateFn[];
 
 // @public
-export function mapToCanActivateChild(providers: Array<Type<{
-    canActivateChild: CanActivateChildFn;
-}>>): CanActivateChildFn[];
+export function mapToCanActivateChild(providers: Array<Type<CanActivateChild>>): CanActivateChildFn[];
 
 // @public
-export function mapToCanDeactivate<T = unknown>(providers: Array<Type<{
-    canDeactivate: CanDeactivateFn<T>;
-}>>): CanDeactivateFn<T>[];
+export function mapToCanDeactivate<T = unknown>(providers: Array<Type<CanDeactivate<T>>>): CanDeactivateFn<T>[];
 
 // @public
-export function mapToCanMatch(providers: Array<Type<{
-    canMatch: CanMatchFn;
-}>>): CanMatchFn[];
+export function mapToCanMatch(providers: Array<Type<CanMatch>>): CanMatchFn[];
 
 // @public
-export function mapToResolve<T>(provider: Type<{
-    resolve: ResolveFn<T>;
-}>): ResolveFn<T>;
+export function mapToResolve<T>(provider: Type<Resolve<T>>): ResolveFn<T>;
 
 // @public
 export type MaybeAsync<T> = T | Observable<T> | Promise<T>;
@@ -416,6 +407,7 @@ export interface Navigation {
 
 // @public
 export interface NavigationBehaviorOptions {
+    readonly browserUrl?: UrlTree | string;
     readonly info?: unknown;
     onSameUrlNavigation?: OnSameUrlNavigation;
     replaceUrl?: boolean;
@@ -540,13 +532,14 @@ export type OnSameUrlNavigation = 'reload' | 'ignore';
 
 // @public
 export class OutletContext {
-    constructor(injector: EnvironmentInjector);
+    constructor(rootInjector: EnvironmentInjector);
     // (undocumented)
     attachRef: ComponentRef<any> | null;
     // (undocumented)
     children: ChildrenOutletContexts;
     // (undocumented)
-    injector: EnvironmentInjector;
+    get injector(): EnvironmentInjector;
+    set injector(_: EnvironmentInjector);
     // (undocumented)
     outlet: RouterOutletContract | null;
     // (undocumented)
@@ -595,7 +588,7 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
 export function provideRoutes(routes: Routes): Provider[];
 
 // @public
-export type QueryParamsHandling = 'merge' | 'preserve' | '';
+export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
 // @public
 export class RedirectCommand {
@@ -609,10 +602,10 @@ export class RedirectCommand {
 // @public
 export type RedirectFunction = (redirectData: Pick<ActivatedRouteSnapshot, 'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'>) => string | UrlTree;
 
-// @public @deprecated
+// @public
 export interface Resolve<T> {
     // (undocumented)
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T>;
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<T | RedirectCommand>;
 }
 
 // @public
@@ -713,8 +706,6 @@ export class Router {
     config: Routes;
     createUrlTree(commands: any[], navigationExtras?: UrlCreationOptions): UrlTree;
     dispose(): void;
-    // @deprecated
-    errorHandler: (error: any) => any;
     get events(): Observable<Event_2>;
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
@@ -750,8 +741,12 @@ export const ROUTER_CONFIGURATION: InjectionToken<ExtraOptions>;
 export const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => void>;
 
 // @public
+export const ROUTER_OUTLET_DATA: InjectionToken<Signal<unknown>>;
+
+// @public
 export interface RouterConfigOptions {
     canceledNavigationResolution?: 'replace' | 'computed';
+    defaultQueryParamsHandling?: QueryParamsHandling;
     onSameUrlNavigation?: OnSameUrlNavigation;
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     resolveNavigationPromiseOnError?: boolean;
@@ -810,7 +805,7 @@ class RouterLink implements OnChanges, OnDestroy {
     // (undocumented)
     static ngAcceptInputType_skipLocationChange: unknown;
     // (undocumented)
-    ngOnChanges(): void;
+    ngOnChanges(changes?: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): any;
     // (undocumented)
@@ -904,10 +899,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
+    readonly routerOutletData: InputSignal<unknown>;
     // (undocumented)
     readonly supportsBindingToComponentInputs = true;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], { "name": { "alias": "name"; "required": false; }; }, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], { "name": { "alias": "name"; "required": false; }; "routerOutletData": { "alias": "routerOutletData"; "required": false; "isSignal": true; }; }, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, never>;
 }

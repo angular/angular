@@ -28,7 +28,23 @@ export interface AfterContentInit {
 }
 
 // @public
+export function afterNextRender<E = never, W = never, M = never>(spec: {
+    earlyRead?: () => E;
+    write?: (...args: ɵFirstAvailable<[E]>) => W;
+    mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
+    read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
+}, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
+
+// @public
 export function afterNextRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
+
+// @public
+export function afterRender<E = never, W = never, M = never>(spec: {
+    earlyRead?: () => E;
+    write?: (...args: ɵFirstAvailable<[E]>) => W;
+    mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
+    read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
+}, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
 
 // @public
 export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
@@ -36,10 +52,11 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
 // @public
 export interface AfterRenderOptions {
     injector?: Injector;
+    // @deprecated
     phase?: AfterRenderPhase;
 }
 
-// @public
+// @public @deprecated
 export enum AfterRenderPhase {
     EarlyRead = 0,
     MixedReadWrite = 2,
@@ -120,6 +137,8 @@ export class ApplicationRef {
     tick(): void;
     get viewCount(): number;
     // (undocumented)
+    whenStable(): Promise<void>;
+    // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ApplicationRef, never>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<ApplicationRef>;
@@ -157,6 +176,7 @@ export function booleanAttribute(value: unknown): boolean;
 
 // @public
 export interface BootstrapOptions {
+    // @deprecated
     ignoreChangesOutsideZone?: boolean;
     ngZone?: NgZone | 'zone.js' | 'noop';
     ngZoneEventCoalescing?: boolean;
@@ -259,6 +279,7 @@ export abstract class ComponentFactory<C> {
         propName: string;
         templateName: string;
         transform?: (value: any) => any;
+        isSignal: boolean;
     }[];
     abstract get ngContentSelectors(): string[];
     abstract get outputs(): {
@@ -281,6 +302,7 @@ export interface ComponentMirror<C> {
         readonly propName: string;
         readonly templateName: string;
         readonly transform?: (value: any) => any;
+        readonly isSignal: boolean;
     }>;
     get isStandalone(): boolean;
     get ngContentSelectors(): ReadonlyArray<string>;
@@ -679,9 +701,7 @@ export interface ExistingSansProvider {
 export class ExperimentalPendingTasks {
     add(): () => void;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<ExperimentalPendingTasks, never>;
-    // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<ExperimentalPendingTasks>;
+    static ɵprov: unknown;
 }
 
 // @public
@@ -1127,11 +1147,7 @@ export interface ModelOptions {
 }
 
 // @public
-export interface ModelSignal<T> extends WritableSignal<T>, OutputRef<T> {
-    // (undocumented)
-    [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
-    // (undocumented)
-    [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
+export interface ModelSignal<T> extends WritableSignal<T>, InputSignal<T>, OutputRef<T> {
     // (undocumented)
     [SIGNAL]: InputSignalNode<T, T>;
 }
@@ -1207,10 +1223,10 @@ export class NgProbeToken {
 
 // @public
 export class NgZone {
-    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection, shouldCoalesceRunChangeDetection, }: {
-        enableLongStackTrace?: boolean | undefined;
-        shouldCoalesceEventChangeDetection?: boolean | undefined;
-        shouldCoalesceRunChangeDetection?: boolean | undefined;
+    constructor(options: {
+        enableLongStackTrace?: boolean;
+        shouldCoalesceEventChangeDetection?: boolean;
+        shouldCoalesceRunChangeDetection?: boolean;
     });
     static assertInAngularZone(): void;
     static assertNotInAngularZone(): void;
@@ -1233,6 +1249,7 @@ export class NgZone {
 // @public
 export interface NgZoneOptions {
     eventCoalescing?: boolean;
+    // @deprecated
     ignoreChangesOutsideZone?: boolean;
     runCoalescing?: boolean;
 }

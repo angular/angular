@@ -117,6 +117,7 @@ export function extractDirectiveMetadata(
   defaultSelector: string | null,
 ):
   | {
+      jitForced: false;
       decorator: Map<string, ts.Expression>;
       metadata: R3DirectiveMetadata;
       inputs: ClassPropertyMapping<InputMapping>;
@@ -124,8 +125,9 @@ export function extractDirectiveMetadata(
       isStructural: boolean;
       hostDirectives: HostDirectiveMeta[] | null;
       rawHostDirectives: ts.Expression | null;
+      inputFieldNamesFromMetadataArray: Set<string>;
     }
-  | undefined {
+  | {jitForced: true} {
   let directive: Map<string, ts.Expression>;
   if (decorator.args === null || decorator.args.length === 0) {
     directive = new Map<string, ts.Expression>();
@@ -149,7 +151,7 @@ export function extractDirectiveMetadata(
 
   if (directive.has('jit')) {
     // The only allowed value is true, so there's no need to expand further.
-    return undefined;
+    return {jitForced: true};
   }
 
   const members = reflector.getMembersOfClass(clazz);
@@ -407,6 +409,7 @@ export function extractDirectiveMetadata(
       null,
   };
   return {
+    jitForced: false,
     decorator: directive,
     metadata,
     inputs,
@@ -414,6 +417,10 @@ export function extractDirectiveMetadata(
     isStructural,
     hostDirectives,
     rawHostDirectives,
+    // Track inputs from class metadata. This is useful for migration efforts.
+    inputFieldNamesFromMetadataArray: new Set(
+      Object.values(inputsFromMeta).map((i) => i.classPropertyName),
+    ),
   };
 }
 

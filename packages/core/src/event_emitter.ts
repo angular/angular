@@ -13,6 +13,7 @@ import {OutputRef} from './authoring/output/output_ref';
 import {isInInjectionContext} from './di/contextual';
 import {inject} from './di/injector_compatibility';
 import {DestroyRef} from './linker/destroy_ref';
+import {PendingTasks} from './pending_tasks';
 
 /**
  * Use in components with the `@Output` directive to emit custom events
@@ -111,15 +112,17 @@ export interface EventEmitter<T> extends Subject<T>, OutputRef<T> {
 class EventEmitter_ extends Subject<any> implements OutputRef<any> {
   __isAsync: boolean; // tslint:disable-line
   destroyRef: DestroyRef | undefined = undefined;
+  private readonly pendingTasks: PendingTasks | undefined = undefined;
 
   constructor(isAsync: boolean = false) {
     super();
     this.__isAsync = isAsync;
 
-    // Attempt to retrieve a `DestroyRef` optionally.
-    // For backwards compatibility reasons, this cannot be required
+    // Attempt to retrieve a `DestroyRef` and `PendingTasks` optionally.
+    // For backwards compatibility reasons, this cannot be required.
     if (isInInjectionContext()) {
       this.destroyRef = inject(DestroyRef, {optional: true}) ?? undefined;
+      this.pendingTasks = inject(PendingTasks, {optional: true}) ?? undefined;
     }
   }
 
@@ -145,14 +148,14 @@ class EventEmitter_ extends Subject<any> implements OutputRef<any> {
     }
 
     if (this.__isAsync) {
-      errorFn = _wrapInTimeout(errorFn);
+      errorFn = this.wrapInTimeout(errorFn);
 
       if (nextFn) {
-        nextFn = _wrapInTimeout(nextFn);
+        nextFn = this.wrapInTimeout(nextFn);
       }
 
       if (completeFn) {
-        completeFn = _wrapInTimeout(completeFn);
+        completeFn = this.wrapInTimeout(completeFn);
       }
     }
 
@@ -164,12 +167,18 @@ class EventEmitter_ extends Subject<any> implements OutputRef<any> {
 
     return sink;
   }
-}
 
-function _wrapInTimeout(fn: (value: unknown) => any) {
-  return (value: unknown) => {
-    setTimeout(fn, undefined, value);
-  };
+  private wrapInTimeout(fn: (value: unknown) => any) {
+    return (value: unknown) => {
+      const taskId = this.pendingTasks?.add();
+      setTimeout(() => {
+        fn(value);
+        if (taskId !== undefined) {
+          this.pendingTasks?.remove(taskId);
+        }
+      });
+    };
+  }
 }
 
 /**

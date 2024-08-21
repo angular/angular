@@ -17,6 +17,8 @@ import {factory as nullishCoalescingNotNullableFactory} from './checks/nullish_c
 import {factory as optionalChainNotNullableFactory} from './checks/optional_chain_not_nullable';
 import {factory as suffixNotSupportedFactory} from './checks/suffix_not_supported';
 import {factory as textAttributeNotBindingFactory} from './checks/text_attribute_not_binding';
+import {factory as uninvokedFunctionInEventBindingFactory} from './checks/uninvoked_function_in_event_binding';
+import {factory as unusedLetDeclarationFactory} from './checks/unused_let_declaration';
 
 export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 
@@ -32,6 +34,8 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   missingNgForOfLetFactory,
   suffixNotSupportedFactory,
   interpolatedSignalNotInvoked,
+  uninvokedFunctionInEventBindingFactory,
+  unusedLetDeclarationFactory,
 ];
 
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([

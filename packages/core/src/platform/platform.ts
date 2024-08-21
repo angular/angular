@@ -15,7 +15,8 @@ import {InjectionToken, Injector, StaticProvider} from '../di';
 import {INJECTOR_SCOPE} from '../di/scope';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 
-import {PLATFORM_DESTROY_LISTENERS, PlatformRef} from './platform_ref';
+import {PlatformRef} from './platform_ref';
+import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
 
 let _platformInjector: Injector | null = null;
 

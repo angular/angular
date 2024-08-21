@@ -1,6 +1,6 @@
 
-MyComponent.ɵfac = function MyComponent_Factory(t) {
-  return new (t || MyComponent)(
+MyComponent.ɵfac = function MyComponent_Factory(__ngFactoryType__) {
+  return new (__ngFactoryType__ || MyComponent)(
     $r3$.ɵɵinjectAttribute('name'),
     $r3$.ɵɵinjectAttribute(dynamicAttrName()),
     $r3$.ɵɵdirectiveInject(MyService),

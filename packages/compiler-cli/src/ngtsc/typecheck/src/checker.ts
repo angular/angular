@@ -752,22 +752,21 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       tagMap.set(tag, null);
     }
 
-    const scope = this.getScopeData(component);
-    if (scope !== null) {
-      for (const directive of scope.directives) {
-        if (directive.selector === null) {
+    const potentialDirectives = this.getPotentialTemplateDirectives(component);
+
+    for (const directive of potentialDirectives) {
+      if (directive.selector === null) {
+        continue;
+      }
+
+      for (const selector of CssSelector.parse(directive.selector)) {
+        if (selector.element === null || tagMap.has(selector.element)) {
+          // Skip this directive if it doesn't match an element tag, or if another directive has
+          // already been included with the same element name.
           continue;
         }
 
-        for (const selector of CssSelector.parse(directive.selector)) {
-          if (selector.element === null || tagMap.has(selector.element)) {
-            // Skip this directive if it doesn't match an element tag, or if another directive has
-            // already been included with the same element name.
-            continue;
-          }
-
-          tagMap.set(selector.element, directive);
-        }
+        tagMap.set(selector.element, directive);
       }
     }
 

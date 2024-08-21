@@ -60,7 +60,7 @@ export class ApiReferenceManager {
 
       groups.push({
         title: packageNameWithoutPrefix,
-        id: packageNameWithoutPrefix.replaceAll('/', '-'),
+        id: packageNameWithoutPrefix.replace(/\//g, '-'),
         items: packageApis
           .map((api) => {
             const url = getApiUrl(packageNameWithoutPrefix, api.name);

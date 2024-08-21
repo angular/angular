@@ -18,3 +18,4 @@ export * from './src/references_registry';
 export * from './src/schema';
 export * from './src/util';
 export * from './src/input_transforms';
+export * from './src/jit_declaration_registry';

@@ -1,4 +1,5 @@
 load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", "http_server")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
@@ -6,6 +7,10 @@ load("@bazel_skylib//lib:collections.bzl", "collections")
 load("//adev/tools/local_deps:index.bzl", "ensure_local_package_deps", "link_local_packages")
 
 package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig.json",
+])
 
 # All source and configuration files required to build the docs app
 APPLICATION_FILES = [
@@ -17,18 +22,15 @@ APPLICATION_FILES = [
     ["src/**/*"],
     exclude = [
         "src/**/*.spec.ts",
-        # Temporarily exclude generated sources produced by the non-bazel
-        # build until the whole project is built by bazel and this directory
-        # isn't needed.
-        "src/generated/**/*",
     ],
 )
 
 TEST_FILES = APPLICATION_FILES + [
     "karma.conf.js",
+    "test-main.ts",
     "tsconfig.spec.json",
 ] + glob(
-    ["**/*.spec.ts"],
+    ["src/**/*.spec.ts"],
 )
 
 APPLICATION_ASSETS = [
@@ -42,6 +44,7 @@ APPLICATION_ASSETS = [
 ]
 
 APPLICATION_DEPS = [
+    "@npm//@angular/docs",
     "@npm//@angular/build",
     "@npm//@angular-devkit/build-angular",
     "@npm//@angular/animations",
@@ -50,7 +53,6 @@ APPLICATION_DEPS = [
     "@npm//@angular/compiler",
     "@npm//@angular/compiler-cli",
     "@npm//@angular/core",
-    "@npm//@angular/docs",
     "@npm//@angular/forms",
     "@npm//@angular/material",
     "@npm//@angular/platform-browser",
@@ -78,6 +80,9 @@ APPLICATION_DEPS = [
     "@npm//@lezer/highlight",
     "@npm//@lezer/javascript",
     "@npm//@lezer/common",
+    "@npm//@stackblitz/sdk",
+    "@npm//open-in-idx",
+    "@npm//@webcontainer/api",
     "@npm//@xterm/xterm",
     "@npm//@xterm/addon-fit",
     "@npm//algoliasearch",
@@ -89,7 +94,6 @@ TEST_DEPS = APPLICATION_DEPS + [
     "@npm//@angular/platform-browser-dynamic",
     "@npm//@types/jasmine",
     "@npm//@types/node",
-    "@npm//assert",
     "@npm//jasmine",
     "@npm//jasmine-core",
     "@npm//karma-chrome-launcher",
@@ -110,27 +114,27 @@ copy_to_bin(
 )
 
 bool_flag(
-    name = "fast_build_mode",
+    name = "prerender_adev",
     build_setting_default = False,
 )
 
 config_setting(
-    name = "fast",
+    name = "no_prerender",
     flag_values = {
-        ":fast_build_mode": "true",
+        ":prerender_adev": "false",
     },
 )
 
 config_setting(
-    name = "full",
+    name = "prerender",
     flag_values = {
-        ":fast_build_mode": "false",
+        ":prerender_adev": "true",
     },
 )
 
 config_based_architect_flags = select({
-    ":fast": ["--no-prerender"],
-    ":full": ["--prerender"],
+    ":no_prerender": ["--no-prerender"],
+    ":prerender": ["--prerender"],
 })
 
 architect(
@@ -151,21 +155,13 @@ architect(
     ],
 )
 
-architect(
+http_server(
     name = "serve",
-    args = [
-        "angular-dev:serve",
-        "--poll=1000",
-        "--live-reload",
-        "--watch",
+    additional_root_paths = [
+        "angular/adev/build/browser",
     ],
-    chdir = package_name(),
-    data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
-        ":application_files_bin",
-    ],
-    tags = [
-        "no-remote-exec",
-    ],
+    enable_dev_ui = True,
+    deps = [":build"],
 )
 
 architect_test(
@@ -176,7 +172,7 @@ architect_test(
     ],
     chdir = package_name(),
     data = ensure_local_package_deps(TEST_DEPS) + TEST_FILES + APPLICATION_ASSETS + [
-        "//aio/tools:windows-chromium-path",
+        "//adev/tools:windows-chromium-path",
         "@npm//@angular/build-tooling/bazel/browsers/chromium",
     ],
     env = {

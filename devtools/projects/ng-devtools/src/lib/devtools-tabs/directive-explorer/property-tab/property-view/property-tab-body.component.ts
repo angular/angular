@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, computed, input, output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
 import {IndexedNode} from '../../directive-forest/index-forest';
@@ -21,18 +21,19 @@ import {PropertyViewComponent} from './property-view.component';
   imports: [PropertyViewComponent],
 })
 export class PropertyTabBodyComponent {
-  @Input({required: true}) currentSelectedElement!: IndexedNode | null;
-  @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
-  @Output() viewSource = new EventEmitter<string>();
+  readonly currentSelectedElement = input.required<IndexedNode>();
+  readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
+  readonly viewSource = output<string>();
 
-  getCurrentDirectives(): string[] | undefined {
-    if (!this.currentSelectedElement) {
+  readonly currentDirectives = computed(() => {
+    const selected = this.currentSelectedElement();
+    if (!selected) {
       return;
     }
-    const directives = this.currentSelectedElement.directives.map((d) => d.name);
-    if (this.currentSelectedElement.component) {
-      directives.push(this.currentSelectedElement.component.name);
+    const directives = selected.directives.map((d) => d.name);
+    if (selected.component) {
+      directives.push(selected.component.name);
     }
     return directives;
-  }
+  });
 }

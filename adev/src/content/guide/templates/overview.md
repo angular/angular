@@ -32,17 +32,19 @@ For more information, see the [Security](best-practices/security) page.
 
 You might also be interested in the following:
 
-| Topics                                                                    | Details                                                               |
-| :------------------------------------------------------------------------ | :-------------------------------------------------------------------- |
-| [Interpolation](guide/templates/interpolation)                            | Learn how to use interpolation and expressions in HTML.               |
-| [Template statements](guide/templates/template-statements)                | Respond to events in your templates.                                  |
-| [Binding syntax](guide/templates/binding)                                 | Use binding to coordinate values in your application.                 |
-| [Property binding](guide/templates/property-binding)                      | Set properties of target elements or directive `@Input()` decorators. |
-| [Attribute, class, and style bindings](guide/templates/attribute-binding) | Set the value of attributes, classes, and styles.                     |
-| [Event binding](guide/templates/event-binding)                            | Listen for events and your HTML.                                      |
-| [Two-way binding](guide/templates/two-way-binding)                        | Share data between a class and its template.                          |
-| [Built-in directives](guide/directives)                                   | Listen to and modify the behavior and layout of HTML.                 |
-| [Template reference variables](guide/templates/reference-variables)       | Use special variables to reference a DOM element within a template.   |
-| [Inputs](guide/components/inputs)                                         | Accepting data with input properties                                  |
-| [Outputs](guide/components/outputs)                                       | Custom events with outputs                                            |
-| [SVG in templates](guide/templates/svg-in-templates)                      | Dynamically generate interactive graphics.                            |
+| Topics                                                                    | Details                                                                       |
+| :------------------------------------------------------------------------ | :---------------------------------------------------------------------------- |
+| [Interpolation](guide/templates/interpolation)                            | Learn how to use interpolation and expressions in HTML.                       |
+| [Template statements](guide/templates/template-statements)                | Respond to events in your templates.                                          |
+| [Binding syntax](guide/templates/binding)                                 | Use binding to coordinate values in your application.                         |
+| [Property binding](guide/templates/property-binding)                      | Set properties of target elements or directive `@Input()` decorators.         |
+| [Attribute, class, and style bindings](guide/templates/attribute-binding) | Set the value of attributes, classes, and styles.                             |
+| [Event binding](guide/templates/event-binding)                            | Listen for events and your HTML.                                              |
+| [Two-way binding](guide/templates/two-way-binding)                        | Share data between a class and its template.                                  |
+| [Control flow](guide/templates/control-flow)                              | Angular's syntax for conditionally showing, hiding, and repeating elements.   |
+| [Local template variables](guide/templates/let-template-variables)        | Define and reuse variables in your template.                                  |
+| [Built-in directives](guide/directives)                                   | Listen to and modify the behavior and layout of HTML.                         |
+| [Template reference variables](guide/templates/reference-variables)       | Use special variables to reference a DOM element within a template.           |
+| [Inputs](guide/components/inputs)                                         | Accepting data with input properties                                          |
+| [Outputs](guide/components/outputs)                                       | Custom events with outputs                                                    |
+| [SVG in templates](guide/templates/svg-in-templates)                      | Dynamically generate interactive graphics.                                    |

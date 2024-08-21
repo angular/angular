@@ -548,8 +548,8 @@ class MockRenderer implements Renderer2 {
   insertBefore(parent: Node, newChild: Node, refChild: Node | null): void {
     parent.insertBefore(newChild, refChild);
   }
-  removeChild(parent: RElement, oldChild: Node): void {
-    parent.removeChild(oldChild);
+  removeChild(parent: RElement, oldChild: Element): void {
+    oldChild.remove();
   }
   selectRootElement(selectorOrNode: string | any): RElement {
     return typeof selectorOrNode === 'string'

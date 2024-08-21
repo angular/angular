@@ -21,6 +21,10 @@ export class MockScriptElement {
   removeEventListener(event: 'load' | 'error'): void {
     delete this.listeners[event];
   }
+
+  remove() {
+    this.ownerDocument.removeNode(this);
+  }
 }
 
 export class MockDocument {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, input, output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
@@ -21,7 +21,7 @@ import {PropertyTabHeaderComponent} from './property-tab-header.component';
   imports: [PropertyTabHeaderComponent, PropertyTabBodyComponent],
 })
 export class PropertyTabComponent {
-  @Input({required: true}) currentSelectedElement!: IndexedNode;
-  @Output() viewSource = new EventEmitter<string>();
-  @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
+  readonly currentSelectedElement = input.required<IndexedNode>();
+  readonly viewSource = output<string>();
+  readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
 }

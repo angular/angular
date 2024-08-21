@@ -11,7 +11,7 @@ import {
   Injectable,
   InjectionToken,
   ɵformatRuntimeError as formatRuntimeError,
-  ɵRuntimeError as RuntimeError,
+  PLATFORM_ID,
 } from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
@@ -20,6 +20,7 @@ import {RuntimeErrorCode} from '../../errors';
 import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';
 import {extractHostname, getUrl} from './url';
+import {isPlatformServer} from '../../platform_id';
 
 // Set of origins that are always excluded from the preconnect checks.
 const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
@@ -56,6 +57,7 @@ export const PRECONNECT_CHECK_BLOCKLIST = new InjectionToken<Array<string | stri
 @Injectable({providedIn: 'root'})
 export class PreconnectLinkChecker {
   private document = inject(DOCUMENT);
+  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 
   /**
    * Set of <link rel="preconnect"> tags found on this page.
@@ -102,9 +104,9 @@ export class PreconnectLinkChecker {
    * @param originalNgSrc ngSrc value
    */
   assertPreconnect(rewrittenSrc: string, originalNgSrc: string): void {
-    if (!this.window) return;
+    if (this.isServer) return;
 
-    const imgUrl = getUrl(rewrittenSrc, this.window);
+    const imgUrl = getUrl(rewrittenSrc, this.window!);
     if (this.blocklist.has(imgUrl.hostname) || this.alreadySeen.has(imgUrl.origin)) return;
 
     // Register this origin as seen, so we don't check it again later.

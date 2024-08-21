@@ -11,7 +11,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<h1>Heading 1</h1>'
+                    template: '<h1>Heading 1</h1>',
                 }]
         }] });
 //# sourceMappingURL=simple_element.js.map
@@ -41,7 +41,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<h1>Heading 1</h1>'
+                    template: '<h1>Heading 1</h1>',
                 }]
         }] });
 //# sourceMappingURL=simple_element.js.map
@@ -71,7 +71,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<hr>'
+                    template: '<hr>',
                 }]
         }] });
 //# sourceMappingURL=void_element.js.map
@@ -101,7 +101,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<hr>'
+                    template: '<hr>',
                 }]
         }] });
 //# sourceMappingURL=void_element.js.map
@@ -134,7 +134,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<h3>Hello {{ name }}</h3>'
+                    template: '<h3>Hello {{ name }}</h3>',
                 }]
         }] });
 //# sourceMappingURL=interpolation_basic.js.map
@@ -168,7 +168,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<h3>Hello {{ name }}</h3>'
+                    template: '<h3>Hello {{ name }}</h3>',
                 }]
         }] });
 //# sourceMappingURL=interpolation_basic.js.map
@@ -203,7 +203,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<h2>{{ greeting + " " + name }}</h2>'
+                    template: '<h2>{{ greeting + " " + name }}</h2>',
                 }]
         }] });
 //# sourceMappingURL=interpolation_complex.js.map
@@ -239,7 +239,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<h2>{{ greeting + " " + name }}</h2>'
+                    template: '<h2>{{ greeting + " " + name }}</h2>',
                 }]
         }] });
 //# sourceMappingURL=interpolation_complex.js.map
@@ -274,7 +274,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div id="{{name}}"></div>'
+                    template: '<div id="{{name}}"></div>',
                 }]
         }] });
 //# sourceMappingURL=interpolation_properties.js.map
@@ -308,7 +308,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div id="{{name}}"></div>'
+                    template: '<div id="{{name}}"></div>',
                 }]
         }] });
 //# sourceMappingURL=interpolation_properties.js.map
@@ -339,7 +339,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div>{{200.3 | percent : 2 }}</div>'
+                    template: '<div>{{200.3 | percent : 2 }}</div>',
                 }]
         }] });
 export class PercentPipe {
@@ -398,7 +398,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div>{{200.3 | percent : 2 }}</div>'
+                    template: '<div>{{200.3 | percent : 2 }}</div>',
                 }]
         }] });
 export class PercentPipe {
@@ -460,7 +460,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div [title]="name"></div>'
+                    template: '<div [title]="name"></div>',
                 }]
         }] });
 //# sourceMappingURL=input_binding_simple.js.map
@@ -494,7 +494,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div [title]="name"></div>'
+                    template: '<div [title]="name"></div>',
                 }]
         }] });
 //# sourceMappingURL=input_binding_simple.js.map
@@ -529,7 +529,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div [title]="greeting + name"></div>'
+                    template: '<div [title]="greeting + name"></div>',
                 }]
         }] });
 //# sourceMappingURL=input_binding_complex.js.map
@@ -565,7 +565,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div [title]="greeting + name"></div>'
+                    template: '<div [title]="greeting + name"></div>',
                 }]
         }] });
 //# sourceMappingURL=input_binding_complex.js.map
@@ -600,7 +600,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div bind-title="name"></div>'
+                    template: '<div bind-title="name"></div>',
                 }]
         }] });
 //# sourceMappingURL=input_binding_longhand.js.map
@@ -634,7 +634,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div bind-title="name"></div>'
+                    template: '<div bind-title="name"></div>',
                 }]
         }] });
 //# sourceMappingURL=input_binding_longhand.js.map
@@ -666,7 +666,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<button (click)="doSomething()">Do it</button>'
+                    template: '<button (click)="doSomething()">Do it</button>',
                 }]
         }] });
 //# sourceMappingURL=output_binding_simple.js.map
@@ -698,7 +698,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<button (click)="doSomething()">Do it</button>'
+                    template: '<button (click)="doSomething()">Do it</button>',
                 }]
         }] });
 //# sourceMappingURL=output_binding_simple.js.map
@@ -732,7 +732,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: `<button (click)="items.push('item' + items.length)">Add Item</button>`
+                    template: `<button (click)="items.push('item' + items.length)">Add Item</button>`,
                 }]
         }] });
 //# sourceMappingURL=output_binding_complex.js.map
@@ -766,7 +766,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: `<button (click)="items.push('item' + items.length)">Add Item</button>`
+                    template: `<button (click)="items.push('item' + items.length)">Add Item</button>`,
                 }]
         }] });
 //# sourceMappingURL=output_binding_complex.js.map
@@ -798,7 +798,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<button on-click="doSomething()">Do it</button>'
+                    template: '<button on-click="doSomething()">Do it</button>',
                 }]
         }] });
 //# sourceMappingURL=output_binding_longhand.js.map
@@ -830,7 +830,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<button on-click="doSomething()">Do it</button>'
+                    template: '<button on-click="doSomething()">Do it</button>',
                 }]
         }] });
 //# sourceMappingURL=output_binding_longhand.js.map
@@ -864,7 +864,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: 'Name: <input [(ngModel)]="name">'
+                    template: 'Name: <input [(ngModel)]="name">',
                 }]
         }] });
 export class NgModelDirective {
@@ -935,7 +935,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: 'Name: <input [(ngModel)]="name">'
+                    template: 'Name: <input [(ngModel)]="name">',
                 }]
         }] });
 export class NgModelDirective {
@@ -1006,7 +1006,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: 'Name: <input bindon-ngModel="name">'
+                    template: 'Name: <input bindon-ngModel="name">',
                 }]
         }] });
 export class NgModelDirective {
@@ -1077,7 +1077,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: 'Name: <input bindon-ngModel="name">'
+                    template: 'Name: <input bindon-ngModel="name">',
                 }]
         }] });
 export class NgModelDirective {
@@ -1148,7 +1148,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div [class.initial]="isInitial">Message</div>'
+                    template: '<div [class.initial]="isInitial">Message</div>',
                 }]
         }] });
 //# sourceMappingURL=input_binding_class.js.map
@@ -1182,7 +1182,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div [class.initial]="isInitial">Message</div>'
+                    template: '<div [class.initial]="isInitial">Message</div>',
                 }]
         }] });
 //# sourceMappingURL=input_binding_class.js.map
@@ -1213,7 +1213,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div *ngIf="showMessage()">{{ name }}</div>'
+                    template: '<div *ngIf="showMessage()">{{ name }}</div>',
                 }]
         }] });
 //# sourceMappingURL=ng_if_simple.js.map
@@ -1243,7 +1243,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div *ngIf="showMessage()">{{ name }}</div>'
+                    template: '<div *ngIf="showMessage()">{{ name }}</div>',
                 }]
         }] });
 //# sourceMappingURL=ng_if_simple.js.map
@@ -1537,7 +1537,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n>Hello, World!</div>'
+                    template: '<div i18n>Hello, World!</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_simple.js.map
@@ -1567,7 +1567,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n>Hello, World!</div>'
+                    template: '<div i18n>Hello, World!</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_simple.js.map
@@ -1600,7 +1600,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n>Hello, {{name}}!</div>'
+                    template: '<div i18n>Hello, {{name}}!</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_placeholder.js.map
@@ -1634,7 +1634,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n>Hello, {{name}}!</div>'
+                    template: '<div i18n>Hello, {{name}}!</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_placeholder.js.map
@@ -1669,7 +1669,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n>Interpolation: {{ one }}&nbsp;Interpolation: {{ two }}</div>'
+                    template: '<div i18n>Interpolation: {{ one }}&nbsp;Interpolation: {{ two }}</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_placeholder_entities.js.map
@@ -1705,7 +1705,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n>Interpolation: {{ one }}&nbsp;Interpolation: {{ two }}</div>'
+                    template: '<div i18n>Interpolation: {{ one }}&nbsp;Interpolation: {{ two }}</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_placeholder_entities.js.map
@@ -1741,7 +1741,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n title="  pre-title {{titleValue}}  post-title" i18n-title>  pre-body {{bodyValue}}  post-body</div>'
+                    template: '<div i18n title="  pre-title {{titleValue}}  post-title" i18n-title>  pre-body {{bodyValue}}  post-body</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_interpolation_whitespace.js.map
@@ -1777,7 +1777,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n title="  pre-title {{titleValue}}  post-title" i18n-title>  pre-body {{bodyValue}}  post-body</div>'
+                    template: '<div i18n title="  pre-title {{titleValue}}  post-title" i18n-title>  pre-body {{bodyValue}}  post-body</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_interpolation_whitespace.js.map
@@ -1809,7 +1809,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n>\n  pre-p\n  <p>\n    in-p\n  </p>\n  post-p\n</div>'
+                    template: '<div i18n>\n  pre-p\n  <p>\n    in-p\n  </p>\n  post-p\n</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_element_whitespace.js.map
@@ -1839,7 +1839,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n>\n  pre-p\n  <p>\n    in-p\n  </p>\n  post-p\n</div>'
+                    template: '<div i18n>\n  pre-p\n  <p>\n    in-p\n  </p>\n  post-p\n</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_element_whitespace.js.map
@@ -1869,7 +1869,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n>Hello, <b>World</b>!</div>'
+                    template: '<div i18n>Hello, <b>World</b>!</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_container_tag.js.map
@@ -1899,7 +1899,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div i18n>Hello, <b>World</b>!</div>'
+                    template: '<div i18n>Hello, <b>World</b>!</div>',
                 }]
         }] });
 //# sourceMappingURL=i18n_message_container_tag.js.map
@@ -1929,7 +1929,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div>this is a test</div><div>{{ 1 + 2 }}</div>'
+                    template: '<div>this is a test</div><div>{{ 1 + 2 }}</div>',
                 }]
         }] });
 //# sourceMappingURL=update_mode.js.map
@@ -1959,7 +1959,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div>this is a test</div><div>{{ 1 + 2 }}</div>'
+                    template: '<div>this is a test</div><div>{{ 1 + 2 }}</div>',
                 }]
         }] });
 //# sourceMappingURL=update_mode.js.map
@@ -1989,7 +1989,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div class=\"some-class\">this is a test</div>'
+                    template: '<div class=\"some-class\">this is a test</div>',
                 }]
         }] });
 //# sourceMappingURL=escape_sequences.js.map
@@ -2019,7 +2019,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: '<div class=\"some-class\">this is a test</div>'
+                    template: '<div class=\"some-class\">this is a test</div>',
                 }]
         }] });
 //# sourceMappingURL=escape_sequences.js.map

@@ -73,11 +73,13 @@
 </mat-tab-nav-panel>
 
 <mat-menu #menu="matMenu">
-  <div mat-menu-item disableRipple (click)="$event.stopPropagation(); toggleTimingAPI()">
-    <mat-slide-toggle [checked]="timingAPIEnabled">
-      Enable timing API
-    </mat-slide-toggle>
-  </div>
+  @if (!profilingNotificationsSupported) {
+    <div mat-menu-item disableRipple (click)="$event.stopPropagation(); toggleTimingAPI()">
+      <mat-slide-toggle [checked]="timingAPIEnabled">
+        Enable timing API
+      </mat-slide-toggle>
+    </div>
+  }
   <div mat-menu-item disableRipple (click)="$event.stopPropagation(); themeService.toggleDarkMode(currentTheme === 'light-theme')">
     <mat-slide-toggle [checked]="currentTheme === 'dark-theme'">
       Dark Mode

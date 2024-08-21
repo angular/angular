@@ -1,7 +1,8 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
-
 package(default_visibility = ["//visibility:public"])
 
-docs_example(
-    name = "two-way-binding",
-)
+exports_files([
+    "src/app/app.component.html",
+    "src/app/app.component.ts",
+    "src/app/sizer/sizer.component.html",
+    "src/app/sizer/sizer.component.ts",
+])

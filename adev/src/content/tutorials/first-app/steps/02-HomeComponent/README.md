@@ -122,7 +122,7 @@ Summary: In this lesson, you created a new component for your app and gave it a 
 For more information about the topics covered in this lesson, visit:
 
 <docs-pill-row>
-  <docs-pill href="cli/generate#component-command" title="`ng generate component`"/>
+  <docs-pill href="cli/generate/component" title="`ng generate component`"/>
   <docs-pill href="api/core/Component" title="`Component` reference"/>
   <docs-pill href="guide/components" title="Angular components overview"/>
 </docs-pill-row>

@@ -9,6 +9,7 @@
 import {ResourceLoader} from '@angular/compiler';
 import {
   ApplicationInitStatus,
+  ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
   Compiler,
@@ -16,6 +17,7 @@ import {
   Component,
   Directive,
   Injector,
+  inject,
   InjectorType,
   LOCALE_ID,
   ModuleWithComponentFactories,
@@ -35,7 +37,6 @@ import {
   ɵcompilePipe as compilePipe,
   ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
   ɵDEFER_BLOCK_CONFIG as DEFER_BLOCK_CONFIG,
-  ɵDeferBlockBehavior as DeferBlockBehavior,
   ɵdepsTracker as depsTracker,
   ɵDirectiveDef as DirectiveDef,
   ɵgenerateStandaloneInDeclarationsError,
@@ -50,6 +51,7 @@ import {
   ɵNG_INJ_DEF as NG_INJ_DEF,
   ɵNG_MOD_DEF as NG_MOD_DEF,
   ɵNG_PIPE_DEF as NG_PIPE_DEF,
+  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵNgModuleFactory as R3NgModuleFactory,
   ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes,
   ɵNgModuleType as NgModuleType,
@@ -62,6 +64,8 @@ import {
   ɵtransitiveScopesFor as transitiveScopesFor,
   ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT as USE_RUNTIME_DEPS_TRACKER_FOR_JIT,
   ɵɵInjectableDeclaration as InjectableDeclaration,
+  NgZone,
+  ErrorHandler,
 } from '@angular/core';
 
 import {ComponentDef, ComponentType} from '../../src/render3';
@@ -75,6 +79,10 @@ import {
   Resolver,
 } from './resolvers';
 import {DEFER_BLOCK_DEFAULT_BEHAVIOR, TestModuleMetadata} from './test_bed_common';
+import {
+  RETHROW_APPLICATION_ERRORS_DEFAULT,
+  TestBedApplicationErrorHandler,
+} from './application_error_handler';
 
 enum TestingModuleOverride {
   DECLARATION,
@@ -182,6 +190,7 @@ export class TestBedCompiler {
   private testModuleRef: NgModuleRef<any> | null = null;
 
   private deferBlockBehavior = DEFER_BLOCK_DEFAULT_BEHAVIOR;
+  private rethrowApplicationTickErrors = RETHROW_APPLICATION_ERRORS_DEFAULT;
 
   constructor(
     private platform: PlatformRef,
@@ -224,6 +233,8 @@ export class TestBedCompiler {
     }
 
     this.deferBlockBehavior = moduleDef.deferBlockBehavior ?? DEFER_BLOCK_DEFAULT_BEHAVIOR;
+    this.rethrowApplicationTickErrors =
+      moduleDef.rethrowApplicationErrors ?? RETHROW_APPLICATION_ERRORS_DEFAULT;
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
@@ -931,6 +942,7 @@ export class TestBedCompiler {
       providers: [
         ...this.rootProviderOverrides,
         internalProvideZoneChangeDetection({}),
+        TestBedApplicationErrorHandler,
         {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
       ],
     });
@@ -938,6 +950,21 @@ export class TestBedCompiler {
     const providers = [
       {provide: Compiler, useFactory: () => new R3TestCompiler(this)},
       {provide: DEFER_BLOCK_CONFIG, useValue: {behavior: this.deferBlockBehavior}},
+      {
+        provide: INTERNAL_APPLICATION_ERROR_HANDLER,
+        useFactory: () => {
+          if (this.rethrowApplicationTickErrors) {
+            const handler = inject(TestBedApplicationErrorHandler);
+            return (e: unknown) => {
+              handler.handleError(e);
+            };
+          } else {
+            const userErrorHandler = inject(ErrorHandler);
+            const ngZone = inject(NgZone);
+            return (e: unknown) => ngZone.runOutsideAngular(() => userErrorHandler.handleError(e));
+          }
+        },
+      },
       ...this.providers,
       ...this.providerOverrides,
     ];

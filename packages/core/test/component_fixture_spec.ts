@@ -7,10 +7,14 @@
  */
 
 import {
+  ApplicationRef,
   Component,
+  EnvironmentInjector,
   ErrorHandler,
   Injectable,
   Input,
+  NgZone,
+  createComponent,
   provideExperimentalZonelessChangeDetection,
   signal,
 } from '@angular/core';
@@ -333,6 +337,59 @@ describe('ComponentFixture', () => {
     });
   }));
 
+  it('throws errors that happen during detectChanges', () => {
+    @Component({
+      template: '',
+      standalone: true,
+    })
+    class App {
+      ngOnInit() {
+        throw new Error();
+      }
+    }
+
+    const fixture = TestBed.createComponent(App);
+    expect(() => fixture.detectChanges()).toThrow();
+  });
+
+  describe('errors during ApplicationRef.tick', () => {
+    @Component({
+      template: '',
+      standalone: true,
+    })
+    class ThrowingThing {
+      ngOnInit() {
+        throw new Error();
+      }
+    }
+    @Component({
+      template: '',
+      standalone: true,
+    })
+    class Blank {}
+
+    it('rejects whenStable promise when errors happen during appRef.tick', async () => {
+      const fixture = TestBed.createComponent(Blank);
+      const throwingThing = createComponent(ThrowingThing, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
+
+      TestBed.inject(ApplicationRef).attachView(throwingThing.hostView);
+      await expectAsync(fixture.whenStable()).toBeRejected();
+    });
+
+    it('can opt-out of rethrowing application errors and rejecting whenStable promises', async () => {
+      TestBed.configureTestingModule({rethrowApplicationErrors: false});
+      const fixture = TestBed.createComponent(Blank);
+      const throwingThing = createComponent(ThrowingThing, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
+
+      TestBed.inject(ApplicationRef).attachView(throwingThing.hostView);
+      await expectAsync(fixture.whenStable()).toBeResolved();
+    });
+  });
+
   describe('defer', () => {
     it('should return all defer blocks in the component', async () => {
       @Component({
@@ -388,17 +445,76 @@ describe('ComponentFixture', () => {
       componentFixture.detectChanges();
       expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
     }));
+
+    it('throws errors that happen during detectChanges', () => {
+      @Component({
+        template: '',
+        standalone: true,
+      })
+      class App {
+        ngOnInit() {
+          throw new Error();
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      expect(() => fixture.detectChanges()).toThrow();
+    });
+  });
+
+  it('reports errors from autoDetect change detection to error handler', () => {
+    let throwError = false;
+    @Component({template: ''})
+    class TestComponent {
+      ngDoCheck() {
+        if (throwError) {
+          throw new Error();
+        }
+      }
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.autoDetectChanges();
+    const errorHandler = TestBed.inject(ErrorHandler);
+    const spy = spyOn(errorHandler, 'handleError').and.callThrough();
+
+    throwError = true;
+    TestBed.inject(NgZone).run(() => {});
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('reports errors from checkNoChanges in autoDetect to error handler', () => {
+    let throwError = false;
+    @Component({template: '{{thing}}'})
+    class TestComponent {
+      thing = 'initial';
+      ngAfterViewChecked() {
+        if (throwError) {
+          this.thing = 'new';
+        }
+      }
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.autoDetectChanges();
+    const errorHandler = TestBed.inject(ErrorHandler);
+    const spy = spyOn(errorHandler, 'handleError').and.callThrough();
+
+    throwError = true;
+    TestBed.inject(NgZone).run(() => {});
+    expect(spy).toHaveBeenCalled();
   });
 });
 
 describe('ComponentFixture with zoneless', () => {
-  it('will not refresh CheckAlways views when detectChanges is called if not marked dirty', () => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         provideExperimentalZonelessChangeDetection(),
         {provide: ErrorHandler, useValue: {handleError: () => {}}},
       ],
     });
+  });
+
+  it('will not refresh CheckAlways views when detectChanges is called if not marked dirty', () => {
     @Component({standalone: true, template: '{{signalThing()}}|{{regularThing}}'})
     class CheckAlwaysCmp {
       regularThing = 'initial';
@@ -410,10 +526,41 @@ describe('ComponentFixture with zoneless', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.innerText).toEqual('initial|initial');
     fixture.componentInstance.regularThing = 'new';
-    fixture.detectChanges();
+    // Expression changed after checked
+    expect(() => fixture.detectChanges()).toThrow();
     expect(fixture.nativeElement.innerText).toEqual('initial|initial');
     fixture.componentInstance.signalThing.set('new');
     fixture.detectChanges();
     expect(fixture.nativeElement.innerText).toEqual('new|new');
+  });
+
+  it('throws errors that happen during detectChanges', () => {
+    @Component({
+      template: '',
+      standalone: true,
+    })
+    class App {
+      ngOnInit() {
+        throw new Error();
+      }
+    }
+
+    const fixture = TestBed.createComponent(App);
+    expect(() => fixture.detectChanges()).toThrow();
+  });
+
+  it('rejects whenStable promise when errors happen during detectChanges', async () => {
+    @Component({
+      template: '',
+      standalone: true,
+    })
+    class App {
+      ngOnInit() {
+        throw new Error();
+      }
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await expectAsync(fixture.whenStable()).toBeRejected();
   });
 });

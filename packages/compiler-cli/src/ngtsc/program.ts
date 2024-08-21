@@ -28,7 +28,7 @@ import {IndexedComponent} from './indexer';
 import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
 import {TsCreateProgramDriver} from './program_driver';
 import {DeclarationNode} from './reflection';
-import {retagAllTsFiles, untagAllTsFiles} from './shims';
+import {retagAllTsFiles} from './shims';
 import {OptimizeFor} from './typecheck/api';
 
 /**
@@ -87,10 +87,6 @@ export class NgtscProgram implements api.Program {
     perfRecorder.memory(PerfCheckpoint.TypeScriptProgramCreate);
 
     this.host.postProgramCreationCleanup();
-
-    // Shim tagging has served its purpose, and tags can now be removed from all `ts.SourceFile`s in
-    // the program.
-    untagAllTsFiles(this.tsProgram);
 
     const programDriver = new TsCreateProgramDriver(
       this.tsProgram,

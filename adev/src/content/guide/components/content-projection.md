@@ -5,7 +5,7 @@ Tip: This guide assumes you've already read the [Essentials Guide](essentials). 
 You often need to create components that act as containers for different types of content. For
 example, you may want to create a custom card component:
 
-```ts
+```angular-ts
 @Component({
   selector: 'custom-card',
   template: '<div class="card-shadow"> <!-- card content goes here --> </div>',
@@ -15,7 +15,7 @@ export class CustomCard {/* ... */}
 
 **You can use the `<ng-content>` element as a placeholder to mark where content should go**:
 
-```ts
+```angular-ts
 @Component({
   selector: 'custom-card',
   template: '<div class="card-shadow"> <ng-content></ng-content> </div>',
@@ -24,13 +24,13 @@ export class CustomCard {/* ... */}
 ```
 
 Tip: `<ng-content>` works similarly
-to [the native `<slot>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot),
+to [the native `<slot>` element](https://developer.mozilla.org/docs/Web/HTML/Element/slot),
 but with some Angular-specific functionality.
 
 When you use a component with `<ng-content>`, any children of the component host element are
 rendered, or **projected**, at the location of that `<ng-content>`:
 
-```ts
+```angular-ts
 // Component source
 @Component({
   selector: 'custom-card',
@@ -43,14 +43,14 @@ rendered, or **projected**, at the location of that `<ng-content>`:
 export class CustomCard {/* ... */}
 ```
 
-```html
+```angular-html
 <!-- Using the component -->
 <custom-card>
   <p>This is the projected content</p>
 </custom-card>
 ```
 
-```html
+```angular-html
 <!-- The rendered DOM -->
 <custom-card>
   <div class="card-shadow">
@@ -66,11 +66,12 @@ template.
 **The `<ng-content>` element is neither a component nor DOM element**. Instead, it is a special
 placeholder that tells Angular where to render content. Angular's compiler processes
 all `<ng-content>` elements at build-time. You cannot insert, remove, or modify `<ng-content>` at
-run time. You cannot add **<span style="text-decoration:underline;">directives</span>**, styles, or
-arbitrary attributes to `<ng-content>`.
+run time. You cannot add directives, styles, or arbitrary attributes to `<ng-content>`.
 
-You should not conditionally include `<ng-content>` with `ngIf`, `ngFor`, or `ngSwitch`. For
-conditional rendering of component content, see [Template fragments](api/core/ng-template).
+You should not conditionally include `<ng-content>` with `@if`, `@for`, or `@switch`. Angular always
+instantiates and creates DOM nodes for content rendered to a `<ng-content>` placeholder, even if
+that `<ng-content>` placeholder is hidden. For conditional rendering of component content,
+see [Template fragments](api/core/ng-template).
 
 ## Multiple content placeholders
 
@@ -78,7 +79,7 @@ Angular supports projecting multiple different elements into different `<ng-cont
 based on CSS selector. Expanding the card example from above, you could create two placeholders for
 a card title and a card body by using the `select` attribute:
 
-```html
+```angular-html
 <!-- Component template -->
 <div class="card-shadow">
   <ng-content select="card-title"></ng-content>
@@ -87,7 +88,7 @@ a card title and a card body by using the `select` attribute:
 </div>
 ```
 
-```html
+```angular-html
 <!-- Using the component -->
 <custom-card>
   <card-title>Hello</card-title>
@@ -95,7 +96,7 @@ a card title and a card body by using the `select` attribute:
 </custom-card>
 ```
 
-```html
+```angular-html
 <!-- Rendered DOM -->
 <custom-card>
   <div class="card-shadow">
@@ -113,7 +114,7 @@ If you include one or more `<ng-content>` placeholders with a `select` attribute
 one `<ng-content>` placeholder without a `select` attribute, the latter captures all elements that
 did not match a `select` attribute:
 
-```html
+```angular-html
 <!-- Component template -->
 <div class="card-shadow">
   <ng-content select="card-title"></ng-content>
@@ -123,7 +124,7 @@ did not match a `select` attribute:
 </div>
 ```
 
-```html
+```angular-html
 <!-- Using the component -->
 <custom-card>
   <card-title>Hello</card-title>
@@ -132,7 +133,7 @@ did not match a `select` attribute:
 </custom-card>
 ```
 
-```html
+```angular-html
 <!-- Rendered DOM -->
 <custom-card>
   <div class="card-shadow">
@@ -153,7 +154,7 @@ Angular supports a special attribute, `ngProjectAs`, that allows you to specify 
 any element. Whenever an element with `ngProjectAs` is checked against an `<ng-content>`
 placeholder, Angular compares against the `ngProjectAs` value instead of the element's identity:
 
-```html
+```angular-html
 <!-- Component template -->
 <div class="card-shadow">
   <ng-content select="card-title"></ng-content>
@@ -162,7 +163,7 @@ placeholder, Angular compares against the `ngProjectAs` value instead of the ele
 </div>
 ```
 
-```html
+```angular-html
 <!-- Using the component -->
 <custom-card>
   <h3 ngProjectAs="card-title">Hello</h3>
@@ -171,7 +172,7 @@ placeholder, Angular compares against the `ngProjectAs` value instead of the ele
 </custom-card>
 ```
 
-```html
+```angular-html
 <!-- Rendered DOM -->
 <custom-card>
   <div class="card-shadow">

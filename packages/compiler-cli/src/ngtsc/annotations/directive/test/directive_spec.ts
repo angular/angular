@@ -29,7 +29,11 @@ import {
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../scope';
 import {getDeclaration, makeProgram} from '../../../testing';
 import {CompilationMode} from '../../../transform';
-import {InjectableClassRegistry, NoopReferencesRegistry} from '../../common';
+import {
+  InjectableClassRegistry,
+  JitDeclarationRegistry,
+  NoopReferencesRegistry,
+} from '../../common';
 import {DirectiveDecoratorHandler} from '../index';
 
 runInEachFileSystem(() => {
@@ -190,6 +194,8 @@ runInEachFileSystem(() => {
     );
     const injectableRegistry = new InjectableClassRegistry(reflectionHost, /* isCore */ false);
     const importTracker = new ImportedSymbolsTracker();
+    const jitDeclarationRegistry = new JitDeclarationRegistry();
+
     const handler = new DirectiveDecoratorHandler(
       reflectionHost,
       evaluator,
@@ -207,7 +213,7 @@ runInEachFileSystem(() => {
       importTracker,
       /*includeClassMetadata*/ true,
       /*compilationMode */ CompilationMode.FULL,
-      /*generateExtraImportsInLocalMode*/ false,
+      jitDeclarationRegistry,
     );
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);

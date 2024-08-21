@@ -13,10 +13,7 @@ import {getDocument} from '../src/render3/interfaces/document';
 import {makeStateKey, TransferState} from '../src/transfer_state';
 
 function removeScriptTag(doc: Document, id: string) {
-  const existing = doc.getElementById(id);
-  if (existing) {
-    doc.body.removeChild(existing);
-  }
+  doc.getElementById(id)?.remove();
 }
 
 function addScriptTag(doc: Document, appId: string, data: object | string) {

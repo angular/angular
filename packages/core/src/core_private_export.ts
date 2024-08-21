@@ -11,6 +11,7 @@ export {
   detectChangesInViewIfRequired as ɵdetectChangesInViewIfRequired,
   whenStable as ɵwhenStable,
 } from './application/application_ref';
+export {INTERNAL_APPLICATION_ERROR_HANDLER as ɵINTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
 export {
   IMAGE_CONFIG as ɵIMAGE_CONFIG,
   IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS,
@@ -71,6 +72,11 @@ export {
   withI18nSupport as ɵwithI18nSupport,
 } from './hydration/api';
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
+export {
+  GLOBAL_EVENT_DELEGATION as ɵGLOBAL_EVENT_DELEGATION,
+  JSACTION_EVENT_CONTRACT as ɵJSACTION_EVENT_CONTRACT,
+} from './event_delegation_utils';
+export {provideGlobalEventDelegation as ɵprovideGlobalEventDelegation} from './event_dispatch/event_delegation';
 export {IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED} from './hydration/tokens';
 export {
   HydratedNode as ɵHydratedNode,

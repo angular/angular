@@ -29,7 +29,6 @@ function bind(template: string) {
   return util.getBoundTemplate(template, {
     preserveWhitespaces: true,
     leadingTriviaChars: [],
-    enableLetSyntax: true,
   });
 }
 

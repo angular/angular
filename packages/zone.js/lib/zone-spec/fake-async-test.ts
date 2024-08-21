@@ -785,7 +785,7 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
   }
 }
 
-let _fakeAsyncTestZoneSpec: any = null;
+let _fakeAsyncTestZoneSpec: FakeAsyncTestZoneSpec | null = null;
 
 type ProxyZoneSpecType = {
   setDelegate(delegateSpec: ZoneSpec): void;
@@ -816,7 +816,8 @@ export function resetFakeAsyncZone() {
  * - microtasks are manually executed by calling `flushMicrotasks()`,
  * - timers are synchronous, `tick()` simulates the asynchronous passage of time.
  *
- * If there are any pending timers at the end of the function, an exception will be thrown.
+ * When flush is `false`, if there are any pending timers at the end of the function,
+ * an exception will be thrown.
  *
  * Can be used to wrap inject() calls.
  *
@@ -825,11 +826,14 @@ export function resetFakeAsyncZone() {
  * {@example core/testing/ts/fake_async.ts region='basic'}
  *
  * @param fn
+ * @param options
+ *     flush: when true, will drain the macrotask queue after the test function completes.
  * @returns The function wrapped to be executed in the fakeAsync zone
  *
  * @experimental
  */
-export function fakeAsync(fn: Function): (...args: any[]) => any {
+export function fakeAsync(fn: Function, options: {flush?: boolean} = {}): (...args: any[]) => any {
+  const {flush = true} = options;
   // Not using an arrow function to preserve context passed from call site
   const fakeAsyncFn: any = function (this: unknown, ...args: any[]) {
     const ProxyZoneSpec = getProxyZoneSpec();
@@ -851,7 +855,7 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
           throw new Error('fakeAsync() calls can not be nested');
         }
 
-        _fakeAsyncTestZoneSpec = new FakeAsyncTestZoneSpec();
+        _fakeAsyncTestZoneSpec = new FakeAsyncTestZoneSpec() as FakeAsyncTestZoneSpec;
       }
 
       let res: any;
@@ -860,22 +864,28 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
       _fakeAsyncTestZoneSpec.lockDatePatch();
       try {
         res = fn.apply(this, args);
-        flushMicrotasks();
+        if (flush) {
+          _fakeAsyncTestZoneSpec.flush(20, true);
+        } else {
+          flushMicrotasks();
+        }
       } finally {
         proxyZoneSpec.setDelegate(lastProxyZoneSpec);
       }
 
-      if (_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
-        throw new Error(
-          `${_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
-            `periodic timer(s) still in the queue.`,
-        );
-      }
+      if (!flush) {
+        if (_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length > 0) {
+          throw new Error(
+            `${_fakeAsyncTestZoneSpec.pendingPeriodicTimers.length} ` +
+              `periodic timer(s) still in the queue.`,
+          );
+        }
 
-      if (_fakeAsyncTestZoneSpec.pendingTimers.length > 0) {
-        throw new Error(
-          `${_fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`,
-        );
+        if (_fakeAsyncTestZoneSpec.pendingTimers.length > 0) {
+          throw new Error(
+            `${_fakeAsyncTestZoneSpec.pendingTimers.length} timer(s) still in the queue.`,
+          );
+        }
       }
       return res;
     } finally {

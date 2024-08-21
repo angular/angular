@@ -1897,6 +1897,46 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(TestBed.inject(Handler).handlerCalled).toBeTrue();
     });
 
+    it('can redirect from error handler with RouterModule.forRoot', async () => {
+      TestBed.configureTestingModule({
+        imports: [
+          RouterModule.forRoot(
+            [
+              {
+                path: 'throw',
+                canMatch: [
+                  () => {
+                    throw new Error('');
+                  },
+                ],
+                component: BlankCmp,
+              },
+              {path: 'error', component: BlankCmp},
+            ],
+            {
+              resolveNavigationPromiseOnError: true,
+              errorHandler: () => new RedirectCommand(coreInject(Router).parseUrl('/error')),
+            },
+          ),
+        ],
+      });
+      const router = TestBed.inject(Router);
+      let emitNavigationError = false;
+      let emitNavigationCancelWithRedirect = false;
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationError) {
+          emitNavigationError = true;
+        }
+        if (e instanceof NavigationCancel && e.code === NavigationCancellationCode.Redirect) {
+          emitNavigationCancelWithRedirect = true;
+        }
+      });
+      await router.navigateByUrl('/throw');
+      expect(router.url).toEqual('/error');
+      expect(emitNavigationError).toBe(false);
+      expect(emitNavigationCancelWithRedirect).toBe(true);
+    });
+
     it('can redirect from error handler', async () => {
       TestBed.configureTestingModule({
         providers: [
@@ -2133,28 +2173,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(routerUrlBeforeEmittingError).toEqual('/simple');
       expect(locationUrlBeforeEmittingError).toEqual('/simple');
     }));
-
-    it('should support custom error handlers', fakeAsync(
-      inject([Router], (router: Router) => {
-        router.errorHandler = (error) => 'resolvedValue';
-        const fixture = createRoot(router, RootCmp);
-
-        router.resetConfig([{path: 'user/:name', component: UserCmp}]);
-
-        const recordedEvents: any[] = [];
-        router.events.forEach((e) => recordedEvents.push(e));
-
-        let e: any;
-        router.navigateByUrl('/invalid')!.then((_) => (e = _));
-        advance(fixture);
-        expect(e).toEqual(true);
-
-        expectEvents(recordedEvents, [
-          [NavigationStart, '/invalid'],
-          [NavigationError, '/invalid'],
-        ]);
-      }),
-    ));
 
     it('should recover from malformed uri errors', fakeAsync(
       inject([Router, Location], (router: Router, location: Location) => {
@@ -4027,6 +4045,69 @@ for (const browserAPI of ['navigation', 'history'] as const) {
             expect(location.path()).toEqual('/redirected');
             expect(location.getState()).toEqual(jasmine.objectContaining({test: 1}));
           }));
+        });
+
+        it('can redirect to 404 without changing the URL', async () => {
+          TestBed.configureTestingModule({
+            providers: [
+              provideRouter([
+                {
+                  path: 'one',
+                  component: RouteCmp,
+                  canActivate: [
+                    () => {
+                      const router = coreInject(Router);
+                      router.navigateByUrl('/404', {
+                        browserUrl: router.getCurrentNavigation()?.finalUrl,
+                      });
+                      return false;
+                    },
+                  ],
+                },
+                {path: '404', component: SimpleCmp},
+              ]),
+            ],
+          });
+          const location = TestBed.inject(Location);
+          await RouterTestingHarness.create('/one');
+
+          expect(location.path()).toEqual('/one');
+          expect(TestBed.inject(Router).url.toString()).toEqual('/404');
+        });
+
+        it('can navigate to same internal route with different browser url', async () => {
+          TestBed.configureTestingModule({
+            providers: [provideRouter([{path: 'one', component: RouteCmp}])],
+          });
+          const location = TestBed.inject(Location);
+          const router = TestBed.inject(Router);
+          await RouterTestingHarness.create('/one');
+          await router.navigateByUrl('/one', {browserUrl: '/two'});
+
+          expect(location.path()).toEqual('/two');
+          expect(router.url.toString()).toEqual('/one');
+        });
+
+        it('retains browserUrl through UrlTree redirects', async () => {
+          TestBed.configureTestingModule({
+            providers: [
+              provideRouter([
+                {
+                  path: 'one',
+                  component: RouteCmp,
+                  canActivate: [() => coreInject(Router).parseUrl('/404')],
+                },
+                {path: '404', component: SimpleCmp},
+              ]),
+            ],
+          });
+          const router = TestBed.inject(Router);
+          const location = TestBed.inject(Location);
+          await RouterTestingHarness.create();
+          await router.navigateByUrl('/one', {browserUrl: router.parseUrl('abc123')});
+
+          expect(location.path()).toEqual('/abc123');
+          expect(TestBed.inject(Router).url.toString()).toEqual('/404');
         });
 
         describe('runGuardsAndResolvers', () => {

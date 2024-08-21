@@ -91,12 +91,20 @@ export function attemptToReuseExistingSourceFileImports(
       if (ts.isNamedImports(namedBindings) && request.exportSymbolName !== null) {
         const existingElement = namedBindings.elements.find((e) => {
           // TODO: Consider re-using type-only imports efficiently.
-          return (
-            !e.isTypeOnly &&
-            (e.propertyName
+          let nameMatches: boolean;
+
+          if (request.unsafeAliasOverride) {
+            // If a specific alias is passed, both the original name and alias have to match.
+            nameMatches =
+              e.propertyName?.text === request.exportSymbolName &&
+              e.name.text === request.unsafeAliasOverride;
+          } else {
+            nameMatches = e.propertyName
               ? e.propertyName.text === request.exportSymbolName
-              : e.name.text === request.exportSymbolName)
-          );
+              : e.name.text === request.exportSymbolName;
+          }
+
+          return !e.isTypeOnly && nameMatches;
         });
 
         if (existingElement !== undefined) {
@@ -122,7 +130,9 @@ export function attemptToReuseExistingSourceFileImports(
   }
   const symbolsToBeImported = tracker.updatedImports.get(candidateImportToBeUpdated)!;
   const propertyName = ts.factory.createIdentifier(request.exportSymbolName);
-  const fileUniqueAlias = tracker.generateUniqueIdentifier(sourceFile, request.exportSymbolName);
+  const fileUniqueAlias = request.unsafeAliasOverride
+    ? ts.factory.createIdentifier(request.unsafeAliasOverride)
+    : tracker.generateUniqueIdentifier(sourceFile, request.exportSymbolName);
 
   // Since it can happen that multiple classes need to be imported within the
   // specified source file and we want to add the identifiers to the existing

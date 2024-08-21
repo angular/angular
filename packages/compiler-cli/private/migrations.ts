@@ -27,3 +27,4 @@ export {
   PotentialImportMode,
   TemplateTypeChecker,
 } from '../src/ngtsc/typecheck/api';
+export {ImportManager} from '../src/ngtsc/translator';

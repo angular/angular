@@ -814,6 +814,29 @@ describe('completions', () => {
       expect(ts.displayPartsToString(details.documentation!)).toEqual('This is another component.');
     });
 
+    it('should return component completions not imported', () => {
+      const {templateFile} = setup(
+        `<other-cmp>`,
+        '',
+        {},
+        `
+        @Component({selector: 'other-cmp', template: 'unimportant', standalone: true})
+        export class OtherCmp {}
+      `,
+      );
+      templateFile.moveCursorToText('<other-cmp¦>');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+        completions,
+        unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.COMPONENT),
+        ['other-cmp'],
+      );
+
+      const details = templateFile.getCompletionEntryDetails('other-cmp')!;
+      expect(details).toBeDefined();
+      expect(details.codeActions?.[0].description).toEqual('Import OtherCmp');
+    });
+
     it('should return completions for an incomplete tag', () => {
       const OTHER_CMP = {
         'OtherCmp': `
@@ -2120,10 +2143,8 @@ function setup(
   const otherDirectiveClassDecls = Object.values(otherDeclarations).join('\n\n');
 
   const env = LanguageServiceTestEnv.setup();
-  const project = env.addProject(
-    'test',
-    {
-      'test.ts': `
+  const project = env.addProject('test', {
+    'test.ts': `
          import {Component,
           input,
           output,
@@ -2154,14 +2175,8 @@ function setup(
          })
          export class AppModule {}
          `,
-      'test.html': template,
-    },
-    // Note: this object is cast to `any`, because for some reason the typing
-    // changes to the `TestableOption` type aren't being picked up in tests.
-    {
-      _enableLetSyntax: true,
-    } as any,
-  );
+    'test.html': template,
+  });
   return {templateFile: project.openFile('test.html')};
 }
 

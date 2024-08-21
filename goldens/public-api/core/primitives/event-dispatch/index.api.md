@@ -6,40 +6,37 @@
 
 // @public (undocumented)
 export const Attribute: {
-    JSACTION: string;
-    OI: string;
-    VED: string;
-    VET: string;
-    JSINSTANCE: string;
-    JSTRACK: string;
+    JSACTION: "jsaction";
 };
 
 // @public
-export function bootstrapEarlyEventContract(field: string, container: HTMLElement, appId: string, eventTypes?: string[], captureEventTypes?: string[], earlyJsactionTracker?: EventContractTracker<EarlyJsactionDataContainer>): void;
+export function bootstrapAppScopedEarlyEventContract(container: HTMLElement, appId: string, bubbleEventTypes: string[], captureEventTypes: string[], dataContainer?: EarlyJsactionDataContainer): void;
+
+// @public
+export function clearAppScopedEarlyEventContract(appId: string, dataContainer?: EarlyJsactionDataContainer): void;
 
 // @public (undocumented)
 export interface EarlyJsactionDataContainer {
     // (undocumented)
     _ejsa?: EarlyJsactionData;
+    // (undocumented)
+    _ejsas?: {
+        [appId: string]: EarlyJsactionData | undefined;
+    };
 }
 
 // @public
 export class EventContract implements UnrenamedEventContract {
-    constructor(containerManager: EventContractContainerManager, useActionResolver?: boolean);
-    // (undocumented)
-    static A11Y_CLICK_SUPPORT: boolean;
-    addA11yClickSupport(): void;
+    constructor(containerManager: EventContractContainerManager);
     addEvent(eventType: string, prefixedEventType?: string): void;
     cleanUp(): void;
-    // (undocumented)
-    ecaacs?: (updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick, preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick, populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction) => void;
     ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
-    exportAddA11yClickSupport(): void;
     handler(eventType: string): EventHandler | undefined;
     // (undocumented)
     static MOUSE_SPECIAL_SUPPORT: boolean;
     registerDispatcher(dispatcher: Dispatcher, restriction: Restriction): void;
-    replayEarlyEvents(earlyJsactionContainer?: EarlyJsactionDataContainer): void;
+    replayEarlyEventInfos(earlyEventInfos: eventInfoLib.EventInfo[]): void;
+    replayEarlyEvents(earlyJsactionData?: EarlyJsactionData | undefined): void;
 }
 
 // @public
@@ -51,16 +48,9 @@ export class EventContractContainer implements EventContractContainerManager {
     readonly element: Element;
 }
 
-// @public (undocumented)
-export type EventContractTracker<T> = {
-    [key: string]: {
-        [appId: string]: T;
-    };
-};
-
 // @public
 export class EventDispatcher {
-    constructor(dispatchDelegate: (event: Event, actionName: string) => void);
+    constructor(dispatchDelegate: (event: Event, actionName: string) => void, clickModSupport?: boolean);
     dispatch(eventInfo: EventInfo): void;
 }
 
@@ -114,31 +104,27 @@ export const EventPhase: {
 };
 
 // @public
-export const isCaptureEvent: (eventType: string) => boolean;
+export function getActionCache(element: Element): {
+    [key: string]: string | undefined;
+};
 
 // @public
-export const isSupportedEvent: (eventType: string) => boolean;
+export function getAppScopedQueuedEventInfos(appId: string, dataContainer?: EarlyJsactionDataContainer): EventInfo[];
 
 // @public
-export const JSACTION = "jsaction";
+export const isCaptureEventType: (eventType: string) => boolean;
 
 // @public
-export const JSINSTANCE = "jsinstance";
+export const isEarlyEventType: (eventType: string) => boolean;
 
 // @public
-export const JSTRACK = "jstrack";
-
-// @public
-export const OI = "oi";
+export function registerAppScopedDispatcher(restriction: Restriction, appId: string, dispatcher: (eventInfo: EventInfo) => void, dataContainer?: EarlyJsactionDataContainer): void;
 
 // @public
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: EventDispatcher): void;
 
 // @public
-export const VED = "ved";
-
-// @public
-export const VET = "vet";
+export function removeAllAppScopedEventListeners(appId: string, dataContainer?: EarlyJsactionDataContainer): void;
 
 // (No @packageDocumentation comment for this package)
 

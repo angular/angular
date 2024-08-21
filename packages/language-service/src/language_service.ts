@@ -18,6 +18,7 @@ import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {
+  ApplyRefactoringProgressFn,
   GetComponentLocationsForTemplateResponse,
   GetTcbResponse,
   GetTemplateLocationForComponentResponse,
@@ -46,6 +47,7 @@ import {
   getPropertyAssignmentFromValue,
 } from './ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
+import {allRefactorings} from './refactorings/refactoring';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
@@ -354,6 +356,17 @@ export class LanguageService {
     });
   }
 
+  /**
+   * Performance helper that can help make quick decisions for
+   * the VSCode language server to decide whether a code fix exists
+   * for the given error code.
+   *
+   * Related context: https://github.com/angular/vscode-ng-language-service/pull/2050#discussion_r1673079263
+   */
+  hasCodeFixesForErrorCode(errorCode: number): boolean {
+    return this.codeFixes.codeActionMetas.some((m) => m.errorCodes.includes(errorCode));
+  }
+
   getCodeFixesAtPosition(
     fileName: string,
     start: number,
@@ -365,6 +378,11 @@ export class LanguageService {
     return this.withCompilerAndPerfTracing<readonly ts.CodeFixAction[]>(
       PerfPhase.LsCodeFixes,
       (compiler) => {
+        // Fast exit if we know no code fix can exist for the given range/and error codes.
+        if (errorCodes.every((code) => !this.hasCodeFixesForErrorCode(code))) {
+          return [];
+        }
+
         const templateInfo = getTemplateInfoAtPosition(fileName, start, compiler);
         if (templateInfo === undefined) {
           return [];
@@ -517,6 +535,41 @@ export class LanguageService {
     );
   }
 
+  getPossibleRefactorings(
+    fileName: string,
+    positionOrRange: number | ts.TextRange,
+  ): ts.ApplicableRefactorInfo[] {
+    return this.withCompilerAndPerfTracing(
+      PerfPhase.LSComputeApplicableRefactorings,
+      (compiler) => {
+        return allRefactorings
+          .filter((r) => r.isApplicable(compiler, fileName, positionOrRange))
+          .map((r) => ({name: r.id, description: r.description, actions: []}));
+      },
+    );
+  }
+
+  applyRefactoring(
+    fileName: string,
+    positionOrRange: number | ts.TextRange,
+    refactorName: string,
+    reportProgress: ApplyRefactoringProgressFn,
+  ): ts.RefactorEditInfo | undefined {
+    const matchingRefactoring = allRefactorings.find((r) => r.id === refactorName);
+    if (matchingRefactoring === undefined) {
+      return undefined;
+    }
+
+    return this.withCompilerAndPerfTracing(PerfPhase.LSApplyRefactoring, (compiler) => {
+      return matchingRefactoring.computeEditsForFix(
+        compiler,
+        fileName,
+        positionOrRange,
+        reportProgress,
+      );
+    });
+  }
+
   /**
    * Provides an instance of the `NgCompiler` and traces perf results. Perf results are logged only
    * if the log level is verbose or higher. This method is intended to be called once per public
@@ -642,9 +695,9 @@ function parseNgCompilerOptions(
   if (config['enableBlockSyntax'] === false) {
     options['_enableBlockSyntax'] = false;
   }
-  // TODO(crisbeto): only allow `false` when the syntax is enabled by default.
-  if (config['enableLetSyntax'] != null) {
-    options['_enableLetSyntax'] = config['enableLetSyntax'];
+
+  if (config['enableLetSyntax'] === false) {
+    options['_enableLetSyntax'] = false;
   }
 
   options['_angularCoreVersion'] = config['angularCoreVersion'];

@@ -324,7 +324,7 @@ describe('FakeAsyncTestZoneSpec', () => {
           // will call `task.state` one more time to check whether to clear the
           // task or not, so here we use this count to check the issue is fixed or not
           // For details, please refer to https://github.com/angular/angular/issues/40387
-          expect(taskSpy.calls.count()).toEqual(5);
+          expect(taskSpy.calls.count()).toBe(4);
         });
     });
     it(
@@ -1333,17 +1333,23 @@ describe('fake async', () => {
 
     it('should throw an error on dangling timers', () => {
       expect(() => {
-        fakeAsync(() => {
-          setTimeout(() => {}, 10);
-        })();
+        fakeAsync(
+          () => {
+            setTimeout(() => {}, 10);
+          },
+          {flush: false},
+        )();
       }).toThrowError('1 timer(s) still in the queue.');
     });
 
     it('should throw an error on dangling periodic timers', () => {
       expect(() => {
-        fakeAsync(() => {
-          setInterval(() => {}, 10);
-        })();
+        fakeAsync(
+          () => {
+            setInterval(() => {}, 10);
+          },
+          {flush: false},
+        )();
       }).toThrowError('1 periodic timer(s) still in the queue.');
     });
 

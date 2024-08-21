@@ -718,13 +718,13 @@ describe('bootstrap factory method', () => {
     })();
   });
 
-  it('should not allow provideZoneChangeDetection in bootstrapModule', async () => {
+  it('should allow provideZoneChangeDetection in bootstrapModule', async () => {
     @NgModule({imports: [BrowserModule], providers: [provideZoneChangeDetection()]})
-    class SomeModule {}
+    class SomeModule {
+      ngDoBootstrap() {}
+    }
 
-    await expectAsync(platformBrowserDynamic().bootstrapModule(SomeModule)).toBeRejectedWithError(
-      /provideZoneChangeDetection.*BootstrapOptions/,
-    );
+    await expectAsync(platformBrowserDynamic().bootstrapModule(SomeModule)).toBeResolved();
   });
 
   it('should register each application with the testability registry', async () => {

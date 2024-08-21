@@ -16,7 +16,6 @@ echo "source $envHelpersPath;" >> $BASH_ENV;
 ####################################################################################################
 setPublicVar CI "$CI"
 setPublicVar PROJECT_ROOT "$projectDir";
-setPublicVar CI_AIO_MIN_PWA_SCORE "95";
 # This is the branch being built; e.g. `pull/12345` for PR builds.
 setPublicVar CI_BRANCH "$CIRCLE_BRANCH";
 setPublicVar CI_BUILD_URL "$CIRCLE_BUILD_URL";

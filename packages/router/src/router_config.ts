@@ -8,23 +8,7 @@
 
 import {InjectionToken} from '@angular/core';
 
-import {OnSameUrlNavigation} from './models';
-
-/**
- * Error handler that is invoked when a navigation error occurs.
- *
- * If the handler returns a value, the navigation Promise is resolved with this value.
- * If the handler throws an exception, the navigation Promise is rejected with
- * the exception.
- *
- * @publicApi
- * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
- *   If the ErrorHandler is used to prevent unhandled promise rejections when navigation
- *   errors occur, use the `resolveNavigationPromiseOnError` option instead.
- *
- * @see RouterConfigOptions
- */
-export type ErrorHandler = (error: any) => any;
+import {OnSameUrlNavigation, QueryParamsHandling, RedirectCommand} from './models';
 
 /**
  * Allowed values in an `ExtraOptions` object that configure
@@ -34,8 +18,9 @@ export type ErrorHandler = (error: any) => any;
  * root component has been created. The bootstrap is not blocked on the completion of the initial
  * navigation.
  * * 'enabledBlocking' - The initial navigation starts before the root component is created.
- * The bootstrap is blocked until the initial navigation is complete. This value is required
- * for [server-side rendering](guide/ssr) to work.
+ * The bootstrap is blocked until the initial navigation is complete. This value should be set in
+ * case you use [server-side rendering](guide/ssr), but do not enable [hydration](guide/hydration)
+ * for your application.
  * * 'disabled' - The initial navigation is not performed. The location listener is set up before
  * the root component gets created. Use if there is a reason to have
  * more control over when the router starts its initial navigation due to some complex
@@ -112,6 +97,20 @@ export interface RouterConfigOptions {
    * showing an error message with the URL that failed.
    */
   urlUpdateStrategy?: 'deferred' | 'eager';
+
+  /**
+   * The default strategy to use for handling query params in `Router.createUrlTree` when one is not provided.
+   *
+   * The `createUrlTree` method is used internally by `Router.navigate` and `RouterLink`.
+   * Note that `QueryParamsHandling` does not apply to `Router.navigateByUrl`.
+   *
+   * When neither the default nor the queryParamsHandling option is specified in the call to `createUrlTree`,
+   * the current parameters will be replaced by new parameters.
+   *
+   * @see {@link Router#createUrlTree}
+   * @see {@link QueryParamsHandling}
+   */
+  defaultQueryParamsHandling?: QueryParamsHandling;
 
   /**
    * When `true`, the `Promise` will instead resolve with `false`, as it does with other failed
@@ -202,8 +201,9 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * One of `enabled`, `enabledBlocking`, `enabledNonBlocking` or `disabled`.
    * When set to `enabled` or `enabledBlocking`, the initial navigation starts before the root
    * component is created. The bootstrap is blocked until the initial navigation is complete. This
-   * value is required for [server-side rendering](guide/ssr) to work. When set to
-   * `enabledNonBlocking`, the initial navigation starts after the root component has been created.
+   * value should be set in case you use [server-side rendering](guide/ssr), but do not enable
+   * [hydration](guide/hydration) for your application. When set to `enabledNonBlocking`,
+   * the initial navigation starts after the root component has been created.
    * The bootstrap is not blocked on the completion of the initial navigation. When set to
    * `disabled`, the initial navigation is not performed. The location listener is set up before the
    * root component gets created. Use if there is a reason to have more control over when the router
@@ -232,13 +232,9 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * If the handler returns a value, the navigation Promise is resolved with this value.
    * If the handler throws an exception, the navigation Promise is rejected with the exception.
    *
-   * @deprecated Subscribe to the `Router` events and watch for `NavigationError` instead.
-   *   If the ErrorHandler is used to prevent unhandled promise rejections when navigation
-   *   errors occur, use the `resolveNavigationPromiseOnError` option instead.
-   *
    * @see RouterConfigOptions
    */
-  errorHandler?: (error: any) => any;
+  errorHandler?: (error: any) => RedirectCommand | any;
 
   /**
    * Configures a preloading strategy.

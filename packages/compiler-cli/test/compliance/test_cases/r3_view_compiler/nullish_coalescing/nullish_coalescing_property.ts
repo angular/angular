@@ -4,7 +4,7 @@ import {Component, NgModule} from '@angular/core';
   selector: 'my-app',
   template: `
     <div [title]="'Hello, ' + (firstName ?? 'Frodo') + '!'"></div>
-    <span [title]="'Your last name is ' + lastName ?? lastNameFallback ?? 'unknown'"></span>
+    <span [title]="'Your last name is ' + (lastName ?? lastNameFallback ?? 'unknown')"></span>
   `
 })
 export class MyApp {

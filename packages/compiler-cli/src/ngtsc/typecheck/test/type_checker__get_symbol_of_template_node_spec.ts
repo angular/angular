@@ -1966,38 +1966,32 @@ runInEachFileSystem(() => {
           @let message = 'The value is ' + value;
           <div [dir]="message"></div>
         `;
-        const testValues = setup(
-          [
-            {
-              fileName,
-              templates: {'Cmp': templateString},
-              source: `
+        const testValues = setup([
+          {
+            fileName,
+            templates: {'Cmp': templateString},
+            source: `
               export class Cmp {
                 value = 1;
               }
             `,
-              declarations: [
-                {
-                  name: 'TestDir',
-                  selector: '[dir]',
-                  file: dirFile,
-                  type: 'directive',
-                  exportAs: ['dir'],
-                  inputs: {dir: 'dir'},
-                },
-              ],
-            },
-            {
-              fileName: dirFile,
-              source: `export class TestDir {dir: any;}`,
-              templates: {},
-            },
-          ],
-          undefined,
-          {
-            enableLetSyntax: true,
+            declarations: [
+              {
+                name: 'TestDir',
+                selector: '[dir]',
+                file: dirFile,
+                type: 'directive',
+                exportAs: ['dir'],
+                inputs: {dir: 'dir'},
+              },
+            ],
           },
-        );
+          {
+            fileName: dirFile,
+            source: `export class TestDir {dir: any;}`,
+            templates: {},
+          },
+        ]);
         templateTypeChecker = testValues.templateTypeChecker;
         program = testValues.program;
         const sf = getSourceFileOrError(testValues.program, fileName);

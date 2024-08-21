@@ -12,7 +12,7 @@ import {
   setActiveConsumer,
   setThrowInvalidWriteToSignalError,
 } from '@angular/core/primitives/signals';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
 import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
@@ -101,7 +101,7 @@ export class NgProbeToken {
  */
 export interface BootstrapOptions {
   /**
-   * Optionally specify which `NgZone` should be used.
+   * Optionally specify which `NgZone` should be used when not configured in the providers.
    *
    * - Provide your own `NgZone` instance.
    * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
@@ -159,10 +159,15 @@ export interface BootstrapOptions {
    * - calling `ChangeDetectorRef.markForCheck`
    * - calling `ComponentRef.setInput`
    * - updating a signal that is read in a template
-   * - when bound host or template listeners are triggered
    * - attaching a view that is marked dirty
    * - removing a view
    * - registering a render hook (templates are only refreshed if render hooks do one of the above)
+   *
+   * @deprecated This option was introduced out of caution as a way for developers to opt out of the
+   *    new behavior in v18 which schedule change detection for the above events when they occur
+   *    outside the Zone. After monitoring the results post-release, we have determined that this
+   *    feature is working as desired and do not believe it should ever be disabled by setting
+   *    this option to `true`.
    */
   ignoreChangesOutsideZone?: boolean;
 }
@@ -313,7 +318,7 @@ export class ApplicationRef {
   /** @internal */
   afterTick = new Subject<void>();
   /** @internal */
-  get allViews() {
+  get allViews(): Array<InternalViewRef<unknown>> {
     return [...this.externalTestViews.keys(), ...this._views];
   }
 
@@ -341,6 +346,24 @@ export class ApplicationRef {
   public readonly isStable: Observable<boolean> = inject(PendingTasks).hasPendingTasks.pipe(
     map((pending) => !pending),
   );
+
+  /**
+   * @returns A promise that resolves when the application becomes stable
+   */
+  whenStable(): Promise<void> {
+    let subscription: Subscription;
+    return new Promise<void>((resolve) => {
+      subscription = this.isStable.subscribe({
+        next: (stable) => {
+          if (stable) {
+            resolve();
+          }
+        },
+      });
+    }).finally(() => {
+      subscription.unsubscribe();
+    });
+  }
 
   private readonly _injector = inject(EnvironmentInjector);
   /**
@@ -554,7 +577,7 @@ export class ApplicationRef {
       this.detectChangesInAttachedViews(refreshViews);
 
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        for (let view of this._views) {
+        for (let view of this.allViews) {
           view.checkNoChanges();
         }
       }
@@ -582,7 +605,7 @@ export class ApplicationRef {
       // After the we execute render hooks in the first pass, we loop while views are marked dirty and should refresh them.
       if (refreshViews || !isFirstPass) {
         this.beforeRender.next(isFirstPass);
-        for (let {_lView, notifyErrorHandler} of this._views) {
+        for (let {_lView, notifyErrorHandler} of this.allViews) {
           detectChangesInViewIfRequired(
             _lView,
             notifyErrorHandler,

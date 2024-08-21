@@ -26,7 +26,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Pipe,
             args: [{
                     name: 'myPurePipe',
-                    pure: true
+                    pure: true,
                 }]
         }] });
 export class MyApp {

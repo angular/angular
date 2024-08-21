@@ -66,7 +66,7 @@ export interface VersionReadyEvent {
 
 /**
  * A union of all event types that can be emitted by
- * {@link api/service-worker/SwUpdate#versionUpdates SwUpdate#versionUpdates}.
+ * {@link SwUpdate#versionUpdates}.
  *
  * @publicApi
  */

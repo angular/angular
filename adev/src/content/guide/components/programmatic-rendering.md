@@ -11,7 +11,7 @@ or in your TypeScript code with `ViewContainerRef`.
 `NgComponentOutlet` is a structural directive that dynamically renders a given component in a
 template.
 
-```ts
+```angular-ts
 @Component({ ... })
 export class AdminBio { /* ... */ }
 
@@ -46,7 +46,7 @@ You can use the `createComponent`method on `ViewContainerRef` to dynamically cre
 component. When you create a new component with a `ViewContainerRef`, Angular appends it into the
 DOM as the next sibling of the component or directive that injected the `ViewContainerRef`.
 
-```ts
+```angular-ts
 @Component({
   selector: 'leaf-content',
   template: `
@@ -82,7 +82,7 @@ export class InnerItem {
 
 In the example above, clicking the "Load content" button results in the following DOM structure
 
-```html
+```angular-html
 <outer-container>
   <p>This is the start of the outer container</p>
   <inner-item>
@@ -97,9 +97,9 @@ In the example above, clicking the "Load content" button results in the followin
 
 You can use both of the approaches described above, `NgComponentOutlet` and `ViewContainerRef`, to
 render components that are lazy-loaded with a standard
-JavaScript [dynamic import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import).
+JavaScript [dynamic import](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/import).
 
-```ts
+```angular-ts
 @Component({
   ...,
   template: `
@@ -113,7 +113,8 @@ JavaScript [dynamic import](https://developer.mozilla.org/en-US/docs/Web/JavaScr
         Load advanced settings
       </button>
       <ng-container *ngComponentOutlet="advancedSettings" />
-    </section>`
+    </section>
+  `
 })
 export class AdminSettings {
   advancedSettings: {new(): AdminSettings} | undefined;

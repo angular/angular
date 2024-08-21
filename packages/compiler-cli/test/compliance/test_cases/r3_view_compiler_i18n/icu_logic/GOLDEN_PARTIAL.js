@@ -114,7 +114,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   {age, select, 10 {ten} 20 {twenty} other {other}}
-`
+`,
                 }]
         }] });
 export class MyModule {
@@ -224,7 +224,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <div i18n>{age, select, 10 {ten} 20 {twenty} other {{% other %}}}</div>
 `,
-                    interpolation: ['{%', '%}']
+                    interpolation: ['{%', '%}'],
                 }]
         }] });
 export class MyModule {
@@ -390,7 +390,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {gender, select, male {male} female {female} other {other}}
     {age, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}
   </div>
-`
+`,
                 }]
         }] });
 export class MyModule {
@@ -947,7 +947,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
     </span>
-`
+`,
                 }]
         }] });
 

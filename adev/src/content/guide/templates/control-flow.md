@@ -1,27 +1,27 @@
 # Built-in control flow
 
-Angular templates support *control flow blocks* that let you conditionally show, hide, and repeat elements.
+Angular templates support _control flow blocks_ that let you conditionally show, hide, and repeat elements.
 
 ## `@if` block conditionals
 
 The `@if` block conditionally displays its content when its condition expression is truthy:
 
-```html
+```angular-html
 @if (a > b) {
-{{a}} is greater than {{b}}
+  {{a}} is greater than {{b}}
 }
 ```
 
 The `@if` block might have one or more associated `@else` blocks. Immediately after an `@if` block, you can optionally
 specify any number of `@else if` blocks and one `@else` block:
 
-```html
+```angular-html
 @if (a > b) {
-{{a}} is greater than {{b}}
+  {{a}} is greater than {{b}}
 } @else if (b > a) {
-{{a}} is less than {{b}}
+  {{a}} is less than {{b}}
 } @else {
-{{a}} is equal to {{b}}
+  {{a}} is equal to {{b}}
 }
 ```
 
@@ -30,21 +30,21 @@ specify any number of `@else if` blocks and one `@else` block:
 The new built-in `@if` conditional supports referencing of expression results to keep a solution for common coding
 patterns:
 
-```html
+```angular-html
 @if (users$ | async; as users) {
-{{ users.length }}
+  {{ users.length }}
 }
 ```
 
 ## `@for` block - repeaters
 
 The `@for` repeatedly renders content of a block for each item in a collection. The collection can be represented as any
-JavaScript [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) but there
+JavaScript [iterable](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Iteration_protocols) but there
 are performance advantages of using a regular `Array`. A basic `@for` loop looks like:
 
-```html
+```angular-html
 @for (item of items; track item.id) {
-{{ item.name }}
+  {{ item.name }}
 }
 ```
 
@@ -66,10 +66,10 @@ structures, as this can lead to unnecessary performance costs.
 
 ### `$index` and other contextual variables
 
-Inside `@for`  contents, several implicit variables are always available:
+Inside `@for` contents, several implicit variables are always available:
 
 | Variable | Meaning                                       |
-|----------|-----------------------------------------------|
+| -------- | --------------------------------------------- |
 | `$count` | Number of items in a collection iterated over |
 | `$index` | Index of the current row                      |
 | `$first` | Whether the current row is the first row      |
@@ -79,9 +79,9 @@ Inside `@for`  contents, several implicit variables are always available:
 
 These variables are always available with these names, but can be aliased via a `let` segment:
 
-```html
+```angular-html
 @for (item of items; track item.id; let idx = $index, e = $even) {
-Item #{{ idx }}: {{ item.name }}
+  Item #{{ idx }}: {{ item.name }}
 }
 ```
 
@@ -92,11 +92,11 @@ The aliasing is especially useful in case of using nested `@for` blocks where co
 You can optionally include an `@empty` section immediately after the `@for` block content. The content of the `@empty`
 block displays when there are no items:
 
-```html
+```angular-html
 @for (item of items; track item.name) {
-<li> {{ item.name }}</li>
+  <li> {{ item.name }}</li>
 } @empty {
-<li> There are no items.</li>
+  <li> There are no items.</li>
 }
 ```
 
@@ -104,17 +104,17 @@ block displays when there are no items:
 
 The syntax for `switch` is very similar to `if`, and is inspired by the JavaScript `switch` statement:
 
-```html
+```angular-html
 @switch (condition) {
-@case (caseA) {
-Case A.
-}
-@case (caseB) {
-Case B.
-}
-@default {
-Default case.
-}
+  @case (caseA) {
+    Case A.
+  }
+  @case (caseB) {
+    Case B.
+  }
+  @default {
+    Default case.
+  }
 }
 ```
 
@@ -131,24 +131,24 @@ The `@if` block replaces `*ngIf` for expressing conditional parts of the UI.
 
 The `@switch` block replaces `ngSwitch` with major benefits:
 
-* it does not require a container element to hold the condition expression or each conditional template;
-* it supports template type-checking, including type narrowing within each branch.
+- it does not require a container element to hold the condition expression or each conditional template;
+- it supports template type-checking, including type narrowing within each branch.
 
 The `@for` block replaces `*ngFor` for iteration, and has several differences compared to its structural
 directive `NgFor` predecessor:
 
-* tracking expression (calculating keys corresponding to object identities) is mandatory but has better ergonomics (it
+- tracking expression (calculating keys corresponding to object identities) is mandatory but has better ergonomics (it
   is enough to write an expression instead of creating the `trackBy` method);
-* uses a new optimized algorithm for calculating a minimal number of DOM operations to be performed in response to
+- uses a new optimized algorithm for calculating a minimal number of DOM operations to be performed in response to
   changes in a collection, instead of Angular’s customizable diffing implementation (`IterableDiffer`);
-* has support for `@empty` blocks.
+- has support for `@empty` blocks.
 
 The `track` setting replaces `NgFor`'s concept of a `trackBy` function. Because `@for` is built-in, we can provide a
 better experience than passing a `trackBy` function, and directly use an expression representing the key instead.
 Migrating from `trackBy` to `track` is possible by invoking the `trackBy` function:
 
-```html
+```angular-html
 @for (item of items; track itemId($index, item)) {
-{{ item.name }}
+  {{ item.name }}
 }
 ```

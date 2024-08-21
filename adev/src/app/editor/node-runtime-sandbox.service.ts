@@ -107,7 +107,10 @@ export class NodeRuntimeSandbox {
 
       console.timeEnd('Load time');
     } catch (error: any) {
-      this.setErrorState(error.message);
+      // If we're already in an error state, throw away the most recent error which may have happened because
+      // we were in the error state already and tried to do more things after terminating.
+      const message = this.nodeRuntimeState.error()?.message ?? error.message;
+      this.setErrorState(message);
     }
   }
 
@@ -250,7 +253,7 @@ export class NodeRuntimeSandbox {
       this.setLoading(LoadingStep.READY);
   }
 
-  async writeFile(path: string, content: string | Buffer): Promise<void> {
+  async writeFile(path: string, content: string | Uint8Array): Promise<void> {
     const webContainer = await this.webContainerPromise!;
 
     try {

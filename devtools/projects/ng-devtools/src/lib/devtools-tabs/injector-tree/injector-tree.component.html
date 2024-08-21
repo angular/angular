@@ -1,9 +1,9 @@
-@if (!diDebugAPIsAvailable) {
+@if (!diDebugAPIsAvailable()) {
   <p class="not-supported">
     This feature is only available on version 17.0.0 or higher of Angular.
   </p>
 }
-<as-split [class.hidden]="!diDebugAPIsAvailable" unit="pixel" direction="vertical" [gutterSize]="9" [disabled]="true">
+<as-split [class.hidden]="!diDebugAPIsAvailable()" unit="pixel" direction="vertical" [gutterSize]="9" [disabled]="true">
   <as-split-area size="50">
     <mat-checkbox
       (change)="toggleHideInjectorsWithNoProviders()"
@@ -52,9 +52,9 @@
           </as-split-area>
         </as-split>
       </as-split-area>
-      @if (selectedNode && providers.length > 0) {
+      @if (selectedNode() && providers().length > 0) {
         <as-split-area size="40" minSize="25">
-          <ng-injector-providers [injector]="selectedNode.data.injector" [providers]="providers"/>
+          <ng-injector-providers [injector]="selectedNode()!.data.injector" [providers]="providers()"/>
         </as-split-area>
       }
     </as-split>

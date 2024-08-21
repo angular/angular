@@ -7,7 +7,14 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, destroyPlatform, getPlatform, Type} from '@angular/core';
+import {
+  Component,
+  destroyPlatform,
+  ErrorHandler,
+  getPlatform,
+  PLATFORM_ID,
+  Type,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   withEventReplay,
@@ -19,7 +26,13 @@ import {provideServerRendering} from '../public_api';
 import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
 import {EventPhase} from '@angular/core/primitives/event-dispatch';
 
-import {getAppContents, hydrate, render as renderHtml, resetTViewsFor} from './dom_utils';
+import {
+  getAppContents,
+  hydrate,
+  renderAndHydrate,
+  render as renderHtml,
+  resetTViewsFor,
+} from './dom_utils';
 
 /**
  * Represents the <script> tag added by the build process to inject
@@ -36,6 +49,24 @@ function hasEventDispatchScript(content: string) {
 /** Checks whether there are any `jsaction` attributes present in the generated HTML */
 function hasJSActionAttrs(content: string) {
   return content.includes('jsaction="');
+}
+
+/**
+ * Enables strict error handler that fails a test
+ * if there was an error reported to the ErrorHandler.
+ */
+function withStrictErrorHandler() {
+  class StrictErrorHandler extends ErrorHandler {
+    override handleError(error: any): void {
+      fail(error);
+    }
+  }
+  return [
+    {
+      provide: ErrorHandler,
+      useClass: StrictErrorHandler,
+    },
+  ];
 }
 
 describe('event replay', () => {
@@ -61,6 +92,7 @@ describe('event replay', () => {
 
   afterEach(() => {
     doc.body.outerHTML = '<body></body>';
+    window._ejsas = {};
   });
 
   /**
@@ -402,6 +434,17 @@ describe('event replay', () => {
 
       expect(hasJSActionAttrs(ssrContents)).toBeFalse();
       expect(hasEventDispatchScript(ssrContents)).toBeFalse();
+
+      resetTViewsFor(SimpleComponent);
+      await renderAndHydrate(doc, ssrContents, SimpleComponent, {
+        envProviders: [
+          {provide: PLATFORM_ID, useValue: 'browser'},
+          // This ensures that there are no errors while bootstrapping an application
+          // that has no events, but enables Event Replay feature.
+          withStrictErrorHandler(),
+        ],
+        hydrationFeatures: [withEventReplay()],
+      });
     });
 
     it('should not replay mouse events', async () => {
@@ -462,7 +505,7 @@ describe('event replay', () => {
       // the inlined script).
       expect(ssrContents).toContain(
         `<script type="text/javascript" id="ng-event-dispatch-contract"></script>` +
-          `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click"]);</script>`,
+          `<script>window.__jsaction_bootstrap(document.body,"ng",["click"],[]);</script>`,
       );
     });
   });

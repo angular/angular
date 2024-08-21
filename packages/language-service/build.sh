@@ -28,7 +28,7 @@ yarn bazel build --config=release //packages/language-service:npm_package
 pushd "${extension_repo}"
 rm -rf .angular_packages/language-service
 mkdir -p .angular_packages/language-service
-cp -r "${bazel_bin}/packages/language-service/npm_package/" .angular_packages/language-service
+cp -r ${bazel_bin}/packages/language-service/npm_package/* .angular_packages/language-service
 chmod -R +w .angular_packages/language-service
 cat <<EOT >> .angular_packages/language-service/BUILD.bazel
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")

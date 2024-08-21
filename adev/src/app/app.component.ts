@@ -8,9 +8,11 @@
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   inject,
+  Injector,
   OnInit,
   PLATFORM_ID,
   signal,
@@ -23,13 +25,13 @@ import {
   getActivatedRouteSnapshotFromRouter,
   IS_SEARCH_DIALOG_OPEN,
   SearchDialog,
-  WINDOW,
 } from '@angular/docs';
 import {Footer} from './core/layout/footer/footer.component';
 import {Navigation} from './core/layout/navigation/navigation.component';
 import {SecondaryNavigation} from './core/layout/secondary-navigation/secondary-navigation.component';
 import {ProgressBarComponent} from './core/layout/progress-bar/progress-bar.component';
 import {ESCAPE, SEARCH_TRIGGER_KEY} from './core/constants/keys';
+import {HeaderService} from './core/services/header.service';
 
 @Component({
   selector: 'adev-root',
@@ -54,7 +56,7 @@ import {ESCAPE, SEARCH_TRIGGER_KEY} from './core/constants/keys';
 export class AppComponent implements OnInit {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
-  private readonly window = inject(WINDOW);
+  private readonly headerService = inject(HeaderService);
 
   currentUrl = signal('');
   displayFooter = signal(false);
@@ -74,6 +76,8 @@ export class AppComponent implements OnInit {
         this.currentUrl.set(url);
         this.setComponentsVisibility();
         this.displaySearchDialog.set(false);
+
+        this.updateCanonicalLink(url);
       });
 
     this.focusFirstHeadingOnRouteChange();
@@ -86,6 +90,10 @@ export class AppComponent implements OnInit {
 
     const h1 = this.document.querySelector<HTMLHeadingElement>('h1');
     h1?.focus();
+  }
+
+  private updateCanonicalLink(absoluteUrl: string) {
+    this.headerService.setCanonical(absoluteUrl);
   }
 
   private setComponentsVisibility(): void {

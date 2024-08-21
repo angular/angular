@@ -111,7 +111,7 @@ export interface R3DependencyMetadata {
  * Construct a factory function expression for the given `R3FactoryMetadata`.
  */
 export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpression {
-  const t = o.variable('t');
+  const t = o.variable('__ngFactoryType__');
   let baseFactoryVar: o.ReadVarExpr | null = null;
 
   // The type to instantiate via constructor invocation. If there is no delegated factory, meaning
@@ -139,7 +139,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
   let retExpr: o.Expression | null = null;
 
   function makeConditionalFactory(nonCtorExpr: o.Expression): o.ReadVarExpr {
-    const r = o.variable('r');
+    const r = o.variable('__ngConditionalFactory__');
     body.push(r.set(o.NULL_EXPR).toDeclStmt());
     const ctorStmt =
       ctorExpr !== null
@@ -184,7 +184,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
   }
 
   let factoryFn: o.Expression = o.fn(
-    [new o.FnParam('t', o.DYNAMIC_TYPE)],
+    [new o.FnParam(t.name, o.DYNAMIC_TYPE)],
     body,
     o.INFERRED_TYPE,
     undefined,

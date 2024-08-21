@@ -17,8 +17,8 @@ import {
   NgZone,
   PLATFORM_ID,
 } from '@angular/core';
-import {merge, Observable, of} from 'rxjs';
-import {delay, filter, take} from 'rxjs/operators';
+import {merge, from, Observable, of} from 'rxjs';
+import {delay, take} from 'rxjs/operators';
 
 import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
@@ -76,9 +76,10 @@ export function ngswAppInitializer(
           readyToRegister$ = delayWithTimeout(+args[0] || 0);
           break;
         case 'registerWhenStable':
+          const whenStable$ = from(injector.get(ApplicationRef).whenStable());
           readyToRegister$ = !args[0]
-            ? whenStable(injector)
-            : merge(whenStable(injector), delayWithTimeout(+args[0]));
+            ? whenStable$
+            : merge(whenStable$, delayWithTimeout(+args[0]));
           break;
         default:
           // Unknown strategy.
@@ -106,11 +107,6 @@ export function ngswAppInitializer(
 
 function delayWithTimeout(timeout: number): Observable<unknown> {
   return of(null).pipe(delay(timeout));
-}
-
-function whenStable(injector: Injector): Observable<unknown> {
-  const appRef = injector.get(ApplicationRef);
-  return appRef.isStable.pipe(filter((stable) => stable));
 }
 
 export function ngswCommChannelFactory(

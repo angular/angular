@@ -49,7 +49,7 @@ Finally, to make sure your app is ready to use the Angular Router, you need to t
 
 Update the template for `AppComponent` by adding `<router-outlet />`
 
-<docs-code language="ts" highlight="[11]">
+<docs-code language="angular-ts" highlight="[11]">
 import {RouterOutlet} from '@angular/router';
 
 @Component({

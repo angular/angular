@@ -18,7 +18,7 @@ import {
   PipeDecoratorHandler,
   ReferencesRegistry,
 } from '../../annotations';
-import {InjectableClassRegistry} from '../../annotations/common';
+import {InjectableClassRegistry, JitDeclarationRegistry} from '../../annotations/common';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {
   COMPILER_ERRORS_WITH_GUIDES,
@@ -124,6 +124,8 @@ import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../
 
 import {coreHasSymbol} from './core_version';
 import {coreVersionSupportsFeature} from './feature_detection';
+import {angularJitApplicationTransform} from '../../transform/jit';
+import {untagAllTsFiles} from '../../shims';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -145,6 +147,8 @@ interface LazyCompilationState {
   extendedTemplateChecker: ExtendedTemplateChecker | null;
   templateSemanticsChecker: TemplateSemanticsChecker | null;
   sourceFileValidator: SourceFileValidator | null;
+  jitDeclarationRegistry: JitDeclarationRegistry;
+  supportJitMode: boolean;
 
   /**
    * Only available in local compilation mode when option `generateExtraImportsInLocalMode` is set.
@@ -451,11 +455,12 @@ export class NgCompiler {
     private livePerfRecorder: ActivePerfRecorder,
   ) {
     this.delegatingPerfRecorder = new DelegatingPerfRecorder(this.perfRecorder);
+    this.usePoisonedData = usePoisonedData || !!options._compilePoisonedComponents;
     this.enableTemplateTypeChecker =
-      enableTemplateTypeChecker || (options['_enableTemplateTypeChecker'] ?? false);
+      enableTemplateTypeChecker || !!options._enableTemplateTypeChecker;
     // TODO(crisbeto): remove this flag and base `enableBlockSyntax` on the `angularCoreVersion`.
     this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
-    this.enableLetSyntax = options['_enableLetSyntax'] ?? false;
+    this.enableLetSyntax = options['_enableLetSyntax'] ?? true;
     this.angularCoreVersion = options['_angularCoreVersion'] ?? null;
     this.constructionDiagnostics.push(
       ...this.adapter.constructionDiagnostics,
@@ -789,6 +794,10 @@ export class NgCompiler {
   } {
     const compilation = this.ensureAnalyzed();
 
+    // Untag all the files, otherwise TS 5.4 may end up emitting
+    // references to typecheck files (see #56945 and #57135).
+    untagAllTsFiles(this.inputProgram);
+
     const coreImportsFrom = compilation.isCore ? getR3SymbolsFile(this.inputProgram) : null;
     let importRewriter: ImportRewriter;
     if (coreImportsFrom !== null) {
@@ -813,6 +822,39 @@ export class NgCompiler {
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
     ];
+
+    // If there are JIT declarations, wire up the JIT transform and efficiently
+    // run it against the target declarations.
+    if (compilation.supportJitMode && compilation.jitDeclarationRegistry.jitDeclarations.size > 0) {
+      const {jitDeclarations} = compilation.jitDeclarationRegistry;
+      const jitDeclarationsArray = Array.from(jitDeclarations);
+      const jitDeclarationOriginalNodes = new Set(
+        jitDeclarationsArray.map((d) => ts.getOriginalNode(d)),
+      );
+      const sourceFilesWithJit = new Set(
+        jitDeclarationsArray.map((d) => d.getSourceFile().fileName),
+      );
+
+      before.push((ctx) => {
+        const reflectionHost = new TypeScriptReflectionHost(this.inputProgram.getTypeChecker());
+        const jitTransform = angularJitApplicationTransform(
+          this.inputProgram,
+          compilation.isCore,
+          (node) => {
+            // Class may be synthetic at this point due to Ivy transform.
+            node = ts.getOriginalNode(node, ts.isClassDeclaration);
+            return reflectionHost.isClass(node) && jitDeclarationOriginalNodes.has(node);
+          },
+        )(ctx);
+
+        return (sourceFile) => {
+          if (!sourceFilesWithJit.has(sourceFile.fileName)) {
+            return sourceFile;
+          }
+          return jitTransform(sourceFile);
+        };
+      });
+    }
 
     const afterDeclarations: ts.TransformerFactory<ts.SourceFile>[] = [];
 
@@ -1361,6 +1403,8 @@ export class NgCompiler {
       );
     }
 
+    const jitDeclarationRegistry = new JitDeclarationRegistry();
+
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers: DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>[] = [
       new ComponentDecoratorHandler(
@@ -1401,6 +1445,7 @@ export class NgCompiler {
         this.enableBlockSyntax,
         this.enableLetSyntax,
         localCompilationExtraImportsTracker,
+        jitDeclarationRegistry,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
@@ -1422,7 +1467,7 @@ export class NgCompiler {
         importTracker,
         supportTestBed,
         compilationMode,
-        !!this.options.generateExtraImportsInLocalMode,
+        jitDeclarationRegistry,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
@@ -1467,6 +1512,7 @@ export class NgCompiler {
         supportJitMode,
         compilationMode,
         localCompilationExtraImportsTracker,
+        jitDeclarationRegistry,
       ),
     ];
 
@@ -1545,8 +1591,10 @@ export class NgCompiler {
       resourceRegistry,
       extendedTemplateChecker,
       localCompilationExtraImportsTracker,
+      jitDeclarationRegistry,
       templateSemanticsChecker,
       sourceFileValidator,
+      supportJitMode,
     };
   }
 }

@@ -244,6 +244,62 @@ describe('toSignal()', () => {
     );
   });
 
+  describe('with an equality function', () => {
+    it(
+      'should not update for values considered equal',
+      test(() => {
+        const counter$ = new Subject<{value: number}>();
+        const counter = toSignal(counter$, {
+          initialValue: {value: 0},
+          equal: (a, b) => a.value === b.value,
+        });
+
+        let updates = 0;
+        const tracker = computed(() => {
+          updates++;
+          return counter();
+        });
+
+        expect(tracker()).toEqual({value: 0});
+        counter$.next({value: 1});
+        expect(tracker()).toEqual({value: 1});
+        expect(updates).toBe(2);
+
+        counter$.next({value: 1}); // same value as before
+        expect(tracker()).toEqual({value: 1});
+        expect(updates).toBe(2); // no downstream changes, since value was equal.
+
+        counter$.next({value: 2});
+        expect(tracker()).toEqual({value: 2});
+        expect(updates).toBe(3);
+      }),
+    );
+
+    it(
+      'should update when values are reference equal but equality function says otherwise',
+      test(() => {
+        const numsSet = new Set<number>();
+        const nums$ = new BehaviorSubject<Set<number>>(numsSet);
+        const nums = toSignal(nums$, {
+          requireSync: true,
+          equal: () => false,
+        });
+
+        let updates = 0;
+        const tracker = computed(() => {
+          updates++;
+          return Array.from(nums()!.values());
+        });
+
+        expect(tracker()).toEqual([]);
+        numsSet.add(1);
+        nums$.next(numsSet); // same value as before
+        expect(tracker()).toEqual([1]);
+        expect(updates).toBe(2);
+      }),
+    );
+  });
+
   describe('in a @Component', () => {
     it('should support `toSignal` as a class member initializer', () => {
       @Component({

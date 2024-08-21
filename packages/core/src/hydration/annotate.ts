@@ -7,10 +7,10 @@
  */
 
 import {ApplicationRef} from '../application/application_ref';
-import {APP_ID} from '../application/application_tokens';
 import {isDetachedByI18n} from '../i18n/utils';
 import {ViewEncapsulation} from '../metadata';
 import {Renderer2} from '../render';
+import {assertTNode} from '../render3/assert';
 import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';
 import {getComponentDef} from '../render3/definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
@@ -39,7 +39,7 @@ import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
 import {collectDomEventsInfo} from './event_replay';
-import {setJSActionAttribute} from '../event_delegation_utils';
+import {setJSActionAttributes} from '../event_delegation_utils';
 import {
   getOrComputeI18nChildren,
   isI18nHydrationEnabled,
@@ -362,7 +362,8 @@ function appendSerializedNodePath(
 ) {
   const noOffsetIndex = tNode.index - HEADER_OFFSET;
   ngh[NODES] ??= {};
-  ngh[NODES][noOffsetIndex] = calcPathForNode(tNode, lView, excludedParentNodes);
+  // Ensure we don't calculate the path multiple times.
+  ngh[NODES][noOffsetIndex] ??= calcPathForNode(tNode, lView, excludedParentNodes);
 }
 
 /**
@@ -370,8 +371,11 @@ function appendSerializedNodePath(
  * This info is needed at runtime to avoid DOM lookups for this element
  * and instead, the element would be created from scratch.
  */
-function appendDisconnectedNodeIndex(ngh: SerializedView, tNode: TNode) {
-  const noOffsetIndex = tNode.index - HEADER_OFFSET;
+function appendDisconnectedNodeIndex(ngh: SerializedView, tNodeOrNoOffsetIndex: TNode | number) {
+  const noOffsetIndex =
+    typeof tNodeOrNoOffsetIndex === 'number'
+      ? tNodeOrNoOffsetIndex
+      : tNodeOrNoOffsetIndex.index - HEADER_OFFSET;
   ngh[DISCONNECTED_NODES] ??= [];
   if (!ngh[DISCONNECTED_NODES].includes(noOffsetIndex)) {
     ngh[DISCONNECTED_NODES].push(noOffsetIndex);
@@ -404,7 +408,18 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
     const i18nData = trySerializeI18nBlock(lView, i, context);
     if (i18nData) {
       ngh[I18N_DATA] ??= {};
-      ngh[I18N_DATA][noOffsetIndex] = i18nData;
+      ngh[I18N_DATA][noOffsetIndex] = i18nData.caseQueue;
+
+      for (const nodeNoOffsetIndex of i18nData.disconnectedNodes) {
+        appendDisconnectedNodeIndex(ngh, nodeNoOffsetIndex);
+      }
+
+      for (const nodeNoOffsetIndex of i18nData.disjointNodes) {
+        const tNode = tView.data[nodeNoOffsetIndex + HEADER_OFFSET] as TNode;
+        ngDevMode && assertTNode(tNode);
+        appendSerializedNodePath(ngh, tNode, lView, i18nChildren);
+      }
+
       continue;
     }
 
@@ -442,7 +457,7 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
     if (nativeElementsToEventTypes && tNode.type & TNodeType.Element) {
       const nativeElement = unwrapRNode(lView[i]) as Element;
       if (nativeElementsToEventTypes.has(nativeElement)) {
-        setJSActionAttribute(nativeElement, nativeElementsToEventTypes.get(nativeElement)!);
+        setJSActionAttributes(nativeElement, nativeElementsToEventTypes.get(nativeElement)!);
       }
     }
 
@@ -525,24 +540,25 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         // those nodes to reach a corresponding anchor node (comment node).
         ngh[ELEMENT_CONTAINERS] ??= {};
         ngh[ELEMENT_CONTAINERS][noOffsetIndex] = calcNumRootNodes(tView, lView, tNode.child);
-      } else if (tNode.type & TNodeType.Projection) {
-        // Current TNode represents an `<ng-content>` slot, thus it has no
-        // DOM elements associated with it, so the **next sibling** node would
-        // not be able to find an anchor. In this case, use full path instead.
+      } else if (tNode.type & (TNodeType.Projection | TNodeType.LetDeclaration)) {
+        // Current TNode represents an `<ng-content>` slot or `@let` declaration,
+        // thus it has no DOM elements associated with it, so the **next sibling**
+        // node would not be able to find an anchor. In this case, use full path instead.
         let nextTNode = tNode.next;
-        // Skip over all `<ng-content>` slots in a row.
-        while (nextTNode !== null && nextTNode.type & TNodeType.Projection) {
+        // Skip over all `<ng-content>` slots and `@let` declarations in a row.
+        while (
+          nextTNode !== null &&
+          nextTNode.type & (TNodeType.Projection | TNodeType.LetDeclaration)
+        ) {
           nextTNode = nextTNode.next;
         }
         if (nextTNode && !isInSkipHydrationBlock(nextTNode)) {
           // Handle a tNode after the `<ng-content>` slot.
           appendSerializedNodePath(ngh, nextTNode, lView, i18nChildren);
         }
-      } else {
-        if (tNode.type & TNodeType.Text) {
-          const rNode = unwrapRNode(lView[i]);
-          processTextNodeBeforeSerialization(context, rNode);
-        }
+      } else if (tNode.type & TNodeType.Text) {
+        const rNode = unwrapRNode(lView[i]);
+        processTextNodeBeforeSerialization(context, rNode);
       }
     }
   }
@@ -567,6 +583,12 @@ function conditionallyAnnotateNodePath(
   lView: LView<unknown>,
   excludedParentNodes: Set<number> | null,
 ) {
+  if (isProjectionTNode(tNode)) {
+    // Do not annotate projection nodes (<ng-content />), since
+    // they don't have a corresponding DOM node representing them.
+    return;
+  }
+
   // Handle case #1 described above.
   if (
     tNode.projectionNext &&

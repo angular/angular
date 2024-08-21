@@ -15,6 +15,21 @@
       "aliases": [
         "control-flow"
       ]
+    },
+    "inject-migration": {
+      "description": "Converts usages of constructor-based injection to the inject() function",
+      "factory": "./ng-generate/inject-migration/bundle",
+      "schema": "./ng-generate/inject-migration/schema.json",
+      "aliases": [
+        "inject"
+      ]
+    },
+    "route-lazy-loading-migration": {
+      "description": "Updates route definitions to use lazy-loading of components instead of eagerly referencing them",
+      "factory": "./ng-generate/route-lazy-loading/bundle",
+      "schema": "./ng-generate/route-lazy-loading/schema.json",
+      "aliases": ["route-lazy-loading"]
     }
   }
 }
+

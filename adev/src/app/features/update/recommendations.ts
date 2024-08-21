@@ -847,7 +847,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: 'forms-number-input',
     action:
-      'If you use Angular forms, inputs of type `number` no longer listen to [change events](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event) (this events are not necessarily fired for each alteration the value), instead listen for an [input events](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event). ',
+      'If you use Angular forms, inputs of type `number` no longer listen to [change events](https://developer.mozilla.org/docs/Web/API/HTMLElement/change_event) (this events are not necessarily fired for each alteration the value), instead listen for an [input events](https://developer.mozilla.org/docs/Web/API/HTMLElement/input_event). ',
   },
   {
     possibleIn: 1000,
@@ -887,7 +887,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Advanced,
     step: 'sw-vary-headers',
     action:
-      'If you use the Angular service worker and rely on resources with [Vary](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary) headers, these headers are now ignored to avoid unpredictable behavior across browsers. To avoid this, [configure](https://angular.io/guide/service-worker-config) your service worker to avoid caching these resources.',
+      'If you use the Angular service worker and rely on resources with [Vary](https://developer.mozilla.org/docs/Web/HTTP/Headers/Vary) headers, these headers are now ignored to avoid unpredictable behavior across browsers. To avoid this, [configure](https://angular.io/guide/service-worker-config) your service worker to avoid caching these resources.',
   },
   {
     possibleIn: 1000,
@@ -968,7 +968,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v11 browser support',
     action:
-      'Support for IE9, IE10, and IE mobile has been removed. This was announced in the [v10 update](http://blog.angular.io/version-10-of-angular-now-available-78960babd41#c357). ',
+      'Support for IE9, IE10, and IE mobile has been removed. This was announced in the [v10 update](http://blog.angular.dev/version-10-of-angular-now-available-78960babd41#c357). ',
   },
   {
     possibleIn: 1100,

@@ -215,7 +215,6 @@ export default class AppComponent {
 
   private async renderPreV6Instructions(): Promise<void> {
     let upgradeStep: Step;
-    const isWindows = /win/i.test(navigator.platform);
     const additionalDeps = this.getAdditionalDependencies(this.to.number);
     const angularVersion = this.getAngularVersion(this.to.number);
     const angularPackages = [
@@ -236,7 +235,7 @@ export default class AppComponent {
     if (this.to.number < 600) {
       const actionMessage = `Update all of your dependencies to the latest Angular and the right version of TypeScript.`;
 
-      if (isWindows) {
+      if (isWindows()) {
         const packages =
           angularPackages
             .map((packageName) => `@angular/${packageName}@${angularVersion}`)
@@ -289,6 +288,10 @@ export default class AppComponent {
 
 /** Whether or not the user is running on a Windows OS. */
 function isWindows(): boolean {
+  if (typeof navigator === 'undefined') {
+    return false;
+  }
+
   const platform = navigator.platform.toLowerCase();
   return platform.includes('windows') || platform.includes('win32');
 }

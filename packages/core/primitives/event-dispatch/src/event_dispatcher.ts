@@ -51,8 +51,11 @@ export class EventDispatcher {
 
   private readonly dispatcher: Dispatcher;
 
-  constructor(private readonly dispatchDelegate: (event: Event, actionName: string) => void) {
-    this.actionResolver = new ActionResolver();
+  constructor(
+    private readonly dispatchDelegate: (event: Event, actionName: string) => void,
+    private readonly clickModSupport = true,
+  ) {
+    this.actionResolver = new ActionResolver({clickModSupport});
     this.dispatcher = new Dispatcher(
       (eventInfoWrapper: EventInfoWrapper) => {
         this.dispatchToDelegate(eventInfoWrapper);
@@ -89,8 +92,10 @@ export class EventDispatcher {
 
 function prepareEventForBubbling(eventInfoWrapper: EventInfoWrapper) {
   const event = eventInfoWrapper.getEvent();
+  const originalStopPropagation = eventInfoWrapper.getEvent().stopPropagation.bind(event);
   const stopPropagation = () => {
     event[PROPAGATION_STOPPED_SYMBOL] = true;
+    originalStopPropagation();
   };
   patchEventInstance(event, 'stopPropagation', stopPropagation);
   patchEventInstance(event, 'stopImmediatePropagation', stopPropagation);
@@ -104,9 +109,11 @@ function propagationStopped(eventInfoWrapper: EventInfoWrapper) {
 function prepareEventForReplay(eventInfoWrapper: EventInfoWrapper) {
   const event = eventInfoWrapper.getEvent();
   const target = eventInfoWrapper.getTargetElement();
+  const originalPreventDefault = event.preventDefault.bind(event);
   patchEventInstance(event, 'target', target);
   patchEventInstance(event, 'eventPhase', EventPhase.REPLAY);
   patchEventInstance(event, 'preventDefault', () => {
+    originalPreventDefault();
     throw new Error(
       PREVENT_DEFAULT_ERROR_MESSAGE + (ngDevMode ? PREVENT_DEFAULT_ERROR_MESSAGE_DETAILS : ''),
     );

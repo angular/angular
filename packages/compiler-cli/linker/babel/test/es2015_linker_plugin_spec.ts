@@ -69,7 +69,6 @@ describe('createEs2015LinkerPlugin()', () => {
     );
     const fileSystem = new MockFileSystemNative();
     const logger = new MockLogger();
-    const plugin = createEs2015LinkerPlugin({fileSystem, logger});
 
     babel.transformSync(
       [
@@ -115,7 +114,6 @@ describe('createEs2015LinkerPlugin()', () => {
     );
     const fileSystem = new MockFileSystemNative();
     const logger = new MockLogger();
-    const plugin = createEs2015LinkerPlugin({fileSystem, logger});
     const result = babel.transformSync(
       [
         'var core;',
@@ -138,7 +136,6 @@ describe('createEs2015LinkerPlugin()', () => {
     spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
     const fileSystem = new MockFileSystemNative();
     const logger = new MockLogger();
-    const plugin = createEs2015LinkerPlugin({fileSystem, logger});
     const result = babel.transformSync(
       [
         "import * as core from 'some-module';",
@@ -159,11 +156,35 @@ describe('createEs2015LinkerPlugin()', () => {
     );
   });
 
+  it('should return a Babel plugin that adds shared statements after the first group of imports', () => {
+    spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
+    const fileSystem = new MockFileSystemNative();
+    const logger = new MockLogger();
+    const result = babel.transformSync(
+      [
+        "import * as core from 'some-module';",
+        "import {id} from 'other-module';",
+        `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+        `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+        `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+        "import {second} from 'second-module';",
+      ].join('\n'),
+      {
+        plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
+        filename: '/test.js',
+        parserOpts: {sourceType: 'unambiguous'},
+        generatorOpts: {compact: true},
+      },
+    );
+    expect(result!.code).toEqual(
+      'import*as core from\'some-module\';import{id}from\'other-module\';const _c0=[1];const _c1=[2];const _c2=[3];"REPLACEMENT";"REPLACEMENT";"REPLACEMENT";import{second}from\'second-module\';',
+    );
+  });
+
   it('should return a Babel plugin that adds shared statements at the start of the program if it is an ECMAScript Module and there are no imports', () => {
     spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
     const fileSystem = new MockFileSystemNative();
     const logger = new MockLogger();
-    const plugin = createEs2015LinkerPlugin({fileSystem, logger});
     const result = babel.transformSync(
       [
         'var core;',
@@ -188,7 +209,6 @@ describe('createEs2015LinkerPlugin()', () => {
     spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
     const fileSystem = new MockFileSystemNative();
     const logger = new MockLogger();
-    const plugin = createEs2015LinkerPlugin({fileSystem, logger});
     const result = babel.transformSync(
       [
         'function run(core) {',
@@ -213,7 +233,6 @@ describe('createEs2015LinkerPlugin()', () => {
     spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
     const fileSystem = new MockFileSystemNative();
     const logger = new MockLogger();
-    const plugin = createEs2015LinkerPlugin({fileSystem, logger});
     const result = babel.transformSync(
       [
         'function run() {',
@@ -244,7 +263,6 @@ describe('createEs2015LinkerPlugin()', () => {
     spyOnLinkPartialDeclarationWithConstants(o.fn([], [], null, null, 'FOO'));
     const fileSystem = new MockFileSystemNative();
     const logger = new MockLogger();
-    const plugin = createEs2015LinkerPlugin({fileSystem, logger});
     const result = babel.transformSync(
       [
         `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core}); FOO;`,
@@ -298,7 +316,6 @@ describe('createEs2015LinkerPlugin()', () => {
 
     const fileSystem = new MockFileSystemNative();
     const logger = new MockLogger();
-    const plugin = createEs2015LinkerPlugin({fileSystem, logger});
     const result = babel.transformSync(
       [
         "import * as core from 'some-module';",

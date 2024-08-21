@@ -16,6 +16,7 @@ export {
   ReferencesRegistry,
   ResourceLoader,
   ResourceLoaderContext,
+  JitDeclarationRegistry,
 } from './common';
 export {ComponentDecoratorHandler} from './component';
 export {

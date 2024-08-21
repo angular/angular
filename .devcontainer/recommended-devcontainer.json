@@ -6,10 +6,6 @@
   "postCreateCommand": "yarn install",
   "extensions": [
     "devondcarew.bazel-code",
-    "gkalpak.aio-docs-utils",
-    "ms-vscode.vscode-typescript-tslint-plugin",
-    // The following extensions are useful when working on angular.io (i.e. inside the `aio/` directory).
-    //"angular.ng-template",
-    //"dbaeumer.vscode-eslint",
+    "ms-vscode.vscode-typescript-tslint-plugin"
   ],
 }

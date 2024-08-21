@@ -267,6 +267,12 @@ export interface Navigation {
    */
   finalUrl?: UrlTree;
   /**
+   * `UrlTree` to use when updating the browser URL for the navigation when `extras.browserUrl` is
+   * defined.
+   * @internal
+   */
+  readonly targetBrowserUrl?: UrlTree | string;
+  /**
    * TODO(atscott): If we want to make StateManager public, they will need access to this. Note that
    * it's already eventually exposed through router.routerState.
    * @internal
@@ -322,10 +328,6 @@ export interface NavigationTransition {
  */
 interface InternalRouterInterface {
   config: Routes;
-  // All of these are public API of router interface and can change during runtime because they are
-  // writeable. Ideally, these would be removed and the values retrieved instead from the values
-  // available in DI.
-  errorHandler: (error: any) => any;
   navigated: boolean;
   routeReuseStrategy: RouteReuseStrategy;
   onSameUrlNavigation: 'reload' | 'ignore';
@@ -475,6 +477,10 @@ export class NavigationTransitions {
               id: t.id,
               initialUrl: t.rawUrl,
               extractedUrl: t.extractedUrl,
+              targetBrowserUrl:
+                typeof t.extras.browserUrl === 'string'
+                  ? this.urlSerializer.parse(t.extras.browserUrl)
+                  : t.extras.browserUrl,
               trigger: t.source,
               extras: t.extras,
               previousNavigation: !this.lastSuccessfulNavigation
@@ -883,10 +889,7 @@ export class NavigationTransitions {
                   );
                 } else {
                   this.events.next(navigationError);
-                  // TODO(atscott): remove deprecation on errorHandler in RouterModule.forRoot and change behavior to provide NAVIGATION_ERROR_HANDLER
-                  // Note: Still remove public `Router.errorHandler` property, as this is supposed to be configured in DI.
-                  const errorHandlerResult = router.errorHandler(e);
-                  overallTransitionState.resolve(!!errorHandlerResult);
+                  throw e;
                 }
               } catch (ee) {
                 // TODO(atscott): consider flipping the default behavior of
@@ -955,12 +958,14 @@ export class NavigationTransitions {
     // The extracted URL is the part of the URL that this application cares about. `extract` may
     // return only part of the browser URL and that part may have not changed even if some other
     // portion of the URL did.
-    const extractedBrowserUrl = this.urlHandlingStrategy.extract(
+    const currentBrowserUrl = this.urlHandlingStrategy.extract(
       this.urlSerializer.parse(this.location.path(true)),
     );
+    const targetBrowserUrl =
+      this.currentNavigation?.targetBrowserUrl ?? this.currentNavigation?.extractedUrl;
     return (
-      extractedBrowserUrl.toString() !== this.currentTransition?.extractedUrl.toString() &&
-      !this.currentTransition?.extras.skipLocationChange
+      currentBrowserUrl.toString() !== targetBrowserUrl?.toString() &&
+      !this.currentNavigation?.extras.skipLocationChange
     );
   }
 }

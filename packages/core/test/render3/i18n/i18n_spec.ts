@@ -105,6 +105,7 @@ describe('Runtime i18n', () => {
         ]),
         update: [] as unknown as I18nUpdateOpCodes,
         ast: [{kind: 0, index: HEADER_OFFSET + 1}],
+        parentTNodeIndex: HEADER_OFFSET,
       });
     });
 
@@ -154,6 +155,7 @@ describe('Runtime i18n', () => {
           },
           {kind: 0, index: HEADER_OFFSET + 8},
         ],
+        parentTNodeIndex: HEADER_OFFSET,
       });
     });
 
@@ -189,6 +191,7 @@ describe('Runtime i18n', () => {
           }] as Text).textContent = \`Hello \${lView[i-1]}!\`; }`,
         ]),
         ast: [{kind: 0, index: HEADER_OFFSET + 2}],
+        parentTNodeIndex: HEADER_OFFSET,
       });
     });
 
@@ -218,6 +221,7 @@ describe('Runtime i18n', () => {
           }] as Text).textContent = \`Hello \${lView[i-1]} and \${lView[i-2]}, again \${lView[i-1]}!\`; }`,
         ]),
         ast: [{kind: 0, index: HEADER_OFFSET + 2}],
+        parentTNodeIndex: HEADER_OFFSET,
       });
     });
 
@@ -264,6 +268,7 @@ describe('Runtime i18n', () => {
           {kind: 2, index: HEADER_OFFSET + 2, children: [], type: 1},
           {kind: 0, index: HEADER_OFFSET + 4},
         ],
+        parentTNodeIndex: HEADER_OFFSET,
       });
 
       /**** First sub-template ****/
@@ -298,6 +303,7 @@ describe('Runtime i18n', () => {
             type: 0,
           },
         ],
+        parentTNodeIndex: HEADER_OFFSET,
       });
 
       /**** Second sub-template ****/
@@ -325,6 +331,7 @@ describe('Runtime i18n', () => {
             type: 0,
           },
         ],
+        parentTNodeIndex: HEADER_OFFSET,
       });
     });
 
@@ -390,6 +397,7 @@ describe('Runtime i18n', () => {
             currentCaseLViewIndex: HEADER_OFFSET + 3,
           },
         ],
+        parentTNodeIndex: HEADER_OFFSET,
       });
       expect(getTIcu(tView, HEADER_OFFSET + 2)).toEqual(<TIcu>{
         type: 1,
@@ -511,6 +519,7 @@ describe('Runtime i18n', () => {
             currentCaseLViewIndex: HEADER_OFFSET + 3,
           },
         ],
+        parentTNodeIndex: HEADER_OFFSET,
       });
       expect(getTIcu(tView, HEADER_OFFSET + 2)).toEqual({
         type: 1,

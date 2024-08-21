@@ -8,6 +8,7 @@
 
 import {inject, InjectionToken} from './di';
 import {getOriginalError} from './util/errors';
+import {NgZone} from './zone';
 
 /**
  * Provides a hook for centralized exception handling.
@@ -71,8 +72,9 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
   {
     providedIn: 'root',
     factory: () => {
+      const zone = inject(NgZone);
       const userErrorHandler = inject(ErrorHandler);
-      return userErrorHandler.handleError.bind(this);
+      return (e: unknown) => zone.runOutsideAngular(() => userErrorHandler.handleError(e));
     },
   },
 );

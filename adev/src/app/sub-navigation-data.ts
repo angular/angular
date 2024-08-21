@@ -32,6 +32,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'introduction/what-is-angular',
       },
       {
+        label: 'Installation',
+        path: 'installation',
+        contentPath: 'introduction/installation',
+      },
+      {
         label: 'Essentials',
         children: [
           {
@@ -227,6 +232,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Control flow',
             path: 'guide/templates/control-flow',
             contentPath: 'guide/templates/control-flow',
+          },
+          {
+            label: 'Local template variables with @let',
+            path: 'guide/templates/let-template-variables',
+            contentPath: 'guide/templates/let-template-variables',
           },
           {
             label: 'Pipes',
@@ -473,6 +483,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       {
         label: 'Performance',
         children: [
+          {
+            label: 'Overview',
+            path: 'guide/performance',
+            contentPath: 'guide/performance/overview',
+          },
           {
             label: 'Deferrable views',
             path: 'guide/defer',
@@ -1047,6 +1062,10 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'cli/generate/config',
           },
           {
+            label: 'directive',
+            path: 'cli/generate/directive',
+          },
+          {
             label: 'enum',
             path: 'cli/generate/enum',
           },
@@ -1260,6 +1279,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG0912',
       },
       {
+        label: 'NG0913: Runtime Performance Warnings',
+        path: 'errors/NG0913',
+        contentPath: 'reference/errors/NG0913',
+      },
+      {
         label: 'NG0950: Required input is accessed before a value is set.',
         path: 'errors/NG0950',
         contentPath: 'reference/errors/NG0950',
@@ -1379,6 +1403,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'extended-diagnostics/NG8109',
         contentPath: 'reference/extended-diagnostics/NG8109',
       },
+      {
+        label: 'NG8111: Functions must be invoked in event bindings',
+        path: 'extended-diagnostics/NG8111',
+        contentPath: 'reference/extended-diagnostics/NG8111',
+      },
     ],
   },
   {
@@ -1434,19 +1463,19 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/migrations/standalone',
       },
       {
-        label: 'ModuleWithProviders',
-        path: 'reference/migrations/module-with-providers',
-        contentPath: 'reference/migrations/module-with-providers',
-      },
-      {
-        label: 'Typed Forms',
-        path: 'reference/migrations/typed-forms',
-        contentPath: 'reference/migrations/typed-forms',
-      },
-      {
         label: 'Control Flow Syntax',
         path: 'reference/migrations/control-flow',
         contentPath: 'reference/migrations/control-flow',
+      },
+      {
+        label: 'inject() Function',
+        path: 'reference/migrations/inject-function',
+        contentPath: 'reference/migrations/inject-function',
+      },
+      {
+        label: 'Lazy-loaded routes',
+        path: 'reference/migrations/route-lazy-loading',
+        contentPath: 'reference/migrations/route-lazy-loading',
       },
     ],
   },

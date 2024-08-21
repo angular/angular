@@ -27,7 +27,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       </xhtml:div>
     </foreignObject>
   </svg>
-`
+`,
                 }]
         }] });
 export class MyModule {
@@ -83,7 +83,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       </xhtml:div>
     </foreignObject>
   </svg>
-`
+`,
                 }]
         }] });
 export class MyModule {

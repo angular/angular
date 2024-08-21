@@ -127,9 +127,11 @@ export interface PipeEntry extends ClassEntry {
   // TODO: add `isPure`.
 }
 
-export interface FunctionEntry extends DocEntry {
+export interface FunctionSignatureMetadata extends DocEntry {
   params: ParameterEntry[];
   returnType: string;
+  returnDescription?: string;
+
   generics: GenericEntry[];
   isNewType: boolean;
 }
@@ -169,11 +171,16 @@ export interface ParameterEntry {
   isRestParam: boolean;
 }
 
+export type FunctionEntry = FunctionDefinitionEntry &
+  DocEntry & {
+    implementation: FunctionSignatureMetadata;
+  };
+
 /** Interface describing a function with overload signatures. */
-export interface FunctionWithOverloads {
+export interface FunctionDefinitionEntry {
   name: string;
-  signatures: FunctionEntry[];
-  implementation: FunctionEntry | null;
+  signatures: FunctionSignatureMetadata[];
+  implementation: FunctionSignatureMetadata | null;
 }
 
 /**
@@ -190,8 +197,8 @@ export interface FunctionWithOverloads {
  * constructs. Initializer APIs are explicitly denoted via a JSDoc tag.
  */
 export interface InitializerApiFunctionEntry extends DocEntry {
-  callFunction: FunctionWithOverloads;
-  subFunctions: FunctionWithOverloads[];
+  callFunction: FunctionDefinitionEntry;
+  subFunctions: FunctionDefinitionEntry[];
 
   __docsMetadata__?: {
     /**

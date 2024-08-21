@@ -15,7 +15,6 @@ import {
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
-import {EmptyOutletComponent} from '../components/empty_outlet';
 import {RuntimeErrorCode} from '../errors';
 import {Route, Routes} from '../models';
 import {ActivatedRouteSnapshot} from '../router_state';
@@ -222,24 +221,6 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
   }
 }
 
-/**
- * Makes a copy of the config and adds any default required properties.
- */
-export function standardizeConfig(r: Route): Route {
-  const children = r.children && r.children.map(standardizeConfig);
-  const c = children ? {...r, children} : {...r};
-  if (
-    !c.component &&
-    !c.loadComponent &&
-    (children || c.loadChildren) &&
-    c.outlet &&
-    c.outlet !== PRIMARY_OUTLET
-  ) {
-    c.component = EmptyOutletComponent;
-  }
-  return c;
-}
-
 /** Returns the `route.outlet` or PRIMARY_OUTLET if none exists. */
 export function getOutlet(route: Route): string {
   return route.outlet || PRIMARY_OUTLET;
@@ -268,7 +249,7 @@ export function sortByMatchingOutlets(routes: Routes, outletName: string): Route
  * also used for getting the correct injector to use for creating components.
  */
 export function getClosestRouteInjector(
-  snapshot: ActivatedRouteSnapshot,
+  snapshot: ActivatedRouteSnapshot | undefined,
 ): EnvironmentInjector | null {
   if (!snapshot) return null;
 

@@ -1,22 +1,19 @@
 @use '@angular/docs/styles/media-queries' as mq;
 
 :host {
+  z-index: 100;
+
   @include mq.for-tablet-landscape-up {
     position: sticky;
     top: 0;
-    // Render secondary nav below primary nav
-    z-index: 99;
   }
 
   @include mq.for-tablet-landscape-down {
     position: fixed;
-    // Render secondary nav above mobile menu
-    z-index: 100;
   }
 
   @include mq.for-phone-only {
     transform: translateX(0);
-    z-index: 99;
     transition: transform 0.3s ease;
     &:has(.docs-nav-secondary--open) {
       transform: translateX(82px);
@@ -40,7 +37,10 @@
   transition: transform 0.45s ease;
 
   @media (prefers-reduced-motion: no-preference) {
-    transition: transform 0.45s ease, background-color 0.3s ease, border-color 0.3s ease;
+    transition:
+      transform 0.45s ease,
+      background-color 0.3s ease,
+      border-color 0.3s ease;
   }
 
   @include mq.for-tablet-landscape-down {

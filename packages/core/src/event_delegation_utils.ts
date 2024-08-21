@@ -11,12 +11,15 @@ import {
   EventContract,
   EventContractContainer,
   EventDispatcher,
+  isEarlyEventType,
+  getActionCache,
   registerDispatcher,
 } from '@angular/core/primitives/event-dispatch';
-import * as Attributes from '@angular/core/primitives/event-dispatch';
-import {Injectable, Injector} from './di';
+import {Attribute} from '@angular/core/primitives/event-dispatch';
+import {Injectable, InjectionToken, Injector, inject} from './di';
 import {RElement} from './render3/interfaces/renderer_dom';
 import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './hydration/tokens';
+import {OnDestroy} from './interface/lifecycle_hooks';
 
 declare global {
   interface Element {
@@ -34,17 +37,16 @@ export function invokeRegisteredListeners(event: Event) {
   }
 }
 
-export function setJSActionAttribute(nativeElement: Element, eventTypes: string[]) {
+export function setJSActionAttributes(nativeElement: Element, eventTypes: string[]) {
   if (!eventTypes.length) {
     return;
   }
   const parts = eventTypes.reduce((prev, curr) => prev + curr + ':;', '');
-  const existingAttr = nativeElement.getAttribute(Attributes.JSACTION);
-  //  This is required to be a module accessor to appease security tests on setAttribute.
-  nativeElement.setAttribute(Attributes.JSACTION, `${existingAttr ?? ''}${parts}`);
+  const existingAttr = nativeElement.getAttribute(Attribute.JSACTION);
+  nativeElement.setAttribute(Attribute.JSACTION, `${existingAttr ?? ''}${parts}`);
 }
 
-export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn: () => void) => {
+export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn: Function) => {
   const el = rEl as unknown as Element;
   const eventListenerMap = el.__jsaction_fns ?? new Map();
   const eventListeners = eventListenerMap.get(eventType) ?? [];
@@ -54,31 +56,75 @@ export const sharedStashFunction = (rEl: RElement, eventType: string, listenerFn
 };
 
 export const removeListeners = (el: Element) => {
-  el.removeAttribute(Attributes.JSACTION);
+  el.removeAttribute(Attribute.JSACTION);
   el.__jsaction_fns = undefined;
 };
 
-@Injectable({providedIn: 'root'})
-export class GlobalEventDelegation {
-  eventContract!: EventContract;
-  addEvent(el: Element, eventName: string) {
-    if (this.eventContract) {
-      this.eventContract.addEvent(eventName);
-      setJSActionAttribute(el, [eventName]);
-      return true;
+export interface EventContractDetails {
+  instance?: EventContract;
+}
+
+export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
+  ngDevMode ? 'EVENT_CONTRACT_DETAILS' : '',
+  {
+    providedIn: 'root',
+    factory: () => ({}),
+  },
+);
+
+export const GLOBAL_EVENT_DELEGATION = new InjectionToken<GlobalEventDelegation>(
+  ngDevMode ? 'GLOBAL_EVENT_DELEGATION' : '',
+);
+
+/**
+ * This class is the delegate for `EventDelegationPlugin`. It represents the
+ * noop version of this class, with the enabled version set when
+ * `provideGlobalEventDelegation` is called.
+ */
+@Injectable()
+export class GlobalEventDelegation implements OnDestroy {
+  private eventContractDetails = inject(JSACTION_EVENT_CONTRACT);
+
+  ngOnDestroy() {
+    this.eventContractDetails.instance?.cleanUp();
+  }
+
+  supports(eventType: string): boolean {
+    return isEarlyEventType(eventType);
+  }
+
+  addEventListener(element: HTMLElement, eventType: string, handler: Function): Function {
+    // Note: contrary to the type, Window and Document can be passed in
+    // as well.
+    if (element.nodeType === Node.ELEMENT_NODE) {
+      this.eventContractDetails.instance!.addEvent(eventType);
+      getActionCache(element)[eventType] = '';
+      sharedStashFunction(element, eventType, handler);
+    } else {
+      element.addEventListener(eventType, handler as EventListener);
     }
-    return false;
+    return () => this.removeEventListener(element, eventType, handler);
+  }
+
+  removeEventListener(element: HTMLElement, eventType: string, callback: Function): void {
+    if (element.nodeType === Node.ELEMENT_NODE) {
+      getActionCache(element)[eventType] = undefined;
+    } else {
+      element.removeEventListener(eventType, callback as EventListener);
+    }
   }
 }
 
 export const initGlobalEventDelegation = (
-  eventDelegation: GlobalEventDelegation,
+  eventContractDetails: EventContractDetails,
   injector: Injector,
 ) => {
   if (injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT)) {
     return;
   }
-  eventDelegation.eventContract = new EventContract(new EventContractContainer(document.body));
-  const dispatcher = new EventDispatcher(invokeRegisteredListeners);
-  registerDispatcher(eventDelegation.eventContract, dispatcher);
+  const eventContract = (eventContractDetails.instance = new EventContract(
+    new EventContractContainer(document.body),
+  ));
+  const dispatcher = new EventDispatcher(invokeRegisteredListeners, /** clickModSupport */ false);
+  registerDispatcher(eventContract, dispatcher);
 };

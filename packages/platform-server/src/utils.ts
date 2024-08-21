@@ -26,6 +26,7 @@ import {PlatformState} from './platform_state';
 import {platformServer} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 import {createScript} from './transfer_state';
+import {runAndMeasurePerf} from './profiler';
 
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
@@ -143,9 +144,13 @@ function insertEventRecordScript(
   const eventDispatchScript = findEventDispatchScript(doc);
   if (eventDispatchScript) {
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
-    const replayScriptContents = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
-      appId,
-    )}, ${JSON.stringify(Array.from(regular))}${capture.size ? ',' + JSON.stringify(Array.from(capture)) : ''});`;
+    const replayScriptContents =
+      `window.__jsaction_bootstrap(` +
+      `document.body,` +
+      `"${appId}",` +
+      `${JSON.stringify(Array.from(regular))},` +
+      `${JSON.stringify(Array.from(capture))}` +
+      `);`;
 
     const replayScript = createScript(doc, replayScriptContents, nonce);
 
@@ -272,7 +277,10 @@ export async function renderApplication<T>(
   bootstrap: () => Promise<ApplicationRef>,
   options: {document?: string | Document; url?: string; platformProviders?: Provider[]},
 ): Promise<string> {
-  const platformRef = createServerPlatform(options);
-  const applicationRef = await bootstrap();
-  return _render(platformRef, applicationRef);
+  return runAndMeasurePerf('renderApplication', async () => {
+    const platformRef = createServerPlatform(options);
+
+    const applicationRef = await bootstrap();
+    return _render(platformRef, applicationRef);
+  });
 }

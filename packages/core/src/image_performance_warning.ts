@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {IMAGE_CONFIG, ImageConfig} from './application/application_tokens';
+import {IMAGE_CONFIG, ImageConfig, PLATFORM_ID} from './application/application_tokens';
 import {Injectable} from './di';
 import {inject} from './di/injector_compatibility';
 import {formatRuntimeError, RuntimeErrorCode} from './errors';
 import {OnDestroy} from './interface/lifecycle_hooks';
 import {getDocument} from './render3/interfaces/document';
-import {NgZone} from './zone';
 
 // A delay in milliseconds before the scan is run after onLoad, to avoid any
 // potential race conditions with other LCP-related functions. This delay
@@ -28,11 +27,12 @@ export class ImagePerformanceWarning implements OnDestroy {
   private window: Window | null = null;
   private observer: PerformanceObserver | null = null;
   private options: ImageConfig = inject(IMAGE_CONFIG);
-  private ngZone = inject(NgZone);
+  private readonly isBrowser = inject(PLATFORM_ID) === 'browser';
   private lcpImageUrl?: string;
 
   public start() {
     if (
+      !this.isBrowser ||
       typeof PerformanceObserver === 'undefined' ||
       (this.options?.disableImageSizeWarning && this.options?.disableImageLazyLoadWarning)
     ) {
@@ -48,9 +48,7 @@ export class ImagePerformanceWarning implements OnDestroy {
       const waitToScan = () => {
         setTimeout(this.scanImages.bind(this), SCAN_DELAY);
       };
-      // Angular doesn't have to run change detection whenever any asynchronous tasks are invoked in
-      // the scope of this functionality.
-      this.ngZone.runOutsideAngular(() => {
+      const setup = () => {
         // Consider the case when the application is created and destroyed multiple times.
         // Typically, applications are created instantly once the page is loaded, and the
         // `window.load` listener is always triggered. However, the `window.load` event will never
@@ -61,7 +59,14 @@ export class ImagePerformanceWarning implements OnDestroy {
         } else {
           this.window?.addEventListener('load', waitToScan, {once: true});
         }
-      });
+      };
+      // Angular doesn't have to run change detection whenever any asynchronous tasks are invoked in
+      // the scope of this functionality.
+      if (typeof Zone !== 'undefined') {
+        Zone.root.run(() => setup());
+      } else {
+        setup();
+      }
     }
   }
 

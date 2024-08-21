@@ -49,6 +49,7 @@ import {BrowserGetTestability} from './browser/testability';
 import {BrowserXhr} from './browser/xhr';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
+import {EventDelegationPlugin} from './dom/events/event_delegation';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {SharedStylesHost} from './dom/shared_styles_host';
@@ -240,6 +241,11 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
     deps: [DOCUMENT, NgZone, PLATFORM_ID],
   },
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
+  {
+    provide: EVENT_MANAGER_PLUGINS,
+    useClass: EventDelegationPlugin,
+    multi: true,
+  },
   DomRendererFactory2,
   SharedStylesHost,
   EventManager,

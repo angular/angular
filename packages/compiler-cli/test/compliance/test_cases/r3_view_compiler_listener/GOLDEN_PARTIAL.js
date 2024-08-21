@@ -205,7 +205,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: `<div (click)="click()" (change)="change()"></div>`
+                    template: `<div (click)="click()" (change)="change()"></div>`,
                 }]
         }] });
 export class MyModule {
@@ -251,7 +251,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'some-comp',
-                    template: ''
+                    template: '',
                 }]
         }], propDecorators: { update: [{
                 type: Output
@@ -396,7 +396,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: '',
                     host: {
-                        '(mousedown)': 'mousedown()'
+                        '(mousedown)': 'mousedown()',
                     }
                 }]
         }], propDecorators: { click: [{
@@ -574,7 +574,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     host: {
-                        '(click)': 'c(this.$event)'
+                        '(click)': 'c(this.$event)',
                     }
                 }]
         }] });
@@ -700,7 +700,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: 'Name: <input [(ngModel)]="name">'
+                    template: 'Name: <input [(ngModel)]="name">',
                 }]
         }] });
 export class NgModelDirective {
@@ -767,7 +767,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test-cmp',
-                    template: 'Name: <ng-template><input [(ngModel)]="name"></ng-template>'
+                    template: 'Name: <ng-template><input [(ngModel)]="name"></ng-template>',
                 }]
         }] });
 export class NgModelDirective {
@@ -892,7 +892,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     imports: [Dir],
                     template: `
     <div dir [(a)]="value" (b)="noop()" [(c)]="value" (d)="noop()"></div>
-  `
+  `,
                 }]
         }] });
 
@@ -933,7 +933,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[ngModel]',
-                    standalone: true
+                    standalone: true,
                 }]
         }] });
 export class TestCmp {
@@ -956,7 +956,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
   `,
                     standalone: true,
-                    imports: [NgModelDirective]
+                    imports: [NgModelDirective],
                 }]
         }] });
 

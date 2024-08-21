@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
+import {Location, NgFor, NgIf} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -20,6 +20,7 @@ import {
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
+import {Title} from '@angular/platform-browser';
 import {debounceTime, map} from 'rxjs';
 
 import {TerminalType} from '../terminal/terminal-handler.service';
@@ -28,7 +29,10 @@ import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 import {CodeMirrorEditor} from './code-mirror-editor.service';
 import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
 import {DownloadManager} from '../download-manager.service';
+import {StackBlitzOpener} from '../stackblitz-opener.service';
 import {ClickOutside, IconComponent} from '@angular/docs';
+import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
+import {IDXLauncher} from '../idx-launcher.service';
 
 export const REQUIRED_FILES = new Set([
   'src/main.ts',
@@ -36,13 +40,24 @@ export const REQUIRED_FILES = new Set([
   'src/app/app.component.ts',
 ]);
 
+const ANGULAR_DEV = 'https://angular.dev';
+
 @Component({
   selector: 'docs-tutorial-code-editor',
   standalone: true,
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, NgFor, MatTabsModule, IconComponent, ClickOutside],
+  imports: [
+    NgIf,
+    NgFor,
+    MatTabsModule,
+    IconComponent,
+    ClickOutside,
+    CdkMenu,
+    CdkMenuItem,
+    CdkMenuTrigger,
+  ],
 })
 export class CodeEditor implements AfterViewInit, OnDestroy {
   @ViewChild('codeEditorWrapper') private codeEditorWrapperRef!: ElementRef<HTMLDivElement>;
@@ -73,6 +88,10 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
   private readonly codeMirrorEditor = inject(CodeMirrorEditor);
   private readonly diagnosticsState = inject(DiagnosticsState);
   private readonly downloadManager = inject(DownloadManager);
+  private readonly stackblitzOpener = inject(StackBlitzOpener);
+  private readonly idxLauncher = inject(IDXLauncher);
+  private readonly title = inject(Title);
+  private readonly location = inject(Location);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
 
   private readonly errors$ = this.diagnosticsState.diagnostics$.pipe(
@@ -108,6 +127,19 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.codeMirrorEditor.disable();
+  }
+
+  openCurrentSolutionInIDX(): void {
+    this.idxLauncher.openCurrentSolutionInIDX();
+  }
+  async openCurrentCodeInStackBlitz(): Promise<void> {
+    const title = this.title.getTitle();
+
+    const path = this.location.path();
+    const editorUrl = `${ANGULAR_DEV}${path}`;
+    const description = `Angular.dev example generated from [${editorUrl}](${editorUrl})`;
+
+    await this.stackblitzOpener.openCurrentSolutionInStackBlitz({title, description});
   }
 
   async downloadCurrentCodeEditorState(): Promise<void> {

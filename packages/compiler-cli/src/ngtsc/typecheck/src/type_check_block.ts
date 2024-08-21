@@ -69,7 +69,7 @@ import {
 } from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
-import {astToTypescript, NULL_AS_ANY} from './expression';
+import {astToTypescript, ANY_EXPRESSION} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {
   tsCallMethod,
@@ -763,7 +763,7 @@ class TcbInvalidReferenceOp extends TcbOp {
 
   override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
-    this.scope.addStatement(tsCreateVariable(id, NULL_AS_ANY));
+    this.scope.addStatement(tsCreateVariable(id, ANY_EXPRESSION));
     return id;
   }
 }
@@ -1647,23 +1647,23 @@ class TcbIfOp extends TcbOp {
       return ts.factory.createBlock(branchScope.render());
     }
 
-    // We need to process the expression first so it gets its own scope that the body of the
-    // conditional will inherit from. We do this, because we need to declare a separate variable
+    // We process the expression first in the parent scope, but create a scope around the block
+    // that the body will inherit from. We do this, because we need to declare a separate variable
     // for the case where the expression has an alias _and_ because we need the processed
     // expression when generating the guard for the body.
-    const expressionScope = Scope.forNodes(this.tcb, this.scope, branch, [], null);
-    expressionScope.render().forEach((stmt) => this.scope.addStatement(stmt));
-    this.expressionScopes.set(branch, expressionScope);
+    const outerScope = Scope.forNodes(this.tcb, this.scope, branch, [], null);
+    outerScope.render().forEach((stmt) => this.scope.addStatement(stmt));
+    this.expressionScopes.set(branch, outerScope);
 
-    let expression = tcbExpression(branch.expression, this.tcb, expressionScope);
+    let expression = tcbExpression(branch.expression, this.tcb, this.scope);
     if (branch.expressionAlias !== null) {
       expression = ts.factory.createBinaryExpression(
         ts.factory.createParenthesizedExpression(expression),
         ts.SyntaxKind.AmpersandAmpersandToken,
-        expressionScope.resolve(branch.expressionAlias),
+        outerScope.resolve(branch.expressionAlias),
       );
     }
-    const bodyScope = this.getBranchScope(expressionScope, branch, index);
+    const bodyScope = this.getBranchScope(outerScope, branch, index);
 
     return ts.factory.createIfStatement(
       expression,
@@ -1889,7 +1889,7 @@ class TcbForOfOp extends TcbOp {
     // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
     // Add a non-null expression to allow such values to be assigned.
     const expression = ts.factory.createNonNullExpression(
-      tcbExpression(this.block.expression, this.tcb, loopScope),
+      tcbExpression(this.block.expression, this.tcb, this.scope),
     );
     const trackTranslator = new TcbForLoopTrackTranslator(this.tcb, loopScope, this.block);
     const trackExpression = trackTranslator.translate(this.block.trackBy);
@@ -2025,7 +2025,7 @@ class Scope {
    *
    * Assumes that there won't be duplicated `@let` declarations within the same scope.
    */
-  private letDeclOpMap = new Map<string, number>();
+  private letDeclOpMap = new Map<string, {opIndex: number; node: TmplAstLetDeclaration}>();
 
   /**
    * Statements for this template.
@@ -2131,15 +2131,14 @@ class Scope {
     }
     for (const node of children) {
       scope.appendNode(node);
-
-      if (node instanceof TmplAstLetDeclaration) {
-        const opIndex = scope.opQueue.push(new TcbLetDeclarationOp(tcb, scope, node)) - 1;
-        if (scope.letDeclOpMap.has(node.name)) {
-          tcb.oobRecorder.duplicateLetDeclaration(tcb.id, node);
-        } else {
-          scope.letDeclOpMap.set(node.name, opIndex);
-        }
-      }
+    }
+    // Once everything is registered, we need to check if there are `@let`
+    // declarations that conflict with other local symbols defined after them.
+    for (const variable of scope.varMap.keys()) {
+      Scope.checkConflictingLet(scope, variable);
+    }
+    for (const ref of scope.referenceOpMap.keys()) {
+      Scope.checkConflictingLet(scope, ref);
     }
     return scope;
   }
@@ -2273,7 +2272,7 @@ class Scope {
     if (ref instanceof TmplAstReference && this.referenceOpMap.has(ref)) {
       return this.resolveOp(this.referenceOpMap.get(ref)!);
     } else if (ref instanceof TmplAstLetDeclaration && this.letDeclOpMap.has(ref.name)) {
-      return this.resolveOp(this.letDeclOpMap.get(ref.name)!);
+      return this.resolveOp(this.letDeclOpMap.get(ref.name)!.opIndex);
     } else if (ref instanceof TmplAstVariable && this.varMap.has(ref)) {
       // Resolving a context variable for this template.
       // Execute the `TcbVariableOp` associated with the `TmplAstVariable`.
@@ -2383,6 +2382,13 @@ class Scope {
       this.appendIcuExpressions(node);
     } else if (node instanceof TmplAstContent) {
       this.appendChildren(node);
+    } else if (node instanceof TmplAstLetDeclaration) {
+      const opIndex = this.opQueue.push(new TcbLetDeclarationOp(this.tcb, this, node)) - 1;
+      if (this.isLocal(node)) {
+        this.tcb.oobRecorder.conflictingDeclaration(this.tcb.id, node);
+      } else {
+        this.letDeclOpMap.set(node.name, {opIndex, node});
+      }
     }
   }
 
@@ -2627,6 +2633,16 @@ class Scope {
       this.tcb.oobRecorder.inaccessibleDeferredTriggerElement(this.tcb.id, trigger);
     }
   }
+
+  /** Reports a diagnostic if there are any `@let` declarations that conflict with a node. */
+  private static checkConflictingLet(scope: Scope, node: TmplAstVariable | TmplAstReference): void {
+    if (scope.letDeclOpMap.has(node.name)) {
+      scope.tcb.oobRecorder.conflictingDeclaration(
+        scope.tcb.id,
+        scope.letDeclOpMap.get(node.name)!.node,
+      );
+    }
+  }
 }
 
 interface TcbBoundAttribute {
@@ -2707,10 +2723,23 @@ class TcbExpressionTranslator {
       // returned here to let it fall through resolution so it will be caught when the
       // `ImplicitReceiver` is resolved in the branch below.
       const target = this.tcb.boundTarget.getExpressionTarget(ast);
-      if (target instanceof TmplAstLetDeclaration) {
-        this.validateLetDeclarationAccess(target, ast);
+      const targetExpression = target === null ? null : this.getTargetNodeExpression(target, ast);
+      if (
+        target instanceof TmplAstLetDeclaration &&
+        !this.isValidLetDeclarationAccess(target, ast)
+      ) {
+        this.tcb.oobRecorder.letUsedBeforeDefinition(this.tcb.id, ast, target);
+        // Cast the expression to `any` so we don't produce additional diagnostics.
+        // We don't use `markIgnoreForDiagnostics` here, because it won't prevent duplicate
+        // diagnostics for nested accesses in cases like `@let value = value.foo.bar.baz`.
+        if (targetExpression !== null) {
+          return ts.factory.createAsExpression(
+            targetExpression,
+            ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+          );
+        }
       }
-      return target === null ? null : this.getTargetNodeExpression(target, ast);
+      return targetExpression;
     } else if (ast instanceof PropertyWrite && ast.receiver instanceof ImplicitReceiver) {
       const target = this.tcb.boundTarget.getExpressionTarget(ast);
       if (target === null) {
@@ -2756,7 +2785,7 @@ class TcbExpressionTranslator {
         this.tcb.oobRecorder.missingPipe(this.tcb.id, ast);
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
-        pipe = NULL_AS_ANY;
+        pipe = ANY_EXPRESSION;
       } else if (
         pipeMeta.isExplicitlyDeferred &&
         this.tcb.boundTarget.getEagerlyUsedPipes().includes(ast.name)
@@ -2766,7 +2795,7 @@ class TcbExpressionTranslator {
         this.tcb.oobRecorder.deferredPipeUsedEagerly(this.tcb.id, ast);
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
-        pipe = NULL_AS_ANY;
+        pipe = ANY_EXPRESSION;
       } else {
         // Use a variable declared as the pipe's type.
         pipe = this.tcb.env.pipeInst(
@@ -2843,7 +2872,7 @@ class TcbExpressionTranslator {
     return expr;
   }
 
-  protected validateLetDeclarationAccess(target: TmplAstLetDeclaration, ast: PropertyRead): void {
+  protected isValidLetDeclarationAccess(target: TmplAstLetDeclaration, ast: PropertyRead): boolean {
     const targetStart = target.sourceSpan.start.offset;
     const targetEnd = target.sourceSpan.end.offset;
     const astStart = ast.sourceSpan.start;
@@ -2851,12 +2880,7 @@ class TcbExpressionTranslator {
     // We only flag local references that occur before the declaration, because embedded views
     // are updated before the child views. In practice this means that something like
     // `<ng-template [ngIf]="true">{{value}}</ng-template> @let value = 1;` is valid.
-    if (
-      (targetStart > astStart || (astStart >= targetStart && astStart <= targetEnd)) &&
-      this.scope.isLocal(target)
-    ) {
-      this.tcb.oobRecorder.letUsedBeforeDefinition(this.tcb.id, ast, target);
-    }
+    return (targetStart < astStart && astStart > targetEnd) || !this.scope.isLocal(target);
   }
 }
 
@@ -2892,7 +2916,7 @@ function tcbCallTypeCtor(
     } else {
       // A type constructor is required to be called with all input properties, so any unset
       // inputs are simply assigned a value of type `any` to ignore them.
-      return ts.factory.createPropertyAssignment(propertyName, NULL_AS_ANY);
+      return ts.factory.createPropertyAssignment(propertyName, ANY_EXPRESSION);
     }
   });
 
@@ -3184,9 +3208,10 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
     return super.resolve(ast);
   }
 
-  protected override validateLetDeclarationAccess(): void {
+  protected override isValidLetDeclarationAccess(): boolean {
     // Event listeners are allowed to read `@let` declarations before
     // they're declared since the callback won't be executed immediately.
+    return true;
   }
 }
 

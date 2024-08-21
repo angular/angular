@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Element, ParseTreeResult, RecursiveVisitor, Text} from '@angular/compiler';
+import {
+  Attribute,
+  Block,
+  Element,
+  ParseTreeResult,
+  RecursiveVisitor,
+  Text,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {lookupIdentifiersInSourceFile} from './identifier-lookup';
@@ -150,8 +157,19 @@ export class ElementToMigrate {
     this.aliasAttrs = aliasAttrs;
   }
 
+  normalizeConditionString(value: string): string {
+    value = this.insertSemicolon(value, value.indexOf(' else '));
+    value = this.insertSemicolon(value, value.indexOf(' then '));
+    value = this.insertSemicolon(value, value.indexOf(' let '));
+    return value.replace(';;', ';');
+  }
+
+  insertSemicolon(str: string, ix: number): string {
+    return ix > -1 ? `${str.slice(0, ix)};${str.slice(ix)}` : str;
+  }
+
   getCondition(): string {
-    const chunks = this.attr.value.split(';');
+    const chunks = this.normalizeConditionString(this.attr.value).split(';');
     let condition = chunks[0];
 
     // checks for case of no usage of `;` in if else / if then else
@@ -364,6 +382,14 @@ export class CommonCollector extends RecursiveVisitor {
       }
     }
     super.visitElement(el, null);
+  }
+
+  override visitBlock(ast: Block): void {
+    for (const blockParam of ast.parameters) {
+      if (this.hasPipes(blockParam.expression)) {
+        this.count++;
+      }
+    }
   }
 
   override visitText(ast: Text) {

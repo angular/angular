@@ -9,10 +9,11 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import ApiReferenceList, {ALL_STATUSES_KEY} from './api-reference-list.component';
-import {RouterTestingModule} from '@angular/router/testing';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import {signal} from '@angular/core';
 import {ApiItemType} from '../interfaces/api-item-type';
+import {RouterTestingHarness} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
 
 describe('ApiReferenceList', () => {
   let component: ApiReferenceList;
@@ -52,8 +53,11 @@ describe('ApiReferenceList', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ApiReferenceList, RouterTestingModule],
-      providers: [{provide: ApiReferenceManager, useValue: fakeApiReferenceManager}],
+      imports: [ApiReferenceList],
+      providers: [
+        {provide: ApiReferenceManager, useValue: fakeApiReferenceManager},
+        provideRouter([{path: 'api', component: ApiReferenceList}]),
+      ],
     });
     fixture = TestBed.createComponent(ApiReferenceList);
     component = fixture.componentInstance;
@@ -90,25 +94,27 @@ describe('ApiReferenceList', () => {
   });
 
   it('should display only class items when user selects Class in the Type select', () => {
-    component.type.set(ApiItemType.CLASS);
+    fixture.componentInstance.type.set(ApiItemType.CLASS);
     fixture.detectChanges();
 
+    expect(component.type()).toEqual(ApiItemType.CLASS);
     expect(component.filteredGroups()![0].items).toEqual([fakeItem2]);
   });
 
-  it('should set selected type when provided type is different than selected', () => {
+  it('should set selected type when provided type is different than selected', async () => {
+    expect(component.type()).toBe(ALL_STATUSES_KEY);
     component.filterByItemType(ApiItemType.BLOCK);
-
+    await RouterTestingHarness.create(`/api?type=${ApiItemType.BLOCK}`);
     expect(component.type()).toBe(ApiItemType.BLOCK);
   });
 
-  it('should reset selected type when provided type is equal to selected', () => {
+  it('should reset selected type when provided type is equal to selected', async () => {
     component.filterByItemType(ApiItemType.BLOCK);
-
+    const harness = await RouterTestingHarness.create(`/api?type=${ApiItemType.BLOCK}`);
     expect(component.type()).toBe(ApiItemType.BLOCK);
 
     component.filterByItemType(ApiItemType.BLOCK);
-
+    harness.navigateByUrl(`/api`);
     expect(component.type()).toBe(ALL_STATUSES_KEY);
   });
 });

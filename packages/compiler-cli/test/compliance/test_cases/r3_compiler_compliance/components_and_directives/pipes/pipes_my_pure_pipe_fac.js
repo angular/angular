@@ -1,1 +1,1 @@
-MyPurePipe.ɵfac = function MyPurePipe_Factory(t) { return new (t || MyPurePipe)(); };
+MyPurePipe.ɵfac = function MyPurePipe_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || MyPurePipe)(); };

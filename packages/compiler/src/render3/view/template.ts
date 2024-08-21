@@ -161,7 +161,7 @@ export function parseTemplate(
     ...options,
     tokenizeExpansionForms: true,
     tokenizeBlocks: options.enableBlockSyntax ?? true,
-    tokenizeLet: options.enableLetSyntax ?? false,
+    tokenizeLet: options.enableLetSyntax ?? true,
   });
 
   if (

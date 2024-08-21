@@ -1,6 +1,6 @@
 import {fetchLongTermSupportBranchesFromNpm, ActiveReleaseTrains} from '@angular/ng-dev';
 import {ReleaseConfig} from '@angular/ng-dev';
-import {GitClient} from '@angular/ng-dev';
+import {AuthenticatedGitClient} from '@angular/ng-dev';
 
 export interface Deployment {
   branch: string;
@@ -14,7 +14,7 @@ export interface Deployment {
 export type Deployments = Map<string, Deployment>;
 
 export async function getDeployments(): Promise<Deployments> {
-  const {github} = await GitClient.get();
+  const {github} = await AuthenticatedGitClient.get();
   const releaseTrains = await ActiveReleaseTrains.fetch({
     api: github,
     name: 'angular',

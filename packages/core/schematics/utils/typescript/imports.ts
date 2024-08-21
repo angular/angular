@@ -67,28 +67,40 @@ export function getImportSpecifier(
   moduleName: string | RegExp,
   specifierName: string,
 ): ts.ImportSpecifier | null {
-  return getImportSpecifiers(sourceFile, moduleName, [specifierName])[0] ?? null;
+  return getImportSpecifiers(sourceFile, moduleName, specifierName)[0] ?? null;
 }
 
 export function getImportSpecifiers(
   sourceFile: ts.SourceFile,
   moduleName: string | RegExp,
-  specifierNames: string[],
+  specifierOrSpecifiers: string | string[],
 ): ts.ImportSpecifier[] {
   const matches: ts.ImportSpecifier[] = [];
   for (const node of sourceFile.statements) {
-    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
-      const isMatch =
-        typeof moduleName === 'string'
-          ? node.moduleSpecifier.text === moduleName
-          : moduleName.test(node.moduleSpecifier.text);
-      const namedBindings = node.importClause?.namedBindings;
-      if (isMatch && namedBindings && ts.isNamedImports(namedBindings)) {
-        for (const specifierName of specifierNames) {
-          const match = findImportSpecifier(namedBindings.elements, specifierName);
-          if (match) {
-            matches.push(match);
-          }
+    if (!ts.isImportDeclaration(node) || !ts.isStringLiteral(node.moduleSpecifier)) {
+      continue;
+    }
+
+    const namedBindings = node.importClause?.namedBindings;
+    const isMatch =
+      typeof moduleName === 'string'
+        ? node.moduleSpecifier.text === moduleName
+        : moduleName.test(node.moduleSpecifier.text);
+
+    if (!isMatch || !namedBindings || !ts.isNamedImports(namedBindings)) {
+      continue;
+    }
+
+    if (typeof specifierOrSpecifiers === 'string') {
+      const match = findImportSpecifier(namedBindings.elements, specifierOrSpecifiers);
+      if (match) {
+        matches.push(match);
+      }
+    } else {
+      for (const specifierName of specifierOrSpecifiers) {
+        const match = findImportSpecifier(namedBindings.elements, specifierName);
+        if (match) {
+          matches.push(match);
         }
       }
     }

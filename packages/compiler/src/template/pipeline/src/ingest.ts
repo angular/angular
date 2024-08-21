@@ -226,7 +226,7 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
     } else if (node instanceof t.ForLoopBlock) {
       ingestForBlock(unit, node);
     } else if (node instanceof t.LetDeclaration) {
-      // TODO(crisbeto): needs further integration
+      ingestLetDeclaration(unit, node);
     } else {
       throw new Error(`Unsupported template node: ${node.constructor.name}`);
     }
@@ -926,6 +926,20 @@ function getComputedForLoopVariableExpression(
   }
 }
 
+function ingestLetDeclaration(unit: ViewCompilationUnit, node: t.LetDeclaration) {
+  const target = unit.job.allocateXrefId();
+
+  unit.create.push(ir.createDeclareLetOp(target, node.name, node.sourceSpan));
+  unit.update.push(
+    ir.createStoreLetOp(
+      target,
+      node.name,
+      convertAst(node.value, unit.job, node.valueSpan),
+      node.sourceSpan,
+    ),
+  );
+}
+
 /**
  * Convert a template AST expression into an output AST expression.
  */
@@ -955,7 +969,7 @@ function convertAst(
     // The whole point of the explicit `this` was to access the class property, but TDB and the
     // current TCB treat the read as implicit, and give you the context property instead!
     //
-    // For now, we emulate this old behvaior by aggressively converting explicit reads to to
+    // For now, we emulate this old behavior by aggressively converting explicit reads to to
     // implicit reads, except for the special cases that TDB and the current TCB protect. However,
     // it would be an improvement to fix this.
     //

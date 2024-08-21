@@ -20,7 +20,7 @@ import {
   scheduleCallbackWithRafRace,
 } from '../../util/callback_scheduler';
 import {performanceMarkFeature} from '../../util/performance';
-import {NgZone, NoopNgZone} from '../../zone/ng_zone';
+import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '../../zone/ng_zone';
 
 import {
   ChangeDetectionScheduler,
@@ -28,6 +28,7 @@ import {
   ZONELESS_ENABLED,
   PROVIDED_ZONELESS,
   ZONELESS_SCHEDULER_DISABLED,
+  SCHEDULE_IN_ROOT_ZONE,
 } from './zoneless_scheduling';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
@@ -64,6 +65,13 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly subscriptions = new Subscription();
+  private readonly angularZoneId = this.zoneIsDefined
+    ? (this.ngZone as NgZonePrivate)._inner?.get(angularZoneInstanceIdProperty)
+    : null;
+  private readonly scheduleInRootZone =
+    !this.zonelessEnabled &&
+    this.zoneIsDefined &&
+    (inject(SCHEDULE_IN_ROOT_ZONE, {optional: true}) ?? false);
 
   private cancelScheduledCallback: null | (() => void) = null;
   private shouldRefreshViews = false;
@@ -153,16 +161,14 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       ? scheduleCallbackWithMicrotask
       : scheduleCallbackWithRafRace;
     this.pendingRenderTaskId = this.taskService.add();
-    if (this.zoneIsDefined) {
-      Zone.root.run(() => {
-        this.cancelScheduledCallback = scheduleCallback(() => {
-          this.tick(this.shouldRefreshViews);
-        });
-      });
+    if (this.scheduleInRootZone) {
+      this.cancelScheduledCallback = Zone.root.run(() =>
+        scheduleCallback(() => this.tick(this.shouldRefreshViews)),
+      );
     } else {
-      this.cancelScheduledCallback = scheduleCallback(() => {
-        this.tick(this.shouldRefreshViews);
-      });
+      this.cancelScheduledCallback = this.ngZone.runOutsideAngular(() =>
+        scheduleCallback(() => this.tick(this.shouldRefreshViews)),
+      );
     }
   }
 
@@ -176,7 +182,11 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
     // If we're inside the zone don't bother with scheduler. Zone will stabilize
     // eventually and run change detection.
-    if (!this.zonelessEnabled && this.zoneIsDefined && NgZone.isInAngularZone()) {
+    if (
+      !this.zonelessEnabled &&
+      this.zoneIsDefined &&
+      Zone.current.get(angularZoneInstanceIdProperty + this.angularZoneId)
+    ) {
       return false;
     }
 
@@ -290,7 +300,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  *
  * @publicApi
  * @experimental
- * @see {@link bootstrapApplication}
+ * @see [bootstrapApplication](/api/platform-browser/bootstrapApplication)
  */
 export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders {
   performanceMarkFeature('NgZoneless');
@@ -298,7 +308,7 @@ export function provideExperimentalZonelessChangeDetection(): EnvironmentProvide
   if ((typeof ngDevMode === 'undefined' || ngDevMode) && typeof Zone !== 'undefined' && Zone) {
     const message = formatRuntimeError(
       RuntimeErrorCode.UNEXPECTED_ZONEJS_PRESENT_IN_ZONELESS_MODE,
-      `The application is using zoneless change detection, but is still loading Zone.js.` +
+      `The application is using zoneless change detection, but is still loading Zone.js. ` +
         `Consider removing Zone.js to get the full benefits of zoneless. ` +
         `In applications using the Angular CLI, Zone.js is typically included in the "polyfills" section of the angular.json file.`,
     );
@@ -309,6 +319,7 @@ export function provideExperimentalZonelessChangeDetection(): EnvironmentProvide
     {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
     {provide: NgZone, useClass: NoopNgZone},
     {provide: ZONELESS_ENABLED, useValue: true},
+    {provide: SCHEDULE_IN_ROOT_ZONE, useValue: false},
     typeof ngDevMode === 'undefined' || ngDevMode
       ? [{provide: PROVIDED_ZONELESS, useValue: true}]
       : [],

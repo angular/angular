@@ -49,7 +49,7 @@ This allows users to bind to your input using `[studentAge]`, while inside your 
 Signal inputs are read-only signals.
 As with signals declared via `signal()`, you access the current value of the input by calling the input signal.
 
-```html
+```angular-html
 <p>First name: {{firstName()}}</p>
 <p>Last name: {{lastName()}}</p>
 ```
@@ -126,7 +126,7 @@ These values are then parsed to a `boolean` with the transform, resulting in boo
 
 That way, you are only dealing with `boolean` inside your component when calling `this.disabled()`, while users of your component can pass an empty string as a shorthand to mark your component as disabled.
 
-```html
+```angular-html
 <my-custom-comp disabled>
 ```
 

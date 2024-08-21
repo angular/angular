@@ -12,7 +12,7 @@ export function advance(f: ComponentFixture<any>): void {
   f.detectChanges();
 }
 
-// See https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
+// See https://developer.mozilla.org/docs/Web/API/MouseEvent/button
 // #docregion click-event
 /** Button events to pass to `DebugElement.triggerEventHandler` for RouterLink event handler */
 export const ButtonClickEvents = {

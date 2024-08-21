@@ -9,7 +9,7 @@
 import {Attribute} from './attribute';
 import {Char} from './char';
 import {EventType} from './event_type';
-import {OWNER} from './property';
+import {Property} from './property';
 import * as a11yClick from './a11y_click';
 import * as cache from './cache';
 import * as eventInfoLib from './event_info';
@@ -32,6 +32,7 @@ const DEFAULT_EVENT_TYPE: string = EventType.CLICK;
 /** Resolves actions for Events. */
 export class ActionResolver {
   private a11yClickSupport: boolean = false;
+  private clickModSupport: boolean = true;
   private readonly syntheticMouseEventSupport: boolean;
 
   private updateEventInfoForA11yClick?: (eventInfo: eventInfoLib.EventInfo) => void = undefined;
@@ -41,15 +42,18 @@ export class ActionResolver {
   private populateClickOnlyAction?: (
     actionElement: Element,
     eventInfo: eventInfoLib.EventInfo,
-    actionMap: {[key: string]: string},
+    actionMap: {[key: string]: string | undefined},
   ) => void = undefined;
 
   constructor({
     syntheticMouseEventSupport = false,
+    clickModSupport = true,
   }: {
     syntheticMouseEventSupport?: boolean;
+    clickModSupport?: boolean;
   } = {}) {
     this.syntheticMouseEventSupport = syntheticMouseEventSupport;
+    this.clickModSupport = clickModSupport;
   }
 
   resolveEventType(eventInfo: eventInfoLib.EventInfo) {
@@ -87,6 +91,7 @@ export class ActionResolver {
     // a11y click support is enabled, addEvent() will set up the appropriate key
     // event handler automatically.
     if (
+      this.clickModSupport &&
       eventInfoLib.getEventType(eventInfo) === EventType.CLICK &&
       eventLib.isModifiedClickEvent(eventInfoLib.getEvent(eventInfo))
     ) {
@@ -200,7 +205,7 @@ export class ActionResolver {
    * shadow root if needed.
    */
   private getParentNode(element: Element): Element | null {
-    const owner = element[OWNER];
+    const owner = element[Property.OWNER];
     if (owner) {
       return owner as Element;
     }
@@ -243,8 +248,8 @@ export class ActionResolver {
    * @param actionElement The DOM node to retrieve the jsaction map from.
    * @return Map from event to qualified name of the jsaction bound to it.
    */
-  private parseActions(actionElement: Element): {[key: string]: string} {
-    let actionMap: {[key: string]: string} | undefined = cache.get(actionElement);
+  private parseActions(actionElement: Element): {[key: string]: string | undefined} {
+    let actionMap: {[key: string]: string | undefined} | undefined = cache.get(actionElement);
     if (!actionMap) {
       const jsactionAttribute = actionElement.getAttribute(Attribute.JSACTION);
       if (!jsactionAttribute) {

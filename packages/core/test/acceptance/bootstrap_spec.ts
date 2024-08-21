@@ -15,9 +15,12 @@ import {
   NgModule,
   NgZone,
   provideExperimentalZonelessChangeDetection,
+  provideZoneChangeDetection,
   TestabilityRegistry,
   ViewContainerRef,
   ViewEncapsulation,
+  ɵNoopNgZone,
+  ɵZONELESS_ENABLED,
 } from '@angular/core';
 import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -329,9 +332,32 @@ describe('bootstrap', () => {
       );
 
       it(
-        'should throw when using zoneless without ngZone: "noop"',
+        'can configure zone with provideZoneChangeDetection',
         withBody('<my-app></my-app>', async () => {
           @Component({
+            selector: 'my-app',
+            template: '...',
+          })
+          class App {}
+
+          @NgModule({
+            declarations: [App],
+            providers: [provideZoneChangeDetection({eventCoalescing: true})],
+            imports: [BrowserModule],
+            bootstrap: [App],
+          })
+          class MyModule {}
+
+          const {injector} = await platformBrowserDynamic().bootstrapModule(MyModule);
+          expect((injector.get(NgZone) as any).shouldCoalesceEventChangeDetection).toBe(true);
+        }),
+      );
+
+      it(
+        'can configure zoneless correctly without `ngZone: "noop"`',
+        withBody('<my-app></my-app>', async () => {
+          @Component({
+            selector: 'my-app',
             template: '...',
           })
           class App {}
@@ -344,19 +370,9 @@ describe('bootstrap', () => {
           })
           class MyModule {}
 
-          try {
-            await platformBrowserDynamic().bootstrapModule(MyModule);
-
-            // This test tries to bootstrap a standalone component using NgModule-based bootstrap
-            // mechanisms. We expect standalone components to be bootstrapped via
-            // `bootstrapApplication` API instead.
-            fail('Expected to throw');
-          } catch (e: unknown) {
-            const expectedErrorMessage =
-              "Invalid change detection configuration: `ngZone: 'noop'` must be set in `BootstrapOptions`";
-            expect(e).toBeInstanceOf(Error);
-            expect((e as Error).message).toContain(expectedErrorMessage);
-          }
+          const {injector} = await platformBrowserDynamic().bootstrapModule(MyModule);
+          expect(injector.get(NgZone)).toBeInstanceOf(ɵNoopNgZone);
+          expect(injector.get(ɵZONELESS_ENABLED)).toBeTrue();
         }),
       );
 

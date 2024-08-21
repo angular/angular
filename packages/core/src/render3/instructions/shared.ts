@@ -80,6 +80,7 @@ import {
   TElementContainerNode,
   TElementNode,
   TIcuContainerNode,
+  TLetDeclarationNode,
   TNode,
   TNodeFlags,
   TNodeType,
@@ -209,7 +210,8 @@ export function createLView<T>(
     LViewFlags.CreationMode |
     LViewFlags.Attached |
     LViewFlags.FirstLViewPass |
-    LViewFlags.Dirty;
+    LViewFlags.Dirty |
+    LViewFlags.RefreshView;
   if (
     embeddedViewInjector !== null ||
     (parentLView && parentLView[FLAGS] & LViewFlags.HasEmbeddedViewInjector)
@@ -290,10 +292,22 @@ export function getOrCreateTNode(
 export function getOrCreateTNode(
   tView: TView,
   index: number,
+  type: TNodeType.LetDeclaration,
+  name: null,
+  attrs: null,
+): TLetDeclarationNode;
+export function getOrCreateTNode(
+  tView: TView,
+  index: number,
   type: TNodeType,
   name: string | null,
   attrs: TAttributes | null,
-): TElementNode & TContainerNode & TElementContainerNode & TProjectionNode & TIcuContainerNode {
+): TElementNode &
+  TContainerNode &
+  TElementContainerNode &
+  TProjectionNode &
+  TIcuContainerNode &
+  TLetDeclarationNode {
   ngDevMode &&
     index !== 0 && // 0 are bogus nodes and they are OK. See `createContainerRef` in
     // `view_engine_compatibility` for additional context.
@@ -787,6 +801,14 @@ export function createTNode(
   tagName: string | null,
   attrs: TAttributes | null,
 ): TProjectionNode;
+export function createTNode(
+  tView: TView,
+  tParent: TElementNode | TContainerNode | null,
+  type: TNodeType.LetDeclaration,
+  index: number,
+  tagName: null,
+  attrs: null,
+): TLetDeclarationNode;
 export function createTNode(
   tView: TView,
   tParent: TElementNode | TContainerNode | null,

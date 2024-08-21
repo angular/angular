@@ -364,8 +364,8 @@ export enum ErrorCode {
   /** An expression is trying to read an `@let` before it has been defined. */
   LET_USED_BEFORE_DEFINITION = 8016,
 
-  /** Multiple `@let` declarations were defined with the same name within a scope. */
-  DUPLICATE_LET_DECLARATION = 8017,
+  /** A `@let` declaration conflicts with another symbol in the same scope. */
+  CONFLICTING_LET_DECLARATION = 8017,
 
   /**
    * A two way binding in a template has an incorrect syntax,
@@ -481,6 +481,32 @@ export enum ErrorCode {
    * ```
    */
   UNSUPPORTED_INITIALIZER_API_USAGE = 8110,
+
+  /**
+   * A function in an event binding is not called.
+   *
+   * For example:
+   * ```
+   * <button (click)="myFunc"></button>
+   * ```
+   *
+   * This will not call `myFunc` when the button is clicked. Instead, it should be
+   * `<button (click)="myFunc()"></button>`.
+   */
+  UNINVOKED_FUNCTION_IN_EVENT_BINDING = 8111,
+
+  /**
+   * A `@let` declaration in a template isn't used.
+   *
+   * For example:
+   * ```
+   * @let used = 1; <!-- Not an error -->
+   * @let notUsed = 2; <!-- Error -->
+   *
+   * {{used}}
+   * ```
+   */
+  UNUSED_LET_DECLARATION = 8112,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

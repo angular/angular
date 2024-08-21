@@ -1,7 +1,7 @@
 {
   "cli-hello-world": {
     "uncompressed": {
-      "main": 127322,
+      "main": 132425,
       "polyfills": 33792
     }
   },
@@ -20,7 +20,7 @@
   },
   "forms": {
     "uncompressed": {
-      "main": 171726,
+      "main": 176726,
       "polyfills": 33772
     }
   },
@@ -41,7 +41,7 @@
   },
   "standalone-bootstrap": {
     "uncompressed": {
-      "main": 85055,
+      "main": 89354,
       "polyfills": 33802
     }
   },
@@ -56,7 +56,7 @@
     "uncompressed": {
       "main": 207890,
       "polyfills": 33807,
-      "event-dispatch-contract.min": 648
+      "event-dispatch-contract.min": 476
     }
   }
 }

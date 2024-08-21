@@ -12,8 +12,8 @@ With Angular reactive forms, you explicitly specify a *form model*. As a simple 
 
 ```ts
 const login = new FormGroup({
-    email: new FormControl(''),
-    password: new FormControl(''),
+  email: new FormControl(''),
+  password: new FormControl(''),
 });
 ```
 
@@ -37,8 +37,8 @@ Non-typed forms are still supported, and will continue to work as before. To use
 
 ```ts
 const login = new UntypedFormGroup({
-    email: new UntypedFormControl(''),
-    password: new UntypedFormControl(''),
+  email: new UntypedFormControl(''),
+  password: new UntypedFormControl(''),
 });
 ```
 
@@ -132,13 +132,13 @@ Some forms have controls that may or may not be present, which can be added and 
 
 ```ts
 interface LoginForm {
-    email: FormControl<string>;
-    password?: FormControl<string>;
+  email: FormControl<string>;
+  password?: FormControl<string>;
 }
 
 const login = new FormGroup<LoginForm>({
-    email: new FormControl('', {nonNullable: true}),
-    password: new FormControl('', {nonNullable: true}),
+  email: new FormControl('', {nonNullable: true}),
+  password: new FormControl('', {nonNullable: true}),
 });
 
 login.removeControl('password');
@@ -174,8 +174,8 @@ Additionally, an additional builder is available: `NonNullableFormBuilder`. This
 ```ts
 const fb = new FormBuilder();
 const login = fb.nonNullable.group({
-    email: '',
-    password: '',
+  email: '',
+  password: '',
 });
 ```
 
