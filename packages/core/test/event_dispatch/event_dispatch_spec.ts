@@ -109,38 +109,6 @@ describe('event dispatch', () => {
     inner.click();
     expect(outerOnClickSpy).toHaveBeenCalledBefore(innerOnClickSpy);
   });
-  it('should serialize event types to be listened to and jsaction cache entry', async () => {
-    const clickSpy = jasmine.createSpy('onClick');
-    const focusSpy = jasmine.createSpy('onFocus');
-    @Component({
-      standalone: true,
-      selector: 'app',
-      template: `
-            <div (click)="onClick()" id="click-element">
-              <div id="focus-container">
-                <div id="focus-action-element" (focus)="onFocus()">
-                  <button id="focus-target-element">Focus Button</button>
-                </div>
-              </div>
-            </div>
-          `,
-    })
-    class SimpleComponent {
-      onClick = clickSpy;
-      onFocus = focusSpy;
-    }
-    configureTestingModule([SimpleComponent]);
-    fixture = TestBed.createComponent(SimpleComponent);
-    const nativeElement = fixture.debugElement.nativeElement;
-    const el = nativeElement.querySelector('#click-element')!;
-    const button = nativeElement.querySelector('#focus-target-element')!;
-    const clickEvent = new CustomEvent('click', {bubbles: true});
-    el.dispatchEvent(clickEvent);
-    const focusEvent = new CustomEvent('focus');
-    button.dispatchEvent(focusEvent);
-    expect(clickSpy).toHaveBeenCalled();
-    expect(focusSpy).toHaveBeenCalled();
-  });
 
   describe('bubbling behavior', () => {
     it('should propagate events', async () => {
@@ -303,5 +271,33 @@ describe('event dispatch', () => {
       bottomEl.click();
       expect(onClickSpy).toHaveBeenCalledTimes(1);
     });
+  });
+});
+
+describe('capture behavior', () => {
+  let fixture: ComponentFixture<unknown>;
+  it('should not bubble', async () => {
+    const onFocusSpy = jasmine.createSpy();
+    @Component({
+      standalone: true,
+      selector: 'app',
+      template: `
+          <div id="top" (focus)="onFocus()">
+              <div id="bottom"></div>
+          </div>
+        `,
+    })
+    class SimpleComponent {
+      onFocus = onFocusSpy;
+    }
+    configureTestingModule([SimpleComponent]);
+    fixture = TestBed.createComponent(SimpleComponent);
+    const nativeElement = fixture.debugElement.nativeElement;
+    const bottomEl = nativeElement.querySelector('#bottom')!;
+    const topEl = nativeElement.querySelector('#top')!;
+    bottomEl.dispatchEvent(new FocusEvent('focus'));
+    expect(onFocusSpy).toHaveBeenCalledTimes(0);
+    topEl.dispatchEvent(new FocusEvent('focus'));
+    expect(onFocusSpy).toHaveBeenCalledTimes(1);
   });
 });

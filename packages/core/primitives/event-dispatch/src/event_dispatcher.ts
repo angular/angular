@@ -9,6 +9,7 @@
 import {ActionResolver} from './action_resolver';
 import {Dispatcher} from './dispatcher';
 import {EventInfo, EventInfoWrapper} from './event_info';
+import {isCaptureEventType} from './event_type';
 import {UnrenamedEventContract} from './eventcontract';
 import {Restriction} from './restriction';
 
@@ -81,6 +82,13 @@ export class EventDispatcher {
     prepareEventForBubbling(eventInfoWrapper);
     while (eventInfoWrapper.getAction()) {
       prepareEventForDispatch(eventInfoWrapper);
+      // If this is a capture event, ONLY dispatch if the action element is the target.
+      if (
+        isCaptureEventType(eventInfoWrapper.getEventType()) &&
+        eventInfoWrapper.getAction()!.element !== eventInfoWrapper.getTargetElement()
+      ) {
+        return;
+      }
       this.dispatchDelegate(eventInfoWrapper.getEvent(), eventInfoWrapper.getAction()!.name);
       if (propagationStopped(eventInfoWrapper)) {
         return;
