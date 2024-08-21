@@ -6,12 +6,6 @@
   "deprecated": false,
   "options": [
     {
-      "name": "browser-target",
-      "type": "string",
-      "deprecated": "Use 'buildTarget' instead.",
-      "description": "A browser builder target to extract i18n messages in the format of `project:target[:configuration]`. You can also pass in more than one configuration name as a comma-separated list. Example: `project:target:production,staging`."
-    },
-    {
       "name": "build-target",
       "type": "string",
       "description": "A builder target to extract i18n messages in the format of `project:target[:configuration]`. You can also pass in more than one configuration name as a comma-separated list. Example: `project:target:production,staging`."
