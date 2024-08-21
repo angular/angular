@@ -269,13 +269,6 @@
       }
     }
 
-    &:has(.docs-reference-card-body) {
-      header {
-        border-radius: 0.25rem 0.25rem 0 0;
-        border-bottom: 1px solid var(--senary-contrast);
-      }
-    }
-
     header {
       display: flex;
       flex-direction: column;
@@ -338,6 +331,10 @@
     }
     .docs-code {
       margin-block-end: 1rem;
+    }
+
+    &:empty {
+      display: none;
     }
   }
 
@@ -402,7 +399,7 @@
     margin-inline-end: 0.5rem;
   }
 
-  .adev-param-name {
+  .docs-param-name {
     color: var(--vivid-pink);
     font-family: var(--code-font);
     margin-inline-end: 0.25rem;

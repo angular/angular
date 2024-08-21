@@ -317,6 +317,7 @@ function getMethodCodeLine(
   displayParamsInNewLines: boolean = false,
   isFunction: boolean = false,
 ): string {
+  displayParamsInNewLines &&= member.params.length > 0;
   return `${isFunction ? 'function' : ''}${memberTags.join(' ')} ${member.name}(${displayParamsInNewLines ? '\n  ' : ''}${member.params
     .map((param) => mapParamEntry(param))
     .join(`,${displayParamsInNewLines ? '\n  ' : ' '}`)}${

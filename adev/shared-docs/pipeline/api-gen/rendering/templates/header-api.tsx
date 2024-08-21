@@ -74,12 +74,12 @@ export function HeaderApi(props: {entry: DocEntryRenderable; showFullDescription
         )}
       </div>
 
-      <p
+      <section
         className={'docs-reference-description'}
         dangerouslySetInnerHTML={{
           __html: props.showFullDescription ? entry.htmlDescription : entry.shortHtmlDescription,
         }}
-      ></p>
+      ></section>
 
       <DocsPillRow links={entry.additionalLinks} />
     </header>
