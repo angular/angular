@@ -248,6 +248,8 @@ If you haven't used `sizes` before, a good place to start is to set it based on 
 
 If you find that the above does not cover your desired image behavior, see the documentation on [advanced sizes values](#advanced-sizes-values).
 
+Note that `NgOptimizedImage` automatically prepends `"auto"` to the provided `sizes` value. This is an optimization that increases the accuracy of srcset selection on browsers which support `sizes="auto"`, and is ignored by browsers which do not.
+
 By default, the responsive breakpoints are:
 
 `[16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840]`
