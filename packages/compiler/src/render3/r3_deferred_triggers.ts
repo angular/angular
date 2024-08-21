@@ -529,7 +529,7 @@ function createHoverTrigger(
   hydrateSpan: ParseSourceSpan | null,
   placeholder: t.DeferredBlockPlaceholder | null,
 ): t.HoverDeferredTrigger {
-  validateReferenceBasedTrigger(OnTriggerType.HOVER, parameters, placeholder);
+  validateReferenceBasedTrigger(OnTriggerType.HOVER, parameters, placeholder, hydrateSpan);
   return new t.HoverDeferredTrigger(
     parameters[0] ?? null,
     nameSpan,
@@ -549,7 +549,7 @@ function createInteractionTrigger(
   hydrateSpan: ParseSourceSpan | null,
   placeholder: t.DeferredBlockPlaceholder | null,
 ): t.InteractionDeferredTrigger {
-  validateReferenceBasedTrigger(OnTriggerType.INTERACTION, parameters, placeholder);
+  validateReferenceBasedTrigger(OnTriggerType.INTERACTION, parameters, placeholder, hydrateSpan);
   return new t.InteractionDeferredTrigger(
     parameters[0] ?? null,
     nameSpan,
@@ -569,7 +569,7 @@ function createViewportTrigger(
   hydrateSpan: ParseSourceSpan | null,
   placeholder: t.DeferredBlockPlaceholder | null,
 ): t.ViewportDeferredTrigger {
-  validateReferenceBasedTrigger(OnTriggerType.VIEWPORT, parameters, placeholder);
+  validateReferenceBasedTrigger(OnTriggerType.VIEWPORT, parameters, placeholder, hydrateSpan);
   return new t.ViewportDeferredTrigger(
     parameters[0] ?? null,
     nameSpan,
@@ -584,12 +584,13 @@ function validateReferenceBasedTrigger(
   type: OnTriggerType,
   parameters: string[],
   placeholder: t.DeferredBlockPlaceholder | null,
+  hydrateSpan: ParseSourceSpan | null,
 ) {
   if (parameters.length > 1) {
     throw new Error(`"${type}" trigger can only have zero or one parameters`);
   }
 
-  if (parameters.length === 0) {
+  if (parameters.length === 0 && hydrateSpan === null) {
     if (placeholder === null) {
       throw new Error(
         `"${type}" trigger with no parameters can only be placed on an @defer that has a @placeholder block`,
