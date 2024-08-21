@@ -102,6 +102,11 @@ export class ReferenceScrollHandler implements OnDestroy {
     fromEvent(tocContainer, 'click')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
+        if (event.target instanceof HTMLAnchorElement) {
+          event.stopPropagation();
+          return;
+        }
+
         // Get the card member ID from the attributes
         const target =
           event.target instanceof HTMLButtonElement
@@ -125,7 +130,12 @@ export class ReferenceScrollHandler implements OnDestroy {
       }
       fromEvent(header, 'click')
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => {
+        .subscribe((event) => {
+          const target = event.target as HTMLElement;
+          if (target instanceof HTMLAnchorElement) {
+            return;
+          }
+
           this.router.navigate([], {fragment: card.id, replaceUrl: true});
         });
     });
