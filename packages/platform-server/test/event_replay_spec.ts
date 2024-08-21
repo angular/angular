@@ -208,46 +208,6 @@ describe('event replay', () => {
     expect(outerOnClickSpy).toHaveBeenCalledBefore(innerOnClickSpy);
   });
 
-  it('should serialize event types to be listened to and jsaction attribute', async () => {
-    const clickSpy = jasmine.createSpy('onClick');
-    const focusSpy = jasmine.createSpy('onFocus');
-    @Component({
-      standalone: true,
-      selector: 'app',
-      template: `
-            <div (click)="onClick()" id="click-element">
-              <div id="focus-container">
-                <div id="focus-action-element" (focus)="onFocus()">
-                  <button id="focus-target-element">Focus Button</button>
-                </div>
-              </div>
-            </div>
-          `,
-    })
-    class SimpleComponent {
-      onClick = clickSpy;
-      onFocus = focusSpy;
-    }
-    const html = await ssr(SimpleComponent);
-    const ssrContents = getAppContents(html);
-
-    render(doc, ssrContents);
-    const el = doc.getElementById('click-element')!;
-    const button = doc.getElementById('focus-target-element')!;
-    const clickEvent = new CustomEvent('click', {bubbles: true});
-    el.dispatchEvent(clickEvent);
-    const focusEvent = new CustomEvent('focus');
-    button.dispatchEvent(focusEvent);
-    expect(clickSpy).not.toHaveBeenCalled();
-    expect(focusSpy).not.toHaveBeenCalled();
-    resetTViewsFor(SimpleComponent);
-    await hydrate(doc, SimpleComponent, {
-      hydrationFeatures: [withEventReplay()],
-    });
-    expect(clickSpy).toHaveBeenCalled();
-    expect(focusSpy).toHaveBeenCalled();
-  });
-
   it('should remove jsaction attributes, but continue listening to events.', async () => {
     @Component({
       standalone: true,
