@@ -5,6 +5,11 @@ import {renderEntry} from '../rendering';
 import {getRenderable} from '../processing';
 import {initHighlighter} from '../shiki/shiki';
 import {configureMarkedGlobally} from '../marked/configuration';
+import {setSymbols} from '../symbol-context';
+
+// Note: The tests will probably break if the schema of the api extraction changes.
+// All entries in the fake-entries are extracted from Angular's api.
+// You can just generate them an copy/replace the items in the fake-entries file.
 
 describe('markdown to html', () => {
   const entries = new Map<string, DocumentFragment>();
@@ -18,6 +23,11 @@ describe('markdown to html', () => {
       encoding: 'utf-8',
     });
     const entryJson = JSON.parse(entryContent) as any;
+    const symbols = new Map<string, string>([
+      ['AfterRenderPhase', 'core'],
+      ['afterRender', 'core'],
+    ]);
+    setSymbols(symbols);
     for (const entry of entryJson.entries) {
       const renderableJson = getRenderable(entry, '@angular/fakeentry');
       const fragment = JSDOM.fragment(await renderEntry(renderableJson));
@@ -46,7 +56,22 @@ describe('markdown to html', () => {
   it('should render multiple {@link} blocks', () => {
     const provideClientHydrationEntry = entries.get('provideClientHydration')!;
     expect(provideClientHydrationEntry).toBeDefined();
-    const cardItem = provideClientHydrationEntry.querySelector('.docs-reference-card-item ')!;
+    const cardItem = provideClientHydrationEntry.querySelector('.docs-reference-card-item')!;
     expect(cardItem.innerHTML).not.toContain('@link');
+  });
+
+  it('should create cross-links', () => {
+    const entry = entries.get('AfterRenderOptions')!;
+    expect(entry).toBeDefined();
+
+    // In the description
+    const descriptionItem = entry.querySelector('.docs-reference-description')!;
+    expect(descriptionItem.innerHTML).toContain('<a href="/api/core/afterRender">afterRender</a>');
+
+    // In the card
+    const cardItem = entry.querySelectorAll('.docs-reference-card-item')[1];
+    expect(cardItem.innerHTML).toContain(
+      '<a href="/api/core/AfterRenderPhase#MixedReadWrite">AfterRenderPhase.MixedReadWrite</a>',
+    );
   });
 });
