@@ -101,6 +101,7 @@
         {"name": "publicApi", "comment": ""}
       ],
       "rawComment": "/**\n * @ngModule CommonModule\n *\n * @description\n *\n * Inserts an embedded view from a prepared `TemplateRef`.\n *\n * You can attach a context object to the `EmbeddedViewRef` by setting `[ngTemplateOutletContext]`.\n * `[ngTemplateOutletContext]` should be an object, the object's keys will be available for binding\n * by the local template `let` declarations.\n *\n * @usageNotes\n * ```\n * <ng-container *ngTemplateOutlet=\"templateRefExp; context: contextExp\"></ng-container>\n * ```\n *\n * Using the key `$implicit` in the context object will set its value as default.\n *\n * ### Example\n *\n * {@example common/ngTemplateOutlet/ts/module.ts region='NgTemplateOutlet'}\n *\n * @publicApi\n */",
+      "implements": ["OnChanges"],
       "isStandalone": true,
       "selector": "[ngTemplateOutlet]",
       "exportAs": [],
@@ -416,6 +417,8 @@
         {"name": "publicApi", "comment": ""}
       ],
       "rawComment": "/**\n * Represents an Angular view.\n *\n * @see [Change detection usage](/api/core/ChangeDetectorRef?tab=usage-notes)\n *\n * @publicApi\n */",
+      "extends": "ChangeDetectorRef",
+      "implements": [],
       "source": {
         "filePath": "/packages/core/src/linker/view_ref.ts",
         "startLine": 18,
@@ -530,8 +533,8 @@
       "rawComment": "",
       "source": {
         "filePath": "/packages/core/src/render3/after_render_hooks.ts",
-        "startLine": 446,
-        "endLine": 454
+        "startLine": 442,
+        "endLine": 450
       }
     },
     {
@@ -540,7 +543,7 @@
         {
           "name": "provideClientHydration",
           "entryType": "function",
-          "description": "Sets up providers necessary to enable hydration functionality for the application.\n\nBy default, the function enables the recommended set of features for the optimal\nperformance for most of the applications. It includes the following features:\n\n* Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n* [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\ntransferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n[here](guide/ssr#caching-data-when-using-httpclient).\n\nThese functions allow you to disable some of the default features or configure features\n* {@link withNoHttpTransferCache} to disable HTTP transfer cache\n* {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options",
+          "description": "Sets up providers necessary to enable hydration functionality for the application.\n\nBy default, the function enables the recommended set of features for the optimal\nperformance for most of the applications. It includes the following features:\n\n* Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n* [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\ntransferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n[here](guide/ssr#caching-data-when-using-httpclient).\n\nThese functions allow you to disable some of the default features or enable new ones:\n\n* {@link withNoHttpTransferCache} to disable HTTP transfer cache\n* {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n* {@link withI18nSupport} to enable hydration support for i18n blocks\n* {@link withEventReplay} to enable support for replaying user events",
           "generics": [],
           "isNewType": false,
           "jsdocTags": [
@@ -550,6 +553,8 @@
             },
             {"name": "see", "comment": "{@link withNoHttpTransferCache}"},
             {"name": "see", "comment": "{@link withHttpTransferCacheOptions}"},
+            {"name": "see", "comment": "{@link withI18nSupport}"},
+            {"name": "see", "comment": "{@link withEventReplay}"},
             {
               "name": "param",
               "comment": "Optional features to configure additional router behaviors."
@@ -566,7 +571,7 @@
               "isRestParam": true
             }
           ],
-          "rawComment": "/**\n * Sets up providers necessary to enable hydration functionality for the application.\n *\n * By default, the function enables the recommended set of features for the optimal\n * performance for most of the applications. It includes the following features:\n *\n * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\n * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n * [here](guide/ssr#caching-data-when-using-httpclient).\n *\n * These functions allow you to disable some of the default features or configure features\n * * {@link withNoHttpTransferCache} to disable HTTP transfer cache\n * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n *\n * @usageNotes\n *\n * Basic example of how you can enable hydration in your application when\n * `bootstrapApplication` function is used:\n * ```\n * bootstrapApplication(AppComponent, {\n *   providers: [provideClientHydration()]\n * });\n * ```\n *\n * Alternatively if you are using NgModules, you would add `provideClientHydration`\n * to your root app module's provider list.\n * ```\n * @NgModule({\n *   declarations: [RootCmp],\n *   bootstrap: [RootCmp],\n *   providers: [provideClientHydration()],\n * })\n * export class AppModule {}\n * ```\n *\n * @see {@link withNoHttpTransferCache}\n * @see {@link withHttpTransferCacheOptions}\n *\n * @param features Optional features to configure additional router behaviors.\n * @returns A set of providers to enable hydration.\n *\n * @publicApi\n */",
+          "rawComment": "/**\n * Sets up providers necessary to enable hydration functionality for the application.\n *\n * By default, the function enables the recommended set of features for the optimal\n * performance for most of the applications. It includes the following features:\n *\n * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\n * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n * [here](guide/ssr#caching-data-when-using-httpclient).\n *\n * These functions allow you to disable some of the default features or enable new ones:\n *\n * * {@link withNoHttpTransferCache} to disable HTTP transfer cache\n * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n * * {@link withI18nSupport} to enable hydration support for i18n blocks\n * * {@link withEventReplay} to enable support for replaying user events\n *\n * @usageNotes\n *\n * Basic example of how you can enable hydration in your application when\n * `bootstrapApplication` function is used:\n * ```\n * bootstrapApplication(AppComponent, {\n *   providers: [provideClientHydration()]\n * });\n * ```\n *\n * Alternatively if you are using NgModules, you would add `provideClientHydration`\n * to your root app module's provider list.\n * ```\n * @NgModule({\n *   declarations: [RootCmp],\n *   bootstrap: [RootCmp],\n *   providers: [provideClientHydration()],\n * })\n * export class AppModule {}\n * ```\n *\n * @see {@link withNoHttpTransferCache}\n * @see {@link withHttpTransferCacheOptions}\n * @see {@link withI18nSupport}\n * @see {@link withEventReplay}\n *\n * @param features Optional features to configure additional router behaviors.\n * @returns A set of providers to enable hydration.\n *\n * @publicApi\n */",
           "returnType": "EnvironmentProviders"
         }
       ],
@@ -585,7 +590,7 @@
         "returnDescription": "A set of providers to enable hydration.",
         "generics": [],
         "name": "provideClientHydration",
-        "description": "Sets up providers necessary to enable hydration functionality for the application.\n\nBy default, the function enables the recommended set of features for the optimal\nperformance for most of the applications. It includes the following features:\n\n* Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n* [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\ntransferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n[here](guide/ssr#caching-data-when-using-httpclient).\n\nThese functions allow you to disable some of the default features or configure features\n* {@link withNoHttpTransferCache} to disable HTTP transfer cache\n* {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options",
+        "description": "Sets up providers necessary to enable hydration functionality for the application.\n\nBy default, the function enables the recommended set of features for the optimal\nperformance for most of the applications. It includes the following features:\n\n* Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n* [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\ntransferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n[here](guide/ssr#caching-data-when-using-httpclient).\n\nThese functions allow you to disable some of the default features or enable new ones:\n\n* {@link withNoHttpTransferCache} to disable HTTP transfer cache\n* {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n* {@link withI18nSupport} to enable hydration support for i18n blocks\n* {@link withEventReplay} to enable support for replaying user events",
         "entryType": "function",
         "jsdocTags": [
           {
@@ -594,6 +599,8 @@
           },
           {"name": "see", "comment": "{@link withNoHttpTransferCache}"},
           {"name": "see", "comment": "{@link withHttpTransferCacheOptions}"},
+          {"name": "see", "comment": "{@link withI18nSupport}"},
+          {"name": "see", "comment": "{@link withEventReplay}"},
           {
             "name": "param",
             "comment": "Optional features to configure additional router behaviors."
@@ -601,10 +608,10 @@
           {"name": "returns", "comment": "A set of providers to enable hydration."},
           {"name": "publicApi", "comment": ""}
         ],
-        "rawComment": "/**\n * Sets up providers necessary to enable hydration functionality for the application.\n *\n * By default, the function enables the recommended set of features for the optimal\n * performance for most of the applications. It includes the following features:\n *\n * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\n * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n * [here](guide/ssr#caching-data-when-using-httpclient).\n *\n * These functions allow you to disable some of the default features or configure features\n * * {@link withNoHttpTransferCache} to disable HTTP transfer cache\n * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n *\n * @usageNotes\n *\n * Basic example of how you can enable hydration in your application when\n * `bootstrapApplication` function is used:\n * ```\n * bootstrapApplication(AppComponent, {\n *   providers: [provideClientHydration()]\n * });\n * ```\n *\n * Alternatively if you are using NgModules, you would add `provideClientHydration`\n * to your root app module's provider list.\n * ```\n * @NgModule({\n *   declarations: [RootCmp],\n *   bootstrap: [RootCmp],\n *   providers: [provideClientHydration()],\n * })\n * export class AppModule {}\n * ```\n *\n * @see {@link withNoHttpTransferCache}\n * @see {@link withHttpTransferCacheOptions}\n *\n * @param features Optional features to configure additional router behaviors.\n * @returns A set of providers to enable hydration.\n *\n * @publicApi\n */"
+        "rawComment": "/**\n * Sets up providers necessary to enable hydration functionality for the application.\n *\n * By default, the function enables the recommended set of features for the optimal\n * performance for most of the applications. It includes the following features:\n *\n * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\n * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n * [here](guide/ssr#caching-data-when-using-httpclient).\n *\n * These functions allow you to disable some of the default features or enable new ones:\n *\n * * {@link withNoHttpTransferCache} to disable HTTP transfer cache\n * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n * * {@link withI18nSupport} to enable hydration support for i18n blocks\n * * {@link withEventReplay} to enable support for replaying user events\n *\n * @usageNotes\n *\n * Basic example of how you can enable hydration in your application when\n * `bootstrapApplication` function is used:\n * ```\n * bootstrapApplication(AppComponent, {\n *   providers: [provideClientHydration()]\n * });\n * ```\n *\n * Alternatively if you are using NgModules, you would add `provideClientHydration`\n * to your root app module's provider list.\n * ```\n * @NgModule({\n *   declarations: [RootCmp],\n *   bootstrap: [RootCmp],\n *   providers: [provideClientHydration()],\n * })\n * export class AppModule {}\n * ```\n *\n * @see {@link withNoHttpTransferCache}\n * @see {@link withHttpTransferCacheOptions}\n * @see {@link withI18nSupport}\n * @see {@link withEventReplay}\n *\n * @param features Optional features to configure additional router behaviors.\n * @returns A set of providers to enable hydration.\n *\n * @publicApi\n */"
       },
       "entryType": "function",
-      "description": "Sets up providers necessary to enable hydration functionality for the application.\n\nBy default, the function enables the recommended set of features for the optimal\nperformance for most of the applications. It includes the following features:\n\n* Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n* [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\ntransferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n[here](guide/ssr#caching-data-when-using-httpclient).\n\nThese functions allow you to disable some of the default features or configure features\n* {@link withNoHttpTransferCache} to disable HTTP transfer cache\n* {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options",
+      "description": "Sets up providers necessary to enable hydration functionality for the application.\n\nBy default, the function enables the recommended set of features for the optimal\nperformance for most of the applications. It includes the following features:\n\n* Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n* [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\ntransferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n[here](guide/ssr#caching-data-when-using-httpclient).\n\nThese functions allow you to disable some of the default features or enable new ones:\n\n* {@link withNoHttpTransferCache} to disable HTTP transfer cache\n* {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n* {@link withI18nSupport} to enable hydration support for i18n blocks\n* {@link withEventReplay} to enable support for replaying user events",
       "jsdocTags": [
         {
           "name": "usageNotes",
@@ -612,15 +619,55 @@
         },
         {"name": "see", "comment": "{@link withNoHttpTransferCache}"},
         {"name": "see", "comment": "{@link withHttpTransferCacheOptions}"},
+        {"name": "see", "comment": "{@link withI18nSupport}"},
+        {"name": "see", "comment": "{@link withEventReplay}"},
         {"name": "param", "comment": "Optional features to configure additional router behaviors."},
         {"name": "returns", "comment": "A set of providers to enable hydration."},
         {"name": "publicApi", "comment": ""}
       ],
-      "rawComment": "/**\n * Sets up providers necessary to enable hydration functionality for the application.\n *\n * By default, the function enables the recommended set of features for the optimal\n * performance for most of the applications. It includes the following features:\n *\n * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\n * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n * [here](guide/ssr#caching-data-when-using-httpclient).\n *\n * These functions allow you to disable some of the default features or configure features\n * * {@link withNoHttpTransferCache} to disable HTTP transfer cache\n * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n *\n * @usageNotes\n *\n * Basic example of how you can enable hydration in your application when\n * `bootstrapApplication` function is used:\n * ```\n * bootstrapApplication(AppComponent, {\n *   providers: [provideClientHydration()]\n * });\n * ```\n *\n * Alternatively if you are using NgModules, you would add `provideClientHydration`\n * to your root app module's provider list.\n * ```\n * @NgModule({\n *   declarations: [RootCmp],\n *   bootstrap: [RootCmp],\n *   providers: [provideClientHydration()],\n * })\n * export class AppModule {}\n * ```\n *\n * @see {@link withNoHttpTransferCache}\n * @see {@link withHttpTransferCacheOptions}\n *\n * @param features Optional features to configure additional router behaviors.\n * @returns A set of providers to enable hydration.\n *\n * @publicApi\n */",
+      "rawComment": "/**\n * Sets up providers necessary to enable hydration functionality for the application.\n *\n * By default, the function enables the recommended set of features for the optimal\n * performance for most of the applications. It includes the following features:\n *\n * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\n * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n * [here](guide/ssr#caching-data-when-using-httpclient).\n *\n * These functions allow you to disable some of the default features or enable new ones:\n *\n * * {@link withNoHttpTransferCache} to disable HTTP transfer cache\n * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n * * {@link withI18nSupport} to enable hydration support for i18n blocks\n * * {@link withEventReplay} to enable support for replaying user events\n *\n * @usageNotes\n *\n * Basic example of how you can enable hydration in your application when\n * `bootstrapApplication` function is used:\n * ```\n * bootstrapApplication(AppComponent, {\n *   providers: [provideClientHydration()]\n * });\n * ```\n *\n * Alternatively if you are using NgModules, you would add `provideClientHydration`\n * to your root app module's provider list.\n * ```\n * @NgModule({\n *   declarations: [RootCmp],\n *   bootstrap: [RootCmp],\n *   providers: [provideClientHydration()],\n * })\n * export class AppModule {}\n * ```\n *\n * @see {@link withNoHttpTransferCache}\n * @see {@link withHttpTransferCacheOptions}\n * @see {@link withI18nSupport}\n * @see {@link withEventReplay}\n *\n * @param features Optional features to configure additional router behaviors.\n * @returns A set of providers to enable hydration.\n *\n * @publicApi\n */",
       "source": {
         "filePath": "/packages/platform-browser/src/hydration.ts",
-        "startLine": 196,
-        "endLine": 233
+        "startLine": 201,
+        "endLine": 238
+      }
+    },
+    {
+      "name": "AfterRenderOptions",
+      "isAbstract": false,
+      "entryType": "interface",
+      "members": [
+        {
+          "name": "injector",
+          "type": "Injector",
+          "memberType": "property",
+          "memberTags": ["optional"],
+          "description": "The `Injector` to use during creation.\n\nIf this is not provided, the current injection context will be used instead (via `inject`).",
+          "jsdocTags": []
+        },
+        {
+          "name": "phase",
+          "type": "AfterRenderPhase",
+          "memberType": "property",
+          "memberTags": ["optional"],
+          "description": "The phase the callback should be invoked in.\n\n<div class=\"alert is-critical\">\n\nDefaults to `AfterRenderPhase.MixedReadWrite`. You should choose a more specific\nphase instead. See `AfterRenderPhase` for more information.\n\n</div>",
+          "jsdocTags": [
+            {
+              "name": "deprecated",
+              "comment": "Specify the phase for your callback to run in by passing a spec-object as the first\nparameter to `afterRender` or `afterNextRender` instead of a function."
+            }
+          ]
+        }
+      ],
+      "generics": [],
+      "description": "Options passed to `afterRender` and `afterNextRender`.",
+      "jsdocTags": [{"name": "developerPreview", "comment": ""}],
+      "rawComment": "/**\n * Options passed to `afterRender` and `afterNextRender`.\n *\n * @developerPreview\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/packages/core/src/render3/after_render_hooks.ts",
+        "startLine": 103,
+        "endLine": 125
       }
     }
   ]
