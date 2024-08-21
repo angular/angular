@@ -11,7 +11,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  EnvironmentInjector,
+  Injector,
   OnInit,
   ViewChild,
   afterNextRender,
@@ -56,6 +56,7 @@ export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
   private readonly router = inject(Router);
   private readonly scrollHandler = inject(ReferenceScrollHandler);
   private readonly appScroller = inject(AppScroller);
+  private readonly injector = inject(Injector);
 
   ApiItemType = ApiItemType;
 
@@ -96,7 +97,7 @@ export default class ApiReferenceDetailsPage implements OnInit, AfterViewInit {
       )
       .subscribe((doc: DocContent | undefined) => {
         this.setContentForPageSections(doc);
-        this.setActiveTab();
+        afterNextRender(() => this.setActiveTab(), {injector: this.injector});
       });
   }
 
