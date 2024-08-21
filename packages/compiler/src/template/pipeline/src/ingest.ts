@@ -792,13 +792,15 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
       );
       deferWhenOps.push(deferOnOp);
     }
+  }
 
-    // If no (non-prefetching or hydrating) defer triggers were provided, default to `idle`.
-    if (deferOnOps.length === 0 && deferWhenOps.length === 0 && !hydrate && !prefetch) {
-      deferOnOps.push(
-        ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, false, null!),
-      );
-    }
+  const deferOnlyOps = deferOnOps.filter((x) => x.hydrate === false && x.prefetch === false);
+  const whenOnlyOps = deferWhenOps.filter((x) => x.hydrate === false && x.prefetch === false);
+  // If no (non-prefetching or hydrating) defer triggers were provided, default to `idle`.
+  if (deferOnlyOps.length === 0 && whenOnlyOps.length === 0) {
+    deferOnOps.push(
+      ir.createDeferOnOp(deferXref, {kind: ir.DeferTriggerKind.Idle}, false, false, null!),
+    );
   }
 
   unit.create.push(deferOnOps);

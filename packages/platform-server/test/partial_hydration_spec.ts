@@ -14,6 +14,7 @@ import {
   inject,
   NgZone,
   PLATFORM_ID,
+  Provider,
   signal,
   ɵwhenStable as whenStable,
 } from '@angular/core';
@@ -22,7 +23,9 @@ import {withPartialHydration} from '@angular/platform-browser';
 import {getAppContents, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
 import {getComponentRef, ssr, timeout} from './hydration_utils';
 import {getDocument} from '@angular/core/src/render3/interfaces/document';
-import {isPlatformServer} from '@angular/common';
+import {isPlatformServer, PlatformLocation} from '@angular/common';
+import {provideRouter, RouterLink, RouterOutlet, Routes} from '@angular/router';
+import {MockPlatformLocation} from '@angular/common/testing';
 
 describe('platform-server partial hydration integration', () => {
   const originalWindow = globalThis.window;

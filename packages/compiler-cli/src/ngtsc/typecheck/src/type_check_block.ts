@@ -2611,15 +2611,15 @@ class Scope {
       this.opQueue.push(new TcbExpressionOp(this.tcb, this, triggers.when.value));
     }
 
-    if (triggers.hover !== undefined) {
+    if (triggers.hover !== undefined && triggers.hover.hydrateSpan === null) {
       this.appendReferenceBasedDeferredTrigger(block, triggers.hover);
     }
 
-    if (triggers.interaction !== undefined) {
+    if (triggers.interaction !== undefined && triggers.interaction.hydrateSpan === null) {
       this.appendReferenceBasedDeferredTrigger(block, triggers.interaction);
     }
 
-    if (triggers.viewport !== undefined) {
+    if (triggers.viewport !== undefined && triggers.viewport.hydrateSpan === null) {
       this.appendReferenceBasedDeferredTrigger(block, triggers.viewport);
     }
   }
