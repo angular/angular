@@ -1027,7 +1027,7 @@ describe('Image directive', () => {
     it('should add default sizes value in fill mode', () => {
       setupTestingModule();
 
-      const template = '<img ngSrc="path/img.png" fill>';
+      const template = '<img ngSrc="path/img.png" fill priority>';
 
       const fixture = createTestComponent(template);
       fixture.detectChanges();
@@ -1035,7 +1035,29 @@ describe('Image directive', () => {
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('sizes')).toBe('100vw');
     });
+    it('should add auto sizes to default in fill mode when lazy', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('sizes')).toBe('auto, 100vw');
+    });
     it('should not overwrite sizes value in fill mode', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" sizes="50vw" fill loading="eager">';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('sizes')).toBe('50vw');
+    });
+    it('should prepend "auto" to sizes in fill mode when lazy', () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" sizes="50vw" fill>';
@@ -1044,7 +1066,7 @@ describe('Image directive', () => {
       fixture.detectChanges();
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
-      expect(img.getAttribute('sizes')).toBe('50vw');
+      expect(img.getAttribute('sizes')).toBe('auto, 50vw');
     });
     it('should cause responsive srcset to be generated in fill mode', () => {
       setupTestingModule();
@@ -2022,10 +2044,55 @@ describe('Image directive', () => {
             `${IMG_BASE_URL}/img.png?w=300 3x`,
         );
       });
+      it('should automatically set a default sizes attribute when ngSrcset is used with a responsive srcset and is lazy', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+           <img ngSrc="img.png" ngSrcset="100w, 200w, 300w" width="100" height="50">
+         `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
+        expect(img.sizes).toBe(`auto, 100vw`);
+      });
+      it('should not automatically set a default sizes attribute when ngSrcset is used with a responsive srcset and is not lazy', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+           <img ngSrc="img.png" ngSrcset="100w, 200w, 300w" width="100" height="50" priority>
+         `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
+        expect(img.sizes).toBe('');
+      });
     });
 
     describe('sizes attribute', () => {
       it('should pass through the sizes attribute', () => {
+        setupTestingModule();
+
+        const template =
+          '<img ngSrc="path/img.png" width="150" height="50" ' +
+          'sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" priority>';
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+
+        expect(img.getAttribute('sizes')).toBe(
+          '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+        );
+      });
+
+      it('should prepend sizes="auto" to a lazy-loaded image', () => {
         setupTestingModule();
 
         const template =
@@ -2038,7 +2105,7 @@ describe('Image directive', () => {
         const img = nativeElement.querySelector('img')!;
 
         expect(img.getAttribute('sizes')).toBe(
-          '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+          'auto, (max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
         );
       });
 
