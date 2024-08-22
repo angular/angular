@@ -6,19 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import fs from 'fs';
-import {CompilationUnitData, SerializableForBatching} from './metadata_file';
+import {CompilationUnitData, SerializableForBatching} from './unit_data';
 import {InputReference, InputReferenceKind} from '../utils/input_reference';
-
-/**
- * Merges a list of metadata files into a combined global file.
- *
- * TODO: Remove when 1P code uses go/tsurge.
- */
-export async function mergeMetadataFiles(metadataFiles: CompilationUnitData[]) {
-  const result = mergeCompilationUnitData(metadataFiles);
-  process.stdout.write(JSON.stringify(result));
-}
 
 /** Merges a list of compilation units into a combined unit. */
 export function mergeCompilationUnitData(

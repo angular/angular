@@ -52,6 +52,3 @@ export interface CompilationUnitData {
 
   references: SerializableForBatching<InputReference>[];
 }
-
-// TODO: Remove when 1P code uses go/tsurge.
-export type {CompilationUnitData as MetadataFile};

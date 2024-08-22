@@ -14,19 +14,7 @@ import {
   isTsInputClassTypeReference,
   isTsInputReference,
 } from '../utils/input_reference';
-import {CompilationUnitData, IncompatibilityType} from './metadata_file';
-
-/**
- * Batch mode.
- *
- * Analyzes and extracts metadata for the given TypeScript target. The
- * resolved metadata is returned and can be merged later.
- *
- * TODO: Remove when 1P code uses go/tsurge.
- */
-export function extract(_absoluteTsconfigPath: string): CompilationUnitData {
-  return {knownInputs: {}, references: []};
-}
+import {CompilationUnitData, IncompatibilityType} from './unit_data';
 
 export function getCompilationUnitMetadata(knownInputs: KnownInputs, result: MigrationResult) {
   const struct: CompilationUnitData = {
