@@ -1,3 +1,31 @@
+<a name="19.0.0-next.1"></a>
+# 19.0.0-next.1 (2024-08-22)
+## Breaking Changes
+### core
+- The `autoDetect` feature of `ComponentFixture` will now
+  attach the fixture to the `ApplicationRef`. As a result, errors during
+  automatic change detection of the fixture be reported to the `ErrorHandler`.
+  This change may cause custom error handlers to observe new failures that were previously unreported.
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9e87593055](https://github.com/angular/angular/commit/9e87593055a5314a67090bd15d5552c23b538050) | feat | ensure template style elements are preprocessed as inline styles ([#57429](https://github.com/angular/angular/pull/57429)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b063468027](https://github.com/angular/angular/commit/b0634680272569501146bb7a9cdfe53033e25971) | feat | support TypeScript 5.6 ([#57424](https://github.com/angular/angular/pull/57424)) |
+| [3b0dca75d6](https://github.com/angular/angular/commit/3b0dca75d6dab6039253edd00c436715775bd0dd) | fix | Allow zoneless scheduler to run inside `fakeAsync` ([#56932](https://github.com/angular/angular/pull/56932)) |
+| [f03d274e87](https://github.com/angular/angular/commit/f03d274e87c919514a70d02c0699523957de7386) | fix | ComponentFixture autoDetect feature works like production ([#55228](https://github.com/angular/angular/pull/55228)) |
+| [d4449fce21](https://github.com/angular/angular/commit/d4449fce21bebbb18f9e1341f1675cdbec7e83ac) | fix | handle hydration of components that project content conditionally ([#57383](https://github.com/angular/angular/pull/57383)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4ae66f25d0](https://github.com/angular/angular/commit/4ae66f25d01ffd603872b3df3faf5c5c555b6446) | fix | account for members with doc strings and no modifiers ([#57389](https://github.com/angular/angular/pull/57389)) |
+| [ac93839d69](https://github.com/angular/angular/commit/ac93839d694929fdf16c610994a369d4efb2823a) | fix | avoid migrating route component in tests ([#57317](https://github.com/angular/angular/pull/57317)) |
+| [58a79b6e43](https://github.com/angular/angular/commit/58a79b6e435f2a46a7ab17ff5538083e05340b6f) | fix | preserve type when using inject decorator ([#57389](https://github.com/angular/angular/pull/57389)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.0-next.0"></a>
 # 19.0.0-next.0 (2024-08-14)
 ## Breaking Changes
