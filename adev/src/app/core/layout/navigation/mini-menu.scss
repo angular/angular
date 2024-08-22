@@ -1,7 +1,6 @@
 @use '@angular/docs/styles/media-queries' as mq;
 
 // Dark/Light mode switcher & social media icon buttons
-// ul
 .adev-mini-menu {
   padding: 0;
   color: var(--primary-contrast);
@@ -10,14 +9,35 @@
   border-radius: 0.25rem;
   z-index: var(--z-index-mini-menu);
   box-shadow: 10px 4px 40px 0 rgba(0, 0, 0, 0.075);
-
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(-10px);
+  opacity: 0;
+  
   @include mq.for-tablet {
     top: 75px;
     left: 5px;
   }
 
+  @include mq.for-mobile {
+    top: 10px;
+    left: 10px;
+    width: 90%;
+  }
+
+  @include mq.for-desktop {
+    top: 20px;
+    left: 20px;
+  }
+
+  &-open {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   li {
     list-style: none;
+    margin-bottom: 0.5rem;
 
     // themes and versions
     button {
@@ -29,6 +49,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      position: relative;
 
       docs-icon {
         font-size: 1.5rem;
@@ -38,10 +59,29 @@
 
       &:hover {
         background-color: var(--senary-contrast);
+
         span,
         docs-icon {
           color: var(--primary-contrast);
         }
+
+        &::after {
+          content: attr(data-tooltip);
+          position: absolute;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 0.5rem;
+          background-color: var(--tooltip-background);
+          color: var(--tooltip-text);
+          border-radius: 0.25rem;
+          white-space: nowrap;
+        }
+      }
+
+      &:focus {
+        outline: 2px solid var(--focus-outline-color);
+        outline-offset: 2px;
       }
     }
 
@@ -71,8 +111,19 @@
     }
   }
 
-  &-open {
-    display: block;
+  // Dark mode styles
+  .dark-mode & {
+    color: var(--dark-primary-contrast);
+    background-color: var(--dark-page-background);
+    border: 1px solid var(--dark-senary-contrast);
+
+    button docs-icon {
+      color: var(--dark-quaternary-contrast);
+    }
+
+    button:hover {
+      background-color: var(--dark-senary-contrast);
+    }
   }
 }
 
@@ -82,7 +133,6 @@
   top: 30px;
   left: 10px;
   position: absolute;
-  bottom: auto;
 
   li {
     padding-inline: 0;
@@ -95,6 +145,29 @@
   @include mq.for-tablet {
     top: 30px;
     left: auto;
-    bottom: auto;
+  }
+
+  @include mq.for-mobile {
+    top: 10px;
+    left: auto;
+    width: 90%;
+  }
+  
+  @include mq.for-desktop {
+    top: 20px;
+    left: 20px;
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track);
   }
 }
