@@ -1670,6 +1670,32 @@ describe('projection', () => {
       expect(getElementHtml(hostElement)).toContain('<p>override</p>|Two fallback|Three fallback');
     });
 
+    it('should render the content through projectableNodes along with fallback', () => {
+      @Component({
+        standalone: true,
+        template:
+          `<ng-content>One fallback</ng-content>|` +
+          `<ng-content>Two fallback</ng-content>|<ng-content>Three fallback</ng-content>`,
+      })
+      class Projection {}
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const paragraph = document.createElement('p');
+      paragraph.textContent = 'override';
+      const secondParagraph = document.createElement('p');
+      secondParagraph.textContent = 'override';
+      const projectableNodes = [[paragraph], [], [secondParagraph]];
+      const componentRef = createComponent(Projection, {
+        hostElement,
+        environmentInjector,
+        projectableNodes,
+      });
+      componentRef.changeDetectorRef.detectChanges();
+
+      expect(getElementHtml(hostElement)).toContain('<p>override</p>|Two fallback|<p>override</p>');
+    });
+
     it('should render fallback content when ng-content is inside an ng-template', () => {
       @Component({
         selector: 'projection',
