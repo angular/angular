@@ -39,6 +39,7 @@ export interface KeyValue<K, V> {
  * The output array will be ordered by keys.
  * By default the comparator will be by Unicode point value.
  * You can optionally pass a compareFn if your keys are complex types.
+ * Passing `null` as the compareFn will use natural ordering of the input.
  *
  * @usageNotes
  * ### Examples
@@ -60,7 +61,8 @@ export class KeyValuePipe implements PipeTransform {
 
   private differ!: KeyValueDiffer<any, any>;
   private keyValues: Array<KeyValue<any, any>> = [];
-  private compareFn: (a: KeyValue<any, any>, b: KeyValue<any, any>) => number = defaultComparator;
+  private compareFn: ((a: KeyValue<any, any>, b: KeyValue<any, any>) => number) | null =
+    defaultComparator;
 
   /*
    * NOTE: when the `input` value is a simple Record<K, V> object, the keys are extracted with
@@ -69,35 +71,35 @@ export class KeyValuePipe implements PipeTransform {
    */
   transform<K, V>(
     input: ReadonlyMap<K, V>,
-    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+    compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null,
   ): Array<KeyValue<K, V>>;
   transform<K extends number, V>(
     input: Record<K, V>,
-    compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number,
+    compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null,
   ): Array<KeyValue<string, V>>;
   transform<K extends string, V>(
     input: Record<K, V> | ReadonlyMap<K, V>,
-    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+    compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null,
   ): Array<KeyValue<K, V>>;
   transform(
     input: null | undefined,
-    compareFn?: (a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number,
+    compareFn?: ((a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number) | null,
   ): null;
   transform<K, V>(
     input: ReadonlyMap<K, V> | null | undefined,
-    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+    compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null,
   ): Array<KeyValue<K, V>> | null;
   transform<K extends number, V>(
     input: Record<K, V> | null | undefined,
-    compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number,
+    compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null,
   ): Array<KeyValue<string, V>> | null;
   transform<K extends string, V>(
     input: Record<K, V> | ReadonlyMap<K, V> | null | undefined,
-    compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number,
+    compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null,
   ): Array<KeyValue<K, V>> | null;
   transform<K, V>(
     input: undefined | null | {[key: string]: V; [key: number]: V} | ReadonlyMap<K, V>,
-    compareFn: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number = defaultComparator,
+    compareFn: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null = defaultComparator,
   ): Array<KeyValue<K, V>> | null {
     if (!input || (!(input instanceof Map) && typeof input !== 'object')) {
       return null;
@@ -116,7 +118,9 @@ export class KeyValuePipe implements PipeTransform {
       });
     }
     if (differChanges || compareFnChanged) {
-      this.keyValues.sort(compareFn);
+      if (compareFn) {
+        this.keyValues.sort(compareFn);
+      }
       this.compareFn = compareFn;
     }
     return this.keyValues;
