@@ -670,7 +670,7 @@ function projectNodes(
     // complex checks down the line.
     // We also normalize the length of the passed in projectable nodes (to match the number of
     // <ng-container> slots defined by a component).
-    projection.push(nodesforSlot != null ? Array.from(nodesforSlot) : null);
+    projection.push(nodesforSlot != null && nodesforSlot.length ? Array.from(nodesforSlot) : null);
   }
 }
 
