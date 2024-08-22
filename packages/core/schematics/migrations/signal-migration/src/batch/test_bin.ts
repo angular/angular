@@ -13,7 +13,7 @@ import {executeMergePhase} from '../../../../utils/tsurge/executors/merge_exec';
 import {executeMigratePhase} from '../../../../utils/tsurge/executors/migrate_exec';
 import {SignalInputMigration} from '../migration';
 import {writeMigrationReplacements} from '../write_replacements';
-import {CompilationUnitData} from './metadata_file';
+import {CompilationUnitData} from './unit_data';
 
 main().catch((e) => {
   console.error(e);
