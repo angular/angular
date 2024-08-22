@@ -8,21 +8,7 @@
 
 import {KnownInputs} from '../input_detection/known_inputs';
 import {InputUniqueKey} from '../utils/input_id';
-import {CompilationUnitData, IncompatibilityType, MetadataFile} from './metadata_file';
-
-/**
- * Batch mode.
- *
- * Migrates the given compilation unit, leveraging the global analysis metadata
- * that was created as the merge of all individual project units.
- *
- * TODO: Remove when 1P code uses go/tsurge.
- */
-export function migrateTarget(_absoluteTsconfigPath: string, _mergedMetadata: MetadataFile) {
-  return {
-    replacements: new Map<string, Array<{pos: number; end: number; toInsert: string}>>(),
-  };
-}
+import {CompilationUnitData, IncompatibilityType} from './unit_data';
 
 export function populateKnownInputsFromGlobalData(
   knownInputs: KnownInputs,
