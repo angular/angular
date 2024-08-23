@@ -89,7 +89,7 @@ export abstract class TsurgeFunnelMigration<
    *
    * @returns All replacements for the whole project.
    */
-  abstract migrate(globalData: CombinedGlobalMetadata): Promise<Serializable<Replacement[]>>;
+  abstract migrate(globalData: CombinedGlobalMetadata): Promise<Replacement[]>;
 }
 
 /**
