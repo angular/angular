@@ -6,21 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FileSystem} from '../../../../compiler-cli/src/ngtsc/file_system';
-import {NgtscProgram} from '../../../../compiler-cli/src/ngtsc/program';
-import assert from 'assert';
-import path from 'path';
 import ts from 'typescript';
-import {isShim} from '../../../../compiler-cli/src/ngtsc/shims';
-import {createNgtscProgram} from './helpers/ngtsc_program';
+import {NgtscProgram} from '../../../../compiler-cli/src/ngtsc/program';
+import {TsurgeBaseMigration} from './base_migration';
 import {Serializable} from './helpers/serializable';
+import {ProgramInfo} from './program_info';
 import {Replacement} from './replacement';
-import {BaseProgramInfo, ProgramInfo} from './program_info';
 
 /**
- * Class defining a `Tsurge` migration.
- *
- * A tsurge migration is split into three stages:
+ * A Tsurge migration is split into three stages:
  *    - analyze phase
  *    - merge phase
  *    - migrate phase
@@ -30,69 +24,104 @@ import {BaseProgramInfo, ProgramInfo} from './program_info';
  * individual workers are never seeing the full project, e.g. Google3.
  *
  * The analysis phases can operate on smaller TS project units, and later
- * the expect the isolated unit data to be merged into some sort of global
- * metadata via the `merge` phase. For example, every analyze worker may
- * contribute to a list of TS references that are later combined.
+ * then expect the isolated unit data to be merged into some sort of global
+ * metadata via the `merge` phase. As a final step then, the migration
+ * replacements will be computed.
  *
- * The migrate phase can then compute actual file updates for all individual
- * compilation units, leveraging the global metadata to e.g. see if there are
- * any references from other compilation units that may be problematic and prevent
- * migration of a given file.
+ * There are subtle differences in how the final stage can compute migration
+ * replacements. Some migrations need program access again, while other's don't.
+ * For this reason, there are two possible variants of Tsurge migrations:
  *
- * More details can be found in the design doc for signal input migration,
- * or in the testing examples.
+ *   - {@link TsurgeFunnelMigration}
+ *   - {@link TsurgeComplexMigration}
  *
- * TODO: Link design doc.
+ *  TODO: Link design doc
  */
-export abstract class TsurgeMigration<
+export type TsurgeMigration<
   UnitAnalysisMetadata,
   CombinedGlobalMetadata,
   TsProgramType extends ts.Program | NgtscProgram = NgtscProgram,
   PreparationInfo = ProgramInfo<TsProgramType>,
-> {
-  // By default, ngtsc programs are being created.
-  createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo<TsProgramType> {
-    return createNgtscProgram(tsconfigAbsPath, fs) as BaseProgramInfo<TsProgramType>;
-  }
+> =
+  | TsurgeComplexMigration<
+      UnitAnalysisMetadata,
+      CombinedGlobalMetadata,
+      TsProgramType,
+      PreparationInfo
+    >
+  | TsurgeFunnelMigration<
+      UnitAnalysisMetadata,
+      CombinedGlobalMetadata,
+      TsProgramType,
+      PreparationInfo
+    >;
 
-  // Optional function to prepare the base `ProgramInfo` even further,
-  // for the analyze and migrate phases. E.g. determining source files.
-  prepareProgram(info: BaseProgramInfo<TsProgramType>): PreparationInfo {
-    assert(info.program instanceof NgtscProgram);
-
-    const userProgram = info.program.getTsProgram();
-    const fullProgramSourceFiles = userProgram.getSourceFiles();
-    const sourceFiles = fullProgramSourceFiles.filter(
-      (f) =>
-        !f.isDeclarationFile &&
-        // Note `isShim` will work for the initial program, but for TCB programs, the shims are no longer annotated.
-        !isShim(f) &&
-        !f.fileName.endsWith('.ngtypecheck.ts'),
-    );
-
-    const basePath = path.dirname(info.tsconfigAbsolutePath);
-    const projectDirAbsPath = info.userOptions.rootDir ?? basePath;
-
-    return {
-      ...info,
-      sourceFiles,
-      fullProgramSourceFiles,
-      projectDirAbsPath,
-    } as PreparationInfo;
-  }
-
+/**
+ * A simpler variant of a {@link TsurgeComplexMigration} that does not
+ * fan-out into multiple workers per compilation unit to compute
+ * the final migration replacements.
+ *
+ * This is faster and less resource intensive as workers and TS programs
+ * are only ever created once.
+ *
+ * This is commonly the case when migrations are refactored to eagerly
+ * compute replacements in the analyze stage, and then leverage the
+ * global unit data to filter replacements that turned out to be "invalid".
+ */
+export abstract class TsurgeFunnelMigration<
+  UnitAnalysisMetadata,
+  CombinedGlobalMetadata,
+  TsProgramType extends ts.Program | NgtscProgram = NgtscProgram,
+  PreparationInfo = ProgramInfo<TsProgramType>,
+> extends TsurgeBaseMigration<TsProgramType, PreparationInfo> {
   /** Analyzes the given TypeScript project and returns serializable compilation unit data. */
-  abstract analyze(program: PreparationInfo): Promise<Serializable<UnitAnalysisMetadata>>;
+  abstract analyze(info: PreparationInfo): Promise<Serializable<UnitAnalysisMetadata>>;
 
-  /** Merges all compilation unit data from previous analysis phases into a global metadata. */
+  /** Merges all compilation unit data from previous analysis phases into a global result. */
   abstract merge(units: UnitAnalysisMetadata[]): Promise<Serializable<CombinedGlobalMetadata>>;
 
   /**
-   * Computes migration updates for the given TypeScript project, leveraging the global
-   * metadata built up from all analyzed projects and their merged "unit data".
+   * Finalizes the migration result.
+   *
+   * This stage can be used to filter replacements, leveraging global combined analysis
+   * data to compute the overall migration result, without needing new "migrate" workers
+   * for every unit, as with a standard {@link TsurgeMigration}.
+   *
+   * @returns All replacements for the whole project.
+   */
+  abstract migrate(globalData: CombinedGlobalMetadata): Promise<Serializable<Replacement[]>>;
+}
+
+/**
+ * Complex variant of a `Tsurge` migration.
+ *
+ * For example, every analyze worker may contribute to a list of TS
+ * references that are later combined. The migrate phase can then compute actual
+ * file updates for all individual compilation units, leveraging the global metadata
+ * to e.g. see if there are any references from other compilation units that may be
+ * problematic and prevent migration of a given file.
+ */
+export abstract class TsurgeComplexMigration<
+  UnitAnalysisMetadata,
+  CombinedGlobalMetadata,
+  TsProgramType extends ts.Program | NgtscProgram = NgtscProgram,
+  PreparationInfo = ProgramInfo<TsProgramType>,
+> extends TsurgeBaseMigration<TsProgramType, PreparationInfo> {
+  /** Analyzes the given TypeScript project and returns serializable compilation unit data. */
+  abstract analyze(info: PreparationInfo): Promise<Serializable<UnitAnalysisMetadata>>;
+
+  /** Merges all compilation unit data from previous analysis phases into a global result. */
+  abstract merge(units: UnitAnalysisMetadata[]): Promise<Serializable<CombinedGlobalMetadata>>;
+
+  /**
+   * Migration phase. Workers will be started for every compilation unit again,
+   * instantiating a new program for every unit to compute the final migration
+   * replacements, leveraging combined global metadata.
+   *
+   * @returns Replacements for the given compilation unit (**not** the whole project!)
    */
   abstract migrate(
     globalMetadata: CombinedGlobalMetadata,
-    program: PreparationInfo,
+    info: PreparationInfo,
   ): Promise<Replacement[]>;
 }
