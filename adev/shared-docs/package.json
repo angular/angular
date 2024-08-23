@@ -21,7 +21,7 @@
     "html-entities": "~2.5.2",
     "jsdom": "~24.1.0",
     "marked": "~14.0.0",
-    "mermaid": "^10.8.0",
+    "mermaid": "^11.0.0",
     "shiki": "^1.10.3"
   },
   "exports": {
