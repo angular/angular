@@ -61,10 +61,17 @@ async function hydrateFromBlockNameImpl(
     deferBlockRegistry.hydrating.add(blockId);
 
     await onTriggerFn(deferBlock);
+    let hydratedBlock: {lView: LView; tNode: TNode; lContainer: LContainer} | null = deferBlock;
     for (const dehydratedBlock of dehydratedBlocks) {
-      await hydrateFromBlockNameImpl(injector, dehydratedBlock, hydratedBlocks, onTriggerFn);
+      hydratedBlock = await hydrateFromBlockNameImpl(
+        injector,
+        dehydratedBlock,
+        hydratedBlocks,
+        onTriggerFn,
+      );
     }
-    return deferBlock;
+    // this is going to be the wrong defer block. We need to get the final one.
+    return hydratedBlock;
   } else {
     // TODO: this is likely an error, consider producing a `console.error`.
     return null;

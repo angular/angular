@@ -254,11 +254,15 @@ async function triggerBlockHydration(injector: Injector, blockName: string) {
   for (let block of dehydratedBlocks) {
     hydratingBlocks.add(block);
   }
-  const {hydratedBlocks} = await hydrateFromBlockName(injector, blockName, (deferBlock: any) =>
-    triggerAndWaitForCompletion(deferBlock),
+  const {deferBlock, hydratedBlocks} = await hydrateFromBlockName(
+    injector,
+    blockName,
+    (deferBlock: any) => triggerAndWaitForCompletion(deferBlock),
   );
-  hydratedBlocks.add(blockName);
-  replayQueuedBlockEvents(hydratedBlocks, injector);
+  if (deferBlock !== null) {
+    hydratedBlocks.add(blockName);
+    replayQueuedBlockEvents(hydratedBlocks, injector);
+  }
 }
 
 function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector) {
