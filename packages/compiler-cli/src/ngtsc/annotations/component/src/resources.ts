@@ -38,7 +38,7 @@ import {
  */
 export interface StyleUrlMeta {
   url: string;
-  nodeForError: ts.Node;
+  expression: ts.Expression;
   source:
     | ResourceTypeForDiagnostics.StylesheetFromTemplate
     | ResourceTypeForDiagnostics.StylesheetFromDecorator;
@@ -123,7 +123,9 @@ export interface ExternalTemplateDeclaration extends CommonTemplateDeclaration {
 export type TemplateDeclaration = InlineTemplateDeclaration | ExternalTemplateDeclaration;
 
 /** Determines the node to use for debugging purposes for the given TemplateDeclaration. */
-export function getTemplateDeclarationNodeForError(declaration: TemplateDeclaration): ts.Node {
+export function getTemplateDeclarationNodeForError(
+  declaration: TemplateDeclaration,
+): ts.Expression {
   return declaration.isInline ? declaration.expression : declaration.templateUrlExpression;
 }
 
@@ -629,7 +631,7 @@ export function extractComponentStyleUrls(
       {
         url: styleUrl,
         source: ResourceTypeForDiagnostics.StylesheetFromDecorator,
-        nodeForError: styleUrlExpr,
+        expression: styleUrlExpr,
       },
     ];
   }
@@ -657,7 +659,7 @@ function extractStyleUrlsFromExpression(
         styleUrls.push({
           url: styleUrl,
           source: ResourceTypeForDiagnostics.StylesheetFromDecorator,
-          nodeForError: styleUrlExpr,
+          expression: styleUrlExpr,
         });
       }
     }
@@ -675,7 +677,7 @@ function extractStyleUrlsFromExpression(
       styleUrls.push({
         url: styleUrl,
         source: ResourceTypeForDiagnostics.StylesheetFromDecorator,
-        nodeForError: styleUrlsExpr,
+        expression: styleUrlsExpr,
       });
     }
   }
@@ -683,34 +685,10 @@ function extractStyleUrlsFromExpression(
   return styleUrls;
 }
 
-export function extractStyleResources(
-  resourceLoader: ResourceLoader,
-  component: Map<string, ts.Expression>,
-  containingFile: string,
-): ReadonlySet<Resource> {
+export function extractInlineStyleResources(component: Map<string, ts.Expression>): Set<Resource> {
   const styles = new Set<Resource>();
   function stringLiteralElements(array: ts.ArrayLiteralExpression): ts.StringLiteralLike[] {
     return array.elements.filter((e): e is ts.StringLiteralLike => ts.isStringLiteralLike(e));
-  }
-
-  // If styleUrls is a literal array, process each resource url individually and register ones that
-  // are string literals. If `styleUrl` is specified, register a single stylesheet. Note that
-  // `styleUrl` and `styleUrls` are mutually-exclusive. This is validated in
-  // `extractComponentStyleUrls`.
-  const styleUrlExpr = component.get('styleUrl');
-  const styleUrlsExpr = component.get('styleUrls');
-  if (styleUrlsExpr !== undefined && ts.isArrayLiteralExpression(styleUrlsExpr)) {
-    for (const expression of stringLiteralElements(styleUrlsExpr)) {
-      const resource = stringLiteralUrlToResource(resourceLoader, expression, containingFile);
-      if (resource !== null) {
-        styles.add(resource);
-      }
-    }
-  } else if (styleUrlExpr !== undefined && ts.isStringLiteralLike(styleUrlExpr)) {
-    const resource = stringLiteralUrlToResource(resourceLoader, styleUrlExpr, containingFile);
-    if (resource !== null) {
-      styles.add(resource);
-    }
   }
 
   const stylesExpr = component.get('styles');
@@ -727,31 +705,15 @@ export function extractStyleResources(
   return styles;
 }
 
-function stringLiteralUrlToResource(
-  resourceLoader: ResourceLoader,
-  expression: ts.StringLiteralLike,
-  containingFile: string,
-): Resource | null {
-  try {
-    const resourceUrl = resourceLoader.resolve(expression.text, containingFile);
-    return {path: absoluteFrom(resourceUrl), expression};
-  } catch {
-    // Errors in style resource extraction do not need to be handled here. We will produce
-    // diagnostics for each one that fails in the analysis, after we evaluate the `styleUrls`
-    // expression to determine _all_ style resources, not just the string literals.
-    return null;
-  }
-}
-
 export function _extractTemplateStyleUrls(template: ParsedTemplateWithSource): StyleUrlMeta[] {
   if (template.styleUrls === null) {
     return [];
   }
 
-  const nodeForError = getTemplateDeclarationNodeForError(template.declaration);
+  const expression = getTemplateDeclarationNodeForError(template.declaration);
   return template.styleUrls.map((url) => ({
     url,
     source: ResourceTypeForDiagnostics.StylesheetFromTemplate,
-    nodeForError,
+    expression,
   }));
 }
