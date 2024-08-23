@@ -248,7 +248,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#40c5080c52f4d14aa2b5083e42fe5cb0fea2f929":
   version "0.0.0-bd7b63896ab21fc258f8f9236165c37e62db27d8"
-  uid "40c5080c52f4d14aa2b5083e42fe5cb0fea2f929"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#40c5080c52f4d14aa2b5083e42fe5cb0fea2f929"
   dependencies:
     "@angular/benchpress" "0.3.0"
@@ -373,7 +372,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#682b3d77e51c0c4fcb535bd6b147eb42a8738d7b":
   version "0.0.0-bd7b63896ab21fc258f8f9236165c37e62db27d8"
-  uid "682b3d77e51c0c4fcb535bd6b147eb42a8738d7b"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#682b3d77e51c0c4fcb535bd6b147eb42a8738d7b"
   dependencies:
     "@octokit/rest" "21.0.2"
@@ -3714,10 +3712,10 @@
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.5.tgz#db9468cb1b1b5a925b8f34822f1669df0c5472f5"
   integrity sha512-hWtVTC2q7hc7xZ/RLbxapMvDMgUnDvKvMOpKal4DrMyfGBUfB1oKaZlIRr6mJL+If3bAP6sV/QneGzF6tJjZDg==
 
-"@types/chrome@^0.0.270":
-  version "0.0.270"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.270.tgz#575f47107652ef75d4841ec8ffa018137c8f51e7"
-  integrity sha512-ADvkowV7YnJfycZZxL2brluZ6STGW+9oKG37B422UePf2PCXuFA/XdERI0T18wtuWPx0tmFeZqq6MOXVk1IC+Q==
+"@types/chrome@^0.0.269":
+  version "0.0.269"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.269.tgz#5bc2a536bb72a3332119742f31b42b5250d39905"
+  integrity sha512-vF7x8YywnhXX2F06njQ/OE7a3Qeful43C5GUOsUksXWk89WoSFUU3iLeZW8lDpVO9atm8iZIEiLQTRC3H7NOXQ==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"

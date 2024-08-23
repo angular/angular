@@ -18,6 +18,7 @@ import {HEADER_OFFSET, LView, TView} from '../render3/interfaces/view';
 import {LContainer} from '../render3/interfaces/container';
 import {TDeferBlockDetails} from '../defer/interfaces';
 import {getDeferBlockDataIndex, getTDeferBlockDetails, isTDeferBlockDetails} from '../defer/utils';
+import {whenStable, ApplicationRef} from '../application/application_ref';
 
 /**
  * Finds first hydrated parent `@defer` block for a given block id.
@@ -98,9 +99,6 @@ export async function hydrateFromBlockName(
     hydratedBlocks,
     onTriggerFn,
   );
-  if (deferBlock) {
-    cleanupLContainer(deferBlock.lContainer);
-  }
   return {deferBlock, hydratedBlocks};
 }
 
@@ -111,10 +109,10 @@ export async function partialHydrateFromBlockName(
 ): Promise<void> {
   const {deferBlock, hydratedBlocks} = await hydrateFromBlockName(injector, blockName, triggerFn);
   removeListenersFromBlocks([...hydratedBlocks], injector);
-  // cleanupDehydratedViews(injector.get(ApplicationRef));
-  // TODO: add `await whenStable(appRef);` call here
-  if (deferBlock) {
+  if (deferBlock !== null) {
     cleanupLContainer(deferBlock.lContainer);
+    const appRef = injector.get(ApplicationRef);
+    await whenStable(appRef);
   }
 }
 

@@ -23,6 +23,7 @@ import {
 } from './interfaces';
 import {NGH_DEFER_BLOCKS_KEY} from './utils';
 import {onViewport} from '../defer/dom_triggers';
+import {fetchAndRenderDeferBlock} from './event_replay';
 
 export function bootstrapPartialHydration(doc: Document, injector: Injector) {
   const deferBlockData = processBlockData(injector);
@@ -160,9 +161,7 @@ async function setIdleTriggers(injector: Injector, ets: ElementTrigger[]) {
     for (const elementTrigger of ets) {
       const registry = injector.get(DeferBlockRegistry);
       const onInvoke = () =>
-        partialHydrateFromBlockName(injector, elementTrigger.blockName, (deferBlock: any) =>
-          triggerAndWaitForCompletion(deferBlock),
-        );
+        partialHydrateFromBlockName(injector, elementTrigger.blockName, fetchAndRenderDeferBlock);
       const cleanupFn = onIdle(onInvoke, injector);
       registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
     }
@@ -174,10 +173,8 @@ async function setViewportTriggers(injector: Injector, ets: ElementTrigger[]) {
     for (let et of ets) {
       onViewport(
         et.el,
-        () => {
-          partialHydrateFromBlockName(injector, et.blockName, (deferBlock: any) =>
-            triggerAndWaitForCompletion(deferBlock),
-          );
+        async () => {
+          await partialHydrateFromBlockName(injector, et.blockName, fetchAndRenderDeferBlock);
         },
         injector,
       );
@@ -189,9 +186,11 @@ async function setTimerTriggers(injector: Injector, ets: ElementTrigger[]) {
   if (ets.length > 0) {
     for (const elementTrigger of ets) {
       const registry = injector.get(DeferBlockRegistry);
-      const onInvoke = () =>
-        partialHydrateFromBlockName(injector, elementTrigger.blockName, (deferBlock: any) =>
-          triggerAndWaitForCompletion(deferBlock),
+      const onInvoke = async () =>
+        await partialHydrateFromBlockName(
+          injector,
+          elementTrigger.blockName,
+          fetchAndRenderDeferBlock,
         );
       const timerFn = onTimer(elementTrigger.delay!);
       const cleanupFn = timerFn(onInvoke, injector);
@@ -202,9 +201,7 @@ async function setTimerTriggers(injector: Injector, ets: ElementTrigger[]) {
 
 async function setImmediateTriggers(injector: Injector, ets: ElementTrigger[]) {
   for (const elementTrigger of ets) {
-    partialHydrateFromBlockName(injector, elementTrigger.blockName, (deferBlock: any) =>
-      triggerAndWaitForCompletion(deferBlock),
-    );
+    await partialHydrateFromBlockName(injector, elementTrigger.blockName, fetchAndRenderDeferBlock);
   }
 }
 

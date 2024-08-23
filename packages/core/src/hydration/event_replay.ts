@@ -47,8 +47,10 @@ import {performanceMarkFeature} from '../util/performance';
 import {hydrateFromBlockName, findFirstKnownParentDeferBlock} from './blocks';
 import {HydrateTrigger, Trigger} from '../defer/interfaces';
 import {triggerAndWaitForCompletion} from '../defer/instructions';
-import {cleanupDehydratedViews} from './cleanup';
+import {cleanupDehydratedViews, cleanupLContainer} from './cleanup';
 import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
+import {TNode} from '../render3/interfaces/node';
+import {LContainer} from '../render3/interfaces/container';
 
 /**
  * A set of in progress hydrating blocks
@@ -234,7 +236,7 @@ export function invokeRegisteredReplayListeners(
   }
 }
 
-function hydrateAndInvokeBlockListeners(
+async function hydrateAndInvokeBlockListeners(
   blockName: string,
   injector: Injector,
   event: Event,
@@ -243,25 +245,35 @@ function hydrateAndInvokeBlockListeners(
   blockEventQueue.push({event, currentTarget});
   if (!hydratingBlocks.has(blockName)) {
     hydratingBlocks.add(blockName);
-    triggerBlockHydration(injector, blockName);
+    await triggerBlockHydration(injector, blockName, fetchAndRenderDeferBlock);
     hydratingBlocks.delete(blockName);
   }
 }
 
-async function triggerBlockHydration(injector: Injector, blockName: string) {
+export async function fetchAndRenderDeferBlock(
+  deferBlock: any,
+): Promise<{lView: LView; tNode: TNode; lContainer: LContainer}> {
+  await triggerAndWaitForCompletion(deferBlock);
+  return deferBlock;
+}
+
+async function triggerBlockHydration(
+  injector: Injector,
+  blockName: string,
+  onTriggerFn: (deferBlock: any) => void,
+) {
   // grab the list of dehydrated blocks and queue them up
   const {dehydratedBlocks} = findFirstKnownParentDeferBlock(blockName, injector);
   for (let block of dehydratedBlocks) {
     hydratingBlocks.add(block);
   }
-  const {deferBlock, hydratedBlocks} = await hydrateFromBlockName(
-    injector,
-    blockName,
-    (deferBlock: any) => triggerAndWaitForCompletion(deferBlock),
-  );
+  const {deferBlock, hydratedBlocks} = await hydrateFromBlockName(injector, blockName, onTriggerFn);
   if (deferBlock !== null) {
     hydratedBlocks.add(blockName);
+    const appRef = injector.get(ApplicationRef);
+    await appRef.whenStable();
     replayQueuedBlockEvents(hydratedBlocks, injector);
+    cleanupLContainer(deferBlock.lContainer);
   }
 }
 
@@ -279,8 +291,8 @@ function replayQueuedBlockEvents(hydratedBlocks: Set<string>, injector: Injector
       blockEventQueue.push({event, currentTarget});
     }
   }
-  removeListenersFromBlocks([...hydratedBlocks], injector);
   cleanupDehydratedViews(injector.get(ApplicationRef));
+  removeListenersFromBlocks([...hydratedBlocks], injector);
 }
 
 export function convertHydrateTriggersToJsAction(
