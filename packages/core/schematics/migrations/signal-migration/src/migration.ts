@@ -10,7 +10,7 @@ import {NgtscProgram} from '../../../../../compiler-cli/src/ngtsc/program';
 import {FileSystem} from '../../../../../compiler-cli/src/ngtsc/file_system';
 import {confirmAsSerializable, Serializable} from '../../../utils/tsurge/helpers/serializable';
 import {BaseProgramInfo, ProgramInfo} from '../../../utils/tsurge/program_info';
-import {TsurgeMigration} from '../../../utils/tsurge/migration';
+import {TsurgeComplexMigration} from '../../../utils/tsurge/migration';
 import {CompilationUnitData} from './batch/unit_data';
 import {KnownInputs} from './input_detection/known_inputs';
 import {AnalysisProgramInfo, prepareAnalysisInfo} from './analysis_deps';
@@ -31,7 +31,7 @@ import {createNgtscProgram} from '../../../utils/tsurge/helpers/ngtsc_program';
  * Tsurge migration for migrating Angular `@Input()` declarations to
  * signal inputs, with support for batch execution.
  */
-export class SignalInputMigration extends TsurgeMigration<
+export class SignalInputMigration extends TsurgeComplexMigration<
   CompilationUnitData,
   CompilationUnitData,
   NgtscProgram,

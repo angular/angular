@@ -11,7 +11,7 @@ import {absoluteFromSourceFile} from '../../../../../compiler-cli/src/ngtsc/file
 import {TypeScriptReflectionHost} from '../../../../../compiler-cli/src/ngtsc/reflection';
 import {DtsMetadataReader} from '../../../../../compiler-cli/src/ngtsc/metadata';
 import {confirmAsSerializable} from '../helpers/serializable';
-import {TsurgeMigration} from '../migration';
+import {TsurgeComplexMigration} from '../migration';
 import {Replacement, TextUpdate} from '../replacement';
 import {findOutputDeclarationsAndReferences, OutputID} from './output_helpers';
 import {ProgramInfo} from '../program_info';
@@ -26,7 +26,7 @@ type GlobalMetadata = {[id: OutputID]: {canBeMigrated: boolean}};
  * Note that this is simply a testing construct for now, to verify the migration
  * framework works as expected. This is **not a full migration**, but rather an example.
  */
-export class OutputMigration extends TsurgeMigration<AnalysisUnit, GlobalMetadata> {
+export class OutputMigration extends TsurgeComplexMigration<AnalysisUnit, GlobalMetadata> {
   override async analyze(info: ProgramInfo<NgtscProgram>) {
     const program = info.program.getTsProgram();
     const typeChecker = program.getTypeChecker();

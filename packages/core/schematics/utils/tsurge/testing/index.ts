@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TsurgeMigration} from '../migration';
+import {TsurgeFunnelMigration, TsurgeMigration} from '../migration';
 import {
   initMockFileSystem,
   MockFileSystem,
@@ -61,9 +61,12 @@ export async function runTsurgeMigration<UnitData, GlobalData>(
 
   const unitData = await migration.analyze(info);
   const merged = await migration.merge([unitData]);
-  const replacements = await migration.migrate(merged, info);
-  const updates = groupReplacementsByFile(replacements);
+  const replacements =
+    migration instanceof TsurgeFunnelMigration
+      ? await migration.migrate(merged)
+      : await migration.migrate(merged, info);
 
+  const updates = groupReplacementsByFile(replacements);
   for (const [filePath, changes] of updates.entries()) {
     mockFs.writeFile(filePath, applyTextUpdates(mockFs.readFile(filePath), changes));
   }
