@@ -1392,6 +1392,7 @@ export class NgCompiler {
     const strictCtorDeps = this.options.strictInjectionParameters || false;
     const supportJitMode = this.options['supportJitMode'] ?? true;
     const supportTestBed = this.options['supportTestBed'] ?? true;
+    const externalRuntimeStyles = this.options['externalRuntimeStyles'] ?? false;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
     // application. Since this is not known at library compilation time, support is required to
@@ -1457,6 +1458,7 @@ export class NgCompiler {
         !!this.options.forbidOrphanComponents,
         this.enableBlockSyntax,
         this.enableLetSyntax,
+        externalRuntimeStyles,
         localCompilationExtraImportsTracker,
         jitDeclarationRegistry,
         this.options.i18nPreserveWhitespaceForLegacyExtraction ?? true,

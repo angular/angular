@@ -237,6 +237,11 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency>
   styles: string[];
 
   /**
+   * A collection of style paths for external stylesheets that will be applied and scoped to the component.
+   */
+  externalStyles?: string[];
+
+  /**
    * An encapsulation policy for the component's styling.
    * Possible values:
    * - `ViewEncapsulation.Emulated`: Apply modified component styles in order to emulate

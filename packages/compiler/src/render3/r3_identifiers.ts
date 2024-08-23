@@ -553,6 +553,11 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  static ExternalStylesFeature: o.ExternalReference = {
+    name: 'ɵɵExternalStylesFeature',
+    moduleName: CORE,
+  };
+
   static listener: o.ExternalReference = {name: 'ɵɵlistener', moduleName: CORE};
 
   static getInheritedFactory: o.ExternalReference = {
