@@ -12,7 +12,7 @@ import {
 } from '../application/application_ref';
 import {PLATFORM_INITIALIZER} from '../application/application_tokens';
 import {InjectionToken, Injector, StaticProvider} from '../di';
-import {INJECTOR_SCOPE} from '../di/scope';
+import {INJECTOR_SCOPE, InjectorScope} from '../di/scope';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 
 import {PlatformRef} from './platform_ref';
@@ -93,7 +93,7 @@ function createPlatformInjector(providers: StaticProvider[] = [], name?: string)
   return Injector.create({
     name,
     providers: [
-      {provide: INJECTOR_SCOPE, useValue: 'platform'},
+      {provide: INJECTOR_SCOPE, useValue: InjectorScope.Platform},
       {provide: PLATFORM_DESTROY_LISTENERS, useValue: new Set([() => (_platformInjector = null)])},
       ...providers,
     ],

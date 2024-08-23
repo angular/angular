@@ -8,7 +8,12 @@
 
 import {InjectionToken} from './injection_token';
 
-export type InjectorScope = 'root' | 'platform' | 'environment';
+export const enum InjectorScope {
+  None = 0,
+  Root = 1 << 0,
+  Platform = 1 << 1,
+  Environment = 1 << 2,
+}
 
 /**
  * An internal token whose presence in an injector indicates that the injector should treat itself

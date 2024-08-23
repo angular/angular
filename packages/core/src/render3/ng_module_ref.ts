@@ -10,6 +10,7 @@ import {createInjectorWithoutInjectorInstances} from '../di/create_injector';
 import {Injector} from '../di/injector';
 import {EnvironmentProviders, Provider, StaticProvider} from '../di/interface/provider';
 import {EnvironmentInjector, getNullInjector, R3Injector} from '../di/r3_injector';
+import {InjectorScope} from '../di/scope';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {
@@ -92,7 +93,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
         ...additionalProviders,
       ],
       stringify(ngModuleType),
-      new Set(['environment']),
+      InjectorScope.Environment,
     ) as R3Injector;
 
     // We need to resolve the injector types separately from the injector creation, because
@@ -164,7 +165,7 @@ export class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> 
       ],
       config.parent || getNullInjector(),
       config.debugName,
-      new Set(['environment']),
+      InjectorScope.Environment,
     );
     this.injector = injector;
     if (config.runEnvironmentInitializers) {

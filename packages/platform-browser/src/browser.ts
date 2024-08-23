@@ -54,6 +54,7 @@ import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {SharedStylesHost} from './dom/shared_styles_host';
 import {RuntimeErrorCode} from './errors';
+import {InjectorScope} from '@angular/core/src/di/scope';
 
 /**
  * Set of config options available during the application bootstrap operation.
@@ -232,7 +233,8 @@ const TESTABILITY_PROVIDERS = [
 ];
 
 const BROWSER_MODULE_PROVIDERS: Provider[] = [
-  {provide: INJECTOR_SCOPE, useValue: 'root'},
+  // tslint:disable-next-line: no-toplevel-property-access
+  {provide: INJECTOR_SCOPE, useValue: InjectorScope.Root},
   {provide: ErrorHandler, useFactory: errorHandler, deps: []},
   {
     provide: EVENT_MANAGER_PLUGINS,

@@ -206,7 +206,7 @@ export class R3Injector extends EnvironmentInjector {
     providers: Array<Provider | EnvironmentProviders>,
     readonly parent: Injector,
     readonly source: string | null,
-    readonly scopes: Set<InjectorScope>,
+    readonly scopes: InjectorScope,
   ) {
     super();
     // Start off by creating Records for every provider.
@@ -218,15 +218,15 @@ export class R3Injector extends EnvironmentInjector {
     this.records.set(INJECTOR, makeRecord(undefined, this));
 
     // And `EnvironmentInjector` if the current injector is supposed to be env-scoped.
-    if (scopes.has('environment')) {
+    if ((this.scopes & InjectorScope.Environment) !== 0) {
       this.records.set(EnvironmentInjector, makeRecord(undefined, this));
     }
 
     // Detect whether this injector has the APP_ROOT_SCOPE token and thus should provide
     // any injectable scoped to APP_ROOT_SCOPE.
     const record = this.records.get(INJECTOR_SCOPE) as Record<InjectorScope | null>;
-    if (record != null && typeof record.value === 'string') {
-      this.scopes.add(record.value as InjectorScope);
+    if (record != null && typeof record.value === 'number') {
+      this.scopes |= record.value;
     }
 
     this.injectorDefTypes = new Set(this.get(INJECTOR_DEF_TYPES, EMPTY_ARRAY, InjectFlags.Self));
@@ -507,7 +507,14 @@ export class R3Injector extends EnvironmentInjector {
     }
     const providedIn = resolveForwardRef(def.providedIn);
     if (typeof providedIn === 'string') {
-      return providedIn === 'any' || this.scopes.has(providedIn);
+      if (providedIn === 'root') {
+        return (this.scopes & InjectorScope.Root) !== 0;
+      } else if (providedIn === 'platform') {
+        return (this.scopes & InjectorScope.Platform) !== 0;
+      } else if (providedIn === 'environment') {
+        return (this.scopes & InjectorScope.Environment) !== 0;
+      }
+      return providedIn === 'any';
     } else {
       return this.injectorDefTypes.has(providedIn);
     }

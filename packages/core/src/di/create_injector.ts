@@ -44,7 +44,7 @@ export function createInjectorWithoutInjectorInstances(
   parent: Injector | null = null,
   additionalProviders: Array<Provider | StaticProvider> | null = null,
   name?: string,
-  scopes = new Set<InjectorScope>(),
+  scopes = InjectorScope.None,
 ): R3Injector {
   const providers = [additionalProviders || EMPTY_ARRAY, importProvidersFrom(defType)];
   name = name || (typeof defType === 'object' ? undefined : stringify(defType));

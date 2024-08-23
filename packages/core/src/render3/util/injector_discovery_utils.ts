@@ -16,6 +16,7 @@ import {INJECTOR_DEF_TYPES} from '../../di/internal_tokens';
 import {NullInjector} from '../../di/null_injector';
 import {SingleProvider, walkProviderTree} from '../../di/provider_collection';
 import {EnvironmentInjector, R3Injector} from '../../di/r3_injector';
+import {InjectorScope} from '../../di/scope';
 import {Type} from '../../interface/type';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../../linker/ng_module_factory';
 import {deepForEach} from '../../util/array_utils';
@@ -462,8 +463,8 @@ function getEnvironmentInjectorProviders(injector: EnvironmentInjector): Provide
   return providerRecords;
 }
 
-function isPlatformInjector(injector: Injector) {
-  return injector instanceof R3Injector && injector.scopes.has('platform');
+function isPlatformInjector(injector: Injector): boolean {
+  return injector instanceof R3Injector && (injector.scopes & InjectorScope.Platform) !== 0;
 }
 
 /**

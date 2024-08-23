@@ -61,6 +61,7 @@ import {
   ɵINJECTOR_SCOPE,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
 } from '@angular/core';
+import {InjectorScope} from '@angular/core/src/di/scope';
 import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
@@ -2500,10 +2501,10 @@ describe('di', () => {
       expect(anyService.injector).toBe(childInjector);
 
       const rootService = childInjector.get(RootService);
-      expect(rootService.injector.get(ɵINJECTOR_SCOPE)).toBe('root');
+      expect(rootService.injector.get(ɵINJECTOR_SCOPE)).toBe(InjectorScope.Root);
 
       const platformService = childInjector.get(PlatformService);
-      expect(platformService.injector.get(ɵINJECTOR_SCOPE)).toBe('platform');
+      expect(platformService.injector.get(ɵINJECTOR_SCOPE)).toBe(InjectorScope.Platform);
     });
 
     it('should create a provider that uses `forwardRef` inside `providedIn`', () => {
