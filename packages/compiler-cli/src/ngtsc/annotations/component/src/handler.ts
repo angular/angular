@@ -160,7 +160,7 @@ import {
 import {
   _extractTemplateStyleUrls,
   extractComponentStyleUrls,
-  extractStyleResources,
+  extractInlineStyleResources,
   extractTemplate,
   makeResourceNotFoundError,
   ParsedTemplateWithSource,
@@ -681,7 +681,7 @@ export class ComponentDecoratorHandler
     // component.
     let styles: string[] = [];
 
-    const styleResources = extractStyleResources(this.resourceLoader, component, containingFile);
+    const styleResources = extractInlineStyleResources(component);
     const styleUrls: StyleUrlMeta[] = [
       ...extractComponentStyleUrls(this.evaluator, component),
       ..._extractTemplateStyleUrls(template),
@@ -690,6 +690,16 @@ export class ComponentDecoratorHandler
     for (const styleUrl of styleUrls) {
       try {
         const resourceUrl = this.resourceLoader.resolve(styleUrl.url, containingFile);
+        if (
+          styleUrl.source === ResourceTypeForDiagnostics.StylesheetFromDecorator &&
+          ts.isStringLiteralLike(styleUrl.expression)
+        ) {
+          // Only string literal values from the decorator are considered style resources
+          styleResources.add({
+            path: absoluteFrom(resourceUrl),
+            expression: styleUrl.expression,
+          });
+        }
         const resourceStr = this.resourceLoader.load(resourceUrl);
         styles.push(resourceStr);
         if (this.depTracker !== null) {
@@ -711,11 +721,7 @@ export class ComponentDecoratorHandler
             ? ResourceTypeForDiagnostics.StylesheetFromDecorator
             : ResourceTypeForDiagnostics.StylesheetFromTemplate;
         diagnostics.push(
-          makeResourceNotFoundError(
-            styleUrl.url,
-            styleUrl.nodeForError,
-            resourceType,
-          ).toDiagnostic(),
+          makeResourceNotFoundError(styleUrl.url, styleUrl.expression, resourceType).toDiagnostic(),
         );
       }
     }
