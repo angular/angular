@@ -77,6 +77,7 @@ import {
   MetaKind,
   NgModuleMeta,
   PipeMeta,
+  Resource,
   ResourceRegistry,
 } from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
@@ -249,6 +250,7 @@ export class ComponentDecoratorHandler
     private readonly forbidOrphanRendering: boolean,
     private readonly enableBlockSyntax: boolean,
     private readonly enableLetSyntax: boolean,
+    private readonly externalRuntimeStyles: boolean,
     private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
     private readonly jitDeclarationRegistry: JitDeclarationRegistry,
     private readonly i18nPreserveSignificantWhitespace: boolean,
@@ -399,6 +401,11 @@ export class ComponentDecoratorHandler
       }
 
       this.preanalyzeStylesCache.set(node, styles);
+
+      if (this.externalRuntimeStyles) {
+        // No preanalysis required for style URLs with external runtime styles
+        return;
+      }
 
       // Wait for both the template and all styleUrl resources to resolve.
       await Promise.all([
@@ -686,6 +693,7 @@ export class ComponentDecoratorHandler
     // precede inline styles, and styles defined in the template override styles defined in the
     // component.
     let styles: string[] = [];
+    const externalStyles: string[] = [];
 
     const styleResources = extractInlineStyleResources(component);
     const styleUrls: StyleUrlMeta[] = [
@@ -696,6 +704,11 @@ export class ComponentDecoratorHandler
     for (const styleUrl of styleUrls) {
       try {
         const resourceUrl = this.resourceLoader.resolve(styleUrl.url, containingFile);
+        if (this.externalRuntimeStyles) {
+          // External runtime styles are not considered disk-based and may not actually exist on disk
+          externalStyles.push(resourceUrl);
+          continue;
+        }
         if (
           styleUrl.source === ResourceTypeForDiagnostics.StylesheetFromDecorator &&
           ts.isStringLiteralLike(styleUrl.expression)
@@ -816,7 +829,7 @@ export class ComponentDecoratorHandler
           changeDetection,
           interpolation: template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,
           styles,
-
+          externalStyles,
           // These will be replaced during the compilation step, after all `NgModule`s have been
           // analyzed and the full compilation scope for the component can be realized.
           animations,

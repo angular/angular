@@ -152,6 +152,12 @@ function addFeatures(
   if (meta.hasOwnProperty('template') && meta.isStandalone) {
     features.push(o.importExpr(R3.StandaloneFeature));
   }
+  if ('externalStyles' in meta && meta.externalStyles?.length) {
+    const externalStyleNodes = meta.externalStyles.map((externalStyle) => o.literal(externalStyle));
+    features.push(
+      o.importExpr(R3.ExternalStylesFeature).callFn([o.literalArr(externalStyleNodes)]),
+    );
+  }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }
@@ -281,8 +287,10 @@ export function compileComponentFromMetadata(
     meta.encapsulation = core.ViewEncapsulation.Emulated;
   }
 
+  let hasStyles = !!meta.externalStyles?.length;
   // e.g. `styles: [str1, str2]`
   if (meta.styles && meta.styles.length) {
+    hasStyles = true;
     const styleValues =
       meta.encapsulation == core.ViewEncapsulation.Emulated
         ? compileStyles(meta.styles, CONTENT_ATTR, HOST_ATTR)
@@ -297,7 +305,9 @@ export function compileComponentFromMetadata(
     if (styleNodes.length > 0) {
       definitionMap.set('styles', o.literalArr(styleNodes));
     }
-  } else if (meta.encapsulation === core.ViewEncapsulation.Emulated) {
+  }
+
+  if (!hasStyles && meta.encapsulation === core.ViewEncapsulation.Emulated) {
     // If there is no style, don't generate css selectors on elements
     meta.encapsulation = core.ViewEncapsulation.None;
   }
