@@ -14,12 +14,6 @@
       "description": "List of hosts that are allowed to access the dev server. This option has no effect when using the 'application' or other esbuild-based builders."
     },
     {
-      "name": "browser-target",
-      "type": "string",
-      "deprecated": "Use 'buildTarget' instead.",
-      "description": "A browser builder target to serve in the format of `project:target[:configuration]`. You can also pass in more than one configuration name as a comma-separated list. Example: `project:target:production,staging`."
-    },
-    {
       "name": "build-target",
       "type": "string",
       "description": "A build builder target to serve in the format of `project:target[:configuration]`. You can also pass in more than one configuration name as a comma-separated list. Example: `project:target:production,staging`."
