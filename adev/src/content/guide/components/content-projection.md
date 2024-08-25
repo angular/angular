@@ -148,6 +148,38 @@ did not match a `select` attribute:
 If a component does not include an `<ng-content>` placeholder without a `select` attribute, any
 elements that don't match one of the component's placeholders do not render into the DOM.
 
+## Fallback content
+
+Angular can show *fallback content* for a component's `<ng-content>` placeholder if that component doesn't have any matching child content. You can specify fallback content by adding child content to the `<ng-content>` element itself.
+
+```angular-html
+<!-- Component template -->
+<div class="card-shadow">
+  <ng-content select="card-title">Default Title</ng-content>
+  <div class="card-divider"></div>
+  <ng-content select="card-body">Default Body</ng-content>
+</div>
+```
+
+```angular-html
+<!-- Using the component -->
+<custom-card>
+  <card-title>Hello</card-title>
+  <!-- No card-body provided -->
+</custom-card>
+```
+
+```angular-html
+<!-- Rendered DOM -->
+<custom-card>
+  <div class="card-shadow">
+    Hello
+    <div class="card-divider"></div>
+    Default Body
+  </div>
+</custom-card>
+```
+
 ## Aliasing content for projection
 
 Angular supports a special attribute, `ngProjectAs`, that allows you to specify a CSS selector on
