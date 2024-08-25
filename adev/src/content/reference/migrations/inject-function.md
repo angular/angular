@@ -23,7 +23,7 @@ import { DI_TOKEN } from './token';
 export class MyComp {
   constructor(
     private service: MyService,
-    @Inject(TOKEN) @Optional() readonly token: string) {}
+    @Inject(DI_TOKEN) @Optional() readonly token: string) {}
 }
 </docs-code>
 
