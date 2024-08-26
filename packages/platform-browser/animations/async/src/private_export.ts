@@ -6,4 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {AsyncAnimationRendererFactory as ɵAsyncAnimationRendererFactory} from './async_animation_renderer';
+export {
+  AsyncAnimationRendererFactory as ɵAsyncAnimationRendererFactory,
+  ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN,
+} from './async_animation_renderer';
