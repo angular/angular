@@ -19,6 +19,11 @@ const extractViewTree = (
   getComponent: (element: Element) => {} | null,
   getDirectives: (node: Node) => {}[],
 ): ComponentTreeNode[] => {
+  // Ignore DOM Node if it came from a different frame. Use instanceof Node to check this.
+  if (!(domNode instanceof Node)) {
+    return result;
+  }
+
   const directives = getDirectives(domNode);
   if (!directives.length && !(domNode instanceof Element)) {
     return result;
