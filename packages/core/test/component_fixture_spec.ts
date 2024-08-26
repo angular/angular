@@ -581,4 +581,20 @@ describe('ComponentFixture with zoneless', () => {
     // still throws if checkNoChanges is not disabled
     expect(() => fixture.detectChanges()).toThrowError(/ExpressionChanged/);
   });
+
+  it('runs change detection when autoDetect is false', () => {
+    @Component({
+      template: '{{thing()}}',
+      standalone: true,
+    })
+    class App {
+      thing = signal(1);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.autoDetectChanges(false);
+    fixture.componentInstance.thing.set(2);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toBe('2');
+  });
 });

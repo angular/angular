@@ -140,7 +140,14 @@ export class ComponentFixture<T> {
       }
 
       if (this.zonelessEnabled) {
-        this._appRef.tick();
+        try {
+          this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+          this._appRef.tick();
+        } finally {
+          if (!this.autoDetect) {
+            this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+          }
+        }
       } else {
         // Run the change detection inside the NgZone so that any async tasks as part of the change
         // detection are captured by the zone and can be waited for in isStable.
