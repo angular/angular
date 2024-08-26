@@ -15,7 +15,7 @@ import {internalImportProvidersFrom} from '../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {findMatchingDehydratedView} from '../hydration/views';
 import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref';
-import {PendingTasks} from '../pending_tasks';
+import {PendingTasksInternal} from '../pending_tasks';
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
 import {bindingUpdated} from '../render3/bindings';
 import {ChainedInjector} from '../render3/chained_injector';
@@ -910,7 +910,7 @@ export function triggerResourceLoading(
   }
 
   // Indicate that an application is not stable and has a pending task.
-  const pendingTasks = injector.get(PendingTasks);
+  const pendingTasks = injector.get(PendingTasksInternal);
   const taskId = pendingTasks.add();
 
   // The `dependenciesFn` might be `null` when all dependencies within

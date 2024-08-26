@@ -14,7 +14,7 @@ import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode, formatRuntimeError} from '../../errors';
-import {PendingTasks} from '../../pending_tasks';
+import {PendingTasksInternal} from '../../pending_tasks';
 import {
   scheduleCallbackWithMicrotask,
   scheduleCallbackWithRafRace,
@@ -57,7 +57,7 @@ function trackMicrotaskNotificationForDebugging() {
 @Injectable({providedIn: 'root'})
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly appRef = inject(ApplicationRef);
-  private readonly taskService = inject(PendingTasks);
+  private readonly taskService = inject(PendingTasksInternal);
   private readonly ngZone = inject(NgZone);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly disableScheduling =

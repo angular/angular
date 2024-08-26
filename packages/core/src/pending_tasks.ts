@@ -19,7 +19,7 @@ import {
 /**
  * Internal implementation of the pending tasks service.
  */
-export class PendingTasks implements OnDestroy {
+export class PendingTasksInternal implements OnDestroy {
   private taskId = 0;
   private pendingTasks = new Set<number>();
   private get _hasPendingTasks() {
@@ -52,14 +52,14 @@ export class PendingTasks implements OnDestroy {
 
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
-    token: PendingTasks,
+    token: PendingTasksInternal,
     providedIn: 'root',
-    factory: () => new PendingTasks(),
+    factory: () => new PendingTasksInternal(),
   });
 }
 
 /**
- * Experimental service that keeps track of pending tasks contributing to the stableness of Angular
+ * Service that keeps track of pending tasks contributing to the stableness of Angular
  * application. While several existing Angular services (ex.: `HttpClient`) will internally manage
  * tasks influencing stability, this API gives control over stability to library and application
  * developers for specific cases not covered by Angular internals.
@@ -71,21 +71,17 @@ export class PendingTasks implements OnDestroy {
  *
  * @usageNotes
  * ```typescript
- * const pendingTasks = inject(ExperimentalPendingTasks);
+ * const pendingTasks = inject(PendingTasks);
  * const taskCleanup = pendingTasks.add();
  * // do work that should block application's stability and then:
  * taskCleanup();
  * ```
  *
- * This API is experimental. Neither the shape, nor the underlying behavior is stable and can change
- * in patch versions. We will iterate on the exact API based on the feedback and our understanding
- * of the problem and solution space.
- *
  * @publicApi
- * @experimental
+ * @developerPreview
  */
-export class ExperimentalPendingTasks {
-  private internalPendingTasks = inject(PendingTasks);
+export class PendingTasks {
+  private internalPendingTasks = inject(PendingTasksInternal);
   private scheduler = inject(ChangeDetectionScheduler);
   /**
    * Adds a new task that should block application's stability.
@@ -131,8 +127,8 @@ export class ExperimentalPendingTasks {
 
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
-    token: ExperimentalPendingTasks,
+    token: PendingTasks,
     providedIn: 'root',
-    factory: () => new ExperimentalPendingTasks(),
+    factory: () => new PendingTasks(),
   });
 }

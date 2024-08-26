@@ -19,7 +19,7 @@ import {
   StaticProvider,
 } from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {PendingTasks} from '../../pending_tasks';
+import {PendingTasksInternal} from '../../pending_tasks';
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
@@ -256,7 +256,7 @@ export class ZoneStablePendingTask {
   private readonly subscription = new Subscription();
   private initialized = false;
   private readonly zone = inject(NgZone);
-  private readonly pendingTasks = inject(PendingTasks);
+  private readonly pendingTasks = inject(PendingTasksInternal);
 
   initialize() {
     if (this.initialized) {

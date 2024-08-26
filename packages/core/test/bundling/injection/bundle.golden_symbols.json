@@ -108,7 +108,7 @@
     "name": "Observable"
   },
   {
-    "name": "PendingTasks"
+    "name": "PendingTasksInternal"
   },
   {
     "name": "R3Injector"

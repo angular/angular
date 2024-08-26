@@ -411,7 +411,7 @@
     "name": "PRESERVE_HOST_CONTENT_DEFAULT"
   },
   {
-    "name": "PendingTasks"
+    "name": "PendingTasksInternal"
   },
   {
     "name": "R3Injector"

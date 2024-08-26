@@ -13,7 +13,7 @@ import {OutputRef} from './authoring/output/output_ref';
 import {isInInjectionContext} from './di/contextual';
 import {inject} from './di/injector_compatibility';
 import {DestroyRef} from './linker/destroy_ref';
-import {PendingTasks} from './pending_tasks';
+import {PendingTasksInternal} from './pending_tasks';
 
 /**
  * Use in components with the `@Output` directive to emit custom events
@@ -112,7 +112,7 @@ export interface EventEmitter<T> extends Subject<T>, OutputRef<T> {
 class EventEmitter_ extends Subject<any> implements OutputRef<any> {
   __isAsync: boolean; // tslint:disable-line
   destroyRef: DestroyRef | undefined = undefined;
-  private readonly pendingTasks: PendingTasks | undefined = undefined;
+  private readonly pendingTasks: PendingTasksInternal | undefined = undefined;
 
   constructor(isAsync: boolean = false) {
     super();
@@ -122,7 +122,7 @@ class EventEmitter_ extends Subject<any> implements OutputRef<any> {
     // For backwards compatibility reasons, this cannot be required.
     if (isInInjectionContext()) {
       this.destroyRef = inject(DestroyRef, {optional: true}) ?? undefined;
-      this.pendingTasks = inject(PendingTasks, {optional: true}) ?? undefined;
+      this.pendingTasks = inject(PendingTasksInternal, {optional: true}) ?? undefined;
     }
   }
 
