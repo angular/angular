@@ -84,16 +84,16 @@ export class DocViewer implements OnChanges {
 
   // tslint:disable-next-line:no-unused-variable
   private animateContent = false;
-  private readonly pendingRenderTasks = inject(PendingTasks);
+  private readonly pendingTasks = inject(PendingTasks);
 
   private countOfExamples = 0;
 
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    const taskId = this.pendingRenderTasks.add();
+    const taskId = this.pendingTasks.add();
     if ('docContent' in changes) {
       await this.renderContentsAndRunClientSetup(this.docContent!);
     }
-    this.pendingRenderTasks.remove(taskId);
+    this.pendingTasks.remove(taskId);
   }
 
   async renderContentsAndRunClientSetup(content?: string): Promise<void> {
@@ -195,7 +195,7 @@ export class DocViewer implements OnChanges {
     const preview = Boolean(placeholder.getAttribute('preview'));
     const title = placeholder.getAttribute('header') ?? undefined;
     const firstCodeSnippetTitle =
-      snippets.length > 0 ? snippets[0].title ?? snippets[0].name : undefined;
+      snippets.length > 0 ? (snippets[0].title ?? snippets[0].name) : undefined;
     const exampleRef = this.viewContainer.createComponent(ExampleViewer);
 
     this.countOfExamples++;

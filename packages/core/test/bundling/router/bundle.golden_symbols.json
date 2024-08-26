@@ -537,7 +537,7 @@
     "name": "PathLocationStrategy"
   },
   {
-    "name": "PendingTasks"
+    "name": "PendingTasksInternal"
   },
   {
     "name": "PlatformLocation"

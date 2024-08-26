@@ -711,14 +711,6 @@ export interface ExistingSansProvider {
 }
 
 // @public
-export class ExperimentalPendingTasks {
-    add(): () => void;
-    run<T>(fn: () => Promise<T>): Promise<T>;
-    // (undocumented)
-    static ɵprov: unknown;
-}
-
-// @public
 export interface FactoryProvider extends FactorySansProvider {
     multi?: boolean;
     provide: any;
@@ -1350,6 +1342,14 @@ export interface OutputRefSubscription {
 
 // @public @deprecated
 export const PACKAGE_ROOT_URL: InjectionToken<string>;
+
+// @public
+export class PendingTasks {
+    add(): () => void;
+    run<T>(fn: () => Promise<T>): Promise<T>;
+    // (undocumented)
+    static ɵprov: unknown;
+}
 
 // @public
 export interface Pipe {

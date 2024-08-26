@@ -4,6 +4,11 @@
       "version": "19.0.0",
       "description": "Updates non-standalone Directives, Component and Pipes to standalone:false",
       "factory": "./bundles/explicit-standalone-flag#migrate"
+    },
+    "pending-tasks": {
+      "version": "19.0.0",
+      "description": "Updates ExperimentalPendingTasks to PendingTasks",
+      "factory": "./bundles/pending-tasks#migrate"
     }
   }
 }
