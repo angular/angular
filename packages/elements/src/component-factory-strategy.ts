@@ -18,9 +18,10 @@ import {
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵNotificationSource as NotificationSource,
   ɵViewRef as ViewRef,
+  OutputRef,
 } from '@angular/core';
 import {merge, Observable, ReplaySubject} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
+import {switchMap} from 'rxjs/operators';
 
 import {
   NgElementStrategy,
@@ -219,8 +220,11 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   protected initializeOutputs(componentRef: ComponentRef<any>): void {
     const eventEmitters: Observable<NgElementStrategyEvent>[] = this.componentFactory.outputs.map(
       ({propName, templateName}) => {
-        const emitter: EventEmitter<any> = componentRef.instance[propName];
-        return emitter.pipe(map((value) => ({name: templateName, value})));
+        const emitter: EventEmitter<any> | OutputRef<any> = componentRef.instance[propName];
+        return new Observable((observer) => {
+          const sub = emitter.subscribe((value) => observer.next({name: templateName, value}));
+          return () => sub.unsubscribe();
+        });
       },
     );
 

@@ -16,6 +16,7 @@ import {
   Input,
   NgZone,
   Output,
+  OutputEmitterRef,
   SimpleChange,
   SimpleChanges,
   createComponent,
@@ -110,6 +111,18 @@ describe('ComponentFactoryNgElementStrategy', () => {
         {name: 'templateOutput1', value: 'output-1a'},
         {name: 'templateOutput1', value: 'output-1b'},
         {name: 'templateOutput2', value: 'output-2a'},
+      ]);
+    });
+
+    it('should listen to output() emitters', () => {
+      const events: NgElementStrategyEvent[] = [];
+      strategy.events.subscribe((e) => events.push(e));
+
+      componentRef.instance.output3.emit('output-a');
+      componentRef.instance.output3.emit('output-b');
+      expect(events).toEqual([
+        {name: 'templateOutput3', value: 'output-a'},
+        {name: 'templateOutput3', value: 'output-b'},
       ]);
     });
 
@@ -369,6 +382,7 @@ export class CdTrackerDir {
 export class TestComponent {
   @Output('templateOutput1') output1 = new Subject();
   @Output('templateOutput2') output2 = new Subject();
+  @Output('templateOutput3') output3 = new OutputEmitterRef();
 
   @Input() fooFoo: unknown;
   @Input({alias: 'my-bar-bar'}) barBar: unknown;
