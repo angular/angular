@@ -10,7 +10,7 @@ Focus each block on a feature or business domain, a workflow or navigation flow,
 
 ## Summary of NgModule categories
 
-All applications start by [bootstrapping a root NgModule](guide/ngmodules/bootstrapping "Launching an app with a root NgModule").
+All module-based applications start by [bootstrapping a root NgModule](guide/ngmodules/bootstrapping "Launching an app with a root NgModule").
 You can organize your other NgModules any way you want.
 
 This topic provides some guidelines for the following general categories of NgModules:
