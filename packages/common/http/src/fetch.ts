@@ -52,9 +52,11 @@ function getResponseUrl(response: Response): string | null {
  */
 @Injectable()
 export class FetchBackend implements HttpBackend {
-  // We need to bind the native fetch to its context or it will throw an "illegal invocation"
+  // Note: binding fetch directly causes an "illegal invocation" error
+  // We use an arrow function to always reference the current global implementation of fetch
+  // In case it has been (monkey)patched after the FetchBackend has been created
   private readonly fetchImpl =
-    inject(FetchFactory, {optional: true})?.fetch ?? fetch.bind(globalThis);
+    inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
