@@ -14,6 +14,7 @@ import {
   NgZone,
   RendererFactory2,
   ɵperformanceMarkFeature as performanceMarkFeature,
+  InjectionToken,
 } from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 
