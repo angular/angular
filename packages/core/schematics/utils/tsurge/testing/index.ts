@@ -7,10 +7,7 @@
  */
 
 import {TsurgeFunnelMigration, TsurgeMigration} from '../migration';
-import {
-  initMockFileSystem,
-  MockFileSystem,
-} from '../../../../../compiler-cli/src/ngtsc/file_system/testing';
+import {MockFileSystem} from '../../../../../compiler-cli/src/ngtsc/file_system/testing';
 import {
   absoluteFrom,
   AbsoluteFsPath,
