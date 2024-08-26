@@ -195,7 +195,7 @@ function containsEmptyPathMatches(
   return routes.some((r) => emptyPathMatch(segmentGroup, slicedSegments, r));
 }
 
-function emptyPathMatch(
+export function emptyPathMatch(
   segmentGroup: UrlSegmentGroup,
   slicedSegments: UrlSegment[],
   r: Route,
@@ -205,37 +205,6 @@ function emptyPathMatch(
   }
 
   return r.path === '';
-}
-
-/**
- * Determines if `route` is a path match for the `rawSegment`, `segments`, and `outlet` without
- * verifying that its children are a full match for the remainder of the `rawSegment` children as
- * well.
- */
-export function isImmediateMatch(
-  route: Route,
-  rawSegment: UrlSegmentGroup,
-  segments: UrlSegment[],
-  outlet: string,
-): boolean {
-  // We allow matches to empty paths when the outlets differ so we can match a url like `/(b:b)` to
-  // a config like
-  // * `{path: '', children: [{path: 'b', outlet: 'b'}]}`
-  // or even
-  // * `{path: '', outlet: 'a', children: [{path: 'b', outlet: 'b'}]`
-  //
-  // The exception here is when the segment outlet is for the primary outlet. This would
-  // result in a match inside the named outlet because all children there are written as primary
-  // outlets. So we need to prevent child named outlet matches in a url like `/b` in a config like
-  // * `{path: '', outlet: 'x' children: [{path: 'b'}]}`
-  // This should only match if the url is `/(x:b)`.
-  if (
-    getOutlet(route) !== outlet &&
-    (outlet === PRIMARY_OUTLET || !emptyPathMatch(rawSegment, segments, route))
-  ) {
-    return false;
-  }
-  return match(rawSegment, route, segments).matched;
 }
 
 export function noLeftoversInUrl(
