@@ -9,7 +9,7 @@
 import {EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-import {Routes} from '../src/models';
+import {Routes, UrlMatcher} from '../src/models';
 import {Recognizer} from '../src/recognize';
 import {RouterConfigLoader} from '../src/router_config_loader';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
@@ -700,6 +700,27 @@ describe('recognize', async () => {
   });
 
   describe('custom path matchers', async () => {
+    it('should run once', async () => {
+      let calls = 0;
+      const matcher: UrlMatcher = (s) => {
+        calls++;
+        return {consumed: s};
+      };
+
+      const s = await recognize(
+        [
+          {
+            matcher,
+            component: ComponentA,
+          },
+        ],
+        '/a/1/b',
+      );
+      const a = s.root.firstChild!;
+      checkActivatedRoute(a, 'a/1/b', {}, ComponentA);
+      expect(calls).toBe(1);
+    });
+
     it('should use custom path matcher', async () => {
       const matcher = (s: any, g: any, r: any) => {
         if (s[0].path === 'a') {
