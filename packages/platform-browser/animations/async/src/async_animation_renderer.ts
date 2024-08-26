@@ -24,6 +24,8 @@ import {
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵNotificationSource as NotificationSource,
   ɵRuntimeError as RuntimeError,
+  Injector,
+  InjectionToken,
 } from '@angular/core';
 import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
 
@@ -33,6 +35,9 @@ const ANIMATION_PREFIX = '@';
 export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory2 {
   private _rendererFactoryPromise: Promise<AnimationRendererFactory> | null = null;
   private readonly scheduler = inject(ChangeDetectionScheduler, {optional: true});
+  private readonly loadingSchedulerFn = inject(ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN, {
+    optional: true,
+  });
   private _engine?: AnimationEngine;
 
   /**
@@ -68,9 +73,16 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
     // Note on the `.then(m => m)` part below: Closure compiler optimizations in g3 require
     // `.then` to be present for a dynamic import (or an import should be `await`ed) to detect
     // the set of imported symbols.
-    const moduleImpl = this.moduleImpl ?? import('@angular/animations/browser').then((m) => m);
+    const loadFn = () => this.moduleImpl ?? import('@angular/animations/browser').then((m) => m);
 
-    return moduleImpl
+    let moduleImplPromise: typeof this.moduleImpl;
+    if (this.loadingSchedulerFn) {
+      moduleImplPromise = this.loadingSchedulerFn(loadFn);
+    } else {
+      moduleImplPromise = loadFn();
+    }
+
+    return moduleImplPromise
       .catch((e) => {
         throw new RuntimeError(
           RuntimeErrorCode.ANIMATION_RENDERER_ASYNC_LOADING_FAILURE,
@@ -280,3 +292,12 @@ export class DynamicDelegationRenderer implements Renderer2 {
     return this.replay !== null && propOrEventName.startsWith(ANIMATION_PREFIX);
   }
 }
+
+/**
+ * Provides a custom scheduler function for the async loading of the animation package.
+ *
+ * Private token for investigation purposes
+ */
+export const ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN = new InjectionToken<<T>(loadFn: () => T) => T>(
+  ngDevMode ? 'async_animation_loading_scheduler_fn' : '',
+);
