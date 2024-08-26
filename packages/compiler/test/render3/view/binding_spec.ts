@@ -206,6 +206,35 @@ describe('findMatchingDirectivesAndPipes', () => {
       },
     });
   });
+
+  it('should handle directives on elements with local refs', () => {
+    const template = `
+        <input [(ngModel)]="name" #ctrl="ngModel" required />
+        @defer {
+          <my-defer-cmp [label]="abc | lowercase" [title]="abc | uppercase" />
+          <input [(ngModel)]="name" #ctrl="ngModel" required />
+        } @placeholder {}
+      `;
+    const directiveSelectors = [
+      '[ngModel]:not([formControlName]):not([formControl])',
+      '[title]',
+      'my-defer-cmp',
+      'not-matching',
+    ];
+    const result = findMatchingDirectivesAndPipes(template, directiveSelectors);
+    expect(result).toEqual({
+      directives: {
+        // `ngModel` is used both eagerly and in a defer block, thus it's located
+        // in the "regular" (eager) bucket.
+        regular: ['[ngModel]:not([formControlName]):not([formControl])'],
+        deferCandidates: ['my-defer-cmp', '[title]'],
+      },
+      pipes: {
+        regular: [],
+        deferCandidates: ['lowercase', 'uppercase'],
+      },
+    });
+  });
 });
 
 describe('t2 binding', () => {
