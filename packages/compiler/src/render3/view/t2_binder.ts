@@ -94,6 +94,7 @@ export function findMatchingDirectivesAndPipes(template: string, directiveSelect
     // function internally).
     const fakeDirective = {
       selector,
+      exportAs: null,
       inputs: {
         hasBindingPropertyName() {
           return false;
