@@ -7,7 +7,7 @@ ts_library(
         exclude = ["test/**"],
     ),
     visibility = [
-        "//packages/core/schematics/migrations/signal-migration/src/batch:__pkg__",
+        "//packages/core/schematics/migrations/signal-queries-migration:__pkg__",
         "//packages/language-service:__subpackages__",
     ],
     deps = [
