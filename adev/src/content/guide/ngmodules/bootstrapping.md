@@ -4,7 +4,7 @@ An NgModule describes how the application parts fit together.
 Every application has at least one Angular module, the *root* module, which must be present for bootstrapping the application on launch.
 By convention and by default, this NgModule is named `AppModule`.
 
-When you use the [Angular CLI](/tools/cli) `ng new` command to generate an app, the default `AppModule` looks like the following:
+When you use the [Angular CLI](/tools/cli) `ng new` command with the `no-standalone` option to generate an app, the default `AppModule` looks like the following:
 
 <docs-code language="typescript">
 import { BrowserModule } from '@angular/platform-browser';
