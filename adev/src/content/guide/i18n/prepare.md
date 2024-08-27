@@ -2,9 +2,9 @@
 
 To prepare your project for translation, complete the following actions.
 
-* Use the `i18n` attribute to mark text in component templates
-* Use the `i18n-` attribute to mark attribute text strings in component templates
-* Use the `$localize` tagged message string to mark text strings in component code
+- Use the `i18n` attribute to mark text in component templates
+- Use the `i18n-` attribute to mark attribute text strings in component templates
+- Use the `$localize` tagged message string to mark text strings in component code
 
 ## Mark text in component template
 
@@ -69,9 +69,9 @@ To mark the title attribute for translation, complete the following action.
 
 1. Add the `i18n-title` attribute
 
-    The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
+   The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" visibleRegion="i18n-title-translate"/>
+   <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" visibleRegion="i18n-title-translate"/>
 
 ## Mark text in component code
 
@@ -95,7 +95,7 @@ $localize `:{i18n_metadata}:string_to_translate`
 
 ### Include interpolated text
 
-Include [interpolations](guide/templates/interpolation) in a [`$localize`][ApiLocalizeInitLocalize] tagged message string.
+Include [interpolations](guide/templates/binding#render-dynamic-text-with-text-interpolation) in a [`$localize`][ApiLocalizeInitLocalize] tagged message string.
 
 <!--todo: replace with docs-code -->
 
@@ -120,7 +120,7 @@ $localize `string_to_translate ${variable_name}:placeholder_name:`;
 The following parameters provide context and additional information to reduce confusion for your translator.
 
 | Metadata parameter | Details                                                               |
-|:---                |:---                                                                   |
+| :----------------- | :-------------------------------------------------------------------- |
 | Custom ID          | Provide a custom identifier                                           |
 | Description        | Provide additional information or context                             |
 | Meaning            | Provide the meaning or intent of the text within the specific context |
@@ -131,7 +131,7 @@ For additional information about custom IDs, see [Manage marked text with custom
 
 To translate a text message accurately, provide additional information or context for the translator.
 
-Add a *description* of the text message as the value of the `i18n` attribute or [`$localize`][ApiLocalizeInitLocalize] tagged message string.
+Add a _description_ of the text message as the value of the `i18n` attribute or [`$localize`][ApiLocalizeInitLocalize] tagged message string.
 
 The following example shows the value of the `i18n` attribute.
 
@@ -148,7 +148,7 @@ $localize `:An introduction header for this sample:Hello i18n!`;
 </docs-code>
 
 The translator may also need to know the meaning or intent of the text message within this particular application context, in order to translate it the same way as other text with the same meaning.
-Start the `i18n` attribute value with the *meaning* and separate it from the *description* with the `|` character: `{meaning}|{description}`.
+Start the `i18n` attribute value with the _meaning_ and separate it from the _description_ with the `|` character: `{meaning}|{description}`.
 
 #### `h1` example
 
@@ -158,7 +158,7 @@ The following example shows how to specify that the `<h1>` tag must be translate
 
 <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-meaning"/>
 
-The result is any text marked with `site header`, as the *meaning* is translated exactly the same way.
+The result is any text marked with `site header`, as the _meaning_ is translated exactly the same way.
 
 The following code example shows the value of the [`$localize`][ApiLocalizeInitLocalize] tagged message string with a meaning and a description.
 
@@ -173,20 +173,20 @@ $localize `:site header|An introduction header for this sample:Hello i18n!`;
 <docs-callout title="How meanings control text extraction and merges">
 
 The Angular extraction tool generates a translation unit entry for each `i18n` attribute in a template.
-The Angular extraction tool assigns each translation unit a unique ID based on the *meaning* and *description*.
+The Angular extraction tool assigns each translation unit a unique ID based on the _meaning_ and _description_.
 
 HELPFUL: For more information about the Angular extraction tool, see [Work with translation files](guide/i18n/translation-files).
 
-The same text elements with different *meanings* are extracted with different IDs.
+The same text elements with different _meanings_ are extracted with different IDs.
 For example, if the word "right" uses the following two definitions in two different locations, the word is translated differently and merged back into the application as different translation entries.
 
-* `correct` as in "you are right"
-* `direction` as in "turn right"
+- `correct` as in "you are right"
+- `direction` as in "turn right"
 
 If the same text elements meet the following conditions, the text elements are extracted only once and use the same ID.
 
-* Same meaning or definition
-* Different descriptions
+- Same meaning or definition
+- Different descriptions
 
 That one translation entry is merged back into the application wherever the same text elements appear.
 
@@ -208,8 +208,8 @@ An ICU expression includes a component property, an ICU clause, and the case sta
 The component property defines the variable
 An ICU clause defines the type of conditional text.
 
-| ICU clause                                                              | Details                                                             |
-|:---                                                                     |:---                                                                 |
+| ICU clause                                                           | Details                                                             |
+| :------------------------------------------------------------------- | :------------------------------------------------------------------ |
 | [`plural`][GuideI18nCommonPrepareMarkPlurals]                        | Mark the use of plural numbers                                      |
 | [`select`][GuideI18nCommonPrepareMarkAlternatesAndNestedExpressions] | Mark choices for alternate text based on your defined string values |
 
@@ -244,7 +244,7 @@ pluralization_category { }
 The following pluralization categories are available for English and may change based on the locale.
 
 | Pluralization category | Details                    | Example                    |
-|:---                    |:---                        |:---                        |
+| :--------------------- | :------------------------- | :------------------------- |
 | `zero`                 | Quantity is zero           | `=0 { }` <br /> `zero { }` |
 | `one`                  | Quantity is 1              | `=1 { }` <br /> `one { }`  |
 | `two`                  | Quantity is 2              | `=2 { }` <br /> `two { }`  |
@@ -308,22 +308,22 @@ updated one minute ago
 
 </docs-code>
 
-Use HTML markup and [interpolations](guide/templates/interpolation).
+Use HTML markup and [interpolations](guide/templates/binding#render-dynamic-text-with-text-interpolation).
 The following code example shows how to use the `plural` clause to express the previous three situations in a `<span>` element.
 
 <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" visibleRegion="i18n-plural"/>
 
 Review the following details in the previous code example.
 
-| Parameters                        | Details|
-|:---                               |:---    |
+| Parameters                        | Details                                                                                                               |
+| :-------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
 | `minutes`                         | The first parameter specifies the component property is `minutes` and determines the number of minutes.               |
 | `plural`                          | The second parameter specifies the ICU clause is `plural`.                                                            |
 | `=0 {just now}`                   | For zero minutes, the pluralization category is `=0`. The value is `just now`.                                        |
 | `=1 {one minute}`                 | For one minute, the pluralization category is `=1`. The value is `one minute`.                                        |
 | `other {{{minutes}} minutes ago}` | For any unmatched cardinality, the default pluralization category is `other`. The value is `{{minutes}} minutes ago`. |
 
-`{{minutes}}` is an [interpolation](guide/templates/interpolation).
+`{{minutes}}` is an [interpolation](guide/templates/binding#render-dynamic-text-with-text-interpolation).
 
 ### Mark alternates and nested expressions
 
@@ -396,7 +396,7 @@ The following code example shows how to bind the `gender` property of the compon
 The `gender` property binds the outputs to each of following string values.
 
 | Value  | English value |
-|:---    |:---           |
+| :----- | :------------ |
 | female | `female`      |
 | male   | `male`        |
 | other  | `other`       |
@@ -419,17 +419,12 @@ The following code example shows nested clauses based on the `gender` and `minut
   <docs-pill href="guide/i18n/translation-files" title="Work with translation files"/>
 </docs-pill-row>
 
-[ApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API  | Angular"
-
-[GuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n/prepare#mark-alternates-and-nested-expressions "Mark alternates and nested expressions - Prepare templates for translation | Angular"
-[GuideI18nCommonPrepareMarkPlurals]: guide/i18n/prepare#mark-plurals "Mark plurals - Prepare component for translation | Angular"
-
-[GuideI18nOptionalManageMarkedText]: guide/i18n/manage-marked-text "Manage marked text with custom IDs | Angular"
-
-[GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18]: <https://github.com/angular/angular/blob/ecffc3557fe1bff9718c01277498e877ca44588d/packages/core/src/i18n/locale_en.ts#L14-L18> "Line 14 to 18 - angular/packages/core/src/i18n/locale_en.ts | angular/angular | GitHub"
-
-[GithubUnicodeOrgIcuUserguideFormatParseMessages]: https://unicode-org.github.io/icu/userguide/format_parse/messages "ICU Message Format - ICU Documentation | Unicode | GitHub"
-
-[UnicodeCldrMain]: https://cldr.unicode.org "Unicode CLDR Project"
-[UnicodeCldrIndexCldrSpecPluralRules]: http://cldr.unicode.org/index/cldr-spec/plural-rules "Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode"
-[UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames]: http://cldr.unicode.org/index/cldr-spec/plural-rules#TOC-Choosing-Plural-Category-Names "Choosing Plural Category Names - Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode"
+[ApiLocalizeInitLocalize]: api/localize/init/$localize '$localize | init - localize - API  | Angular'
+[GuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n/prepare#mark-alternates-and-nested-expressions 'Mark alternates and nested expressions - Prepare templates for translation | Angular'
+[GuideI18nCommonPrepareMarkPlurals]: guide/i18n/prepare#mark-plurals 'Mark plurals - Prepare component for translation | Angular'
+[GuideI18nOptionalManageMarkedText]: guide/i18n/manage-marked-text 'Manage marked text with custom IDs | Angular'
+[GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18]: https://github.com/angular/angular/blob/ecffc3557fe1bff9718c01277498e877ca44588d/packages/core/src/i18n/locale_en.ts#L14-L18 'Line 14 to 18 - angular/packages/core/src/i18n/locale_en.ts | angular/angular | GitHub'
+[GithubUnicodeOrgIcuUserguideFormatParseMessages]: https://unicode-org.github.io/icu/userguide/format_parse/messages 'ICU Message Format - ICU Documentation | Unicode | GitHub'
+[UnicodeCldrMain]: https://cldr.unicode.org 'Unicode CLDR Project'
+[UnicodeCldrIndexCldrSpecPluralRules]: http://cldr.unicode.org/index/cldr-spec/plural-rules 'Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode'
+[UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames]: http://cldr.unicode.org/index/cldr-spec/plural-rules#TOC-Choosing-Plural-Category-Names 'Choosing Plural Category Names - Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode'

@@ -6,21 +6,20 @@ control over how and when the content is displayed.
 
 <div class="alter is-helpful">
 
-  Note that if you wrap content inside an `<ng-template>` without instructing Angular to render it,
-  such content will not appear on a page. For example, see the following HTML code, when handling it
-  Angular won't render the middle "Hip!" in the phrase "Hip! Hip! Hooray!" because of the
-  surrounding `<ng-template>`.
+Note that if you wrap content inside an `<ng-template>` without instructing Angular to render it,
+such content will not appear on a page. For example, see the following HTML code, when handling it
+Angular won't render the middle "Hip!" in the phrase "Hip! Hip! Hooray!" because of the
+surrounding `<ng-template>`.
 
-  ```html
+```html
+  <p>Hip!</p>
+  <ng-template>
     <p>Hip!</p>
-    <ng-template>
-      <p>Hip!</p>
-    </ng-template>
-    <p>Hooray!</p>
-  ```
+  </ng-template>
+  <p>Hooray!</p>
+```
 
 </div>
-
 
 ## Usage notes
 
@@ -44,9 +43,9 @@ method `createEmbeddedView()`.
 ### Template Variables
 
 `<ng-template>` elements can be referenced in templates
-using [standard template variables](guide/templates/reference-variables#how-angular-assigns-values-to-template-variables).
+using [standard template variables](guide/templates/variables#template-reference-variables#how-angular-assigns-values-to-template-variables).
 
-*This is how `<ng-template>` elements are used as `ngIf` else clauses.*
+_This is how `<ng-template>` elements are used as `ngIf` else clauses._
 
 Such template variables can be used in conjunction with `ngTemplateOutlet` directives to render the
 content defined inside `<ng-template>` tags.

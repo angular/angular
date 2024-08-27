@@ -12,8 +12,8 @@ IMPORTANT: We recommend using your local environment for this step of the tutori
 
 ## What you'll learn
 
-* Your app has a form into which users can enter data that is sent to your app's service.
-* The service writes the data from the form to the browser's console log.
+- Your app has a form into which users can enter data that is sent to your app's service.
+- The service writes the data from the form to the browser's console log.
 
 <docs-workflow>
 
@@ -25,11 +25,11 @@ In the **Edit** pane of your IDE:
 
 1. In `src/app/housing.service.ts`, inside the `HousingService` class, paste this method at the bottom of the class definition.
 
-    <docs-code header="Submit method in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/housing.service.ts" visibleLines="[120,124]"/>
+<docs-code header="Submit method in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/housing.service.ts" visibleLines="[120,124]"/>
 
 1. Confirm that the app builds without error.
-    Correct any errors before you continue to the next step.
-</docs-step>
+   Correct any errors before you continue to the next step.
+   </docs-step>
 
 <docs-step title="Add the form functions to the details page">
 This step adds the code to the details page that handles the form's interactions.
@@ -38,27 +38,27 @@ In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
 
 1. After the `import` statements at the top of the file, add the following code to import the Angular form classes.
 
-    <docs-code header="Forms imports in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[6]"/>
+<docs-code header="Forms imports in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[6]"/>
 
 1. In the `DetailsComponent` decorator metadata, update the `imports` property with the following code:
 
-    <docs-code header="imports directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[10]"/>
+<docs-code header="imports directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[10]"/>
 
 1. In the `DetailsComponent` class, before the `constructor()` method, add the following code to create the form object.
 
-    <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[53,57]"/>
+   <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[53,57]"/>
 
-    In Angular, `FormGroup` and `FormControl` are types that enable you to build forms. The `FormControl` type can provide a default value and shape the form data. In this example `firstName` is a `string` and the default value is empty string.
+   In Angular, `FormGroup` and `FormControl` are types that enable you to build forms. The `FormControl` type can provide a default value and shape the form data. In this example `firstName` is a `string` and the default value is empty string.
 
 1. In the `DetailsComponent` class, after the `constructor()` method, add the following code to handle the **Apply now** click.
 
-    <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[63,69]"/>
+   <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[63,69]"/>
 
-    This button does not exist yet - you will add it in the next step. In the above code, the `FormControl`s may return `null`. This code uses the nullish coalescing operator to default to empty string if the value is `null`.
+   This button does not exist yet - you will add it in the next step. In the above code, the `FormControl`s may return `null`. This code uses the nullish coalescing operator to default to empty string if the value is `null`.
 
 1. Confirm that the app builds without error.
-    Correct any errors before you continue to the next step.
-</docs-step>
+   Correct any errors before you continue to the next step.
+   </docs-step>
 
 <docs-step title="Add the form's markup to the details page">
 This step adds the markup to the details page that displays the form.
@@ -67,14 +67,14 @@ In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
 
 1. In the `DetailsComponent` decorator metadata, update the `template` HTML to match the following code to add the form's markup.
 
-    <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[11,46]"/>
+   <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[11,46]"/>
 
-    The template now includes an event handler `(submit)="submitApplication()"`. Angular uses parentheses syntax around the event name to define events in the template code. The code on the right hand side of the equals sign is the code that should be executed when this event is triggered. You can bind to browser events and custom events.
+   The template now includes an event handler `(submit)="submitApplication()"`. Angular uses parentheses syntax around the event name to define events in the template code. The code on the right hand side of the equals sign is the code that should be executed when this event is triggered. You can bind to browser events and custom events.
 
 1. Confirm that the app builds without error.
-    Correct any errors before you continue to the next step.
+Correct any errors before you continue to the next step.
 
-    <img alt="details page with a form for applying to live at this location" src="assets/images/tutorials/first-app/homes-app-lesson-12-step-3.png">
+<img alt="details page with a form for applying to live at this location" src="assets/images/tutorials/first-app/homes-app-lesson-12-step-3.png">
 
 </docs-step>
 
@@ -85,14 +85,14 @@ This step tests the new form to see that when the form data is submitted to the 
 1. In your browser, open your app at `http://localhost:4200`.
 1. Right click on the app in the browser and from the context menu, choose **Inspect**.
 1. In the developer tools window, choose the **Console** tab.
-    Make sure that the developer tools window is visible for the next steps
+   Make sure that the developer tools window is visible for the next steps
 1. In your app:
-    1. Select a housing location and click **Learn more**, to see details about the house.
-    1. In the house's details page, scroll to the bottom to find the new form.
-    1. Enter data into the form's fields - any data is fine.
-    1. Choose **Apply now** to submit the data.
+   1. Select a housing location and click **Learn more**, to see details about the house.
+   1. In the house's details page, scroll to the bottom to find the new form.
+   1. Enter data into the form's fields - any data is fine.
+   1. Choose **Apply now** to submit the data.
 1. In the developer tools window, review the log output to find your form data.
-</docs-step>
+   </docs-step>
 
 </docs-workflow>
 
@@ -102,5 +102,5 @@ For more information about the topics covered in this lesson, visit:
 
 <docs-pill-row>
   <docs-pill href="guide/forms" title="Angular Forms"/>
-  <docs-pill href="guide/templates/event-binding" title="Event Handling"/>
+  <docs-pill href="guide/templates/event-listeners" title="Event Handling"/>
 </docs-pill-row>

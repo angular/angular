@@ -176,7 +176,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ],
       },
       {
-        label: 'Template Syntax',
+        label: 'Templates',
         children: [
           {
             label: 'Overview',
@@ -184,44 +184,14 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/templates/overview',
           },
           {
-            label: 'Text interpolation',
-            path: 'guide/templates/interpolation',
-            contentPath: 'guide/templates/interpolation',
-          },
-          {
-            label: 'Template statements',
-            path: 'guide/templates/template-statements',
-            contentPath: 'guide/templates/template-statements',
-          },
-          {
-            label: 'Understanding binding',
+            label: 'Binding dynamic text, properties and attributes',
             path: 'guide/templates/binding',
             contentPath: 'guide/templates/binding',
           },
           {
-            label: 'Property binding',
-            path: 'guide/templates/property-binding',
-            contentPath: 'guide/templates/property-binding',
-          },
-          {
-            label: 'Property binding best practices',
-            path: 'guide/templates/property-binding-best-practices',
-            contentPath: 'guide/templates/property-binding-best-practices',
-          },
-          {
-            label: 'Attribute binding',
-            path: 'guide/templates/attribute-binding',
-            contentPath: 'guide/templates/attribute-binding',
-          },
-          {
-            label: 'Class and style binding',
-            path: 'guide/templates/class-binding',
-            contentPath: 'guide/templates/class-binding',
-          },
-          {
-            label: 'Event binding',
-            path: 'guide/templates/event-binding',
-            contentPath: 'guide/templates/event-binding',
+            label: 'Adding event listeners',
+            path: 'guide/templates/event-listeners',
+            contentPath: 'guide/templates/event-listeners',
           },
           {
             label: 'Two-way binding',
@@ -234,54 +204,44 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/templates/control-flow',
           },
           {
-            label: 'Local template variables with @let',
-            path: 'guide/templates/let-template-variables',
-            contentPath: 'guide/templates/let-template-variables',
-          },
-          {
             label: 'Pipes',
-            children: [
-              {
-                label: 'Overview',
-                path: 'guide/pipes',
-                contentPath: 'guide/pipes/overview',
-              },
-              {
-                label: 'Using a pipe in a template',
-                path: 'guide/pipes/template',
-                contentPath: 'guide/pipes/template',
-              },
-              {
-                label: 'Custom pipes',
-                path: 'guide/pipes/transform-data',
-                contentPath: 'guide/pipes/transform-data',
-              },
-              {
-                label: 'Pipe precedence in expressions',
-                path: 'guide/pipes/precedence',
-                contentPath: 'guide/pipes/precedence',
-              },
-              {
-                label: 'Change detection with pipes',
-                path: 'guide/pipes/change-detection',
-                contentPath: 'guide/pipes/change-detection',
-              },
-              {
-                label: 'Unwrapping data from an observable',
-                path: 'guide/pipes/unwrapping-data-observables',
-                contentPath: 'guide/pipes/unwrapping-data-observables',
-              },
-            ],
+            path: 'guide/templates/pipes',
+            contentPath: 'guide/templates/pipes',
           },
           {
-            label: 'Template reference variables',
-            path: 'guide/templates/reference-variables',
-            contentPath: 'guide/templates/reference-variables',
+            label: 'Slotting child content with ng-content',
+            path: 'guide/templates/ng-content',
+            contentPath: 'guide/templates/ng-content',
           },
           {
-            label: 'SVG as templates',
-            path: 'guide/templates/svg-in-templates',
-            contentPath: 'guide/templates/svg-in-templates',
+            label: 'Create template fragments with ng-template',
+            path: 'guide/templates/ng-template',
+            contentPath: 'guide/templates/ng-template',
+          },
+          {
+            label: 'Grouping elements with ng-container',
+            path: 'guide/templates/ng-container',
+            contentPath: 'guide/templates/ng-container',
+          },
+          {
+            label: 'Variables in templates',
+            path: 'guide/templates/variables',
+            contentPath: 'guide/templates/variables',
+          },
+          {
+            label: 'Deferred loading with @defer',
+            path: 'guide/templates/defer',
+            contentPath: 'guide/templates/defer',
+          },
+          {
+            label: 'Expression syntax',
+            path: 'guide/templates/expression-syntax',
+            contentPath: 'guide/templates/expression-syntax',
+          },
+          {
+            label: 'Whitespace in templates',
+            path: 'guide/templates/whitespace',
+            contentPath: 'guide/templates/whitespace',
           },
         ],
       },
