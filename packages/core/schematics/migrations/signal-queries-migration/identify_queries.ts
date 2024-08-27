@@ -19,7 +19,7 @@ import {PartialEvaluator} from '../../../../compiler-cli/private/migrations';
 import {R3QueryMetadata} from '../../../../compiler';
 
 /** Branded type to uniquely identify class properties in a project. */
-export type ClassPropertyID = UniqueID<'ClassPropertyID; Potentially an output'>;
+export type ClassPropertyID = UniqueID<'ClassPropertyID; Potentially a query'>;
 
 /** Type describing an extracted decorator query that can be migrated. */
 export interface ExtractedQuery {
