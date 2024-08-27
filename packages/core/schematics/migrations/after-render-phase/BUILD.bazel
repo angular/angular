@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "esbuild", "ts_library")
+load("//tools:defaults.bzl", "esbuild_no_sourcemaps", "ts_library")
 
 package(
     default_visibility = [
@@ -20,7 +20,7 @@ ts_library(
     ],
 )
 
-esbuild(
+esbuild_no_sourcemaps(
     name = "bundle",
     entry_point = ":index.ts",
     external = [
