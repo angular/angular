@@ -10,6 +10,7 @@ load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protract
 load("@npm//typescript:index.bzl", "tsc")
 load("@npm//@angular/build-tooling/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
 load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", _http_server = "http_server")
+load("@npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_outputs")
 load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
@@ -649,6 +650,10 @@ def esbuild(args = None, **kwargs):
         },
         **kwargs
     )
+
+def esbuild_no_sourcemaps(name, **kwargs):
+    esbuild(name = name + ".with-sourcemap", sourcemap = "external", output = "%s.js" % name, **kwargs)
+    filter_outputs(name = name, target = "%s.with-sourcemap" % name, filters = ["%s.js" % name])
 
 def esbuild_checked_in(name, **kwargs):
     esbuild_esm_bundle(
