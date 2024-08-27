@@ -11,14 +11,10 @@ import ts from 'typescript';
 export function removeFromUnionIfPossible(
   union: ts.UnionTypeNode,
   filter: (v: ts.TypeNode) => boolean,
-): ts.TypeNode {
+): ts.UnionTypeNode {
   const filtered = union.types.filter(filter);
   if (filtered.length === union.types.length) {
     return union;
-  }
-  // If there is only item at this point, avoid the union structure.
-  if (filtered.length === 1) {
-    return filtered[0];
   }
   return ts.factory.updateUnionTypeNode(union, ts.factory.createNodeArray(filtered));
 }
