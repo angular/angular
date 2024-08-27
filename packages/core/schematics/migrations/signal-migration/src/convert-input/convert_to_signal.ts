@@ -31,13 +31,12 @@ export function convertToSignalInput(
     resolvedMetadata: metadata,
     resolvedType,
     preferShorthandIfPossible,
-    isUndefinedInitialValue,
     originalInputDecorator,
+    initialValue,
   }: ConvertInputPreparation,
   checker: ts.TypeChecker,
   importManager: ImportManager,
 ): string {
-  let initialValue = node.initializer;
   let optionsLiteral: ts.ObjectLiteralExpression | null = null;
 
   // We need an options array for the input because:
@@ -63,7 +62,7 @@ export function convertToSignalInput(
   // The initial value is `undefined` or none is present:
   //    - We may be able to use the `input()` shorthand
   //    - or we use an explicit `undefined` initial value.
-  if (isUndefinedInitialValue) {
+  if (initialValue === undefined) {
     // Shorthand not possible, so explicitly add `undefined`.
     if (preferShorthandIfPossible === null) {
       initialValue = ts.factory.createIdentifier('undefined');
@@ -95,7 +94,6 @@ export function convertToSignalInput(
   // Always add an initial value when the input is optional, and we have one, or we need one
   // to be able to pass options as the second argument.
   if (!metadata.required && (initialValue !== undefined || optionsLiteral !== null)) {
-    // TODO: undefined `input()` shorthand support!
     inputArgs.push(initialValue ?? ts.factory.createIdentifier('undefined'));
   }
 
