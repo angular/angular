@@ -14,6 +14,7 @@ import {ImportManager} from '../../../../compiler-cli/private/migrations';
 import assert from 'assert';
 import {WrappedNodeExpr} from '@angular/compiler';
 import {removeFromUnionIfPossible} from '../signal-migration/src/utils/remove_from_union';
+import {extractQueryListType} from './query_list_type';
 
 const printer = ts.createPrinter();
 
@@ -57,6 +58,16 @@ export function computeReplacementsToMigrateQuery(
     metadata.args[0], // Locator.
   ];
   let type = node.type;
+
+  // For multi queries, attempt to unwrap `QueryList` types, or infer the
+  // type from the initializer, if possible.
+  if (!metadata.queryInfo.first) {
+    if (type === undefined && node.initializer !== undefined) {
+      type = extractQueryListType(node.initializer);
+    } else if (type !== undefined) {
+      type = extractQueryListType(type);
+    }
+  }
 
   if (metadata.queryInfo.read !== null) {
     assert(metadata.queryInfo.read instanceof WrappedNodeExpr);
