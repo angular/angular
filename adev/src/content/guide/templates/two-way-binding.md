@@ -1,64 +1,148 @@
 # Two-way binding
 
-Two-way binding gives components in your application a way to share data.
-Use two-way binding to listen for events and update values simultaneously between parent and child components.
+**Two way binding** is a shorthand to simultaneously bind a value into an element, while also giving that element the ability to propagate changes back through this binding.
 
-Two-way binding combines [property binding](guide/templates/property-binding) with event binding:
+## Syntax
 
-| Bindings                                   | Details |
-|:---                                        |:---     |
-| [Property binding](guide/templates/property-binding) | Sets a specific element property.    |
-| [Event binding](guide/templates/event-binding)       | Listens for an element change event. |
+The syntax for two-way binding is a combination of square brackets and parentheses, `[()]`. It combines the syntax from property binding, `[]`, and the syntax from event binding, `()`. The Angular community informally refers to this syntax as "banana-in-a-box".
 
-## Adding two-way data binding
+## Two-way binding with form controls
 
-Angular's two-way binding syntax is a combination of square brackets and parentheses, `[()]`.
-The `[()]` syntax combines the brackets of property binding, `[]`, with the parentheses of event binding, `()`, as follows.
+Developers commonly use two-way binding to keep component data in sync with a form control as a user interacts with the control. For example, when a user fills out a text input, it should update the state in the component.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/two-way-binding/src/app/app.component.html" visibleRegion="two-way-syntax" language="angular-html"/>
+The following example dynamically updates the `firstName` attribute on the page:
 
-## How two-way binding works
+```angular-ts
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
-For two-way data binding to work, the `@Output()` property must use the pattern, `inputChange`, where `input` is the name of the `@Input()` property.
-For example, if the `@Input()` property is `size`, the `@Output()` property must be `sizeChange`.
+@Component({
+  standalone: true,
+  imports: [FormsModule],
+  template: `
+    <main>
+      <h2>Hello {{ firstName }}!</h2>
+      <input type="text" [(ngModel)]="firstName" />
+    </main>
+  `
+})
+export class AppComponent {
+  firstName = 'Ada';
+}
+```
 
-The following `sizerComponent` has a `size` value property and a `sizeChange` event.
-The `size` property is an `@Input()`, so data can flow into the `sizerComponent`.
-The `sizeChange` event is an `@Output()`, which lets data flow out of the `sizerComponent` to the parent component.
+To use two-way binding with native form controls, you need to:
 
-Next, there are two methods, `dec()` to decrease the font size and `inc()` to increase the font size.
-These two methods use `resize()` to change the value of the `size` property within min/max value constraints, and to emit an event that conveys the new `size` value.
+1. Import the `FormsModule` from `@angular/forms`
+1. Use the `ngModel` directive with the two-way binding syntax (e.g., `[(ngModel)]`)
+1. Assign it the state that you want it to update (e.g., `firstName`)
 
-<docs-code header="src/app/sizer.component.ts" path="adev/src/content/examples/two-way-binding/src/app/sizer/sizer.component.ts" visibleRegion="sizer-component" language="angular-ts"/>
+Once that is setup, Angular will ensure that any updates in the text input will reflect correctly inside of the component state!
 
-The `sizerComponent` template has two buttons that each bind the click event to the `inc()` and `dec()` methods.
-When the user clicks one of the buttons, the `sizerComponent` calls the corresponding method.
-Both methods, `inc()` and `dec()`, call the `resize()` method with a `+1` or `-1`, which in turn raises the `sizeChange` event with the new size value.
+Learn more about [`NgModel`](guide/directives#displaying-and-updating-properties-with-ngmodel) in the official docs.
 
-<docs-code header="src/app/sizer.component.html" path="adev/src/content/examples/two-way-binding/src/app/sizer/sizer.component.html"/>
+## Two-way binding between components
 
-In the `AppComponent` template, `fontSizePx` is two-way bound to the `SizerComponent`.
+Leveraging two-way binding between a parent and child component requires more configuration compared to form elements.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/two-way-binding/src/app/app.component.html" visibleRegion="two-way-1"/>
+Here is an example where the `AppComponent` is responsible for setting the initial count state, but the logic for updating and rendering the UI for the counter primarily resides inside its child `CounterComponent`.
 
-In the `AppComponent`, `fontSizePx` establishes the initial `SizerComponent.size` value by setting the value to `16`.
+```angular-ts
+// ./app.component.ts
+import { Component } from '@angular/core';
+import { CounterComponent } from './counter/counter.component';
 
-<docs-code header="src/app/app.component.ts" path="adev/src/content/examples/two-way-binding/src/app/app.component.ts" visibleRegion="font-size"/>
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [CounterComponent],
+  template: `
+    <main>
+      <h1>Counter: {{ initialCount }}</h1>
+      <app-counter [(count)]="initialCount"></app-counter>
+    </main>
+  `,
+})
+export class AppComponent {
+  initialCount = 18;
+}
+```
 
-Clicking the buttons updates the `AppComponent.fontSizePx`.
-The revised `AppComponent.fontSizePx` value updates the style binding, which makes the displayed text bigger or smaller.
+```angular-ts
+// './counter/counter.component.ts';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-The two-way binding syntax is shorthand for a combination of property binding and event binding.
-The `SizerComponent` binding as separate property binding and event binding is as follows.
+@Component({
+  selector: 'app-counter',
+  standalone: true,
+  template: `
+    <button (click)="updateCount(-1)">-</button>
+    <span>{{ count }}</span>
+    <button (click)="updateCount(+1)">+</button>
+  `,
+})
+export class CounterComponent {
+  @Input() count: number;
+  @Output() countChange = new EventEmitter<number>();
 
-<docs-code header="src/app/app.component.html (expanded)" path="adev/src/content/examples/two-way-binding/src/app/app.component.html" visibleRegion="two-way-2"/>
+  updateCount(amount: number): void {
+    this.count += amount;
+    this.countChange.emit(this.count);
+  }
+}
+```
 
-The `$event` variable contains the data of the `SizerComponent.sizeChange` event.
-Angular assigns the `$event` value to the `AppComponent.fontSizePx` when the user clicks the buttons.
+### Enabling two-way binding between components
 
-<docs-callout title="Two-way binding in forms">
+If we break down the example above to its core , each two-way binding for components requires the following:
 
-Because no built-in HTML element follows the `x` value and `xChange` event pattern, two-way binding with form elements requires `NgModel`.
-For more information on how to use two-way binding in forms, see Angular [NgModel](guide/directives#displaying-and-updating-properties-with-ngmodel).
+The child component must contain:
 
-</docs-callout>
+1. An `@Input()` property
+1. A corresponding `@Output()` event emitter that has the exact same name as the input property plus "Change" at the end. The emitter must also emit the same type as the input property.
+1. A method that emits to the event emitter with the updated value of the `@Input()`.
+
+Here is a simplified example:
+
+```angular-ts
+// './counter/counter.component.ts';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+
+@Component({ // Omitted for brevity })
+export class CounterComponent {
+  @Input() count: number;
+  @Output() countChange = new EventEmitter<number>();
+
+  updateCount(amount: number): void {
+    this.count += amount;
+    this.countChange.emit(this.count);
+  }
+}
+```
+
+The parent component must:
+
+1. Wrap the `@Input()` property name in the two-way binding syntax.
+1. Specify the corresponding property to which the updated value is assigned
+
+Here is a simplified example:
+
+```angular-ts
+// ./app.component.ts
+import { Component } from '@angular/core';
+import { CounterComponent } from './counter/counter.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [CounterComponent],
+  template: `
+    <main>
+      <app-counter [(count)]="initialCount"></app-counter>
+    </main>
+  `,
+})
+export class AppComponent {
+  initialCount = 18;
+}
+```

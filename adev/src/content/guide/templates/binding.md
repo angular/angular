@@ -1,102 +1,228 @@
-# Understanding binding
+# Binding dynamic text, properties and attributes
 
-In an Angular template, a binding creates a live connection between a part of the UI created from a template (a DOM element, directive, or component) and the model (the component instance to which the template belongs). This connection can be used to synchronize the view with the model, to notify the model when an event or user action takes place in the view, or both. Angular's [Change Detection](best-practices/runtime-performance) algorithm is responsible for keeping the view and the model in sync.
+In Angular, a **binding** creates a dynamic connection between a component's template and its data. This connection ensures that changes to the component's data automatically update the rendered template.
 
-Examples of binding include:
+## Render dynamic text with text interpolation
 
-* text interpolations
-* property binding
-* event binding
-* two-way binding
+You can bind dynamic text in templates with double curly braces, which tells Angular that it is responsible for the expression inside and ensuring it is updated correctly. This is called **text interpolation**.
 
-Bindings always have two parts: a _target_ which will receive the bound value, and a _template expression_ which produces a value from the model.
+```angular-ts
+@Component({
+  template: `
+    <p>Your color preference is {{ theme }}.</p>
+  `,
+  ...
+})
+export class AppComponent {
+  theme = 'dark';
+}
+```
 
-## Syntax
+In this example, when the snippet is rendered to the page, Angular will replace `{{ theme }}` with `dark`.
 
-Template expressions are similar to JavaScript expressions.
-Many JavaScript expressions are legal template expressions, with the following exceptions.
+```angular-html
+<!-- Rendered Output -->
+<p>Your color preference is dark.</p>
+```
 
-You can't use JavaScript expressions that have or promote side effects, including:
+In addition to evaluating the expression at first render, Angular also updates the rendered content when the expression's value changes.
 
-* Assignments (`=`, `+=`, `-=`, `...`)
-* Operators such as `new`, `typeof`, or `instanceof`
-* Chaining expressions with <code>;</code> or <code>,</code>
-* The increment and decrement operators `++` and `--`
-* Some of the ES2015+ operators
+Continuing the theme example, if a user clicks on a button that changes the value of `theme` to `'light'` after the page loads, the page updates accordingly to:
 
-Other notable differences from JavaScript syntax include:
+```angular-html
+<!-- Rendered Output -->
+<p>Your color preference is light.</p>
+```
 
-* No support for the bitwise operators such as `|` and `&`
+You can use text interpolation anywhere you would normally write text in HTML.
 
-## Expression context
+All expression values are converted to a string. Objects and arrays are converted using the value’s `toString` method.
 
-Interpolated expressions have a context—a particular part of the application to which the expression belongs.  Typically, this context is the component instance.
+## Binding dynamic properties and attributes
 
-In the following snippet, the expression `recommended` and the expression `itemImageUrl2` refer to properties of the `AppComponent`.
+Angular supports binding dynamic values into object properties and HTML attributes with square brackets.
 
-<docs-code path="adev/src/content/examples/interpolation/src/app/app.component.html" visibleRegion="component-context" header="src/app/app.component.html"/>
+You can bind to properties on an HTML element's DOM instance, a [component](guide/components) instance, or a [directive](guide/directives) instance.
 
-An expression can also refer to properties of the _template's_ context such as a [template input variable](guide/directives/structural-directives#shorthand) or a [template reference variable](guide/templates/reference-variables).
+### Native element properties
 
-The following example uses a template input variable of `customer`.
+Every HTML element has a corresponding DOM representation. For example, each `<button>` HTML element corresponds to an instance of `HTMLButtonElement` in the DOM. In Angular, you use property bindings to set values directly to the DOM representation of the element.
 
-<docs-code path="adev/src/content/examples/interpolation/src/app/app.component.html" visibleRegion="template-input-variable" header="src/app/app.component.html (template input variable)"/>
+```angular-html
+<!-- Bind the `disabled` property on the button element's DOM object -->
+<button [disabled]="isFormValid">Save</button>
+```
 
-This next example features a template reference variable, `#customerInput`.
+In this example, every time `isFormValid` changes, Angular automatically sets the `disabled` property of the `HTMLButtonElement` instance.
 
-<docs-code path="adev/src/content/examples/interpolation/src/app/app.component.html" visibleRegion="template-reference-variable" header="src/app/app.component.html (template reference variable)"/>
+### Component and directive properties
 
-HELPFUL: Template expressions cannot refer to anything in the global namespace, except `undefined`.  They can't refer to `window` or `document`.  Additionally, they can't call `console.log()` or `Math.max()` and are restricted to referencing members of the expression context.
+When an element is an Angular component, you can use property bindings to set component input properties using the same square bracket syntax.
 
-### Preventing name collisions
+```angular-html
+<!-- Bind the `value` property on the `MyListbox` component instance. -->
+<my-listbox [value]="mySelection" />
+```
 
-The context against which an expression evaluates is the union of the template variables, the directive's context object—if it has one—and the component's members.
-If you reference a name that belongs to more than one of these namespaces, Angular applies the following precedence logic to determine the context:
+In this example, every time `mySelection` changes, Angular automatically sets the `value` property of the `MyListbox` instance.
 
-1. The template variable name.
-1. A name in the directive's context.
-1. The component's member names.
+You can bind to directive properties as well.
 
-To avoid variables shadowing variables in another context, keep variable names unique.
-In the following example, the `AppComponent` template greets the `customer`, Padma.
+```angular-html
+<!-- Bind to the `ngSrc` property of the `NgOptimizedImage` directive  -->
+<img [ngSrc]="profilePhotoUrl" alt="The current user's profile photo">
+```
 
-The `@for` then lists each `customer` in the `customers` array.
+### Attributes
 
-<docs-code path="adev/src/content/examples/interpolation/src/app/app.component.1.ts" visibleRegion="var-collision" header="src/app/app.component.ts"/>
+When you need to set HTML attributes that do not have corresponding DOM properties, such as ARIA attributes or SVG attributes, you can bind attributes to elements in your template with the `attr.` prefix.
 
-The `customer` within the `@for` is in the context of the implicit `<ng-template>` defined by the _@for_.  It refers to each `customer` in the `customers` array and displays "Ebony" and "Chiho".  "Padma" is not displayed because that name is not in that array.
+```angular-html
+<!-- Bind the `role` attribute on the `<ul>` element to the component's `listRole` property. -->
+<ul [attr.role]="listRole">
+```
 
-On the other hand, the `<h1>` displays "Padma" which is bound to the value of the `customer` property in the component class.
+In this example, every time `listRole` changes, Angular automatically sets the `role` attribute of the `<ul>` element by calling `setAttribute`.
 
-## Expression best practices
+If the value of an attribute binding is `null`, Angular removes the attribute by calling `removeAttribute`.
 
-When using a template expression, follow these best practices:
+### Text interpolation in properties and attributes
 
-* **Use short expressions**
+You can also use text interpolation syntax in properties and attributes by using the double curly brace syntax instead of square braces around the property or attribute name. When using this syntax, Angular treats the assignment as a property binding.
 
-Use property names or method calls whenever possible.  Keep application and business logic in the component, where it is accessible to develop and test.
+```angular-html
+<!-- Binds a value to the `alt` property of the image element's DOM object. -->
+<img src="profile-photo.jpg" alt="Profile photo of {{ firstName }}" >
+```
 
-* **Quick execution**
+To bind to an attribute with the text interpolation syntax, prefix the attribute name with `attr.`
 
-Angular executes a template expression after every change detection cycle.  Many asynchronous activities trigger change detection cycles, such as promise resolutions, HTTP results, timer events, key presses, and mouse moves.
+```angular-html
+<button attr.aria-label="Save changes to {{ objectType }}">
+```
 
-An expression should finish quickly to keep the user experience as efficient as possible, especially on slower devices.  Consider caching values when their computation requires greater resources.
+## CSS class and style property bindings
 
-## No visible side effects
+Angular supports additional features for binding CSS classes and CSS style properties to elements.
 
-According to Angular's unidirectional data flow model, a template expression should not change any application state other than the value of the target property.  Reading a component value should not change some other displayed value.  The view should be stable throughout a single rendering pass.
+### CSS classes
 
-  <docs-callout title='Idempotent expressions reduce side effects'>
+You can create a CSS class binding to conditionally add or remove a CSS class on an element based on whether the bound value is [truthy or falsy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy).
 
-An [idempotent](https://en.wikipedia.org/wiki/Idempotence) expression is free of side effects and improves Angular's change detection performance.  In Angular terms, an idempotent expression always returns _exactly the same thing_ until one of its dependent values changes.
+```angular-html
+<!-- When `isExpanded` is truthy, add the `expanded` CSS class. -->
+<ul [class.expanded]="isExpanded">
+```
 
-Dependent values should not change during a single turn of the event loop.  If an idempotent expression returns a string or a number, it returns the same string or number if you call it twice consecutively.  If the expression returns an object, including an `array`, it returns the same object _reference_ if you call it twice consecutively.
+You can also bind directly to the `class` property. Angular accepts three types of value:
 
-  </docs-callout>
+| Description of `class` value                                                                                                                                      | TypeScript type       |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| A string containing one or more CSS classes separated by spaces                                                                                                   | `string`              |
+| An array of CSS class strings                                                                                                                                     | `string[]`            |
+| An object where each property name is a CSS class name and each corresponding value determines whether that class is applied to the element, based on truthiness. | `Record<string, any>` |
 
-## What's next
+```angular-ts
+@Component({
+  template: `
+    <ul [class]="listClasses"> ... </ul>
+    <section [class]="sectionClasses"> ... </section>
+    <button [class]="buttonClasses"> ... </button>
+  `,
+  ...
+})
+export class UserProfile {
+  listClasses = 'full-width outlined';
+  sectionClasses = ['expandable', 'elevated'];
+  buttonClasses = {
+    highlighted: true,
+    embiggened: false,
+  };
+}
+```
 
-<docs-pill-row>
-  <docs-pill href="guide/templates/property-binding" title="Property binding"/>
-  <docs-pill href="guide/templates/event-binding" title="Event binding"/>
-</docs-pill-row>
+The above example renders the following DOM:
+
+```angular-html
+<ul class="full-width outlined"> ... </ul>
+<section class="expandable elevated"> ... </section>
+<button class="highlighted"> ... </button>
+```
+
+Angular ignores any string values that are not valid CSS class names.
+
+When using static CSS classes, directly binding `class`, and binding specific classes, Angular intelligently combines all of the classes in the rendered result.
+
+```angular-ts
+@Component({
+  template: `<ul class="list" [class]="listType " [class.expanded]="isExpanded"> ...`,
+  ...
+})
+export class Listbox {
+  listType = 'box';
+  isExpanded = true;
+}
+```
+
+In the example above, Angular renders the `ul` element with all three CSS classes.
+
+```angular-html
+<ul class="list box expanded">
+```
+
+Angular does not guarantee any specific order of CSS classes on rendered elements.
+
+When binding `class` to an array or an object, Angular compares the previous value to the current value with the triple-equals operator (`===`). You must create a new object or array instance when you modify these values in order to Angular to apply any updates.
+
+If an element has multiple bindings for the same CSS class, Angular resolves collisions by following its style precedence order.
+
+### CSS style properties
+
+You can also bind to CSS style properties directly on an element.
+
+```angular-html
+<!-- Set the CSS `display` property based on the `isExpanded` property. -->
+<section [style.display]="isExpanded ? 'block' : 'none'">
+```
+
+You can further specify units for CSS properties that accept units.
+
+```angular-html
+<!-- Set the CSS `height` property to a pixel value based on the `sectionHeightInPixels` property. -->
+<section [style.height.px]="sectionHeightInPixels">
+```
+
+You can also set multiple style values in one binding. Angular accepts the following types of value:
+
+| Description of `style` value                                                                                              | TypeScript type       |
+| ------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| A string containing zero or more CSS declarations, such as `"display: flex; margin: 8px"`.                                | `string`              |
+| An object where each property name is a CSS property name and each corresponding value is the value of that CSS property. | `Record<string, any>` |
+
+```angular-ts
+@Component({
+  template: `
+    <ul [style]="listStyles"> ... </ul>
+    <section [class]="sectionStyles"> ... </section>
+  `,
+  ...
+})
+export class UserProfile {
+  listStyle = 'display: flex; padding: 8px';
+  sectionStyles = {
+    border: '1px solid black',
+    font-weight: 'bold',
+  };
+}
+```
+
+The above example renders the following DOM.
+
+```angular-html
+<ul style="display: flex; padding: 8px"> ... </ul>
+<section style="border: 1px solid black; font-weight: bold"> ... </section>
+```
+
+When binding `style` to an object, Angular compares the previous value to the current value with the triple-equals operator (`===`). You must create a new object instance when you modify these values in order to Angular to apply any updates.
+
+If an element has multiple bindings for the same style property, Angular resolves collisions by following its style precedence order.
