@@ -51,17 +51,17 @@ Because `isSpecial` is true, `ngClass` applies the class of `special` to the `<d
 ### Using `NgClass` with a method
 
 1. To use `NgClass` with a method, add the method to the component class.
-    In the following example, `setCurrentClasses()` sets the property `currentClasses` with an object that adds or removes three classes based on the `true` or `false` state of three other component properties.
+   In the following example, `setCurrentClasses()` sets the property `currentClasses` with an object that adds or removes three classes based on the `true` or `false` state of three other component properties.
 
-    Each key of the object is a CSS class name.
-    If a key is `true`, `ngClass` adds the class.
-    If a key is `false`, `ngClass` removes the class.
+   Each key of the object is a CSS class name.
+   If a key is `true`, `ngClass` adds the class.
+   If a key is `false`, `ngClass` removes the class.
 
-    <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="setClasses"/>
+   <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="setClasses"/>
 
 1. In the template, add the `ngClass` property binding to `currentClasses` to set the element's classes:
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgClass-1"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgClass-1"/>
 
 For this use case, Angular applies the classes on initialization and in case of changes caused by reassigning the `currentClasses` object.
 The full example calls `setCurrentClasses()` initially with `ngOnInit()` when the user clicks on the `Refresh currentClasses` button.
@@ -79,13 +79,13 @@ Use `NgStyle` to set multiple inline styles simultaneously, based on the state o
 
 1. To use `NgStyle`, add a method to the component class.
 
-    In the following example, `setCurrentStyles()` sets the property `currentStyles` with an object that defines three styles, based on the state of three other component properties.
+   In the following example, `setCurrentStyles()` sets the property `currentStyles` with an object that defines three styles, based on the state of three other component properties.
 
-    <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="setStyles"/>
+   <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="setStyles"/>
 
 1. To set the element's styles, add an `ngStyle` property binding to `currentStyles`.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgStyle-2"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgStyle-2"/>
 
 For this use case, Angular applies the styles upon initialization and in case of changes.
 To do this, the full example calls `setCurrentStyles()` initially with `ngOnInit()` and when the dependent properties change through a button click.
@@ -97,16 +97,16 @@ Use the `NgModel` directive to display a data property and update that property 
 
 1. Import `FormsModule` and add it to the AppComponent's `imports` list.
 
-    <docs-code header="src/app/app.component.ts (FormsModule import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="import-forms-module" />
+<docs-code header="src/app/app.component.ts (FormsModule import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="import-forms-module" />
 
 1. Add an `[(ngModel)]` binding on an HTML `<form>` element and set it equal to the property, here `name`.
 
-    <docs-code header="src/app/app.component.html (NgModel example)" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgModel-1"/>
+   <docs-code header="src/app/app.component.html (NgModel example)" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgModel-1"/>
 
-    This `[(ngModel)]` syntax can only set a data-bound property.
+   This `[(ngModel)]` syntax can only set a data-bound property.
 
 To customize your configuration, write the expanded form, which separates the property and event binding.
-Use [property binding](guide/templates/property-binding) to set the property and [event binding](guide/templates/event-binding) to respond to changes.
+Use [property binding](guide/templates/property-binding) to set the property and [event binding](guide/templates/event-listeners) to respond to changes.
 The following example changes the `<input>` value to uppercase:
 
 <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="uppercase"/>
@@ -253,14 +253,14 @@ Reduce the number of calls your application makes to the server by tracking chan
 With the `*ngFor` `trackBy` property, Angular can change and re-render only those items that have changed, rather than reloading the entire list of items.
 
 1. Add a method to the component that returns the value `NgFor` should track.
-    In this example, the value to track is the item's `id`.
-    If the browser has already rendered `id`, Angular keeps track of it and doesn't re-query the server for the same `id`.
+In this example, the value to track is the item's `id`.
+If the browser has already rendered `id`, Angular keeps track of it and doesn't re-query the server for the same `id`.
 
-    <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="trackByItems"/>
+<docs-code header="src/app/app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="trackByItems"/>
 
 1. In the shorthand expression, set `trackBy` to the `trackByItems()` method.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="trackBy"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="trackBy"/>
 
 **Change ids** creates new items with new `item.id`s.
 In the following illustration of the `trackBy` effect, **Reset items** creates new items with the same `item.id`s.
@@ -288,9 +288,9 @@ Here's a conditional paragraph using `<ng-container>`.
 
 1. To conditionally exclude an `<option>`, wrap the `<option>` in an `<ng-container>`.
 
-    <docs-code header="src/app/app.component.html (select-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" visibleRegion="select-ngcontainer"/>
+   <docs-code header="src/app/app.component.html (select-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" visibleRegion="select-ngcontainer"/>
 
-    <img alt="ngcontainer options work properly" src="assets/images/guide/structural-directives/select-ngcontainer-anim.gif">
+   <img alt="ngcontainer options work properly" src="assets/images/guide/structural-directives/select-ngcontainer-anim.gif">
 
 ## Switching cases with `NgSwitch`
 
@@ -314,23 +314,23 @@ To use the directives, add the `NgSwitch`, `NgSwitchCase` and `NgSwitchDefault` 
 ### Using `NgSwitch`
 
 1. On an element, such as a `<div>`, add `[ngSwitch]` bound to an expression that returns the switch value, such as `feature`.
-    Though the `feature` value in this example is a string, the switch value can be of any type.
+   Though the `feature` value in this example is a string, the switch value can be of any type.
 
 1. Bind to `*ngSwitchCase` and `*ngSwitchDefault` on the elements for the cases.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgSwitch"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgSwitch"/>
 
 1. In the parent component, define `currentItem`, to use it in the `[ngSwitch]` expression.
 
-    <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="item"/>
+<docs-code header="src/app/app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="item"/>
 
 1. In each child component, add an `item` [input property](guide/components/inputs) which is bound to the `currentItem` of the parent component.
-    The following two snippets show the parent component and one of the child components.
-    The other child components are identical to `StoutItemComponent`.
+   The following two snippets show the parent component and one of the child components.
+   The other child components are identical to `StoutItemComponent`.
 
-    <docs-code header="In each child component, here StoutItemComponent" path="adev/src/content/examples/built-in-directives/src/app/item-switch.component.ts" visibleRegion="input"/>
+   <docs-code header="In each child component, here StoutItemComponent" path="adev/src/content/examples/built-in-directives/src/app/item-switch.component.ts" visibleRegion="input"/>
 
-    <img alt="Animation of NgSwitch" src="assets/images/guide/built-in-directives/ngswitch.gif">
+   <img alt="Animation of NgSwitch" src="assets/images/guide/built-in-directives/ngswitch.gif">
 
 Switch directives also work with built-in HTML elements and web components.
 For example, you could replace the `<app-best-item>` switch case with a `<div>` as follows.

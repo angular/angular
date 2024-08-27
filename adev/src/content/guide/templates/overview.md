@@ -1,50 +1,48 @@
 <docs-decorative-header title="Template syntax" imgSrc="adev/src/assets/images/templates.svg"> <!-- markdownlint-disable-line -->
-In Angular, a *template* is a chunk of HTML.
-Use special syntax within a template to build on many of Angular's features.
+In Angular, a template is a chunk of HTML.
+Use special syntax within a template to leverage many of Angular's features.
 </docs-decorative-header>
 
 Tip: Check out Angular's [Essentials](essentials/rendering-dynamic-templates) before diving into this comprehensive guide.
 
-<!--todo: Do we still need the following section? It seems more relevant to those coming from AngularJS, which is now 7 versions ago. -->
-<!-- You may be familiar with the component/template duality from your experience with model-view-controller (MVC) or model-view-viewmodel (MVVM).
-In Angular, the component plays the part of the controller/viewmodel, and the template represents the view. -->
+Every Angular component has a **template** that defines the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) that the component renders onto the page. By using templates, Angular is able to automatically keep your page up-to-date as data changes.
 
-Each Angular template in your application is a section of HTML to include as a part of the page that the browser displays.
-An Angular HTML template renders a view, or user interface, in the browser, just like regular HTML, but with a lot more functionality.
+Templates are usually found within either the `template` property of a `*.component.ts` file or the `*.component.html` file. To learn more, check out the [in-depth components guide](/guide/components).
 
-When you generate an Angular application with the Angular CLI, the `app.component.html` file is the default template containing placeholder HTML.
+## How do templates work?
 
-The template syntax guides show you how to control the UX/UI by coordinating data between the class and the template.
+Templates are based on [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML) syntax, with additional features such as built-in template functions, data binding, event listening, variables, and more.
 
-## Empower your HTML
+Angular compiles templates into JavaScript in order to build up an internal understanding of your application. One of the benefits of this are built-in rendering optimizations that Angular applies to your application automatically.
 
-Extend the HTML vocabulary of your applications with special Angular syntax in your templates.
-For example, Angular helps you get and set DOM \(Document Object Model\) values dynamically with features such as built-in template functions, variables, event listening, and data binding.
+### Differences from standard HTML
 
-Almost all HTML syntax is valid template syntax.
-However, because an Angular template is part of an overall webpage, and not the entire page, you don't need to include elements such as `<html>`, `<body>`, or `<base>`, and can focus exclusively on the part of the page you are developing.
+Some differences between templates and standard HTML syntax include:
 
-IMPORTANT: To eliminate the risk of script injection attacks, Angular does not support the `<script>` element in templates.
-Angular ignores the `<script>` tag and outputs a warning to the browser console.
-For more information, see the [Security](best-practices/security) page.
+- Comments in the template source code are not included in the rendered output
+- Component and directive elements can be self-closed (e.g., `<UserProfile />`)
+- Attributes with certain characters (i.e., `[]`, `()`, etc.) have special meaning to Angular. See [binding docs](guide/templates/binding) and [adding event listeners docs](guide/templates/event-listeners) for more information.
+- The `@` character has a special meaning to Angular for adding dynamic behavior, such as [control flow](guide/templates/control-flow), to templates. You can include a literal `@` character by escaping it as an HTML entity code (`&commat;` or `&#64;`).
+- Angular ignores and collapses unnecessary whitespace characters. See Whitespace in templates for more details.
+- Angular may add comment nodes to a page as placeholders for dynamic content, but developers can ignore these.
 
-## More on template syntax
+In addition, while most HTML syntax is valid template syntax, Angular does not support `<script>` element in templates. For more information, see the [Security](best-practices/security) page.
+
+## What's next?
 
 You might also be interested in the following:
 
-| Topics                                                                    | Details                                                                       |
-| :------------------------------------------------------------------------ | :---------------------------------------------------------------------------- |
-| [Interpolation](guide/templates/interpolation)                            | Learn how to use interpolation and expressions in HTML.                       |
-| [Template statements](guide/templates/template-statements)                | Respond to events in your templates.                                          |
-| [Binding syntax](guide/templates/binding)                                 | Use binding to coordinate values in your application.                         |
-| [Property binding](guide/templates/property-binding)                      | Set properties of target elements or directive `@Input()` decorators.         |
-| [Attribute, class, and style bindings](guide/templates/attribute-binding) | Set the value of attributes, classes, and styles.                             |
-| [Event binding](guide/templates/event-binding)                            | Listen for events and your HTML.                                              |
-| [Two-way binding](guide/templates/two-way-binding)                        | Share data between a class and its template.                                  |
-| [Control flow](guide/templates/control-flow)                              | Angular's syntax for conditionally showing, hiding, and repeating elements.   |
-| [Local template variables](guide/templates/let-template-variables)        | Define and reuse variables in your template.                                  |
-| [Built-in directives](guide/directives)                                   | Listen to and modify the behavior and layout of HTML.                         |
-| [Template reference variables](guide/templates/reference-variables)       | Use special variables to reference a DOM element within a template.           |
-| [Inputs](guide/components/inputs)                                         | Accepting data with input properties                                          |
-| [Outputs](guide/components/outputs)                                       | Custom events with outputs                                                    |
-| [SVG in templates](guide/templates/svg-in-templates)                      | Dynamically generate interactive graphics.                                    |
+| Topics                                                                      | Details                                                                                 |
+| :-------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
+| [Binding dynamic text, properties, and attributes](guide/templates/binding) | Bind dynamic data to text, properties and attributes.                                   |
+| [Adding event listeners](guide/templates/event-listeners)                   | Respond to events in your templates.                                                    |
+| [Two-way binding](guide/templates/two-way-binding)                          | Simultaneously binds a value and propagate changes.                                     |
+| [Control flow](guide/templates/control-flow)                                | Conditionally show, hide and repeat elements.                                           |
+| [Pipes](guide/templates/pipes)                                              | Transform data declaratively.                                                           |
+| [Slotting child content with ng-content](guide/templates/ng-content)        | Control how components render content.                                                  |
+| [Create template fragments with ng-template](guide/templates/ng-template)   | Declare a template fragment.                                                            |
+| [Grouping elements with ng-container](guide/templates/ng-container)         | Group multiple elements together or mark a location for rendering.                      |
+| [Variables in templates](guide/templates/variables)                         | Learn about variable declarations.                                                      |
+| [Deferred loading with @defer](guide/templates/defer)                       | Create deferrable views with `@defer`.                                                  |
+| [Expression syntax](guide/templates/expression-syntax)                      | Learn similarities and differences betwene Angular expressions and standard JavaScript. |
+| [Whitespace in templates](guide/templates/whitespace)                       | Learn how Angular handles whitespace.                                                   |

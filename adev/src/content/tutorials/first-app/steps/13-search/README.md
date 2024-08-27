@@ -10,8 +10,8 @@ IMPORTANT: We recommend using your local environment for this step of the tutori
 
 ## What you'll learn
 
-* Your app will use data from a form to search for matching housing locations
-* Your app will display only the matching housing locations
+- Your app will use data from a form to search for matching housing locations
+- Your app will display only the matching housing locations
 
 <docs-workflow>
 
@@ -20,13 +20,13 @@ In this step, you'll update the `HomeComponent` class to store data in a new arr
 
 1. In `src/app/home/home.component.ts`, add new property to the class called `filteredLocationList`.
 
-    <docs-code header="Add the filtered results property" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[30]"/>
+   <docs-code header="Add the filtered results property" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[30]"/>
 
-    The `filteredLocationList` hold the values that match the search criteria entered by the user.
+   The `filteredLocationList` hold the values that match the search criteria entered by the user.
 
 1. The `filteredLocationList` should contain the total set of housing locations values by default when the page loads. Update the `constructor` for the `HomeComponent` to set the value.
 
-    <docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[31,34]"/>
+<docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[31,34]"/>
 
 </docs-step>
 
@@ -35,25 +35,25 @@ The `HomeComponent` already contains an input field that you will use to capture
 
 1. Update the `HomeComponent` template to include a template variable in the `input` element called `#filter`.
 
-    <docs-code header="Add a template variable to HomeComponent's template" language="html">
-        <input type="text" placeholder="Filter by city" #filter>
-    </docs-code>
+   <docs-code header="Add a template variable to HomeComponent's template" language="html">
+       <input type="text" placeholder="Filter by city" #filter>
+   </docs-code>
 
-    This example uses a [template reference variable](guide/templates) to get access to the `input` element as its value.
+   This example uses a [template reference variable](guide/templates) to get access to the `input` element as its value.
 
 1. Next, update the component template to attach an event handler to the "Search" button.
 
-    <docs-code header="Bind the click event" language="html">
-        <button class="primary" type="button" (click)="filterResults(filter.value)">Search</button>
-    </docs-code>
+   <docs-code header="Bind the click event" language="html">
+       <button class="primary" type="button" (click)="filterResults(filter.value)">Search</button>
+   </docs-code>
 
-    By binding to the `click` event on the `button` element, you are able to call the `filterResults` function. The argument to the function is the `value` property of the `filter` template variable. Specifically, the `.value` property from the `input` HTML element.
+   By binding to the `click` event on the `button` element, you are able to call the `filterResults` function. The argument to the function is the `value` property of the `filter` template variable. Specifically, the `.value` property from the `input` HTML element.
 
 1. The last template update is to the `ngFor` directive. Update the `ngFor` value to iterate over values from the `filteredLocationList` array.
 
-    <docs-code header="Update the ngFor directive value" language="html">
-        <app-housing-location *ngFor="let housingLocation of filteredLocationList" [housingLocation]="housingLocation"></app-housing-location>
-    </docs-code>
+<docs-code header="Update the ngFor directive value" language="html">
+    <app-housing-location *ngFor="let housingLocation of filteredLocationList" [housingLocation]="housingLocation"></app-housing-location>
+</docs-code>
 
 </docs-step>
 
@@ -62,9 +62,9 @@ The template has been updated to bind the `filterResults` function to the `click
 
 1. Update the `HomeComponent` class to include the implementation of the `filterResults` function.
 
-    <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[35,44]"/>
+   <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[35,44]"/>
 
-    This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
+   This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
 
 1. Save your code.
 
@@ -81,5 +81,5 @@ For more information about the topics covered in this lesson, visit:
 
 <docs-pill-row>
   <docs-pill href="guide/templates" title="Template Variables"/>
-  <docs-pill href="guide/templates/event-binding" title="Event Handling"/>
+  <docs-pill href="guide/templates/event-listeners" title="Event Handling"/>
 </docs-pill-row>

@@ -52,13 +52,13 @@ The `@placeholder` block accepts an optional parameter to specify the `minimum` 
 }
 ```
 
-Note: Certain triggers may require the presence of either a `@placeholder` or a [template reference variable](guide/templates/reference-variables) to function. See the [Triggers](guide/defer#triggers) section for more details.
+Note: Certain triggers may require the presence of either a `@placeholder` or a [template reference variable](guide/templates/variables#template-reference-variables) to function. See the [Triggers](guide/defer#triggers) section for more details.
 
 ### `@loading`
 
 The `@loading` block is an optional block that allows you to declare content that will be shown during the loading of any deferred dependencies. Its dependences are eagerly loaded (similar to `@placeholder`).
 
-For example, you could show a loading spinner. Once loading has been triggered, the `@loading` block replaces the `@placeholder` block. 
+For example, you could show a loading spinner. Once loading has been triggered, the `@loading` block replaces the `@placeholder` block.
 
 The `@loading` block accepts two optional parameters to specify the `minimum` amount of time that this placeholder should be shown and amount of time to wait `after` loading begins before showing the loading template. `minimum` and `after` parameters are specified in time increments of milliseconds (ms) or seconds (s). Just like `@placeholder`, these parameters exist to prevent fast flickering of content in the case that the deferred dependencies are fetched quickly. Both the `minimum` and `after` timers for the `@loading` block begins immediately after the loading has been triggered.
 
@@ -140,7 +140,7 @@ By default, the placeholder will act as the element watched for entering viewpor
 }
 ```
 
-Alternatively, you can specify a [template reference variable](guide/templates/reference-variables) in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.
+Alternatively, you can specify a [template reference variable](guide/templates/variables#template-reference-variables) in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.
 
 ```angular-html
 <div #greeting>Hello!</div>
@@ -164,7 +164,7 @@ By default, the placeholder will act as the interaction element as long as it is
 }
 ```
 
-Alternatively, you can specify a [template reference variable](guide/templates/reference-variables) as the element that triggers interaction. This variable is passed in as a parameter on the interaction trigger.
+Alternatively, you can specify a [template reference variable](guide/templates/variables#template-reference-variables) as the element that triggers interaction. This variable is passed in as a parameter on the interaction trigger.
 
 ```angular-html
 <button type="button" #greeting>Hello!</button>
@@ -190,7 +190,7 @@ By default, the placeholder will act as the hover element as long as it is a sin
 }
 ```
 
-Alternatively, you can specify a [template reference variable](guide/templates/reference-variables) as the hover element. This variable is passed in as a parameter on the hover trigger.
+Alternatively, you can specify a [template reference variable](guide/templates/variables#template-reference-variables) as the hover element. This variable is passed in as a parameter on the hover trigger.
 
 ```angular-html
 <div #greeting>Hello!</div>
