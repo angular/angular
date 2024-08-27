@@ -161,6 +161,7 @@ http_server(
         "angular/adev/build/browser",
     ],
     enable_dev_ui = True,
+    relax_cors = True,
     deps = [":build"],
 )
 
