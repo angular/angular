@@ -88,6 +88,7 @@ import {debugStringifyTypeForError, stringifyForError} from './util/stringify_ut
 import {getComponentLViewByIndex, getNativeByTNode, getTNode} from './util/view_utils';
 import {ViewRef} from './view_ref';
 import {ChainedInjector} from './chained_injector';
+import {unregisterLView} from './interfaces/lview_tracking';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -333,6 +334,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
 
       let component: T;
       let tElementNode: TElementNode;
+      let componentView: LView | null = null;
 
       try {
         const rootComponentDef = this.componentDef;
@@ -354,7 +356,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         }
 
         const hostTNode = createRootComponentTNode(rootLView, hostRNode);
-        const componentView = createRootComponentView(
+        componentView = createRootComponentView(
           hostTNode,
           hostRNode,
           rootComponentDef,
@@ -388,6 +390,14 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           [LifecycleHooksFeature],
         );
         renderView(rootTView, rootLView, null);
+      } catch (e) {
+        // Stop tracking the views if creation failed since
+        // the consumer won't have a way to dereference them.
+        if (componentView !== null) {
+          unregisterLView(componentView);
+        }
+        unregisterLView(rootLView);
+        throw e;
       } finally {
         leaveView();
       }
