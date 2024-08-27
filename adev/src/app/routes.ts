@@ -121,6 +121,49 @@ const FOOTER_ROUTES: Route[] = mapNavigationItemsToRoutes(
 
 const API_REFERENCE_ROUTES: Route[] = mapApiManifestToRoutes();
 
+const REDIRECT_ROUTES: Route[] = [
+  {
+    path: 'guide/templates/attribute-binding',
+    redirectTo: 'guide/templates/binding#binding-dynamic-properties-and-attributes',
+  },
+  {
+    path: 'guide/templates/interpolation',
+    redirectTo: 'guide/templates/binding#render-dynamic-text-with-text-interpolation',
+  },
+  {
+    path: 'guide/templates/class-binding',
+    redirectTo: 'guide/templates/binding#css-class-and-style-property-bindings',
+  },
+  {
+    path: 'guide/templates/event-binding',
+    redirectTo: 'guide/templates/event-listeners',
+  },
+  {
+    path: 'guide/templates/let-template-variables',
+    redirectTo: 'guide/templates/variables#local-template-variables-with-let',
+  },
+  {
+    path: 'guide/templates/property-binding',
+    redirectTo: 'guide/templates/binding#binding-dynamic-properties-and-attributes',
+  },
+  {
+    path: 'guide/templates/property-binding-best-practices',
+    redirectTo: 'guide/templates/binding#binding-dynamic-properties-and-attributes',
+  },
+  {
+    path: 'guide/templates/reference-variables',
+    redirectTo: 'guide/templates/variables#template-reference-variables',
+  },
+  {
+    path: 'guide/templates/svg-in-templates',
+    redirectTo: 'guide/templates/binding',
+  },
+  {
+    path: 'guide/templates/template-statements',
+    redirectTo: 'guide/templates/event-listeners',
+  },
+];
+
 export const routes: Route[] = [
   {
     path: '',
@@ -151,6 +194,7 @@ export const routes: Route[] = [
       ...API_REFERENCE_ROUTES,
       ...FOOTER_ROUTES,
       updateGuidePageRoute,
+      ...REDIRECT_ROUTES,
     ],
   },
   // Error page
