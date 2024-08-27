@@ -24,9 +24,6 @@ import {unwrapParent} from '../signal-migration/src/utils/unwrap_parent';
 import {writeBinaryOperators} from '../signal-migration/src/utils/write_operators';
 import {computeReplacementsToMigrateQuery} from './convert_query_property';
 import {ImportManager, PartialEvaluator} from '../../../../compiler-cli/private/migrations';
-import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
-import {QueryFunctionName} from '../../../../compiler-cli/src/ngtsc/annotations';
-import {queryFunctionNameToDecorator} from './query_api_names';
 
 export interface CompilationUnitData {
   knownQueryFields: Record<ClassPropertyID, true>;
@@ -115,9 +112,6 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     const replacements: Replacement[] = [];
     const importManager = new ImportManager();
 
-    const filesWithMigratedQueries = new Map<ts.SourceFile, Set<QueryFunctionName>>();
-    const filesWithIncompleteMigration = new Map<ts.SourceFile, Set<QueryFunctionName>>();
-
     const isMigratedQuery = (id: ClassPropertyID) =>
       globalMetadata.knownQueryFields[id] !== undefined &&
       globalMetadata.problematicQueries[id] === undefined;
@@ -130,13 +124,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         evaluator,
         projectDirAbsPath,
       );
-      if (extractedQuery !== null) {
-        if (!isMigratedQuery(extractedQuery.id)) {
-          updateFileState(filesWithIncompleteMigration, node, extractedQuery.kind);
-          return;
-        }
-
-        updateFileState(filesWithMigratedQueries, node, extractedQuery.kind);
+      if (extractedQuery !== null && isMigratedQuery(extractedQuery.id)) {
         replacements.push(
           ...computeReplacementsToMigrateQuery(
             node as ts.PropertyDeclaration,
@@ -144,7 +132,6 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
             importManager,
           ),
         );
-        return;
       }
 
       // Migrate references to queries, if those are migrated too.
@@ -166,34 +153,6 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       ts.forEachChild(sf, visitor);
     }
 
-    // Remove imports if possible.
-    for (const [file, types] of filesWithMigratedQueries) {
-      for (const type of types) {
-        if (!filesWithIncompleteMigration.get(file)?.has(type)) {
-          importManager.removeImport(file, queryFunctionNameToDecorator(type), '@angular/core');
-        }
-      }
-    }
-
-    applyImportManagerChanges(importManager, replacements, sourceFiles);
-
     return replacements;
   }
-}
-
-/**
- * Updates the given map to capture the given query type.
- * The map may track migrated queries in a file, or query types
- * that couldn't be migrated.
- */
-function updateFileState(
-  stateMap: Map<ts.SourceFile, Set<string>>,
-  node: ts.Node,
-  queryType: QueryFunctionName,
-): void {
-  const file = node.getSourceFile();
-  if (!stateMap.has(file)) {
-    stateMap.set(file, new Set());
-  }
-  stateMap.get(file)!.add(queryType);
 }
