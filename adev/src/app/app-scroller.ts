@@ -71,7 +71,7 @@ export class AppScroller {
     const {anchor, position} = this._lastScrollEvent;
 
     // Don't scroll during rendering
-    this.cancelScroll = afterNextRender(
+    const ref = afterNextRender(
       {
         write: () => {
           if (position) {
@@ -84,6 +84,9 @@ export class AppScroller {
         },
       },
       {injector: this.injector},
-    ).destroy;
+    );
+    this.cancelScroll = () => {
+      ref.destroy();
+    };
   }
 }
