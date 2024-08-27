@@ -1668,6 +1668,7 @@ describe('projection', () => {
       componentRef.changeDetectorRef.detectChanges();
 
       expect(getElementHtml(hostElement)).toContain('<p>override</p>|Two fallback|Three fallback');
+      componentRef.destroy();
     });
 
     it('should render fallback content when ng-content is inside an ng-template', () => {

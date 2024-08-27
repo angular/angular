@@ -738,6 +738,7 @@ describe('component', () => {
       componentRef.instance.name = 'ZoneJS';
       componentRef.changeDetectorRef.detectChanges();
       expect(hostElement.textContent).toBe('Hello ZoneJS!');
+      componentRef.destroy();
     });
 
     it('should create an instance of an NgModule-based component', () => {
@@ -797,6 +798,7 @@ describe('component', () => {
 
       componentRef.changeDetectorRef.detectChanges();
       expect(hostElement.innerHTML.replace(/\s*/g, '')).toBe('<p>1</p>|<p>2</p>|<p>3</p>');
+      componentRef.destroy();
     });
 
     it('should be able to inject tokens from EnvironmentInjector', () => {
@@ -817,6 +819,7 @@ describe('component', () => {
       componentRef.changeDetectorRef.detectChanges();
 
       expect(hostElement.textContent).toBe('Token: EnvironmentInjector(A)');
+      componentRef.destroy();
     });
 
     it('should be able to use NodeInjector from the node hierarchy', () => {
@@ -890,6 +893,7 @@ describe('component', () => {
       expect(hostElement.tagName.toLowerCase()).toBe(selector);
 
       expect(hostElement.textContent).toBe('Hello Angular!');
+      componentRef.destroy();
     });
 
     it(
@@ -917,6 +921,7 @@ describe('component', () => {
         expect(hostElement.tagName.toLowerCase()).toBe('div');
 
         expect(hostElement.textContent).toBe('Hello Angular!');
+        componentRef.destroy();
       },
     );
 
