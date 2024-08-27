@@ -92,11 +92,26 @@ class MyComp {
 
 it('should work', () => {
   const inputs = {
-    hello: 'Damn',
-    // TODO:
+    hello: 'test',
   } as Partial<UnwrapSignalInputs<MyComp>>;
   bootstrapTemplate('<my-comp [hello]="hello">', inputs);
 });
+@@@@@@ constructor_initializations.ts @@@@@@
+
+// tslint:disable
+
+import {Input, Directive} from '@angular/core';
+
+@Directive()
+export class MyComp {
+  @Input() firstName: string;
+
+  constructor() {
+    // TODO: Consider initializations inside the constructor.
+    // Those are not migrated right now though, as they are writes.
+    this.firstName = 'Initial value';
+  }
+}
 @@@@@@ cross_references.ts @@@@@@
 
 // tslint:disable

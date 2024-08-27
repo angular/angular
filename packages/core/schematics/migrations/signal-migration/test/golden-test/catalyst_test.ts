@@ -14,8 +14,7 @@ class MyComp {
 
 it('should work', () => {
   const inputs = {
-    hello: 'Damn',
-    // TODO:
+    hello: 'test',
   } as Partial<MyComp>;
   bootstrapTemplate('<my-comp [hello]="hello">', inputs);
 });

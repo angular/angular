@@ -41,8 +41,6 @@ export function pass7__migrateTemplateReferences(
     }
     seenFileReferences.add(fileReferenceId);
 
-    // TODO: Control flow, or wait for Joost's PR?
-
     // Expand shorthands like `{bla}` to `{bla: bla()}`.
     const appendText = reference.from.isObjectShorthandExpression
       ? `: ${reference.from.read.name}()`
