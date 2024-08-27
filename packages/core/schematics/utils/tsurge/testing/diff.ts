@@ -25,7 +25,7 @@ export function diffText(expected: string, actual: string): string {
       ? chalk.green(valueForColor)
       : part.removed
         ? chalk.red(valueForColor)
-        : chalk.reset(part.value);
+        : part.value;
 
     result += text;
   }
