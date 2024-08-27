@@ -2160,6 +2160,9 @@
     "name": "uniqueIdCounter"
   },
   {
+    "name": "unregisterLView"
+  },
+  {
     "name": "unwrapElementRef"
   },
   {
