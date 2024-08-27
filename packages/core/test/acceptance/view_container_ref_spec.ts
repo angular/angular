@@ -144,7 +144,7 @@ describe('ViewContainerRef', () => {
 
       // Add a test component to the view container ref to ensure that
       // the "ng-container" comment was used as marker for the insertion.
-      vcref.createComponent(HelloComp);
+      const ref = vcref.createComponent(HelloComp);
       fixture.detectChanges();
 
       expect(testParent.textContent).toBe('hello');
@@ -152,6 +152,7 @@ describe('ViewContainerRef', () => {
       expect(testParent.childNodes[0].nodeType).toBe(Node.ELEMENT_NODE);
       expect(testParent.childNodes[0].textContent).toBe('hello');
       expect(testParent.childNodes[1].nodeType).toBe(Node.COMMENT_NODE);
+      ref.destroy();
     });
 
     it('should support attribute selectors in dynamically created components', () => {
@@ -167,7 +168,7 @@ describe('ViewContainerRef', () => {
         @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
 
         createComponent() {
-          this.vcRef.createComponent(HelloComp);
+          return this.vcRef.createComponent(HelloComp);
         }
       }
 
@@ -176,9 +177,10 @@ describe('ViewContainerRef', () => {
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML).not.toContain('Hello');
 
-      fixture.componentInstance.createComponent();
+      const ref = fixture.componentInstance.createComponent();
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.innerHTML).toContain('Hello');
+      ref.destroy();
     });
 
     it('should view queries in dynamically created components', () => {
@@ -294,11 +296,11 @@ describe('ViewContainerRef', () => {
         ) {}
 
         createComponentViaVCRef() {
-          this.vcRef.createComponent(HelloComp);
+          return this.vcRef.createComponent(HelloComp);
         }
 
         createComponentViaFactory() {
-          createComponent(HelloComp, {
+          return createComponent(HelloComp, {
             environmentInjector: this.injector,
             hostElement: this.elementRef.nativeElement.querySelector('#factory'),
           });
@@ -308,8 +310,8 @@ describe('ViewContainerRef', () => {
       TestBed.configureTestingModule({declarations: [TestComp, HelloComp]});
       const fixture = TestBed.createComponent(TestComp);
       fixture.detectChanges();
-      fixture.componentInstance.createComponentViaVCRef();
-      fixture.componentInstance.createComponentViaFactory();
+      const firstRef = fixture.componentInstance.createComponentViaVCRef();
+      const secondRef = fixture.componentInstance.createComponentViaFactory();
       fixture.detectChanges();
 
       // Verify host element for a component created via  `vcRef.createComponent` method
@@ -336,6 +338,8 @@ describe('ViewContainerRef', () => {
       // Make sure selector-based attrs and classes were not added to the host element
       expect(factoryHostElement.classList.contains('class-a')).toBe(false);
       expect(factoryHostElement.getAttribute('attr-c')).toBe(null);
+      firstRef.destroy();
+      secondRef.destroy();
     });
   });
 
@@ -1534,6 +1538,7 @@ describe('ViewContainerRef', () => {
         fixture.componentInstance.viewContainerRef.createComponent(DynamicComponent);
       const element = componentRef.location.nativeElement;
       expect((element.namespaceURI || '').toLowerCase()).not.toContain('svg');
+      componentRef.destroy();
     });
 
     it('should be compatible with componentRef generated via TestBed.createComponent in component factory', () => {

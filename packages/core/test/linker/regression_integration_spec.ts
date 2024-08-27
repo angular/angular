@@ -365,6 +365,7 @@ describe('regressions', () => {
     });
 
     expect(compRef.location.nativeElement.hasAttribute('ng-version')).toBe(false);
+    compRef.destroy();
   });
 });
 
