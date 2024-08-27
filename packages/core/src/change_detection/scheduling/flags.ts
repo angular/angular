@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export const SCHEDULE_IN_ROOT_ZONE_DEFAULT = true;
+export const SCHEDULE_IN_ROOT_ZONE_DEFAULT = false;
