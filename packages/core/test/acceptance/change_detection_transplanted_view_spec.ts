@@ -1105,6 +1105,7 @@ describe('change detection for transplanted views', () => {
     // goes and marks the root view dirty, which then starts the process all over again by
     // checking the declaration.
     expect(() => appRef.tick()).not.toThrow();
+    app.destroy();
   });
   it('does not cause infinite loops with exhaustive checkNoChanges', async () => {
     TestBed.configureTestingModule({

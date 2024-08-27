@@ -100,6 +100,7 @@ describe('effects', () => {
       ),
     );
     await expectAsync(p).toBeResolvedTo([false, true]);
+    componentRef.destroy();
   });
 
   it('should propagate errors to the ErrorHandler', () => {
@@ -543,7 +544,7 @@ describe('effects', () => {
       const fixture = TestBed.createComponent(DriverCmp);
       fixture.detectChanges();
 
-      fixture.componentInstance.vcr.createComponent(TestCmp);
+      const ref = fixture.componentInstance.vcr.createComponent(TestCmp);
 
       // Verify that simply creating the component didn't schedule the effect.
       TestBed.flushEffects();
@@ -552,6 +553,7 @@ describe('effects', () => {
       // Running change detection should schedule and run the effect.
       fixture.detectChanges();
       expect(log).toEqual(['init', 'effect']);
+      ref.destroy();
     });
 
     it('when created in a service provided in a component', () => {
