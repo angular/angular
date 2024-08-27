@@ -652,8 +652,22 @@ def esbuild(args = None, **kwargs):
     )
 
 def esbuild_no_sourcemaps(name, **kwargs):
-    esbuild(name = name + ".with-sourcemap", sourcemap = "external", output = "%s.js" % name, **kwargs)
-    filter_outputs(name = name, target = "%s.with-sourcemap" % name, filters = ["%s.js" % name])
+    esbuild_target_name = "%s.with-sourcemap" % name,
+
+    # Unlike linked, when using external the .js output file does not contain a //# sourceMappingURL= comment.
+    # See: https://esbuild.github.io/api/#sourcemap
+    esbuild(
+        name = esbuild_target_name,
+        sourcemap = "external",
+        output = "%s.js" % name,
+        **kwargs
+    )
+
+    filter_outputs(
+        name = name,
+        target = esbuild_target_name,
+        filters = ["%s.js" % name],
+    )
 
 def esbuild_checked_in(name, **kwargs):
     esbuild_esm_bundle(
