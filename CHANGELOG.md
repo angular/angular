@@ -1,3 +1,64 @@
+<a name="19.0.0-next.2"></a>
+# 19.0.0-next.2 (2024-08-28)
+## Breaking Changes
+### core
+- Render default fallback with empty `projectableNodes`.
+  
+  When passing an empty array to `projectableNodes` in the `createComponent` API, the default fallback content of the `ng-content` will be rendered if present. To prevent rendering the default content, pass `document.createTextNode('')` as a `projectableNode`.
+  
+  For example:
+  
+  ```ts
+  // The first ng-content will render the default fallback content if present
+  createComponent(MyComponent. { projectableNodes: [[], [secondNode]] });
+  
+  // To prevent projecting the default fallback content:
+  createComponent(MyComponent. { projectableNodes: [[document.createTextNode('')], [secondNode]] });
+  
+  ```
+- The timers that are used for zone coalescing and hybrid
+  mode scheduling (which schedules an application state synchronization
+  when changes happen outside the Angular zone) will now run in the zone
+  above Angular rather than the root zone. This will mostly affect tests
+  which use `fakeAsync`: these timers will now be visible to `fakeAsync`
+  and can be affected by `tick` or `flush`.
+### elements
+- as part of switching away from custom CD behavior to the
+  hybrid scheduler, timing of change detection around custom elements has
+  changed subtly. These changes make elements more efficient, but can cause
+  tests which encoded assumptions about how or when elements would be checked
+  to require updating.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [50f08e6c4bf](https://github.com/angular/angular/commit/50f08e6c4bf1caeeb08d3505ce7fabd466b9c76b) | feat | automatically use sizes auto in NgOptimizedImage ([#57479](https://github.com/angular/angular/pull/57479)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4716c3b9660](https://github.com/angular/angular/commit/4716c3b9660b01f4ef3642fb774270b7f4a13d1a) | perf | reduce duplicate component style resolution ([#57502](https://github.com/angular/angular/pull/57502)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a3cdbfe87f5](https://github.com/angular/angular/commit/a3cdbfe87f5a8daef11a154ef3edb5a3a5c12f77) | fix | avoid leaking memory if component throws during creation ([#57546](https://github.com/angular/angular/pull/57546)) |
+| [7a99815146e](https://github.com/angular/angular/commit/7a99815146eb78074aa3ed6db73c6e87042df692) | fix | Do not bubble capture events. ([#57476](https://github.com/angular/angular/pull/57476)) |
+| [7b1e5be20b9](https://github.com/angular/angular/commit/7b1e5be20b99c88246c6be78a4dcd64eb55cee1a) | fix | fallback to default ng-content with empty projectable nodes. ([#57480](https://github.com/angular/angular/pull/57480)) |
+| [0300dd2e18f](https://github.com/angular/angular/commit/0300dd2e18f064f2f57f7371e0dc5c01218b5019) | fix | Fix fixture.detectChanges with autoDetect disabled and zoneless ([#57416](https://github.com/angular/angular/pull/57416)) |
+| [226a67dabba](https://github.com/angular/angular/commit/226a67dabba90a488ad09ce7bb026b8883c90d4a) | fix | Schedulers run in zone above Angular rather than root ([#57553](https://github.com/angular/angular/pull/57553)) |
+### elements
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0cebfd7462c](https://github.com/angular/angular/commit/0cebfd7462c6a7c6c3b0d66720c436a4b0eea19d) | fix | switch to `ComponentRef.setInput` & remove custom scheduler ([#56728](https://github.com/angular/angular/pull/56728)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8f6308457f0](https://github.com/angular/angular/commit/8f6308457f0f03e9bbd09f4bc10d1c61fd41d22c) | fix | Do not unnecessarily run matcher twice on route matching ([#57530](https://github.com/angular/angular/pull/57530)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c9d90786d0a](https://github.com/angular/angular/commit/c9d90786d0a6421bbb21b9d1649d031b34e3fa5d) | fix | Address Trusted Types violations in @angular/upgrade ([#57454](https://github.com/angular/angular/pull/57454)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.2"></a>
 # 18.2.2 (2024-08-28)
 ### core
