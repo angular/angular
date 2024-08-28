@@ -44,7 +44,7 @@ export class TodoListItem {
 Other common metadata that you'll also see in components include:
 
 - `standalone: true` — The recommended approach of streamlining the authoring experience of components
-- `styles` — A string or array of strings that contains any CSS styles you want applied to the component
+- `styles` — A string or array of strings that contains any CSS styles you want to apply to the component
 
 Knowing this, here is an updated version of our `TodoListItem` component.
 
