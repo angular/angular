@@ -22,7 +22,7 @@ import {
   getTargetDetailsAtTemplatePosition,
   TemplateLocationDetails,
 } from './references_and_rename_utils';
-import {collectMemberMethods, findTightestNode} from './ts_utils';
+import {collectMemberMethods, findTightestNode} from './utils/ts_utils';
 import {getTemplateInfoAtPosition, TemplateInfo} from './utils';
 
 export class ReferencesBuilder {

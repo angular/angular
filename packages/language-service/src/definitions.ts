@@ -31,7 +31,7 @@ import ts from 'typescript';
 
 import {convertToTemplateDocumentSpan} from './references_and_rename_utils';
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode, getParentClassDeclaration} from './ts_utils';
+import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 import {
   getDirectiveMatchesForAttribute,
   getDirectiveMatchesForElementTag,

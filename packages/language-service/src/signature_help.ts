@@ -13,7 +13,7 @@ import {SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode} from './ts_utils';
+import {findTightestNode} from './utils/ts_utils';
 import {getTemplateInfoAtPosition} from './utils';
 
 /**

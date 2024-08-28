@@ -45,7 +45,7 @@ import {
   getClassDeclFromDecoratorProp,
   getParentClassDeclaration,
   getPropertyAssignmentFromValue,
-} from './ts_utils';
+} from './utils/ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 import {allRefactorings} from './refactorings/refactoring';
 

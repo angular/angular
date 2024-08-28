@@ -228,7 +228,7 @@ function toAttributeCssSelector(
 }
 
 function getNodeName(node: TmplAstTemplate | TmplAstElement): string {
-  return node instanceof TmplAstTemplate ? node.tagName ?? 'ng-template' : node.name;
+  return node instanceof TmplAstTemplate ? (node.tagName ?? 'ng-template') : node.name;
 }
 
 /**
