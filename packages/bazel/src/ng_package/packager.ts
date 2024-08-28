@@ -16,7 +16,7 @@ import {analyzeFileAndEnsureNoCrossImports} from './cross_entry_points_imports';
  * List of known `package.json` fields which provide information about
  * supported package formats and their associated entry paths.
  */
-const knownFormatPackageJsonFormatFields = ['main', 'esm2022', 'esm', 'typings', 'module'] as const;
+const knownFormatPackageJsonFormatFields = ['main', 'typings', 'module'] as const;
 
 /** Union type matching known `package.json` format fields. */
 type KnownPackageJsonFormatFields = (typeof knownFormatPackageJsonFormatFields)[number];
@@ -27,8 +27,6 @@ type KnownPackageJsonFormatFields = (typeof knownFormatPackageJsonFormatFields)[
  */
 type ConditionalExport = {
   types?: string;
-  esm2022?: string;
-  esm?: string;
   default?: string;
 };
 
@@ -130,16 +128,6 @@ function main(args: string[]): void {
     return path.relative(owningPackageName, file.shortPath);
   }
 
-  /** Writes an ESM file into the `esm2022` output directory. */
-  function writeEsm2022File(file: BazelFileInfo) {
-    // Note: files which do not belong to the owning package of this `ng_package` are omitted.
-    // this prevents us from accidentally bringing in transitive node module dependencies.
-    const packageRelativePath = getOwningPackageRelativePath(file);
-    if (!packageRelativePath.startsWith('..')) {
-      copyFile(file.path, getEsm2022OutputRelativePath(file));
-    }
-  }
-
   /** Gets the output-relative path where the given flat ESM file should be written to. */
   function getFlatEsmOutputRelativePath(file: BazelFileInfo) {
     // Flat ESM files should be put into their owning package relative sub-path. e.g. if
@@ -148,13 +136,6 @@ function main(args: string[]): void {
     // for the `fesm2022` bundles. The directory name for `fesm` is already declared as
     // part of the Bazel action generating these files. See `ng_package.bzl`.
     return getOwningPackageRelativePath(file);
-  }
-
-  /** Gets the output-relative path where a non-flat ESM2022 file should be written to. */
-  function getEsm2022OutputRelativePath(file: BazelFileInfo) {
-    // Path computed relative to the current package in bazel-bin. e.g. a ES2022 output file
-    // in `bazel-out/<..>/packages/core/src/di.mjs` should be stored in `esm2022/src/di.mjs`.
-    return path.join('esm2022', getOwningPackageRelativePath(file));
   }
 
   /** Gets the output-relative path where the typing file is being written to. */
@@ -184,12 +165,9 @@ function main(args: string[]): void {
     return getEntryPointSubpath(moduleName) !== '';
   }
 
-  const crossEntryPointFailures: string[] = [];
-
-  esm2022.forEach((file) => {
-    crossEntryPointFailures.push(...analyzeFileAndEnsureNoCrossImports(file, metadata));
-    writeEsm2022File(file);
-  });
+  const crossEntryPointFailures = esm2022.flatMap((file) =>
+    analyzeFileAndEnsureNoCrossImports(file, metadata),
+  );
 
   if (crossEntryPointFailures.length) {
     console.error(crossEntryPointFailures);
@@ -342,7 +320,6 @@ function main(args: string[]): void {
       const subpath = isSecondaryEntryPoint(moduleName)
         ? `./${getEntryPointSubpath(moduleName)}`
         : '.';
-      const esmIndexOutRelativePath = getEsm2022OutputRelativePath(entryPoint.index);
       const fesm2022OutRelativePath = getFlatEsmOutputRelativePath(entryPoint.fesm2022Bundle);
       const typesOutRelativePath = getTypingOutputRelativePath(entryPoint.typings);
 
@@ -351,8 +328,6 @@ function main(args: string[]): void {
       // https://github.com/microsoft/TypeScript/pull/45884.
       insertExportMappingOrError(newPackageJson, subpath, {
         types: normalizePath(typesOutRelativePath),
-        esm2022: normalizePath(esmIndexOutRelativePath),
-        esm: normalizePath(esmIndexOutRelativePath),
         // Note: The default conditions needs to be the last one.
         default: normalizePath(fesm2022OutRelativePath),
       });

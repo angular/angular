@@ -97,32 +97,22 @@ describe('@angular/common ng_package', () => {
             './package.json': {default: './package.json'},
             '.': {
               types: './index.d.ts',
-              esm2022: './esm2022/common.mjs',
-              esm: './esm2022/common.mjs',
               default: './fesm2022/common.mjs',
             },
             './http': {
               types: './http/index.d.ts',
-              esm2022: './esm2022/http/http.mjs',
-              esm: './esm2022/http/http.mjs',
               default: './fesm2022/http.mjs',
             },
             './http/testing': {
               types: './http/testing/index.d.ts',
-              esm2022: './esm2022/http/testing/testing.mjs',
-              esm: './esm2022/http/testing/testing.mjs',
               default: './fesm2022/http/testing.mjs',
             },
             './testing': {
               types: './testing/index.d.ts',
-              esm2022: './esm2022/testing/testing.mjs',
-              esm: './esm2022/testing/testing.mjs',
               default: './fesm2022/testing.mjs',
             },
             './upgrade': {
               types: './upgrade/index.d.ts',
-              esm2022: './esm2022/upgrade/upgrade.mjs',
-              esm: './esm2022/upgrade/upgrade.mjs',
               default: './fesm2022/upgrade.mjs',
             },
           }),

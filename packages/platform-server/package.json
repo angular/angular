@@ -27,7 +27,6 @@
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
   "sideEffects": [
-    "./esm2022/init/**",
     "./fesm2022/init.mjs"
   ]
 }

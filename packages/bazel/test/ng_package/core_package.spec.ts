@@ -63,32 +63,22 @@ describe('@angular/core ng_package', () => {
               './package.json': {default: './package.json'},
               '.': {
                 types: './index.d.ts',
-                esm2022: './esm2022/core.mjs',
-                esm: './esm2022/core.mjs',
                 default: './fesm2022/core.mjs',
               },
               './primitives/event-dispatch': {
                 types: './primitives/event-dispatch/index.d.ts',
-                esm2022: './esm2022/primitives/event-dispatch/index.mjs',
-                esm: './esm2022/primitives/event-dispatch/index.mjs',
                 default: './fesm2022/primitives/event-dispatch.mjs',
               },
               './primitives/signals': {
                 types: './primitives/signals/index.d.ts',
-                esm2022: './esm2022/primitives/signals/index.mjs',
-                esm: './esm2022/primitives/signals/index.mjs',
                 default: './fesm2022/primitives/signals.mjs',
               },
               './rxjs-interop': {
                 types: './rxjs-interop/index.d.ts',
-                esm2022: './esm2022/rxjs-interop/rxjs-interop.mjs',
-                esm: './esm2022/rxjs-interop/rxjs-interop.mjs',
                 default: './fesm2022/rxjs-interop.mjs',
               },
               './testing': {
                 types: './testing/index.d.ts',
-                esm2022: './esm2022/testing/testing.mjs',
-                esm: './esm2022/testing/testing.mjs',
                 default: './fesm2022/testing.mjs',
               },
             }),
@@ -138,16 +128,6 @@ describe('@angular/core ng_package', () => {
         expect(shx.cat('fesm2022/core.mjs')).toMatch(
           /@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/,
         );
-      });
-    });
-
-    describe('esm2022', () => {
-      it('should not contain any *.ngfactory.js files', () => {
-        expect(shx.find('esm2022').filter((f) => f.includes('.ngfactory'))).toEqual([]);
-      });
-
-      it('should not contain any *.ngsummary.js files', () => {
-        expect(shx.find('esm2022').filter((f) => f.includes('.ngsummary'))).toEqual([]);
       });
     });
   });
