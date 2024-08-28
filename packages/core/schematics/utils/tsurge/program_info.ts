@@ -10,14 +10,16 @@ import {NgtscProgram} from '../../../../compiler-cli/src/ngtsc/program';
 import {NgCompilerOptions} from '../../../../compiler-cli/src/ngtsc/core/api';
 
 import ts from 'typescript';
+import {NgCompiler} from '../../../../compiler-cli/src/ngtsc/core';
 
 /**
  * Base information for a TypeScript project, including an instantiated
  * TypeScript program. Base information may be extended by user-overridden
  * migration preparation methods to extend the stages with more data.
  */
-export interface BaseProgramInfo<T extends NgtscProgram | ts.Program> {
-  program: T;
+export interface BaseProgramInfo {
+  ngCompiler: NgCompiler | null;
+  program: ts.Program;
   userOptions: NgCompilerOptions;
   programAbsoluteRootPaths: string[];
   tsconfigAbsolutePath: string;
@@ -30,8 +32,8 @@ export interface BaseProgramInfo<T extends NgtscProgram | ts.Program> {
  * A different interface may be used as full program information, configured via a
  * {@link TsurgeMigration.prepareProgram} override.
  */
-export interface ProgramInfo<T extends NgtscProgram | ts.Program> extends BaseProgramInfo<T> {
+export interface ProgramInfo extends BaseProgramInfo {
   sourceFiles: ts.SourceFile[];
-  fullProgramSourceFiles: ts.SourceFile[];
+  fullProgramSourceFiles: readonly ts.SourceFile[];
   projectDirAbsPath: string;
 }

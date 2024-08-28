@@ -25,7 +25,7 @@ export function createNgtscProgram(
   absoluteTsconfigPath: string,
   fs?: FileSystem,
   optionOverrides: NgCompilerOptions = {},
-): BaseProgramInfo<NgtscProgram> {
+): BaseProgramInfo {
   if (fs === undefined) {
     fs = new NodeJSFileSystem();
     setFileSystem(fs);
@@ -57,7 +57,8 @@ export function createNgtscProgram(
   );
 
   return {
-    program: ngtscProgram,
+    ngCompiler: ngtscProgram.compiler,
+    program: ngtscProgram.getTsProgram(),
     userOptions: tsconfig.options,
     programAbsoluteRootPaths: tsconfig.rootNames,
     tsconfigAbsolutePath: absoluteTsconfigPath,

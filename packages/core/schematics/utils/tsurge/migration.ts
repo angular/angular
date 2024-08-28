@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript';
-import {NgtscProgram} from '../../../../compiler-cli/src/ngtsc/program';
 import {TsurgeBaseMigration} from './base_migration';
 import {Serializable} from './helpers/serializable';
 import {ProgramInfo} from './program_info';
@@ -37,24 +35,9 @@ import {Replacement} from './replacement';
  *
  *  TODO: Link design doc
  */
-export type TsurgeMigration<
-  UnitAnalysisMetadata,
-  CombinedGlobalMetadata,
-  TsProgramType extends ts.Program | NgtscProgram = NgtscProgram,
-  PreparationInfo = ProgramInfo<TsProgramType>,
-> =
-  | TsurgeComplexMigration<
-      UnitAnalysisMetadata,
-      CombinedGlobalMetadata,
-      TsProgramType,
-      PreparationInfo
-    >
-  | TsurgeFunnelMigration<
-      UnitAnalysisMetadata,
-      CombinedGlobalMetadata,
-      TsProgramType,
-      PreparationInfo
-    >;
+export type TsurgeMigration<UnitAnalysisMetadata, CombinedGlobalMetadata> =
+  | TsurgeComplexMigration<UnitAnalysisMetadata, CombinedGlobalMetadata>
+  | TsurgeFunnelMigration<UnitAnalysisMetadata, CombinedGlobalMetadata>;
 
 /**
  * A simpler variant of a {@link TsurgeComplexMigration} that does not
@@ -71,9 +54,8 @@ export type TsurgeMigration<
 export abstract class TsurgeFunnelMigration<
   UnitAnalysisMetadata,
   CombinedGlobalMetadata,
-  TsProgramType extends ts.Program | NgtscProgram = NgtscProgram,
-  PreparationInfo = ProgramInfo<TsProgramType>,
-> extends TsurgeBaseMigration<TsProgramType, PreparationInfo> {
+  PreparationInfo = ProgramInfo,
+> extends TsurgeBaseMigration {
   /** Analyzes the given TypeScript project and returns serializable compilation unit data. */
   abstract analyze(info: PreparationInfo): Promise<Serializable<UnitAnalysisMetadata>>;
 
@@ -104,11 +86,9 @@ export abstract class TsurgeFunnelMigration<
 export abstract class TsurgeComplexMigration<
   UnitAnalysisMetadata,
   CombinedGlobalMetadata,
-  TsProgramType extends ts.Program | NgtscProgram = NgtscProgram,
-  PreparationInfo = ProgramInfo<TsProgramType>,
-> extends TsurgeBaseMigration<TsProgramType, PreparationInfo> {
+> extends TsurgeBaseMigration {
   /** Analyzes the given TypeScript project and returns serializable compilation unit data. */
-  abstract analyze(info: PreparationInfo): Promise<Serializable<UnitAnalysisMetadata>>;
+  abstract analyze(info: ProgramInfo): Promise<Serializable<UnitAnalysisMetadata>>;
 
   /** Merges all compilation unit data from previous analysis phases into a global result. */
   abstract merge(units: UnitAnalysisMetadata[]): Promise<Serializable<CombinedGlobalMetadata>>;
@@ -122,6 +102,6 @@ export abstract class TsurgeComplexMigration<
    */
   abstract migrate(
     globalMetadata: CombinedGlobalMetadata,
-    info: PreparationInfo,
+    info: ProgramInfo,
   ): Promise<Replacement[]>;
 }

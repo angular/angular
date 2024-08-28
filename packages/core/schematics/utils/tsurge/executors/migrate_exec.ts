@@ -8,8 +8,6 @@
 
 import {TsurgeMigration} from '../migration';
 import {Replacement} from '../replacement';
-import {NgtscProgram} from '../../../../../compiler-cli/src/ngtsc/program';
-import ts from 'typescript';
 
 /**
  * Executes the migrate phase of the given migration against
@@ -20,12 +18,8 @@ import ts from 'typescript';
  *
  * @returns a list of text replacements to apply to disk.
  */
-export async function executeMigratePhase<
-  UnitData,
-  GlobalData,
-  TsProgramType extends ts.Program | NgtscProgram,
->(
-  migration: TsurgeMigration<UnitData, GlobalData, TsProgramType, unknown>,
+export async function executeMigratePhase<UnitData, GlobalData>(
+  migration: TsurgeMigration<UnitData, GlobalData>,
   globalMetadata: GlobalData,
   tsconfigAbsolutePath: string,
 ): Promise<Replacement[]> {
