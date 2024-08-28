@@ -9,8 +9,8 @@
         placeholder="duration: >30 source: click"
         />
     </mat-form-field>
-    <mat-form-field [class.hidden]="!record">
-      <mat-select [value]="visualizationMode" (selectionChange)="this.changeVisualizationMode.emit($event.value)">
+    <mat-form-field [class.hidden]="!record()">
+      <mat-select [value]="visualizationMode()" (selectionChange)="visualizationMode.set($event.value)">
         <mat-option [value]="flameGraphMode"> Flame graph </mat-option>
         <mat-option [value]="treeMapMode"> Tree map </mat-option>
         <mat-option [value]="barGraphMode"> Bar chart </mat-option>
@@ -19,39 +19,39 @@
   </div>
   <div
     class="details"
-    [class.flame-details]="visualizationMode == flameGraphMode"
-    [class.bar-details]="visualizationMode == barGraphMode"
+    [class.flame-details]="visualizationMode() == flameGraphMode"
+    [class.bar-details]="visualizationMode() == barGraphMode"
     >
-    @if (estimatedFrameRate >= 60 && record) {
+    @if (estimatedFrameRate() >= 60 && record()) {
       <label>
-        Time spent: <span class="value">{{ record?.duration | number }} ms</span>
+        Time spent: <span class="value">{{ record()?.duration | number }} ms</span>
       </label>
     }
-    @if (estimatedFrameRate < 60 && record) {
+    @if (estimatedFrameRate() < 60 && record()) {
       <label class="warning-label">
-        Time spent: <span class="value">{{ record?.duration | number }} ms</span>
+        Time spent: <span class="value">{{ record()?.duration | number }} ms</span>
       </label>
     }
-    @if (estimatedFrameRate < 60 && record) {
+    @if (estimatedFrameRate() < 60 && record()) {
       <label class="warning-label">
-        Frame rate: <span class="value">{{ estimatedFrameRate }} fps</span>
+        Frame rate: <span class="value">{{ estimatedFrameRate() }} fps</span>
       </label>
     }
-    @if (record?.source && record) {
+    @if (record()?.source && record()) {
       <label>
-        Source: <span class="value">{{ record?.source }}</span>
+        Source: <span class="value">{{ record()?.source }}</span>
       </label>
     }
-    @if (visualizationMode == flameGraphMode) {
+    @if (visualizationMode() == flameGraphMode) {
       <mat-checkbox
-        [checked]="changeDetection"
-        (change)="this.toggleChangeDetection.emit(!changeDetection)"
+        [checked]="changeDetection()"
+        (change)="changeDetection.set($event.checked)"
         >
         Show only change detection
       </mat-checkbox>
     }
   </div>
-  @if (!empty) {
+  @if (!empty()) {
     <button mat-stroked-button (click)="exportProfile.emit()">Save Profile</button>
   }
 </div>
