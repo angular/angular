@@ -7,12 +7,12 @@
  */
 
 import {TsurgeFunnelMigration, TsurgeMigration} from '../migration';
-import {MockFileSystem} from '../../../../../compiler-cli/src/ngtsc/file_system/testing';
+import {MockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {
   absoluteFrom,
   AbsoluteFsPath,
   getFileSystem,
-} from '../../../../../compiler-cli/src/ngtsc/file_system';
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {groupReplacementsByFile} from '../helpers/group_replacements';
 import {applyTextUpdates} from '../replacement';
 

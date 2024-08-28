@@ -13,7 +13,7 @@ import {
   InputMemberIncompatibility,
 } from '../input_detection/incompatibility';
 import {InputNode} from '../input_detection/input_node';
-import {Decorator} from '../../../../../../compiler-cli/src/ngtsc/reflection';
+import {Decorator} from '@angular/compiler-cli/src/ngtsc/reflection';
 import assert from 'assert';
 
 /**

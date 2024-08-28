@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {readConfiguration} from '../../../../../compiler-cli/src/perform_compile';
-import {NgCompilerOptions} from '../../../../../compiler-cli/src/ngtsc/core/api';
+import {readConfiguration} from '@angular/compiler-cli/src/perform_compile';
+import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {
   FileSystem,
   NgtscCompilerHost,
   NodeJSFileSystem,
   setFileSystem,
-} from '../../../../../compiler-cli/src/ngtsc/file_system';
-import {NgtscProgram} from '../../../../../compiler-cli/src/ngtsc/program';
+} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
 import {BaseProgramInfo} from '../program_info';
 
 /**

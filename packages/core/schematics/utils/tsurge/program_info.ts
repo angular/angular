@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgtscProgram} from '../../../../compiler-cli/src/ngtsc/program';
-import {NgCompilerOptions} from '../../../../compiler-cli/src/ngtsc/core/api';
+import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
+import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 
 import ts from 'typescript';
-import {NgCompiler} from '../../../../compiler-cli/src/ngtsc/core';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 
 /**
  * Base information for a TypeScript project, including an instantiated

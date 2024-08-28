@@ -10,10 +10,10 @@ import ts from 'typescript';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationResult} from '../result';
 import {isTsInputClassTypeReference} from '../utils/input_reference';
-import {absoluteFromSourceFile} from '../../../../../../compiler-cli/src/ngtsc/file_system';
+import {absoluteFromSourceFile} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
 import assert from 'assert';
-import {ImportManager} from '../../../../../../compiler-cli/src/ngtsc/translator';
+import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
 
 /**
  * Migrates TypeScript "ts.Type" references. E.g.

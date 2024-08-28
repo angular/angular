@@ -16,7 +16,7 @@ import {pass8__migrateHostBindings} from './passes/8_migrate_host_bindings';
 import {pass9__migrateTypeScriptTypeReferences} from './passes/9_migrate_ts_type_references';
 import {MigrationResult} from './result';
 import {pass10_applyImportManager} from './passes/10_apply_import_manager';
-import {ImportManager} from '../../../../../compiler-cli/src/ngtsc/translator';
+import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
 
 /**
  * Executes the migration phase.

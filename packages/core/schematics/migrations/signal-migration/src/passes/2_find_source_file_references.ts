@@ -7,8 +7,8 @@
  */
 
 import ts from 'typescript';
-import {ReflectionHost} from '../../../../../../compiler-cli/src/ngtsc/reflection';
-import {TemplateTypeChecker} from '../../../../../../compiler-cli/src/ngtsc/typecheck/api';
+import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {isInputContainerNode} from '../input_detection/input_node';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationHost} from '../migration_host';
@@ -20,8 +20,8 @@ import {identifyPotentialTypeScriptReference} from './references/identify_ts_ref
 import {PartialDirectiveTypeInCatalystTests} from '../pattern_advisors/partial_directive_type';
 import {InputReferenceKind} from '../utils/input_reference';
 import {GroupedTsAstVisitor} from '../utils/grouped_ts_ast_visitor';
-import {ResourceLoader} from '../../../../../../compiler-cli/src/ngtsc/annotations';
-import {PartialEvaluator} from '../../../../../../compiler-cli/src/ngtsc/partial_evaluator';
+import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 
 /**
  * Phase where we iterate through all source file references and

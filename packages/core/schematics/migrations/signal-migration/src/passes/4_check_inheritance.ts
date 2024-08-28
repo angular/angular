@@ -15,9 +15,9 @@ import {InheritanceGraph} from '../utils/inheritance_graph';
 import {topologicalSort} from '../utils/inheritance_sort';
 import {getMemberName} from '../utils/class_member_names';
 import ts from 'typescript';
-import {MetadataReader} from '../../../../../../compiler-cli/src/ngtsc/metadata';
-import {Reference} from '../../../../../../compiler-cli/src/ngtsc/imports';
-import {ClassDeclaration} from '../../../../../../compiler-cli/src/ngtsc/reflection';
+import {MetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
+import {ClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {isInputContainerNode} from '../input_detection/input_node';
 import {getInputDescriptor} from '../utils/input_id';
 

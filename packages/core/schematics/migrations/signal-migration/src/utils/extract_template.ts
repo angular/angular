@@ -7,17 +7,14 @@
  */
 
 import ts from 'typescript';
-import {
-  ReflectionHost,
-  reflectObjectLiteral,
-} from '../../../../../../compiler-cli/src/ngtsc/reflection';
+import {ReflectionHost, reflectObjectLiteral} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {MigrationHost} from '../migration_host';
-import {getAngularDecorators} from '../../../../../../compiler-cli/src/ngtsc/annotations';
-import {PartialEvaluator} from './../../../../../../compiler-cli/src/ngtsc/partial_evaluator';
+import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {
   ExternalTemplateDeclaration,
   InlineTemplateDeclaration,
-} from '../../../../../../compiler-cli/src/ngtsc/annotations/component/src/resources';
+} from '@angular/compiler-cli/src/ngtsc/annotations/component/src/resources';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler';
 import path from 'path';
 

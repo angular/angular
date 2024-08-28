@@ -7,7 +7,7 @@
  */
 
 import {absoluteFromSourceFile} from '@angular/compiler-cli';
-import {TypeScriptReflectionHost} from '../../../../compiler-cli/src/ngtsc/reflection';
+import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import ts from 'typescript';
 import {
   confirmAsSerializable,
@@ -23,9 +23,9 @@ import {traverseAccess} from '../signal-migration/src/utils/traverse_access';
 import {unwrapParent} from '../signal-migration/src/utils/unwrap_parent';
 import {writeBinaryOperators} from '../signal-migration/src/utils/write_operators';
 import {computeReplacementsToMigrateQuery} from './convert_query_property';
-import {ImportManager, PartialEvaluator} from '../../../../compiler-cli/private/migrations';
+import {ImportManager, PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
-import {QueryFunctionName} from '../../../../compiler-cli/src/ngtsc/annotations';
+import {QueryFunctionName} from '@angular/compiler-cli/src/ngtsc/annotations';
 import {queryFunctionNameToDecorator} from './query_api_names';
 
 export interface CompilationUnitData {

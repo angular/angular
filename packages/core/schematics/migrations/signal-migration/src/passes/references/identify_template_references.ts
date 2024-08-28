@@ -7,23 +7,20 @@
  */
 
 import ts from 'typescript';
-import {ResourceLoader} from '../../../../../../../compiler-cli/src/ngtsc/annotations';
-import {TemplateTypeChecker} from '../../../../../../../compiler-cli/src/ngtsc/typecheck/api';
+import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {InputIncompatibilityReason} from '../../input_detection/incompatibility';
 import {KnownInputs} from '../../input_detection/known_inputs';
 import {TemplateReferenceVisitor} from '../../input_detection/template_reference_visitor';
 import {MigrationHost} from '../../migration_host';
 import {MigrationResult} from '../../result';
 import {InputReferenceKind} from '../../utils/input_reference';
-import {
-  ClassDeclaration,
-  ReflectionHost,
-} from '../../../../../../../compiler-cli/src/ngtsc/reflection';
-import {PartialEvaluator} from '../../../../../../../compiler-cli/src/ngtsc/partial_evaluator';
-import {extractTemplate} from '../../../../../../../compiler-cli/src/ngtsc/annotations/component/src/resources';
+import {ClassDeclaration, ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {extractTemplate} from '@angular/compiler-cli/src/ngtsc/annotations/component/src/resources';
 import {attemptExtractTemplateDefinition} from '../../utils/extract_template';
-import {NgCompilerOptions} from '../../../../../../../compiler-cli/src/ngtsc/core/api';
-import {CompilationMode} from '../../../../../../../compiler-cli/src/ngtsc/transform';
+import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {CompilationMode} from '@angular/compiler-cli/src/ngtsc/transform';
 import {TmplAstNode} from '@angular/compiler';
 
 /**

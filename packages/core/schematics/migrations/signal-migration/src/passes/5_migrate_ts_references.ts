@@ -15,7 +15,7 @@ import {isTsInputReference} from '../utils/input_reference';
 import {traverseAccess} from '../utils/traverse_access';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {UniqueNamesGenerator} from '../utils/unique_names';
-import {absoluteFromSourceFile} from '../../../../../../compiler-cli/src/ngtsc/file_system';
+import {absoluteFromSourceFile} from '@angular/compiler-cli/src/ngtsc/file_system';
 
 /**
  * Phase that migrates TypeScript input references to be signal compatible.
