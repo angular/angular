@@ -153,6 +153,15 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         force = true;
         break;
       }
+      case NotificationSource.PendingTaskRemoved: {
+        // Removing a pending task via the public API forces a scheduled tick, ensuring that
+        // stability is async and delayed until there was at least an opportunity to run
+        // application synchronization. This prevents some footguns when working with the
+        // public API for pending tasks where developers attempt to update application state
+        // immediately after removing the last task.
+        force = true;
+        break;
+      }
       case NotificationSource.ViewDetachedFromDOM:
       case NotificationSource.ViewAttached:
       case NotificationSource.RenderHook:
@@ -226,6 +235,14 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     // stable. We want to prevent double ticking so we track whether the tick is
     // already running and skip it if so.
     if (this.runningTick || this.appRef.destroyed) {
+      return;
+    }
+
+    // If we reach the tick and there is no work to be done in ApplicationRef.tick,
+    // skip it altogether and clean up. There may be no work if, for example, the only
+    // event that notified the scheduler was the removal of a pending task.
+    if (this.appRef.dirtyFlags === ApplicationRefDirtyFlags.None) {
+      this.cleanup();
       return;
     }
 

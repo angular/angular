@@ -72,9 +72,12 @@ describe('public ExperimentalPendingTasks', () => {
     const appRef = TestBed.inject(ApplicationRef);
     const pendingTasks = TestBed.inject(ExperimentalPendingTasks);
 
-    const taskA = pendingTasks.add();
+    const removeTaskA = pendingTasks.add();
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
-    taskA();
+    removeTaskA();
+    // stability is delayed until a tick happens
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
+    TestBed.inject(ApplicationRef).tick();
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
   });
 });
