@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFromSourceFile, NgtscProgram} from '@angular/compiler-cli';
+import {absoluteFromSourceFile} from '@angular/compiler-cli';
 import {TypeScriptReflectionHost} from '../../../../compiler-cli/src/ngtsc/reflection';
 import ts from 'typescript';
 import {
@@ -41,12 +41,11 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     sourceFiles,
     program,
     projectDirAbsPath,
-  }: ProgramInfo<NgtscProgram>): Promise<Serializable<CompilationUnitData>> {
+  }: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
     // TODO: This stage for this migration doesn't necessarily need a full
     // compilation unit program.
 
-    const tsProgram = program.getTsProgram();
-    const checker = tsProgram.getTypeChecker();
+    const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflector, checker, null);
     const res: CompilationUnitData = {knownQueryFields: {}, problematicQueries: {}};
@@ -106,10 +105,9 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
   override async migrate(
     globalMetadata: CompilationUnitData,
-    {program, projectDirAbsPath, sourceFiles}: ProgramInfo<NgtscProgram>,
+    {program, projectDirAbsPath, sourceFiles}: ProgramInfo,
   ): Promise<Replacement[]> {
-    const tsProgram = program.getTsProgram();
-    const checker = tsProgram.getTypeChecker();
+    const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflector, checker, null);
     const replacements: Replacement[] = [];
