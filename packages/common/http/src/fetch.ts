@@ -52,9 +52,9 @@ function getResponseUrl(response: Response): string | null {
  */
 @Injectable()
 export class FetchBackend implements HttpBackend {
-  // Note: binding fetch directly causes an "illegal invocation" error
-  // We use an arrow function to always reference the current global implementation of fetch
-  // In case it has been (monkey)patched after the FetchBackend has been created
+  // We use an arrow function to always reference the current global implementation of `fetch`.
+  // This is helpful for cases when the global `fetch` implementation is modified by external code,
+  // see https://github.com/angular/angular/issues/57527.
   private readonly fetchImpl =
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);

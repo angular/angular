@@ -429,24 +429,31 @@ describe('FetchBackend', async () => {
     });
 
     it('should use the current implementation of the global fetch', async () => {
-      const fakeFetch = jasmine
-        .createSpy('', () => Promise.resolve(new Response(JSON.stringify({foo: 'bar'}))))
-        .and.callThrough();
-      globalThis.fetch = fakeFetch;
+      const originalFetch = globalThis.fetch;
 
-      const client = TestBed.inject(HttpClient);
-      expect(fakeFetch).not.toHaveBeenCalled();
-      let response = await client.get<unknown>('').toPromise();
-      expect(fakeFetch).toHaveBeenCalled();
-      expect(response).toEqual({foo: 'bar'});
+      try {
+        const fakeFetch = jasmine
+          .createSpy('', () => Promise.resolve(new Response(JSON.stringify({foo: 'bar'}))))
+          .and.callThrough();
+        globalThis.fetch = fakeFetch;
 
-      // We dynamicaly change the implementation of fetch
-      const fakeFetch2 = jasmine
-        .createSpy('', () => Promise.resolve(new Response(JSON.stringify({foo: 'baz'}))))
-        .and.callThrough();
-      globalThis.fetch = fakeFetch2;
-      response = await client.get<unknown>('').toPromise();
-      expect(response).toEqual({foo: 'baz'});
+        const client = TestBed.inject(HttpClient);
+        expect(fakeFetch).not.toHaveBeenCalled();
+        let response = await client.get<unknown>('').toPromise();
+        expect(fakeFetch).toHaveBeenCalled();
+        expect(response).toEqual({foo: 'bar'});
+
+        // We dynamicaly change the implementation of fetch
+        const fakeFetch2 = jasmine
+          .createSpy('', () => Promise.resolve(new Response(JSON.stringify({foo: 'baz'}))))
+          .and.callThrough();
+        globalThis.fetch = fakeFetch2;
+        response = await client.get<unknown>('').toPromise();
+        expect(response).toEqual({foo: 'baz'});
+      } finally {
+        // We need to restore the original fetch implementation, else the tests might become flaky
+        globalThis.fetch = originalFetch;
+      }
     });
   });
 });
