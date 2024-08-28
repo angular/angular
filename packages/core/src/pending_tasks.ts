@@ -11,6 +11,10 @@ import {BehaviorSubject} from 'rxjs';
 import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
 import {OnDestroy} from './interface/lifecycle_hooks';
+import {
+  ChangeDetectionScheduler,
+  NotificationSource,
+} from './change_detection/scheduling/zoneless_scheduling';
 
 /**
  * Internal implementation of the pending tasks service.
@@ -82,13 +86,18 @@ export class PendingTasks implements OnDestroy {
  */
 export class ExperimentalPendingTasks {
   private internalPendingTasks = inject(PendingTasks);
+  private scheduler = inject(ChangeDetectionScheduler);
   /**
    * Adds a new task that should block application's stability.
    * @returns A cleanup function that removes a task when called.
    */
   add(): () => void {
     const taskId = this.internalPendingTasks.add();
-    return () => this.internalPendingTasks.remove(taskId);
+    return () => {
+      // Notifying the scheduler will hold application stability open until the next tick.
+      this.scheduler.notify(NotificationSource.PendingTaskRemoved);
+      this.internalPendingTasks.remove(taskId);
+    };
   }
 
   /** @nocollapse */

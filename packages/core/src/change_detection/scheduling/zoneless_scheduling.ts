@@ -47,6 +47,9 @@ export const enum NotificationSource {
   ViewDetachedFromDOM,
   // Applying animations might result in new DOM state and should rerun render hooks
   AsyncAnimationsLoaded,
+  // The scheduler is notified when a pending task is removed via the public API.
+  // This allows us to make stability async, delayed until the next application tick.
+  PendingTaskRemoved,
 }
 
 /**
