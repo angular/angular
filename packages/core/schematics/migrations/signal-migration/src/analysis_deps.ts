@@ -25,7 +25,7 @@ import {TemplateTypeChecker} from '../../../../../compiler-cli/src/ngtsc/typeche
  * Interface containing the analysis information
  * for an Angular program to be migrated.
  */
-export interface AnalysisProgramInfo extends ProgramInfo<NgtscProgram> {
+export interface AnalysisProgramInfo extends ProgramInfo {
   // List of source files in the program.
   sourceFiles: ts.SourceFile[];
   // List of all files in the program, including external `d.ts`.

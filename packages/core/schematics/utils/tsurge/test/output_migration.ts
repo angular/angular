@@ -27,8 +27,8 @@ type GlobalMetadata = {[id: OutputID]: {canBeMigrated: boolean}};
  * framework works as expected. This is **not a full migration**, but rather an example.
  */
 export class OutputMigration extends TsurgeComplexMigration<AnalysisUnit, GlobalMetadata> {
-  override async analyze(info: ProgramInfo<NgtscProgram>) {
-    const program = info.program.getTsProgram();
+  override async analyze(info: ProgramInfo) {
+    const program = info.program;
     const typeChecker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(typeChecker, false);
     const dtsReader = new DtsMetadataReader(typeChecker, reflector);
@@ -74,8 +74,8 @@ export class OutputMigration extends TsurgeComplexMigration<AnalysisUnit, Global
     return confirmAsSerializable(merged);
   }
 
-  override async migrate(globalAnalysisData: GlobalMetadata, info: ProgramInfo<NgtscProgram>) {
-    const program = info.program.getTsProgram();
+  override async migrate(globalAnalysisData: GlobalMetadata, info: ProgramInfo) {
+    const program = info.program;
     const typeChecker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(typeChecker, false);
     const dtsReader = new DtsMetadataReader(typeChecker, reflector);
