@@ -30,7 +30,6 @@
     "save": "devDependencies"
   },
   "sideEffects": [
-    "./esm2022/init/**",
     "./fesm2022/init.mjs"
   ],
   "dependencies": {
