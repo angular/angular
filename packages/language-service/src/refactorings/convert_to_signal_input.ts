@@ -119,7 +119,7 @@ export class ConvertToSignalInputRefactoring implements Refactoring {
 
     this.migration ??= new SignalInputMigration();
     this.migration.upgradeAnalysisPhaseToAvoidBatch = true;
-    this.migration.lsReportProgressFn = reportProgress;
+    this.migration.reportProgressFn = reportProgress;
     this.migration.beforeMigrateHook = getBeforeMigrateHookToFilterAllUnrelatedInputs(
       containingProp,
       (i) => (targetInput = i),
@@ -214,14 +214,15 @@ function getBeforeMigrateHookToFilterAllUnrelatedInputs(
     // Mark all other inputs as incompatible.
     // Note that we still analyzed the whole application for potential references.
     // Only migrate references to the target input.
-    Array.from(result.sourceInputs.keys()).forEach(
-      (i) =>
-        i.key !== key &&
-        knownInputs.markInputAsIncompatible(i, {
+    for (const input of result.sourceInputs.keys()) {
+      if (input.key !== key) {
+        knownInputs.markInputAsIncompatible(input, {
           context: null,
           reason: InputIncompatibilityReason.IgnoredBecauseOfLanguageServiceRefactoringRange,
-        }),
-    );
+        });
+      }
+    }
+
     result.references = result.references.filter(
       // Note: References to the whole class are not migrated as we are not migrating all inputs.
       // We can revisit this at a later time.

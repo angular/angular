@@ -39,7 +39,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
   upgradedAnalysisPhaseResults: Replacement[] | null = null;
 
   // Necessary for language service configuration.
-  lsReportProgressFn: ((percentage: number, updateMessage: string) => void) | null = null;
+  reportProgressFn: ((percentage: number, updateMessage: string) => void) | null = null;
   beforeMigrateHook:
     | ((host: MigrationHost, knownInputs: KnownInputs, result: MigrationResult) => void)
     | null = null;
@@ -76,10 +76,10 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     const result = new MigrationResult();
     const host = createMigrationHost(info);
 
-    this.lsReportProgressFn?.(10, 'Analyzing project (input usages)..');
+    this.reportProgressFn?.(10, 'Analyzing project (input usages)..');
     const {inheritanceGraph} = executeAnalysisPhase(host, knownInputs, result, analysisDeps);
 
-    this.lsReportProgressFn?.(40, 'Checking inheritance..');
+    this.reportProgressFn?.(40, 'Checking inheritance..');
     pass4__checkInheritanceOfInputs(host, inheritanceGraph, metaRegistry, knownInputs);
     if (this.bestEffortMode) {
       filterIncompatibilitiesForBestEffortMode(knownInputs);
@@ -91,7 +91,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     if (this.upgradeAnalysisPhaseToAvoidBatch) {
       const merged = await this.merge([unitData]);
 
-      this.lsReportProgressFn?.(60, 'Collecting migration changes..');
+      this.reportProgressFn?.(60, 'Collecting migration changes..');
       const replacements = await this.migrate(merged, info, {
         knownInputs,
         result,
@@ -99,7 +99,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
         inheritanceGraph,
         analysisDeps,
       });
-      this.lsReportProgressFn?.(100, 'Completed migration.');
+      this.reportProgressFn?.(100, 'Completed migration.');
 
       // Expose the upgraded analysis stage results.
       this.upgradedAnalysisPhaseResults = replacements;
