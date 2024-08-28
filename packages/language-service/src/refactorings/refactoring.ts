@@ -40,7 +40,7 @@ export interface Refactoring {
     fileName: string,
     positionOrRange: number | ts.TextRange,
     reportProgress: ApplyRefactoringProgressFn,
-  ): ts.RefactorEditInfo;
+  ): Promise<ts.RefactorEditInfo>;
 }
 
 export const allRefactorings: Refactoring[] = [];

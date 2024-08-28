@@ -549,12 +549,12 @@ export class LanguageService {
     );
   }
 
-  applyRefactoring(
+  async applyRefactoring(
     fileName: string,
     positionOrRange: number | ts.TextRange,
     refactorName: string,
     reportProgress: ApplyRefactoringProgressFn,
-  ): ts.RefactorEditInfo | undefined {
+  ): Promise<ts.RefactorEditInfo | undefined> {
     const matchingRefactoring = allRefactorings.find((r) => r.id === refactorName);
     if (matchingRefactoring === undefined) {
       return undefined;

@@ -91,7 +91,7 @@ export interface NgLanguageService extends ts.LanguageService {
     positionOrRange: number | ts.TextRange,
     refactorName: string,
     reportProgress: ApplyRefactoringProgressFn,
-  ): ts.RefactorEditInfo | undefined;
+  ): Promise<ts.RefactorEditInfo | undefined>;
 
   hasCodeFixesForErrorCode(errorCode: number): boolean;
 }
