@@ -9,7 +9,7 @@
 import {absoluteFrom} from '@angular/compiler-cli';
 import {runTsurgeMigration} from '../../utils/tsurge/testing';
 import {SignalQueriesMigration} from './migration';
-import {initMockFileSystem} from '../../../../compiler-cli/src/ngtsc/file_system/testing';
+import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {diffText} from '../../utils/tsurge/testing/diff';
 
 interface TestCase {

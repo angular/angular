@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom} from '../../../../../compiler-cli/src/ngtsc/file_system';
-import {initMockFileSystem} from '../../../../../compiler-cli/src/ngtsc/file_system/testing';
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {runTsurgeMigration} from '../testing';
 import {OutputMigration} from './output_migration';
 

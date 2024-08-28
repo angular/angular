@@ -8,10 +8,10 @@
 
 import assert from 'assert';
 import ts from 'typescript';
-import {ReferenceEmitter} from '../../../../../../compiler-cli/src/ngtsc/imports';
-import {DtsMetadataReader} from '../../../../../../compiler-cli/src/ngtsc/metadata';
-import {PartialEvaluator} from '../../../../../../compiler-cli/src/ngtsc/partial_evaluator';
-import {TypeScriptReflectionHost} from '../../../../../../compiler-cli/src/ngtsc/reflection';
+import {ReferenceEmitter} from '@angular/compiler-cli/src/ngtsc/imports';
+import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {extractDecoratorInput} from '../input_detection/input_decorator';
 import {isInputContainerNode} from '../input_detection/input_node';
 import {KnownInputs} from '../input_detection/known_inputs';

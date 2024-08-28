@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '../../../../../compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {Replacement, TextUpdate} from '../replacement';
 
 /**

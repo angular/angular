@@ -8,7 +8,7 @@
 
 import assert from 'assert';
 import ts from 'typescript';
-import {unwrapExpression} from '../../../../../../compiler-cli/src/ngtsc/annotations/common';
+import {unwrapExpression} from '@angular/compiler-cli/src/ngtsc/annotations/common';
 import {ClassIncompatibilityReason} from '../input_detection/incompatibility';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {getMemberName} from '../utils/class_member_names';

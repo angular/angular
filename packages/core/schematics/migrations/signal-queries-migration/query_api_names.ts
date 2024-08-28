@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {QueryFunctionName} from '../../../../compiler-cli/src/ngtsc/annotations';
+import {QueryFunctionName} from '@angular/compiler-cli/src/ngtsc/annotations';
 
 /** Converts an initializer query API name to its decorator-equivalent. */
 export function queryFunctionNameToDecorator(name: QueryFunctionName): string {

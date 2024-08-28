@@ -7,7 +7,7 @@
  */
 
 import ts from 'typescript';
-import {absoluteFromSourceFile} from '../../../../../../compiler-cli/src/ngtsc/file_system';
+import {absoluteFromSourceFile} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
 import {MigrationResult} from '../result';
 import {isHostBindingInputReference} from '../utils/input_reference';

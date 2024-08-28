@@ -7,7 +7,7 @@
  */
 
 import {MigrationHost} from '../migration_host';
-import {absoluteFrom} from '../../../../../../compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MigrationResult} from '../result';
 import {isTemplateInputReference} from '../utils/input_reference';
 import {KnownInputs} from '../input_detection/known_inputs';

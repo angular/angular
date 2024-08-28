@@ -11,9 +11,9 @@ import {MigrationResult} from '../result';
 import {convertToSignalInput} from '../convert-input/convert_to_signal';
 import assert from 'assert';
 import {KnownInputs} from '../input_detection/known_inputs';
-import {ImportManager} from '../../../../../../compiler-cli/src/ngtsc/translator';
+import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
 import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
-import {absoluteFromSourceFile} from '../../../../../../compiler-cli/src/ngtsc/file_system';
+import {absoluteFromSourceFile} from '@angular/compiler-cli/src/ngtsc/file_system';
 
 /**
  * Phase that migrates `@Input()` declarations to signal inputs and

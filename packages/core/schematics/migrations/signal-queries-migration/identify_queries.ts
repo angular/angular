@@ -10,12 +10,12 @@ import ts from 'typescript';
 import {
   getAngularDecorators,
   queryDecoratorNames,
-} from '../../../../compiler-cli/src/ngtsc/annotations';
-import {ReflectionHost} from '../../../../compiler-cli/src/ngtsc/reflection';
+} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {UniqueID} from '../../utils/tsurge';
 import path from 'path';
-import {extractDecoratorQueryMetadata} from '../../../../compiler-cli/src/ngtsc/annotations/directive';
-import {PartialEvaluator} from '../../../../compiler-cli/private/migrations';
+import {extractDecoratorQueryMetadata} from '@angular/compiler-cli/src/ngtsc/annotations/directive';
+import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {R3QueryMetadata} from '../../../../compiler';
 
 /** Branded type to uniquely identify class properties in a project. */

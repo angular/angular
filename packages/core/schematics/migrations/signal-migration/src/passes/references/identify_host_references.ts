@@ -7,12 +7,9 @@
  */
 
 import ts from 'typescript';
-import {getAngularDecorators} from '../../../../../../../compiler-cli/src/ngtsc/annotations';
-import {unwrapExpression} from '../../../../../../../compiler-cli/src/ngtsc/annotations/common';
-import {
-  ReflectionHost,
-  reflectObjectLiteral,
-} from '../../../../../../../compiler-cli/src/ngtsc/reflection';
+import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {unwrapExpression} from '@angular/compiler-cli/src/ngtsc/annotations/common';
+import {ReflectionHost, reflectObjectLiteral} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {
   AST,
   ParseLocation,

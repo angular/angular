@@ -32,10 +32,7 @@ import {
   TmplAstTemplate,
   tmplAstVisitAll,
 } from '../../../../../../compiler';
-import {
-  SymbolKind,
-  TemplateTypeChecker,
-} from '../../../../../../compiler-cli/src/ngtsc/typecheck/api';
+import {SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {KnownInputs} from './known_inputs';
 import {attemptRetrieveInputFromSymbol} from './nodes_to_input';
 import {MigrationHost} from '../migration_host';

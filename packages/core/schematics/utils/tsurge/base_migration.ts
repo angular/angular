@@ -7,8 +7,8 @@
  */
 
 import path from 'path';
-import {FileSystem} from '../../../../compiler-cli/src/ngtsc/file_system';
-import {isShim} from '../../../../compiler-cli/src/ngtsc/shims';
+import {FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import {createNgtscProgram} from './helpers/ngtsc_program';
 import {BaseProgramInfo, ProgramInfo} from './program_info';
 

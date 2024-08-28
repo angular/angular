@@ -10,7 +10,7 @@ import ts from 'typescript';
 import {ExtractedQuery} from './identify_queries';
 import {Replacement, TextUpdate} from '../../utils/tsurge';
 import {absoluteFromSourceFile} from '../../../../compiler-cli';
-import {ImportManager} from '../../../../compiler-cli/private/migrations';
+import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import assert from 'assert';
 import {WrappedNodeExpr} from '@angular/compiler';
 import {removeFromUnionIfPossible} from '../signal-migration/src/utils/remove_from_union';

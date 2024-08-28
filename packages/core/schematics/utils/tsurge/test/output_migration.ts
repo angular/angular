@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgtscProgram} from '../../../../../compiler-cli/src/ngtsc/program';
-import {absoluteFromSourceFile} from '../../../../../compiler-cli/src/ngtsc/file_system';
-import {TypeScriptReflectionHost} from '../../../../../compiler-cli/src/ngtsc/reflection';
-import {DtsMetadataReader} from '../../../../../compiler-cli/src/ngtsc/metadata';
+import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
+import {absoluteFromSourceFile} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {confirmAsSerializable} from '../helpers/serializable';
 import {TsurgeComplexMigration} from '../migration';
 import {Replacement, TextUpdate} from '../replacement';

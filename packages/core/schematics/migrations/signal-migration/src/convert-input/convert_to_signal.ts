@@ -10,8 +10,8 @@ import assert from 'assert';
 import ts from 'typescript';
 
 import {ConvertInputPreparation} from './prepare_and_check';
-import {DecoratorInputTransform} from '../../../../../../compiler-cli/src/ngtsc/metadata';
-import {ImportManager} from '../../../../../../compiler-cli/src/ngtsc/translator';
+import {DecoratorInputTransform} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
 import {removeFromUnionIfPossible} from '../utils/remove_from_union';
 
 const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});

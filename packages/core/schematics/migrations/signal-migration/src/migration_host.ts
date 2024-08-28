@@ -8,7 +8,7 @@
 
 import path from 'path';
 import ts from 'typescript';
-import {NgCompilerOptions} from '../../../../../compiler-cli/src/ngtsc/core/api';
+import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 
 /**
  * A migration host is in practice a container object that
