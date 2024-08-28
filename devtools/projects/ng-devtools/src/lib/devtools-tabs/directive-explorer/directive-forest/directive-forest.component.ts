@@ -13,6 +13,7 @@ import {
 } from '@angular/cdk/scrolling';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -91,14 +92,14 @@ export class DirectiveForestComponent {
 
   constructor() {
     this.subscribeToInspectorEvents();
-    this._tabUpdate.tabUpdate$.pipe(takeUntilDestroyed()).subscribe(() => {
-      if (this.viewport()) {
-        setTimeout(() => {
-          const viewport = this.viewport();
-          viewport.scrollToIndex(0);
-          viewport.checkViewportSize();
-        });
-      }
+    afterRenderEffect(() => {
+      // Listen for tab updates to reset the scroll position to the top
+      // This ensures the viewport is properly updated when switching tabs
+      this._tabUpdate.tabUpdate();
+
+      const viewport = this.viewport();
+      viewport.scrollToIndex(0);
+      viewport.checkViewportSize();
     });
 
     // In some cases there a height changes, we need to recalculate the viewport size.

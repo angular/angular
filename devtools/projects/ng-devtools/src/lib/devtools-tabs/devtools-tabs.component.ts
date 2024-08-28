@@ -103,7 +103,7 @@ export class DevToolsTabsComponent {
 
   changeTab(tab: Tabs): void {
     this.activeTab.set(tab);
-    this.tabUpdate.notify();
+    this.tabUpdate.notify(tab);
     if (tab === 'Router Tree') {
       this._messageBus.emit('getRoutes');
     }
