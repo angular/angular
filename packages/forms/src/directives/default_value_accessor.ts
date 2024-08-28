@@ -54,7 +54,6 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
  * elements. The accessor is used by the `FormControlDirective`, `FormControlName`, and
  * `NgModel` directives.
  *
- * {@searchKeywords ngDefaultControl}
  *
  * @usageNotes
  *
