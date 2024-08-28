@@ -21,7 +21,7 @@ import {
   printNode,
   updateImport,
   updateObjectValueForKey,
-} from '../src/ts_utils';
+} from '../src/utils/ts_utils';
 import {LanguageServiceTestEnv, OpenBuffer, Project} from '../testing';
 
 describe('TS util', () => {

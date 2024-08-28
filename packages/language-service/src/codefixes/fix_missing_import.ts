@@ -19,7 +19,10 @@ import {
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
-import {getCodeActionToImportTheDirectiveDeclaration, standaloneTraitOrNgModule} from '../ts_utils';
+import {
+  getCodeActionToImportTheDirectiveDeclaration,
+  standaloneTraitOrNgModule,
+} from '../utils/ts_utils';
 import {getDirectiveMatchesForElementTag} from '../utils';
 
 import {CodeActionContext, CodeActionMeta, FixIdForCodeFixesAll} from './utils';

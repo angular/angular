@@ -59,9 +59,12 @@ import {
   getSymbolDisplayInfo,
   getTsSymbolDisplayInfo,
   unsafeCastDisplayInfoKindToScriptElementKind,
-} from './display_parts';
+} from './utils/display_parts';
 import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
-import {getCodeActionToImportTheDirectiveDeclaration, standaloneTraitOrNgModule} from './ts_utils';
+import {
+  getCodeActionToImportTheDirectiveDeclaration,
+  standaloneTraitOrNgModule,
+} from './utils/ts_utils';
 import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 
 type PropertyExpressionCompletionBuilder = CompletionBuilder<

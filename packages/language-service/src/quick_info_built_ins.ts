@@ -24,7 +24,7 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 
-import {DisplayInfoKind, SYMBOL_TEXT} from './display_parts';
+import {DisplayInfoKind, SYMBOL_TEXT} from './utils/display_parts';
 import {createQuickInfo, getTextSpanOfNode, isWithin, toTextSpan} from './utils';
 
 export function isDollarAny(node: TmplAstNode | AST): node is Call {

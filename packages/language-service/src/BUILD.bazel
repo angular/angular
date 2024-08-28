@@ -26,6 +26,8 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/util",
         "//packages/language-service:api",
+        "//packages/language-service/src/refactorings",
+        "//packages/language-service/src/utils",
         "@npm//@types/node",
         "@npm//typescript",
     ],
