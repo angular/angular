@@ -281,7 +281,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     positionOrRange: number | ts.TextRange,
     refactorName: string,
     reportProgress: ApplyRefactoringProgressFn,
-  ): ts.RefactorEditInfo | undefined {
+  ): Promise<ts.RefactorEditInfo | undefined> {
     return ngLS.applyRefactoring(fileName, positionOrRange, refactorName, reportProgress);
   }
 

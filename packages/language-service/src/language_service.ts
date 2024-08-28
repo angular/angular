@@ -549,12 +549,26 @@ export class LanguageService {
     );
   }
 
-  applyRefactoring(
+  /**
+   * Computes edits for applying the specified refactoring.
+   *
+   * VSCode explicitly split code actions into two stages:
+   *
+   *  - 1) what actions are active?
+   *  - 2) what are the edits? <- if the user presses the button
+   *
+   * The latter stage may take longer to compute complex edits, perform
+   * analysis. This stage is currently implemented via our non-LSP standard
+   * `applyRefactoring` method. We implemented it in a way to support asynchronous
+   * computation, so that it can easily integrate with migrations that aren't
+   * synchronous/or compute edits in parallel.
+   */
+  async applyRefactoring(
     fileName: string,
     positionOrRange: number | ts.TextRange,
     refactorName: string,
     reportProgress: ApplyRefactoringProgressFn,
-  ): ts.RefactorEditInfo | undefined {
+  ): Promise<ts.RefactorEditInfo | undefined> {
     const matchingRefactoring = allRefactorings.find((r) => r.id === refactorName);
     if (matchingRefactoring === undefined) {
       return undefined;
