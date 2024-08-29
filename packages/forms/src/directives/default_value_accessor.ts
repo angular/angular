@@ -52,7 +52,8 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
 /**
  * The default `ControlValueAccessor` for writing a value and listening to changes on input
  * elements. The accessor is used by the `FormControlDirective`, `FormControlName`, and
- * `NgModel` directives. This is provided by `FormsModule` and `ReactiveFormsModule`.
+ * `NgModel` directives. This directive is included automatically when the `FormsModule`
+ * or `ReactiveFormsModule` are imported into a component.
  *
  * {@searchKeywords ngDefaultControl}
  *
