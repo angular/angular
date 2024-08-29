@@ -58,7 +58,8 @@ export function getApiNavigationItems(): NavigationItem[] {
 }
 
 export function getApiUrl(packageEntry: ApiManifestPackage, apiName: string): string {
-  return `${PagePrefix.API}/${packageEntry.normalizedModuleName}/${apiName}`;
+  const packageName = packageEntry.normalizedModuleName.replace('angular_', '');
+  return `${PagePrefix.API}/${packageName}/${apiName}`;
 }
 
 function getNormalizedFilename(
