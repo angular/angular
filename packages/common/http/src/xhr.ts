@@ -138,7 +138,7 @@ export class HttpXhrBackend implements HttpBackend {
               return headerResponse;
             }
 
-            const statusText = xhr.statusText || 'OK';
+            const statusText = xhr.statusText || '';
 
             // Parse headers from XMLHttpRequest - this step is lazy.
             const headers = new HttpHeaders(xhr.getAllResponseHeaders());

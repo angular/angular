@@ -164,7 +164,7 @@ export abstract class HttpResponseBase {
   readonly status: number;
 
   /**
-   * Textual description of response status code, defaults to OK.
+   * Textual description of response status code, defaults to an empty string.
    *
    * Do not depend on this.
    */
@@ -200,7 +200,7 @@ export abstract class HttpResponseBase {
       url?: string;
     },
     defaultStatus: number = 200,
-    defaultStatusText: string = 'OK',
+    defaultStatusText: string = '',
   ) {
     // If the hash has values passed, use them to initialize the response.
     // Otherwise use the default values.
@@ -363,9 +363,10 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
     if (this.status >= 200 && this.status < 300) {
       this.message = `Http failure during parsing for ${init.url || '(unknown url)'}`;
     } else {
-      this.message = `Http failure response for ${init.url || '(unknown url)'}: ${init.status} ${
-        init.statusText
-      }`;
+      const statusErrorText = [undefined, ''].includes(init.statusText)
+        ? ''
+        : ` ${init.statusText}`;
+      this.message = `Http failure response for ${init.url || '(unknown url)'}: ${init.status}${statusErrorText}`;
     }
     this.error = init.error || null;
   }

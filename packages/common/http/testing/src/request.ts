@@ -93,9 +93,6 @@ export class TestRequest {
         statusText ||= 'OK';
       }
     }
-    if (statusText === undefined) {
-      throw new Error('statusText is required when setting a custom status.');
-    }
     if (status >= 200 && status < 300) {
       this.observer.next(new HttpResponse<any>({body, headers, status, statusText, url}));
       this.observer.complete();
