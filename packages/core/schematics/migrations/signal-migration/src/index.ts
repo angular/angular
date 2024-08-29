@@ -36,6 +36,8 @@ export async function main(absoluteTsconfigPath: string, bestEffortMode: boolean
     'Expected upgraded analysis phase results; batch mode is disabled.',
   );
 
+  const {replacements, projectAbsDirPath} = migration.upgradedAnalysisPhaseResults;
+
   // Apply replacements
-  writeMigrationReplacements(migration.upgradedAnalysisPhaseResults);
+  writeMigrationReplacements(replacements, projectAbsDirPath);
 }

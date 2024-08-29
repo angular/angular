@@ -12,7 +12,7 @@ import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflecti
 import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {confirmAsSerializable} from '../helpers/serializable';
 import {TsurgeComplexMigration} from '../migration';
-import {Replacement, TextUpdate} from '../replacement';
+import {projectRelativePath, Replacement, TextUpdate} from '../replacement';
 import {findOutputDeclarationsAndReferences, OutputID} from './output_helpers';
 import {ProgramInfo} from '../program_info';
 
@@ -96,7 +96,7 @@ export class OutputMigration extends TsurgeComplexMigration<AnalysisUnit, Global
 
       replacements.push(
         new Replacement(
-          absoluteFromSourceFile(node.getSourceFile()),
+          projectRelativePath(node.getSourceFile(), info.projectDirAbsPath),
           new TextUpdate({
             position: node.getStart(),
             end: node.getStart(),

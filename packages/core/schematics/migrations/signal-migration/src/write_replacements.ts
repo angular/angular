@@ -6,16 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import fs from 'fs';
 import {applyTextUpdates, Replacement} from '../../../utils/tsurge/replacement';
 import {groupReplacementsByFile} from '../../../utils/tsurge/helpers/group_replacements';
+import {AbsoluteFsPath, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 
 /** Applies the migration result and applies it to the file system. */
-export function writeMigrationReplacements(replacements: Replacement[]) {
-  for (const [filePath, updates] of groupReplacementsByFile(replacements)) {
-    const fileText = fs.readFileSync(filePath, 'utf8')!;
+export function writeMigrationReplacements(
+  replacements: Replacement[],
+  projectDirAbsPath: AbsoluteFsPath,
+) {
+  const fs = getFileSystem();
+
+  for (const [projectRelativePath, updates] of groupReplacementsByFile(replacements)) {
+    const filePath = fs.join(projectDirAbsPath, projectRelativePath);
+    const fileText = fs.readFile(filePath);
     const newText = applyTextUpdates(fileText, updates);
 
-    fs.writeFileSync(filePath, newText, 'utf8');
+    fs.writeFile(filePath, newText);
   }
 }
