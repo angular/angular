@@ -11415,7 +11415,7 @@ async function setupRedirect(deployment) {
   await rm(tmpRedirectDir, { recursive: true });
 }
 function firebase(cmd, cwd) {
-  spawnSync("npx", `-y firebase-tools@latest ${cmd}`.split(" "), {
+  spawnSync("npx", `-y firebase-tools@13.15.1 ${cmd}`.split(" "), {
     cwd,
     encoding: "utf-8",
     shell: true,
