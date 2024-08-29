@@ -58,7 +58,11 @@ export function getApiNavigationItems(): NavigationItem[] {
 }
 
 export function getApiUrl(packageEntry: ApiManifestPackage, apiName: string): string {
-  const packageName = packageEntry.normalizedModuleName.replace('angular_', '');
+  const packageName = packageEntry.normalizedModuleName
+    // packages like `angular_core` should be `core`
+    // packages like `angular_animation_browser` should be `animation/browser`
+    .replace('angular_', '')
+    .replace('_', '/');
   return `${PagePrefix.API}/${packageName}/${apiName}`;
 }
 
