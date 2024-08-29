@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 
 import ts from 'typescript';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
@@ -35,5 +35,5 @@ export interface BaseProgramInfo {
 export interface ProgramInfo extends BaseProgramInfo {
   sourceFiles: ts.SourceFile[];
   fullProgramSourceFiles: readonly ts.SourceFile[];
-  projectDirAbsPath: string;
+  projectDirAbsPath: AbsoluteFsPath;
 }

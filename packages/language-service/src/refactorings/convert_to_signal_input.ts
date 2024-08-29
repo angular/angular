@@ -162,7 +162,7 @@ export class ConvertToSignalInputRefactoring implements Refactoring {
     }
 
     const edits: ts.FileTextChanges[] = Array.from(
-      groupReplacementsByFile(this.migration.upgradedAnalysisPhaseResults).entries(),
+      groupReplacementsByFile(this.migration.upgradedAnalysisPhaseResults.replacements).entries(),
     ).map(([fileName, changes]) => {
       return {
         fileName,

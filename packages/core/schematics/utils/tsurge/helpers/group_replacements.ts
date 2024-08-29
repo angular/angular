@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {Replacement, TextUpdate} from '../replacement';
+import {ProjectRelativePath, Replacement, TextUpdate} from '../replacement';
 
 /**
  * Groups the given replacements per file path.
@@ -17,13 +16,13 @@ import {Replacement, TextUpdate} from '../replacement';
  */
 export function groupReplacementsByFile(
   replacements: Replacement[],
-): Map<AbsoluteFsPath, TextUpdate[]> {
-  const result = new Map<AbsoluteFsPath, TextUpdate[]>();
-  for (const {absoluteFilePath, update} of replacements) {
-    if (!result.has(absoluteFilePath)) {
-      result.set(absoluteFilePath, []);
+): Map<ProjectRelativePath, TextUpdate[]> {
+  const result = new Map<ProjectRelativePath, TextUpdate[]>();
+  for (const {projectRelativePath, update} of replacements) {
+    if (!result.has(projectRelativePath)) {
+      result.set(projectRelativePath, []);
     }
-    result.get(absoluteFilePath)!.push(update);
+    result.get(projectRelativePath)!.push(update);
   }
   return result;
 }

@@ -8,8 +8,8 @@
 
 import ts from 'typescript';
 import {ExtractedQuery} from './identify_queries';
-import {Replacement, TextUpdate} from '../../utils/tsurge';
-import {absoluteFromSourceFile} from '../../../../compiler-cli';
+import {projectRelativePath, Replacement, TextUpdate} from '../../utils/tsurge';
+import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import assert from 'assert';
 import {WrappedNodeExpr} from '@angular/compiler';
@@ -43,6 +43,7 @@ export function computeReplacementsToMigrateQuery(
   node: ts.PropertyDeclaration,
   metadata: ExtractedQuery,
   importManager: ImportManager,
+  projectDirAbsPath: AbsoluteFsPath,
 ): Replacement[] {
   const sf = node.getSourceFile();
   let newQueryFn = importManager.addImport({
@@ -133,7 +134,7 @@ export function computeReplacementsToMigrateQuery(
 
   return [
     new Replacement(
-      absoluteFromSourceFile(node.getSourceFile()),
+      projectRelativePath(node.getSourceFile(), projectDirAbsPath),
       new TextUpdate({
         position: node.getStart(),
         end: node.getEnd(),

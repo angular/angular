@@ -64,8 +64,9 @@ export async function runTsurgeMigration<UnitData, GlobalData>(
       : await migration.migrate(merged, info);
 
   const updates = groupReplacementsByFile(replacements);
-  for (const [filePath, changes] of updates.entries()) {
-    mockFs.writeFile(filePath, applyTextUpdates(mockFs.readFile(filePath), changes));
+  for (const [projectRelativePath, changes] of updates.entries()) {
+    const absolutePath = mockFs.resolve('/', projectRelativePath);
+    mockFs.writeFile(absolutePath, applyTextUpdates(mockFs.readFile(absolutePath), changes));
   }
 
   return mockFs;

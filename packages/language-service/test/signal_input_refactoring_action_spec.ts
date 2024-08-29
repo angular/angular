@@ -107,7 +107,7 @@ describe('Signal input refactoring action', () => {
     expect(edits?.notApplicableReason).toBeUndefined();
     expect(edits?.edits).toEqual([
       {
-        fileName: '/test/app.ts',
+        fileName: 'app.ts',
         textChanges: [
           // Input declaration.
           {

@@ -41,12 +41,12 @@ async function main() {
 
     process.stdout.write(JSON.stringify(mergedResult));
   } else if (mode === 'migrate') {
-    const replacements = await executeMigratePhase(
+    const {replacements, projectDirAbsPath} = await executeMigratePhase(
       migration,
       JSON.parse(fs.readFileSync(path.resolve(args[1]), 'utf8')) as CompilationUnitData,
       path.resolve(args[0]),
     );
 
-    writeMigrationReplacements(replacements);
+    writeMigrationReplacements(replacements, projectDirAbsPath);
   }
 }

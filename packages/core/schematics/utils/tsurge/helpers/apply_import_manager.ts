@@ -8,8 +8,12 @@
 
 import ts from 'typescript';
 import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
-import {absoluteFrom, absoluteFromSourceFile} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {Replacement, TextUpdate} from '../replacement';
+import {
+  absoluteFrom,
+  absoluteFromSourceFile,
+  AbsoluteFsPath,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {projectRelativePath, Replacement, TextUpdate} from '../replacement';
 
 /**
  * Applies import manager changes, and writes them as replacements the
@@ -19,6 +23,7 @@ export function applyImportManagerChanges(
   importManager: ImportManager,
   replacements: Replacement[],
   sourceFiles: readonly ts.SourceFile[],
+  projectAbsPath: AbsoluteFsPath,
 ) {
   const {newImports, updatedImports, deletedImports} = importManager.finalize();
   const printer = ts.createPrinter({});
@@ -34,7 +39,7 @@ export function applyImportManagerChanges(
       );
       replacements.push(
         new Replacement(
-          absoluteFrom(fileName),
+          projectRelativePath(fileName, projectAbsPath),
           new TextUpdate({position: 0, end: 0, toInsert: `${printedImport}\n`}),
         ),
       );
@@ -50,7 +55,7 @@ export function applyImportManagerChanges(
     );
     replacements.push(
       new Replacement(
-        absoluteFromSourceFile(oldBindings.getSourceFile()),
+        projectRelativePath(oldBindings.getSourceFile(), projectAbsPath),
         new TextUpdate({
           position: oldBindings.getStart(),
           end: oldBindings.getEnd(),
@@ -64,7 +69,7 @@ export function applyImportManagerChanges(
   for (const removedImport of deletedImports) {
     replacements.push(
       new Replacement(
-        absoluteFromSourceFile(removedImport.getSourceFile()),
+        projectRelativePath(removedImport.getSourceFile(), projectAbsPath),
         new TextUpdate({
           position: removedImport.getStart(),
           end: removedImport.getEnd(),
