@@ -392,8 +392,21 @@ The `goToItems()` method interprets the destination URI as relative to the activ
 ## Accessing query parameters and fragments
 
 Sometimes, a feature of your application requires accessing a part of a route, such as a query parameter or a fragment.
-The Tour of Heroes application at this stage in the tutorial uses a list view in which you can click on a hero to see details.
-The router uses an `id` to show the correct hero's details.
+In this example, the route contains an `id` parameter we can use to target a specific hero page.
+
+```ts
+import {ApplicationConfig} from "@angular/core";
+import {Routes} from '@angular/router';
+import {HeroListComponent} from './hero-list.component';
+
+export const routes: Routes = [
+  {path: 'hero/:id', component: HeroDetailComponent}
+];
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideRouter(routes)],
+};
+```
 
 First, import the following members in the component you want to navigate from.
 
