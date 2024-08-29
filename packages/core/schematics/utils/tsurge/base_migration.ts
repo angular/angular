@@ -7,7 +7,7 @@
  */
 
 import path from 'path';
-import {absoluteFrom, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import {createNgtscProgram} from './helpers/ngtsc_program';
 import {BaseProgramInfo, ProgramInfo} from './program_info';
@@ -37,7 +37,7 @@ export abstract class TsurgeBaseMigration {
     );
 
     const basePath = path.dirname(info.tsconfigAbsolutePath);
-    const projectDirAbsPath = absoluteFrom(info.userOptions.rootDir ?? basePath);
+    const projectDirAbsPath = info.userOptions.rootDir ?? basePath;
 
     return {
       ...info,

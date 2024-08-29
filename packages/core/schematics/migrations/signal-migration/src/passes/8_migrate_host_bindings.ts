@@ -7,8 +7,8 @@
  */
 
 import ts from 'typescript';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {projectRelativePath, Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
+import {absoluteFromSourceFile} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
 import {MigrationResult} from '../result';
 import {isHostBindingInputReference} from '../utils/input_reference';
 import {KnownInputs} from '../input_detection/known_inputs';
@@ -17,11 +17,7 @@ import {KnownInputs} from '../input_detection/known_inputs';
  * Phase that migrates Angular host binding references to
  * unwrap signals.
  */
-export function pass8__migrateHostBindings(
-  result: MigrationResult,
-  knownInputs: KnownInputs,
-  projectDirAbsPath: AbsoluteFsPath,
-) {
+export function pass8__migrateHostBindings(result: MigrationResult, knownInputs: KnownInputs) {
   const seenReferences = new WeakMap<ts.Node, Set<number>>();
 
   for (const reference of result.references) {
@@ -55,7 +51,7 @@ export function pass8__migrateHostBindings(
 
     result.replacements.push(
       new Replacement(
-        projectRelativePath(bindingField.getSourceFile(), projectDirAbsPath),
+        absoluteFromSourceFile(bindingField.getSourceFile()),
         new TextUpdate({position: readEndPos, end: readEndPos, toInsert: appendText}),
       ),
     );

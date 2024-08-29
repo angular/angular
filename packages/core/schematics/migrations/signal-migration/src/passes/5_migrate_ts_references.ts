@@ -9,13 +9,13 @@
 import ts from 'typescript';
 import {MigrationResult} from '../result';
 import {analyzeControlFlow} from '../flow_analysis';
-import {projectRelativePath, Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
+import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
 import {InputUniqueKey} from '../utils/input_id';
 import {isTsInputReference} from '../utils/input_reference';
 import {traverseAccess} from '../utils/traverse_access';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {UniqueNamesGenerator} from '../utils/unique_names';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFromSourceFile} from '@angular/compiler-cli/src/ngtsc/file_system';
 
 /**
  * Phase that migrates TypeScript input references to be signal compatible.
@@ -46,7 +46,6 @@ export function pass5__migrateTypeScriptReferences(
   result: MigrationResult,
   checker: ts.TypeChecker,
   knownInputs: KnownInputs,
-  projectDirAbsPath: AbsoluteFsPath,
 ) {
   const tsReferences = new Map<InputUniqueKey, {accesses: ts.Identifier[]}>();
   const seenIdentifiers = new WeakSet<ts.Identifier>();
@@ -96,7 +95,7 @@ export function pass5__migrateTypeScriptReferences(
         // Append `()` to unwrap the signal.
         result.replacements.push(
           new Replacement(
-            projectRelativePath(sf, projectDirAbsPath),
+            absoluteFromSourceFile(sf),
             new TextUpdate({
               position: originalNode.getEnd(),
               end: originalNode.getEnd(),
@@ -113,7 +112,7 @@ export function pass5__migrateTypeScriptReferences(
         const replaceNode = traverseAccess(originalNode);
         result.replacements.push(
           new Replacement(
-            projectRelativePath(sf, projectDirAbsPath),
+            absoluteFromSourceFile(sf),
             new TextUpdate({
               position: replaceNode.getStart(),
               end: replaceNode.getEnd(),
@@ -148,7 +147,7 @@ export function pass5__migrateTypeScriptReferences(
 
       result.replacements.push(
         new Replacement(
-          projectRelativePath(sf, projectDirAbsPath),
+          absoluteFromSourceFile(sf),
           new TextUpdate({
             position: previous.getStart(),
             end: previous.getStart(),
@@ -159,7 +158,7 @@ export function pass5__migrateTypeScriptReferences(
 
       result.replacements.push(
         new Replacement(
-          projectRelativePath(sf, projectDirAbsPath),
+          absoluteFromSourceFile(sf),
           new TextUpdate({
             position: replaceNode.getStart(),
             end: replaceNode.getEnd(),

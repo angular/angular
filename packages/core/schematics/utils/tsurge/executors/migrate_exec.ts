@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TsurgeMigration} from '../migration';
 import {Replacement} from '../replacement';
 
@@ -17,19 +16,15 @@ import {Replacement} from '../replacement';
  * This requires the global migration data, computed by the
  * analysis and merge phases of the migration.
  *
- * @returns a list of text replacements to apply to disk and the
- *   absolute project directory path (to allow for applying).
+ * @returns a list of text replacements to apply to disk.
  */
 export async function executeMigratePhase<UnitData, GlobalData>(
   migration: TsurgeMigration<UnitData, GlobalData>,
   globalMetadata: GlobalData,
   tsconfigAbsolutePath: string,
-): Promise<{replacements: Replacement[]; projectDirAbsPath: AbsoluteFsPath}> {
+): Promise<Replacement[]> {
   const baseInfo = migration.createProgram(tsconfigAbsolutePath);
   const info = migration.prepareProgram(baseInfo);
 
-  return {
-    replacements: await migration.migrate(globalMetadata, info),
-    projectDirAbsPath: info.projectDirAbsPath,
-  };
+  return await migration.migrate(globalMetadata, info);
 }

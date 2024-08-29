@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {confirmAsSerializable, Serializable} from '../../../utils/tsurge/helpers/serializable';
 import {BaseProgramInfo, ProgramInfo} from '../../../utils/tsurge/program_info';
 import {TsurgeComplexMigration} from '../../../utils/tsurge/migration';
@@ -36,10 +36,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
   CompilationUnitData
 > {
   upgradeAnalysisPhaseToAvoidBatch = false;
-  upgradedAnalysisPhaseResults: {
-    replacements: Replacement[];
-    projectAbsDirPath: AbsoluteFsPath;
-  } | null = null;
+  upgradedAnalysisPhaseResults: Replacement[] | null = null;
 
   // Necessary for language service configuration.
   reportProgressFn: ((percentage: number, updateMessage: string) => void) | null = null;
@@ -105,7 +102,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
       this.reportProgressFn?.(100, 'Completed migration.');
 
       // Expose the upgraded analysis stage results.
-      this.upgradedAnalysisPhaseResults = {replacements, projectAbsDirPath: info.projectDirAbsPath};
+      this.upgradedAnalysisPhaseResults = replacements;
     }
 
     return confirmAsSerializable(unitData);

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {absoluteFromSourceFile} from '@angular/compiler-cli';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import ts from 'typescript';
 import {
   confirmAsSerializable,
   ProgramInfo,
-  projectRelativePath,
   Replacement,
   Serializable,
   TextUpdate,
@@ -140,7 +140,6 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
             node as ts.PropertyDeclaration,
             extractedQuery,
             importManager,
-            projectDirAbsPath,
           ),
         );
         return;
@@ -152,7 +151,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         if (targetId !== null && isMigratedQuery(targetId)) {
           replacements.push(
             new Replacement(
-              projectRelativePath(node.getSourceFile(), projectDirAbsPath),
+              absoluteFromSourceFile(node.getSourceFile()),
               new TextUpdate({position: node.getEnd(), end: node.getEnd(), toInsert: '()'}),
             ),
           );
@@ -174,7 +173,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       }
     }
 
-    applyImportManagerChanges(importManager, replacements, sourceFiles, projectDirAbsPath);
+    applyImportManagerChanges(importManager, replacements, sourceFiles);
 
     return replacements;
   }

@@ -7,11 +7,11 @@
  */
 
 import {MigrationHost} from '../migration_host';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MigrationResult} from '../result';
 import {isTemplateInputReference} from '../utils/input_reference';
 import {KnownInputs} from '../input_detection/known_inputs';
-import {projectRelativePath, Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
+import {Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
 
 /**
  * Phase that migrates Angular template references to
@@ -21,7 +21,6 @@ export function pass7__migrateTemplateReferences(
   host: MigrationHost,
   result: MigrationResult,
   knownInputs: KnownInputs,
-  projectDirAbsPath: AbsoluteFsPath,
 ) {
   const seenFileReferences = new Set<string>();
 
@@ -49,7 +48,7 @@ export function pass7__migrateTemplateReferences(
 
     result.replacements.push(
       new Replacement(
-        projectRelativePath(host.idToFilePath(reference.from.templateFileId), projectDirAbsPath),
+        absoluteFrom(host.idToFilePath(reference.from.templateFileId)),
         new TextUpdate({
           position: reference.from.read.sourceSpan.end,
           end: reference.from.read.sourceSpan.end,
