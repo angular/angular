@@ -20,7 +20,7 @@ interface Options {
   path: string;
 }
 
-export default function (options: Options): Rule {
+export function migrate(options: Options): Rule {
   return async (tree, context) => {
     const {buildPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();

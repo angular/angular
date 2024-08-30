@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "pkg_npm")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 
 exports_files([
     "tsconfig.json",
@@ -20,9 +21,33 @@ pkg_npm(
     validate = False,
     visibility = ["//packages/core:__pkg__"],
     deps = [
-        "//packages/core/schematics/ng-generate/control-flow-migration:bundle",
-        "//packages/core/schematics/ng-generate/inject-migration:bundle",
-        "//packages/core/schematics/ng-generate/route-lazy-loading:bundle",
-        "//packages/core/schematics/ng-generate/standalone-migration:bundle",
+        ":bundles",
+    ],
+)
+
+rollup_bundle(
+    name = "bundles",
+    config_file = ":rollup.config.js",
+    entry_points = {
+        "//packages/core/schematics/ng-generate/control-flow-migration:index.ts": "control-flow-migration",
+        "//packages/core/schematics/ng-generate/inject-migration:index.ts": "inject-migration",
+        "//packages/core/schematics/ng-generate/route-lazy-loading:index.ts": "route-lazy-loading",
+        "//packages/core/schematics/ng-generate/standalone-migration:index.ts": "standalone-migration",
+    },
+    format = "cjs",
+    link_workspace_root = True,
+    output_dir = True,
+    sourcemap = "false",
+    visibility = [
+        "//packages/core/schematics/test:__pkg__",
+    ],
+    deps = [
+        "//packages/core/schematics/ng-generate/control-flow-migration",
+        "//packages/core/schematics/ng-generate/inject-migration",
+        "//packages/core/schematics/ng-generate/route-lazy-loading",
+        "//packages/core/schematics/ng-generate/standalone-migration",
+        "@npm//@rollup/plugin-commonjs",
+        "@npm//@rollup/plugin-node-resolve",
+        "@npm//magic-string",
     ],
 )

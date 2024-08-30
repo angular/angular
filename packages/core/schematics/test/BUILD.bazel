@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(["*.ts"]),
     deps = [
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/core",
@@ -17,22 +17,14 @@ ts_library(
 jasmine_node_test(
     name = "test",
     data = [
+        "//packages/core/schematics:bundles",
         "//packages/core/schematics:collection.json",
         "//packages/core/schematics:migrations.json",
-        "//packages/core/schematics/ng-generate/control-flow-migration",
-        "//packages/core/schematics/ng-generate/control-flow-migration:bundle",
         "//packages/core/schematics/ng-generate/control-flow-migration:static_files",
-        "//packages/core/schematics/ng-generate/inject-migration",
-        "//packages/core/schematics/ng-generate/inject-migration:bundle",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
-        "//packages/core/schematics/ng-generate/route-lazy-loading",
-        "//packages/core/schematics/ng-generate/route-lazy-loading:bundle",
         "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",
-        "//packages/core/schematics/ng-generate/standalone-migration",
-        "//packages/core/schematics/ng-generate/standalone-migration:bundle",
         "//packages/core/schematics/ng-generate/standalone-migration:static_files",
     ],
-    templated_args = ["--nobazel_run_linker"],
     deps = [
         ":test_lib",
         "@npm//shelljs",

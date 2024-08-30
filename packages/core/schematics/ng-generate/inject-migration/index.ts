@@ -18,7 +18,7 @@ interface Options extends MigrationOptions {
   path: string;
 }
 
-export default function (options: Options): Rule {
+export function migrate(options: Options): Rule {
   return async (tree: Tree) => {
     const basePath = process.cwd();
     const pathToMigrate = normalizePath(join(basePath, options.path));

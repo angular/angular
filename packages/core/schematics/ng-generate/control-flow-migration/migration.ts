@@ -23,10 +23,8 @@ import {
 import {
   canRemoveCommonModule,
   formatTemplate,
-  parseTemplate,
   processNgTemplates,
   removeImports,
-  validateI18nStructure,
   validateMigratedTemplate,
 } from './util';
 

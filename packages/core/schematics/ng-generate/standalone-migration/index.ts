@@ -32,7 +32,7 @@ interface Options {
   mode: MigrationMode;
 }
 
-export default function (options: Options): Rule {
+export function migrate(options: Options): Rule {
   return async (tree, context) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();

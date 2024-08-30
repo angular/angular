@@ -23,7 +23,6 @@ import {
   getPlaceholder,
   hasLineBreaks,
   parseTemplate,
-  PlaceholderKind,
   reduceNestingOffset,
 } from './util';
 
