@@ -34,8 +34,8 @@ export function pass9__migrateTypeScriptTypeReferences(
     if (!isTsInputClassTypeReference(reference)) {
       continue;
     }
-    // Skip references to classes that are not migrated.
-    if (knownInputs.getDirectiveInfoForClass(reference.target)!.isClassSkippedForMigration()) {
+    // Skip references to classes that are not fully migrated.
+    if (knownInputs.getDirectiveInfoForClass(reference.target)?.hasIncompatibleMembers()) {
       continue;
     }
     // Skip duplicate references. E.g. in batching.

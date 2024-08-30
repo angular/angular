@@ -16,7 +16,6 @@ import {pass2_IdentifySourceFileReferences} from './passes/2_find_source_file_re
 import {MigrationResult} from './result';
 import {InheritanceGraph} from './utils/inheritance_graph';
 import {GroupedTsAstVisitor} from './utils/grouped_ts_ast_visitor';
-import {nonIgnorableIncompatibilities} from './input_detection/incompatibility';
 
 /**
  * Executes the analysis phase of the migration.

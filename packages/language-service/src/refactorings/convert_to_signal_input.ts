@@ -42,8 +42,6 @@ export class ConvertToSignalInputRefactoring implements Refactoring {
   id = 'convert-to-signal-input';
   description = '(experimental fixer): Convert @Input() to a signal input';
 
-  migration: SignalInputMigration | null = null;
-
   isApplicable(
     compiler: NgCompiler,
     fileName: string,
@@ -113,20 +111,14 @@ export class ConvertToSignalInputRefactoring implements Refactoring {
     }
     reportProgress(0, 'Starting input migration. Analyzing..');
 
-    // TS incorrectly narrows to `null` if we don't explicitly widen the type.
-    // See: https://github.com/microsoft/TypeScript/issues/11498.
-    let targetInput: KnownInputInfo | null = null as KnownInputInfo | null;
+    const migration = new SignalInputMigration({
+      upgradeAnalysisPhaseToAvoidBatch: true,
+      reportProgressFn: reportProgress,
+      shouldMigrateInput: (input) => input.descriptor.node === containingProp,
+    });
 
-    this.migration ??= new SignalInputMigration();
-    this.migration.upgradeAnalysisPhaseToAvoidBatch = true;
-    this.migration.reportProgressFn = reportProgress;
-    this.migration.beforeMigrateHook = getBeforeMigrateHookToFilterAllUnrelatedInputs(
-      containingProp,
-      (i) => (targetInput = i),
-    );
-
-    await this.migration.analyze(
-      this.migration.prepareProgram({
+    await migration.analyze(
+      migration.prepareProgram({
         ngCompiler: compiler,
         program: compiler.getCurrentProgram(),
         userOptions: compilerOptions,
@@ -135,14 +127,26 @@ export class ConvertToSignalInputRefactoring implements Refactoring {
       }),
     );
 
-    if (this.migration.upgradedAnalysisPhaseResults === null || targetInput === null) {
+    if (migration.upgradedAnalysisPhaseResults === null) {
       return {
         edits: [],
-        notApplicableReason: 'Unexpected error. No edits could be computed.',
+        notApplicableReason: 'Unexpected error. No analysis result is available.',
       };
     }
 
-    // Check for incompatibility, and report if it prevented migration.
+    const {knownInputs, replacements} = migration.upgradedAnalysisPhaseResults;
+    const targetInput = Array.from(knownInputs.knownInputIds.values()).find(
+      (i) => i.descriptor.node === containingProp,
+    );
+
+    if (targetInput === undefined) {
+      return {
+        edits: [],
+        notApplicableReason: 'Unexpected error. Could not find target input in registry.',
+      };
+    }
+
+    // Check for incompatibility, and report when it prevented migration.
     if (targetInput.isIncompatible()) {
       const {container, descriptor} = targetInput;
       const memberIncompatibility = container.memberIncompatibility.get(descriptor.key);
@@ -161,9 +165,8 @@ export class ConvertToSignalInputRefactoring implements Refactoring {
       };
     }
 
-    const edits: ts.FileTextChanges[] = Array.from(
-      groupReplacementsByFile(this.migration.upgradedAnalysisPhaseResults.replacements).entries(),
-    ).map(([fileName, changes]) => {
+    const fileUpdates = Array.from(groupReplacementsByFile(replacements).entries());
+    const edits: ts.FileTextChanges[] = fileUpdates.map(([fileName, changes]) => {
       return {
         fileName,
         textChanges: changes.map((c) => ({
@@ -195,38 +198,4 @@ function findParentPropertyDeclaration(node: ts.Node): ts.PropertyDeclaration | 
     return null;
   }
   return node;
-}
-
-function getBeforeMigrateHookToFilterAllUnrelatedInputs(
-  containingProp: InputNode,
-  setTargetInput: (i: KnownInputInfo) => void,
-): SignalInputMigration['beforeMigrateHook'] {
-  return (host, knownInputs, result) => {
-    const {key} = getInputDescriptor(host, containingProp);
-    const targetInput = knownInputs.get({key});
-
-    if (targetInput === undefined) {
-      return;
-    }
-
-    setTargetInput(targetInput);
-
-    // Mark all other inputs as incompatible.
-    // Note that we still analyzed the whole application for potential references.
-    // Only migrate references to the target input.
-    for (const input of result.sourceInputs.keys()) {
-      if (input.key !== key) {
-        knownInputs.markInputAsIncompatible(input, {
-          context: null,
-          reason: InputIncompatibilityReason.IgnoredBecauseOfLanguageServiceRefactoringRange,
-        });
-      }
-    }
-
-    result.references = result.references.filter(
-      // Note: References to the whole class are not migrated as we are not migrating all inputs.
-      // We can revisit this at a later time.
-      (r) => isInputDescriptor(r.target) && r.target.key === key,
-    );
-  };
 }

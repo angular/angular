@@ -11,7 +11,7 @@ import {confirmAsSerializable, Serializable} from '../../../utils/tsurge/helpers
 import {BaseProgramInfo, ProgramInfo} from '../../../utils/tsurge/program_info';
 import {TsurgeComplexMigration} from '../../../utils/tsurge/migration';
 import {CompilationUnitData} from './batch/unit_data';
-import {KnownInputs} from './input_detection/known_inputs';
+import {KnownInputInfo, KnownInputs} from './input_detection/known_inputs';
 import {AnalysisProgramInfo, prepareAnalysisInfo} from './analysis_deps';
 import {MigrationResult} from './result';
 import {MigrationHost} from './migration_host';
@@ -26,6 +26,44 @@ import {executeMigrationPhase} from './phase_migrate';
 import {filterIncompatibilitiesForBestEffortMode} from './best_effort_mode';
 import {createNgtscProgram} from '../../../utils/tsurge/helpers/ngtsc_program';
 import assert from 'assert';
+import {InputIncompatibilityReason} from './input_detection/incompatibility';
+import {InputUniqueKey, isInputDescriptor} from './utils/input_id';
+
+export interface MigrationConfig {
+  /**
+   * Whether to migrate as much as possible, even if certain inputs would otherwise
+   * be marked as incompatible for migration.
+   */
+  bestEffortMode?: boolean;
+
+  /**
+   * Whether the given input should be migrated. With batch execution, this
+   * callback fires for foreign inputs from other compilation units too.
+   *
+   * Treating the input as non-migrated means that no references to it are
+   * migrated.
+   */
+  shouldMigrateInput?: (input: KnownInputInfo) => boolean;
+
+  /**
+   * Whether to upgrade analysis phase to avoid batch execution.
+   *
+   * This is useful when not running against multiple compilation units.
+   * The analysis phase will re-use the same program and information, without
+   * re-analyzing in the `migrate` phase.
+   *
+   * Results will be available as {@link SignalInputMigration#upgradedAnalysisPhaseResults}
+   * after executing the analyze stage.
+   */
+  upgradeAnalysisPhaseToAvoidBatch?: boolean;
+
+  /**
+   * Optional function to receive updates on progress of the migration. Useful
+   * for integration with the language service to give some kind of indication
+   * what the migration is currently doing.
+   */
+  reportProgressFn?: (percentage: number, updateMessage: string) => void;
+}
 
 /**
  * Tsurge migration for migrating Angular `@Input()` declarations to
@@ -35,19 +73,15 @@ export class SignalInputMigration extends TsurgeComplexMigration<
   CompilationUnitData,
   CompilationUnitData
 > {
-  upgradeAnalysisPhaseToAvoidBatch = false;
   upgradedAnalysisPhaseResults: {
     replacements: Replacement[];
     projectAbsDirPath: AbsoluteFsPath;
+    knownInputs: KnownInputs;
   } | null = null;
 
-  // Necessary for language service configuration.
-  reportProgressFn: ((percentage: number, updateMessage: string) => void) | null = null;
-  beforeMigrateHook:
-    | ((host: MigrationHost, knownInputs: KnownInputs, result: MigrationResult) => void)
-    | null = null;
-
-  bestEffortMode = false;
+  constructor(private readonly config: MigrationConfig = {}) {
+    super();
+  }
 
   // Override the default ngtsc program creation, to add extra flags.
   override createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo {
@@ -79,22 +113,22 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     const result = new MigrationResult();
     const host = createMigrationHost(info);
 
-    this.reportProgressFn?.(10, 'Analyzing project (input usages)..');
+    this.config.reportProgressFn?.(10, 'Analyzing project (input usages)..');
     const {inheritanceGraph} = executeAnalysisPhase(host, knownInputs, result, analysisDeps);
 
-    this.reportProgressFn?.(40, 'Checking inheritance..');
+    this.config.reportProgressFn?.(40, 'Checking inheritance..');
     pass4__checkInheritanceOfInputs(host, inheritanceGraph, metaRegistry, knownInputs);
-    if (this.bestEffortMode) {
+    if (this.config.bestEffortMode) {
       filterIncompatibilitiesForBestEffortMode(knownInputs);
     }
 
     const unitData = getCompilationUnitMetadata(knownInputs, result);
 
     // Non-batch mode!
-    if (this.upgradeAnalysisPhaseToAvoidBatch) {
+    if (this.config.upgradeAnalysisPhaseToAvoidBatch) {
       const merged = await this.merge([unitData]);
 
-      this.reportProgressFn?.(60, 'Collecting migration changes..');
+      this.config.reportProgressFn?.(60, 'Collecting migration changes..');
       const replacements = await this.migrate(merged, info, {
         knownInputs,
         result,
@@ -102,10 +136,14 @@ export class SignalInputMigration extends TsurgeComplexMigration<
         inheritanceGraph,
         analysisDeps,
       });
-      this.reportProgressFn?.(100, 'Completed migration.');
+      this.config.reportProgressFn?.(100, 'Completed migration.');
 
       // Expose the upgraded analysis stage results.
-      this.upgradedAnalysisPhaseResults = {replacements, projectAbsDirPath: info.projectDirAbsPath};
+      this.upgradedAnalysisPhaseResults = {
+        replacements,
+        projectAbsDirPath: info.projectDirAbsPath,
+        knownInputs,
+      };
     }
 
     return confirmAsSerializable(unitData);
@@ -144,18 +182,53 @@ export class SignalInputMigration extends TsurgeComplexMigration<
         analysisDeps.metaRegistry,
         knownInputs,
       );
-      if (this.bestEffortMode) {
+      if (this.config.bestEffortMode) {
         filterIncompatibilitiesForBestEffortMode(knownInputs);
       }
     }
 
-    // Optional before migrate hook. Used by the language service.
-    this.beforeMigrateHook?.(host, knownInputs, result);
-
+    filterInputsViaConfig(result, knownInputs, this.config);
     executeMigrationPhase(host, knownInputs, result, analysisDeps);
 
     return result.replacements;
   }
+}
+
+/**
+ * Updates the migration state to filter inputs based on a filter
+ * method defined in the migration config.
+ */
+function filterInputsViaConfig(
+  result: MigrationResult,
+  knownInputs: KnownInputs,
+  config: MigrationConfig,
+) {
+  if (config.shouldMigrateInput === undefined) {
+    return;
+  }
+
+  const skippedInputs = new Set<InputUniqueKey>();
+
+  // Mark all skipped inputs as incompatible for migration.
+  for (const input of knownInputs.knownInputIds.values()) {
+    if (!config.shouldMigrateInput(input)) {
+      skippedInputs.add(input.descriptor.key);
+      knownInputs.markInputAsIncompatible(input.descriptor, {
+        context: null,
+        reason: InputIncompatibilityReason.SkippedViaConfigFilter,
+      });
+    }
+  }
+
+  result.references = result.references.filter((reference) => {
+    if (isInputDescriptor(reference.target)) {
+      // Only migrate the reference if the target is NOT skipped.
+      return !skippedInputs.has(reference.target.key);
+    }
+    // Class references may be migrated. This is up to the logic handling
+    // the class reference. E.g. it may not migrate if any member is incompatible.
+    return true;
+  });
 }
 
 function createMigrationHost(info: ProgramInfo): MigrationHost {
