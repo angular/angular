@@ -13,7 +13,7 @@ HELPFUL: If you are currently using AngularJS, see [Upgrading from AngularJS](ht
 
 ## Getting notified of new releases
 
-To be notified when new releases are available, follow [@angular](https://twitter.com/angular "@angular on Twitter") on Twitter or subscribe to the [Angular blog](https://blog.angular.dev "Angular blog").
+To be notified when new releases are available, follow [@angular](https://x.com/angular "@angular on X") on X (formerly Twitter) or subscribe to the [Angular blog](https://blog.angular.dev "Angular blog").
 
 ## Learning about new features
 
