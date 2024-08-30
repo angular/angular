@@ -460,6 +460,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
 class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
   private readonly styles: string[];
+  private readonly styleUrls?: string[];
 
   constructor(
     eventManager: EventManager,
@@ -472,10 +473,22 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     compId?: string,
   ) {
     super(eventManager, doc, ngZone, platformIsServer);
+
     this.styles = compId ? shimStylesContent(compId, component.styles) : component.styles;
+
+    const externalStyles = component.data['externalStyles'] as string[] | undefined;
+    if (Array.isArray(externalStyles)) {
+      // Add component ID search parameter `component` to support server-side style content shimming
+      this.styleUrls = externalStyles.map(
+        (value) => value + '?component' + (compId ? '=' + encodeURIComponent(compId) : ''),
+      );
+    }
   }
 
   applyStyles(): void {
+    if (this.styleUrls) {
+      this.sharedStylesHost.addExternalStyles(this.styleUrls);
+    }
     this.sharedStylesHost.addStyles(this.styles);
   }
 
@@ -485,6 +498,9 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     }
 
     this.sharedStylesHost.removeStyles(this.styles);
+    if (this.styleUrls) {
+      this.sharedStylesHost.removeExternalStyles(this.styleUrls);
+    }
   }
 }
 
