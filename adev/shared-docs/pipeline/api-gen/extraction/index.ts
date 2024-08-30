@@ -17,12 +17,15 @@ function main() {
   const [
     moduleName,
     moduleLabel,
+    serializedPrivateModules,
     entryPointExecRootRelativePath,
     srcs,
     outputFilenameExecRootRelativePath,
     serializedPathMapWithExecRootRelativePaths,
     extraEntriesSrcs,
   ] = rawParamLines;
+
+  const privateModules = new Set(serializedPrivateModules.split(','));
 
   // The path map is a serialized JSON map of import path to index.ts file.
   // For example, {'@angular/core': 'path/to/some/index.ts'}
@@ -61,7 +64,7 @@ function main() {
       return result.concat(JSON.parse(readFileSync(path, {encoding: 'utf8'})) as DocEntry[]);
     }, []);
 
-  const apiDoc = program.getApiDocumentation(entryPointExecRootRelativePath);
+  const apiDoc = program.getApiDocumentation(entryPointExecRootRelativePath, privateModules);
   const extractedEntries = apiDoc.entries;
   const combinedEntries = extractedEntries.concat(extraEntries);
 

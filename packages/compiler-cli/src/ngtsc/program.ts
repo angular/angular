@@ -399,8 +399,11 @@ export class NgtscProgram implements api.Program {
    * @param entryPoint Path to the entry point for the package for which API
    *     docs should be extracted.
    */
-  getApiDocumentation(entryPoint: string): {entries: DocEntry[]; symbols: Map<string, string>} {
-    return this.compiler.getApiDocumentation(entryPoint);
+  getApiDocumentation(
+    entryPoint: string,
+    privateModules: Set<string>,
+  ): {entries: DocEntry[]; symbols: Map<string, string>} {
+    return this.compiler.getApiDocumentation(entryPoint, privateModules);
   }
 
   getEmittedSourceFiles(): Map<string, ts.SourceFile> {

@@ -16,6 +16,9 @@ def _extract_api_to_json(ctx):
     # Pass the module_label for the extracted APIs, This is something like core for "@angular/core".
     args.add(ctx.attr.module_label)
 
+    # Pass the set of private modules that should not be included in the API reference.
+    args.add_joined(ctx.attr.private_modules, join_with = ",")
+
     # Pass the entry_point for from which to extract public symbols.
     args.add(ctx.file.entry_point)
 
@@ -76,6 +79,9 @@ extract_api_to_json = rule(
             doc = """Source file entry-point from which to extract public symbols""",
             mandatory = True,
             allow_single_file = True,
+        ),
+        "private_modules": attr.string_list(
+            doc = """List of private modules that should not be included in the API symbol linking""",
         ),
         "import_map": attr.label_keyed_string_dict(
             doc = """Map of import path to the index.ts file for that import""",

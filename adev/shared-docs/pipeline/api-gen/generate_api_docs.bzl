@@ -1,7 +1,7 @@
 load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
 load("//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html.bzl", "render_api_to_html")
 
-def generate_api_docs(name, module_name, entry_point, srcs, module_label = None, import_map = {}, extra_entries = []):
+def generate_api_docs(name, module_name, entry_point, srcs, private_modules = [""], module_label = None, import_map = {}, extra_entries = []):
     """Generates API documentation reference pages for the given sources."""
     json_outfile = name + "_api.json"
 
@@ -14,6 +14,7 @@ def generate_api_docs(name, module_name, entry_point, srcs, module_label = None,
         output_name = json_outfile,
         import_map = import_map,
         extra_entries = extra_entries,
+        private_modules = private_modules,
     )
 
     render_api_to_html(

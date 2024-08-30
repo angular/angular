@@ -904,7 +904,10 @@ export class NgCompiler {
    *
    * @returns A map of symbols with their associated module, eg: ApplicationRef => @angular/core
    */
-  getApiDocumentation(entryPoint: string): {entries: DocEntry[]; symbols: Map<string, string>} {
+  getApiDocumentation(
+    entryPoint: string,
+    privateModules: Set<string>,
+  ): {entries: DocEntry[]; symbols: Map<string, string>} {
     const compilation = this.ensureAnalyzed();
     const checker = this.inputProgram.getTypeChecker();
     const docsExtractor = new DocsExtractor(checker, compilation.metaReader);
@@ -922,7 +925,7 @@ export class NgCompiler {
     // TODO: Technically the current directory is not the root dir.
     // Should probably be derived from the config.
     const rootDir = this.inputProgram.getCurrentDirectory();
-    return docsExtractor.extractAll(entryPointSourceFile, rootDir);
+    return docsExtractor.extractAll(entryPointSourceFile, rootDir, privateModules);
   }
 
   /**

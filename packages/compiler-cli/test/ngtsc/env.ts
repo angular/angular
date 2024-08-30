@@ -321,14 +321,14 @@ export class NgtscTestEnvironment {
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
-    return (program as NgtscProgram).getApiDocumentation(entryPoint).entries;
+    return (program as NgtscProgram).getApiDocumentation(entryPoint, new Set()).entries;
   }
 
   driveDocsExtractionForSymbols(entryPoint: string): Map<string, string> {
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
-    return (program as NgtscProgram).getApiDocumentation(entryPoint).symbols;
+    return (program as NgtscProgram).getApiDocumentation(entryPoint, new Set()).symbols;
   }
 
   driveXi18n(format: string, outputFileName: string, locale: string | null = null): void {
