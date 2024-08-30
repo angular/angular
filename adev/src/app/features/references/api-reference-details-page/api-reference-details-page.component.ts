@@ -18,7 +18,6 @@ const HIGHLIGHTED_CARD_CLASS = 'docs-highlighted-card';
 
 @Component({
   selector: 'adev-reference-page',
-  standalone: true,
   imports: [DocViewer],
   templateUrl: './api-reference-details-page.component.html',
   styleUrls: ['./api-reference-details-page.component.scss'],

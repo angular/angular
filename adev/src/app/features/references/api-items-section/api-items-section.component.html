@@ -29,7 +29,13 @@
         <span class="adev-item-title" [attr.title]="apiItem.title">{{ apiItem.title }}</span>
       </a>
       @if (apiItem.isDeprecated) {
-        <span class="adev-deprecated"> &lt;!&gt; </span>
+        <span class="adev-item-attribute" matTooltip="Deprecated"> &lt;!&gt; </span>
+      }
+      @if(apiItem.isExperimental) {
+        <span class="adev-item-attribute" matTooltip="Experimental"> 🧪 </span>
+      }
+      @if(apiItem.isDeveloperPreview) {
+        <span class="adev-item-attribute" matTooltip="Developer Preview"> 🚧 </span>
       }
     </li>
   }

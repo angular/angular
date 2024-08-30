@@ -127,7 +127,8 @@ const initializeNavigationAdapter = () => {
     // Skip this for popstate/traversals that are already committed.
     // The rollback is problematic so we only do it for navigations that
     // defer the actual update (pushState) on the browser.
-    if (router.getCurrentNavigation()?.trigger === 'popstate') {
+    const currentNavigation = router.getCurrentNavigation();
+    if (currentNavigation?.trigger === 'popstate' || currentNavigation?.extras.replaceUrl) {
       return;
     }
     if (e instanceof NavigationStart) {

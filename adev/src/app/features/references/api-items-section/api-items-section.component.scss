@@ -79,11 +79,12 @@
   gap: 1em;
 }
 
-.adev-deprecated {
+.adev-item-attribute {
+  width: 24px;
+  text-align: center;
   font-family: var(--code-font);
   background-color: var(--senary-contrast);
   color: var(--tertiary-contrast);
-  width: max-content;
   border-radius: 0.25rem;
   padding: 0.001rem 0.2rem 0.005rem;
   margin-inline-start: 0.5rem;

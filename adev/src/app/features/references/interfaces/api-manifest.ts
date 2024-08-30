@@ -11,7 +11,9 @@ import {ApiItemType} from './api-item-type';
 export interface ApiManifestEntry {
   name: string;
   type: ApiItemType;
-  isDeprecated?: boolean;
+  isDeprecated: boolean;
+  isDeveloperPreview: boolean;
+  isExperimental: boolean;
 }
 
 export interface ApiManifestPackage {

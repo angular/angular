@@ -59,7 +59,7 @@ describe('ApiItemsSection', () => {
     fixture.detectChanges();
 
     const deprecatedApiIcons = fixture.debugElement.queryAll(
-      By.css('.adev-api-items-section-grid li .adev-deprecated'),
+      By.css('.adev-api-items-section-grid li .adev-item-attribute'),
     );
     const deprecatedApiTitle = deprecatedApiIcons[0].parent?.query(By.css('.adev-item-title'));
 
