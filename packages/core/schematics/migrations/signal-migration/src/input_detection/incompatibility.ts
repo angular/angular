@@ -10,6 +10,7 @@ import ts from 'typescript';
 
 /** Reasons why an input cannot be migrated. */
 export enum InputIncompatibilityReason {
+  SkippedViaConfigFilter,
   Accessor,
   WriteAssignment,
   OverriddenByDerivedClass,
@@ -18,7 +19,6 @@ export enum InputIncompatibilityReason {
   ParentIsIncompatible,
   SpyOnThatOverwritesField,
   PotentiallyNarrowedInTemplateButNoSupportYet,
-  IgnoredBecauseOfLanguageServiceRefactoringRange,
   RequiredInputButNoGoodExplicitTypeExtractable,
 }
 
@@ -33,16 +33,6 @@ export interface InputMemberIncompatibility {
   reason: InputIncompatibilityReason;
   context: ts.Node | null;
 }
-
-/** Reasons that cannot be ignored. */
-export const nonIgnorableIncompatibilities: Array<
-  InputIncompatibilityReason | ClassIncompatibilityReason
-> = [
-  // There is no good output for accessor inputs.
-  InputIncompatibilityReason.Accessor,
-  // There is no good output for such inputs. We can't perform "conversion".
-  InputIncompatibilityReason.RequiredInputButNoGoodExplicitTypeExtractable,
-];
 
 /** Whether the given value refers to an input member incompatibility. */
 export function isInputMemberIncompatibility(value: unknown): value is InputMemberIncompatibility {

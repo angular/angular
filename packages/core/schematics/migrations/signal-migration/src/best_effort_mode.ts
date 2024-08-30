@@ -6,18 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {nonIgnorableIncompatibilities} from './input_detection/incompatibility';
+import {InputIncompatibilityReason} from './input_detection/incompatibility';
 import {KnownInputs} from './input_detection/known_inputs';
+
+/** Input reasons that cannot be ignored. */
+const nonIgnorableInputIncompatibilities: InputIncompatibilityReason[] = [
+  // There is no good output for accessor inputs.
+  InputIncompatibilityReason.Accessor,
+  // There is no good output for such inputs. We can't perform "conversion".
+  InputIncompatibilityReason.RequiredInputButNoGoodExplicitTypeExtractable,
+];
 
 /** Filters ignorable input incompatibilities when best effort mode is enabled. */
 export function filterIncompatibilitiesForBestEffortMode(knownInputs: KnownInputs) {
-  // Remove all "ignorable" incompatibilities of inputs, if best effort mode is requested.
   knownInputs.knownInputIds.forEach(({container: c}) => {
-    if (c.incompatible !== null && !nonIgnorableIncompatibilities.includes(c.incompatible)) {
-      c.incompatible = null;
-    }
+    // All class incompatibilities are "filterable" right now.
+    c.incompatible = null;
+
     for (const [key, i] of c.memberIncompatibility.entries()) {
-      if (!nonIgnorableIncompatibilities.includes(i.reason)) {
+      if (!nonIgnorableInputIncompatibilities.includes(i.reason)) {
         c.memberIncompatibility.delete(key);
       }
     }

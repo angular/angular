@@ -647,11 +647,11 @@ new ManualInstantiation();
 
 // tslint:disable
 
-import {Component, Input} from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({})
 export class ManualInstantiation {
-  @Input() bla: string = '';
+  readonly bla = input<string>('');
 }
 @@@@@@ modifier_tests.ts @@@@@@
 
@@ -917,10 +917,10 @@ export class ScopeMismatchTest {
 
 // tslint:disable
 
-import {Input} from '@angular/core';
+import { input } from '@angular/core';
 
 class MyComp {
-  @Input() myInput = () => {};
+  readonly myInput = input(() => { });
 }
 
 spyOn<MyComp>(new MyComp(), 'myInput').and.returnValue();

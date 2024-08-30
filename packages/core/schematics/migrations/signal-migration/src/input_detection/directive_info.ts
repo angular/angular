@@ -24,21 +24,23 @@ export class DirectiveInfo {
   /** Map of input IDs and their incompatibilities. */
   memberIncompatibility = new Map<InputUniqueKey, InputMemberIncompatibility>();
 
-  /** Whether the whole class is incompatible. */
+  /**
+   * Whether the whole class is incompatible.
+   *
+   * Class incompatibility precedes individual member incompatibility.
+   * All members in the class are considered incompatible.
+   */
   incompatible: ClassIncompatibilityReason | null = null;
 
   constructor(public clazz: ts.ClassDeclaration) {}
 
   /**
-   * Checks whether the class is skipped for migration because all of
-   * the inputs are marked as incompatible, or the class itself.
+   * Checks whether there are any incompatible inputs for the
+   * given class.
    */
-  isClassSkippedForMigration(): boolean {
-    return (
-      this.incompatible !== null ||
-      Array.from(this.inputFields.values()).every(({descriptor}) =>
-        this.isInputMemberIncompatible(descriptor),
-      )
+  hasIncompatibleMembers(): boolean {
+    return Array.from(this.inputFields.values()).some(({descriptor}) =>
+      this.isInputMemberIncompatible(descriptor),
     );
   }
 
