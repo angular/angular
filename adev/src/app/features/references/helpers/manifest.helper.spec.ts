@@ -30,6 +30,15 @@ describe('ManiferHelper', () => {
       };
       const result2 = getApiUrl(packageEntry2, apiName);
       expect(result2).toBe('api/animations/browser/DatePipe');
+
+      const packageEntry3: ApiManifestPackage = {
+        moduleName: '@angular/common/http/testing',
+        moduleLabel: 'common/http/testing',
+        normalizedModuleName: 'angular_common_http_testing',
+        entries: [],
+      };
+      const result3 = getApiUrl(packageEntry3, apiName);
+      expect(result3).toBe('api/common/http/testing/DatePipe');
     });
   });
 });

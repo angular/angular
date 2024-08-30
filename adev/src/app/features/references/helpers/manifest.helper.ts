@@ -62,7 +62,7 @@ export function getApiUrl(packageEntry: ApiManifestPackage, apiName: string): st
     // packages like `angular_core` should be `core`
     // packages like `angular_animation_browser` should be `animation/browser`
     .replace('angular_', '')
-    .replace('_', '/');
+    .replaceAll('_', '/');
   return `${PagePrefix.API}/${packageName}/${apiName}`;
 }
 
