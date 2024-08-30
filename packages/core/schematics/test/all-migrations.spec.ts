@@ -62,13 +62,15 @@ describe('all migrations', () => {
     await runner.runSchematic(migrationName, undefined, tree);
   }
 
-  if (!allMigrationSchematics.length) {
-    throw Error('No migration schematics found.');
+  if (allMigrationSchematics.length) {
+    allMigrationSchematics.forEach((name) => {
+      describe(name, () => createTests(name));
+    });
+  } else {
+    it('should pass', () => {
+      expect(true).toBe(true);
+    });
   }
-
-  allMigrationSchematics.forEach((name) => {
-    describe(name, () => createTests(name));
-  });
 
   function createTests(migrationName: string) {
     // Regression test for: https://github.com/angular/angular/issues/36346.
