@@ -11,12 +11,27 @@
       (ngModelChange)="syncUrlWithFilters()"
     />
 
-    <docs-slide-toggle
-      buttonId="includeDeprecated"
-      label="Show @deprecated"
-      name="includeDeprecated"
-      [(ngModel)]="includeDeprecated"
-    />
+    <div class="adev-reference-list-form-part-two">
+      <span class="adev-status-select">
+        Status:
+        <button [cdkMenuTriggerFor]="statusMenu">
+          <span>{{ status() ?? 'all'| titlecase }}</span>
+          <docs-icon>expand_more</docs-icon>
+        </button>
+
+        <ng-template #statusMenu>
+          <ul class="adev-status-dropdown" cdkMenu>
+            @for (stat of statuses; track $index) {
+              <li>
+                <button cdkMenuItem type="button" (click)="status.set(stat)">
+                  <span>{{ stat | titlecase }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        </ng-template>
+      </span>
+    </div>
   </div>
 
   <p class="adev-reference-list-type-filter-label">Filter by Identifier type</p>

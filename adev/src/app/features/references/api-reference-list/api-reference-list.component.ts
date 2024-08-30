@@ -16,22 +16,36 @@ import {
   signal,
   viewChild,
   afterNextRender,
+  EnvironmentInjector,
+  effect,
 } from '@angular/core';
 import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {FormsModule} from '@angular/forms';
-import {SlideToggle, TextField} from '@angular/docs';
+import {IconComponent, TextField} from '@angular/docs';
+import {TitleCasePipe} from '@angular/common';
 import {Params, Router} from '@angular/router';
 import {ApiItemType} from '../interfaces/api-item-type';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import ApiItemLabel from '../api-item-label/api-item-label.component';
 import {ApiLabel} from '../pipes/api-label.pipe';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
+import {CdkMenuModule} from '@angular/cdk/menu';
 
 export const ALL_TYPES_KEY = 'All';
 
 @Component({
   selector: 'adev-reference-list',
-  imports: [ApiItemsSection, ApiItemLabel, FormsModule, SlideToggle, TextField, ApiLabel],
+  standalone: true,
+  imports: [
+    ApiItemsSection,
+    ApiItemLabel,
+    FormsModule,
+    TextField,
+    ApiLabel,
+    CdkMenuModule,
+    IconComponent,
+    TitleCasePipe,
+  ],
   templateUrl: './api-reference-list.component.html',
   styleUrls: ['./api-reference-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,34 +54,24 @@ export default class ApiReferenceList {
   // services
   private readonly apiReferenceManager = inject(ApiReferenceManager);
   private readonly router = inject(Router);
+  filterInput = viewChild.required(TextField, {read: ElementRef});
+  private readonly injector = inject(EnvironmentInjector);
+
+  statuses = ['all', 'stable', 'deprecated', 'developer-preview', 'experimental'];
 
   // inputs
   query = model<string | undefined>('');
   type = model<string | undefined>(ALL_TYPES_KEY);
-
+  status = model<string | undefined>('all');
   // const state
   itemTypes = Object.values(ApiItemType);
 
   // state
   includeDeprecated = signal(false);
 
-  // queries
-  filterInput = viewChild.required(TextField, {read: ElementRef});
-
-  constructor() {
-    afterNextRender(() => {
-      // Lord forgive me for I have sinned
-      // Use the CVA to focus when https://github.com/angular/angular/issues/31133 is implemented
-      if (matchMedia('(hover: hover) and (pointer:fine)').matches) {
-        scheduleOnIdle(() => {
-          this.filterInput().nativeElement.querySelector('input').focus({preventScroll: true});
-        });
-      }
-    });
-  }
-
   filteredGroups = computed((): ApiItemsGroup[] => {
     const query = this.query()?.toLocaleLowerCase();
+    const status = this.status()?.toLowerCase();
     return this.apiReferenceManager
       .apiGroups()
       .map((group) => ({
@@ -76,15 +80,66 @@ export default class ApiReferenceList {
         items: group.items.filter((apiItem) => {
           return (
             (query !== undefined ? apiItem.title.toLocaleLowerCase().includes(query) : true) &&
-            (this.includeDeprecated() ? true : apiItem.isDeprecated === this.includeDeprecated()) &&
             (this.type() === undefined ||
               this.type() === ALL_TYPES_KEY ||
-              apiItem.itemType === this.type())
+              apiItem.itemType === this.type()) &&
+            (this.status() === undefined ||
+              status === 'all' ||
+              (status === 'stable' &&
+                !apiItem.isDeveloperPreview &&
+                !apiItem.isDeprecated &&
+                !apiItem.isExperimental) ||
+              (status === 'deprecated' && apiItem.isDeprecated) ||
+              (status === 'developer-preview' && apiItem.isDeveloperPreview) ||
+              (status === 'experimental' && apiItem.isExperimental))
           );
         }),
       }))
       .filter((group) => group.items.length > 0);
   });
+
+  constructor() {
+    effect(() => {
+      const filterInput = this.filterInput();
+      afterNextRender(
+        {
+          write: () => {
+            // Lord forgive me for I have sinned
+            // Use the CVA to focus when https://github.com/angular/angular/issues/31133 is implemented
+            if (matchMedia('(hover: hover) and (pointer:fine)').matches) {
+              filterInput.nativeElement.querySelector('input').focus();
+            }
+          },
+        },
+        {injector: this.injector},
+      );
+    });
+
+    effect(
+      () => {
+        // prevents displaying a non-existent status on the dropdown button
+        let status = this.status();
+        if (status && !this.statuses.includes(status.toLowerCase())) {
+          this.status.set('all');
+        }
+        const params: Params = {
+          'query': this.query() ? this.query() : null,
+          'type': this.type() ? this.type() : null,
+          'status': this.status() ? this.status() : null,
+        };
+
+        this.router.navigate([], {
+          queryParams: params,
+          replaceUrl: true,
+          preserveFragment: true,
+          info: {
+            disableScrolling: true,
+          },
+        });
+      },
+      {allowSignalWrites: true},
+    );
+  }
 
   filterByItemType(itemType: ApiItemType): void {
     this.type.update((currentType) => (currentType === itemType ? ALL_TYPES_KEY : itemType));
