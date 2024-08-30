@@ -271,6 +271,22 @@
   --mdc-snackbar-container-shape: 0.25rem;
   --mdc-snackbar-container-color: var(--page-background);
   --mdc-snackbar-supporting-text-color: var(--primary-contrast);
+
+  --mdc-chip-elevated-selected-container-color: transparent;
+  --mdc-chip-flat-selected-outline-width: 1px;
+  --mdc-chip-outline-color: var(--quinary-contrast);
+  --mdc-chip-label-text-color: var(--quinary-contrast);
+  --mdc-chip-focus-outline-color: var(--quinary-contrast);
+
+  --mdc-chip-selected-label-text-color: var(--tertiary-contrast);
+
+  --mdc-chip-label-text-size: 14px; 
+  --mdc-chip-label-text-line-height: 20px;
+  
+  .mat-mdc-standard-chip.mdc-evolution-chip--selected {
+    --mdc-chip-outline-color: var(--french-violet);
+    --mdc-chip-focus-outline-color: var(--french-violet);
+  }
 }
 
 // LIGHT MODE (Explicit)
