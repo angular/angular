@@ -140,6 +140,10 @@ generate_api_docs(
     ],
     entry_point = ":index.ts",
     module_name = "@angular/core",
+    private_modules = [
+        "core/primitives/signals",
+        "core/primitives/event-dispatch",
+    ],
 )
 
 genrule(
