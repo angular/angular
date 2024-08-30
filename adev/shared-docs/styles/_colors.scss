@@ -263,24 +263,36 @@
   }
 }
 
-@mixin mdc-definitions() {
-  @include mat.snack-bar-overrides(
-    (
-      container-shape: 0.25rem,
-      container-color: var(--page-background),
-      supporting-text-color: var(--primary-contrast),
-    )
-  );
-}
+@include mat.snack-bar-overrides(
+  (
+    container-shape: 0.25rem,
+    container-color: var(--page-background),
+    supporting-text-color: var(--primary-contrast),
+  )
+);
+
+@include mat.chips-overrides(
+  (
+    outline-color: var(--quinary-contrast),
+    disabled-outline-color: var(--quinary-contrast),
+    flat-selected-outline-width: 1px,
+    label-text-color: var(--tertiary-contrast),
+    label-text-size: 14px,
+    label-text-line-height: 20px,
+
+    with-icon-icon-color: var(--french-violet),
+    with-icon-selected-icon-color: var(--french-violet),
+    selected-label-text-color: var(--french-violet),
+    focus-outline-color: var(--french-violet),
+  )
+);
 
 // LIGHT MODE (Explicit)
 .docs-light-mode {
   background-color: #ffffff;
   @include root-definitions();
-  @include mdc-definitions();
   .docs-invert-mode {
     @include dark-mode-definitions();
-    @include mdc-definitions();
   }
 }
 
@@ -289,9 +301,7 @@
   background-color: oklch(16.93% 0.004 285.95);
   @include root-definitions();
   @include dark-mode-definitions();
-  @include mdc-definitions();
   .docs-invert-mode {
     @include root-definitions();
-    @include mdc-definitions();
   }
 }
