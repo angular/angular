@@ -2,34 +2,27 @@
   "schematics": {
     "standalone-migration": {
       "description": "Converts the entire application or a part of it to standalone",
-      "factory": "./ng-generate/standalone-migration/bundle",
+      "factory": "./bundles/standalone-migration#migrate",
       "schema": "./ng-generate/standalone-migration/schema.json",
-      "aliases": [
-        "standalone"
-      ]
+      "aliases": ["standalone"]
     },
     "control-flow-migration": {
       "description": "Converts the entire application to block control flow syntax",
-      "factory": "./ng-generate/control-flow-migration/bundle",
+      "factory": "./bundles/control-flow-migration#migrate",
       "schema": "./ng-generate/control-flow-migration/schema.json",
-      "aliases": [
-        "control-flow"
-      ]
+      "aliases": ["control-flow"]
     },
     "inject-migration": {
       "description": "Converts usages of constructor-based injection to the inject() function",
-      "factory": "./ng-generate/inject-migration/bundle",
+      "factory": "./bundles/inject-migration#migrate",
       "schema": "./ng-generate/inject-migration/schema.json",
-      "aliases": [
-        "inject"
-      ]
+      "aliases": ["inject"]
     },
     "route-lazy-loading-migration": {
       "description": "Updates route definitions to use lazy-loading of components instead of eagerly referencing them",
-      "factory": "./ng-generate/route-lazy-loading/bundle",
+      "factory": "./bundles/route-lazy-loading#migrate",
       "schema": "./ng-generate/route-lazy-loading/schema.json",
       "aliases": ["route-lazy-loading"]
     }
   }
 }
-

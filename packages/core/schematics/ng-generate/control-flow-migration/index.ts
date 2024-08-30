@@ -21,7 +21,7 @@ interface Options {
   format: boolean;
 }
 
-export default function (options: Options): Rule {
+export function migrate(options: Options): Rule {
   return async (tree: Tree, context: SchematicContext) => {
     const basePath = process.cwd();
     const pathToMigrate = normalizePath(join(basePath, options.path));

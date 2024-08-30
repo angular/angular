@@ -10,7 +10,6 @@ load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protract
 load("@npm//typescript:index.bzl", "tsc")
 load("@npm//@angular/build-tooling/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
 load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", _http_server = "http_server")
-load("@npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_outputs")
 load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
@@ -649,24 +648,6 @@ def esbuild(args = None, **kwargs):
             "resolveExtensions": [".mjs", ".js", ".json"],
         },
         **kwargs
-    )
-
-def esbuild_no_sourcemaps(name, **kwargs):
-    esbuild_target_name = "%s.with-sourcemap" % name
-
-    # Unlike linked, when using external the .js output file does not contain a //# sourceMappingURL= comment.
-    # See: https://esbuild.github.io/api/#sourcemap
-    esbuild(
-        name = esbuild_target_name,
-        sourcemap = "external",
-        output = "%s.js" % name,
-        **kwargs
-    )
-
-    filter_outputs(
-        name = name,
-        target = esbuild_target_name,
-        filters = ["%s.js" % name],
     )
 
 def esbuild_checked_in(name, **kwargs):
