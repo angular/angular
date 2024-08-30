@@ -352,6 +352,10 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   readonly data: {
     [kind: string]: any;
     animation?: any[];
+    /**
+     * A set of style URLs that the component needs to be present for component to render correctly.
+     */
+    externalStyles?: string[];
   };
 
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */

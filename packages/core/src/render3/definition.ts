@@ -301,6 +301,11 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
   styles?: string[];
 
   /**
+   * A set of stylesheet URLs that the component needs to be present for component to render correctly.
+   */
+  externalStyles?: string[];
+
+  /**
    * The strategy that the default change detector uses to detect changes.
    * When set, takes effect the next time change detection is triggered.
    */
@@ -366,6 +371,10 @@ export function ɵɵdefineComponent<T>(
       tView: null,
       id: '',
     };
+
+    if (componentDefinition.externalStyles) {
+      def.data['externalStyles'] = componentDefinition.externalStyles;
+    }
 
     initFeatures(def);
     const dependencies = componentDefinition.dependencies;
