@@ -50,6 +50,7 @@ export class DocsExtractor {
   extractAll(
     sourceFile: ts.SourceFile,
     rootDir: string,
+    privateModules: Set<string>,
   ): {entries: DocEntry[]; symbols: Map<string, string>} {
     const entries: DocEntry[] = [];
     const symbols = new Map<string, string>();
@@ -77,8 +78,7 @@ export class DocsExtractor {
          */
         const importedSymbols = getImportedSymbols(realSourceFile);
         importedSymbols.forEach((moduleName, symbolName) => {
-          // TODO: we probably want to filter out symbols from private modules (like core/primitives)
-          if (symbolName.startsWith('ɵ')) {
+          if (symbolName.startsWith('ɵ') || privateModules.has(moduleName)) {
             return;
           }
 
