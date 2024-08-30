@@ -113,10 +113,40 @@ describe('outputs', () => {
 
             @Directive()
             export class TestDir {
-              @Output(aliasParam) someChange = new EventEmitter();
+              @Output() someChange = new EventEmitter();
 
               someMethod() {
                 this.someChange.pipe();
+              }
+            }
+          `);
+      });
+
+      it('should _not_ migrate outputs that are used with .next', () => {
+        verifyNoChange(`
+            import {Directive, Output, EventEmitter} from '@angular/core';
+
+            @Directive()
+            export class TestDir {
+              @Output() someChange = new EventEmitter<string>();
+
+              someMethod() {
+                this.someChange.next('payload');
+              }
+            }
+          `);
+      });
+
+      it('should _not_ migrate outputs that are used with .complete', () => {
+        verifyNoChange(`
+            import {Directive, Output, EventEmitter, OnDestroy} from '@angular/core';
+
+            @Directive()
+            export class TestDir implements OnDestroy {
+              @Output() someChange = new EventEmitter<string>();
+
+              ngOnDestroy() {
+                this.someChange.complete();
               }
             }
           `);

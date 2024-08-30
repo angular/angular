@@ -7,7 +7,12 @@
  */
 
 import ts from 'typescript';
-import {Replacement, TextUpdate} from '../../utils/tsurge';
+import {
+  Replacement,
+  TextUpdate,
+  ProjectRelativePath,
+  projectRelativePath,
+} from '../../utils/tsurge';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
 import {ImportManager} from '../../../../compiler-cli/private/migrations';
@@ -15,6 +20,7 @@ import {ImportManager} from '../../../../compiler-cli/private/migrations';
 const printer = ts.createPrinter();
 
 export function calculateDeclarationReplacements(
+  projectDirAbsPath: AbsoluteFsPath,
   node: ts.PropertyDeclaration,
   aliasParam?: ts.Expression,
 ): Replacement[] {
@@ -49,7 +55,7 @@ export function calculateDeclarationReplacements(
 
   return [
     new Replacement(
-      absoluteFromSourceFile(sf),
+      projectRelativePath(sf, projectDirAbsPath),
       new TextUpdate({
         position: node.getStart(),
         end: node.getEnd(),
@@ -59,9 +65,12 @@ export function calculateDeclarationReplacements(
   ];
 }
 
-export function calculateImportReplacements(sourceFiles: ts.SourceFile[]) {
+export function calculateImportReplacements(
+  projectDirAbsPath: AbsoluteFsPath,
+  sourceFiles: ts.SourceFile[],
+) {
   const importReplacements: Record<
-    AbsoluteFsPath,
+    ProjectRelativePath,
     {add: Replacement[]; addAndRemove: Replacement[]}
   > = {};
 
@@ -77,18 +86,16 @@ export function calculateImportReplacements(sourceFiles: ts.SourceFile[]) {
       exportModuleSpecifier: '@angular/core',
       exportSymbolName: 'output',
     });
-    applyImportManagerChanges(importManager, addOnly, [sf]);
+    applyImportManagerChanges(importManager, addOnly, [sf], projectDirAbsPath);
 
-    importManager.addImport({
-      requestedFile: sf,
-      exportModuleSpecifier: '@angular/core',
-      exportSymbolName: 'output',
-    });
     importManager.removeImport(sf, 'Output', '@angular/core');
     importManager.removeImport(sf, 'EventEmitter', '@angular/core');
-    applyImportManagerChanges(importManager, addRemove, [sf]);
+    applyImportManagerChanges(importManager, addRemove, [sf], projectDirAbsPath);
 
-    importReplacements[absolutePath] = {add: addOnly, addAndRemove: addRemove};
+    importReplacements[projectRelativePath(sf, projectDirAbsPath)] = {
+      add: addOnly,
+      addAndRemove: addRemove,
+    };
   }
 
   return importReplacements;

@@ -33,29 +33,38 @@ export interface ExtractedOutput {
  * returns its resolved metadata if possible.
  */
 export function extractSourceOutputDefinition(
-  node: ts.Node,
+  node: ts.PropertyDeclaration,
   reflector: ReflectionHost,
   projectDirAbsPath: string,
 ): ExtractedOutput | null {
-  if (
-    ts.isPropertyDeclaration(node) &&
+  const outputDecorator = getOutputDecorator(node, reflector);
+
+  if (outputDecorator !== null && isOutputDeclarationEligibleForMigration(node)) {
+    return {
+      id: getUniqueIdForProperty(projectDirAbsPath, node),
+      aliasParam: outputDecorator.args?.at(0),
+    };
+  }
+
+  return null;
+}
+
+function isOutputDeclarationEligibleForMigration(node: ts.PropertyDeclaration) {
+  return (
     node.initializer !== undefined &&
     ts.isNewExpression(node.initializer) &&
     ts.isIdentifier(node.initializer.expression) &&
     node.initializer.expression.text === 'EventEmitter'
-  ) {
-    const id = getUniqueIdForProperty(projectDirAbsPath, node);
-    const outputDecorator = getOutputDecorator(node, reflector);
+  );
+}
 
-    if (outputDecorator !== null) {
-      return {
-        id: id,
-        aliasParam: outputDecorator.args?.at(0),
-      };
-    }
-  }
-
-  return null;
+const problematicEventEmitterUsages = new Set(['pipe', 'next', 'complete']);
+export function isProblematicEventEmitterUsage(node: ts.Node): node is ts.PropertyAccessExpression {
+  return (
+    ts.isPropertyAccessExpression(node) &&
+    ts.isIdentifier(node.name) &&
+    problematicEventEmitterUsages.has(node.name.text)
+  );
 }
 
 /** Gets whether the given property is an Angular `@Output`. */
