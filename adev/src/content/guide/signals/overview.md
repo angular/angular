@@ -6,7 +6,7 @@ Tip: Check out Angular's [Essentials](essentials/managing-dynamic-data) before d
 
 ## What are signals?
 
-A **signal** is a wrapper around a value that notifies interested consumers when that value changes. Signals can contain any value, from primitives to complex data structures.
+A **signal** is a wrapper a value that notifies interested consumers when that value changes. Signals can contain any value, from primitives to complex data structures.
 
 You read a signal's value by calling its getter function, which allows Angular to track where the signal is used.
 
