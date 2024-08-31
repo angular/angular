@@ -27,9 +27,11 @@ import {EnumReference} from './templates/enum-reference';
 import {FunctionReference} from './templates/function-reference';
 import {InitializerApiFunction} from './templates/initializer-api-function';
 import {TypeAliasReference} from './templates/type-alias-reference';
+import {setCurrentSymbol} from './symbol-context';
 
 /** Given a doc entry, get the transformed version of the entry for rendering. */
 export function renderEntry(renderable: DocEntryRenderable | CliCommandRenderable): string {
+  setCurrentSymbol(renderable.name);
   if (isCliEntry(renderable)) {
     return render(CliCommandReference(renderable));
   }
