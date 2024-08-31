@@ -7,6 +7,8 @@ import {
   createCompilerHost,
   DocEntry,
   EntryCollection,
+  InterfaceEntry,
+  ClassEntry,
 } from '@angular/compiler-cli';
 import ts from 'typescript';
 
@@ -81,10 +83,28 @@ function main() {
 
       // Exported symbols from the current package
       ...apiDoc.entries.map((entry) => [entry.name, moduleName]),
+
+      // Also doing it for every member of classes/interfaces
+      ...apiDoc.entries.flatMap((entry) => [
+        [entry.name, moduleName],
+        ...getEntriesFromMembers(entry).map((member) => [member, moduleName]),
+      ]),
     ],
   } as EntryCollection);
 
   writeFileSync(outputFilenameExecRootRelativePath, output, {encoding: 'utf8'});
+}
+
+function getEntriesFromMembers(entry: DocEntry): string[] {
+  if (!hasMembers(entry)) {
+    return [];
+  }
+
+  return entry.members.map((member) => `${entry.name}.${member.name}`);
+}
+
+function hasMembers(entry: DocEntry): entry is InterfaceEntry | ClassEntry {
+  return 'members' in entry;
 }
 
 main();
