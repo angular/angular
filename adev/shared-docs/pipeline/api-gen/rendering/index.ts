@@ -7,7 +7,7 @@ import {configureMarkedGlobally} from './marked/configuration';
 import {getRenderable} from './processing';
 import {renderEntry} from './rendering';
 import {initHighlighter} from './shiki/shiki';
-import {setSymbols} from './symbol-context';
+import {setCurrentSymbol, setSymbols} from './symbol-context';
 
 /** The JSON data file format for extracted API reference info. */
 interface EntryCollection {
@@ -110,9 +110,10 @@ async function main() {
     // Setting the symbols are a global context for the rendering templates of this entry
     setSymbols(collection.symbols);
 
-    const renderableEntries = extractedEntries.map((entry) =>
-      getRenderable(entry, collection.moduleName),
-    );
+    const renderableEntries = extractedEntries.map((entry) => {
+      setCurrentSymbol(entry.name);
+      return getRenderable(entry, collection.moduleName);
+    });
 
     const htmlOutputs = renderableEntries.map(renderEntry);
 

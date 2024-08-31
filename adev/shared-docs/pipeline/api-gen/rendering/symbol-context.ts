@@ -5,6 +5,9 @@
 
 let symbols = new Map<string, string>();
 
+// This is used to store the currently processed symbol (usually a class or an interface)
+let currentSymbol: string | undefined;
+
 export function setSymbols(newSymbols: Map<string, string>): void {
   symbols = newSymbols;
 }
@@ -12,7 +15,23 @@ export function setSymbols(newSymbols: Map<string, string>): void {
 /**
  * Returns the module name of a symbol.
  * eg: 'ApplicationRef' => 'core', 'FormControl' => 'forms'
+ * Also supports class.member, 'NgZone.runOutsideAngular => 'core'
  */
 export function getModuleName(symbol: string): string | undefined {
-  return symbols.get(symbol)?.replace('@angular/', '');
+  const moduleName = symbols.get(symbol);
+  return moduleName?.replace('@angular/', '');
+}
+
+export function setCurrentSymbol(symbol: string): void {
+  currentSymbol = symbol;
+}
+
+export function getCurrentSymbol(): string | undefined {
+  return currentSymbol;
+}
+
+export function logUnknownSymbol(link: string, symbol: string): void {
+  console.warn(
+    `WARNING: {@link ${link}} is invalid, ${symbol} or ${currentSymbol}.${symbol} is unknown in this context`,
+  );
 }

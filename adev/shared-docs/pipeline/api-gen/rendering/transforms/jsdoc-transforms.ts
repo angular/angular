@@ -31,7 +31,7 @@ import {
 
 import {getLinkToModule} from './url-transforms';
 import {addApiLinksToHtml} from './code-transforms';
-import {getModuleName} from '../symbol-context';
+import {getCurrentSymbol, getModuleName, logUnknownSymbol} from '../symbol-context';
 
 export const JS_DOC_USAGE_NOTES_TAG = 'usageNotes';
 export const JS_DOC_SEE_TAG = 'see';
@@ -197,27 +197,41 @@ function convertLinks(text: string) {
   });
 }
 
-function parseAtLink(link: string) {
+function parseAtLink(link: string): {label: string; url: string} {
   // Because of microsoft/TypeScript/issues/59679
   // getTextOfJSDocComment introduces an extra space between the symbol and a trailing ()
   link = link.replace(/ \(\)$/, '');
 
   let [rawSymbol, description] = link.split(/\s(.+)/);
-  let [symbol, subSymbol] = rawSymbol.split(/(?:#|\.)/);
-
-  const moduleName = getModuleName(symbol)!;
-  if (!moduleName) {
-    logWarning(link, symbol);
+  if (rawSymbol.startsWith('#')) {
+    rawSymbol = rawSymbol.substring(1);
+  } else if (rawSymbol.startsWith('http://') || rawSymbol.startsWith('https://')) {
+    return {
+      url: rawSymbol,
+      label: rawSymbol.split('/').pop()!,
+    };
   }
 
-  return {
-    label: description ?? rawSymbol,
-    url: getLinkToModule(moduleName, symbol, subSymbol),
-  };
-}
+  let [symbol, subSymbol] = rawSymbol.replace(/\(\)$/, '').split(/(?:#|\.)/);
 
-function logWarning(link: string, symbol: string) {
-  // TODO: remove the links that generate this error
-  // TODO: throw an error when there are no more warning generated
-  console.warn(`WARNING: {@link ${link}} is invalid, ${symbol} is unknown in this context`);
+  let moduleName = getModuleName(symbol);
+  const label = description ?? rawSymbol;
+
+  const currentSymbol = getCurrentSymbol();
+
+  if (!moduleName) {
+    // 2nd attemp, try to get the module name in the context of the current symbol
+    moduleName = getModuleName(`${currentSymbol}.${symbol}`);
+
+    if (!moduleName || !currentSymbol) {
+      // TODO: remove the links that generate this error
+      // TODO: throw an error when there are no more warning generated
+      logUnknownSymbol(link, symbol);
+      return {label, url: '#'};
+    }
+    subSymbol = symbol;
+    symbol = currentSymbol;
+  }
+
+  return {label, url: getLinkToModule(moduleName, symbol, subSymbol)};
 }

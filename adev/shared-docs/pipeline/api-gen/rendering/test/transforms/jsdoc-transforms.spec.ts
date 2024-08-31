@@ -1,10 +1,21 @@
-import {setSymbols} from '../../symbol-context';
+import {setCurrentSymbol, setSymbols} from '../../symbol-context';
 import {addHtmlAdditionalLinks} from '../../transforms/jsdoc-transforms';
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
 describe('jsdoc transforms', () => {
   it('should transform links', () => {
-    setSymbols(new Map([['Route', 'test']]));
+    setCurrentSymbol('Router');
+    setSymbols(
+      new Map([
+        ['Route', 'test'],
+        ['Router', 'test'],
+        ['Router.someMethod', 'test'],
+        ['Router.someMethodWithParenthesis', 'test'],
+        ['FormGroup', 'test'],
+        ['FormGroup.someMethod', 'test'],
+      ]),
+    );
+
     const entry = addHtmlAdditionalLinks({
       jsdocTags: [
         {
@@ -22,6 +33,30 @@ describe('jsdoc transforms', () => {
         {
           name: 'see',
           comment: '{@link Route Something else}',
+        },
+        {
+          name: 'see',
+          comment: '{@link #someMethod}',
+        },
+        {
+          name: 'see',
+          comment: '{@link #someMethodWithParenthesis()}',
+        },
+        {
+          name: 'see',
+          comment: '{@link someMethod()}',
+        },
+        {
+          name: 'see',
+          comment: '{@link FormGroup.someMethod()}',
+        },
+        {
+          name: 'see',
+          comment: '{@link https://angular.dev/api/core/ApplicationRef}',
+        },
+        {
+          name: 'see',
+          comment: '{@link https://angular.dev}',
         },
       ],
       moduleName: 'test',
@@ -47,6 +82,32 @@ describe('jsdoc transforms', () => {
     expect(entry.additionalLinks[3]).toEqual({
       label: 'Something else',
       url: '/api/test/Route',
+    });
+
+    expect(entry.additionalLinks[4]).toEqual({
+      label: 'someMethod',
+      url: '/api/test/Router#someMethod',
+    });
+    expect(entry.additionalLinks[5]).toEqual({
+      label: 'someMethodWithParenthesis()',
+      url: '/api/test/Router#someMethodWithParenthesis',
+    });
+    expect(entry.additionalLinks[6]).toEqual({
+      label: 'someMethod()',
+      url: '/api/test/Router#someMethod',
+    });
+    expect(entry.additionalLinks[7]).toEqual({
+      label: 'FormGroup.someMethod()',
+      url: '/api/test/FormGroup#someMethod',
+    });
+
+    expect(entry.additionalLinks[8]).toEqual({
+      label: 'ApplicationRef',
+      url: 'https://angular.dev/api/core/ApplicationRef',
+    });
+    expect(entry.additionalLinks[9]).toEqual({
+      label: 'angular.dev',
+      url: 'https://angular.dev',
     });
   });
 });
