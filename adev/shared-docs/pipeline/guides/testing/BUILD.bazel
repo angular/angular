@@ -30,6 +30,7 @@ jasmine_node_test(
     data = [
         "@npm//jsdom",
     ] + glob([
+        "**/*.html",
         "**/*.md",
         "**/*.svg",
         "**/*.ts",

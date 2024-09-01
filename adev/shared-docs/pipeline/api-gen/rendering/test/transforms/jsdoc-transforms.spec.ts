@@ -1,8 +1,10 @@
+import {setSymbols} from '../../symbol-context';
 import {addHtmlAdditionalLinks} from '../../transforms/jsdoc-transforms';
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
 describe('jsdoc transforms', () => {
   it('should transform links', () => {
+    setSymbols(new Map([['Route', 'test']]));
     const entry = addHtmlAdditionalLinks({
       jsdocTags: [
         {
@@ -39,12 +41,12 @@ describe('jsdoc transforms', () => {
 
     expect(entry.additionalLinks[2]).toEqual({
       label: 'Route',
-      url: 'api/test/Route',
+      url: '/api/test/Route',
     });
 
     expect(entry.additionalLinks[3]).toEqual({
       label: 'Something else',
-      url: 'api/test/Route',
+      url: '/api/test/Route',
     });
   });
 });

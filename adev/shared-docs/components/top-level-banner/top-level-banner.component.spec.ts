@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {STORAGE_KEY_PREFIX, TopLevelBannerComponent} from './top-level-banner.component';
-import {LOCAL_STORAGE} from '../../providers';
+import {LOCAL_STORAGE, WINDOW} from '../../providers';
 
 describe('TopLevelBannerComponent', () => {
   let component: TopLevelBannerComponent;
@@ -15,12 +15,13 @@ describe('TopLevelBannerComponent', () => {
   beforeEach(async () => {
     mockLocalStorage = jasmine.createSpyObj('Storage', ['getItem', 'setItem']);
 
-    await TestBed.configureTestingModule({
-      imports: [TopLevelBannerComponent],
-      providers: [{provide: LOCAL_STORAGE, useValue: mockLocalStorage}],
-    }).compileComponents();
+    fixture = TestBed.configureTestingModule({
+      providers: [
+        {provide: LOCAL_STORAGE, useValue: mockLocalStorage},
+        {provide: WINDOW, useValue: {location: {origin: ''}}},
+      ],
+    }).createComponent(TopLevelBannerComponent);
 
-    fixture = TestBed.createComponent(TopLevelBannerComponent);
     fixture.componentRef.setInput('text', EXAMPLE_TEXT);
     fixture.componentRef.setInput('id', EXAMPLE_ID);
 
@@ -33,7 +34,7 @@ describe('TopLevelBannerComponent', () => {
     fixture.componentRef.setInput('link', EXAMPLE_LINK);
     fixture.detectChanges();
 
-    const bannerElement = fixture.nativeElement.querySelector('a.adev-top-level-banner');
+    const bannerElement = fixture.nativeElement.querySelector('a.docs-top-level-banner');
     expect(bannerElement).toBeTruthy();
     expect(bannerElement.getAttribute('href')).toBe(EXAMPLE_LINK);
     expect(bannerElement.textContent).toContain(EXAMPLE_TEXT);
@@ -45,7 +46,7 @@ describe('TopLevelBannerComponent', () => {
     fixture.componentRef.setInput('text', EXAMPLE_TEXT);
     fixture.detectChanges();
 
-    const bannerElement = fixture.nativeElement.querySelector('div.adev-top-level-banner');
+    const bannerElement = fixture.nativeElement.querySelector('div.docs-top-level-banner');
     expect(bannerElement).toBeTruthy();
     expect(bannerElement.textContent).toContain(EXAMPLE_TEXT);
   });
@@ -56,7 +57,7 @@ describe('TopLevelBannerComponent', () => {
     fixture.componentRef.setInput('text', EXAMPLE_TEXT);
     fixture.detectChanges();
 
-    const bannerElement = fixture.nativeElement.querySelector('.adev-top-level-banner-cta');
+    const bannerElement = fixture.nativeElement.querySelector('.docs-top-level-banner-cta');
     expect(bannerElement).toBeTruthy();
     expect(bannerElement.textContent).toBe(EXAMPLE_TEXT);
   });

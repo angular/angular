@@ -10,7 +10,7 @@ export const API_PREFIX = 'api';
 export const MODULE_NAME_PREFIX = '@angular/';
 
 export function getLinkToModule(moduleName: string, symbol: string, subSymbol?: string) {
-  return `${API_PREFIX}/${moduleName}/${symbol}${subSymbol ? `#${subSymbol}` : ''}`;
+  return `/${API_PREFIX}/${moduleName}/${symbol}${subSymbol ? `#${subSymbol}` : ''}`;
 }
 
 export const normalizePath = (path: string): string => {
