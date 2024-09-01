@@ -13,11 +13,7 @@ import {
   isPropertyEntry,
   isSetterEntry,
 } from '../entities/categorization';
-import {
-  FunctionSignatureMetadataRenderable,
-  MemberEntryRenderable,
-  MethodEntryRenderable,
-} from '../entities/renderables';
+import {MemberEntryRenderable} from '../entities/renderables';
 import {
   REFERENCE_MEMBER_CARD,
   REFERENCE_MEMBER_CARD_BODY,
@@ -34,7 +30,10 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
   const body = (
     <div className={REFERENCE_MEMBER_CARD_BODY}>
       {isClassMethodEntry(props.member) ? (
-        props.member.signatures.map((sig, i, signatures) => {
+        (props.member.signatures.length
+          ? props.member.signatures
+          : [props.member.implementation]
+        ).map((sig) => {
           const renderableMember = getFunctionMetadataRenderable(sig);
           return <ClassMethodInfo entry={renderableMember} options={{showUsageNotes: true}} />;
         })
