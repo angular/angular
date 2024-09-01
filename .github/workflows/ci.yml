@@ -86,7 +86,7 @@ jobs:
       - name: Build adev in fast mode to ensure it continues to work
         run: yarn bazel build //adev:build --config=release
       - name: Run tests
-        run: yarn bazel test //adev:test
+        run: yarn bazel test //adev/...
 
   publish-snapshots:
     runs-on:

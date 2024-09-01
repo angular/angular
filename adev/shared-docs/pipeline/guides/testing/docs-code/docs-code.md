@@ -9,4 +9,4 @@ this is code
 <docs-code path="adev/shared-docs/pipeline/guides/testing/docs-code/new-code.ts"
            diff="adev/shared-docs/pipeline/guides/testing/docs-code/old-code.ts" />
 
-<docs-code header="src/locale/messages.fr.xlf (<trans-unit>)" path="docs/pipeline/guides/testing/docs-code/messages.fr.xlf.html" />
+<docs-code header="src/locale/messages.fr.xlf (<trans-unit>)" path="adev/shared-docs/pipeline/guides/testing/docs-code/messages.fr.xlf.html" />
