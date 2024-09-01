@@ -17,6 +17,7 @@ import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {RouterTestingModule} from '@angular/router/testing';
 import {Router} from '@angular/router';
 import {provideExperimentalZonelessChangeDetection} from '@angular/core';
+import {SearchResult} from '../../interfaces';
 
 describe('SearchDialog', () => {
   let fixture: ComponentFixture<SearchDialog>;
@@ -135,6 +136,9 @@ const fakeSearchResults = [
       'lvl6': null,
     },
     'objectID': 'fakeObjectId1',
+    _snippetResult: {},
+    type: '',
+    content: null,
   },
   {
     'url': 'https://angular.dev/fakeUrl2#h1',
@@ -148,5 +152,8 @@ const fakeSearchResults = [
       'lvl6': null,
     },
     'objectID': 'fakeObjectId2',
+    type: '',
+    content: null,
+    _snippetResult: {},
   },
-];
+] satisfies SearchResult[];

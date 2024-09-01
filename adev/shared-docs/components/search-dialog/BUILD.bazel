@@ -43,6 +43,7 @@ ts_library(
     deps = [
         ":search-dialog",
         "//adev/shared-docs/components/algolia-icon",
+        "//adev/shared-docs/interfaces",
         "//adev/shared-docs/providers",
         "//adev/shared-docs/services",
         "//adev/shared-docs/testing",
