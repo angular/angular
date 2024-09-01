@@ -474,6 +474,20 @@ gotoItems(hero: Hero) {
 You can configure your routes to lazy load modules, which means that Angular only loads modules as needed, rather than loading all modules when the application launches.
 Additionally, preload parts of your application in the background to improve the user experience.
 
+Any route can lazily load its routed, standalone component by using `loadComponent:`
+
+<docs-code header="Lazy loading a standalone component" language="typescript">
+
+const routes: Routes = [
+  {
+    path: 'lazy',
+    loadComponent: () => import('./lazy.component').then(c => c.LazyComponent)
+  }
+];
+</docs-code>
+This works as long as the loaded component is standalone.
+
+
 For more information on lazy loading and preloading see the dedicated guide [Lazy loading](guide/ngmodules/lazy-loading).
 
 ## Preventing unauthorized access
