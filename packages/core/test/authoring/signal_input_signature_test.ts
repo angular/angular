@@ -68,6 +68,24 @@ export class InputSignatureTest {
   /** string | undefined */
   withNoInitialValue = input<string>();
 
+  /** undefined */
+  initialValueUndefinedWithoutOptions = input(undefined);
+  /** undefined */
+  initialValueUndefinedWithOptions = input(undefined, {});
+  /** @internal */
+  __shouldErrorIfInitialValueUndefinedExplicitReadWithoutOptions = input<string>(
+    // @ts-expect-error
+    undefined,
+  );
+  /** string | undefined, unknown */
+  initialValueUndefinedWithUntypedTransform = input(undefined, {transform: (bla) => ''});
+  /** string | undefined, string */
+  initialValueUndefinedWithTypedTransform = input(undefined, {transform: (bla: string) => ''});
+  /** string | undefined, string */
+  initialValueUndefinedExplicitReadWithTransform = input<string, string>(undefined, {
+    transform: (bla) => '',
+  });
+
   /** string */
   requiredNoInitialValue = input.required<string>();
   /** string | undefined */

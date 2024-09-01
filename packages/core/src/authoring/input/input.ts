@@ -51,6 +51,8 @@ export interface InputFunction {
   <T>(): InputSignal<T | undefined>;
   /** Declares an input of type `T` with an explicit initial value. */
   <T>(initialValue: T, opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
+  /** Declares an input of type `T|undefined` without an initial value, but with input options */
+  <T>(initialValue: undefined, opts: InputOptionsWithoutTransform<T>): InputSignal<T | undefined>;
   /**
    * Declares an input of type `T` with an initial value and a transform
    * function.
@@ -62,6 +64,16 @@ export interface InputFunction {
     initialValue: T,
     opts: InputOptionsWithTransform<T, TransformT>,
   ): InputSignalWithTransform<T, TransformT>;
+  /**
+   * Declares an input of type `T|undefined` without an initial value and with a transform
+   * function.
+   *
+   * The input accepts values of type `TransformT` and the given
+   * transform function will transform the value to type `T|undefined`.
+   */ <T, TransformT>(
+    initialValue: undefined,
+    opts: InputOptionsWithTransform<T | undefined, TransformT>,
+  ): InputSignalWithTransform<T | undefined, TransformT>;
 
   /**
    * Initializes a required input.
