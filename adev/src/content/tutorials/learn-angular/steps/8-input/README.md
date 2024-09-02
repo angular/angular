@@ -31,7 +31,7 @@ Make sure you bind the property `occupation` in your `UserComponent`.
 <docs-code header="user.component.ts" language="angular-ts">
 @Component({
   ...
-  template: `<p>The user's name is {{occupation}}</p>`
+  template: `<p>The user's occupation is {{occupation}}</p>`
 })
 </docs-code>
 
