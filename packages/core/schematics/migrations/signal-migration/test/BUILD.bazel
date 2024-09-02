@@ -1,6 +1,6 @@
 load("@npm//@angular/build-tooling/bazel/integration:index.bzl", "integration_test")
 load("//packages/core/schematics/migrations/signal-migration/test/ts-versions:index.bzl", "TS_VERSIONS")
-load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "nodejs_binary", "ts_library")
 
 ts_library(
     name = "test_runners_lib",
@@ -125,4 +125,21 @@ integration_test(
     tool_mappings = {
         "//packages/core/schematics/migrations/signal-migration/src:batch_test_bin": "migration",
     },
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["migration_spec.ts"],
+    deps = [
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/core/schematics/migrations/signal-migration/src",
+        "//packages/core/schematics/utils/tsurge",
+    ],
+)
+
+jasmine_node_test(
+    name = "test_jasmine",
+    srcs = [":test_lib"],
 )

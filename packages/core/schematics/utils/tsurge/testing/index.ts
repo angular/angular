@@ -15,6 +15,7 @@ import {
 } from '@angular/compiler-cli/src/ngtsc/file_system';
 import {groupReplacementsByFile} from '../helpers/group_replacements';
 import {applyTextUpdates} from '../replacement';
+import ts from 'typescript';
 
 /**
  * Runs the given migration against a fake set of files, emulating
@@ -30,6 +31,7 @@ import {applyTextUpdates} from '../replacement';
 export async function runTsurgeMigration<UnitData, GlobalData>(
   migration: TsurgeMigration<UnitData, GlobalData>,
   files: {name: AbsoluteFsPath; contents: string; isProgramRootFile?: boolean}[],
+  compilerOptions: ts.CompilerOptions = {},
 ): Promise<MockFileSystem> {
   const mockFs = getFileSystem();
   if (!(mockFs instanceof MockFileSystem)) {
@@ -47,7 +49,9 @@ export async function runTsurgeMigration<UnitData, GlobalData>(
     absoluteFrom('/tsconfig.json'),
     JSON.stringify({
       compilerOptions: {
+        strict: true,
         rootDir: '/',
+        ...compilerOptions,
       },
       files: rootFiles,
     }),
