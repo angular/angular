@@ -55,7 +55,12 @@ export function pass1__IdentifySourceFileAndDeclarationInputs(
       // track source file inputs in the result of this target.
       // these are then later migrated in the migration phase.
       if (decoratorInput.inSourceFile && host.isSourceFileForCurrentMigration(sf)) {
-        const conversionPreparation = prepareAndCheckForConversion(node, decoratorInput, checker);
+        const conversionPreparation = prepareAndCheckForConversion(
+          node,
+          decoratorInput,
+          checker,
+          host.options,
+        );
 
         if (isInputMemberIncompatibility(conversionPreparation)) {
           knownDecoratorInputs.markInputAsIncompatible(inputDescr, conversionPreparation);

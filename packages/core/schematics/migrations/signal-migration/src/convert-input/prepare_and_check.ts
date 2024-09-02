@@ -15,6 +15,7 @@ import {
 import {InputNode} from '../input_detection/input_node';
 import {Decorator} from '@angular/compiler-cli/src/ngtsc/reflection';
 import assert from 'assert';
+import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 
 /**
  * Interface describing analysis performed when the input
@@ -42,6 +43,7 @@ export function prepareAndCheckForConversion(
   node: InputNode,
   metadata: ExtractedInput,
   checker: ts.TypeChecker,
+  options: NgCompilerOptions,
 ): InputMemberIncompatibility | ConvertInputPreparation {
   // Accessor inputs cannot be migrated right now.
   if (ts.isAccessor(node)) {
@@ -56,7 +58,13 @@ export function prepareAndCheckForConversion(
     'Expected an input decorator for inputs that are being migrated.',
   );
 
-  const initialValue = node.initializer;
+  let initialValue = node.initializer;
+  let isUndefinedInitialValue =
+    node.initializer === undefined ||
+    (ts.isIdentifier(node.initializer) && node.initializer.text === 'undefined');
+
+  const loosePropertyInitializationWithStrictNullChecks =
+    options.strict !== true && options.strictPropertyInitialization !== true;
 
   // If an input can be required, due to the non-null assertion on the property,
   // make it required if there is no initializer.
@@ -64,16 +72,18 @@ export function prepareAndCheckForConversion(
     metadata.required = true;
   }
 
-  const isUndefinedInitialValue =
-    node.initializer === undefined ||
-    (ts.isIdentifier(node.initializer) && node.initializer.text === 'undefined');
   let typeToAdd: ts.TypeNode | undefined = node.type;
   let preferShorthandIfPossible: {originalType: ts.TypeNode} | null = null;
 
   // If there is no initial value, or it's `undefined`, we can prefer the `input()`
   // shorthand which automatically uses `undefined` as initial value, and includes it
   // in the input type.
-  if (!metadata.required && node.type !== undefined && isUndefinedInitialValue) {
+  if (
+    !metadata.required &&
+    node.type !== undefined &&
+    isUndefinedInitialValue &&
+    !loosePropertyInitializationWithStrictNullChecks
+  ) {
     preferShorthandIfPossible = {originalType: node.type};
   }
 
@@ -89,6 +99,24 @@ export function prepareAndCheckForConversion(
       node.type,
       ts.factory.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword),
     ]);
+  }
+
+  // If the input does not have an initial value, and strict property initialization
+  // is disabled, while strict null checks are enabled; then we know that `undefined`
+  // cannot be used as initial value, nor do we want to expand the input's type magically.
+  // Instead, we detect this case and migrate to `undefined!` which leaves the behavior unchanged.
+  // TODO: This would be a good spot for a clean-up TODO.
+  if (
+    loosePropertyInitializationWithStrictNullChecks &&
+    node.initializer === undefined &&
+    node.type !== undefined &&
+    node.questionToken === undefined &&
+    node.exclamationToken === undefined &&
+    metadata.required === false &&
+    !checker.isTypeAssignableTo(checker.getUndefinedType(), checker.getTypeFromTypeNode(node.type))
+  ) {
+    isUndefinedInitialValue = false;
+    initialValue = ts.factory.createNonNullExpression(ts.factory.createIdentifier('undefined'));
   }
 
   // Attempt to extract type from input initial value. No explicit type, but input is required.
