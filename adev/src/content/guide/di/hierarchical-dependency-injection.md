@@ -215,7 +215,7 @@ Use `@Self()` so that Angular will only look at the `ElementInjector` for the cu
 A good use case for `@Self()` is to inject a service but only if it is available on the current host element.
 To avoid errors in this situation, combine `@Self()` with `@Optional()`.
 
-For example, in the following `SelfComponent`, notice the injected `LeafService` in the constructor.
+For example, in the following `SelfNoDataComponent`, notice the injected `LeafService` in the constructor.
 
 <docs-code header="src/app/self-no-data/self-no-data.component.ts" language="typescript"
            highlight="[7]">
