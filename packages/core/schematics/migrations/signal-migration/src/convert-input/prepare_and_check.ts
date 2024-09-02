@@ -23,6 +23,7 @@ import assert from 'assert';
 export interface ConvertInputPreparation {
   resolvedType: ts.TypeNode | undefined;
   preferShorthandIfPossible: {originalType: ts.TypeNode} | null;
+  requiredButIncludedUndefinedPreviously: boolean;
   resolvedMetadata: ExtractedInput;
   originalInputDecorator: Decorator;
   initialValue: ts.Expression | undefined;
@@ -123,6 +124,7 @@ export function prepareAndCheckForConversion(
   }
 
   return {
+    requiredButIncludedUndefinedPreviously: metadata.required && node.questionToken !== undefined,
     resolvedMetadata: metadata,
     resolvedType: typeToAdd,
     preferShorthandIfPossible,
