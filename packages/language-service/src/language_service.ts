@@ -47,7 +47,7 @@ import {
   getPropertyAssignmentFromValue,
 } from './utils/ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
-import {allRefactorings} from './refactorings/refactoring';
+import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
@@ -55,6 +55,7 @@ export class LanguageService {
   private options: CompilerOptions;
   readonly compilerFactory: CompilerFactory;
   private readonly codeFixes: CodeFixes;
+  private readonly activeRefactorings = new Map<string, ActiveRefactoring>();
 
   constructor(
     private readonly project: ts.server.Project,
@@ -575,7 +576,12 @@ export class LanguageService {
     }
 
     return this.withCompilerAndPerfTracing(PerfPhase.LSApplyRefactoring, (compiler) => {
-      return matchingRefactoring.computeEditsForFix(
+      if (!this.activeRefactorings.has(refactorName)) {
+        this.activeRefactorings.set(refactorName, new matchingRefactoring(this.project));
+      }
+      const activeRefactoring = this.activeRefactorings.get(refactorName)!;
+
+      return activeRefactoring.computeEditsForFix(
         compiler,
         this.options,
         fileName,
