@@ -128,9 +128,7 @@ through the template.
 
 ## When to use model inputs
 
-Use model inputs in components that exist to modify a value based on user interaction.
-Custom form controls, such as a date picker or combobox, should use model inputs for their
-primary value.
-
-Avoid using model inputs as a convenience to avoid introducing an additional class property for
-containing local state.
+Use model inputs when you want a component to support two-way binding. This is typically 
+appropriate when a component exists to modify a value based on user interaction. Most commonly, 
+custom form controls such as a date picker or combobox should use model inputs for their primary 
+value.
