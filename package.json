@@ -90,7 +90,7 @@
     "@types/selenium-webdriver4": "npm:@types/selenium-webdriver@4.1.26",
     "@types/semver": "^7.3.4",
     "@types/shelljs": "^0.8.6",
-    "@types/systemjs": "6.13.5",
+    "@types/systemjs": "6.15.0",
     "@types/yargs": "^17.0.3",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
