@@ -17,6 +17,7 @@ import ts from 'typescript';
  */
 export class GroupedTsAstVisitor {
   private visitors: Array<(node: ts.Node) => void> = [];
+  private doneFns: Array<() => void> = [];
 
   constructor(private files: readonly ts.SourceFile[]) {}
 
@@ -24,8 +25,11 @@ export class GroupedTsAstVisitor {
     insidePropertyDeclaration: null as ts.PropertyDeclaration | null,
   };
 
-  register(visitor: (node: ts.Node) => void) {
+  register(visitor: (node: ts.Node) => void, done?: () => void) {
     this.visitors.push(visitor);
+    if (done !== undefined) {
+      this.doneFns.push(done);
+    }
   }
 
   execute() {
@@ -44,6 +48,10 @@ export class GroupedTsAstVisitor {
 
     for (const file of this.files) {
       ts.forEachChild(file, visitor);
+    }
+
+    for (const doneFn of this.doneFns) {
+      doneFn();
     }
   }
 }

@@ -53,7 +53,16 @@ export function pass2_IdentifySourceFileReferences(
     knownInputs,
   );
 
+  const perfCounters = {
+    template: 0,
+    hostBindings: 0,
+    tsReferences: 0,
+    tsTypes: 0,
+  };
+
   const visitor = (node: ts.Node) => {
+    let lastTime = performance.now();
+
     if (ts.isClassDeclaration(node)) {
       identifyTemplateReferences(
         node,
@@ -67,8 +76,16 @@ export function pass2_IdentifySourceFileReferences(
         result,
         knownInputs,
       );
+      perfCounters.template += (performance.now() - lastTime) / 1000;
+      lastTime = performance.now();
+
       identifyHostBindingReferences(node, host, checker, reflector, result, knownInputs);
+
+      perfCounters.hostBindings += (performance.now() - lastTime) / 1000;
+      lastTime = performance.now();
     }
+
+    lastTime = performance.now();
 
     // find references, but do not capture:
     //    (1) input declarations.
@@ -85,6 +102,8 @@ export function pass2_IdentifySourceFileReferences(
       });
     }
 
+    perfCounters.tsReferences += (performance.now() - lastTime) / 1000;
+    lastTime = performance.now();
     // Detect `Partial<T>` references.
     // Those are relevant to be tracked as they may be updated in Catalyst to
     // unwrap signal inputs. Commonly people use `Partial` in Catalyst to type
@@ -102,7 +121,13 @@ export function pass2_IdentifySourceFileReferences(
         target: partialDirectiveInCatalyst.targetClass,
       });
     }
+
+    perfCounters.tsTypes += (performance.now() - lastTime) / 1000;
   };
 
-  groupedTsAstVisitor.register(visitor);
+  groupedTsAstVisitor.register(visitor, () => {
+    if (process.env['DEBUG'] === '1') {
+      console.info('Source file analysis performance', perfCounters);
+    }
+  });
 }
