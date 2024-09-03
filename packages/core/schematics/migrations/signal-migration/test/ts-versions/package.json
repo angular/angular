@@ -3,7 +3,7 @@
   "license": "MIT",
   "dependencies": {
     "typescript-5.5.4": "npm:typescript@5.5.4",
-    "typescript-5.5.3": "npm:typescript@5.5.3",
-    "typescript-5.5.2": "npm:typescript@5.5.2"
+    "typescript-5.5.3": "npm:typescript@5.5.4",
+    "typescript-5.5.2": "npm:typescript@5.5.4"
   }
 }
