@@ -5339,10 +5339,10 @@
   resolved "https://registry.yarnpkg.com/@types/supports-color/-/supports-color-8.1.3.tgz#b769cdce1d1bb1a3fa794e35b62c62acdf93c139"
   integrity sha512-Hy6UMpxhE3j1tLpl27exp1XqHD7n8chAiNPzWfz16LPZoMMoSc4dzLl6w9qijkEb/r5O1ozdu1CWGA2L83ZeZg==
 
-"@types/systemjs@6.13.5":
-  version "6.13.5"
-  resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-6.13.5.tgz#dcc763ddf50558cea14019f2c17fc3b704ef0141"
-  integrity sha512-VWG7Z1/cb90UQF3HjkVcE+PB2kts93mW/94XQ2XUyHk+4wpzVrTdfXw0xeoaVyI/2XUuBRuCA7Is25RhEfHXNg==
+"@types/systemjs@6.15.0":
+  version "6.15.0"
+  resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-6.15.0.tgz#098ea50650bd128550e9564e2c818cde17d22aee"
+  integrity sha512-cnlGl3wretbgmtNOo43OtIUctcAeXddy+vrBFp4Pz2spuEfsTS/sol0KsUG1qmP1OeU4SgbRYPKxNIlkkXdUBQ==
 
 "@types/tmp@^0.2.1":
   version "0.2.6"
