@@ -11,7 +11,7 @@ import {InputUniqueKey} from '../../utils/input_id';
 import {analyzeControlFlow} from '../../flow_analysis';
 import {MigrationResult} from '../../result';
 import {projectRelativePath, Replacement, TextUpdate} from '../../../../../utils/tsurge';
-import {AbsoluteFsPath} from '../../../../../../../compiler-cli';
+import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {traverseAccess} from '../../utils/traverse_access';
 import {UniqueNamesGenerator} from '../../utils/unique_names';
 
@@ -81,6 +81,9 @@ export function migrateStandardTsReference(
       while (parent !== recommendedNode) {
         previous = parent;
         parent = parent.parent;
+      }
+
+      if (ts.isArrowFunction(recommendedNode)) {
       }
 
       const leadingSpace = ts.getLineAndCharacterOfPosition(sf, previous.getStart());

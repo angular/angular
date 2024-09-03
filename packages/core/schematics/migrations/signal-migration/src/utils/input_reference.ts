@@ -67,6 +67,8 @@ export interface TsInputReference {
     node: ts.Identifier;
     /** Whether the reference is a write. */
     isWrite: boolean;
+    /** Whether the reference is part of an element binding */
+    isPartOfElementBinding: boolean;
   };
   /** Target input addressed by the reference. */
   target: InputDescriptor;

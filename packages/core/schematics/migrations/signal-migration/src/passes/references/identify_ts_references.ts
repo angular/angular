@@ -17,6 +17,8 @@ import {InputReferenceKind} from '../../utils/input_reference';
 import {traverseAccess} from '../../utils/traverse_access';
 import {unwrapParent} from '../../utils/unwrap_parent';
 import {writeBinaryOperators} from '../../utils/write_operators';
+import {resolveBindingElement} from '../../utils/binding_elements';
+import {lookupPropertyAccess} from '../../../../../utils/tsurge/helpers/ast/lookup_property_access';
 
 /**
  * Checks whether given TypeScript reference refers to an Angular input, and captures
@@ -31,20 +33,28 @@ export function identifyPotentialTypeScriptReference(
   advisors: {
     debugElComponentInstanceTracker: DebugElementComponentInstance;
   },
-) {
-  let target = checker.getSymbolAtLocation(node);
+): void {
+  let target: ts.Symbol | undefined = undefined;
 
   // Resolve binding elements to their declaration symbol.
   // Commonly inputs are accessed via object expansion. e.g. `const {input} = this;`.
-  if (target?.declarations?.[0] && ts.isBindingElement(target?.declarations[0])) {
-    const bindingElement = target.declarations[0];
-    const bindingParent = bindingElement.parent;
-    const bindingType = checker.getTypeAtLocation(bindingParent);
-    const bindingName = bindingElement.propertyName ?? bindingElement.name;
-
-    if (ts.isIdentifier(bindingName) && bindingType.getProperty(bindingName.text)) {
-      target = bindingType.getProperty(bindingName.text);
+  if (ts.isBindingElement(node.parent)) {
+    // Skip binding elements that are using spread.
+    if (node.parent.dotDotDotToken !== undefined) {
+      return;
     }
+
+    const bindingInfo = resolveBindingElement(node.parent);
+    if (bindingInfo === null) {
+      // The declaration could not be resolved. Skip analyzing this.
+      return;
+    }
+
+    const bindingType = checker.getTypeAtLocation(bindingInfo.pattern);
+    const resolved = lookupPropertyAccess(checker, bindingType, [bindingInfo.propertyName]);
+    target = resolved?.symbol;
+  } else {
+    target = checker.getSymbolAtLocation(node);
   }
 
   noTargetSymbolCheck: if (target === undefined) {
@@ -86,6 +96,7 @@ export function identifyPotentialTypeScriptReference(
       node,
       fileId: host.fileToId(node.getSourceFile()),
       isWrite: isWriteReference,
+      isPartOfElementBinding: ts.isBindingElement(node.parent),
     },
     target: targetInput?.descriptor,
   });

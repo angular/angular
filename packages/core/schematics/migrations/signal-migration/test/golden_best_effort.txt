@@ -514,9 +514,10 @@ class IndexAccessInput {
   readonly items = input<string[]>([]);
 
   bla() {
-    const {items} = this;
+    const {items: itemsValue} = this;
+    const items = itemsValue();
 
-    items()[0].charAt(0);
+    items[0].charAt(0);
   }
 }
 @@@@@@ index_spec.ts @@@@@@
@@ -693,6 +694,36 @@ export class TestCmp {
     return v.x;
   }
 }
+@@@@@@ narrowing.ts @@@@@@
+
+// tslint:disable
+
+import { Directive, input } from '@angular/core';
+
+@Directive()
+export class Narrowing {
+  readonly name = input<string>();
+
+  narrowingArrowFn() {
+    const name = x.name();
+    [this].map((x) => name && name.charAt(0));
+  }
+
+  narrowingObjectExpansion() {
+    [this].map(({name: nameValue}) => {
+      const name = nameValue();
+      return name && name.charAt(0);
+    });
+  }
+
+  narrowingNormalThenObjectExpansion() {
+    const name = this.name();
+    if (name) {
+      const {charAt} = name;
+      charAt(0);
+    }
+  }
+}
 @@@@@@ nested_template_prop_access.ts @@@@@@
 
 // tslint:disable
@@ -741,9 +772,23 @@ export class ObjectExpansion {
   readonly bla = input<string>('');
 
   expansion() {
-    const {bla} = this;
+    const {bla: blaValue} = this;
+    const bla = blaValue();
 
-    bla().charAt(0);
+    bla.charAt(0);
+  }
+
+  deeperExpansion() {
+    const {
+      bla,
+    } = this;
+    const {charAt} = bla();
+    charAt(0);
+  }
+
+  expansionAsParameter({bla: blaValue} = this) {
+    const bla = blaValue();
+    bla.charAt(0);
   }
 }
 @@@@@@ optimize_test.ts @@@@@@
