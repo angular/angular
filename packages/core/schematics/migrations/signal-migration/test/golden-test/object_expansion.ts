@@ -11,4 +11,15 @@ export class ObjectExpansion {
 
     bla.charAt(0);
   }
+
+  deeperExpansion() {
+    const {
+      bla: {charAt},
+    } = this;
+    charAt(0);
+  }
+
+  expansionAsParameter({bla} = this) {
+    bla.charAt(0);
+  }
 }

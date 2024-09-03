@@ -87,15 +87,10 @@ export function pass2_IdentifySourceFileReferences(
 
     lastTime = performance.now();
 
-    // find references, but do not capture:
-    //    (1) input declarations.
-    //    (2) binding element declarations.
+    // find references, but do not capture input declarations itself.
     if (
       ts.isIdentifier(node) &&
-      !(
-        (isInputContainerNode(node.parent) && node.parent.name === node) ||
-        ts.isBindingElement(node.parent)
-      )
+      !(isInputContainerNode(node.parent) && node.parent.name === node)
     ) {
       identifyPotentialTypeScriptReference(node, host, checker, knownInputs, result, {
         debugElComponentInstanceTracker,

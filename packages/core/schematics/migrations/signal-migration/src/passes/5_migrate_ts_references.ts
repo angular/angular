@@ -14,6 +14,10 @@ import {InputUniqueKey} from '../utils/input_id';
 import {isTsInputReference} from '../utils/input_reference';
 import {UniqueNamesGenerator} from '../utils/unique_names';
 import {
+  migrateBindingElementInputReference,
+  IdentifierOfBindingElement,
+} from './migrate_ts_reference/object_expansion_refs';
+import {
   migrateStandardTsReference,
   NarrowableTsReference,
 } from './migrate_ts_reference/standard_reference';
@@ -50,6 +54,7 @@ export function pass5__migrateTypeScriptReferences(
   projectDirAbsPath: AbsoluteFsPath,
 ) {
   const tsReferencesWithNarrowing = new Map<InputUniqueKey, NarrowableTsReference>();
+  const tsReferencesInBindingElements = new Set<IdentifierOfBindingElement>();
 
   const seenIdentifiers = new WeakSet<ts.Identifier>();
   const nameGenerator = new UniqueNamesGenerator();
@@ -77,11 +82,22 @@ export function pass5__migrateTypeScriptReferences(
 
     const targetKey = reference.target.key;
 
-    if (!tsReferencesWithNarrowing.has(targetKey)) {
-      tsReferencesWithNarrowing.set(targetKey, {accesses: []});
+    if (reference.from.isPartOfElementBinding) {
+      tsReferencesInBindingElements.add(reference.from.node as IdentifierOfBindingElement);
+    } else {
+      if (!tsReferencesWithNarrowing.has(targetKey)) {
+        tsReferencesWithNarrowing.set(targetKey, {accesses: []});
+      }
+      tsReferencesWithNarrowing.get(targetKey)!.accesses.push(reference.from.node);
     }
-    tsReferencesWithNarrowing.get(targetKey)!.accesses.push(reference.from.node);
   }
+
+  migrateBindingElementInputReference(
+    tsReferencesInBindingElements,
+    projectDirAbsPath,
+    nameGenerator,
+    result,
+  );
 
   migrateStandardTsReference(
     tsReferencesWithNarrowing,

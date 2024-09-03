@@ -51,6 +51,7 @@ export function getCompilationUnitMetadata(knownInputs: KnownInputs, result: Mig
             fileId: r.from.fileId,
             node: {positionEndInFile: r.from.node.getEnd()},
             isWrite: r.from.isWrite,
+            isPartOfElementBinding: r.from.isPartOfElementBinding,
           },
         };
       } else if (isHostBindingInputReference(r)) {
