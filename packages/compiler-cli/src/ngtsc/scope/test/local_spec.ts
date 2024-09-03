@@ -346,6 +346,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     isStandalone: false,
     isSignal: false,
     imports: null,
+    rawImports: null,
     schemas: null,
     decorator: null,
     hostDirectives: null,

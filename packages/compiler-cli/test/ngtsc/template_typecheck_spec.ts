@@ -7438,5 +7438,307 @@ suppress
         );
       });
     });
+
+    describe('unused standalone imports', () => {
+      it('should report when a directive is not used within a template', () => {
+        env.write(
+          'used.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[used]', standalone: true})
+            export class UsedDir {}
+          `,
+        );
+
+        env.write(
+          'unused.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[unused]', standalone: true})
+            export class UnusedDir {}
+          `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {UsedDir} from './used';
+          import {UnusedDir} from './unused';
+
+          @Component({
+            template: \`
+              <section>
+                <div></div>
+                <span used></span>
+              </section>
+            \`,
+            standalone: true,
+            imports: [UsedDir, UnusedDir]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe('Imports array contains unused imports');
+        expect(diags[0].relatedInformation?.length).toBe(1);
+        expect(diags[0].relatedInformation![0].messageText).toBe(
+          'Directive "UnusedDir" is not used within the template',
+        );
+      });
+
+      it('should report when a pipe is not used within a template', () => {
+        env.write(
+          'used.ts',
+          `
+            import {Pipe} from '@angular/core';
+
+            @Pipe({name: 'used', standalone: true})
+            export class UsedPipe {
+              transform(value: number) {
+                return value * 2;
+              }
+            }
+          `,
+        );
+
+        env.write(
+          'unused.ts',
+          `
+            import {Pipe} from '@angular/core';
+
+            @Pipe({name: 'unused', standalone: true})
+            export class UnusedPipe {
+              transform(value: number) {
+                return value * 2;
+              }
+            }
+          `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {UsedPipe} from './used';
+          import {UnusedPipe} from './unused';
+
+          @Component({
+            template: \`
+              <section>
+                <div></div>
+                <span [attr.id]="1 | used"></span>
+              </section>
+            \`,
+            standalone: true,
+            imports: [UsedPipe, UnusedPipe]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe('Imports array contains unused imports');
+        expect(diags[0].relatedInformation?.length).toBe(1);
+        expect(diags[0].relatedInformation?.[0].messageText).toBe(
+          'Pipe "UnusedPipe" is not used within the template',
+        );
+      });
+
+      it('should not report imports only used inside @defer blocks', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Pipe} from '@angular/core';
+
+          @Directive({selector: '[used]', standalone: true})
+          export class UsedDir {}
+
+          @Pipe({name: 'used', standalone: true})
+          export class UsedPipe {
+            transform(value: number) {
+              return value * 2;
+            }
+          }
+
+          @Component({
+            template: \`
+              <section>
+                @defer (on idle) {
+                  <div used></div>
+                  <span [attr.id]="1 | used"></span>
+                }
+              </section>
+            \`,
+            standalone: true,
+            imports: [UsedDir, UsedPipe]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should report when all imports in an import array are not used', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Pipe} from '@angular/core';
+
+          @Directive({selector: '[unused]', standalone: true})
+          export class UnusedDir {}
+
+          @Pipe({name: 'unused', standalone: true})
+          export class UnusedPipe {
+            transform(value: number) {
+              return value * 2;
+            }
+          }
+
+          @Component({
+            template: '',
+            standalone: true,
+            imports: [UnusedDir, UnusedPipe]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe('All imports are unused');
+        expect(diags[0].relatedInformation).toBeFalsy();
+      });
+
+      it('should not report unused imports coming from modules', () => {
+        env.write(
+          'module.ts',
+          `
+            import {Directive, NgModule} from '@angular/core';
+
+            @Directive({selector: '[unused-from-module]'})
+            export class UnusedDirFromModule {}
+
+            @NgModule({
+              declarations: [UnusedDirFromModule],
+              exports: [UnusedDirFromModule]
+            })
+            export class UnusedModule {}
+        `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {UnusedModule} from './module';
+
+          @Component({
+            template: '',
+            standalone: true,
+            imports: [UnusedModule]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should be able to opt out for checking for unused imports via the tsconfig', () => {
+        env.tsconfig({
+          extendedDiagnostics: {
+            checks: {
+              unusedStandaloneImports: DiagnosticCategoryLabel.Suppress,
+            },
+          },
+        });
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive} from '@angular/core';
+
+          @Directive({selector: '[unused]', standalone: true})
+          export class UnusedDir {}
+
+          @Component({
+            template: '',
+            standalone: true,
+            imports: [UnusedDir]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should unused imports from external modules', () => {
+        // Note: we don't use the existing fake `@angular/common`,
+        // because all the declarations there are non-standalone.
+        env.write(
+          'node_modules/fake-common/index.d.ts',
+          `
+          import * as i0 from '@angular/core';
+
+          export declare class NgIf {
+            static ɵdir: i0.ɵɵDirectiveDeclaration<NgIf<any, any>, "[ngIf]", never, {}, {}, never, never, true, never>;
+            static ɵfac: i0.ɵɵFactoryDeclaration<NgIf<any, any>, never>;
+          }
+
+          export declare class NgFor {
+            static ɵdir: i0.ɵɵDirectiveDeclaration<NgFor<any, any>, "[ngFor]", never, {}, {}, never, never, true, never>;
+            static ɵfac: i0.ɵɵFactoryDeclaration<NgFor<any, any>, never>;
+          }
+
+          export class PercentPipe {
+            static ɵfac: i0.ɵɵFactoryDeclaration<PercentPipe, never>;
+            static ɵpipe: i0.ɵɵPipeDeclaration<PercentPipe, "percent", true>;
+          }
+        `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {NgIf, NgFor, PercentPipe} from 'fake-common';
+
+          @Component({
+            template: \`
+              <section>
+                <div></div>
+                <span *ngIf="true"></span>
+              </section>
+            \`,
+            standalone: true,
+            imports: [NgFor, NgIf, PercentPipe]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe('Imports array contains unused imports');
+        expect(diags[0].relatedInformation?.length).toBe(2);
+        expect(diags[0].relatedInformation![0].messageText).toBe(
+          'Directive "NgFor" is not used within the template',
+        );
+        expect(diags[0].relatedInformation![1].messageText).toBe(
+          'Pipe "PercentPipe" is not used within the template',
+        );
+      });
+    });
   });
 });

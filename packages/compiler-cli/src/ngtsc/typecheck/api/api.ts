@@ -40,6 +40,8 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveType
   hostDirectives: HostDirectiveMeta[] | null;
   decorator: ts.Decorator | null;
   isExplicitlyDeferred: boolean;
+  imports: Reference<ClassDeclaration>[] | null;
+  rawImports: ts.Expression | null;
 }
 
 export type TemplateId = string & {__brand: 'TemplateId'};
@@ -293,6 +295,11 @@ export interface TypeCheckingConfig {
    * Whether to check if control flow syntax will prevent a node from being projected.
    */
   controlFlowPreventingContentProjection: 'error' | 'warning' | 'suppress';
+
+  /**
+   * Whether to check if `@Component.imports` contains unused symbols.
+   */
+  unusedStandaloneImports: 'error' | 'warning' | 'suppress';
 
   /**
    * Whether to use any generic types of the context component.

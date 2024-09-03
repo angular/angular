@@ -1127,7 +1127,7 @@ runInEachFileSystem(() => {
                 standalone: true,
                 selector: 'standalone-cmp',
                 imports: [DepCmp],
-                template: '',
+                template: '<dep-cmp/>',
               })
               export class StandaloneCmp {}
 

@@ -1368,6 +1368,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'extended-diagnostics/NG8111',
         contentPath: 'reference/extended-diagnostics/NG8111',
       },
+      {
+        label: 'NG8113: Unused Standalone Imports',
+        path: 'extended-diagnostics/NG8113',
+        contentPath: 'reference/extended-diagnostics/NG8113',
+      },
     ],
   },
   {

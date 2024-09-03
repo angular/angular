@@ -20,6 +20,7 @@ Currently, Angular supports the following extended diagnostics:
 | `NG8108` | [`skipHydrationNotStatic`](extended-diagnostics/NG8108)          |
 | `NG8109` | [`interpolatedSignalNotInvoked`](extended-diagnostics/NG8109)    |
 | `NG8111` | [`uninvokedFunctionInEventBinding`](extended-diagnostics/NG8111) |
+| `NG8113` | [`unusedStandaloneImports`](extended-diagnostics/NG8113) |
 
 ## Configuration
 

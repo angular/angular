@@ -509,6 +509,11 @@ export enum ErrorCode {
   UNUSED_LET_DECLARATION = 8112,
 
   /**
+   * A symbol referenced in `@Component.imports` isn't being used within the template.
+   */
+  UNUSED_STANDALONE_IMPORTS = 8113,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

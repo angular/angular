@@ -963,6 +963,7 @@ describe('type check blocks', () => {
       useInlineTypeConstructors: true,
       suggestionsForSuboptimalTypeInference: false,
       controlFlowPreventingContentProjection: 'warning',
+      unusedStandaloneImports: 'warning',
       allowSignalsInTwoWayBindings: true,
     };
 
