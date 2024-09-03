@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import ts from 'typescript';
+import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationResult} from '../result';
-import {analyzeControlFlow} from '../flow_analysis';
-import {projectRelativePath, Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
 import {InputUniqueKey} from '../utils/input_id';
 import {isTsInputReference} from '../utils/input_reference';
-import {traverseAccess} from '../utils/traverse_access';
-import {KnownInputs} from '../input_detection/known_inputs';
 import {UniqueNamesGenerator} from '../utils/unique_names';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  migrateStandardTsReference,
+  NarrowableTsReference,
+} from './migrate_ts_reference/standard_reference';
 
 /**
  * Phase that migrates TypeScript input references to be signal compatible.
@@ -48,7 +49,8 @@ export function pass5__migrateTypeScriptReferences(
   knownInputs: KnownInputs,
   projectDirAbsPath: AbsoluteFsPath,
 ) {
-  const tsReferences = new Map<InputUniqueKey, {accesses: ts.Identifier[]}>();
+  const tsReferencesWithNarrowing = new Map<InputUniqueKey, NarrowableTsReference>();
+
   const seenIdentifiers = new WeakSet<ts.Identifier>();
   const nameGenerator = new UniqueNamesGenerator();
 
@@ -73,100 +75,19 @@ export function pass5__migrateTypeScriptReferences(
     }
     seenIdentifiers.add(reference.from.node);
 
-    if (!tsReferences.has(reference.target.key)) {
-      tsReferences.set(reference.target.key, {
-        accesses: [],
-      });
+    const targetKey = reference.target.key;
+
+    if (!tsReferencesWithNarrowing.has(targetKey)) {
+      tsReferencesWithNarrowing.set(targetKey, {accesses: []});
     }
-    tsReferences.get(reference.target.key)!.accesses.push(reference.from.node);
+    tsReferencesWithNarrowing.get(targetKey)!.accesses.push(reference.from.node);
   }
 
-  // TODO: Consider checking/properly handling optional chaining and narrowing.
-
-  for (const reference of tsReferences.values()) {
-    const controlFlowResult = analyzeControlFlow(reference.accesses, checker);
-    const idToSharedField = new Map<number, string>();
-
-    for (const {id, originalNode, recommendedNode} of controlFlowResult) {
-      const sf = originalNode.getSourceFile();
-
-      // Original node is preserved. No narrowing, and hence not shared.
-      // Unwrap the signal directly.
-      if (recommendedNode === 'preserve') {
-        // Append `()` to unwrap the signal.
-        result.replacements.push(
-          new Replacement(
-            projectRelativePath(sf, projectDirAbsPath),
-            new TextUpdate({
-              position: originalNode.getEnd(),
-              end: originalNode.getEnd(),
-              toInsert: '()',
-            }),
-          ),
-        );
-        continue;
-      }
-
-      // This reference is shared with a previous reference. Replace the access
-      // with the temporary variable.
-      if (typeof recommendedNode === 'number') {
-        const replaceNode = traverseAccess(originalNode);
-        result.replacements.push(
-          new Replacement(
-            projectRelativePath(sf, projectDirAbsPath),
-            new TextUpdate({
-              position: replaceNode.getStart(),
-              end: replaceNode.getEnd(),
-              // Extract the shared field name.
-              toInsert: idToSharedField.get(recommendedNode)!,
-            }),
-          ),
-        );
-        continue;
-      }
-
-      // Otherwise, we are creating a "shared reference" at the given node and
-      // block.
-
-      // Iterate up the original node, until we hit the "recommended block" level.
-      // We then use the previous child as anchor for inserting. This allows us
-      // to insert right before the first reference in the container, at the proper
-      // block level— instead of always inserting at the beginning of the container.
-      let parent = originalNode.parent;
-      let previous: ts.Node = originalNode;
-      while (parent !== recommendedNode) {
-        previous = parent;
-        parent = parent.parent;
-      }
-
-      const leadingSpace = ts.getLineAndCharacterOfPosition(sf, previous.getStart());
-
-      const replaceNode = traverseAccess(originalNode);
-      const fieldName = nameGenerator.generate(originalNode.text, previous);
-
-      idToSharedField.set(id, fieldName);
-
-      result.replacements.push(
-        new Replacement(
-          projectRelativePath(sf, projectDirAbsPath),
-          new TextUpdate({
-            position: previous.getStart(),
-            end: previous.getStart(),
-            toInsert: `const ${fieldName} = ${replaceNode.getText()}();\n${' '.repeat(leadingSpace.character)}`,
-          }),
-        ),
-      );
-
-      result.replacements.push(
-        new Replacement(
-          projectRelativePath(sf, projectDirAbsPath),
-          new TextUpdate({
-            position: replaceNode.getStart(),
-            end: replaceNode.getEnd(),
-            toInsert: fieldName,
-          }),
-        ),
-      );
-    }
-  }
+  migrateStandardTsReference(
+    tsReferencesWithNarrowing,
+    checker,
+    result,
+    nameGenerator,
+    projectDirAbsPath,
+  );
 }
