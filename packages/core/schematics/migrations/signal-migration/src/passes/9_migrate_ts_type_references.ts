@@ -63,7 +63,7 @@ export function pass9__migrateTypeScriptTypeReferences(
           new TextUpdate({
             position: firstArg.getStart(),
             end: firstArg.getStart(),
-            toInsert: `${ts.createPrinter().printNode(ts.EmitHint.Unspecified, unwrapImportExpr, sf)}<`,
+            toInsert: `${result.printer.printNode(ts.EmitHint.Unspecified, unwrapImportExpr, sf)}<`,
           }),
         ),
       );

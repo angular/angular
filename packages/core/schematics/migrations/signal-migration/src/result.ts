@@ -23,10 +23,13 @@ import {Replacement} from '../../../utils/tsurge/replacement';
  *    - imports that may need to be updated.
  */
 export class MigrationResult {
+  printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
+
   // May be `null` if the input cannot be converted. This is also
   // signified by an incompatibility- but the input is tracked here as it
   // still is a "source input".
   sourceInputs = new Map<InputDescriptor, ConvertInputPreparation | null>();
+
   references: InputReference[] = [];
 
   // Execution data

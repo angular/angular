@@ -47,7 +47,7 @@ export function pass6__migrateInputDeclarations(
         new TextUpdate({
           position: input.node.getStart(),
           end: input.node.getEnd(),
-          toInsert: convertToSignalInput(input.node, metadata, checker, importManager),
+          toInsert: convertToSignalInput(input.node, metadata, checker, importManager, result),
         }),
       ),
     );
