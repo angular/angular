@@ -28,4 +28,5 @@ export enum ExtendedTemplateDiagnosticName {
   INTERPOLATED_SIGNAL_NOT_INVOKED = 'interpolatedSignalNotInvoked',
   CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 'controlFlowPreventingContentProjection',
   UNUSED_LET_DECLARATION = 'unusedLetDeclaration',
+  UNUSED_STANDALONE_IMPORTS = 'unusedStandaloneImports',
 }

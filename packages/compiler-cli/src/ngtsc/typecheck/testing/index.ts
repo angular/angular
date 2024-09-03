@@ -282,6 +282,7 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   useInlineTypeConstructors: true,
   suggestionsForSuboptimalTypeInference: false,
   controlFlowPreventingContentProjection: 'warning',
+  unusedStandaloneImports: 'warning',
   allowSignalsInTwoWayBindings: true,
 };
 
@@ -414,6 +415,7 @@ export function tcb(
     checkControlFlowBodies: true,
     alwaysCheckSchemaInTemplateBodies: true,
     controlFlowPreventingContentProjection: 'warning',
+    unusedStandaloneImports: 'warning',
     strictSafeNavigationTypes: true,
     useContextGenericType: true,
     strictLiteralTypes: true,
@@ -893,6 +895,8 @@ function getDirectiveMetaFromDeclaration(
     ngContentSelectors: decl.ngContentSelectors || null,
     preserveWhitespaces: decl.preserveWhitespaces ?? false,
     isExplicitlyDeferred: false,
+    imports: decl.imports,
+    rawImports: null,
     hostDirectives:
       decl.hostDirectives === undefined
         ? null
@@ -948,6 +952,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
         isSignal: false,
         imports: null,
+        rawImports: null,
         deferredImports: null,
         schemas: null,
         decorator: null,

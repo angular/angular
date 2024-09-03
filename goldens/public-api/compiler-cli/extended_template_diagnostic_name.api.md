@@ -29,7 +29,9 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     UNINVOKED_FUNCTION_IN_EVENT_BINDING = "uninvokedFunctionInEventBinding",
     // (undocumented)
-    UNUSED_LET_DECLARATION = "unusedLetDeclaration"
+    UNUSED_LET_DECLARATION = "unusedLetDeclaration",
+    // (undocumented)
+    UNUSED_STANDALONE_IMPORTS = "unusedStandaloneImports"
 }
 
 // (No @packageDocumentation comment for this package)

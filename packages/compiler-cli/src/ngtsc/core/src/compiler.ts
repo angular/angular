@@ -1037,6 +1037,8 @@ export class NgCompiler {
         suggestionsForSuboptimalTypeInference: this.enableTemplateTypeChecker && !strictTemplates,
         controlFlowPreventingContentProjection:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        unusedStandaloneImports:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
       };
     } else {
@@ -1068,6 +1070,8 @@ export class NgCompiler {
         // not checked anyways.
         suggestionsForSuboptimalTypeInference: false,
         controlFlowPreventingContentProjection:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        unusedStandaloneImports:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
       };
@@ -1113,6 +1117,10 @@ export class NgCompiler {
     ) {
       typeCheckingConfig.controlFlowPreventingContentProjection =
         this.options.extendedDiagnostics.checks.controlFlowPreventingContentProjection;
+    }
+    if (this.options.extendedDiagnostics?.checks?.unusedStandaloneImports !== undefined) {
+      typeCheckingConfig.unusedStandaloneImports =
+        this.options.extendedDiagnostics.checks.unusedStandaloneImports;
     }
 
     return typeCheckingConfig;
@@ -1541,11 +1549,12 @@ export class NgCompiler {
       },
     );
 
+    const typeCheckingConfig = this.getTypeCheckingConfig();
     const templateTypeChecker = new TemplateTypeCheckerImpl(
       this.inputProgram,
       notifyingDriver,
       traitCompiler,
-      this.getTypeCheckingConfig(),
+      typeCheckingConfig,
       refEmitter,
       reflector,
       this.adapter,
@@ -1576,7 +1585,7 @@ export class NgCompiler {
 
     const sourceFileValidator =
       this.constructionDiagnostics.length === 0
-        ? new SourceFileValidator(reflector, importTracker)
+        ? new SourceFileValidator(reflector, importTracker, templateTypeChecker, typeCheckingConfig)
         : null;
 
     return {

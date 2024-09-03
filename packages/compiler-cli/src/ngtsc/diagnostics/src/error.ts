@@ -50,10 +50,11 @@ export function makeDiagnostic(
   node: ts.Node,
   messageText: string | ts.DiagnosticMessageChain,
   relatedInformation?: ts.DiagnosticRelatedInformation[],
+  category: ts.DiagnosticCategory = ts.DiagnosticCategory.Error,
 ): ts.DiagnosticWithLocation {
   node = ts.getOriginalNode(node);
   return {
-    category: ts.DiagnosticCategory.Error,
+    category,
     code: ngErrorCode(code),
     file: ts.getOriginalNode(node).getSourceFile(),
     start: node.getStart(undefined, false),

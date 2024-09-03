@@ -181,6 +181,7 @@ export class DtsMetadataReader implements MetadataReader {
       // Imports are tracked in metadata only for template type-checking purposes,
       // so standalone components from .d.ts files don't have any.
       imports: null,
+      rawImports: null,
       deferredImports: null,
       // The same goes for schemas.
       schemas: null,

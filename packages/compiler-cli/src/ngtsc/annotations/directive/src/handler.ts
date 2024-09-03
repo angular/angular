@@ -270,6 +270,7 @@ export class DirectiveDecoratorHandler
       isStandalone: analysis.meta.isStandalone,
       isSignal: analysis.meta.isSignal,
       imports: null,
+      rawImports: null,
       deferredImports: null,
       schemas: null,
       ngContentSelectors: null,

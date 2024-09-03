@@ -13,6 +13,9 @@ import {ReflectionHost} from '../../reflection';
 
 import {SourceFileValidatorRule} from './rules/api';
 import {InitializerApiUsageRule} from './rules/initializer_api_usage_rule';
+import {UnusedStandaloneImportsRule} from './rules/unused_standalone_imports_rule';
+import {TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
+import {UNUSED_STANDALONE_IMPORTS_RULE_ENABLED} from './config';
 
 /**
  * Validates that TypeScript files match a specific set of rules set by the Angular compiler.
@@ -20,8 +23,23 @@ import {InitializerApiUsageRule} from './rules/initializer_api_usage_rule';
 export class SourceFileValidator {
   private rules: SourceFileValidatorRule[];
 
-  constructor(reflector: ReflectionHost, importedSymbolsTracker: ImportedSymbolsTracker) {
+  constructor(
+    reflector: ReflectionHost,
+    importedSymbolsTracker: ImportedSymbolsTracker,
+    templateTypeChecker: TemplateTypeChecker,
+    typeCheckingConfig: TypeCheckingConfig,
+  ) {
     this.rules = [new InitializerApiUsageRule(reflector, importedSymbolsTracker)];
+
+    if (UNUSED_STANDALONE_IMPORTS_RULE_ENABLED) {
+      this.rules.push(
+        new UnusedStandaloneImportsRule(
+          templateTypeChecker,
+          typeCheckingConfig,
+          importedSymbolsTracker,
+        ),
+      );
+    }
   }
 
   /**
