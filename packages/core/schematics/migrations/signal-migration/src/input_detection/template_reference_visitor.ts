@@ -39,6 +39,7 @@ import {MigrationHost} from '../migration_host';
 import {InputDescriptor, InputUniqueKey} from '../utils/input_id';
 import {InputIncompatibilityReason} from './incompatibility';
 import {BoundAttribute, BoundEvent} from '../../../../../../compiler/src/render3/r3_ast';
+import {lookupPropertyAccess} from '../../../../utils/tsurge/helpers/ast/lookup_property_access';
 
 /**
  * Interface describing a reference to an input from within
@@ -420,22 +421,14 @@ function traverseReceiverAndLookupSymbol(
     return null;
   }
 
-  let type = checker.getTypeAtLocation(componentClass.name);
-  let symbol: ts.Symbol | null = null;
-
-  for (const propName of path) {
-    // Note: Always assume `NonNullable` for the path, when using the non-TCB lookups. This
-    // is necessary to support e.g. ternary narrowing in host bindings. The assumption is that
-    // an input is only accessed if its receivers are all non-nullable anyway.
-    const propSymbol = type.getNonNullableType().getProperty(propName);
-    if (propSymbol === undefined) {
-      return null;
-    }
-    symbol = propSymbol;
-    type = checker.getTypeOfSymbol(propSymbol);
-  }
-
-  return symbol;
+  const classType = checker.getTypeAtLocation(componentClass.name);
+  return (
+    lookupPropertyAccess(checker, classType, path, {
+      // Necessary to avoid breaking the resolution if there is
+      // some narrowing involved. E.g. `myClass ? myClass.input`.
+      ignoreNullability: true,
+    })?.symbol ?? null
+  );
 }
 
 /** Whether the given node refers to a two-way binding AST node. */
