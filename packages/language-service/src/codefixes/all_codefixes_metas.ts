@@ -9,10 +9,12 @@
 import {fixInvalidBananaInBoxMeta} from './fix_invalid_banana_in_box';
 import {missingImportMeta} from './fix_missing_import';
 import {missingMemberMeta} from './fix_missing_member';
+import {fixUnusedStandaloneImportsMeta} from './fix_unused_standalone_imports';
 import {CodeActionMeta} from './utils';
 
 export const ALL_CODE_FIXES_METAS: CodeActionMeta[] = [
   missingMemberMeta,
   fixInvalidBananaInBoxMeta,
   missingImportMeta,
+  fixUnusedStandaloneImportsMeta,
 ];
