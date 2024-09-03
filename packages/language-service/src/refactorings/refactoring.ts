@@ -13,16 +13,21 @@ import {CompilerOptions} from '@angular/compiler-cli';
 import {ConvertToSignalInputRefactoring} from './convert_to_signal_input';
 
 /**
- * Interface that describes a refactoring.
+ * Interface exposing static metadata for a {@link Refactoring},
+ * exposed via static fields.
  *
  * A refactoring may be applicable at a given position inside
  * a file. If it becomes applicable, the language service will suggest
  * it as a code action.
  *
  * Later, the user can request edits for the refactoring lazily, upon
- * e.g. click.
+ * e.g. click. The refactoring class is then instantiated and will be
+ * re-used for future applications, allowing for efficient re-use of e.g
+ * analysis data.
  */
 export interface Refactoring {
+  new (project: ts.server.Project): ActiveRefactoring;
+
   /** Unique id of the refactoring. */
   id: string;
 
@@ -35,7 +40,16 @@ export interface Refactoring {
     fileName: string,
     positionOrRange: number | ts.TextRange,
   ): boolean;
+}
 
+/**
+ * Interface that describes an active refactoring instance. A
+ * refactoring may be lazily instantiated whenever the refactoring
+ * is requested to be applied.
+ *
+ * More information can be found in {@link Refactoring}
+ */
+export interface ActiveRefactoring {
   /** Computes the edits for the refactoring. */
   computeEditsForFix(
     compiler: NgCompiler,
@@ -46,4 +60,4 @@ export interface Refactoring {
   ): Promise<ts.RefactorEditInfo>;
 }
 
-export const allRefactorings: Refactoring[] = [new ConvertToSignalInputRefactoring()];
+export const allRefactorings: Refactoring[] = [ConvertToSignalInputRefactoring];

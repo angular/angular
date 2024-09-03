@@ -15,20 +15,12 @@ import {
 } from '@angular/core/schematics/migrations/signal-migration/src/input_detection/incompatibility';
 import {ApplyRefactoringProgressFn} from '@angular/language-service/api';
 import ts from 'typescript';
-import {
-  InputNode,
-  isInputContainerNode,
-} from '../../../core/schematics/migrations/signal-migration/src/input_detection/input_node';
-import {KnownInputInfo} from '../../../core/schematics/migrations/signal-migration/src/input_detection/known_inputs';
+import {isInputContainerNode} from '../../../core/schematics/migrations/signal-migration/src/input_detection/input_node';
 import {SignalInputMigration} from '../../../core/schematics/migrations/signal-migration/src/migration';
-import {
-  getInputDescriptor,
-  isInputDescriptor,
-} from '../../../core/schematics/migrations/signal-migration/src/utils/input_id';
 import {groupReplacementsByFile} from '../../../core/schematics/utils/tsurge/helpers/group_replacements';
 import {findTightestNode, getParentClassDeclaration} from '../utils/ts_utils';
+import type {ActiveRefactoring} from './refactoring';
 import {isTypeScriptFile} from '../utils';
-import type {Refactoring} from './refactoring';
 
 /**
  * Language service refactoring action that can convert `@Input()`
@@ -38,11 +30,11 @@ import type {Refactoring} from './refactoring';
  * extension and ask for the input to be migrated. All references, imports and
  * the declaration are updated automatically.
  */
-export class ConvertToSignalInputRefactoring implements Refactoring {
-  id = 'convert-to-signal-input';
-  description = '(experimental fixer): Convert @Input() to a signal input';
+export class ConvertToSignalInputRefactoring implements ActiveRefactoring {
+  static id = 'convert-to-signal-input';
+  static description = '(experimental fixer): Convert @Input() to a signal input';
 
-  isApplicable(
+  static isApplicable(
     compiler: NgCompiler,
     fileName: string,
     positionOrRange: number | ts.TextRange,
