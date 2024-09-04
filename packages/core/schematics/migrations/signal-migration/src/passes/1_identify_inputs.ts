@@ -59,7 +59,7 @@ export function pass1__IdentifySourceFileAndDeclarationInputs(
           node,
           decoratorInput,
           checker,
-          host.options,
+          host.compilerOptions,
         );
 
         if (isInputMemberIncompatibility(conversionPreparation)) {

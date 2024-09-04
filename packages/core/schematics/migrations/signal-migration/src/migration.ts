@@ -28,42 +28,7 @@ import {createNgtscProgram} from '../../../utils/tsurge/helpers/ngtsc_program';
 import assert from 'assert';
 import {InputIncompatibilityReason} from './input_detection/incompatibility';
 import {InputUniqueKey, isInputDescriptor} from './utils/input_id';
-
-export interface MigrationConfig {
-  /**
-   * Whether to migrate as much as possible, even if certain inputs would otherwise
-   * be marked as incompatible for migration.
-   */
-  bestEffortMode?: boolean;
-
-  /**
-   * Whether the given input should be migrated. With batch execution, this
-   * callback fires for foreign inputs from other compilation units too.
-   *
-   * Treating the input as non-migrated means that no references to it are
-   * migrated.
-   */
-  shouldMigrateInput?: (input: KnownInputInfo) => boolean;
-
-  /**
-   * Whether to upgrade analysis phase to avoid batch execution.
-   *
-   * This is useful when not running against multiple compilation units.
-   * The analysis phase will re-use the same program and information, without
-   * re-analyzing in the `migrate` phase.
-   *
-   * Results will be available as {@link SignalInputMigration#upgradedAnalysisPhaseResults}
-   * after executing the analyze stage.
-   */
-  upgradeAnalysisPhaseToAvoidBatch?: boolean;
-
-  /**
-   * Optional function to receive updates on progress of the migration. Useful
-   * for integration with the language service to give some kind of indication
-   * what the migration is currently doing.
-   */
-  reportProgressFn?: (percentage: number, updateMessage: string) => void;
-}
+import {MigrationConfig} from './migration_config';
 
 /**
  * Tsurge migration for migrating Angular `@Input()` declarations to
@@ -111,7 +76,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     const {metaRegistry} = analysisDeps;
     const knownInputs = new KnownInputs();
     const result = new MigrationResult();
-    const host = createMigrationHost(info);
+    const host = createMigrationHost(info, this.config);
 
     this.config.reportProgressFn?.(10, 'Analyzing project (input usages)..');
     const {inheritanceGraph} = executeAnalysisPhase(host, knownInputs, result, analysisDeps);
@@ -166,7 +131,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
   ): Promise<Replacement[]> {
     const knownInputs = nonBatchData?.knownInputs ?? new KnownInputs();
     const result = nonBatchData?.result ?? new MigrationResult();
-    const host = nonBatchData?.host ?? createMigrationHost(info);
+    const host = nonBatchData?.host ?? createMigrationHost(info, this.config);
     const analysisDeps = nonBatchData?.analysisDeps ?? this.prepareAnalysisDeps(info);
     let inheritanceGraph: InheritanceGraph;
 
@@ -231,11 +196,12 @@ function filterInputsViaConfig(
   });
 }
 
-function createMigrationHost(info: ProgramInfo): MigrationHost {
+function createMigrationHost(info: ProgramInfo, config: MigrationConfig): MigrationHost {
   return new MigrationHost(
     /* projectDir */ info.projectDirAbsPath,
     /* isMigratingCore */ false,
     info.userOptions,
+    config,
     info.sourceFiles,
   );
 }

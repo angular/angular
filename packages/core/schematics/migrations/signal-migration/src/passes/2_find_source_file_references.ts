@@ -53,6 +53,13 @@ export function pass2_IdentifySourceFileReferences(
     knownInputs,
   );
 
+  // List of input field names that will be migrated.
+  const migratedInputFieldNames = new Set<string>(
+    Array.from(knownInputs.knownInputIds.values())
+      .filter((v) => host.config.shouldMigrateInput?.(v) ?? true)
+      .map((v) => v.descriptor.node.name.text),
+  );
+
   const perfCounters = {
     template: 0,
     hostBindings: 0,
@@ -72,7 +79,7 @@ export function pass2_IdentifySourceFileReferences(
         evaluator,
         templateTypeChecker,
         resourceLoader,
-        host.options,
+        host.compilerOptions,
         result,
         knownInputs,
       );
@@ -92,9 +99,17 @@ export function pass2_IdentifySourceFileReferences(
       ts.isIdentifier(node) &&
       !(isInputContainerNode(node.parent) && node.parent.name === node)
     ) {
-      identifyPotentialTypeScriptReference(node, host, checker, knownInputs, result, {
-        debugElComponentInstanceTracker,
-      });
+      identifyPotentialTypeScriptReference(
+        node,
+        host,
+        checker,
+        knownInputs,
+        result,
+        migratedInputFieldNames,
+        {
+          debugElComponentInstanceTracker,
+        },
+      );
     }
 
     perfCounters.tsReferences += (performance.now() - lastTime) / 1000;
