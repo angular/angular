@@ -106,6 +106,58 @@ describe('outputs', () => {
       });
     });
 
+    describe('.next migration', () => {
+      it('should migrate .next usages that should have been .emit', () => {
+        verify({
+          before: `
+            import {Directive, Output, EventEmitter} from '@angular/core';
+
+            @Directive()
+            export class TestDir {
+              @Output() someChange = new EventEmitter<string>();
+
+              onClick() {
+                this.someChange.next('clicked');
+              }
+            }
+          `,
+          after: `
+            import { Directive, output } from '@angular/core';
+
+            @Directive()
+            export class TestDir {
+              readonly someChange = output<string>();
+
+              onClick() {
+                this.someChange.emit('clicked');
+              }
+            }
+          `,
+        });
+      });
+
+      it('should _not_ migrate .next usages when problematic output usage is detected', () => {
+        verifyNoChange(
+          `
+            import {Directive, Output, EventEmitter} from '@angular/core';
+
+            @Directive()
+            export class TestDir {
+              @Output() someChange = new EventEmitter<string>();
+
+              onClick() {
+                this.someChange.next('clicked');
+              }
+
+              ngOnDestroy() {
+                this.someChange.complete();
+              }
+            }
+          `,
+        );
+      });
+    });
+
     describe('declarations _with_ problematic access patterns', () => {
       it('should _not_ migrate outputs that are used with .pipe', () => {
         verifyNoChange(`
@@ -117,21 +169,6 @@ describe('outputs', () => {
 
               someMethod() {
                 this.someChange.pipe();
-              }
-            }
-          `);
-      });
-
-      it('should _not_ migrate outputs that are used with .next', () => {
-        verifyNoChange(`
-            import {Directive, Output, EventEmitter} from '@angular/core';
-
-            @Directive()
-            export class TestDir {
-              @Output() someChange = new EventEmitter<string>();
-
-              someMethod() {
-                this.someChange.next('payload');
               }
             }
           `);
