@@ -7,15 +7,15 @@
  */
 
 import ts from 'typescript';
+
+import {AbsoluteFsPath, ImportManager} from '../../../../compiler-cli/private/migrations';
 import {
-  Replacement,
-  TextUpdate,
   ProjectRelativePath,
   projectRelativePath,
+  Replacement,
+  TextUpdate,
 } from '../../utils/tsurge';
-import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
-import {ImportManager} from '../../../../compiler-cli/private/migrations';
 
 const printer = ts.createPrinter();
 
@@ -80,7 +80,6 @@ export function calculateImportReplacements(
     const addOnly: Replacement[] = [];
     const addRemove: Replacement[] = [];
 
-    const absolutePath = absoluteFromSourceFile(sf);
     importManager.addImport({
       requestedFile: sf,
       exportModuleSpecifier: '@angular/core',
