@@ -35,10 +35,14 @@ export interface ControlFlowAnalysisNode {
    * Recommended node for the reference in the container. For example:
    *   - may be "preserve" to indicate it's not narrowed.
    *   - may point to a different flow node. This means they will share for narrowing.
-   *   - may point to a block or source file to indicate at what level this node may be shared.
-   *     I.e. a location where we generate the temporary variable for subsequent sharing.
+   *   - may point to a block, source file or arrow function to indicate at what level this
+   *     node may be shared. I.e. a location where we generate the temporary variable
+   *     for subsequent sharing.
    */
-  recommendedNode: ControlFlowNodeIndex | 'preserve' | (ts.Block | ts.SourceFile);
+  recommendedNode:
+    | ControlFlowNodeIndex
+    | 'preserve'
+    | (ts.Block | ts.SourceFile | ts.ArrowFunction);
   /** Flow container this reference is part of. */
   flowContainer: ts.Node;
 }
@@ -154,7 +158,7 @@ function connectSharedReferences(
   // the reference and the earliest partner. References in between can also
   // use the shared flow node and not preserve their original reference— as
   // this would be rather unreadable and inefficient.
-  let highestBlock: ts.Block | ts.SourceFile | null = null;
+  let highestBlock: ts.Block | ts.SourceFile | ts.ArrowFunction | null = null;
   for (let i = earliestPartnerId; i <= refId; i++) {
     // Different flow container captured sequentially in result. Ignore.
     if (result[i].flowContainer !== refFlowContainer) {
@@ -163,7 +167,7 @@ function connectSharedReferences(
 
     // Iterate up the block, find the highest block within the flow container.
     let block: ts.Node = result[i].originalNode.parent;
-    while (!ts.isSourceFile(block) && !ts.isBlock(block)) {
+    while (!isBlockLikeAncestor(block)) {
       block = block.parent;
     }
     if (highestBlock === null || block.getStart() < highestBlock.getStart()) {
@@ -177,6 +181,13 @@ function connectSharedReferences(
 
   assert(highestBlock, 'Expected a block anchor to be found');
   result[earliestPartnerId].recommendedNode = highestBlock;
+}
+
+function isBlockLikeAncestor(node: ts.Node): node is ts.ArrowFunction | ts.Block | ts.SourceFile {
+  // Note: Arrow functions may not have a block, but instead use an expression
+  // directly. This still signifies a "block" as we can convert the concise body
+  // to a block.
+  return ts.isSourceFile(node) || ts.isBlock(node) || ts.isArrowFunction(node);
 }
 
 /**

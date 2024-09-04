@@ -10,6 +10,16 @@ export class Narrowing {
     [this].map((x) => x.name && x.name.charAt(0));
   }
 
+  narrowingArrowFnMultiLineWrapped() {
+    [this].map(
+      (x) =>
+        x.name &&
+        x.name.includes(
+          'A super long string to ensure this is wrapped and we can test formatting.',
+        ),
+    );
+  }
+
   narrowingObjectExpansion() {
     [this].map(({name}) => name && name.charAt(0));
   }

@@ -14,6 +14,7 @@ import {projectRelativePath, Replacement, TextUpdate} from '../../../../../utils
 import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {traverseAccess} from '../../utils/traverse_access';
 import {UniqueNamesGenerator} from '../../utils/unique_names';
+import {createNewBlockToInsertVariable} from './create_block_arrow_function';
 
 export interface NarrowableTsReference {
   accesses: ts.Identifier[];
@@ -77,32 +78,40 @@ export function migrateStandardTsReference(
       // to insert right before the first reference in the container, at the proper
       // block level— instead of always inserting at the beginning of the container.
       let parent = originalNode.parent;
-      let previous: ts.Node = originalNode;
+      let referenceNodeInBlock: ts.Node = originalNode;
       while (parent !== recommendedNode) {
-        previous = parent;
+        referenceNodeInBlock = parent;
         parent = parent.parent;
       }
 
-      if (ts.isArrowFunction(recommendedNode)) {
-      }
-
-      const leadingSpace = ts.getLineAndCharacterOfPosition(sf, previous.getStart());
-
       const replaceNode = traverseAccess(originalNode);
-      const fieldName = nameGenerator.generate(originalNode.text, previous);
+      const fieldName = nameGenerator.generate(originalNode.text, referenceNodeInBlock);
+      const filePath = projectRelativePath(sf, projectDirAbsPath);
+      const temporaryVariableStr = `const ${fieldName} = ${replaceNode.getText()}();`;
 
       idToSharedField.set(id, fieldName);
 
-      result.replacements.push(
-        new Replacement(
-          projectRelativePath(sf, projectDirAbsPath),
-          new TextUpdate({
-            position: previous.getStart(),
-            end: previous.getStart(),
-            toInsert: `const ${fieldName} = ${replaceNode.getText()}();\n${' '.repeat(leadingSpace.character)}`,
-          }),
-        ),
-      );
+      // If the common ancestor block of all shared references is an arrow function
+      // without a block, convert the arrow function to a block and insert the temporary
+      // variable at the beginning.
+      if (ts.isArrowFunction(parent) && !ts.isBlock(parent.body)) {
+        result.replacements.push(
+          ...createNewBlockToInsertVariable(parent, filePath, temporaryVariableStr),
+        );
+      } else {
+        const leadingSpace = ts.getLineAndCharacterOfPosition(sf, referenceNodeInBlock.getStart());
+
+        result.replacements.push(
+          new Replacement(
+            filePath,
+            new TextUpdate({
+              position: referenceNodeInBlock.getStart(),
+              end: referenceNodeInBlock.getStart(),
+              toInsert: `${temporaryVariableStr}\n${' '.repeat(leadingSpace.character)}`,
+            }),
+          ),
+        );
+      }
 
       result.replacements.push(
         new Replacement(
