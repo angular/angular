@@ -18,6 +18,7 @@ import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {UniqueNamesGenerator} from '../../utils/unique_names';
 import assert from 'assert';
 import {MigrationResult} from '../../result';
+import {createNewBlockToInsertVariable} from './create_block_arrow_function';
 
 /** An identifier part of a binding element. */
 export interface IdentifierOfBindingElement extends ts.Identifier {
@@ -163,32 +164,7 @@ function insertTemporaryVariableForBindingElement(
   // Other cases where we see an arrow function without a block.
   // We need to create one now.
   if (ts.isArrowFunction(parent) && !ts.isBlock(parent.body)) {
-    // For indentation, we traverse up and find the earliest statement.
-    // This node is most of the time a good candidate for acceptable
-    // indentation of a new block.
-    const spacingNode = ts.findAncestor(parent, ts.isStatement) ?? parent.parent;
-    const {character} = ts.getLineAndCharacterOfPosition(sf, spacingNode.getStart());
-    const blockSpace = ' '.repeat(character);
-    const contentSpace = ' '.repeat(character + 2);
-
-    return [
-      new Replacement(
-        filePath,
-        new TextUpdate({
-          position: parent.body.getStart(),
-          end: parent.body.getEnd(),
-          toInsert: `{\n${contentSpace}${toInsert}\n${contentSpace}return ${parent.body.getText()};`,
-        }),
-      ),
-      new Replacement(
-        filePath,
-        new TextUpdate({
-          position: parent.body.getEnd(),
-          end: parent.body.getEnd(),
-          toInsert: `\n${blockSpace}}`,
-        }),
-      ),
-    ];
+    return createNewBlockToInsertVariable(parent, filePath, toInsert);
   }
 
   return null;
