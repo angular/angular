@@ -6,37 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import path from 'path';
-
-import assert from 'assert';
-import {SignalInputMigration} from './migration';
-import {writeMigrationReplacements} from './write_replacements';
-
-main(path.resolve(process.argv[2]), process.argv.includes('--best-effort-mode')).catch((e) => {
-  console.error(e);
-  process.exitCode = 1;
-});
-
-/**
- * Runs the signal input migration for the given TypeScript project.
- */
-export async function main(absoluteTsconfigPath: string, bestEffortMode: boolean) {
-  const migration = new SignalInputMigration({
-    bestEffortMode,
-    upgradeAnalysisPhaseToAvoidBatch: true,
-  });
-  const baseInfo = migration.createProgram(absoluteTsconfigPath);
-  const info = migration.prepareProgram(baseInfo);
-
-  await migration.analyze(info);
-
-  assert(
-    migration.upgradedAnalysisPhaseResults,
-    'Expected upgraded analysis phase results; batch mode is disabled.',
-  );
-
-  const {replacements, projectAbsDirPath} = migration.upgradedAnalysisPhaseResults;
-
-  // Apply replacements
-  writeMigrationReplacements(replacements, projectAbsDirPath);
-}
+export {
+  getMessageForClassIncompatibility,
+  getMessageForInputIncompatibility,
+} from './input_detection/incompatibility_human';
+export {type KnownInputInfo, KnownInputs} from './input_detection/known_inputs';
+export {
+  type InputNameNode,
+  type InputNode,
+  isInputContainerNode,
+} from './input_detection/input_node';
+export {
+  type InputDescriptor,
+  type InputUniqueKey,
+  getInputDescriptor,
+  isInputDescriptor,
+} from './utils/input_id';
+export {SignalInputMigration} from './migration';
+export {type MigrationConfig} from './migration_config';

@@ -10,15 +10,15 @@ import {CompilerOptions} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MetaKind} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {
-  getMessageForClassIncompatibility,
-  getMessageForInputIncompatibility,
-} from '@angular/core/schematics/migrations/signal-migration/src/input_detection/incompatibility_human';
 import {ApplyRefactoringProgressFn} from '@angular/language-service/api';
 import ts from 'typescript';
-import {isInputContainerNode} from '@angular/core/schematics/migrations/signal-migration/src/input_detection/input_node';
-import {SignalInputMigration} from '@angular/core/schematics/migrations/signal-migration/src/migration';
-import {MigrationConfig} from '@angular/core/schematics/migrations/signal-migration/src/migration_config';
+import {
+  isInputContainerNode,
+  SignalInputMigration,
+  MigrationConfig,
+  getMessageForClassIncompatibility,
+  getMessageForInputIncompatibility,
+} from '@angular/core/schematics/migrations/signal-migration/src';
 import {groupReplacementsByFile} from '@angular/core/schematics/utils/tsurge/helpers/group_replacements';
 import {isTypeScriptFile} from '../utils';
 import {findTightestNode, getParentClassDeclaration} from '../utils/ts_utils';
