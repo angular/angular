@@ -44,9 +44,10 @@ export interface IdentifierOfBindingElement extends ts.Identifier {
 export function migrateBindingElementInputReference(
   tsReferencesInBindingElements: Set<IdentifierOfBindingElement>,
   projectDirAbsPath: AbsoluteFsPath,
-  nameGenerator: UniqueNamesGenerator,
   result: MigrationResult,
 ) {
+  const nameGenerator = new UniqueNamesGenerator(['Input', 'Signal', 'Ref']);
+
   for (const reference of tsReferencesInBindingElements) {
     const bindingElement = reference.parent;
     const bindingDecl = getBindingElementDeclaration(bindingElement);
@@ -64,12 +65,14 @@ export function migrateBindingElementInputReference(
     // Only use the temporary name, if really needed. A temporary name is needed if
     // the input field simply aliased via the binding element, or if the exposed identifier
     // is a string-literal like.
-    const useTmpName =
+    const useTmpNameForInputField =
       !ts.isObjectBindingPattern(bindingElement.name) || !ts.isIdentifier(inputFieldName);
 
-    const propertyName = useTmpName ? inputFieldName : undefined;
-    const exposedName = useTmpName ? ts.factory.createIdentifier(tmpName) : inputFieldName;
-    const newBinding = ts.factory.updateBindingElement(
+    const propertyName = useTmpNameForInputField ? inputFieldName : undefined;
+    const exposedName = useTmpNameForInputField
+      ? ts.factory.createIdentifier(tmpName)
+      : inputFieldName;
+    const newBindingToAccessInputField = ts.factory.updateBindingElement(
       bindingElement,
       bindingElement.dotDotDotToken,
       propertyName,
@@ -80,7 +83,7 @@ export function migrateBindingElementInputReference(
     const temporaryVariableReplacements = insertTemporaryVariableForBindingElement(
       bindingDecl,
       filePath,
-      `const ${bindingElement.name.getText()} = ${tmpName}();`,
+      `const ${bindingElement.name.getText()} = ${exposedName.text}();`,
     );
     if (temporaryVariableReplacements === null) {
       console.error(`Could not migrate reference ${reference.text} in ${filePath}`);
@@ -93,7 +96,11 @@ export function migrateBindingElementInputReference(
         new TextUpdate({
           position: bindingElement.getStart(),
           end: bindingElement.getEnd(),
-          toInsert: result.printer.printNode(ts.EmitHint.Unspecified, newBinding, sourceFile),
+          toInsert: result.printer.printNode(
+            ts.EmitHint.Unspecified,
+            newBindingToAccessInputField,
+            sourceFile,
+          ),
         }),
       ),
       ...temporaryVariableReplacements,

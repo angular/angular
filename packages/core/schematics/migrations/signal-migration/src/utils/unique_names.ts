@@ -9,9 +9,6 @@
 import ts from 'typescript';
 import {isIdentifierFreeInScope} from './is_identifier_free_in_scope';
 
-/** List of potential suffixes to avoid conflicts. */
-const fallbackSuffixes = ['Value', 'Val', 'Input'];
-
 /**
  * Helper that can generate unique identifier names at a
  * given location.
@@ -20,6 +17,8 @@ const fallbackSuffixes = ['Value', 'Val', 'Input'];
  * to support narrowing.
  */
 export class UniqueNamesGenerator {
+  constructor(private readonly fallbackSuffixes: string[]) {}
+
   generate(base: string, location: ts.Node): string {
     const checkNameAndClaimIfAvailable = (name: string): boolean => {
       const freeInfo = isIdentifierFreeInScope(name, location);
@@ -38,7 +37,7 @@ export class UniqueNamesGenerator {
     }
 
     // Try any of the possible suffixes.
-    for (const suffix of fallbackSuffixes) {
+    for (const suffix of this.fallbackSuffixes) {
       const name = `${base}${suffix}`;
       if (checkNameAndClaimIfAvailable(name)) {
         return name;
