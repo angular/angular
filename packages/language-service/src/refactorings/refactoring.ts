@@ -10,7 +10,10 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import ts from 'typescript';
 import {ApplyRefactoringProgressFn} from '@angular/language-service/api';
 import {CompilerOptions} from '@angular/compiler-cli';
-import {ConvertToSignalInputRefactoring} from './convert_to_signal_input';
+import {
+  ConvertToSignalInputBestEffortRefactoring,
+  ConvertToSignalInputRefactoring,
+} from './convert_to_signal_input';
 
 /**
  * Interface exposing static metadata for a {@link Refactoring},
@@ -60,4 +63,7 @@ export interface ActiveRefactoring {
   ): Promise<ts.RefactorEditInfo>;
 }
 
-export const allRefactorings: Refactoring[] = [ConvertToSignalInputRefactoring];
+export const allRefactorings: Refactoring[] = [
+  ConvertToSignalInputRefactoring,
+  ConvertToSignalInputBestEffortRefactoring,
+];
