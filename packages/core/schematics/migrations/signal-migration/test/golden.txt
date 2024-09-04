@@ -514,8 +514,8 @@ class IndexAccessInput {
   readonly items = input<string[]>([]);
 
   bla() {
-    const {items: itemsValue} = this;
-    const items = itemsValue();
+    const {items: itemsInput} = this;
+    const items = itemsInput();
 
     items[0].charAt(0);
   }
@@ -724,8 +724,8 @@ export class Narrowing {
   }
 
   narrowingObjectExpansion() {
-    [this].map(({name: nameValue}) => {
-      const name = nameValue();
+    [this].map(({name: nameInput}) => {
+      const name = nameInput();
       return name && name.charAt(0);
     });
   }
@@ -786,8 +786,8 @@ export class ObjectExpansion {
   readonly bla = input<string>('');
 
   expansion() {
-    const {bla: blaValue} = this;
-    const bla = blaValue();
+    const {bla: blaInput} = this;
+    const bla = blaInput();
 
     bla.charAt(0);
   }
@@ -800,8 +800,8 @@ export class ObjectExpansion {
     charAt(0);
   }
 
-  expansionAsParameter({bla: blaValue} = this) {
-    const bla = blaValue();
+  expansionAsParameter({bla: blaInput} = this) {
+    const bla = blaInput();
     bla.charAt(0);
   }
 }

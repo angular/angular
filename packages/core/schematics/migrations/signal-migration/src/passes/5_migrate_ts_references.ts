@@ -12,7 +12,6 @@ import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationResult} from '../result';
 import {InputUniqueKey} from '../utils/input_id';
 import {isTsInputReference} from '../utils/input_reference';
-import {UniqueNamesGenerator} from '../utils/unique_names';
 import {
   migrateBindingElementInputReference,
   IdentifierOfBindingElement,
@@ -57,7 +56,6 @@ export function pass5__migrateTypeScriptReferences(
   const tsReferencesInBindingElements = new Set<IdentifierOfBindingElement>();
 
   const seenIdentifiers = new WeakSet<ts.Identifier>();
-  const nameGenerator = new UniqueNamesGenerator();
 
   for (const reference of result.references) {
     // This pass only deals with TS references.
@@ -92,18 +90,7 @@ export function pass5__migrateTypeScriptReferences(
     }
   }
 
-  migrateBindingElementInputReference(
-    tsReferencesInBindingElements,
-    projectDirAbsPath,
-    nameGenerator,
-    result,
-  );
+  migrateBindingElementInputReference(tsReferencesInBindingElements, projectDirAbsPath, result);
 
-  migrateStandardTsReference(
-    tsReferencesWithNarrowing,
-    checker,
-    result,
-    nameGenerator,
-    projectDirAbsPath,
-  );
+  migrateStandardTsReference(tsReferencesWithNarrowing, checker, result, projectDirAbsPath);
 }

@@ -24,9 +24,10 @@ export function migrateStandardTsReference(
   tsReferencesWithNarrowing: Map<InputUniqueKey, NarrowableTsReference>,
   checker: ts.TypeChecker,
   result: MigrationResult,
-  nameGenerator: UniqueNamesGenerator,
   projectDirAbsPath: AbsoluteFsPath,
 ) {
+  const nameGenerator = new UniqueNamesGenerator(['Value', 'Val', 'Input']);
+
   // TODO: Consider checking/properly handling optional chaining and narrowing.
   for (const reference of tsReferencesWithNarrowing.values()) {
     const controlFlowResult = analyzeControlFlow(reference.accesses, checker);
