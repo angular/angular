@@ -44,7 +44,7 @@ ts_library(
 nodejs_binary(
     name = "bin",
     data = [":src"],
-    entry_point = ":index.ts",
+    entry_point = ":cli.ts",
     visibility = ["//packages/core/schematics/migrations/signal-migration/test:__pkg__"],
 )
 
