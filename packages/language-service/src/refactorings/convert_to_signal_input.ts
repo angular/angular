@@ -8,6 +8,7 @@
 
 import {CompilerOptions} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MetaKind} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {
   ClassIncompatibilityReason,
@@ -103,6 +104,7 @@ export class ConvertToSignalInputRefactoring implements ActiveRefactoring {
     }
     reportProgress(0, 'Starting input migration. Analyzing..');
 
+    const fs = getFileSystem();
     const migration = new SignalInputMigration({
       upgradeAnalysisPhaseToAvoidBatch: true,
       reportProgressFn: reportProgress,
@@ -115,7 +117,7 @@ export class ConvertToSignalInputRefactoring implements ActiveRefactoring {
         program: compiler.getCurrentProgram(),
         userOptions: compilerOptions,
         programAbsoluteRootPaths: [],
-        tsconfigAbsolutePath: '',
+        tsconfigAbsolutePath: '/',
       }),
     );
 
@@ -126,7 +128,7 @@ export class ConvertToSignalInputRefactoring implements ActiveRefactoring {
       };
     }
 
-    const {knownInputs, replacements} = migration.upgradedAnalysisPhaseResults;
+    const {knownInputs, replacements, projectAbsDirPath} = migration.upgradedAnalysisPhaseResults;
     const targetInput = Array.from(knownInputs.knownInputIds.values()).find(
       (i) => i.descriptor.node === containingProp,
     );
@@ -158,9 +160,9 @@ export class ConvertToSignalInputRefactoring implements ActiveRefactoring {
     }
 
     const fileUpdates = Array.from(groupReplacementsByFile(replacements).entries());
-    const edits: ts.FileTextChanges[] = fileUpdates.map(([fileName, changes]) => {
+    const edits: ts.FileTextChanges[] = fileUpdates.map(([relativePath, changes]) => {
       return {
-        fileName,
+        fileName: fs.join(projectAbsDirPath, relativePath),
         textChanges: changes.map((c) => ({
           newText: c.data.toInsert,
           span: {
