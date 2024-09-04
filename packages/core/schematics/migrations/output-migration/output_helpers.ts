@@ -28,6 +28,8 @@ export interface ExtractedOutput {
   aliasParam?: ts.Expression;
 }
 
+const PROBLEMATIC_OUTPUT_USAGES = new Set(['complete', 'pipe']);
+
 /**
  * Determines if the given node refers to a decorator-based output, and
  * returns its resolved metadata if possible.
@@ -58,13 +60,49 @@ function isOutputDeclarationEligibleForMigration(node: ts.PropertyDeclaration) {
   );
 }
 
-const problematicEventEmitterUsages = new Set(['pipe', 'next', 'complete']);
-export function isProblematicEventEmitterUsage(node: ts.Node): node is ts.PropertyAccessExpression {
+// TODO: rename to something like "potential"
+export function isPotentialProblematicEventEmitterUsage(
+  node: ts.Node,
+): node is ts.PropertyAccessExpression {
   return (
     ts.isPropertyAccessExpression(node) &&
     ts.isIdentifier(node.name) &&
-    problematicEventEmitterUsages.has(node.name.text)
+    PROBLEMATIC_OUTPUT_USAGES.has(node.name.text)
   );
+}
+
+export function isPotentialNextCallUsage(node: ts.Node): node is ts.CallExpression {
+  if (
+    ts.isCallExpression(node) &&
+    ts.isPropertyAccessExpression(node.expression) &&
+    ts.isIdentifier(node.expression.name)
+  ) {
+    const methodName = node.expression.name.text;
+    if (methodName === 'next') {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function isTargetOutputDeclaration(
+  node: ts.Node,
+  checker: ts.TypeChecker,
+  reflector: ReflectionHost,
+  dtsReader: DtsMetadataReader,
+): ts.PropertyDeclaration | null {
+  const targetSymbol = checker.getSymbolAtLocation(node);
+  if (targetSymbol !== undefined) {
+    const propertyDeclaration = getTargetPropertyDeclaration(targetSymbol);
+    if (
+      propertyDeclaration !== null &&
+      isOutputDeclaration(propertyDeclaration, reflector, dtsReader)
+    ) {
+      return propertyDeclaration;
+    }
+  }
+  return null;
 }
 
 /** Gets whether the given property is an Angular `@Output`. */

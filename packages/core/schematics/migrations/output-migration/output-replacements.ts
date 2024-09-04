@@ -99,3 +99,18 @@ export function calculateImportReplacements(
 
   return importReplacements;
 }
+
+export function calculateNextReplacement(
+  projectDirAbsPath: AbsoluteFsPath,
+  node: ts.MemberName,
+): Replacement {
+  const sf = node.getSourceFile();
+  return new Replacement(
+    projectRelativePath(sf, projectDirAbsPath),
+    new TextUpdate({
+      position: node.getStart(),
+      end: node.getEnd(),
+      toInsert: printer.printNode(ts.EmitHint.Unspecified, ts.factory.createIdentifier('emit'), sf),
+    }),
+  );
+}

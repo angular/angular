@@ -23,11 +23,16 @@ import {
   isOutputDeclaration,
   OutputID,
   getUniqueIdForProperty,
-  getTargetPropertyDeclaration,
+  isTargetOutputDeclaration,
   extractSourceOutputDefinition,
-  isProblematicEventEmitterUsage,
+  isPotentialProblematicEventEmitterUsage,
+  isPotentialNextCallUsage,
 } from './output_helpers';
-import {calculateImportReplacements, calculateDeclarationReplacements} from './output-replacements';
+import {
+  calculateImportReplacements,
+  calculateDeclarationReplacements,
+  calculateNextReplacement,
+} from './output-replacements';
 
 interface OutputMigrationData {
   path: ProjectRelativePath;
@@ -52,7 +57,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
     program,
     projectDirAbsPath,
   }: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
-    const outputFields: Record<OutputID, OutputMigrationData> = {};
+    const outputFieldReplacements: Record<OutputID, OutputMigrationData> = {};
     const problematicUsages: Record<OutputID, true> = {};
 
     const filesWithOutputDeclarations = new Set<ProjectRelativePath>();
@@ -69,29 +74,43 @@ export class OutputMigration extends TsurgeFunnelMigration<
           const relativePath = projectRelativePath(node.getSourceFile(), projectDirAbsPath);
 
           filesWithOutputDeclarations.add(relativePath);
-          outputFields[outputDef.id] = {
-            path: relativePath,
-            replacements: calculateDeclarationReplacements(
-              projectDirAbsPath,
-              node,
-              outputDef.aliasParam,
-            ),
-          };
+          addOutputReplacements(
+            outputFieldReplacements,
+            outputDef.id,
+            relativePath,
+            calculateDeclarationReplacements(projectDirAbsPath, node, outputDef.aliasParam),
+          );
+        }
+      }
+
+      // detect .next usages that should be migrated to .emit
+      if (isPotentialNextCallUsage(node) && ts.isPropertyAccessExpression(node.expression)) {
+        const propertyDeclaration = isTargetOutputDeclaration(
+          node.expression.expression,
+          checker,
+          reflector,
+          dtsReader,
+        );
+        if (propertyDeclaration !== null) {
+          const id = getUniqueIdForProperty(projectDirAbsPath, propertyDeclaration);
+          const relativePath = projectRelativePath(node.getSourceFile(), projectDirAbsPath);
+          addOutputReplacements(outputFieldReplacements, id, relativePath, [
+            calculateNextReplacement(projectDirAbsPath, node.expression.name),
+          ]);
         }
       }
 
       // detect unsafe access of the output property
-      if (isProblematicEventEmitterUsage(node)) {
-        const targetSymbol = checker.getSymbolAtLocation(node.expression);
-        if (targetSymbol !== undefined) {
-          const propertyDeclaration = getTargetPropertyDeclaration(targetSymbol);
-          if (
-            propertyDeclaration !== null &&
-            isOutputDeclaration(propertyDeclaration, reflector, dtsReader)
-          ) {
-            const id = getUniqueIdForProperty(projectDirAbsPath, propertyDeclaration);
-            problematicUsages[id] = true;
-          }
+      if (isPotentialProblematicEventEmitterUsage(node)) {
+        const propertyDeclaration = isTargetOutputDeclaration(
+          node.expression,
+          checker,
+          reflector,
+          dtsReader,
+        );
+        if (propertyDeclaration !== null) {
+          const id = getUniqueIdForProperty(projectDirAbsPath, propertyDeclaration);
+          problematicUsages[id] = true;
         }
       }
 
@@ -112,7 +131,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
     );
 
     return confirmAsSerializable({
-      outputFields,
+      outputFields: outputFieldReplacements,
       importReplacements,
       problematicUsages,
     });
@@ -181,5 +200,22 @@ export class OutputMigration extends TsurgeFunnelMigration<
     }
 
     return replacements;
+  }
+}
+
+function addOutputReplacements(
+  outputFieldReplacements: Record<OutputID, OutputMigrationData>,
+  outputId: OutputID,
+  relativePath: ProjectRelativePath,
+  replacements: Replacement[],
+): void {
+  const existingReplacements = outputFieldReplacements[outputId];
+  if (existingReplacements !== undefined) {
+    existingReplacements.replacements.push(...replacements);
+  } else {
+    outputFieldReplacements[outputId] = {
+      path: relativePath,
+      replacements: replacements,
+    };
   }
 }
