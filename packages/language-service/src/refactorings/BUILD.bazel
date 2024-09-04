@@ -10,6 +10,7 @@ ts_library(
     deps = [
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/core",
+        "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/core/schematics/migrations/signal-migration/src",
         "//packages/core/schematics/utils/tsurge",
