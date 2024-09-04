@@ -30,10 +30,17 @@ export function identifyPotentialTypeScriptReference(
   checker: ts.TypeChecker,
   knownInputs: KnownInputs,
   result: MigrationResult,
+  migratedInputFieldNames: Set<string>,
   advisors: {
     debugElComponentInstanceTracker: DebugElementComponentInstance;
   },
 ): void {
+  // Skip all identifiers that never can point to a migrated input.
+  // TODO: Capture these assumptions and performance optimizations in the design doc.
+  if (!migratedInputFieldNames.has(node.text)) {
+    return;
+  }
+
   let target: ts.Symbol | undefined = undefined;
 
   // Resolve binding elements to their declaration symbol.
