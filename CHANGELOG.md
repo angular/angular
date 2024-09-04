@@ -1,3 +1,12 @@
+<a name="18.2.3"></a>
+# 18.2.3 (2024-09-04)
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [de68e049e4](https://github.com/angular/angular/commit/de68e049e40ab702d9e2b7dd02070de9856377df) | fix | Dynamicaly call the global fetch implementation ([#57531](https://github.com/angular/angular/pull/57531)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.2"></a>
 
 # 18.2.2 (2024-08-28)
