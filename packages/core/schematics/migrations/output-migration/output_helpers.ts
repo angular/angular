@@ -60,7 +60,6 @@ function isOutputDeclarationEligibleForMigration(node: ts.PropertyDeclaration) {
   );
 }
 
-// TODO: rename to something like "potential"
 export function isPotentialProblematicEventEmitterUsage(
   node: ts.Node,
 ): node is ts.PropertyAccessExpression {
@@ -106,7 +105,7 @@ export function isTargetOutputDeclaration(
 }
 
 /** Gets whether the given property is an Angular `@Output`. */
-export function isOutputDeclaration(
+function isOutputDeclaration(
   node: ts.PropertyDeclaration,
   reflector: ReflectionHost,
   dtsReader: DtsMetadataReader,

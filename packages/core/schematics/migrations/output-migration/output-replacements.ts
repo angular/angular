@@ -100,7 +100,7 @@ export function calculateImportReplacements(
   return importReplacements;
 }
 
-export function calculateNextReplacement(
+export function calculateNextFnReplacement(
   projectDirAbsPath: AbsoluteFsPath,
   node: ts.MemberName,
 ): Replacement {
@@ -110,7 +110,7 @@ export function calculateNextReplacement(
     new TextUpdate({
       position: node.getStart(),
       end: node.getEnd(),
-      toInsert: printer.printNode(ts.EmitHint.Unspecified, ts.factory.createIdentifier('emit'), sf),
+      toInsert: 'emit',
     }),
   );
 }

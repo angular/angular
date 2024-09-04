@@ -136,7 +136,7 @@ describe('outputs', () => {
         });
       });
 
-      it('should _not_ .next usages when problematic output usage is detected', () => {
+      it('should _not_ migrate .next usages when problematic output usage is detected', () => {
         verifyNoChange(
           `
             import {Directive, Output, EventEmitter} from '@angular/core';

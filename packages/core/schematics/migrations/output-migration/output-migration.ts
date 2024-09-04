@@ -20,7 +20,6 @@ import {
 import {DtsMetadataReader} from '../../../../compiler-cli/src/ngtsc/metadata';
 import {TypeScriptReflectionHost} from '../../../../compiler-cli/src/ngtsc/reflection';
 import {
-  isOutputDeclaration,
   OutputID,
   getUniqueIdForProperty,
   isTargetOutputDeclaration,
@@ -31,7 +30,7 @@ import {
 import {
   calculateImportReplacements,
   calculateDeclarationReplacements,
-  calculateNextReplacement,
+  calculateNextFnReplacement,
 } from './output-replacements';
 
 interface OutputMigrationData {
@@ -95,7 +94,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
           const id = getUniqueIdForProperty(projectDirAbsPath, propertyDeclaration);
           const relativePath = projectRelativePath(node.getSourceFile(), projectDirAbsPath);
           addOutputReplacements(outputFieldReplacements, id, relativePath, [
-            calculateNextReplacement(projectDirAbsPath, node.expression.name),
+            calculateNextFnReplacement(projectDirAbsPath, node.expression.name),
           ]);
         }
       }
