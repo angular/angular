@@ -45,6 +45,8 @@ To verify that the application is server-side rendered, run it locally with `ng 
 
 ## Configure server-side rendering
 
+Note: In Angular v17 and later, `server.ts` is no longer used by `ng serve`. The dev server will use `main.server.ts` directly to perfom server side rendering.
+
 The `server.ts` file configures a Node.js Express server and Angular server-side rendering. `CommonEngine` is used to render an Angular application.
 
 <docs-code path="adev/src/content/examples/ssr/server.ts" visibleLines="[31,45]"></docs-code>
