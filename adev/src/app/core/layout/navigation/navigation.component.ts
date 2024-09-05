@@ -7,7 +7,7 @@
  */
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {CommonModule, DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
+import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,7 +19,6 @@ import {
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
-  NavigationList,
   NavigationState,
   WINDOW,
   IconComponent,
@@ -27,7 +26,7 @@ import {
   isApple,
   IS_SEARCH_DIALOG_OPEN,
 } from '@angular/docs';
-import {ActivatedRoute, NavigationEnd, Router, RouterLink} from '@angular/router';
+import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
 import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD} from '../../constants/links';
@@ -43,16 +42,7 @@ type MenuType = 'social' | 'theme-picker' | 'version-picker';
 @Component({
   selector: 'div.adev-nav',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    NavigationList,
-    ClickOutside,
-    CdkMenu,
-    CdkMenuItem,
-    CdkMenuTrigger,
-    IconComponent,
-  ],
+  imports: [RouterLink, ClickOutside, CdkMenu, CdkMenuItem, CdkMenuTrigger, IconComponent],
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss', './mini-menu.scss', './nav-item.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

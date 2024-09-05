@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgIf, isPlatformBrowser} from '@angular/common';
+import {isPlatformBrowser} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -48,7 +48,7 @@ export const LARGE_EDITOR_HEIGHT_BREAKPOINT = 550;
   selector: EMBEDDED_EDITOR_SELECTOR,
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [AngularSplitModule, CodeEditor, Preview, Terminal, NgIf, MatTabsModule, IconComponent],
+  imports: [AngularSplitModule, CodeEditor, Preview, Terminal, MatTabsModule, IconComponent],
   templateUrl: './embedded-editor.component.html',
   styleUrls: ['./embedded-editor.component.scss'],
   providers: [EditorUiState],

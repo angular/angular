@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Location, NgFor, NgIf} from '@angular/common';
+import {Location} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -48,16 +48,7 @@ const ANGULAR_DEV = 'https://angular.dev';
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    NgIf,
-    NgFor,
-    MatTabsModule,
-    IconComponent,
-    ClickOutside,
-    CdkMenu,
-    CdkMenuItem,
-    CdkMenuTrigger,
-  ],
+  imports: [MatTabsModule, IconComponent, ClickOutside, CdkMenu, CdkMenuItem, CdkMenuTrigger],
 })
 export class CodeEditor implements AfterViewInit, OnDestroy {
   @ViewChild('codeEditorWrapper') private codeEditorWrapperRef!: ElementRef<HTMLDivElement>;
