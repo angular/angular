@@ -24,13 +24,15 @@ import {
   getUniqueIdForProperty,
   isTargetOutputDeclaration,
   extractSourceOutputDefinition,
-  isPotentialProblematicEventEmitterUsage,
+  isPotentialCompleteCallUsage,
   isPotentialNextCallUsage,
+  isPotentialPipeCallUsage,
 } from './output_helpers';
 import {
   calculateImportReplacements,
-  calculateDeclarationReplacements,
+  calculateDeclarationReplacement,
   calculateNextFnReplacement,
+  calculateCompleteCallReplacement,
 } from './output-replacements';
 
 interface OutputMigrationData {
@@ -73,11 +75,11 @@ export class OutputMigration extends TsurgeFunnelMigration<
           const relativePath = projectRelativePath(node.getSourceFile(), projectDirAbsPath);
 
           filesWithOutputDeclarations.add(relativePath);
-          addOutputReplacements(
+          addOutputReplacement(
             outputFieldReplacements,
             outputDef.id,
             relativePath,
-            calculateDeclarationReplacements(projectDirAbsPath, node, outputDef.aliasParam),
+            calculateDeclarationReplacement(projectDirAbsPath, node, outputDef.aliasParam),
           );
         }
       }
@@ -93,16 +95,43 @@ export class OutputMigration extends TsurgeFunnelMigration<
         if (propertyDeclaration !== null) {
           const id = getUniqueIdForProperty(projectDirAbsPath, propertyDeclaration);
           const relativePath = projectRelativePath(node.getSourceFile(), projectDirAbsPath);
-          addOutputReplacements(outputFieldReplacements, id, relativePath, [
+          addOutputReplacement(
+            outputFieldReplacements,
+            id,
+            relativePath,
             calculateNextFnReplacement(projectDirAbsPath, node.expression.name),
-          ]);
+          );
+        }
+      }
+
+      // detect .complete usages that should be removed
+      if (isPotentialCompleteCallUsage(node) && ts.isPropertyAccessExpression(node.expression)) {
+        const propertyDeclaration = isTargetOutputDeclaration(
+          node.expression.expression,
+          checker,
+          reflector,
+          dtsReader,
+        );
+        if (propertyDeclaration !== null) {
+          const id = getUniqueIdForProperty(projectDirAbsPath, propertyDeclaration);
+          const relativePath = projectRelativePath(node.getSourceFile(), projectDirAbsPath);
+          if (ts.isExpressionStatement(node.parent)) {
+            addOutputReplacement(
+              outputFieldReplacements,
+              id,
+              relativePath,
+              calculateCompleteCallReplacement(projectDirAbsPath, node.parent),
+            );
+          } else {
+            problematicUsages[id] = true;
+          }
         }
       }
 
       // detect unsafe access of the output property
-      if (isPotentialProblematicEventEmitterUsage(node)) {
+      if (isPotentialPipeCallUsage(node) && ts.isPropertyAccessExpression(node.expression)) {
         const propertyDeclaration = isTargetOutputDeclaration(
-          node.expression,
+          node.expression.expression,
           checker,
           reflector,
           dtsReader,
@@ -202,19 +231,19 @@ export class OutputMigration extends TsurgeFunnelMigration<
   }
 }
 
-function addOutputReplacements(
+function addOutputReplacement(
   outputFieldReplacements: Record<OutputID, OutputMigrationData>,
   outputId: OutputID,
   relativePath: ProjectRelativePath,
-  replacements: Replacement[],
+  replacement: Replacement,
 ): void {
   const existingReplacements = outputFieldReplacements[outputId];
   if (existingReplacements !== undefined) {
-    existingReplacements.replacements.push(...replacements);
+    existingReplacements.replacements.push(replacement);
   } else {
     outputFieldReplacements[outputId] = {
       path: relativePath,
-      replacements: replacements,
+      replacements: [replacement],
     };
   }
 }

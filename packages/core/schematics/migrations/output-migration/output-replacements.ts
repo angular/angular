@@ -19,11 +19,11 @@ import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import
 
 const printer = ts.createPrinter();
 
-export function calculateDeclarationReplacements(
+export function calculateDeclarationReplacement(
   projectDirAbsPath: AbsoluteFsPath,
   node: ts.PropertyDeclaration,
   aliasParam?: ts.Expression,
-): Replacement[] {
+): Replacement {
   const sf = node.getSourceFile();
   const payloadTypes =
     node.initializer !== undefined && ts.isNewExpression(node.initializer)
@@ -53,16 +53,11 @@ export function calculateDeclarationReplacements(
     outputCall,
   );
 
-  return [
-    new Replacement(
-      projectRelativePath(sf, projectDirAbsPath),
-      new TextUpdate({
-        position: node.getStart(),
-        end: node.getEnd(),
-        toInsert: printer.printNode(ts.EmitHint.Unspecified, updatedOutputDeclaration, sf),
-      }),
-    ),
-  ];
+  return prepareTextReplacement(
+    projectDirAbsPath,
+    node,
+    printer.printNode(ts.EmitHint.Unspecified, updatedOutputDeclaration, sf),
+  );
 }
 
 export function calculateImportReplacements(
@@ -104,13 +99,28 @@ export function calculateNextFnReplacement(
   projectDirAbsPath: AbsoluteFsPath,
   node: ts.MemberName,
 ): Replacement {
+  return prepareTextReplacement(projectDirAbsPath, node, 'emit');
+}
+
+export function calculateCompleteCallReplacement(
+  projectDirAbsPath: AbsoluteFsPath,
+  node: ts.ExpressionStatement,
+): Replacement {
+  return prepareTextReplacement(projectDirAbsPath, node, '');
+}
+
+function prepareTextReplacement(
+  projectDirAbsPath: AbsoluteFsPath,
+  node: ts.Node,
+  replacement: string,
+): Replacement {
   const sf = node.getSourceFile();
   return new Replacement(
     projectRelativePath(sf, projectDirAbsPath),
     new TextUpdate({
       position: node.getStart(),
       end: node.getEnd(),
-      toInsert: 'emit',
+      toInsert: replacement,
     }),
   );
 }
