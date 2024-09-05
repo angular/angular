@@ -23,7 +23,6 @@ import {debounceTime} from 'rxjs/operators';
 import {TerminalHandler, TerminalType} from './terminal-handler.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {WINDOW} from '@angular/docs';
-import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'docs-tutorial-terminal',
@@ -31,7 +30,7 @@ import {NgIf} from '@angular/common';
   templateUrl: './terminal.component.html',
   styleUrls: ['./terminal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf],
+  imports: [],
   // ViewEncapsulation is disabled to allow Xterm.js's styles to be applied
   // to the terminal element.
   encapsulation: ViewEncapsulation.None,

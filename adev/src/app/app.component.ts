@@ -8,11 +8,9 @@
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {
-  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   inject,
-  Injector,
   OnInit,
   PLATFORM_ID,
   signal,
@@ -44,7 +42,6 @@ import {HeaderService} from './core/services/header.service';
     Footer,
     SecondaryNavigation,
     RouterOutlet,
-    RouterLink,
     SearchDialog,
     ProgressBarComponent,
     TopLevelBannerComponent,

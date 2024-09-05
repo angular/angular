@@ -18,12 +18,12 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import {DOCUMENT, NgFor, NgIf} from '@angular/common';
+import {DOCUMENT} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {distinctUntilChanged, map} from 'rxjs/operators';
 import {DocContent, DocViewer} from '@angular/docs';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ApiItemType} from './../interfaces/api-item-type';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {
@@ -41,7 +41,7 @@ import {AppScroller} from '../../../app-scroller';
 @Component({
   selector: 'adev-reference-page',
   standalone: true,
-  imports: [DocViewer, NgIf, NgFor, MatTabsModule, RouterLink],
+  imports: [DocViewer, MatTabsModule],
   templateUrl: './api-reference-details-page.component.html',
   styleUrls: ['./api-reference-details-page.component.scss'],
   providers: [ReferenceScrollHandler],

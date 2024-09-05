@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
 import {DocContent, DocViewer} from '@angular/docs';
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
@@ -17,7 +16,7 @@ import {map} from 'rxjs/operators';
   selector: 'docs-docs',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, DocViewer],
+  imports: [DocViewer],
   styleUrls: ['./docs.component.scss'],
   templateUrl: './docs.component.html',
 })
