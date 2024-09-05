@@ -88,7 +88,12 @@ export class LanguageService {
         const program = compiler.getCurrentProgram();
         const sourceFile = program.getSourceFile(fileName);
         if (sourceFile) {
-          const ngDiagnostics = compiler.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile);
+          let ngDiagnostics = compiler.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile);
+          if (this.config.suppressAngularDiagnosticCodes) {
+            ngDiagnostics = ngDiagnostics.filter(
+              (diag) => !this.config.suppressAngularDiagnosticCodes!.includes(diag.code),
+            );
+          }
           // There are several kinds of diagnostics returned by `NgCompiler` for a source file:
           //
           // 1. Angular-related non-template diagnostics from decorated classes within that
