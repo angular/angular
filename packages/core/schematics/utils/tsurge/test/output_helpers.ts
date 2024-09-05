@@ -14,20 +14,22 @@ import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {ClassDeclaration, ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
 import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {projectFile} from '../project_paths';
 
 export type OutputID = UniqueID<'output-node'>;
 
-export function getIdOfOutput(projectDirAbsPath: string, prop: ts.PropertyDeclaration): OutputID {
-  const fileId = path.relative(projectDirAbsPath, prop.getSourceFile().fileName);
+export function getIdOfOutput(info: ProgramInfo, prop: ts.PropertyDeclaration): OutputID {
+  const fileId = projectFile(prop.getSourceFile(), info).id.replace(/\.d\.ts/, '.ts');
   return `${fileId}@@${prop.parent.name ?? 'unknown-class'}@@${prop.name.getText()}` as OutputID;
 }
 
 export function findOutputDeclarationsAndReferences(
-  {sourceFiles, projectDirAbsPath}: ProgramInfo,
+  info: ProgramInfo,
   checker: ts.TypeChecker,
   reflector: ReflectionHost,
   dtsReader: DtsMetadataReader,
 ) {
+  const {sourceFiles} = info;
   const sourceOutputs = new Map<OutputID, ts.PropertyDeclaration>();
   const problematicReferencedOutputs = new Set<OutputID>();
 
@@ -41,7 +43,7 @@ export function findOutputDeclarationsAndReferences(
         ts.isIdentifier(node.initializer.expression) &&
         node.initializer.expression.text === 'EventEmitter'
       ) {
-        sourceOutputs.set(getIdOfOutput(projectDirAbsPath, node), node);
+        sourceOutputs.set(getIdOfOutput(info, node), node);
       }
 
       // Detect problematic output references.
@@ -58,9 +60,7 @@ export function findOutputDeclarationsAndReferences(
           isOutputDeclaration(targetSymbol.valueDeclaration, reflector, dtsReader)
         ) {
           // Mark output to indicate a seen problematic usage.
-          problematicReferencedOutputs.add(
-            getIdOfOutput(projectDirAbsPath, targetSymbol.valueDeclaration),
-          );
+          problematicReferencedOutputs.add(getIdOfOutput(info, targetSymbol.valueDeclaration));
         }
       }
 

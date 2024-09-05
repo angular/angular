@@ -48,7 +48,7 @@ export function getCompilationUnitMetadata(knownInputs: KnownInputs, result: Mig
           kind: r.kind,
           target: r.target.key,
           from: {
-            fileId: r.from.fileId,
+            file: r.from.file,
             node: {positionEndInFile: r.from.node.getEnd()},
             isWrite: r.from.isWrite,
             isPartOfElementBinding: r.from.isPartOfElementBinding,
@@ -59,7 +59,7 @@ export function getCompilationUnitMetadata(knownInputs: KnownInputs, result: Mig
           kind: r.kind,
           target: r.target.key,
           from: {
-            fileId: r.from.fileId,
+            file: r.from.file,
             hostPropertyNode: {positionEndInFile: r.from.hostPropertyNode.getEnd()},
             isObjectShorthandExpression: r.from.isObjectShorthandExpression,
             read: {positionEndInFile: r.from.read.sourceSpan.end},
@@ -70,7 +70,7 @@ export function getCompilationUnitMetadata(knownInputs: KnownInputs, result: Mig
           kind: r.kind,
           target: {positionEndInFile: r.target.getEnd()},
           from: {
-            fileId: r.from.fileId,
+            file: r.from.file,
             node: {positionEndInFile: r.from.node.getEnd()},
           },
           isPartOfCatalystFile: r.isPartOfCatalystFile,
@@ -81,8 +81,8 @@ export function getCompilationUnitMetadata(knownInputs: KnownInputs, result: Mig
         kind: r.kind,
         target: r.target.key,
         from: {
-          originatingTsFileId: r.from.originatingTsFileId,
-          templateFileId: r.from.templateFileId,
+          originatingTsFile: r.from.originatingTsFile,
+          templateFile: r.from.templateFile,
           isObjectShorthandExpression: r.from.isObjectShorthandExpression,
           node: {positionEndInFile: r.from.node.sourceSpan.end.offset},
           read: {positionEndInFile: r.from.read.sourceSpan.end},

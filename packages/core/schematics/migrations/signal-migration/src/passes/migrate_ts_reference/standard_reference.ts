@@ -10,8 +10,7 @@ import ts from 'typescript';
 import {InputUniqueKey} from '../../utils/input_id';
 import {analyzeControlFlow} from '../../flow_analysis';
 import {MigrationResult} from '../../result';
-import {projectRelativePath, Replacement, TextUpdate} from '../../../../../utils/tsurge';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../utils/tsurge';
 import {traverseAccess} from '../../utils/traverse_access';
 import {UniqueNamesGenerator} from '../../utils/unique_names';
 import {createNewBlockToInsertVariable} from './create_block_arrow_function';
@@ -24,7 +23,7 @@ export function migrateStandardTsReference(
   tsReferencesWithNarrowing: Map<InputUniqueKey, NarrowableTsReference>,
   checker: ts.TypeChecker,
   result: MigrationResult,
-  projectDirAbsPath: AbsoluteFsPath,
+  info: ProgramInfo,
 ) {
   const nameGenerator = new UniqueNamesGenerator(['Value', 'Val', 'Input']);
 
@@ -42,7 +41,7 @@ export function migrateStandardTsReference(
         // Append `()` to unwrap the signal.
         result.replacements.push(
           new Replacement(
-            projectRelativePath(sf, projectDirAbsPath),
+            projectFile(sf, info),
             new TextUpdate({
               position: originalNode.getEnd(),
               end: originalNode.getEnd(),
@@ -59,7 +58,7 @@ export function migrateStandardTsReference(
         const replaceNode = traverseAccess(originalNode);
         result.replacements.push(
           new Replacement(
-            projectRelativePath(sf, projectDirAbsPath),
+            projectFile(sf, info),
             new TextUpdate({
               position: replaceNode.getStart(),
               end: replaceNode.getEnd(),
@@ -87,7 +86,7 @@ export function migrateStandardTsReference(
 
       const replaceNode = traverseAccess(originalNode);
       const fieldName = nameGenerator.generate(originalNode.text, referenceNodeInBlock);
-      const filePath = projectRelativePath(sf, projectDirAbsPath);
+      const filePath = projectFile(sf, info);
       const temporaryVariableStr = `const ${fieldName} = ${replaceNode.getText()}();`;
 
       idToSharedField.set(id, fieldName);
@@ -116,7 +115,7 @@ export function migrateStandardTsReference(
 
       result.replacements.push(
         new Replacement(
-          projectRelativePath(sf, projectDirAbsPath),
+          projectFile(sf, info),
           new TextUpdate({
             position: replaceNode.getStart(),
             end: replaceNode.getEnd(),

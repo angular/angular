@@ -6,23 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ProjectRelativePath, Replacement, TextUpdate} from '../replacement';
+import {Replacement, TextUpdate} from '../replacement';
+import {ProjectRootRelativePath} from '../project_paths';
 
 /**
- * Groups the given replacements per file path.
+ * Groups the given replacements per project relative
+ * file path.
  *
  * This allows for simple execution of the replacements
  * against a given file. E.g. via {@link applyTextUpdates}.
  */
 export function groupReplacementsByFile(
   replacements: Replacement[],
-): Map<ProjectRelativePath, TextUpdate[]> {
-  const result = new Map<ProjectRelativePath, TextUpdate[]>();
-  for (const {projectRelativePath, update} of replacements) {
-    if (!result.has(projectRelativePath)) {
-      result.set(projectRelativePath, []);
+): Map<ProjectRootRelativePath, TextUpdate[]> {
+  const result = new Map<ProjectRootRelativePath, TextUpdate[]>();
+  for (const {projectFile, update} of replacements) {
+    if (!result.has(projectFile.rootRelativePath)) {
+      result.set(projectFile.rootRelativePath, []);
     }
-    result.get(projectRelativePath)!.push(update);
+    result.get(projectFile.rootRelativePath)!.push(update);
   }
   return result;
 }

@@ -8,13 +8,13 @@
 
 import ts from 'typescript';
 import {
-  projectRelativePath,
-  ProjectRelativePath,
   Replacement,
   TextUpdate,
-} from '../../../../../utils/tsurge/replacement';
+  ProgramInfo,
+  projectFile,
+  ProjectFile,
+} from '../../../../../utils/tsurge';
 import {getBindingElementDeclaration} from '../../utils/binding_elements';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {UniqueNamesGenerator} from '../../utils/unique_names';
 import assert from 'assert';
 import {MigrationResult} from '../../result';
@@ -43,7 +43,7 @@ export interface IdentifierOfBindingElement extends ts.Identifier {
  */
 export function migrateBindingElementInputReference(
   tsReferencesInBindingElements: Set<IdentifierOfBindingElement>,
-  projectDirAbsPath: AbsoluteFsPath,
+  info: ProgramInfo,
   result: MigrationResult,
 ) {
   const nameGenerator = new UniqueNamesGenerator(['Input', 'Signal', 'Ref']);
@@ -53,7 +53,7 @@ export function migrateBindingElementInputReference(
     const bindingDecl = getBindingElementDeclaration(bindingElement);
 
     const sourceFile = bindingElement.getSourceFile();
-    const filePath = projectRelativePath(sourceFile.fileName, projectDirAbsPath);
+    const file = projectFile(sourceFile, info);
 
     const inputFieldName = bindingElement.propertyName ?? bindingElement.name;
     assert(
@@ -82,17 +82,17 @@ export function migrateBindingElementInputReference(
 
     const temporaryVariableReplacements = insertTemporaryVariableForBindingElement(
       bindingDecl,
-      filePath,
+      file,
       `const ${bindingElement.name.getText()} = ${exposedName.text}();`,
     );
     if (temporaryVariableReplacements === null) {
-      console.error(`Could not migrate reference ${reference.text} in ${filePath}`);
+      console.error(`Could not migrate reference ${reference.text} in ${file.rootRelativePath}`);
       continue;
     }
 
     result.replacements.push(
       new Replacement(
-        filePath,
+        file,
         new TextUpdate({
           position: bindingElement.getStart(),
           end: bindingElement.getEnd(),
@@ -117,7 +117,7 @@ export function migrateBindingElementInputReference(
  */
 function insertTemporaryVariableForBindingElement(
   expansionDecl: ts.VariableDeclaration | ts.ParameterDeclaration,
-  filePath: ProjectRelativePath,
+  file: ProjectFile,
   toInsert: string,
 ): Replacement[] | null {
   const sf = expansionDecl.getSourceFile();
@@ -133,7 +133,7 @@ function insertTemporaryVariableForBindingElement(
 
     return [
       new Replacement(
-        filePath,
+        file,
         new TextUpdate({
           position: statement.getEnd(),
           end: statement.getEnd(),
@@ -158,7 +158,7 @@ function insertTemporaryVariableForBindingElement(
 
     return [
       new Replacement(
-        filePath,
+        file,
         new TextUpdate({
           position: bodyBlock.getStart() + 1,
           end: bodyBlock.getStart() + 1,
@@ -171,7 +171,7 @@ function insertTemporaryVariableForBindingElement(
   // Other cases where we see an arrow function without a block.
   // We need to create one now.
   if (ts.isArrowFunction(parent) && !ts.isBlock(parent.body)) {
-    return createNewBlockToInsertVariable(parent, filePath, toInsert);
+    return createNewBlockToInsertVariable(parent, file, toInsert);
   }
 
   return null;

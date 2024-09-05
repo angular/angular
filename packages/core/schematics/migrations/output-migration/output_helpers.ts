@@ -7,7 +7,6 @@
  */
 
 import ts from 'typescript';
-import * as path from 'path';
 import {
   ReflectionHost,
   ClassDeclaration,
@@ -17,7 +16,7 @@ import {DtsMetadataReader} from '../../../../compiler-cli/src/ngtsc/metadata';
 import {Reference} from '../../../../compiler-cli/src/ngtsc/imports';
 import {getAngularDecorators} from '../../../../compiler-cli/src/ngtsc/annotations';
 
-import {UniqueID} from '../../utils/tsurge';
+import {ProgramInfo, projectFile, UniqueID} from '../../utils/tsurge';
 
 /** Branded type for unique IDs of Angular `@Output`s. */
 export type OutputID = UniqueID<'output-node'>;
@@ -35,13 +34,13 @@ export interface ExtractedOutput {
 export function extractSourceOutputDefinition(
   node: ts.PropertyDeclaration,
   reflector: ReflectionHost,
-  projectDirAbsPath: string,
+  info: ProgramInfo,
 ): ExtractedOutput | null {
   const outputDecorator = getOutputDecorator(node, reflector);
 
   if (outputDecorator !== null && isOutputDeclarationEligibleForMigration(node)) {
     return {
-      id: getUniqueIdForProperty(projectDirAbsPath, node),
+      id: getUniqueIdForProperty(info, node),
       aliasParam: outputDecorator.args?.at(0),
     };
   }
@@ -150,10 +149,8 @@ function getOutputDecorator(
 
 // THINK: this utility + type is not specific to @Output, really, maybe move it to tsurge?
 /** Computes an unique ID for a given Angular `@Output` property. */
-export function getUniqueIdForProperty(
-  projectDirAbsPath: string,
-  prop: ts.PropertyDeclaration,
-): OutputID {
-  const fileId = path.relative(projectDirAbsPath, prop.getSourceFile().fileName);
-  return `${fileId}@@${prop.parent.name ?? 'unknown-class'}@@${prop.name.getText()}` as OutputID;
+export function getUniqueIdForProperty(info: ProgramInfo, prop: ts.PropertyDeclaration): OutputID {
+  const {id} = projectFile(prop.getSourceFile(), info);
+  id.replace(/\.d\.ts$/, '.ts');
+  return `${id}@@${prop.parent.name ?? 'unknown-class'}@@${prop.name.getText()}` as OutputID;
 }

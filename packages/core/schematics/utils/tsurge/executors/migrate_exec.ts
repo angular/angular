@@ -24,12 +24,12 @@ export async function executeMigratePhase<UnitData, GlobalData>(
   migration: TsurgeMigration<UnitData, GlobalData>,
   globalMetadata: GlobalData,
   tsconfigAbsolutePath: string,
-): Promise<{replacements: Replacement[]; projectDirAbsPath: AbsoluteFsPath}> {
+): Promise<{replacements: Replacement[]; projectRoot: AbsoluteFsPath}> {
   const baseInfo = migration.createProgram(tsconfigAbsolutePath);
   const info = migration.prepareProgram(baseInfo);
 
   return {
     replacements: await migration.migrate(globalMetadata, info),
-    projectDirAbsPath: info.projectDirAbsPath,
+    projectRoot: info.projectRoot,
   };
 }

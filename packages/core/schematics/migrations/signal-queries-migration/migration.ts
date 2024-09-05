@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {
   confirmAsSerializable,
   ProgramInfo,
-  projectRelativePath,
+  projectFile,
   Replacement,
   Serializable,
   TextUpdate,
@@ -37,26 +37,18 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
   CompilationUnitData,
   CompilationUnitData
 > {
-  override async analyze({
-    sourceFiles,
-    program,
-    projectDirAbsPath,
-  }: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
+  override async analyze(info: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
     // TODO: This stage for this migration doesn't necessarily need a full
     // compilation unit program.
 
+    const {sourceFiles, program} = info;
     const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflector, checker, null);
     const res: CompilationUnitData = {knownQueryFields: {}, problematicQueries: {}};
 
     const visitor = (node: ts.Node) => {
-      const extractedQuery = extractSourceQueryDefinition(
-        node,
-        reflector,
-        evaluator,
-        projectDirAbsPath,
-      );
+      const extractedQuery = extractSourceQueryDefinition(node, reflector, evaluator, info);
       if (extractedQuery !== null) {
         res.knownQueryFields[extractedQuery.id] = true;
         return;
@@ -74,7 +66,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
           writeBinaryOperators.includes(accessParent.operatorToken.kind);
 
         if (isWriteReference) {
-          const targetId = getReferenceTargetId(node, checker, projectDirAbsPath);
+          const targetId = getReferenceTargetId(node, checker, info);
           if (targetId !== null) {
             res.problematicQueries[targetId] = true;
           }
@@ -105,8 +97,9 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
   override async migrate(
     globalMetadata: CompilationUnitData,
-    {program, projectDirAbsPath, sourceFiles}: ProgramInfo,
+    info: ProgramInfo,
   ): Promise<Replacement[]> {
+    const {program, sourceFiles} = info;
     const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflector, checker, null);
@@ -122,12 +115,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
     const visitor = (node: ts.Node) => {
       // Detect source queries and migrate them, if possible.
-      const extractedQuery = extractSourceQueryDefinition(
-        node,
-        reflector,
-        evaluator,
-        projectDirAbsPath,
-      );
+      const extractedQuery = extractSourceQueryDefinition(node, reflector, evaluator, info);
       if (extractedQuery !== null) {
         if (!isMigratedQuery(extractedQuery.id)) {
           updateFileState(filesWithIncompleteMigration, node, extractedQuery.kind);
@@ -140,7 +128,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
             node as ts.PropertyDeclaration,
             extractedQuery,
             importManager,
-            projectDirAbsPath,
+            info,
           ),
         );
         return;
@@ -148,11 +136,11 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
       // Migrate references to queries, if those are migrated too.
       if (ts.isIdentifier(node) && !ts.isPropertyDeclaration(node.parent)) {
-        const targetId = getReferenceTargetId(node, checker, projectDirAbsPath);
+        const targetId = getReferenceTargetId(node, checker, info);
         if (targetId !== null && isMigratedQuery(targetId)) {
           replacements.push(
             new Replacement(
-              projectRelativePath(node.getSourceFile(), projectDirAbsPath),
+              projectFile(node.getSourceFile(), info),
               new TextUpdate({position: node.getEnd(), end: node.getEnd(), toInsert: '()'}),
             ),
           );
@@ -174,7 +162,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       }
     }
 
-    applyImportManagerChanges(importManager, replacements, sourceFiles, projectDirAbsPath);
+    applyImportManagerChanges(importManager, replacements, sourceFiles, info);
 
     return replacements;
   }

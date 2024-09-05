@@ -9,6 +9,7 @@
 import ts from 'typescript';
 import {InputDescriptor} from './input_id';
 import {PropertyRead, TmplAstNode} from '@angular/compiler';
+import {ProjectFile} from '../../../../utils/tsurge';
 
 /** Possible types of references to input detected. */
 export enum InputReferenceKind {
@@ -23,10 +24,10 @@ export interface TemplateInputReference {
   kind: InputReferenceKind.InTemplate;
   /** From where the reference is made. */
   from: {
-    /** ID of the template file containing the reference. */
-    templateFileId: string;
-    /** ID of the TypeScript file that references, or contains the template. */
-    originatingTsFileId: string;
+    /** Template file containing the reference. */
+    templateFile: ProjectFile;
+    /** TypeScript file that references, or contains the template. */
+    originatingTsFile: ProjectFile;
     /** HTML AST node that contains the reference. */
     node: TmplAstNode;
     /** Expression AST node that represents the reference. */
@@ -43,8 +44,8 @@ export interface HostBindingInputReference {
   kind: InputReferenceKind.InHostBinding;
   /** From where the reference is made. */
   from: {
-    /** ID of the file that contains the host binding reference. */
-    fileId: string;
+    /** File that contains the host binding reference. */
+    file: ProjectFile;
     /** TypeScript property node containing the reference. */
     hostPropertyNode: ts.Node;
     /** Expression AST node that represents the reference. */
@@ -61,8 +62,8 @@ export interface TsInputReference {
   kind: InputReferenceKind.TsInputReference;
   /** From where the reference is made. */
   from: {
-    /** ID of the file that contains the TypeScript reference. */
-    fileId: string;
+    /** File that contains the TypeScript reference. */
+    file: ProjectFile;
     /** TypeScript AST node representing the reference. */
     node: ts.Identifier;
     /** Whether the reference is a write. */
@@ -82,8 +83,8 @@ export interface TsInputClassTypeReference {
   kind: InputReferenceKind.TsInputClassTypeReference;
   /** From where the reference is made. */
   from: {
-    /** ID of the file that contains the TypeScript reference. */
-    fileId: string;
+    /** File that contains the TypeScript reference. */
+    file: ProjectFile;
     /** TypeScript AST node representing the reference. */
     node: ts.TypeReferenceNode;
   };

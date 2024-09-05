@@ -12,8 +12,7 @@ import {convertToSignalInput} from '../convert-input/convert_to_signal';
 import assert from 'assert';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
-import {projectRelativePath, Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../utils/tsurge';
 
 /**
  * Phase that migrates `@Input()` declarations to signal inputs and
@@ -24,7 +23,7 @@ export function pass6__migrateInputDeclarations(
   result: MigrationResult,
   knownInputs: KnownInputs,
   importManager: ImportManager,
-  projectDirAbsPath: AbsoluteFsPath,
+  info: ProgramInfo,
 ) {
   let filesWithMigratedInputs = new Set<ts.SourceFile>();
   let filesWithIncompatibleInputs = new WeakSet<ts.SourceFile>();
@@ -43,7 +42,7 @@ export function pass6__migrateInputDeclarations(
     filesWithMigratedInputs.add(sf);
     result.replacements.push(
       new Replacement(
-        projectRelativePath(sf, projectDirAbsPath),
+        projectFile(sf, info),
         new TextUpdate({
           position: input.node.getStart(),
           end: input.node.getEnd(),

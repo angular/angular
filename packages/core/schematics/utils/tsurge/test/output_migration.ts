@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
-import {absoluteFromSourceFile} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {confirmAsSerializable} from '../helpers/serializable';
 import {TsurgeComplexMigration} from '../migration';
-import {projectRelativePath, Replacement, TextUpdate} from '../replacement';
-import {findOutputDeclarationsAndReferences, OutputID} from './output_helpers';
 import {ProgramInfo} from '../program_info';
+import {Replacement, TextUpdate} from '../replacement';
+import {findOutputDeclarationsAndReferences, OutputID} from './output_helpers';
+import {projectFile} from '../project_paths';
 
 type AnalysisUnit = {[id: OutputID]: {seenProblematicUsage: boolean}};
 type GlobalMetadata = {[id: OutputID]: {canBeMigrated: boolean}};
@@ -96,7 +95,7 @@ export class OutputMigration extends TsurgeComplexMigration<AnalysisUnit, Global
 
       replacements.push(
         new Replacement(
-          projectRelativePath(node.getSourceFile(), info.projectDirAbsPath),
+          projectFile(node.getSourceFile(), info),
           new TextUpdate({
             position: node.getStart(),
             end: node.getStart(),

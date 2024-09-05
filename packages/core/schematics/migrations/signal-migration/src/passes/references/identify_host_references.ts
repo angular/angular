@@ -26,6 +26,7 @@ import {
 import {MigrationHost} from '../../migration_host';
 import {MigrationResult} from '../../result';
 import {InputReferenceKind} from '../../utils/input_reference';
+import {projectFile} from '../../../../../utils/tsurge';
 
 /**
  * Checks host bindings of the given class and tracks all
@@ -164,7 +165,7 @@ export function identifyHostBindingReferences(
       from: {
         read: ref.read,
         isObjectShorthandExpression: ref.isObjectShorthandExpression,
-        fileId: host.fileToId(ref.context.getSourceFile()),
+        file: projectFile(ref.context.getSourceFile(), host.programInfo),
         hostPropertyNode: ref.context,
       },
       target: ref.targetInput,

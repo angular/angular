@@ -11,3 +11,4 @@ export * from './program_info';
 export * from './replacement';
 export * from './helpers/unique_id';
 export * from './helpers/serializable';
+export * from './project_paths';

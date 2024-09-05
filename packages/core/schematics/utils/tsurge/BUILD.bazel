@@ -15,6 +15,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/shims",
         "//packages/compiler-cli/src/ngtsc/translator",
+        "//packages/compiler-cli/src/ngtsc/util",
         "@npm//@types/diff",
         "@npm//@types/node",
         "@npm//chalk",
