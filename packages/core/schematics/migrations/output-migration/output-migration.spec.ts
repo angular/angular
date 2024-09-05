@@ -174,6 +174,21 @@ describe('outputs', () => {
           `);
       });
 
+      it('should _not_ migrate outputs that are used with .pipe outside of a component class', () => {
+        verifyNoChange(`
+            import {Directive, Output, EventEmitter} from '@angular/core';
+
+            @Directive()
+            export class TestDir {
+              @Output() someChange = new EventEmitter();
+            }
+
+            let instance: TestDir;
+
+            instance.someChange.pipe();
+          `);
+      });
+
       it('should _not_ migrate outputs that are used with .complete', () => {
         verifyNoChange(`
             import {Directive, Output, EventEmitter, OnDestroy} from '@angular/core';
