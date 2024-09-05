@@ -73,25 +73,6 @@ export default class ApiReferenceList {
         {injector: this.injector},
       );
     });
-
-    effect(
-      () => {
-        const params: Params = {
-          'query': this.query() ? this.query() : null,
-          'type': this.type() ? this.type() : null,
-        };
-
-        this.router.navigate([], {
-          queryParams: params,
-          replaceUrl: true,
-          preserveFragment: true,
-          info: {
-            disableScrolling: true,
-          },
-        });
-      },
-      {allowSignalWrites: true},
-    );
   }
 
   query = model<string | undefined>('');
