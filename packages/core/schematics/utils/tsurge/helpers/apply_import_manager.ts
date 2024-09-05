@@ -8,11 +8,7 @@
 
 import ts from 'typescript';
 import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
-import {
-  absoluteFrom,
-  absoluteFromSourceFile,
-  AbsoluteFsPath,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {projectRelativePath, Replacement, TextUpdate} from '../replacement';
 
 /**
@@ -48,9 +44,20 @@ export function applyImportManagerChanges(
 
   // Capture updated imports
   for (const [oldBindings, newBindings] of updatedImports.entries()) {
-    const printedBindings = printer.printNode(
-      ts.EmitHint.Unspecified,
-      newBindings,
+    // The import will be generated as multi-line if it already is multi-line,
+    // or if the number of elements significantly increased and it previously
+    // consisted of very few specifiers.
+    const isMultiline =
+      oldBindings.getText().includes('\n') ||
+      (newBindings.elements.length >= 6 && oldBindings.elements.length <= 3);
+
+    const printedBindings = printer.printList(
+      ts.ListFormat.NamedImportsOrExportsElements |
+        ts.ListFormat.Indented |
+        ts.ListFormat.Braces |
+        ts.ListFormat.PreserveLines |
+        (isMultiline ? ts.ListFormat.MultiLine : ts.ListFormat.SingleLine),
+      newBindings.elements,
       oldBindings.getSourceFile(),
     );
     replacements.push(
@@ -59,7 +66,9 @@ export function applyImportManagerChanges(
         new TextUpdate({
           position: oldBindings.getStart(),
           end: oldBindings.getEnd(),
-          toInsert: printedBindings,
+          // TS uses four spaces as indent. We migrate to two spaces as we
+          // assume this to be more common.
+          toInsert: printedBindings.replace(/^ {4}/gm, '  '),
         }),
       ),
     );

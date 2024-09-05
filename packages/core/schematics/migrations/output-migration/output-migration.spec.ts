@@ -278,27 +278,31 @@ async function verify(testCase: {before: string; after: string}) {
 
 function populateDeclarationTestCase(declaration: string): string {
   return `
-      import {
-        Directive,
-        Output,
-        EventEmitter,
-        Subject
-      } from '@angular/core';
-  
-      @Directive()
-      export class TestDir {
-        ${declaration}
-      }
-    `;
+import {
+  Directive,
+  Output,
+  EventEmitter,
+  Subject
+} from '@angular/core';
+
+@Directive()
+export class TestDir {
+  ${declaration}
+}
+`;
 }
 
 function populateExpectedResult(declaration: string): string {
   return `
-      import { Directive, Subject, output } from '@angular/core';
-  
-      @Directive()
-      export class TestDir {
-        ${declaration}
-      }
-    `;
+import {
+  Directive,
+  Subject,
+  output
+} from '@angular/core';
+
+@Directive()
+export class TestDir {
+  ${declaration}
+}
+`;
 }
