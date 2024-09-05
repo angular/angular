@@ -41,6 +41,11 @@ export interface PluginConfig {
    * If false, disables parsing of `@let` declarations in the compiler.
    */
   enableLetSyntax?: false;
+
+  /**
+   * A list of diagnostic codes that should be supressed in the language service.
+   */
+  suppressAngularDiagnosticCodes?: number[];
 }
 
 export type GetTcbResponse = {
