@@ -81,6 +81,8 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     this.config.reportProgressFn?.(10, 'Analyzing project (input usages)..');
     const {inheritanceGraph} = executeAnalysisPhase(host, knownInputs, result, analysisDeps);
 
+    filterInputsViaConfig(result, knownInputs, this.config);
+
     this.config.reportProgressFn?.(40, 'Checking inheritance..');
     pass4__checkInheritanceOfInputs(host, inheritanceGraph, metaRegistry, knownInputs);
     if (this.config.bestEffortMode) {
@@ -141,6 +143,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
       inheritanceGraph = analysisRes.inheritanceGraph;
       populateKnownInputsFromGlobalData(knownInputs, globalMetadata);
 
+      filterInputsViaConfig(result, knownInputs, this.config);
       pass4__checkInheritanceOfInputs(
         host,
         inheritanceGraph,
@@ -152,7 +155,6 @@ export class SignalInputMigration extends TsurgeComplexMigration<
       }
     }
 
-    filterInputsViaConfig(result, knownInputs, this.config);
     executeMigrationPhase(host, knownInputs, result, analysisDeps);
 
     return result.replacements;

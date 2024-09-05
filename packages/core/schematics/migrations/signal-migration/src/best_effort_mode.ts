@@ -11,6 +11,8 @@ import {KnownInputs} from './input_detection/known_inputs';
 
 /** Input reasons that cannot be ignored. */
 const nonIgnorableInputIncompatibilities: InputIncompatibilityReason[] = [
+  // Explicitly filtered inputs cannot be skipped via best effort mode.
+  InputIncompatibilityReason.SkippedViaConfigFilter,
   // There is no good output for accessor inputs.
   InputIncompatibilityReason.Accessor,
   // There is no good output for such inputs. We can't perform "conversion".
