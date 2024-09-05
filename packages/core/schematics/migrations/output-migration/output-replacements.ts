@@ -8,19 +8,14 @@
 
 import ts from 'typescript';
 
-import {AbsoluteFsPath, ImportManager} from '../../../../compiler-cli/private/migrations';
-import {
-  ProjectRelativePath,
-  projectRelativePath,
-  Replacement,
-  TextUpdate,
-} from '../../utils/tsurge';
+import {ImportManager} from '../../../../compiler-cli/private/migrations';
+import {ProgramInfo, projectFile, ProjectFileID, Replacement, TextUpdate} from '../../utils/tsurge';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
 
 const printer = ts.createPrinter();
 
 export function calculateDeclarationReplacement(
-  projectDirAbsPath: AbsoluteFsPath,
+  info: ProgramInfo,
   node: ts.PropertyDeclaration,
   aliasParam?: ts.Expression,
 ): Replacement {
@@ -54,18 +49,15 @@ export function calculateDeclarationReplacement(
   );
 
   return prepareTextReplacement(
-    projectDirAbsPath,
+    info,
     node,
     printer.printNode(ts.EmitHint.Unspecified, updatedOutputDeclaration, sf),
   );
 }
 
-export function calculateImportReplacements(
-  projectDirAbsPath: AbsoluteFsPath,
-  sourceFiles: ts.SourceFile[],
-) {
+export function calculateImportReplacements(info: ProgramInfo, sourceFiles: Set<ts.SourceFile>) {
   const importReplacements: Record<
-    ProjectRelativePath,
+    ProjectFileID,
     {add: Replacement[]; addAndRemove: Replacement[]}
   > = {};
 
@@ -74,19 +66,20 @@ export function calculateImportReplacements(
   for (const sf of sourceFiles) {
     const addOnly: Replacement[] = [];
     const addRemove: Replacement[] = [];
+    const file = projectFile(sf, info);
 
     importManager.addImport({
       requestedFile: sf,
       exportModuleSpecifier: '@angular/core',
       exportSymbolName: 'output',
     });
-    applyImportManagerChanges(importManager, addOnly, [sf], projectDirAbsPath);
+    applyImportManagerChanges(importManager, addOnly, [sf], info);
 
     importManager.removeImport(sf, 'Output', '@angular/core');
     importManager.removeImport(sf, 'EventEmitter', '@angular/core');
-    applyImportManagerChanges(importManager, addRemove, [sf], projectDirAbsPath);
+    applyImportManagerChanges(importManager, addRemove, [sf], info);
 
-    importReplacements[projectRelativePath(sf, projectDirAbsPath)] = {
+    importReplacements[file.id] = {
       add: addOnly,
       addAndRemove: addRemove,
     };
@@ -95,28 +88,25 @@ export function calculateImportReplacements(
   return importReplacements;
 }
 
-export function calculateNextFnReplacement(
-  projectDirAbsPath: AbsoluteFsPath,
-  node: ts.MemberName,
-): Replacement {
-  return prepareTextReplacement(projectDirAbsPath, node, 'emit');
+export function calculateNextFnReplacement(info: ProgramInfo, node: ts.MemberName): Replacement {
+  return prepareTextReplacement(info, node, 'emit');
 }
 
 export function calculateCompleteCallReplacement(
-  projectDirAbsPath: AbsoluteFsPath,
+  info: ProgramInfo,
   node: ts.ExpressionStatement,
 ): Replacement {
-  return prepareTextReplacement(projectDirAbsPath, node, '');
+  return prepareTextReplacement(info, node, '');
 }
 
 function prepareTextReplacement(
-  projectDirAbsPath: AbsoluteFsPath,
+  info: ProgramInfo,
   node: ts.Node,
   replacement: string,
 ): Replacement {
   const sf = node.getSourceFile();
   return new Replacement(
-    projectRelativePath(sf, projectDirAbsPath),
+    projectFile(sf, info),
     new TextUpdate({
       position: node.getStart(),
       end: node.getEnd(),

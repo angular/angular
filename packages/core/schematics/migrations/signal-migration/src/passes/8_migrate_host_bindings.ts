@@ -7,8 +7,7 @@
  */
 
 import ts from 'typescript';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {projectRelativePath, Replacement, TextUpdate} from '../../../../utils/tsurge/replacement';
+import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../utils/tsurge';
 import {MigrationResult} from '../result';
 import {isHostBindingInputReference} from '../utils/input_reference';
 import {KnownInputs} from '../input_detection/known_inputs';
@@ -20,7 +19,7 @@ import {KnownInputs} from '../input_detection/known_inputs';
 export function pass8__migrateHostBindings(
   result: MigrationResult,
   knownInputs: KnownInputs,
-  projectDirAbsPath: AbsoluteFsPath,
+  info: ProgramInfo,
 ) {
   const seenReferences = new WeakMap<ts.Node, Set<number>>();
 
@@ -55,7 +54,7 @@ export function pass8__migrateHostBindings(
 
     result.replacements.push(
       new Replacement(
-        projectRelativePath(bindingField.getSourceFile(), projectDirAbsPath),
+        projectFile(bindingField.getSourceFile(), info),
         new TextUpdate({position: readEndPos, end: readEndPos, toInsert: appendText}),
       ),
     );

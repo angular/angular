@@ -9,6 +9,7 @@
 import ts from 'typescript';
 import {MigrationHost} from '../migration_host';
 import {InputNode} from '../input_detection/input_node';
+import {projectFile} from '../../../../utils/tsurge';
 
 /**
  * Unique key for an input in a project.
@@ -46,9 +47,14 @@ export function getInputDescriptor(host: MigrationHost, node: InputNode): InputD
     className = node.parent.name?.text ?? '<anonymous>';
   }
 
-  const fileId = host.fileToId(node.getSourceFile());
+  const file = projectFile(node.getSourceFile(), host.programInfo);
+  // Inputs may be detected in `.d.ts` files. Ensure that if the file IDs
+  // match regardless of extension. E.g. `/google3/blaze-out/bin/my_file.ts` should
+  // have the same ID as `/google3/my_file.ts`.
+  const id = file.id.replace(/\.d\.ts$/, '.ts');
+
   return {
-    key: `${fileId}@@${className}@@${node.name.text}` as unknown as InputUniqueKey,
+    key: `${id}@@${className}@@${node.name.text}` as unknown as InputUniqueKey,
     node,
   };
 }

@@ -10,11 +10,12 @@ import ts from 'typescript';
 import {
   confirmAsSerializable,
   ProgramInfo,
-  ProjectRelativePath,
+  projectFile,
+  ProjectFile,
+  ProjectFileID,
   Replacement,
   Serializable,
   TsurgeFunnelMigration,
-  projectRelativePath,
 } from '../../utils/tsurge';
 
 import {DtsMetadataReader} from '../../../../compiler-cli/src/ngtsc/metadata';
@@ -36,32 +37,26 @@ import {
 } from './output-replacements';
 
 interface OutputMigrationData {
-  path: ProjectRelativePath;
+  file: ProjectFile;
   replacements: Replacement[];
 }
 
 interface CompilationUnitData {
   outputFields: Record<OutputID, OutputMigrationData>;
   problematicUsages: Record<OutputID, true>;
-  importReplacements: Record<
-    ProjectRelativePath,
-    {add: Replacement[]; addAndRemove: Replacement[]}
-  >;
+  importReplacements: Record<ProjectFileID, {add: Replacement[]; addAndRemove: Replacement[]}>;
 }
 
 export class OutputMigration extends TsurgeFunnelMigration<
   CompilationUnitData,
   CompilationUnitData
 > {
-  override async analyze({
-    sourceFiles,
-    program,
-    projectDirAbsPath,
-  }: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
+  override async analyze(info: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
+    const {sourceFiles, program} = info;
     const outputFieldReplacements: Record<OutputID, OutputMigrationData> = {};
     const problematicUsages: Record<OutputID, true> = {};
 
-    const filesWithOutputDeclarations = new Set<ProjectRelativePath>();
+    const filesWithOutputDeclarations = new Set<ts.SourceFile>();
 
     const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
@@ -70,16 +65,16 @@ export class OutputMigration extends TsurgeFunnelMigration<
     const outputMigrationVisitor = (node: ts.Node) => {
       // detect output declarations
       if (ts.isPropertyDeclaration(node)) {
-        const outputDef = extractSourceOutputDefinition(node, reflector, projectDirAbsPath);
+        const outputDef = extractSourceOutputDefinition(node, reflector, info);
         if (outputDef !== null) {
-          const relativePath = projectRelativePath(node.getSourceFile(), projectDirAbsPath);
+          const outputFile = projectFile(node.getSourceFile(), info);
 
-          filesWithOutputDeclarations.add(relativePath);
+          filesWithOutputDeclarations.add(node.getSourceFile());
           addOutputReplacement(
             outputFieldReplacements,
             outputDef.id,
-            relativePath,
-            calculateDeclarationReplacement(projectDirAbsPath, node, outputDef.aliasParam),
+            outputFile,
+            calculateDeclarationReplacement(info, node, outputDef.aliasParam),
           );
         }
       }
@@ -93,13 +88,13 @@ export class OutputMigration extends TsurgeFunnelMigration<
           dtsReader,
         );
         if (propertyDeclaration !== null) {
-          const id = getUniqueIdForProperty(projectDirAbsPath, propertyDeclaration);
-          const relativePath = projectRelativePath(node.getSourceFile(), projectDirAbsPath);
+          const id = getUniqueIdForProperty(info, propertyDeclaration);
+          const outputFile = projectFile(node.getSourceFile(), info);
           addOutputReplacement(
             outputFieldReplacements,
             id,
-            relativePath,
-            calculateNextFnReplacement(projectDirAbsPath, node.expression.name),
+            outputFile,
+            calculateNextFnReplacement(info, node.expression.name),
           );
         }
       }
@@ -113,14 +108,14 @@ export class OutputMigration extends TsurgeFunnelMigration<
           dtsReader,
         );
         if (propertyDeclaration !== null) {
-          const id = getUniqueIdForProperty(projectDirAbsPath, propertyDeclaration);
-          const relativePath = projectRelativePath(node.getSourceFile(), projectDirAbsPath);
+          const id = getUniqueIdForProperty(info, propertyDeclaration);
+          const outputFile = projectFile(node.getSourceFile(), info);
           if (ts.isExpressionStatement(node.parent)) {
             addOutputReplacement(
               outputFieldReplacements,
               id,
-              relativePath,
-              calculateCompleteCallReplacement(projectDirAbsPath, node.parent),
+              outputFile,
+              calculateCompleteCallReplacement(info, node.parent),
             );
           } else {
             problematicUsages[id] = true;
@@ -137,7 +132,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
           dtsReader,
         );
         if (propertyDeclaration !== null) {
-          const id = getUniqueIdForProperty(projectDirAbsPath, propertyDeclaration);
+          const id = getUniqueIdForProperty(info, propertyDeclaration);
           problematicUsages[id] = true;
         }
       }
@@ -151,12 +146,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
     }
 
     // calculate import replacements but do so only for files that have output declarations
-    const importReplacements = calculateImportReplacements(
-      projectDirAbsPath,
-      sourceFiles.filter((sf) =>
-        filesWithOutputDeclarations.has(projectRelativePath(sf, projectDirAbsPath)),
-      ),
-    );
+    const importReplacements = calculateImportReplacements(info, filesWithOutputDeclarations);
 
     return confirmAsSerializable({
       outputFields: outputFieldReplacements,
@@ -168,7 +158,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
   override async merge(units: CompilationUnitData[]): Promise<Serializable<CompilationUnitData>> {
     const outputFields: Record<OutputID, OutputMigrationData> = {};
     const importReplacements: Record<
-      ProjectRelativePath,
+      ProjectFileID,
       {add: Replacement[]; addAndRemove: Replacement[]}
     > = {};
     const problematicUsages: Record<OutputID, true> = {};
@@ -180,9 +170,9 @@ export class OutputMigration extends TsurgeFunnelMigration<
         outputFields[declId] = unit.outputFields[declId];
       }
 
-      for (const pathStr of Object.keys(unit.importReplacements)) {
-        const path = pathStr as ProjectRelativePath;
-        importReplacements[path] = unit.importReplacements[path];
+      for (const fileIDStr of Object.keys(unit.importReplacements)) {
+        const fileID = fileIDStr as ProjectFileID;
+        importReplacements[fileID] = unit.importReplacements[fileID];
       }
 
       for (const declIdStr of Object.keys(unit.problematicUsages)) {
@@ -199,8 +189,8 @@ export class OutputMigration extends TsurgeFunnelMigration<
   }
 
   override async migrate(globalData: CompilationUnitData): Promise<Replacement[]> {
-    const migratedFiles = new Set<ProjectRelativePath>();
-    const problematicFiles = new Set<ProjectRelativePath>();
+    const migratedFiles = new Set<ProjectFileID>();
+    const problematicFiles = new Set<ProjectFileID>();
 
     const replacements: Replacement[] = [];
     for (const declIdStr of Object.keys(globalData.outputFields)) {
@@ -209,17 +199,17 @@ export class OutputMigration extends TsurgeFunnelMigration<
 
       if (!globalData.problematicUsages[declId]) {
         replacements.push(...outputField.replacements);
-        migratedFiles.add(outputField.path);
+        migratedFiles.add(outputField.file.id);
       } else {
-        problematicFiles.add(outputField.path);
+        problematicFiles.add(outputField.file.id);
       }
     }
 
-    for (const pathStr of Object.keys(globalData.importReplacements)) {
-      const path = pathStr as ProjectRelativePath;
-      if (migratedFiles.has(path)) {
-        const importReplacements = globalData.importReplacements[path];
-        if (problematicFiles.has(path)) {
+    for (const fileIDStr of Object.keys(globalData.importReplacements)) {
+      const fileID = fileIDStr as ProjectFileID;
+      if (migratedFiles.has(fileID)) {
+        const importReplacements = globalData.importReplacements[fileID];
+        if (problematicFiles.has(fileID)) {
           replacements.push(...importReplacements.add);
         } else {
           replacements.push(...importReplacements.addAndRemove);
@@ -234,7 +224,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
 function addOutputReplacement(
   outputFieldReplacements: Record<OutputID, OutputMigrationData>,
   outputId: OutputID,
-  relativePath: ProjectRelativePath,
+  file: ProjectFile,
   replacement: Replacement,
 ): void {
   const existingReplacements = outputFieldReplacements[outputId];
@@ -242,7 +232,7 @@ function addOutputReplacement(
     existingReplacements.replacements.push(replacement);
   } else {
     outputFieldReplacements[outputId] = {
-      path: relativePath,
+      file: file,
       replacements: [replacement],
     };
   }

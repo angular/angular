@@ -6,29 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  absoluteFrom,
-  AbsoluteFsPath,
-  getFileSystem,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
 import MagicString from 'magic-string';
-import ts from 'typescript';
-
-/**
- * Branded type representing a project-relative path.
- *
- * This is important to enforce as replacements should be relative
- * to the project root, so that they can be serialized between phases.
- *
- * E.g. Tsunami may have different project roots in different stages, or
- * we can't reliably relativize paths after Tsunami completed.
- */
-export type ProjectRelativePath = string & {__projectRelativePath: true};
+import {ProjectFile} from './project_paths';
 
 /** A text replacement for the given file. */
 export class Replacement {
   constructor(
-    public projectRelativePath: ProjectRelativePath,
+    public projectFile: ProjectFile,
     public update: TextUpdate,
   ) {}
 }
@@ -42,17 +26,6 @@ export class TextUpdate {
       toInsert: string;
     },
   ) {}
-}
-
-/** Gets a project-relative relative for the given source file. */
-export function projectRelativePath(
-  file: ts.SourceFile | string,
-  projectAbsPath: AbsoluteFsPath,
-): ProjectRelativePath {
-  return getFileSystem().relative(
-    projectAbsPath,
-    typeof file === 'string' ? file : file.fileName,
-  ) as string as ProjectRelativePath;
 }
 
 /** Helper that applies updates to the given text. */

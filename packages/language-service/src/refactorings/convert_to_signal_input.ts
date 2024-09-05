@@ -35,6 +35,8 @@ import type {ActiveRefactoring} from './refactoring';
 abstract class BaseConvertToSignalInputRefactoring implements ActiveRefactoring {
   abstract config: MigrationConfig;
 
+  constructor(private project: ts.server.Project) {}
+
   static isApplicable(
     compiler: NgCompiler,
     fileName: string,
@@ -117,8 +119,11 @@ abstract class BaseConvertToSignalInputRefactoring implements ActiveRefactoring 
         ngCompiler: compiler,
         program: compiler.getCurrentProgram(),
         userOptions: compilerOptions,
-        programAbsoluteRootPaths: [],
-        tsconfigAbsolutePath: '/',
+        programAbsoluteRootFileNames: [],
+        host: {
+          getCanonicalFileName: (file) => this.project.projectService.toCanonicalFileName(file),
+          getCurrentDirectory: () => this.project.getCurrentDirectory(),
+        },
       }),
     );
 
@@ -129,7 +134,7 @@ abstract class BaseConvertToSignalInputRefactoring implements ActiveRefactoring 
       };
     }
 
-    const {knownInputs, replacements, projectAbsDirPath} = migration.upgradedAnalysisPhaseResults;
+    const {knownInputs, replacements, projectRoot} = migration.upgradedAnalysisPhaseResults;
     const targetInput = Array.from(knownInputs.knownInputIds.values()).find(
       (i) => i.descriptor.node === containingProp,
     );
@@ -175,7 +180,7 @@ abstract class BaseConvertToSignalInputRefactoring implements ActiveRefactoring 
     const fileUpdates = Array.from(groupReplacementsByFile(replacements).entries());
     const edits: ts.FileTextChanges[] = fileUpdates.map(([relativePath, changes]) => {
       return {
-        fileName: fs.join(projectAbsDirPath, relativePath),
+        fileName: fs.join(projectRoot, relativePath),
         textChanges: changes.map((c) => ({
           newText: c.data.toInsert,
           span: {

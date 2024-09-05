@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import ts from 'typescript';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationResult} from '../result';
@@ -20,6 +19,7 @@ import {
   migrateStandardTsReference,
   NarrowableTsReference,
 } from './migrate_ts_reference/standard_reference';
+import {ProgramInfo} from '../../../../utils/tsurge';
 
 /**
  * Phase that migrates TypeScript input references to be signal compatible.
@@ -50,7 +50,7 @@ export function pass5__migrateTypeScriptReferences(
   result: MigrationResult,
   checker: ts.TypeChecker,
   knownInputs: KnownInputs,
-  projectDirAbsPath: AbsoluteFsPath,
+  info: ProgramInfo,
 ) {
   const tsReferencesWithNarrowing = new Map<InputUniqueKey, NarrowableTsReference>();
   const tsReferencesInBindingElements = new Set<IdentifierOfBindingElement>();
@@ -90,7 +90,6 @@ export function pass5__migrateTypeScriptReferences(
     }
   }
 
-  migrateBindingElementInputReference(tsReferencesInBindingElements, projectDirAbsPath, result);
-
-  migrateStandardTsReference(tsReferencesWithNarrowing, checker, result, projectDirAbsPath);
+  migrateBindingElementInputReference(tsReferencesInBindingElements, info, result);
+  migrateStandardTsReference(tsReferencesWithNarrowing, checker, result, info);
 }

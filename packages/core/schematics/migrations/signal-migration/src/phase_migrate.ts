@@ -31,8 +31,9 @@ export function executeMigrationPhase(
   host: MigrationHost,
   knownInputs: KnownInputs,
   result: MigrationResult,
-  {typeChecker, sourceFiles, projectDirAbsPath}: AnalysisProgramInfo,
+  info: AnalysisProgramInfo,
 ) {
+  const {typeChecker, sourceFiles} = info;
   const importManager = new ImportManager({
     // For the purpose of this migration, we always use `input` and don't alias
     // it to e.g. `input_1`.
@@ -40,16 +41,10 @@ export function executeMigrationPhase(
   });
 
   // Migrate passes.
-  pass5__migrateTypeScriptReferences(result, typeChecker, knownInputs, projectDirAbsPath);
-  pass6__migrateInputDeclarations(
-    typeChecker,
-    result,
-    knownInputs,
-    importManager,
-    projectDirAbsPath,
-  );
-  pass7__migrateTemplateReferences(host, result, knownInputs, projectDirAbsPath);
-  pass8__migrateHostBindings(result, knownInputs, projectDirAbsPath);
-  pass9__migrateTypeScriptTypeReferences(result, knownInputs, importManager, projectDirAbsPath);
-  pass10_applyImportManager(importManager, result, sourceFiles, projectDirAbsPath);
+  pass5__migrateTypeScriptReferences(result, typeChecker, knownInputs, info);
+  pass6__migrateInputDeclarations(typeChecker, result, knownInputs, importManager, info);
+  pass7__migrateTemplateReferences(host, result, knownInputs, info);
+  pass8__migrateHostBindings(result, knownInputs, info);
+  pass9__migrateTypeScriptTypeReferences(result, knownInputs, importManager, info);
+  pass10_applyImportManager(importManager, result, sourceFiles, info);
 }

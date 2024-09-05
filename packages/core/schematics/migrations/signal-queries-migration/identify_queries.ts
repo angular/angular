@@ -12,8 +12,7 @@ import {
   queryDecoratorNames,
 } from '@angular/compiler-cli/src/ngtsc/annotations';
 import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {UniqueID} from '../../utils/tsurge';
-import path from 'path';
+import {ProgramInfo, projectFile, UniqueID} from '../../utils/tsurge';
 import {extractDecoratorQueryMetadata} from '@angular/compiler-cli/src/ngtsc/annotations/directive';
 import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {R3QueryMetadata} from '../../../../compiler';
@@ -37,7 +36,7 @@ export function extractSourceQueryDefinition(
   node: ts.Node,
   reflector: ReflectionHost,
   evaluator: PartialEvaluator,
-  projectDirAbsPath: string,
+  info: ProgramInfo,
 ): ExtractedQuery | null {
   if (
     !ts.isPropertyDeclaration(node) ||
@@ -55,7 +54,7 @@ export function extractSourceQueryDefinition(
   }
   const decorator = ngDecorators[0];
 
-  const id = getUniqueIDForClassProperty(node, projectDirAbsPath);
+  const id = getUniqueIDForClassProperty(node, info);
   if (id === null) {
     return null;
   }
@@ -100,14 +99,12 @@ export function extractSourceQueryDefinition(
  */
 export function getUniqueIDForClassProperty(
   property: ts.PropertyDeclaration,
-  projectDirAbsPath: string,
+  info: ProgramInfo,
 ): ClassPropertyID | null {
   if (!ts.isClassDeclaration(property.parent) || property.parent.name === undefined) {
     return null;
   }
-  const filePath = path
-    .relative(projectDirAbsPath, property.getSourceFile().fileName)
-    .replace(/\.d\.ts$/, '.ts');
+  const id = projectFile(property.getSourceFile(), info).id.replace(/\.d\.ts$/, '.ts');
 
   // Note: If a class is nested, there could be an ID clash.
   // This is highly unlikely though, and this is not a problem because
@@ -115,5 +112,5 @@ export function getUniqueIDForClassProperty(
   // a non-exported classes; in which case, cross-compilation unit references
   // likely can't exist anyway.
 
-  return `${filePath}-${property.parent.name.text}-${property.name.getText()}` as ClassPropertyID;
+  return `${id}-${property.parent.name.text}-${property.name.getText()}` as ClassPropertyID;
 }

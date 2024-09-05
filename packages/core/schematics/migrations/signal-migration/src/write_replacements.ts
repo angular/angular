@@ -13,12 +13,12 @@ import {AbsoluteFsPath, getFileSystem} from '@angular/compiler-cli/src/ngtsc/fil
 /** Applies the migration result and applies it to the file system. */
 export function writeMigrationReplacements(
   replacements: Replacement[],
-  projectDirAbsPath: AbsoluteFsPath,
+  projectRoot: AbsoluteFsPath,
 ) {
   const fs = getFileSystem();
 
   for (const [projectRelativePath, updates] of groupReplacementsByFile(replacements)) {
-    const filePath = fs.join(projectDirAbsPath, projectRelativePath);
+    const filePath = fs.join(projectRoot, projectRelativePath);
     const fileText = fs.readFile(filePath);
     const newText = applyTextUpdates(fileText, updates);
 

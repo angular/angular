@@ -48,15 +48,15 @@ export function mergeCompilationUnitData(
 /** Computes a unique ID for the given reference. */
 function computeReferenceId(reference: SerializableForBatching<InputReference>): string {
   if (reference.kind === InputReferenceKind.InTemplate) {
-    return `${reference.from.templateFileId}@@${reference.from.read.positionEndInFile}`;
+    return `${reference.from.templateFile.id}@@${reference.from.read.positionEndInFile}`;
   } else if (reference.kind === InputReferenceKind.InHostBinding) {
     // `read` position is commonly relative to the host property node position— so we need
     // to make it absolute by incorporating the host node position.
     return (
-      `${reference.from.fileId}@@${reference.from.hostPropertyNode.positionEndInFile}` +
+      `${reference.from.file.id}@@${reference.from.hostPropertyNode.positionEndInFile}` +
       `@@${reference.from.read.positionEndInFile}`
     );
   } else {
-    return `${reference.from.fileId}@@${reference.from.node.positionEndInFile}`;
+    return `${reference.from.file.id}@@${reference.from.node.positionEndInFile}`;
   }
 }

@@ -19,6 +19,7 @@ import {unwrapParent} from '../../utils/unwrap_parent';
 import {writeBinaryOperators} from '../../utils/write_operators';
 import {resolveBindingElement} from '../../utils/binding_elements';
 import {lookupPropertyAccess} from '../../../../../utils/tsurge/helpers/ast/lookup_property_access';
+import {projectFile} from '../../../../../utils/tsurge';
 
 /**
  * Checks whether given TypeScript reference refers to an Angular input, and captures
@@ -101,7 +102,7 @@ export function identifyPotentialTypeScriptReference(
     kind: InputReferenceKind.TsInputReference,
     from: {
       node,
-      fileId: host.fileToId(node.getSourceFile()),
+      file: projectFile(node.getSourceFile(), host.programInfo),
       isWrite: isWriteReference,
       isPartOfElementBinding: ts.isBindingElement(node.parent),
     },

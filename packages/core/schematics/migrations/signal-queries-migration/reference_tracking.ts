@@ -8,6 +8,7 @@
 
 import ts from 'typescript';
 import {ClassPropertyID, getUniqueIDForClassProperty} from './identify_queries';
+import {ProgramInfo} from '../../utils/tsurge';
 
 /**
  * Attempts to resolve the given reference and determine a class
@@ -16,7 +17,7 @@ import {ClassPropertyID, getUniqueIDForClassProperty} from './identify_queries';
 export function getReferenceTargetId(
   node: ts.Identifier,
   checker: ts.TypeChecker,
-  projectDirAbsPath: string,
+  info: ProgramInfo,
 ): ClassPropertyID | null {
   const target = checker.getSymbolAtLocation(node);
   if (
@@ -26,5 +27,5 @@ export function getReferenceTargetId(
     return null;
   }
 
-  return getUniqueIDForClassProperty(target.valueDeclaration, projectDirAbsPath);
+  return getUniqueIDForClassProperty(target.valueDeclaration, info);
 }

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import path from 'path';
-import ts from 'typescript';
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import ts from 'typescript';
+import {ProgramInfo} from '../../../utils/tsurge';
 import {MigrationConfig} from './migration_config';
 
 /**
@@ -19,38 +19,20 @@ import {MigrationConfig} from './migration_config';
 export class MigrationHost {
   private _sourceFiles: WeakSet<ts.SourceFile>;
 
+  compilerOptions: NgCompilerOptions;
+
   constructor(
-    public projectDir: string,
     public isMigratingCore: boolean,
-    public compilerOptions: NgCompilerOptions,
+    public programInfo: ProgramInfo,
     public config: MigrationConfig,
     sourceFiles: readonly ts.SourceFile[],
   ) {
     this._sourceFiles = new WeakSet(sourceFiles);
+    this.compilerOptions = programInfo.userOptions;
   }
 
   /** Whether the given file is a source file to be migrated. */
   isSourceFileForCurrentMigration(file: ts.SourceFile): boolean {
     return this._sourceFiles.has(file);
-  }
-
-  /** Retrieves a unique serializable ID for the given source file or file path. */
-  fileToId(file: ts.SourceFile | string): string {
-    if (typeof file !== 'string') {
-      // Assume that declaration files may appear in different workers,
-      // and in practice e.g. the input is actually part of a `.ts` file.
-      if (file.isDeclarationFile) {
-        file = file.fileName.replace(/\.d\.ts$/, '.ts');
-      } else {
-        file = file.fileName;
-      }
-    }
-
-    return path.relative(this.projectDir, file);
-  }
-
-  /** Converts a serialized file ID to an absolute file path. */
-  idToFilePath(id: string): string {
-    return path.join(this.projectDir, id);
   }
 }

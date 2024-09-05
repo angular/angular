@@ -40,7 +40,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
 > {
   upgradedAnalysisPhaseResults: {
     replacements: Replacement[];
-    projectAbsDirPath: AbsoluteFsPath;
+    projectRoot: AbsoluteFsPath;
     knownInputs: KnownInputs;
   } | null = null;
 
@@ -67,7 +67,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     assert(info.ngCompiler !== null, 'Expected `NgCompiler` to be configured.');
     return {
       ...info,
-      ...prepareAnalysisInfo(info.program, info.ngCompiler, info.programAbsoluteRootPaths),
+      ...prepareAnalysisInfo(info.program, info.ngCompiler, info.programAbsoluteRootFileNames),
     };
   }
 
@@ -108,7 +108,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
       // Expose the upgraded analysis stage results.
       this.upgradedAnalysisPhaseResults = {
         replacements,
-        projectAbsDirPath: info.projectDirAbsPath,
+        projectRoot: info.projectRoot,
         knownInputs,
       };
     }
@@ -199,11 +199,5 @@ function filterInputsViaConfig(
 }
 
 function createMigrationHost(info: ProgramInfo, config: MigrationConfig): MigrationHost {
-  return new MigrationHost(
-    /* projectDir */ info.projectDirAbsPath,
-    /* isMigratingCore */ false,
-    info.userOptions,
-    config,
-    info.sourceFiles,
-  );
+  return new MigrationHost(/* isMigratingCore */ false, info, config, info.sourceFiles);
 }

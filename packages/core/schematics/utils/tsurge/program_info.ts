@@ -21,8 +21,8 @@ export interface BaseProgramInfo {
   ngCompiler: NgCompiler | null;
   program: ts.Program;
   userOptions: NgCompilerOptions;
-  programAbsoluteRootPaths: string[];
-  tsconfigAbsolutePath: string;
+  programAbsoluteRootFileNames: string[];
+  host: Pick<ts.CompilerHost, 'getCanonicalFileName' | 'getCurrentDirectory'>;
 }
 
 /**
@@ -35,5 +35,15 @@ export interface BaseProgramInfo {
 export interface ProgramInfo extends BaseProgramInfo {
   sourceFiles: ts.SourceFile[];
   fullProgramSourceFiles: readonly ts.SourceFile[];
-  projectDirAbsPath: AbsoluteFsPath;
+  /**
+   * Root directories of the project.
+   * Sorted longest first for easy lookups.
+   */
+  sortedRootDirs: AbsoluteFsPath[];
+
+  /**
+   * Primary root directory.
+   * This is the shortest root directory, including all others.
+   */
+  projectRoot: AbsoluteFsPath;
 }

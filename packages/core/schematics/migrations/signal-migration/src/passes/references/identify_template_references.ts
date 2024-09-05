@@ -8,6 +8,7 @@
 
 import ts from 'typescript';
 import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {InputIncompatibilityReason} from '../../input_detection/incompatibility';
 import {KnownInputs} from '../../input_detection/known_inputs';
@@ -22,6 +23,7 @@ import {attemptExtractTemplateDefinition} from '../../utils/extract_template';
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {CompilationMode} from '@angular/compiler-cli/src/ngtsc/transform';
 import {TmplAstNode} from '@angular/compiler';
+import {projectFile} from '../../../../../utils/tsurge';
 
 /**
  * Checks whether the given class has an Angular template, and resolves
@@ -73,8 +75,8 @@ export function identifyTemplateReferences(
           read: res.read,
           node: res.context,
           isObjectShorthandExpression: res.isObjectShorthandExpression,
-          originatingTsFileId: host.fileToId(node.getSourceFile()),
-          templateFileId: host.fileToId(templateFilePath),
+          originatingTsFile: projectFile(node.getSourceFile(), host.programInfo),
+          templateFile: projectFile(absoluteFrom(templateFilePath), host.programInfo),
         },
         target: res.targetInput,
       });

@@ -11,6 +11,7 @@ import ts from 'typescript';
 import {applyImportManagerChanges} from '../../../../utils/tsurge/helpers/apply_import_manager';
 import {MigrationResult} from '../result';
 import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {ProgramInfo} from '../../../../utils/tsurge';
 
 /**
  * Phase that applies all changes recorded by the import manager in
@@ -20,7 +21,7 @@ export function pass10_applyImportManager(
   importManager: ImportManager,
   result: MigrationResult,
   sourceFiles: readonly ts.SourceFile[],
-  projectAbsPath: AbsoluteFsPath,
+  info: Pick<ProgramInfo, 'sortedRootDirs' | 'projectRoot'>,
 ) {
-  applyImportManagerChanges(importManager, result.replacements, sourceFiles, projectAbsPath);
+  applyImportManagerChanges(importManager, result.replacements, sourceFiles, info);
 }

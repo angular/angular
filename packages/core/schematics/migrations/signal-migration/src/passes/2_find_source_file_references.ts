@@ -22,6 +22,7 @@ import {InputReferenceKind} from '../utils/input_reference';
 import {GroupedTsAstVisitor} from '../utils/grouped_ts_ast_visitor';
 import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {projectFile} from '../../../../utils/tsurge';
 
 /**
  * Phase where we iterate through all source file references and
@@ -123,7 +124,10 @@ export function pass2_IdentifySourceFileReferences(
       result.references.push({
         kind: InputReferenceKind.TsInputClassTypeReference,
         from: {
-          fileId: host.fileToId(partialDirectiveInCatalyst.referenceNode.getSourceFile()),
+          file: projectFile(
+            partialDirectiveInCatalyst.referenceNode.getSourceFile(),
+            host.programInfo,
+          ),
           node: partialDirectiveInCatalyst.referenceNode,
         },
         isPartialReference: true,

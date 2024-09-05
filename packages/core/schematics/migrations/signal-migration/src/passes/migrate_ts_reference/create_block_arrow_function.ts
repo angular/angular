@@ -7,7 +7,7 @@
  */
 
 import ts from 'typescript';
-import {ProjectRelativePath, Replacement, TextUpdate} from '../../../../../utils/tsurge';
+import {ProjectFile, Replacement, TextUpdate} from '../../../../../utils/tsurge';
 
 /**
  * Creates replacements to insert the given statement as
@@ -19,7 +19,7 @@ import {ProjectRelativePath, Replacement, TextUpdate} from '../../../../../utils
  */
 export function createNewBlockToInsertVariable(
   node: ts.ArrowFunction,
-  filePath: ProjectRelativePath,
+  file: ProjectFile,
   toInsert: string,
 ): Replacement[] {
   const sf = node.getSourceFile();
@@ -35,7 +35,7 @@ export function createNewBlockToInsertVariable(
   return [
     // Delete leading whitespace of the concise body.
     new Replacement(
-      filePath,
+      file,
       new TextUpdate({
         position: node.body.getFullStart(),
         end: node.body.getStart(),
@@ -45,7 +45,7 @@ export function createNewBlockToInsertVariable(
     // Insert leading block braces, and `toInsert` content.
     // Wrap the previous expression in a return now.
     new Replacement(
-      filePath,
+      file,
       new TextUpdate({
         position: node.body.getStart(),
         end: node.body.getStart(),
@@ -54,7 +54,7 @@ export function createNewBlockToInsertVariable(
     ),
     // Add trailing brace.
     new Replacement(
-      filePath,
+      file,
       new TextUpdate({
         position: node.body.getEnd(),
         end: node.body.getEnd(),

@@ -8,8 +8,10 @@
 
 import ts from 'typescript';
 import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {projectRelativePath, Replacement, TextUpdate} from '../replacement';
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {Replacement, TextUpdate} from '../replacement';
+import {projectFile} from '../project_paths';
+import {ProgramInfo} from '../program_info';
 
 /**
  * Applies import manager changes, and writes them as replacements the
@@ -19,7 +21,7 @@ export function applyImportManagerChanges(
   importManager: ImportManager,
   replacements: Replacement[],
   sourceFiles: readonly ts.SourceFile[],
-  projectAbsPath: AbsoluteFsPath,
+  info: Pick<ProgramInfo, 'sortedRootDirs' | 'projectRoot'>,
 ) {
   const {newImports, updatedImports, deletedImports} = importManager.finalize();
   const printer = ts.createPrinter({});
@@ -35,7 +37,7 @@ export function applyImportManagerChanges(
       );
       replacements.push(
         new Replacement(
-          projectRelativePath(fileName, projectAbsPath),
+          projectFile(absoluteFrom(fileName), info),
           new TextUpdate({position: 0, end: 0, toInsert: `${printedImport}\n`}),
         ),
       );
@@ -72,7 +74,7 @@ export function applyImportManagerChanges(
     );
     replacements.push(
       new Replacement(
-        projectRelativePath(oldBindings.getSourceFile(), projectAbsPath),
+        projectFile(oldBindings.getSourceFile(), info),
         new TextUpdate({
           position: oldBindings.getStart(),
           end: oldBindings.getEnd(),
@@ -88,7 +90,7 @@ export function applyImportManagerChanges(
   for (const removedImport of deletedImports) {
     replacements.push(
       new Replacement(
-        projectRelativePath(removedImport.getSourceFile(), projectAbsPath),
+        projectFile(removedImport.getSourceFile(), info),
         new TextUpdate({
           position: removedImport.getStart(),
           end: removedImport.getEnd(),
