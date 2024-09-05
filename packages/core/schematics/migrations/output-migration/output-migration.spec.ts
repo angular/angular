@@ -149,8 +149,58 @@ describe('outputs', () => {
                 this.someChange.next('clicked');
               }
 
+              someMethod() {
+                this.someChange.pipe();
+              }
+            }
+          `,
+        );
+      });
+    });
+
+    describe('.complete migration', () => {
+      it('should remove .complete usage for migrated outputs', () => {
+        verify({
+          before: `
+          import {Directive, Output, EventEmitter} from '@angular/core';
+
+          @Directive()
+          export class TestDir {
+            @Output() someChange = new EventEmitter<string>();
+
+            ngOnDestroy() {
+              this.someChange.complete();
+            }
+          }
+        `,
+          after: `
+          import { Directive, output } from '@angular/core';
+
+          @Directive()
+          export class TestDir {
+            readonly someChange = output<string>();
+
+            ngOnDestroy() {
+              
+            }
+          }
+        `,
+        });
+      });
+
+      it('should _not_ migrate .complete usage outside of expression statements', () => {
+        verifyNoChange(
+          `
+            import {Directive, Output, EventEmitter} from '@angular/core';
+
+            @Directive()
+            export class TestDir {
+              @Output() someChange = new EventEmitter<string>();
+
               ngOnDestroy() {
-                this.someChange.complete();
+                // play it safe and skip replacement for any .complete usage that are not
+                // trivial expression statements
+                (this.someChange.complete());
               }
             }
           `,
@@ -186,21 +236,6 @@ describe('outputs', () => {
             let instance: TestDir;
 
             instance.someChange.pipe();
-          `);
-      });
-
-      it('should _not_ migrate outputs that are used with .complete', () => {
-        verifyNoChange(`
-            import {Directive, Output, EventEmitter, OnDestroy} from '@angular/core';
-
-            @Directive()
-            export class TestDir implements OnDestroy {
-              @Output() someChange = new EventEmitter<string>();
-
-              ngOnDestroy() {
-                this.someChange.complete();
-              }
-            }
           `);
       });
     });

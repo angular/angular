@@ -28,8 +28,6 @@ export interface ExtractedOutput {
   aliasParam?: ts.Expression;
 }
 
-const PROBLEMATIC_OUTPUT_USAGES = new Set(['complete', 'pipe']);
-
 /**
  * Determines if the given node refers to a decorator-based output, and
  * returns its resolved metadata if possible.
@@ -60,29 +58,28 @@ function isOutputDeclarationEligibleForMigration(node: ts.PropertyDeclaration) {
   );
 }
 
-export function isPotentialProblematicEventEmitterUsage(
-  node: ts.Node,
-): node is ts.PropertyAccessExpression {
-  return (
-    ts.isPropertyAccessExpression(node) &&
-    ts.isIdentifier(node.name) &&
-    PROBLEMATIC_OUTPUT_USAGES.has(node.name.text)
-  );
-}
-
-export function isPotentialNextCallUsage(node: ts.Node): node is ts.CallExpression {
+function isPotentialOutputCallUsage(node: ts.Node, name: string): node is ts.CallExpression {
   if (
     ts.isCallExpression(node) &&
     ts.isPropertyAccessExpression(node.expression) &&
     ts.isIdentifier(node.expression.name)
   ) {
-    const methodName = node.expression.name.text;
-    if (methodName === 'next') {
-      return true;
-    }
+    return node.expression?.name.text === name;
+  } else {
+    return false;
   }
+}
 
-  return false;
+export function isPotentialPipeCallUsage(node: ts.Node): node is ts.CallExpression {
+  return isPotentialOutputCallUsage(node, 'pipe');
+}
+
+export function isPotentialNextCallUsage(node: ts.Node): node is ts.CallExpression {
+  return isPotentialOutputCallUsage(node, 'next');
+}
+
+export function isPotentialCompleteCallUsage(node: ts.Node): node is ts.CallExpression {
+  return isPotentialOutputCallUsage(node, 'complete');
 }
 
 export function isTargetOutputDeclaration(
