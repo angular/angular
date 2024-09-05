@@ -367,6 +367,20 @@ class MyComp {
     }
   }
 }
+@@@@@@ imports.ts @@@@@@
+
+// tslint:disable
+// prettier-ignore
+
+import {
+  Directive,
+  input
+} from '@angular/core';
+
+@Directive()
+export class TestCmp {
+  readonly disabled = input(false);
+}
 @@@@@@ index.ts @@@@@@
 
 // tslint:disable
