@@ -88,7 +88,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
 })
 export class DirectiveExplorerComponent implements OnDestroy {
   readonly showCommentNodes = input(false);
-  @Input() isHydrationEnabled = false;
+  readonly isHydrationEnabled = input(false);
   readonly toggleInspector = output<void>();
 
   readonly directiveForest = viewChild(DirectiveForestComponent);
