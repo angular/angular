@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
+import {NgComponentOutlet} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -38,7 +38,7 @@ type PreviewUrlEmittedValue = {
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NgIf, NgSwitch, NgSwitchCase],
+  imports: [NgComponentOutlet],
 })
 export class Preview implements AfterViewInit {
   @ViewChild('preview') previewIframe: ElementRef<HTMLIFrameElement> | undefined;
