@@ -249,7 +249,7 @@ describe('signal queries migration', () => {
     ]);
 
     const actual = fs.readFile(absoluteFrom('/app.component.ts'));
-    expect(actual).toContain(`import { ElementRef, Directive, viewChild } from '@angular/core';`);
+    expect(actual).toContain(`import {ElementRef, Directive, viewChild} from '@angular/core';`);
     expect(actual).toContain(`label = viewChild<ElementRef>('labelRef')`);
   });
 
@@ -276,7 +276,7 @@ describe('signal queries migration', () => {
 
     const actual = fs.readFile(absoluteFrom('/app.component.ts'));
     expect(actual).toContain(
-      `import { ViewChild, ElementRef, Directive, viewChild } from '@angular/core';`,
+      `import {ViewChild, ElementRef, Directive, viewChild} from '@angular/core';`,
     );
     expect(actual).toContain(`label = viewChild<ElementRef>('labelRef')`);
     expect(actual).toContain(`@ViewChild('labelRef2') label2?: ElementRef;`);

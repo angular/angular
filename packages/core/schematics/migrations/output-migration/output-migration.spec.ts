@@ -52,17 +52,17 @@ describe('outputs', () => {
             import {Directive, Output, EventEmitter} from '@angular/core';
 
             const aliasParam = { alias: 'otherChange' } as const;
-      
+
             @Directive()
             export class TestDir {
               @Output(aliasParam) someChange = new EventEmitter();
             }
           `,
           after: `
-            import { Directive, output } from '@angular/core';
+            import {Directive, output} from '@angular/core';
 
             const aliasParam = { alias: 'otherChange' } as const;
-      
+
             @Directive()
             export class TestDir {
               readonly someChange = output(aliasParam);
@@ -122,7 +122,7 @@ describe('outputs', () => {
             }
           `,
           after: `
-            import { Directive, output } from '@angular/core';
+            import {Directive, output} from '@angular/core';
 
             @Directive()
             export class TestDir {
@@ -174,7 +174,7 @@ describe('outputs', () => {
           }
         `,
           after: `
-          import { Directive, output } from '@angular/core';
+          import {Directive, output} from '@angular/core';
 
           @Directive()
           export class TestDir {

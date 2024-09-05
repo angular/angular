@@ -117,7 +117,7 @@ describe('Signal input refactoring action', () => {
             span: {start: 127, length: '@Input() bla = true;'.length},
           },
           // Import (since there is just a single input).
-          {newText: '{ Directive, input }', span: {start: 16, length: 18}},
+          {newText: '{Directive, input}', span: {start: 16, length: 18}},
         ],
       },
     ]);
