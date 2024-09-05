@@ -87,7 +87,9 @@ export function convertToSignalInput(
     typeArguments.push(resolvedType);
 
     if (metadata.transform !== null) {
-      typeArguments.push(metadata.transform.type.node);
+      // Note: The TCB code generation may use the same type node and attach
+      // synthetic comments for error reporting. We remove those explicitly here.
+      typeArguments.push(ts.setSyntheticTrailingComments(metadata.transform.type.node, undefined));
     }
   }
 
