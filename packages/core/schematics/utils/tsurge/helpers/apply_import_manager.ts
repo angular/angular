@@ -50,13 +50,23 @@ export function applyImportManagerChanges(
     const isMultiline =
       oldBindings.getText().includes('\n') ||
       (newBindings.elements.length >= 6 && oldBindings.elements.length <= 3);
+    const hasSpaceBetweenBraces = oldBindings.getText().startsWith('{ ');
+
+    let formatFlags =
+      ts.ListFormat.NamedImportsOrExportsElements |
+      ts.ListFormat.Indented |
+      ts.ListFormat.Braces |
+      ts.ListFormat.PreserveLines |
+      (isMultiline ? ts.ListFormat.MultiLine : ts.ListFormat.SingleLine);
+
+    if (hasSpaceBetweenBraces) {
+      formatFlags |= ts.ListFormat.SpaceBetweenBraces;
+    } else {
+      formatFlags &= ~ts.ListFormat.SpaceBetweenBraces;
+    }
 
     const printedBindings = printer.printList(
-      ts.ListFormat.NamedImportsOrExportsElements |
-        ts.ListFormat.Indented |
-        ts.ListFormat.Braces |
-        ts.ListFormat.PreserveLines |
-        (isMultiline ? ts.ListFormat.MultiLine : ts.ListFormat.SingleLine),
+      formatFlags,
       newBindings.elements,
       oldBindings.getSourceFile(),
     );
