@@ -19,7 +19,13 @@ export interface MigrationConfig {
    * Whether the given input should be migrated. With batch execution, this
    * callback fires for foreign inputs from other compilation units too.
    *
-   * Treating the input as non-migrated means that no references to it are
+   * Treating an input as non-migrated means that no references to it are
+   * migrated, nor the actual declaration (if it's part of the sources).
+   *
+   * If no function is specified here, the migration will migrate all
+   * inputs and references it discovers in compilation units. This is the
+   * running assumption for batch mode and LSC mode where the migration
+   * assumes all seen inputs (even those in `.d.ts`) are intended to be
    * migrated.
    */
   shouldMigrateInput?: (input: KnownInputInfo) => boolean;
