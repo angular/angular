@@ -199,7 +199,7 @@ abstract class BaseConvertToSignalInputRefactoring implements ActiveRefactoring 
 
 export class ConvertToSignalInputRefactoring extends BaseConvertToSignalInputRefactoring {
   static id = 'convert-to-signal-input-safe-mode';
-  static description = 'Convert this @Input() to a signal input (safe)';
+  static description = 'Convert @Input() to a signal input (safe)';
   override config: MigrationConfig = {};
 }
 export class ConvertToSignalInputBestEffortRefactoring extends BaseConvertToSignalInputRefactoring {
