@@ -123,6 +123,10 @@ const API_REFERENCE_ROUTES: Route[] = mapApiManifestToRoutes();
 
 const REDIRECT_ROUTES: Route[] = [
   {
+    path: 'guide/pipes/**',
+    redirectTo: 'guide/templates/pipes',
+  },
+  {
     path: 'guide/templates/attribute-binding',
     redirectTo: 'guide/templates/binding#binding-dynamic-properties-and-attributes',
   },
