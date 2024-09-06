@@ -1,8 +1,9 @@
+<button (click)="focusFirstHeading()" class="adev-skip">Skip to main content</button>
+
 @defer (when isBrowser) {
   <adev-progress-bar />
   <docs-top-level-banner expiry="2024-12-06" id="state-of-js-2024" link="https://survey.devographics.com/en-US/survey/state-of-js/2024?source=angular_homepage" text="Share your experience with Angular in The State of JavaScript 2024 survey"  />
 }
-<button (click)="focusFirstHeading()" class="adev-skip">Skip to main content</button>
 
 <div class="adev-nav"></div>
 @if (displaySecondaryNav()) {
