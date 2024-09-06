@@ -25,7 +25,7 @@ describe('standalone:false migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematic('standalone-false', {}, tree);
+    return runner.runSchematic('explicit-standalone-flag', {}, tree);
   }
 
   beforeEach(() => {

@@ -9,7 +9,7 @@ package(
 )
 
 ts_library(
-    name = "standalone-false",
+    name = "explicit-standalone-flag",
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [

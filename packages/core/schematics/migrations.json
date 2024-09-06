@@ -1,9 +1,9 @@
 {
   "schematics": {
-    "standalone-false": {
+    "explicit-standalone-flag": {
       "version": "19.0.0",
       "description": "Updates non-standalone Directives, Component and Pipes to standalone:false",
-      "factory": "./bundles/standalone-false#migrate"
+      "factory": "./bundles/explicit-standalone-flag#migrate"
     }
   }
 }
