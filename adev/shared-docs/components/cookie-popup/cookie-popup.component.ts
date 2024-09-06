@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import {NgIf} from '@angular/common';
 import {LOCAL_STORAGE} from '../../providers/index';
 import {setCookieConsent} from '../../utils';
 
@@ -21,7 +20,6 @@ export const STORAGE_KEY = 'docs-accepts-cookies';
 @Component({
   selector: 'docs-cookie-popup',
   standalone: true,
-  imports: [NgIf],
   templateUrl: './cookie-popup.component.html',
   styleUrls: ['./cookie-popup.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
