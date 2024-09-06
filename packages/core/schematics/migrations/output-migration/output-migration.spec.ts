@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as diff from 'diff';
+import chalk from 'chalk';
 import {initMockFileSystem} from '../../../../compiler-cli/src/ngtsc/file_system/testing';
 import {runTsurgeMigration} from '../../utils/tsurge/testing';
 import {absoluteFrom} from '@angular/compiler-cli';
@@ -320,35 +322,68 @@ describe('outputs', () => {
       });
     });
 
-    describe('declarations _with_ problematic access patterns', () => {
-      it('should _not_ migrate outputs that are used with .pipe', async () => {
-        await verifyNoChange(`
-            import {Directive, Output, EventEmitter} from '@angular/core';
+    describe('.pipe migration', () => {
+      describe('in test files', () => {
+        it('should convert to observable in a test file importing jasmine', async () => {
+          await verify({
+            before: `
+                import {Directive, Output, EventEmitter} from '@angular/core';
+                import {map} from 'rxjs';
+                import 'jasmine';
+    
+                @Directive()
+                export class TestDir {
+                  @Output() someChange = new EventEmitter<number>();
+                  someChange$ = this.someChange.pipe(map((c) => c + 1)).pipe(map((d) => d - 1));
+                }
+              `,
+            after: `
+                import { outputToObservable } from "@angular/core/rxjs-interop";
 
-            @Directive()
-            export class TestDir {
-              @Output() someChange = new EventEmitter();
-
-              someMethod() {
-                this.someChange.pipe();
-              }
-            }
-          `);
+                import {Directive, output} from '@angular/core';
+                import {map} from 'rxjs';
+                import 'jasmine';
+    
+                @Directive()
+                export class TestDir {
+                  readonly someChange = output<number>();
+                  someChange$ = outputToObservable(this.someChange).pipe(map((c) => c + 1)).pipe(map((d) => d - 1));
+                }
+              `,
+          });
+        });
       });
 
-      it('should _not_ migrate outputs that are used with .pipe outside of a component class', async () => {
-        await verifyNoChange(`
-            import {Directive, Output, EventEmitter} from '@angular/core';
+      describe('declarations _with_ problematic access patterns', () => {
+        it('should _not_ migrate outputs that are used with .pipe', () => {
+          verifyNoChange(`
+              import {Directive, Output, EventEmitter} from '@angular/core';
+  
+              @Directive()
+              export class TestDir {
+                @Output() someChange = new EventEmitter();
+  
+                someMethod() {
+                  this.someChange.pipe();
+                }
+              }
+            `);
+        });
 
-            @Directive()
-            export class TestDir {
-              @Output() someChange = new EventEmitter();
-            }
-
-            let instance: TestDir;
-
-            instance.someChange.pipe();
-          `);
+        it('should _not_ migrate outputs that are used with .pipe outside of a component class', () => {
+          verifyNoChange(`
+              import {Directive, Output, EventEmitter} from '@angular/core';
+  
+              @Directive()
+              export class TestDir {
+                @Output() someChange = new EventEmitter();
+              }
+  
+              let instance: TestDir;
+  
+              instance.someChange.pipe();
+            `);
+        });
       });
     });
   });
@@ -386,7 +421,21 @@ async function verify(testCase: {before: string; after: string}) {
   const actual = fs.readFile(absoluteFrom('/app.component.ts')).trim();
   const expected = testCase.after.trim();
 
-  expect(actual).toBe(expected);
+  const diffResult = diff.diffChars(actual, expected);
+  const diffMsg = diffResult
+    .map((part) => {
+      const value = part.value.trim();
+      if (part.added) {
+        return chalk.green(value ? part.value : '+' + part.value);
+      } else if (part.removed) {
+        return chalk.red(value ? part.value : '-' + part.value);
+      } else {
+        return part.value;
+      }
+    })
+    .join('');
+
+  expect(actual).withContext(diffMsg).toEqual(expected);
 }
 
 function populateDeclarationTestCase(declaration: string): string {

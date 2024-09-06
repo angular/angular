@@ -98,6 +98,51 @@ export function calculateCompleteCallReplacement(
   return prepareTextReplacement(info, node, '', node.getFullStart());
 }
 
+export function calculatePipeCallReplacement(
+  info: ProgramInfo,
+  node: ts.CallExpression,
+): Replacement[] {
+  if (ts.isPropertyAccessExpression(node.expression)) {
+    const sf = node.getSourceFile();
+    const importManager = new ImportManager();
+
+    const outputToObservableIdent = importManager.addImport({
+      requestedFile: sf,
+      exportModuleSpecifier: '@angular/core/rxjs-interop',
+      exportSymbolName: 'outputToObservable',
+    });
+    const toObsCallExp = ts.factory.createCallExpression(outputToObservableIdent, undefined, [
+      node.expression.expression,
+    ]);
+    const pipePropAccessExp = ts.factory.updatePropertyAccessExpression(
+      node.expression,
+      toObsCallExp,
+      node.expression.name,
+    );
+    const pipeCallExp = ts.factory.updateCallExpression(
+      node,
+      pipePropAccessExp,
+      [],
+      node.arguments,
+    );
+
+    const replacements = [
+      prepareTextReplacement(
+        info,
+        node,
+        printer.printNode(ts.EmitHint.Unspecified, pipeCallExp, sf),
+      ),
+    ];
+
+    applyImportManagerChanges(importManager, replacements, [sf], info);
+
+    return replacements;
+  } else {
+    // TODO: assert instead?
+    throw new Error('unexpected call expression');
+  }
+}
+
 function prepareTextReplacement(
   info: ProgramInfo,
   node: ts.Node,
