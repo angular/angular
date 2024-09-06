@@ -203,7 +203,7 @@ You can also set multiple style values in one binding. Angular accepts the follo
 @Component({
   template: `
     <ul [style]="listStyles"> ... </ul>
-    <section [class]="sectionStyles"> ... </section>
+    <section [style]="sectionStyles"> ... </section>
   `,
   ...
 })
