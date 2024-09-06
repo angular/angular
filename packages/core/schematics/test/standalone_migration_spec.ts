@@ -3173,6 +3173,90 @@ describe('standalone migration', () => {
     );
   });
 
+  it('should replace any leftover NgModule classes in imports arrays with the exports used in the template', async () => {
+    writeFile(
+      'button.module.ts',
+      `
+      import {NgModule, Directive} from '@angular/core';
+      import {MyDir, MyButton} from './used';
+      import {Unused} from './unused';
+
+      @NgModule({imports: [MyButton, MyDir, Unused], exports: [MyButton, MyDir, Unused]})
+      export class ButtonModule {}
+    `,
+    );
+
+    // Declared in the module, but not used.
+    writeFile(
+      'unused.ts',
+      `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[unused]', standalone: true})
+        export class Unused {}
+      `,
+    );
+
+    writeFile(
+      'used.ts',
+      `
+        import {Directive, Component} from '@angular/core';
+
+        @Directive({selector: '[my-dir]', standalone: true})
+        export class MyDir {}
+
+        @Component({selector: 'my-button', template: '<ng-content/>', standalone: true})
+        export class MyButton {}
+      `,
+    );
+
+    writeFile(
+      'unrelated.ts',
+      `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[unrelated]', standalone: true})
+        export class Unrelated {}
+      `,
+    );
+
+    writeFile(
+      'comp.ts',
+      `
+      import {Component} from '@angular/core';
+      import {ButtonModule} from './button.module';
+      import {Unrelated} from './unrelated';
+
+      @Component({
+        selector: 'my-comp',
+        template: '<my-button my-dir unrelated>Hello</my-button>',
+        imports: [ButtonModule, Unrelated],
+        standalone: true,
+      })
+      export class MyComp {}
+    `,
+    );
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.exists('button.module.ts')).toBe(false);
+    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
+      stripWhitespace(`
+      import {Component} from '@angular/core';
+      import {Unrelated} from './unrelated';
+      import {MyButton, MyDir} from './used';
+
+      @Component({
+        selector: 'my-comp',
+        template: '<my-button my-dir unrelated>Hello</my-button>',
+        imports: [MyButton, MyDir, Unrelated],
+        standalone: true,
+      })
+      export class MyComp {}
+    `),
+    );
+  });
+
   it('should switch a platformBrowser().bootstrapModule call to bootstrapApplication', async () => {
     writeFile(
       'main.ts',
