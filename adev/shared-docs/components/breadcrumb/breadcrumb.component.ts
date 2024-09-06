@@ -9,13 +9,12 @@
 import {ChangeDetectionStrategy, Component, OnInit, inject, signal} from '@angular/core';
 import {NavigationState} from '../../services/index';
 import {NavigationItem} from '../../interfaces/index';
-import {NgFor, NgIf} from '@angular/common';
 import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'docs-breadcrumb',
   standalone: true,
-  imports: [NgIf, NgFor, RouterLink],
+  imports: [RouterLink],
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

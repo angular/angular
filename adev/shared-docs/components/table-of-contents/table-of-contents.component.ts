@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
 import {ChangeDetectionStrategy, Component, Input, computed, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {TableOfContentsLevel} from '../../interfaces/index';
@@ -20,7 +19,7 @@ import {IconComponent} from '../icon/icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './table-of-contents.component.html',
   styleUrls: ['./table-of-contents.component.scss'],
-  imports: [NgIf, NgFor, RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent],
 })
 export class TableOfContents {
   // Element that contains the content from which the Table of Contents is built
