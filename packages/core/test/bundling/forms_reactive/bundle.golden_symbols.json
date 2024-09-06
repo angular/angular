@@ -804,6 +804,9 @@
     "name": "assertControlPresent"
   },
   {
+    "name": "assertNotDestroyed"
+  },
+  {
     "name": "assertProducerNode"
   },
   {
