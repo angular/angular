@@ -16,6 +16,7 @@ extract_api_to_json(
     entry_point = "another-fake-source.ts",
     module_name = "@angular/router",
     output_name = "api.json",
+    private_modules = [""],
 )
 
 ts_library(
