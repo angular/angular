@@ -35,8 +35,7 @@ export function calculateDeclarationReplacement(
     (modifier) => !ts.isDecorator(modifier) && modifier.kind !== ts.SyntaxKind.ReadonlyKeyword,
   );
 
-  const updatedOutputDeclaration = ts.factory.updatePropertyDeclaration(
-    node,
+  const updatedOutputDeclaration = ts.factory.createPropertyDeclaration(
     // Think: this logic of dealing with modifiers is applicable to all signal-based migrations
     ts.factory.createNodeArray([
       ...existingModifiers,
@@ -96,19 +95,20 @@ export function calculateCompleteCallReplacement(
   info: ProgramInfo,
   node: ts.ExpressionStatement,
 ): Replacement {
-  return prepareTextReplacement(info, node, '');
+  return prepareTextReplacement(info, node, '', node.getFullStart());
 }
 
 function prepareTextReplacement(
   info: ProgramInfo,
   node: ts.Node,
   replacement: string,
+  start?: number,
 ): Replacement {
   const sf = node.getSourceFile();
   return new Replacement(
     projectFile(sf, info),
     new TextUpdate({
-      position: node.getStart(),
+      position: start ?? node.getStart(),
       end: node.getEnd(),
       toInsert: replacement,
     }),

@@ -18,36 +18,36 @@ describe('outputs', () => {
 
   describe('outputs migration', () => {
     describe('EventEmitter declarations without problematic access patterns', () => {
-      it('should migrate declaration with a primitive type hint', () => {
-        verifyDeclaration({
+      it('should migrate declaration with a primitive type hint', async () => {
+        await verifyDeclaration({
           before: '@Output() readonly someChange = new EventEmitter<string>();',
           after: 'readonly someChange = output<string>();',
         });
       });
 
-      it('should migrate declaration with complex type hint', () => {
-        verifyDeclaration({
+      it('should migrate declaration with complex type hint', async () => {
+        await verifyDeclaration({
           before: '@Output() readonly someChange = new EventEmitter<string | number>();',
           after: 'readonly someChange = output<string | number>();',
         });
       });
 
-      it('should migrate declaration without type hint', () => {
-        verifyDeclaration({
+      it('should migrate declaration without type hint', async () => {
+        await verifyDeclaration({
           before: '@Output() readonly someChange = new EventEmitter();',
           after: 'readonly someChange = output();',
         });
       });
 
-      it('should take alias into account', () => {
-        verifyDeclaration({
+      it('should take alias into account', async () => {
+        await verifyDeclaration({
           before: `@Output({alias: 'otherChange'}) readonly someChange = new EventEmitter();`,
           after: `readonly someChange = output({ alias: 'otherChange' });`,
         });
       });
 
-      it('should support alias as statically analyzable reference', () => {
-        verify({
+      it('should support alias as statically analyzable reference', async () => {
+        await verify({
           before: `
             import {Directive, Output, EventEmitter} from '@angular/core';
 
@@ -71,44 +71,128 @@ describe('outputs', () => {
         });
       });
 
-      it('should add readonly modifier', () => {
-        verifyDeclaration({
+      it('should add readonly modifier', async () => {
+        await verifyDeclaration({
           before: '@Output() someChange = new EventEmitter();',
           after: 'readonly someChange = output();',
         });
       });
 
-      it('should respect visibility modifiers', () => {
-        verifyDeclaration({
+      it('should respect visibility modifiers', async () => {
+        await verifyDeclaration({
           before: `@Output() protected someChange = new EventEmitter();`,
           after: `protected readonly someChange = output();`,
         });
       });
 
-      it('should migrate multiple outputs', () => {
-        // TODO: whitespace are messing up test verification
-        verifyDeclaration({
-          before: `@Output() someChange1 = new EventEmitter();
-        @Output() someChange2 = new EventEmitter();`,
-          after: `readonly someChange1 = output();
-        readonly someChange2 = output();`,
+      it('should preserve single line JSdoc comments when migrating outputs', async () => {
+        await verify({
+          before: `
+            import {Directive, Output, EventEmitter} from '@angular/core';
+
+            @Directive()
+            export class TestDir {
+              /** Whenever there is change, emits an event. */
+              @Output() someChange = new EventEmitter();
+            }
+          `,
+          after: `
+            import {Directive, output} from '@angular/core';
+
+            @Directive()
+            export class TestDir {
+              /** Whenever there is change, emits an event. */
+              readonly someChange = output();
+            }
+          `,
         });
       });
 
-      it('should migrate only EventEmitter outputs when multiple outputs exist', () => {
-        // TODO: whitespace are messing up test verification
-        verifyDeclaration({
-          before: `@Output() someChange1 = new EventEmitter();
-        @Output() someChange2 = new Subject();`,
-          after: `readonly someChange1 = output();
-        @Output() someChange2 = new Subject();`,
+      it('should preserve multiline JSdoc comments when migrating outputs', async () => {
+        await verify({
+          before: `
+              import {Directive, Output, EventEmitter} from '@angular/core';
+  
+              @Directive()
+              export class TestDir {
+                /** 
+                 * Whenever there is change, emits an event. 
+                 */
+                @Output() someChange = new EventEmitter();
+              }
+            `,
+          after: `
+              import {Directive, output} from '@angular/core';
+  
+              @Directive()
+              export class TestDir {
+                /** 
+                 * Whenever there is change, emits an event. 
+                 */
+                readonly someChange = output();
+              }
+            `,
+        });
+      });
+
+      it('should preserve multiline comments when migrating outputs', async () => {
+        await verify({
+          before: `
+              import {Directive, Output, EventEmitter} from '@angular/core';
+  
+              @Directive()
+              export class TestDir {
+                /* Whenever there is change,emits an event. */
+                @Output() someChange = new EventEmitter();
+              }
+            `,
+          after: `
+              import {Directive, output} from '@angular/core';
+  
+              @Directive()
+              export class TestDir {
+                /* Whenever there is change,emits an event. */
+                readonly someChange = output();
+              }
+            `,
+        });
+      });
+
+      it('should migrate multiple outputs', async () => {
+        await verifyDeclaration({
+          before:
+            '@Output() someChange1 = new EventEmitter();\n@Output() someChange2 = new EventEmitter();',
+          after: `readonly someChange1 = output();\nreadonly someChange2 = output();`,
+        });
+      });
+
+      it('should migrate only EventEmitter outputs when multiple outputs exist', async () => {
+        await verify({
+          before: `
+              import {Directive, Output, EventEmitter, Subject} from '@angular/core';
+  
+              @Directive()
+              export class TestDir {
+                @Output() someChange1 = new EventEmitter();
+                @Output() someChange2 = new Subject();
+              }
+            `,
+          after: `
+              import {Directive, Subject, output} from '@angular/core';
+  
+              @Directive()
+              export class TestDir {
+                readonly someChange1 = output();
+                @Output() someChange2 = new Subject();
+              }
+            `,
         });
       });
     });
 
     describe('.next migration', () => {
-      it('should migrate .next usages that should have been .emit', () => {
-        verify({
+      it('should migrate .next usages that should have been .emit', async () => {
+        await verify({
           before: `
             import {Directive, Output, EventEmitter} from '@angular/core';
 
@@ -136,8 +220,8 @@ describe('outputs', () => {
         });
       });
 
-      it('should _not_ migrate .next usages when problematic output usage is detected', () => {
-        verifyNoChange(
+      it('should _not_ migrate .next usages when problematic output usage is detected', async () => {
+        await verifyNoChange(
           `
             import {Directive, Output, EventEmitter} from '@angular/core';
 
@@ -159,8 +243,8 @@ describe('outputs', () => {
     });
 
     describe('.complete migration', () => {
-      it('should remove .complete usage for migrated outputs', () => {
-        verify({
+      it('should remove .complete usage for migrated outputs', async () => {
+        await verify({
           before: `
           import {Directive, Output, EventEmitter} from '@angular/core';
 
@@ -181,15 +265,43 @@ describe('outputs', () => {
             readonly someChange = output<string>();
 
             ngOnDestroy() {
-              
             }
           }
         `,
         });
       });
 
-      it('should _not_ migrate .complete usage outside of expression statements', () => {
-        verifyNoChange(
+      it('should remove .complete usage with comments', async () => {
+        await verify({
+          before: `
+          import {Directive, Output, EventEmitter} from '@angular/core';
+
+          @Directive()
+          export class TestDir {
+            @Output() someChange = new EventEmitter<string>();
+
+            ngOnDestroy() {
+              // maybe complete before the destroy?
+              this.someChange.complete();
+            }
+          }
+        `,
+          after: `
+          import {Directive, output} from '@angular/core';
+
+          @Directive()
+          export class TestDir {
+            readonly someChange = output<string>();
+
+            ngOnDestroy() {
+            }
+          }
+        `,
+        });
+      });
+
+      it('should _not_ migrate .complete usage outside of expression statements', async () => {
+        await verifyNoChange(
           `
             import {Directive, Output, EventEmitter} from '@angular/core';
 
@@ -209,8 +321,8 @@ describe('outputs', () => {
     });
 
     describe('declarations _with_ problematic access patterns', () => {
-      it('should _not_ migrate outputs that are used with .pipe', () => {
-        verifyNoChange(`
+      it('should _not_ migrate outputs that are used with .pipe', async () => {
+        await verifyNoChange(`
             import {Directive, Output, EventEmitter} from '@angular/core';
 
             @Directive()
@@ -224,8 +336,8 @@ describe('outputs', () => {
           `);
       });
 
-      it('should _not_ migrate outputs that are used with .pipe outside of a component class', () => {
-        verifyNoChange(`
+      it('should _not_ migrate outputs that are used with .pipe outside of a component class', async () => {
+        await verifyNoChange(`
             import {Directive, Output, EventEmitter} from '@angular/core';
 
             @Directive()
@@ -242,8 +354,8 @@ describe('outputs', () => {
   });
 
   describe('declarations other than EventEmitter', () => {
-    it('should _not_ migrate outputs that are initialized with sth else than EventEmitter', () => {
-      verify({
+    it('should _not_ migrate outputs that are initialized with sth else than EventEmitter', async () => {
+      await verify({
         before: populateDeclarationTestCase('@Output() protected someChange = new Subject();'),
         after: populateDeclarationTestCase('@Output() protected someChange = new Subject();'),
       });
@@ -252,14 +364,14 @@ describe('outputs', () => {
 });
 
 async function verifyDeclaration(testCase: {before: string; after: string}) {
-  verify({
+  await verify({
     before: populateDeclarationTestCase(testCase.before),
     after: populateExpectedResult(testCase.after),
   });
 }
 
 async function verifyNoChange(beforeAndAfter: string) {
-  verify({before: beforeAndAfter, after: beforeAndAfter});
+  await verify({before: beforeAndAfter, after: beforeAndAfter});
 }
 
 async function verify(testCase: {before: string; after: string}) {
@@ -271,9 +383,10 @@ async function verify(testCase: {before: string; after: string}) {
     },
   ]);
 
-  let actual = fs.readFile(absoluteFrom('/app.component.ts'));
+  const actual = fs.readFile(absoluteFrom('/app.component.ts')).trim();
+  const expected = testCase.after.trim();
 
-  expect(actual).toBe(testCase.after);
+  expect(actual).toBe(expected);
 }
 
 function populateDeclarationTestCase(declaration: string): string {
