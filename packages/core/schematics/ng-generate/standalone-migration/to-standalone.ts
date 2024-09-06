@@ -184,7 +184,6 @@ function getComponentImportExpressions(
   const usedDependenciesInMigration = new Set(
     templateDependencies.filter((dep) => allDeclarations.has(dep.node)),
   );
-  const imports: ts.Expression[] = [];
   const seenImports = new Set<string>();
   const resolvedDependencies: PotentialImport[] = [];
 
@@ -204,45 +203,58 @@ function getComponentImportExpressions(
     }
   }
 
-  const processedDependencies = importRemapper
-    ? importRemapper(resolvedDependencies, decl)
-    : resolvedDependencies;
+  return potentialImportsToExpressions(resolvedDependencies, decl, tracker, importRemapper);
+}
 
-  for (const importLocation of processedDependencies) {
+/**
+ * Converts an array of potential imports to an array of expressions that can be
+ * added to the `imports` array.
+ * @param potentialImports Imports to be converted.
+ * @param component Component class to which the imports will be added.
+ * @param tracker
+ * @param importRemapper
+ */
+export function potentialImportsToExpressions(
+  potentialImports: PotentialImport[],
+  component: ts.ClassDeclaration,
+  tracker: ChangeTracker,
+  importRemapper?: ComponentImportsRemapper,
+): ts.Expression[] {
+  const processedDependencies = importRemapper
+    ? importRemapper(potentialImports, component)
+    : potentialImports;
+
+  return processedDependencies.map((importLocation) => {
     if (importLocation.moduleSpecifier) {
-      const identifier = tracker.addImport(
-        decl.getSourceFile(),
+      return tracker.addImport(
+        component.getSourceFile(),
         importLocation.symbolName,
         importLocation.moduleSpecifier,
       );
-      imports.push(identifier);
-    } else {
-      const identifier = ts.factory.createIdentifier(importLocation.symbolName);
-
-      if (importLocation.isForwardReference) {
-        const forwardRefExpression = tracker.addImport(
-          decl.getSourceFile(),
-          'forwardRef',
-          '@angular/core',
-        );
-        const arrowFunction = ts.factory.createArrowFunction(
-          undefined,
-          undefined,
-          [],
-          undefined,
-          undefined,
-          identifier,
-        );
-        imports.push(
-          ts.factory.createCallExpression(forwardRefExpression, undefined, [arrowFunction]),
-        );
-      } else {
-        imports.push(identifier);
-      }
     }
-  }
 
-  return imports;
+    const identifier = ts.factory.createIdentifier(importLocation.symbolName);
+
+    if (!importLocation.isForwardReference) {
+      return identifier;
+    }
+
+    const forwardRefExpression = tracker.addImport(
+      component.getSourceFile(),
+      'forwardRef',
+      '@angular/core',
+    );
+    const arrowFunction = ts.factory.createArrowFunction(
+      undefined,
+      undefined,
+      [],
+      undefined,
+      undefined,
+      identifier,
+    );
+
+    return ts.factory.createCallExpression(forwardRefExpression, undefined, [arrowFunction]);
+  });
 }
 
 /**
@@ -480,7 +492,7 @@ function isNamedPropertyAssignment(
  * @param importMode Mode in which to resolve the import target.
  * @param typeChecker
  */
-function findImportLocation(
+export function findImportLocation(
   target: Reference<NamedClassDeclaration>,
   inComponent: ts.ClassDeclaration,
   importMode: PotentialImportMode,
@@ -602,7 +614,7 @@ export function findTestObjectsToMigrate(sourceFile: ts.SourceFile, typeChecker:
  * @param decl Component in whose template we're looking for dependencies.
  * @param typeChecker
  */
-function findTemplateDependencies(
+export function findTemplateDependencies(
   decl: ts.ClassDeclaration,
   typeChecker: TemplateTypeChecker,
 ): Reference<NamedClassDeclaration>[] {

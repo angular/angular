@@ -132,6 +132,7 @@ function standaloneMigration(
       printer,
       undefined,
       referenceLookupExcludedFiles,
+      knownInternalAliasRemapper,
     );
     pendingChanges = result.pendingChanges;
     filesToRemove = result.filesToRemove;
