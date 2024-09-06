@@ -154,3 +154,11 @@ export function getUniqueIdForProperty(info: ProgramInfo, prop: ts.PropertyDecla
   id.replace(/\.d\.ts$/, '.ts');
   return `${id}@@${prop.parent.name ?? 'unknown-class'}@@${prop.name.getText()}` as OutputID;
 }
+
+export function isTestRunnerImport(node: ts.Node) {
+  if (ts.isImportDeclaration(node)) {
+    const moduleSpecifier = node.moduleSpecifier.getText();
+    return moduleSpecifier.includes('jasmine') || moduleSpecifier.includes('catalyst');
+  }
+  return false;
+}

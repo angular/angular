@@ -28,12 +28,14 @@ import {
   isPotentialCompleteCallUsage,
   isPotentialNextCallUsage,
   isPotentialPipeCallUsage,
+  isTestRunnerImport,
 } from './output_helpers';
 import {
   calculateImportReplacements,
   calculateDeclarationReplacement,
   calculateNextFnReplacement,
   calculateCompleteCallReplacement,
+  calculatePipeCallReplacement,
 } from './output-replacements';
 
 interface OutputMigrationData {
@@ -61,6 +63,8 @@ export class OutputMigration extends TsurgeFunnelMigration<
     const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
     const dtsReader = new DtsMetadataReader(checker, reflector);
+
+    let isTestFile = false;
 
     const outputMigrationVisitor = (node: ts.Node) => {
       // detect output declarations
@@ -123,6 +127,11 @@ export class OutputMigration extends TsurgeFunnelMigration<
         }
       }
 
+      // detect imports of test runners
+      if (isTestRunnerImport(node)) {
+        isTestFile = true;
+      }
+
       // detect unsafe access of the output property
       if (isPotentialPipeCallUsage(node) && ts.isPropertyAccessExpression(node.expression)) {
         const propertyDeclaration = isTargetOutputDeclaration(
@@ -133,7 +142,17 @@ export class OutputMigration extends TsurgeFunnelMigration<
         );
         if (propertyDeclaration !== null) {
           const id = getUniqueIdForProperty(info, propertyDeclaration);
-          problematicUsages[id] = true;
+          if (isTestFile) {
+            const outputFile = projectFile(node.getSourceFile(), info);
+            addOutputReplacement(
+              outputFieldReplacements,
+              id,
+              outputFile,
+              ...calculatePipeCallReplacement(info, node),
+            );
+          } else {
+            problematicUsages[id] = true;
+          }
         }
       }
 
@@ -142,6 +161,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
 
     // calculate output migration replacements
     for (const sf of sourceFiles) {
+      isTestFile = false;
       ts.forEachChild(sf, outputMigrationVisitor);
     }
 
@@ -225,15 +245,14 @@ function addOutputReplacement(
   outputFieldReplacements: Record<OutputID, OutputMigrationData>,
   outputId: OutputID,
   file: ProjectFile,
-  replacement: Replacement,
+  ...replacements: Replacement[]
 ): void {
-  const existingReplacements = outputFieldReplacements[outputId];
-  if (existingReplacements !== undefined) {
-    existingReplacements.replacements.push(replacement);
-  } else {
-    outputFieldReplacements[outputId] = {
+  let existingReplacements = outputFieldReplacements[outputId];
+  if (existingReplacements === undefined) {
+    outputFieldReplacements[outputId] = existingReplacements = {
       file: file,
-      replacements: [replacement],
+      replacements: [],
     };
   }
+  existingReplacements.replacements.push(...replacements);
 }
