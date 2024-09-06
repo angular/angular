@@ -19,7 +19,7 @@ If you're starting a new project, you'll most likely want to create a local proj
 
 ### Prerequisites
 
-- **Node.js** - v[^18.9.1 or newer](/reference/versions)
+- **Node.js** - v[^18.19.1 or newer](/reference/versions)
 - **Text editor** - We recommend [Visual Studio Code](https://code.visualstudio.com/)
 - **Terminal** - Required for running Angular CLI commands
 
