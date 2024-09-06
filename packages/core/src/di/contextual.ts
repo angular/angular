@@ -15,7 +15,7 @@ import {
 import {getInjectImplementation, setInjectImplementation} from './inject_switch';
 import type {Injector} from './injector';
 import {getCurrentInjector, setCurrentInjector} from './injector_compatibility';
-import {R3Injector} from './r3_injector';
+import {assertNotDestroyed, R3Injector} from './r3_injector';
 
 /**
  * Runs the given function in the [context](guide/di/dependency-injection-context) of the given
@@ -33,7 +33,7 @@ import {R3Injector} from './r3_injector';
  */
 export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT {
   if (injector instanceof R3Injector) {
-    injector.assertNotDestroyed();
+    assertNotDestroyed(injector);
   }
 
   let prevInjectorProfilerContext: InjectorProfilerContext;

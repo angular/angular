@@ -780,6 +780,9 @@
     "name": "assertConsumerNode"
   },
   {
+    "name": "assertNotDestroyed"
+  },
+  {
     "name": "assertProducerNode"
   },
   {

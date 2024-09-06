@@ -168,6 +168,9 @@
     "name": "arrRemove"
   },
   {
+    "name": "assertNotDestroyed"
+  },
+  {
     "name": "bind"
   },
   {

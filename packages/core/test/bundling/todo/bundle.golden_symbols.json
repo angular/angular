@@ -669,6 +669,9 @@
     "name": "assertConsumerNode"
   },
   {
+    "name": "assertNotDestroyed"
+  },
+  {
     "name": "assertTemplate"
   },
   {
