@@ -162,6 +162,15 @@ const REDIRECT_ROUTES: Route[] = [
     path: 'guide/templates/template-statements',
     redirectTo: 'guide/templates/event-listeners',
   },
+  {
+    path: 'guide',
+    children: [
+      {
+        path: 'pipes',
+        redirectTo: '/guide/templates/pipes',
+      },
+    ],
+  },
 ];
 
 export const routes: Route[] = [
