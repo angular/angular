@@ -370,6 +370,44 @@ runInEachFileSystem(() => {
       expect(resetEntry.memberTags).toContain(MemberTags.Abstract);
     });
 
+    it('should extract only once, when discovering abstract methods with overloads ', () => {
+      env.write(
+        'index.ts',
+        `
+        export abstract class UserProfile {
+          firstName: string;
+
+          abstract get(key: string): string;
+          abstract get(key: string|undefined): string|undefined;
+          abstract get(key: undefined): undefined;
+
+          save(): void { }
+          abstract reset(): void;
+        }`,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.isAbstract).toBe(true);
+      expect(classEntry.members.length).toBe(4);
+
+      const [firstNameEntry, getEntry, saveEntry, resetEntry] = classEntry.members;
+
+      expect(firstNameEntry.name).toBe('firstName');
+      expect(firstNameEntry.memberTags).not.toContain(MemberTags.Abstract);
+
+      expect(getEntry.name).toBe('get');
+      expect(getEntry.memberTags).toContain(MemberTags.Abstract);
+
+      expect(saveEntry.name).toBe('save');
+      expect(saveEntry.memberTags).not.toContain(MemberTags.Abstract);
+
+      expect(resetEntry.name).toBe('reset');
+      expect(resetEntry.memberTags).toContain(MemberTags.Abstract);
+    });
+
     it('should extract class generic parameters', () => {
       env.write(
         'index.ts',
