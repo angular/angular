@@ -14,6 +14,7 @@ const COUNTER_KEY = makeStateKey<number>('counter');
 @Component({
   selector: 'transfer-state',
   template: ` <div>{{ counter }}</div> `,
+  standalone: false,
 })
 export class TransferStateComponent {
   counter = 0;
