@@ -14,7 +14,6 @@ import {IconComponent} from '@angular/docs';
 
 @Component({
   selector: 'adev-api-items-section',
-  standalone: true,
   imports: [ApiItemLabel, RouterLink, IconComponent],
   templateUrl: './api-items-section.component.html',
   styleUrls: ['./api-items-section.component.scss'],

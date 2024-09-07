@@ -7,6 +7,7 @@ import {AuthService} from '../auth.service';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
+  standalone: false,
 })
 export class LoginComponent {
   message: string;

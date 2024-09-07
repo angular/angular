@@ -5,5 +5,6 @@ import {Component} from '@angular/core';
   selector: 'app-hero-list',
   templateUrl: './hero-list.component.1.html',
   styleUrls: ['./hero-list.component.1.css'],
+  standalone: false,
 })
 export class HeroListComponent {}

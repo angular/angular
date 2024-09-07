@@ -29,7 +29,6 @@ export interface ErrorSnackBarData {
       {{ actionText }}
     </button>
   `,
-  standalone: true,
   imports: [MatSnackBarAction],
   styles: `:host { display: flex; align-items: center; button { margin-left: 16px }}`,
 })

@@ -5,7 +5,6 @@ import {Hero} from './hero';
 import {NgFor} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-hero-list-auto',
   templateUrl: 'hero-list-auto.component.html',
   styleUrls: ['./hero-list-page.component.css'],
@@ -17,7 +16,6 @@ import {NgFor} from '@angular/common';
       transition('* => void', [style({height: '*'}), animate(250, style({height: 0}))]),
     ]),
   ],
-  // #enddocregion auto-calc
 })
 export class HeroListAutoComponent {
   @Input() heroes: Hero[] = [];

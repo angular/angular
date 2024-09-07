@@ -30,7 +30,6 @@ interface Option {
     CdkMenuModule,
     IconComponent,
   ],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AppComponent {

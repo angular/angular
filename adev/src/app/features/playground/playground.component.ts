@@ -28,7 +28,6 @@ import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 
 @Component({
   selector: 'adev-playground',
-  standalone: true,
   imports: [NgComponentOutlet, IconComponent, CdkMenu, CdkMenuItem, CdkMenuTrigger],
   templateUrl: './playground.component.html',
   styleUrls: [

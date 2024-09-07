@@ -5,7 +5,6 @@ import {HeroService} from './hero.service';
 import {NgFor} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-hero-list',
   template: `
     @for (hero of heroes; track hero) {

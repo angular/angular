@@ -26,7 +26,6 @@ import {WINDOW} from '@angular/docs';
 
 @Component({
   selector: 'docs-tutorial-terminal',
-  standalone: true,
   templateUrl: './terminal.component.html',
   styleUrls: ['./terminal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

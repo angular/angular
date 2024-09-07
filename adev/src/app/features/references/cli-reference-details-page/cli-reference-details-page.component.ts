@@ -27,7 +27,6 @@ export const CLI_TOC = '.adev-reference-cli-toc';
 
 @Component({
   selector: 'adev-cli-reference-page',
-  standalone: true,
   imports: [DocViewer],
   templateUrl: './cli-reference-details-page.component.html',
   styleUrls: [

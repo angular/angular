@@ -52,7 +52,6 @@ function getResultQuote(accuracy: number) {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [CommonModule, MatSlideToggleModule, A11yModule],
   styleUrl: 'game.css',
   templateUrl: 'game.html',

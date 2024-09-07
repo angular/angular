@@ -7,7 +7,6 @@ export const STORAGE_KEY_PREFIX = 'docs-was-closed-top-banner-';
 
 @Component({
   selector: 'docs-top-level-banner',
-  standalone: true,
   imports: [ExternalLink, IconComponent],
   templateUrl: './top-level-banner.component.html',
   styleUrl: './top-level-banner.component.scss',

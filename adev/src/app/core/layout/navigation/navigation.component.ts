@@ -41,7 +41,6 @@ type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
 @Component({
   selector: 'div.adev-nav',
-  standalone: true,
   imports: [RouterLink, ClickOutside, CdkMenu, CdkMenuItem, CdkMenuTrigger, IconComponent],
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss', './mini-menu.scss', './nav-item.scss'],

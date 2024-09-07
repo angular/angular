@@ -11,7 +11,6 @@ import {NavigationItem} from '../interfaces/index';
 
 @Pipe({
   name: 'isActiveNavigationItem',
-  standalone: true,
 })
 export class IsActiveNavigationItem implements PipeTransform {
   // Check whether provided item: `itemToCheck` should be marked as active, based on `activeItem`.

@@ -7,6 +7,7 @@ import {HeroArena, HeroService, Hero} from './heroes';
   selector: 'toh-app',
   template: '<pre>{{heroes | json}}</pre>',
   providers: [HeroArena, HeroService],
+  standalone: false,
 })
 export class AppComponent implements OnInit {
   heroes: Hero[] = [];

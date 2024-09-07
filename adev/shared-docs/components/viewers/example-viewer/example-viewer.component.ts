@@ -41,7 +41,6 @@ export const HIDDEN_CLASS_NAME = 'hidden';
 
 @Component({
   selector: 'docs-example-viewer',
-  standalone: true,
   imports: [CommonModule, forwardRef(() => DocViewer), CopySourceCodeButton, MatTabsModule],
   templateUrl: './example-viewer.component.html',
   styleUrls: ['./example-viewer.component.scss'],

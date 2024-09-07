@@ -41,7 +41,6 @@ export const ANIMATION_DURATION = 500;
 
 @Component({
   selector: 'adev-secondary-navigation',
-  standalone: true,
   imports: [NavigationList, ClickOutside],
   templateUrl: './secondary-navigation.component.html',
   styleUrls: ['./secondary-navigation.component.scss'],

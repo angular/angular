@@ -9,6 +9,7 @@ import {slideInAnimation} from './animations';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.css'],
   animations: [slideInAnimation],
+  standalone: false,
 })
 export class AppComponent {
   constructor(private contexts: ChildrenOutletContexts) {}

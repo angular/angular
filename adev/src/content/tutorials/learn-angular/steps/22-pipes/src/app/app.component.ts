@@ -5,7 +5,6 @@ import {Component} from '@angular/core';
   template: `
     {{ username }}
   `,
-  standalone: true,
   imports: [],
 })
 export class AppComponent {

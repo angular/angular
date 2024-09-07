@@ -23,7 +23,7 @@ export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
   selector: '[appForbiddenName]',
   // #docregion directive-providers
   providers: [{provide: NG_VALIDATORS, useExisting: ForbiddenValidatorDirective, multi: true}],
-  // #enddocregion directive-providers
+  standalone: false,
 })
 export class ForbiddenValidatorDirective implements Validator {
   @Input('appForbiddenName') forbiddenName = '';

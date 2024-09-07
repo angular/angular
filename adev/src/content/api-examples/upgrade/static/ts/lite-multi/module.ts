@@ -33,11 +33,13 @@ declare var angular: ng.IAngularStatic;
 @Component({
   selector: 'ng2A',
   template: 'Component A | <ng1A></ng1A>',
+  standalone: false,
 })
 export class Ng2AComponent {}
 
 @Directive({
   selector: 'ng1A',
+  standalone: false,
 })
 export class Ng1AComponentFacade extends UpgradeComponent {
   constructor(elementRef: ElementRef, injector: Injector) {
@@ -65,6 +67,7 @@ export class Ng2AModule {
 @Component({
   selector: 'ng2B',
   template: 'Component B',
+  standalone: false,
 })
 export class Ng2BComponent {}
 
