@@ -4,6 +4,7 @@ import {NgModule, Component} from '@angular/core';
   selector: 'lazy-component',
   template: 'Lazy-loaded component!',
   jit: true,
+  standalone: false,
 })
 export class LazyComponent {}
 

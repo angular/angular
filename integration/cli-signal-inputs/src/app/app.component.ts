@@ -3,7 +3,6 @@ import {ChangeDetectionStrategy, Component, viewChildren} from '@angular/core';
 import {GreetComponent} from './greet.component';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   template: `
     <greet [firstName]="firstName" [lastName]="lastName" [decoratorInput]="10" />

@@ -5,6 +5,7 @@ import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
+  standalone: false,
 })
 export class AppComponent {
   title = 'trusted-types';
