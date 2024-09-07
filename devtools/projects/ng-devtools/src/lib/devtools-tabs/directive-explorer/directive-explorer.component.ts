@@ -75,7 +75,6 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
       useClass: ElementPropertyResolver,
     },
   ],
-  standalone: true,
   imports: [
     SplitComponent,
     SplitAreaDirective,

@@ -16,7 +16,6 @@ import {MessageBus} from 'protocol';
 @Component({
   selector: 'ng-devtools-tabs',
   template: '',
-  standalone: true,
 })
 export class MockNgDevToolsTabs {}
 

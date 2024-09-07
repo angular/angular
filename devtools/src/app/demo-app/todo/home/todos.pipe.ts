@@ -19,7 +19,6 @@ export const enum TodoFilter {
 @Pipe({
   pure: false,
   name: 'todosFilter',
-  standalone: true,
 })
 export class TodosFilter implements PipeTransform {
   transform(todos: Todo[], filter: TodoFilter): Todo[] {

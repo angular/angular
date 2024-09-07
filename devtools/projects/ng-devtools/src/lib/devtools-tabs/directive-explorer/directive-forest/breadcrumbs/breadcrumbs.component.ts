@@ -26,7 +26,6 @@ import {MatCard} from '@angular/material/card';
   selector: 'ng-breadcrumbs',
   templateUrl: './breadcrumbs.component.html',
   styleUrls: ['./breadcrumbs.component.scss'],
-  standalone: true,
   imports: [MatCard, MatIcon, MatButton],
 })
 export class BreadcrumbsComponent {

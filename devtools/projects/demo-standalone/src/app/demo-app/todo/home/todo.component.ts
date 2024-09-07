@@ -20,7 +20,6 @@ export interface Todo {
 @Component({
   selector: 'app-todo',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [TooltipDirective],
   styles: [
     `

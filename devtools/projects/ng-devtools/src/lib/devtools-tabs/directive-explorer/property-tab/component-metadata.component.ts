@@ -17,7 +17,6 @@ import {MatButton} from '@angular/material/button';
   templateUrl: './component-metadata.component.html',
   styleUrls: ['./component-metadata.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [MatButton],
 })
 export class ComponentMetadataComponent {
