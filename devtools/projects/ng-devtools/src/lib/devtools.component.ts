@@ -60,7 +60,6 @@ const LAST_SUPPORTED_VERSION = 9;
       transition(':leave', [style({opacity: 1}), animate('200ms', style({opacity: 0}))]),
     ]),
   ],
-  standalone: true,
   imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
 })
 export class DevToolsComponent implements OnInit, OnDestroy {

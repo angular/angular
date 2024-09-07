@@ -142,7 +142,6 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
       }
     `,
   ],
-  standalone: true,
   imports: [
     MatTableModule,
     MatIcon,

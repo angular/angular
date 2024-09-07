@@ -8,7 +8,9 @@
 
 import {Directive, HostListener} from '@angular/core';
 
-@Directive({selector: '[appTooltip]', standalone: true})
+@Directive({
+  selector: '[appTooltip]',
+})
 export class TooltipDirective {
   visible = false;
   nested = {

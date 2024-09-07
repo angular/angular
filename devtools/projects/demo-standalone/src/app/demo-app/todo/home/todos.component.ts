@@ -29,7 +29,10 @@ export const enum TodoFilter {
   Active = 'active',
 }
 
-@Pipe({pure: false, name: 'todosFilter', standalone: true})
+@Pipe({
+  pure: false,
+  name: 'todosFilter',
+})
 export class TodosFilter implements PipeTransform {
   transform(todos: Todo[], filter: TodoFilter): Todo[] {
     return (todos || []).filter((t) => {
@@ -57,7 +60,6 @@ const fib = (n: number): number => {
 @Component({
   selector: 'app-todos',
   imports: [RouterLink, TodoComponent, SamplePipe, TodosFilter, TooltipDirective],
-  standalone: true,
   template: `
     <a [routerLink]="">Home</a>
     <a [routerLink]="">Home</a>

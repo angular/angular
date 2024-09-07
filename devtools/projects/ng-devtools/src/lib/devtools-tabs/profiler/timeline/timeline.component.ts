@@ -26,7 +26,6 @@ const MAX_HEIGHT = 50;
   selector: 'ng-recording-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.scss'],
-  standalone: true,
   imports: [
     RecordingModalComponent,
     TimelineControlsComponent,

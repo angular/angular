@@ -28,7 +28,6 @@ const PROFILER_VERSION = 1;
   selector: 'ng-profiler',
   templateUrl: './profiler.component.html',
   styleUrls: ['./profiler.component.scss'],
-  standalone: true,
   imports: [MatCard, MatIconButton, MatTooltip, MatIcon, TimelineComponent],
 })
 export class ProfilerComponent implements OnInit {

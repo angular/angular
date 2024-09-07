@@ -38,7 +38,6 @@ const ITEM_WIDTH = 30;
   selector: 'ng-frame-selector',
   templateUrl: './frame-selector.component.html',
   styleUrls: ['./frame-selector.component.scss'],
-  standalone: true,
   imports: [
     MatCard,
     MatTooltip,

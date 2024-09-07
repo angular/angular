@@ -10,7 +10,6 @@ import {Component, Input} from '@angular/core';
 
 @Component({
   selector: 'app-zippy',
-  standalone: true,
   styles: [
     `
       :host {

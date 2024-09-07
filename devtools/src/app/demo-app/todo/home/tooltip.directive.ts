@@ -10,7 +10,6 @@ import {Directive, HostListener} from '@angular/core';
 
 @Directive({
   selector: '[appTooltip]',
-  standalone: true,
 })
 export class TooltipDirective {
   visible = false;

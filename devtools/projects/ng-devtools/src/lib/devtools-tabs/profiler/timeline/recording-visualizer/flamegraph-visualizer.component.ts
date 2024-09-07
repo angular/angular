@@ -25,7 +25,6 @@ import {NgxFlamegraphModule} from 'ngx-flamegraph';
   selector: 'ng-flamegraph-visualizer',
   templateUrl: './flamegraph-visualizer.component.html',
   styleUrls: ['./flamegraph-visualizer.component.scss'],
-  standalone: true,
   imports: [NgxFlamegraphModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
