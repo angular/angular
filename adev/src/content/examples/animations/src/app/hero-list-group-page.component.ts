@@ -3,7 +3,6 @@ import {HEROES} from './mock-heroes';
 import {HeroListGroupsComponent} from './hero-list-groups.component';
 
 @Component({
-  standalone: true,
   selector: 'app-hero-list-groups-page',
   template: `
     <section>

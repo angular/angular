@@ -1,7 +1,6 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'app-input-output',
   template: `
   <p [style.text-decoration]="lineThrough">Item: {{item}}</p>

@@ -23,7 +23,6 @@ import {IsActiveNavigationItem} from '../../pipes/is-active-navigation-item.pipe
 
 @Component({
   selector: 'docs-navigation-list',
-  standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive, IconComponent, IsActiveNavigationItem],
   templateUrl: './navigation-list.component.html',
   styleUrls: ['./navigation-list.component.scss'],

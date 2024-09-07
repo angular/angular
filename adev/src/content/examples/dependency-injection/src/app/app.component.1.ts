@@ -4,7 +4,6 @@ import {CarComponent} from './car/car.component';
 import {HeroesComponent} from './heroes/heroes.component';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   template: `
     <h1>{{title}}</h1>

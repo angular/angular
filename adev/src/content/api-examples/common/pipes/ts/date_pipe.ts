@@ -43,6 +43,7 @@ registerLocaleData(localeFr);
       </p>
     </div>
   `,
+  standalone: false,
 })
 export class DatePipeComponent {
   today = Date.now();
@@ -65,6 +66,7 @@ export class DatePipeComponent {
       <p>The custom date is {{ today | date : 'yyyy-MM-dd HH:mm a' }}</p>
     </div>
   `,
+  standalone: false,
 })
 export class DeprecatedDatePipeComponent {
   today = Date.now();

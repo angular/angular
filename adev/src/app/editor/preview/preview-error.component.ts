@@ -12,7 +12,6 @@ import {isFirefox, isIos} from '@angular/docs';
 import {ErrorType, NodeRuntimeState} from '../node-runtime-state.service';
 
 @Component({
-  standalone: true,
   selector: 'docs-tutorial-preview-error',
   templateUrl: './preview-error.component.html',
   styleUrls: ['./preview-error.component.scss'],

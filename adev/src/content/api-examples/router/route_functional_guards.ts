@@ -21,10 +21,16 @@ import {
   UrlSegment,
 } from '@angular/router';
 
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 export class App {}
 
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 export class TeamComponent {}
 
 // #docregion CanActivateFn
@@ -86,7 +92,10 @@ bootstrapApplication(App, {
 // #enddocregion
 
 // #docregion CanDeactivateFn
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 export class UserComponent {
   hasUnsavedChanges = true;
 }
@@ -123,7 +132,10 @@ bootstrapApplication(App, {
 // #enddocregion
 
 // #docregion ResolveDataUse
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 export class HeroDetailComponent {
   constructor(private activatedRoute: ActivatedRoute) {}
 

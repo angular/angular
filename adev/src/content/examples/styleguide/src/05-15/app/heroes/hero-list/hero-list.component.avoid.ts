@@ -12,7 +12,6 @@ import {Hero} from '../shared/hero.model';
 const heroesUrl = 'http://angular.io';
 
 @Component({
-  standalone: true,
   selector: 'toh-hero-list',
   template: `...`,
 })

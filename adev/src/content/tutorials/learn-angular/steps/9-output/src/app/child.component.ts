@@ -6,7 +6,6 @@ import {Component, Output, EventEmitter} from '@angular/core';
   template: `
     <button class="btn" (click)="addItem()">Add Item</button>
   `,
-  standalone: true,
 })
 export class ChildComponent {
   addItem() {}

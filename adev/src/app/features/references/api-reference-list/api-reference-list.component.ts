@@ -33,7 +33,6 @@ export const ALL_STATUSES_KEY = 'All';
 
 @Component({
   selector: 'adev-reference-list',
-  standalone: true,
   imports: [ApiItemsSection, ApiItemLabel, FormsModule, SlideToggle, TextField, ApiLabel],
   templateUrl: './api-reference-list.component.html',
   styleUrls: ['./api-reference-list.component.scss'],

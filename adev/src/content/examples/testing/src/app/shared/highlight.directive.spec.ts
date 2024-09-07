@@ -6,7 +6,6 @@ import {HighlightDirective} from './highlight.directive';
 
 // #docregion test-component
 @Component({
-  standalone: true,
   template: ` <h2 highlight="yellow">Something Yellow</h2>
     <h2 highlight>The Default (Gray)</h2>
     <h2>No Highlight</h2>

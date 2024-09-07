@@ -6,6 +6,7 @@ import {Hero, HeroService} from './heroes';
   selector: 'sg-app',
   templateUrl: './app.component.html',
   providers: [HeroService],
+  standalone: false,
 })
 export class AppComponent implements OnInit {
   heroes: Hero[] = [];

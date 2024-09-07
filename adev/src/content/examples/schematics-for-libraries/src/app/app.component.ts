@@ -6,6 +6,7 @@ import {Component} from '@angular/core';
     <h2>Library Schematics</h2>
   `,
   styles: [],
+  standalone: false,
 })
 export class AppComponent {
   title = 'schematics-for-libraries';

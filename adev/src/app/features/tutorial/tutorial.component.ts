@@ -48,7 +48,6 @@ const INTRODUCTION_LABEL = 'Introduction';
 
 @Component({
   selector: 'adev-tutorial',
-  standalone: true,
   imports: [
     NgComponentOutlet,
     NgTemplateOutlet,

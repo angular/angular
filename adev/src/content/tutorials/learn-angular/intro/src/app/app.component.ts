@@ -5,6 +5,5 @@ import {Component} from '@angular/core';
   template: `
     Welcome to Angular!
   `,
-  standalone: true,
 })
 export class AppComponent {}

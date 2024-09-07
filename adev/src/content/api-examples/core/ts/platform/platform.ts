@@ -14,6 +14,7 @@ import {BrowserModule} from '@angular/platform-browser';
   template: `
     <h1>Component One</h1>
   `,
+  standalone: false,
 })
 export class ComponentOne {}
 
@@ -22,6 +23,7 @@ export class ComponentOne {}
   template: `
     <h1>Component Two</h1>
   `,
+  standalone: false,
 })
 export class ComponentTwo {}
 
@@ -30,6 +32,7 @@ export class ComponentTwo {}
   template: `
     <h1>Component Three</h1>
   `,
+  standalone: false,
 })
 export class ComponentThree {}
 
@@ -38,6 +41,7 @@ export class ComponentThree {}
   template: `
     <h1>Component Four</h1>
   `,
+  standalone: false,
 })
 export class ComponentFour {}
 

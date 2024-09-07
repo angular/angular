@@ -8,7 +8,6 @@ import {Component} from '@angular/core';
       {{ message }}
     </section>
   `,
-  standalone: true,
 })
 export class AppComponent {
   message = '';

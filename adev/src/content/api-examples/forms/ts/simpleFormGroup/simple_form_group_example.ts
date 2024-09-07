@@ -24,6 +24,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
     </form>
     <button (click)="setValue()">Set preset value</button>
   `,
+  standalone: false,
 })
 export class SimpleFormGroup {
   form = new FormGroup({

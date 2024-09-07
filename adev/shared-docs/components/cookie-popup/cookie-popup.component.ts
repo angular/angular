@@ -19,7 +19,6 @@ export const STORAGE_KEY = 'docs-accepts-cookies';
 
 @Component({
   selector: 'docs-cookie-popup',
-  standalone: true,
   templateUrl: './cookie-popup.component.html',
   styleUrls: ['./cookie-popup.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

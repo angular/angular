@@ -39,7 +39,6 @@ import {SearchResult, SnippetResult} from '../../interfaces';
 
 @Component({
   selector: 'docs-search-dialog',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ClickOutside,
