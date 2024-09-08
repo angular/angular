@@ -172,6 +172,7 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'test-cmp',
           templateUrl: './test.html',
+          standalone: false,
         })
         export class TestCmp {}
       `,
@@ -185,6 +186,7 @@ runInEachFileSystem(() => {
 
         @Component({
           templateUrl: './test_import.html',
+          standalone: false,
         })
         export class TestImportCmp {}
 
