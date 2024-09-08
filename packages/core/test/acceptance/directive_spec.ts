@@ -27,19 +27,32 @@ import {By} from '@angular/platform-browser';
 
 describe('directives', () => {
   describe('matching', () => {
-    @Directive({selector: 'ng-template[test]'})
+    @Directive({
+      selector: 'ng-template[test]',
+      standalone: false,
+    })
     class TestDirective {
       constructor(public templateRef: TemplateRef<any>) {}
     }
 
-    @Directive({selector: '[title]'})
+    @Directive({
+      selector: '[title]',
+      standalone: false,
+    })
     class TitleDirective {}
 
-    @Component({selector: 'test-cmpt', template: ''})
+    @Component({
+      selector: 'test-cmpt',
+      template: '',
+      standalone: false,
+    })
     class TestComponent {}
 
     it('should match directives with attribute selectors on bindings', () => {
-      @Directive({selector: '[test]'})
+      @Directive({
+        selector: '[test]',
+        standalone: false,
+      })
       class TestDir {
         testValue: boolean | undefined;
 
@@ -71,7 +84,10 @@ describe('directives', () => {
     });
 
     it('should not accidentally set inputs from attributes extracted from bindings / outputs', () => {
-      @Directive({selector: '[test]'})
+      @Directive({
+        selector: '[test]',
+        standalone: false,
+      })
       class TestDir {
         @Input() prop1: boolean | undefined;
         @Input() prop2: boolean | undefined;
@@ -133,7 +149,10 @@ describe('directives', () => {
     });
 
     it('should match directives on <ng-container>', () => {
-      @Directive({selector: 'ng-container[directiveA]'})
+      @Directive({
+        selector: 'ng-container[directiveA]',
+        standalone: false,
+      })
       class DirectiveA {
         constructor(public viewContainerRef: ViewContainerRef) {}
       }
@@ -144,6 +163,7 @@ describe('directives', () => {
           <ng-container *ngIf="visible" directiveA>
             <span>Some content</span>
           </ng-container>`,
+        standalone: false,
       })
       class MyComponent {
         visible = true;
@@ -191,7 +211,10 @@ describe('directives', () => {
     });
 
     it('should match classes to directive selectors without case sensitivity', () => {
-      @Directive({selector: '.Titledir'})
+      @Directive({
+        selector: '.Titledir',
+        standalone: false,
+      })
       class TitleClassDirective {}
 
       TestBed.configureTestingModule({declarations: [TestComponent, TitleClassDirective]});
@@ -211,7 +234,10 @@ describe('directives', () => {
     });
 
     it('should match class selectors on ng-template', () => {
-      @Directive({selector: '.titleDir'})
+      @Directive({
+        selector: '.titleDir',
+        standalone: false,
+      })
       class TitleClassDirective {}
 
       TestBed.configureTestingModule({declarations: [TestComponent, TitleClassDirective]});
@@ -231,10 +257,17 @@ describe('directives', () => {
     });
 
     it('should NOT match class selectors on ng-template created by * syntax', () => {
-      @Directive({selector: '.titleDir'})
+      @Directive({
+        selector: '.titleDir',
+        standalone: false,
+      })
       class TitleClassDirective {}
 
-      @Component({selector: 'test-cmp', template: `<div *ngIf="condition" class="titleDir"></div>`})
+      @Component({
+        selector: 'test-cmp',
+        template: `<div *ngIf="condition" class="titleDir"></div>`,
+        standalone: false,
+      })
       class TestCmp {
         condition = false;
       }
@@ -273,7 +306,10 @@ describe('directives', () => {
     });
 
     it('should match attributes to directive selectors without case sensitivity', () => {
-      @Directive({selector: '[title=Titledir]'})
+      @Directive({
+        selector: '[title=Titledir]',
+        standalone: false,
+      })
       class TitleAttributeDirective {}
 
       TestBed.configureTestingModule({declarations: [TestComponent, TitleAttributeDirective]});
@@ -293,7 +329,10 @@ describe('directives', () => {
     });
 
     it('should match directives with attribute selectors on outputs', () => {
-      @Directive({selector: '[out]'})
+      @Directive({
+        selector: '[out]',
+        standalone: false,
+      })
       class TestDir {
         @Output() out = new EventEmitter();
       }
@@ -313,7 +352,10 @@ describe('directives', () => {
     it('should not match directives based on attribute bindings', () => {
       const calls: string[] = [];
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class MyDir {
         ngOnInit() {
           calls.push('MyDir.ngOnInit');
@@ -323,6 +365,7 @@ describe('directives', () => {
       @Component({
         selector: `my-comp`,
         template: `<p [attr.dir]="direction"></p><p dir="rtl"></p>`,
+        standalone: false,
       })
       class MyComp {
         direction = 'auto';
@@ -339,7 +382,10 @@ describe('directives', () => {
     it('should match directives on elements with namespace', () => {
       const calls: string[] = [];
 
-      @Directive({selector: 'svg[dir]'})
+      @Directive({
+        selector: 'svg[dir]',
+        standalone: false,
+      })
       class MyDir {
         constructor(private el: ElementRef) {}
         ngOnInit() {
@@ -350,6 +396,7 @@ describe('directives', () => {
       @Component({
         selector: `my-comp`,
         template: `<svg dir><text dir></text></svg>`,
+        standalone: false,
       })
       class MyComp {}
 
@@ -363,7 +410,10 @@ describe('directives', () => {
     it('should match directives on descendant elements with namespace', () => {
       const calls: string[] = [];
 
-      @Directive({selector: 'text[dir]'})
+      @Directive({
+        selector: 'text[dir]',
+        standalone: false,
+      })
       class MyDir {
         constructor(private el: ElementRef) {}
         ngOnInit() {
@@ -374,6 +424,7 @@ describe('directives', () => {
       @Component({
         selector: `my-comp`,
         template: `<svg dir><text dir></text></svg>`,
+        standalone: false,
       })
       class MyComp {}
 
@@ -387,7 +438,10 @@ describe('directives', () => {
     it('should match directives when the node has "class", "style" and a binding', () => {
       const logs: string[] = [];
 
-      @Directive({selector: '[test]'})
+      @Directive({
+        selector: '[test]',
+        standalone: false,
+      })
       class MyDir {
         constructor() {
           logs.push('MyDir.constructor');
@@ -404,6 +458,7 @@ describe('directives', () => {
         template: `
           <div class="a" style="font-size: 10px;" [disabled]="true" [test]="test"></div>
         `,
+        standalone: false,
       })
       class MyComp {
         test = '';
@@ -421,7 +476,10 @@ describe('directives', () => {
   describe('inputs', () => {
     it('should allow directive inputs (as a prop binding) on <ng-template>', () => {
       let dirInstance: WithInput;
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class WithInput {
         constructor() {
           dirInstance = this;
@@ -432,6 +490,7 @@ describe('directives', () => {
       @Component({
         selector: 'my-app',
         template: '<ng-template [dir]="message"></ng-template>',
+        standalone: false,
       })
       class TestComp {
         message = 'Hello';
@@ -446,7 +505,10 @@ describe('directives', () => {
 
     it('should allow directive inputs (as an interpolated prop) on <ng-template>', () => {
       let dirInstance: WithInput;
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class WithInput {
         constructor() {
           dirInstance = this;
@@ -457,6 +519,7 @@ describe('directives', () => {
       @Component({
         selector: 'my-app',
         template: '<ng-template dir="{{ message }}"></ng-template>',
+        standalone: false,
       })
       class TestComp {
         message = 'Hello';
@@ -471,7 +534,10 @@ describe('directives', () => {
 
     it('should allow directive inputs (as an interpolated prop) on <ng-template> with structural directives', () => {
       let dirInstance: WithInput;
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class WithInput {
         constructor() {
           dirInstance = this;
@@ -482,6 +548,7 @@ describe('directives', () => {
       @Component({
         selector: 'my-app',
         template: '<ng-template *ngIf="true" dir="{{ message }}"></ng-template>',
+        standalone: false,
       })
       class TestComp {
         message = 'Hello';
@@ -497,7 +564,10 @@ describe('directives', () => {
     it('should not set structural directive inputs from static element attrs', () => {
       const dirInstances: StructuralDir[] = [];
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class StructuralDir {
         constructor() {
           dirInstances.push(this);
@@ -516,6 +586,7 @@ describe('directives', () => {
             <div>Some content</div>
           </ng-template>
         `,
+        standalone: false,
       })
       class App {
         items: number[] = [1, 2, 3];
@@ -541,7 +612,10 @@ describe('directives', () => {
     it('should not set structural directive inputs from element bindings', () => {
       const dirInstances: StructuralDir[] = [];
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class StructuralDir {
         constructor() {
           dirInstances.push(this);
@@ -560,6 +634,7 @@ describe('directives', () => {
             <div>Some content</div>
           </ng-template>
         `,
+        standalone: false,
       })
       class App {
         items: number[] = [1, 2, 3];
@@ -582,13 +657,19 @@ describe('directives', () => {
     });
 
     it('should allow directive inputs specified using the object literal syntax in @Input', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class Dir {
         @Input() plainInput: number | undefined;
         @Input({alias: 'alias'}) aliasedInput: number | undefined;
       }
 
-      @Component({template: '<div dir [plainInput]="plainValue" [alias]="aliasedValue"></div>'})
+      @Component({
+        template: '<div dir [plainInput]="plainValue" [alias]="aliasedValue"></div>',
+        standalone: false,
+      })
       class App {
         @ViewChild(Dir) dirInstance!: Dir;
         plainValue = 123;
@@ -608,13 +689,17 @@ describe('directives', () => {
       @Directive({
         selector: '[dir]',
         inputs: [{name: 'plainInput'}, {name: 'aliasedInput', alias: 'alias'}],
+        standalone: false,
       })
       class Dir {
         plainInput: number | undefined;
         aliasedInput: number | undefined;
       }
 
-      @Component({template: '<div dir [plainInput]="plainValue" [alias]="aliasedValue"></div>'})
+      @Component({
+        template: '<div dir [plainInput]="plainValue" [alias]="aliasedValue"></div>',
+        standalone: false,
+      })
       class App {
         @ViewChild(Dir) dirInstance!: Dir;
         plainValue = 123;
@@ -631,12 +716,18 @@ describe('directives', () => {
     });
 
     it('should transform incoming input values', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class Dir {
         @Input({transform: (value: string) => (value ? 1 : 0)}) value = -1;
       }
 
-      @Component({template: '<div dir [value]="assignedValue"></div>'})
+      @Component({
+        template: '<div dir [value]="assignedValue"></div>',
+        standalone: false,
+      })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
         assignedValue = '';
@@ -658,12 +749,16 @@ describe('directives', () => {
       @Directive({
         selector: '[dir]',
         inputs: [{name: 'value', transform: (value: string) => (value ? 1 : 0)}],
+        standalone: false,
       })
       class Dir {
         value = -1;
       }
 
-      @Component({template: '<div dir [value]="assignedValue"></div>'})
+      @Component({
+        template: '<div dir [value]="assignedValue"></div>',
+        standalone: false,
+      })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
         assignedValue = '';
@@ -682,12 +777,18 @@ describe('directives', () => {
     });
 
     it('should transform incoming static input values', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class Dir {
         @Input({transform: (value: string) => (value ? 1 : 0)}) value = -1;
       }
 
-      @Component({template: '<div dir value="staticValue"></div>'})
+      @Component({
+        template: '<div dir value="staticValue"></div>',
+        standalone: false,
+      })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
       }
@@ -700,12 +801,18 @@ describe('directives', () => {
     });
 
     it('should transform incoming values for aliased inputs', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class Dir {
         @Input({alias: 'valueAlias', transform: (value: string) => (value ? 1 : 0)}) value = -1;
       }
 
-      @Component({template: '<div dir [valueAlias]="assignedValue"></div>'})
+      @Component({
+        template: '<div dir [valueAlias]="assignedValue"></div>',
+        standalone: false,
+      })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
         assignedValue = '';
@@ -729,10 +836,16 @@ describe('directives', () => {
         @Input({transform: (value: string) => (value ? 1 : 0)}) value = -1;
       }
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class Dir extends Parent {}
 
-      @Component({template: '<div dir [value]="assignedValue"></div>'})
+      @Component({
+        template: '<div dir [value]="assignedValue"></div>',
+        standalone: false,
+      })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
         assignedValue = '';
@@ -751,7 +864,7 @@ describe('directives', () => {
     });
 
     it('should transform aliased inputs coming from host directives', () => {
-      @Directive({standalone: true})
+      @Directive({})
       class HostDir {
         @Input({transform: (value: string) => (value ? 1 : 0)}) value = -1;
       }
@@ -759,10 +872,14 @@ describe('directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['value: valueAlias']}],
+        standalone: false,
       })
       class Dir {}
 
-      @Component({template: '<div dir [valueAlias]="assignedValue"></div>'})
+      @Component({
+        template: '<div dir [valueAlias]="assignedValue"></div>',
+        standalone: false,
+      })
       class TestComp {
         @ViewChild(HostDir) hostDir!: HostDir;
         assignedValue = '';
@@ -783,7 +900,10 @@ describe('directives', () => {
     it('should use the transformed input values in ngOnChanges', () => {
       const trackedChanges: SimpleChange[] = [];
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class Dir implements OnChanges {
         @Input({transform: (value: string) => (value ? 1 : 0)}) value = -1;
 
@@ -794,7 +914,10 @@ describe('directives', () => {
         }
       }
 
-      @Component({template: '<div dir [value]="assignedValue"></div>'})
+      @Component({
+        template: '<div dir [value]="assignedValue"></div>',
+        standalone: false,
+      })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
         assignedValue = '';
@@ -825,12 +948,18 @@ describe('directives', () => {
         return 0;
       }
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class Dir {
         @Input({transform}) value: any;
       }
 
-      @Component({template: '<div dir value="foo"></div>'})
+      @Component({
+        template: '<div dir value="foo"></div>',
+        standalone: false,
+      })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
       }
@@ -843,12 +972,19 @@ describe('directives', () => {
     });
 
     it('should transform value assigned using setInput', () => {
-      @Component({selector: 'comp', template: ''})
+      @Component({
+        selector: 'comp',
+        template: '',
+        standalone: false,
+      })
       class Comp {
         @Input({transform: (value: string) => (value ? 1 : 0)}) value = -1;
       }
 
-      @Component({template: '<ng-container #location/>'})
+      @Component({
+        template: '<ng-container #location/>',
+        standalone: false,
+      })
       class TestComp {
         @ViewChild('location', {read: ViewContainerRef}) vcr!: ViewContainerRef;
       }
@@ -868,13 +1004,19 @@ describe('directives', () => {
   });
 
   describe('outputs', () => {
-    @Directive({selector: '[out]'})
+    @Directive({
+      selector: '[out]',
+      standalone: false,
+    })
     class TestDir {
       @Output() out = new EventEmitter();
     }
 
     it('should allow outputs of directive on ng-template', () => {
-      @Component({template: `<ng-template (out)="value = true"></ng-template>`})
+      @Component({
+        template: `<ng-template (out)="value = true"></ng-template>`,
+        standalone: false,
+      })
       class TestComp {
         @ViewChild(TestDir, {static: true}) testDir: TestDir | undefined;
         value = false;
@@ -898,6 +1040,7 @@ describe('directives', () => {
           <ng-container (out)="value = true">
             <span>Hello</span>
           </ng-container>`,
+        standalone: false,
       })
       class TestComp {
         value = false;
@@ -922,13 +1065,17 @@ describe('directives', () => {
 
     @Directive({
       selector: '[dir-with-title]',
+      standalone: false,
     })
     class DirWithTitle {
       @Input() title = '';
     }
 
     it('should set both the div attribute and the directive input for `title="value"`', () => {
-      @Component({template: `<div dir-with-title title="a"></div>`})
+      @Component({
+        template: `<div dir-with-title title="a"></div>`,
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({
@@ -946,7 +1093,10 @@ describe('directives', () => {
     });
 
     it('should set the directive input only, shadowing the title property of the div, for `[title]="value"`', () => {
-      @Component({template: `<div dir-with-title [title]="value"></div>`})
+      @Component({
+        template: `<div dir-with-title [title]="value"></div>`,
+        standalone: false,
+      })
       class App {
         value = 'a';
       }
@@ -969,7 +1119,10 @@ describe('directives', () => {
     });
 
     it('should allow setting directive `title` input with `[title]="value"` and a "attr.title" attribute with `attr.title="test"`', () => {
-      @Component({template: `<div dir-with-title [title]="value" attr.title="test"></div>`})
+      @Component({
+        template: `<div dir-with-title [title]="value" attr.title="test"></div>`,
+        standalone: false,
+      })
       class App {
         value = 'a';
       }
@@ -990,7 +1143,10 @@ describe('directives', () => {
     });
 
     it('should allow setting directive `title` input with `[title]="value1"` and attribute with `[attr.title]="value2"`', () => {
-      @Component({template: `<div dir-with-title [title]="value1" [attr.title]="value2"></div>`})
+      @Component({
+        template: `<div dir-with-title [title]="value1" [attr.title]="value2"></div>`,
+        standalone: false,
+      })
       class App {
         value1 = 'a';
         value2 = 'b';
@@ -1011,7 +1167,10 @@ describe('directives', () => {
     });
 
     it('should allow setting directive `title` input with `[title]="value1"` and attribute with `attr.title="{{value2}}"`', () => {
-      @Component({template: `<div dir-with-title [title]="value1" attr.title="{{value2}}"></div>`})
+      @Component({
+        template: `<div dir-with-title [title]="value1" attr.title="{{value2}}"></div>`,
+        standalone: false,
+      })
       class App {
         value1 = 'a';
         value2 = 'b';
@@ -1032,7 +1191,10 @@ describe('directives', () => {
     });
 
     it('should allow setting directive `title` input with `title="{{value}}"` and a "attr.title" attribute with `attr.title="test"`', () => {
-      @Component({template: `<div dir-with-title title="{{value}}" attr.title="test"></div>`})
+      @Component({
+        template: `<div dir-with-title title="{{value}}" attr.title="test"></div>`,
+        standalone: false,
+      })
       class App {
         value = 'a';
       }
@@ -1053,7 +1215,10 @@ describe('directives', () => {
     });
 
     it('should allow setting directive `title` input with `title="{{value1}}"` and attribute with `[attr.title]="value2"`', () => {
-      @Component({template: `<div dir-with-title title="{{value1}}" [attr.title]="value2"></div>`})
+      @Component({
+        template: `<div dir-with-title title="{{value1}}" [attr.title]="value2"></div>`,
+        standalone: false,
+      })
       class App {
         value1 = 'a';
         value2 = 'b';
@@ -1076,6 +1241,7 @@ describe('directives', () => {
     it('should allow setting directive `title` input with `title="{{value1}}"` and attribute with `attr.title="{{value2}}"`', () => {
       @Component({
         template: `<div dir-with-title title="{{value1}}" attr.title="{{value2}}"></div>`,
+        standalone: false,
       })
       class App {
         value1 = 'a';
@@ -1097,7 +1263,10 @@ describe('directives', () => {
     });
 
     it('should set the directive input only, shadowing the title property on the div, for `title="{{value}}"`', () => {
-      @Component({template: `<div dir-with-title title="{{value}}"></div>`})
+      @Component({
+        template: `<div dir-with-title title="{{value}}"></div>`,
+        standalone: false,
+      })
       class App {
         value = 'a';
       }
@@ -1117,7 +1286,10 @@ describe('directives', () => {
     });
 
     it('should set the title attribute only, not directive input, for `attr.title="{{value}}"`', () => {
-      @Component({template: `<div dir-with-title attr.title="{{value}}"></div>`})
+      @Component({
+        template: `<div dir-with-title attr.title="{{value}}"></div>`,
+        standalone: false,
+      })
       class App {
         value = 'a';
       }
@@ -1137,7 +1309,10 @@ describe('directives', () => {
     });
 
     it('should set the title attribute only, not directive input, for `[attr.title]="value"`', () => {
-      @Component({template: `<div dir-with-title [attr.title]="value"></div>`})
+      @Component({
+        template: `<div dir-with-title [attr.title]="value"></div>`,
+        standalone: false,
+      })
       class App {
         value = 'a';
       }
@@ -1160,7 +1335,10 @@ describe('directives', () => {
   describe('directives with the same selector', () => {
     it('should process Directives from `declarations` list after imported ones', () => {
       const log: string[] = [];
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class DirectiveA {
         constructor() {
           log.push('DirectiveA.constructor');
@@ -1176,7 +1354,10 @@ describe('directives', () => {
       })
       class ModuleA {}
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class DirectiveB {
         constructor() {
           log.push('DirectiveB.constructor');
@@ -1189,6 +1370,7 @@ describe('directives', () => {
       @Component({
         selector: 'app',
         template: '<div dir></div>',
+        standalone: false,
       })
       class App {}
 
@@ -1209,7 +1391,10 @@ describe('directives', () => {
 
     it('should respect imported module order', () => {
       const log: string[] = [];
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class DirectiveA {
         constructor() {
           log.push('DirectiveA.constructor');
@@ -1225,7 +1410,10 @@ describe('directives', () => {
       })
       class ModuleA {}
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class DirectiveB {
         constructor() {
           log.push('DirectiveB.constructor');
@@ -1244,6 +1432,7 @@ describe('directives', () => {
       @Component({
         selector: 'app',
         template: '<div dir></div>',
+        standalone: false,
       })
       class App {}
 

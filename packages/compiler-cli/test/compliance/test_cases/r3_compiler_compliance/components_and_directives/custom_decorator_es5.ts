@@ -8,8 +8,9 @@ export function Custom() {
 
 @Custom()
 @Component({
-  template: '',
-  providers: [{provide: token, useExisting: Comp}],
+    template: '',
+    providers: [{ provide: token, useExisting: Comp }],
+    standalone: false
 })
 export class Comp {
 }

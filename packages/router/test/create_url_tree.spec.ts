@@ -642,7 +642,6 @@ describe('createUrlTreeFromSnapshot', async () => {
   it('can create a UrlTree relative to empty path named parent', fakeAsync(() => {
     @Component({
       template: `<router-outlet></router-outlet>`,
-      standalone: true,
       imports: [RouterModule],
     })
     class MainPageComponent {
@@ -658,12 +657,14 @@ describe('createUrlTreeFromSnapshot', async () => {
       }
     }
 
-    @Component({template: 'child works!'})
+    @Component({
+      template: 'child works!',
+      standalone: false,
+    })
     class ChildComponent {}
 
     @Component({
       template: '<router-outlet name="main-page"></router-outlet>',
-      standalone: true,
       imports: [RouterModule],
     })
     class RootCmp {}
@@ -699,17 +700,17 @@ describe('createUrlTreeFromSnapshot', async () => {
 
     @Component({
       template: `main`,
-      standalone: true,
       imports: [RouterModule],
     })
     class GuardedComponent {}
 
-    @Component({template: 'sibling', standalone: true})
+    @Component({
+      template: 'sibling',
+    })
     class SiblingComponent {}
 
     @Component({
       template: '<router-outlet></router-outlet>',
-      standalone: true,
       imports: [RouterModule],
     })
     class RootCmp {}

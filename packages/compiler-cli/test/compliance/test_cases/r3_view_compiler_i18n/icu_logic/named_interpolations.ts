@@ -1,8 +1,8 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
   <div i18n>{
     gender,
     select,
@@ -10,7 +10,8 @@ import {Component, NgModule} from '@angular/core';
       female {female {{ height // i18n(ph="PH_B") }}}
       other {other {{ age // i18n(ph="PH WITH SPACES") }}}
   }</div>
-`
+`,
+    standalone: false
 })
 export class MyComponent {
   gender = 'male';

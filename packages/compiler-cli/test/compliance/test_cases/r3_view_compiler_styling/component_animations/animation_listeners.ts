@@ -6,21 +6,19 @@ declare const trigger: any;
 declare const transition: any;
 
 @Component({
-  selector: 'my-cmp',
-  template: `
+    selector: 'my-cmp',
+    template: `
     <div
       [@myAnimation]="exp"
       (@myAnimation.start)="onStart($event)"
       (@myAnimation.done)="onDone($event)"></div>
   `,
-  animations: [
-    trigger(
-        'myAnimation',
-        [
-          transition(
-              '* => state', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))]),
+    animations: [
+        trigger('myAnimation', [
+            transition('* => state', [style({ 'opacity': '0' }), animate(500, style({ 'opacity': '1' }))]),
         ]),
-  ],
+    ],
+    standalone: false
 })
 class MyComponent {
   exp: any;

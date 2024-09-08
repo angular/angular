@@ -18,7 +18,10 @@ import {getNgModuleDef} from '@angular/core/src/render3/definition';
 
 describe('component dependencies in local compilation', () => {
   it('should compute correct set of dependencies when importing ng-modules directly', () => {
-    @Component({selector: 'sub'})
+    @Component({
+      selector: 'sub',
+      standalone: false,
+    })
     class SubComponent {}
 
     class SubModule {
@@ -26,7 +29,9 @@ describe('component dependencies in local compilation', () => {
     }
     ɵɵsetNgModuleScope(SubModule, {exports: [SubComponent]});
 
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {
@@ -40,7 +45,10 @@ describe('component dependencies in local compilation', () => {
   });
 
   it('should compute correct set of dependencies when importing ng-modules - nested array case', () => {
-    @Component({selector: 'sub'})
+    @Component({
+      selector: 'sub',
+      standalone: false,
+    })
     class SubComponent {}
 
     class SubModule {
@@ -48,7 +56,9 @@ describe('component dependencies in local compilation', () => {
     }
     ɵɵsetNgModuleScope(SubModule, {exports: [[[SubComponent]]]});
 
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {
@@ -62,7 +72,10 @@ describe('component dependencies in local compilation', () => {
   });
 
   it('should compute correct set of dependencies when importing ng-modules with providers', () => {
-    @Component({selector: 'sub'})
+    @Component({
+      selector: 'sub',
+      standalone: false,
+    })
     class SubComponent {}
 
     class SubModule {
@@ -70,7 +83,9 @@ describe('component dependencies in local compilation', () => {
     }
     ɵɵsetNgModuleScope(SubModule, {exports: [SubComponent]});
 
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {
@@ -87,7 +102,10 @@ describe('component dependencies in local compilation', () => {
   });
 
   it('should compute correct set of dependencies when importing ng-modules with providers - nested array case', () => {
-    @Component({selector: 'sub'})
+    @Component({
+      selector: 'sub',
+      standalone: false,
+    })
     class SubComponent {}
 
     class SubModule {
@@ -95,7 +113,9 @@ describe('component dependencies in local compilation', () => {
     }
     ɵɵsetNgModuleScope(SubModule, {exports: [[[SubComponent]]]});
 
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {
@@ -112,7 +132,10 @@ describe('component dependencies in local compilation', () => {
   });
 
   it('should compute correct set of dependencies when importing ng-modules using forward ref', () => {
-    @Component({selector: 'sub'})
+    @Component({
+      selector: 'sub',
+      standalone: false,
+    })
     class SubComponent {}
 
     class SubModule {
@@ -120,7 +143,9 @@ describe('component dependencies in local compilation', () => {
     }
     ɵɵsetNgModuleScope(SubModule, {exports: [forwardRef(() => SubComponent)]});
 
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {
@@ -137,7 +162,10 @@ describe('component dependencies in local compilation', () => {
   });
 
   it('should compute correct set of dependencies when importing ng-modules using forward ref - nested array case', () => {
-    @Component({selector: 'sub'})
+    @Component({
+      selector: 'sub',
+      standalone: false,
+    })
     class SubComponent {}
 
     class SubModule {
@@ -145,7 +173,9 @@ describe('component dependencies in local compilation', () => {
     }
     ɵɵsetNgModuleScope(SubModule, {exports: [[[forwardRef(() => SubComponent)]]]});
 
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {
@@ -162,7 +192,10 @@ describe('component dependencies in local compilation', () => {
   });
 
   it('should compute correct set of dependencies when importing ng-modules with providers using forward ref', () => {
-    @Component({selector: 'sub'})
+    @Component({
+      selector: 'sub',
+      standalone: false,
+    })
     class SubComponent {}
 
     class SubModule {
@@ -170,7 +203,9 @@ describe('component dependencies in local compilation', () => {
     }
     ɵɵsetNgModuleScope(SubModule, {exports: [SubComponent]});
 
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {
@@ -187,7 +222,10 @@ describe('component dependencies in local compilation', () => {
   });
 
   it('should compute correct set of dependencies when importing ng-modules with providers using forward ref', () => {
-    @Component({selector: 'sub'})
+    @Component({
+      selector: 'sub',
+      standalone: false,
+    })
     class SubComponent {}
 
     class SubModule {
@@ -195,7 +233,9 @@ describe('component dependencies in local compilation', () => {
     }
     ɵɵsetNgModuleScope(SubModule, {exports: [[[SubComponent]]]});
 
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {
@@ -214,7 +254,9 @@ describe('component dependencies in local compilation', () => {
 
 describe('component bootstrap info', () => {
   it('should include the bootstrap info in local compilation mode', () => {
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {
@@ -227,7 +269,9 @@ describe('component bootstrap info', () => {
   });
 
   it('should flatten the bootstrap info in local compilation mode', () => {
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {
@@ -240,7 +284,9 @@ describe('component bootstrap info', () => {
   });
 
   it('should include the bootstrap info in full compilation mode', () => {
-    @Component({})
+    @Component({
+      standalone: false,
+    })
     class MainComponent {}
 
     class MainModule {

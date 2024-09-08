@@ -242,7 +242,6 @@ describe('NgStyle', () => {
       selector: 'test-component',
       imports: [NgStyle],
       template: `<div [ngStyle]="{'width.px': expr}"></div>`,
-      standalone: true,
     })
     class TestComponent {
       expr = 400;
@@ -255,7 +254,11 @@ describe('NgStyle', () => {
   });
 });
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {
   expr: any;
 }

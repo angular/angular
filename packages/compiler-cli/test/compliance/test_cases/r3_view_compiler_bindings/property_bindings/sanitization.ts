@@ -1,9 +1,8 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  standalone: true,
-  template: `
+    selector: 'my-component',
+    template: `
     <div [innerHtml]="evil"></div>
     <link [href]="evil" />
     <div [attr.style]="evil"></div>

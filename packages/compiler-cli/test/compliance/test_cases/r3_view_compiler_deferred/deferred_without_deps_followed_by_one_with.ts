@@ -1,14 +1,13 @@
 import {Component, Directive} from '@angular/core';
 
 @Directive({
-  selector: 'lazy-dep',
-  standalone: true,
+    selector: 'lazy-dep'
 })
 export class LazyDep {
 }
 
 @Component({
-  template: `
+    template: `
     <div>
       @defer {
         I'm so independent!
@@ -18,8 +17,7 @@ export class LazyDep {
       }
     </div>
   `,
-  standalone: true,
-  imports: [LazyDep],
+    imports: [LazyDep]
 })
 export class MyApp {
 }

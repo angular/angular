@@ -25,6 +25,7 @@ import {Hero} from './app.component';
 @Directive({
   selector: '[string-model]',
   exportAs: 'stringModel',
+  standalone: false,
 })
 export class StringModel {
   @Input() model: string = 'model';
@@ -33,6 +34,7 @@ export class StringModel {
 
 @Directive({
   selector: '[number-model]',
+  standalone: false,
 })
 export class NumberModel {
   @Input('inputAlias') model: number = 0;
@@ -43,6 +45,7 @@ export class NumberModel {
   selector: '[hint-model]',
   inputs: ['hint'],
   outputs: ['hintChange'],
+  standalone: false,
 })
 export class HintModel {
   hint: string = 'hint';
@@ -53,7 +56,10 @@ class CounterDirectiveContext<T> {
   constructor(public $implicit: T) {}
 }
 
-@Directive({selector: '[counterOf]'})
+@Directive({
+  selector: '[counterOf]',
+  standalone: false,
+})
 export class CounterDirective implements OnChanges {
   // Object does not have an "$implicit" property.
   constructor(
@@ -75,7 +81,10 @@ interface WithContextDirectiveContext {
   nonImplicitPerson: Hero;
 }
 
-@Directive({selector: '[withContext]'})
+@Directive({
+  selector: '[withContext]',
+  standalone: false,
+})
 export class WithContextDirective {
   constructor(_template: TemplateRef<WithContextDirectiveContext>) {}
 
@@ -87,18 +96,25 @@ export class WithContextDirective {
   }
 }
 
-@Directive({selector: 'button[custom-button][compound]'})
+@Directive({
+  selector: 'button[custom-button][compound]',
+  standalone: false,
+})
 export class CompoundCustomButtonDirective {
   @Input() config?: {color?: string};
 }
 
-@Directive({selector: '[eventSelector]'})
+@Directive({
+  selector: '[eventSelector]',
+  standalone: false,
+})
 export class EventSelectorDirective {
   @Output() eventSelector = new EventEmitter<void>();
 }
 
 @Pipe({
   name: 'prefixPipe',
+  standalone: false,
 })
 export class TestPipe implements PipeTransform {
   transform(value: string, prefix: string): string;
@@ -117,6 +133,7 @@ export class TestPipe implements PipeTransform {
 /*BeginTestComponent*/ @Component({
   selector: 'test-comp',
   template: '<div>Testing: {{name}}</div>',
+  standalone: false,
 })
 export class TestComponent {
   @Input('tcName') name = 'test';
@@ -125,6 +142,7 @@ export class TestComponent {
 
 @Component({
   templateUrl: 'test.ng',
+  standalone: false,
 })
 export class TemplateReference {
   /**

@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     @for (grandparent of items; track trackByGrandparent(grandparent, $index)) {
       @for (parent of grandparent.items; track trackByParent(parent, $index)) {
         @for (child of parent.items; track trackByChild(child, $index)) {
@@ -10,6 +10,7 @@ import {Component} from '@angular/core';
       }
     }
   `,
+    standalone: false
 })
 export class MyApp {
   items: any[] = [];

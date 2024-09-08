@@ -1,9 +1,10 @@
 import {Component, HostBinding, Input, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: '',
-  host: {'style': 'width:200px; height:500px', 'class': 'foo baz', 'title': 'foo title'}
+    selector: 'my-component',
+    template: '',
+    host: { 'style': 'width:200px; height:500px', 'class': 'foo baz', 'title': 'foo title' },
+    standalone: false
 })
 export class MyComponent {
   @HostBinding('style') myStyle = {width: '100px'};

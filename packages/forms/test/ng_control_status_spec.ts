@@ -20,7 +20,6 @@ describe('status host binding classes', () => {
     @Component({
       selector: 'test-cmp',
       template: `<input type="text" [formControl]="control">`,
-      standalone: true,
       imports: [FormsModule, ReactiveFormsModule],
       changeDetection: ChangeDetectionStrategy.OnPush,
     })

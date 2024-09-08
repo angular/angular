@@ -54,12 +54,14 @@ class Module {}
   selector: 'app',
   viewProviders: [forwardRef(() => Frame)],
   template: `<door><lock></lock></door>`,
+  standalone: false,
 })
 class App {}
 
 @Component({
   selector: 'door',
   template: `{{frame.name}}(<span *ngFor="let lock of locks">{{lock.name}}</span>)`,
+  standalone: false,
 })
 class Door {
   @ContentChildren(forwardRef(() => Lock)) locks!: QueryList<Lock>;
@@ -70,7 +72,10 @@ class Door {
   }
 }
 
-@Directive({selector: 'lock'})
+@Directive({
+  selector: 'lock',
+  standalone: false,
+})
 class Lock {
   name: string = 'lock';
 }

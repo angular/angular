@@ -1,14 +1,13 @@
 import {Component, Directive, NgModule} from '@angular/core';
 
 @Component({
-  standalone: true,
-  selector: 'standalone-cmp',
-  template: '',
+    selector: 'standalone-cmp',
+    template: ''
 })
 export class StandaloneCmp {
 }
 
-@Directive({standalone: true})
+@Directive({})
 export class StandaloneDir {
 }
 

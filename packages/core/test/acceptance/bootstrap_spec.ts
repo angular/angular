@@ -61,10 +61,16 @@ describe('bootstrap', () => {
   it(
     'should allow injecting VCRef into the root (bootstrapped) component',
     withBody('before|<test-cmp></test-cmp>|after', async () => {
-      @Component({selector: 'dynamic-cmp', standalone: true, template: 'dynamic'})
+      @Component({
+        selector: 'dynamic-cmp',
+        template: 'dynamic',
+      })
       class DynamicCmp {}
 
-      @Component({selector: 'test-cmp', standalone: true, template: '(test)'})
+      @Component({
+        selector: 'test-cmp',
+        template: '(test)',
+      })
       class TestCmp {
         constructor(public vcRef: ViewContainerRef) {}
       }
@@ -97,6 +103,7 @@ describe('bootstrap', () => {
         encapsulation: options.encapsulation,
         preserveWhitespaces: options.preserveWhitespaces,
         jit: true,
+        standalone: false,
       })
       class TestComponent {}
 
@@ -303,7 +310,6 @@ describe('bootstrap', () => {
         'should throw when standalone component is used in @NgModule.bootstrap',
         withBody('<my-app></my-app>', async () => {
           @Component({
-            standalone: true,
             selector: 'standalone-comp',
             template: '...',
           })
@@ -337,6 +343,7 @@ describe('bootstrap', () => {
           @Component({
             selector: 'my-app',
             template: '...',
+            standalone: false,
           })
           class App {}
 
@@ -359,6 +366,7 @@ describe('bootstrap', () => {
           @Component({
             selector: 'my-app',
             template: '...',
+            standalone: false,
           })
           class App {}
 
@@ -380,7 +388,6 @@ describe('bootstrap', () => {
         'should throw when standalone component wrapped in `forwardRef` is used in @NgModule.bootstrap',
         withBody('<my-app></my-app>', async () => {
           @Component({
-            standalone: true,
             selector: 'standalone-comp',
             template: '...',
           })
@@ -559,6 +566,7 @@ describe('bootstrap', () => {
 @Component({
   selector: '#my-app',
   template: 'works!',
+  standalone: false,
 })
 export class IdSelectorAppComponent {}
 
@@ -572,6 +580,7 @@ export class IdSelectorAppModule {}
 @Component({
   selector: '[foo],span,.bar',
   template: 'works!',
+  standalone: false,
 })
 export class MultipleSelectorsAppComponent {}
 

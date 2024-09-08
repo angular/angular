@@ -233,13 +233,21 @@ const AsyncMultiRenderHookProviders = [
 })
 class AsyncMultiRenderHookModule {}
 
-@Component({selector: 'app', template: `Works too!`})
+@Component({
+  selector: 'app',
+  template: `Works too!`,
+  standalone: false,
+})
 class MyServerApp2 {}
 
 @NgModule({declarations: [MyServerApp2], imports: [ServerModule], bootstrap: [MyServerApp2]})
 class ExampleModule2 {}
 
-@Component({selector: 'app', template: ``})
+@Component({
+  selector: 'app',
+  template: ``,
+  standalone: false,
+})
 class TitleApp {
   constructor(private title: Title) {}
   ngOnInit() {
@@ -418,7 +426,11 @@ export class MyHttpInterceptor implements HttpInterceptor {
 })
 export class HttpInterceptorExampleModule {}
 
-@Component({selector: 'app', template: `<img [src]="'link'">`})
+@Component({
+  selector: 'app',
+  template: `<img [src]="'link'">`,
+  standalone: false,
+})
 class ImageApp {}
 
 @NgModule({declarations: [ImageApp], imports: [ServerModule], bootstrap: [ImageApp]})
@@ -925,7 +937,6 @@ class HiddenModule {}
 
         it('appends SSR integrity marker comment when hydration is enabled', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: ``,
           })
@@ -1084,7 +1095,6 @@ class HiddenModule {}
         const ngZone = TestBed.inject(NgZone);
 
         @Component({
-          standalone: true,
           selector: 'lazy',
           template: `LazyCmp content`,
         })

@@ -37,7 +37,11 @@ describe('renderer factory lifecycle', () => {
   let logs: string[] = [];
   let lastCapturedType: RendererType2 | null = null;
 
-  @Component({selector: 'some-component', template: `foo`})
+  @Component({
+    selector: 'some-component',
+    template: `foo`,
+    standalone: false,
+  })
   class SomeComponent implements DoCheck {
     ngOnInit() {
       logs.push('some_component create');
@@ -47,14 +51,22 @@ describe('renderer factory lifecycle', () => {
     }
   }
 
-  @Component({selector: 'some-component-with-error', template: `With error`})
+  @Component({
+    selector: 'some-component-with-error',
+    template: `With error`,
+    standalone: false,
+  })
   class SomeComponentWhichThrows {
     ngOnInit() {
       throw new Error('SomeComponentWhichThrows threw');
     }
   }
 
-  @Component({selector: 'lol', template: `<some-component></some-component>`})
+  @Component({
+    selector: 'lol',
+    template: `<some-component></some-component>`,
+    standalone: false,
+  })
   class TestComponent implements DoCheck {
     ngOnInit() {
       logs.push('test_component create');
@@ -122,7 +134,6 @@ describe('renderer factory lifecycle', () => {
 
   it('should pass in the component styles directly into the underlying renderer', () => {
     @Component({
-      standalone: true,
       styles: ['.some-css-class { color: red; }'],
       template: '...',
       encapsulation: ViewEncapsulation.ShadowDom,
@@ -141,7 +152,6 @@ describe('renderer factory lifecycle', () => {
       const animB = {name: 'b'};
 
       @Component({
-        standalone: true,
         template: '',
         animations: [animA, animB],
       })
@@ -158,7 +168,6 @@ describe('renderer factory lifecycle', () => {
 
     it('should include animations in the renderType data array even if the array is empty', () => {
       @Component({
-        standalone: true,
         template: '...',
         animations: [],
       })
@@ -172,7 +181,6 @@ describe('renderer factory lifecycle', () => {
 
     it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {
       @Component({
-        standalone: true,
         template: '<div @fooAnimation></div>',
         animations: [],
       })
@@ -204,7 +212,6 @@ describe('renderer factory lifecycle', () => {
   it('should not invoke renderer destroy method for embedded views', () => {
     @Component({
       selector: 'comp',
-      standalone: true,
       imports: [CommonModule],
       template: `
         <div>Root view</div>
@@ -300,6 +307,7 @@ describe('animation renderer factory', () => {
         options: {},
       },
     ],
+    standalone: false,
   })
   class SomeComponentWithAnimation {
     exp: string | undefined;
@@ -309,7 +317,11 @@ describe('animation renderer factory', () => {
     }
   }
 
-  @Component({selector: 'some-component', template: 'foo'})
+  @Component({
+    selector: 'some-component',
+    template: 'foo',
+    standalone: false,
+  })
   class SomeComponent {}
 
   it('should work with components without animations', () => {
@@ -386,6 +398,7 @@ describe('custom renderer', () => {
   @Component({
     selector: 'some-component',
     template: `<div><span></span></div>`,
+    standalone: false,
   })
   class SomeComponent {}
 
@@ -437,6 +450,7 @@ describe('Renderer2 destruction hooks', () => {
       <span *ngIf="isContentVisible">B</span>
       <span *ngIf="isContentVisible">C</span>
     `,
+    standalone: false,
   })
   class SimpleApp {
     isContentVisible = true;
@@ -445,6 +459,7 @@ describe('Renderer2 destruction hooks', () => {
   @Component({
     selector: 'basic-comp',
     template: 'comp(<ng-content></ng-content>)',
+    standalone: false,
   })
   class BasicComponent {}
 
@@ -455,6 +470,7 @@ describe('Renderer2 destruction hooks', () => {
       <basic-comp *ngIf="isContentVisible">B</basic-comp>
       <basic-comp *ngIf="isContentVisible">C</basic-comp>
     `,
+    standalone: false,
   })
   class AppWithComponents {
     isContentVisible = true;

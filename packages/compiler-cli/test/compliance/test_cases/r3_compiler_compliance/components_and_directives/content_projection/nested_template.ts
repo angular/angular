@@ -1,7 +1,7 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <div id="second" *ngIf="visible">
       <ng-content SELECT="span[title=toFirst]"></ng-content>
     </div>
@@ -12,6 +12,7 @@ import {Component, NgModule} from '@angular/core';
       '*' selector: <ng-content></ng-content>
     </ng-template>
   `,
+    standalone: false
 })
 class Cmp {
 }

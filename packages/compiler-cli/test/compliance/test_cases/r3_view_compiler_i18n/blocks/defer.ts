@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <div i18n>
       Content:
       @defer (when isLoaded) {
@@ -14,7 +14,8 @@ import {Component} from '@angular/core';
         before<h1>error</h1>after
       }
     </div>
-  `
+  `,
+    standalone: false
 })
 export class MyApp {
   isLoaded = false;

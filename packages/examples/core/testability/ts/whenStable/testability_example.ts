@@ -15,6 +15,7 @@ import {BrowserModule} from '@angular/platform-browser';
     <button class="start-button" (click)="start()">Start long-running task</button>
     <div class="status">Status: {{ status }}</div>
   `,
+  standalone: false,
 })
 export class StableTestCmp {
   status = 'none';

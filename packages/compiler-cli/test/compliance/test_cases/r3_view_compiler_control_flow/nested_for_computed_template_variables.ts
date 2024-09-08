@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     @for (outer of items; track outer; let outerOdd = $odd, outerEven = $even, outerFirst = $first, outerLast = $last) {
       Outer vars: {{outerOdd}} {{outerEven}} {{outerFirst}} {{outerLast}}
       @for (inner of items; track inner; let innerOdd = $odd, innerEven = $even, innerFirst = $first, innerLast = $last) {
@@ -18,6 +18,7 @@ import {Component} from '@angular/core';
       }
     }
   `,
+    standalone: false
 })
 export class MyApp {
   items = [];

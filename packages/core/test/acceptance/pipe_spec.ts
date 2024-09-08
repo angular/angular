@@ -32,7 +32,10 @@ import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('pipe', () => {
-  @Pipe({name: 'countingPipe'})
+  @Pipe({
+    name: 'countingPipe',
+    standalone: false,
+  })
   class CountingPipe implements PipeTransform {
     state: number = 0;
     transform(value: any) {
@@ -40,7 +43,10 @@ describe('pipe', () => {
     }
   }
 
-  @Pipe({name: 'multiArgPipe'})
+  @Pipe({
+    name: 'multiArgPipe',
+    standalone: false,
+  })
   class MultiArgPipe implements PipeTransform {
     transform(value: any, arg1: any, arg2: any, arg3 = 'default') {
       return `${value} ${arg1} ${arg2} ${arg3}`;
@@ -50,6 +56,7 @@ describe('pipe', () => {
   it('should support interpolation', () => {
     @Component({
       template: '{{person.name | countingPipe}}',
+      standalone: false,
     })
     class App {
       person = {name: 'bob'};
@@ -63,12 +70,18 @@ describe('pipe', () => {
   });
 
   it('should support bindings', () => {
-    @Directive({selector: '[my-dir]'})
+    @Directive({
+      selector: '[my-dir]',
+      standalone: false,
+    })
     class Dir {
       @Input() dirProp: string = '';
     }
 
-    @Pipe({name: 'double'})
+    @Pipe({
+      name: 'double',
+      standalone: false,
+    })
     class DoublePipe implements PipeTransform {
       transform(value: any) {
         return `${value}${value}`;
@@ -77,6 +90,7 @@ describe('pipe', () => {
 
     @Component({
       template: `<div my-dir [dirProp]="'a'|double"></div>`,
+      standalone: false,
     })
     class App {
       @ViewChild(Dir) directive!: Dir;
@@ -92,6 +106,7 @@ describe('pipe', () => {
   it('should support arguments in pipes', () => {
     @Component({
       template: `{{person.name | multiArgPipe:'one':person.address.city}}`,
+      standalone: false,
     })
     class App {
       person = {name: 'value', address: {city: 'two'}};
@@ -107,6 +122,7 @@ describe('pipe', () => {
   it('should support calling pipes with different number of arguments', () => {
     @Component({
       template: `{{person.name | multiArgPipe:'a':'b'}} {{0 | multiArgPipe:1:2:3}}`,
+      standalone: false,
     })
     class App {
       person = {name: 'value'};
@@ -120,7 +136,10 @@ describe('pipe', () => {
   });
 
   it('should pick a Pipe defined in `declarations` over imported Pipes', () => {
-    @Pipe({name: 'number'})
+    @Pipe({
+      name: 'number',
+      standalone: false,
+    })
     class PipeA implements PipeTransform {
       transform(value: any) {
         return `PipeA: ${value}`;
@@ -133,7 +152,10 @@ describe('pipe', () => {
     })
     class ModuleA {}
 
-    @Pipe({name: 'number'})
+    @Pipe({
+      name: 'number',
+      standalone: false,
+    })
     class PipeB implements PipeTransform {
       transform(value: any) {
         return `PipeB: ${value}`;
@@ -143,6 +165,7 @@ describe('pipe', () => {
     @Component({
       selector: 'app',
       template: '{{ count | number }}',
+      standalone: false,
     })
     class App {
       count = 10;
@@ -159,7 +182,10 @@ describe('pipe', () => {
   });
 
   it('should respect imported module order when selecting Pipe (last imported Pipe is used)', () => {
-    @Pipe({name: 'number'})
+    @Pipe({
+      name: 'number',
+      standalone: false,
+    })
     class PipeA implements PipeTransform {
       transform(value: any) {
         return `PipeA: ${value}`;
@@ -172,7 +198,10 @@ describe('pipe', () => {
     })
     class ModuleA {}
 
-    @Pipe({name: 'number'})
+    @Pipe({
+      name: 'number',
+      standalone: false,
+    })
     class PipeB implements PipeTransform {
       transform(value: any) {
         return `PipeB: ${value}`;
@@ -188,6 +217,7 @@ describe('pipe', () => {
     @Component({
       selector: 'app',
       template: '{{ count | number }}',
+      standalone: false,
     })
     class App {
       count = 10;
@@ -206,7 +236,10 @@ describe('pipe', () => {
   it('should do nothing when no change', () => {
     let calls: any[] = [];
 
-    @Pipe({name: 'identityPipe'})
+    @Pipe({
+      name: 'identityPipe',
+      standalone: false,
+    })
     class IdentityPipe implements PipeTransform {
       transform(value: any) {
         calls.push(value);
@@ -216,6 +249,7 @@ describe('pipe', () => {
 
     @Component({
       template: `{{person.name | identityPipe}}`,
+      standalone: false,
     })
     class App {
       person = {name: 'Megatron'};
@@ -233,14 +267,20 @@ describe('pipe', () => {
   });
 
   it('should support duplicates by using the later entry', () => {
-    @Pipe({name: 'duplicatePipe'})
+    @Pipe({
+      name: 'duplicatePipe',
+      standalone: false,
+    })
     class DuplicatePipe1 implements PipeTransform {
       transform(value: any) {
         return `${value} from duplicate 1`;
       }
     }
 
-    @Pipe({name: 'duplicatePipe'})
+    @Pipe({
+      name: 'duplicatePipe',
+      standalone: false,
+    })
     class DuplicatePipe2 implements PipeTransform {
       transform(value: any) {
         return `${value} from duplicate 2`;
@@ -249,6 +289,7 @@ describe('pipe', () => {
 
     @Component({
       template: '{{person.name | duplicatePipe}}',
+      standalone: false,
     })
     class App {
       person = {name: 'bob'};
@@ -262,7 +303,10 @@ describe('pipe', () => {
   });
 
   it('should support pipe in context of ternary operator', () => {
-    @Pipe({name: 'pipe'})
+    @Pipe({
+      name: 'pipe',
+      standalone: false,
+    })
     class MyPipe implements PipeTransform {
       transform(value: any): any {
         return value;
@@ -271,6 +315,7 @@ describe('pipe', () => {
 
     @Component({
       template: `{{ condition ? 'a' : 'b' | pipe }}`,
+      standalone: false,
     })
     class App {
       condition = false;
@@ -325,7 +370,6 @@ describe('pipe', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'app',
       template: '{{ value | sayHello }}',
       imports: [SayHelloPipe],
@@ -343,6 +387,7 @@ describe('pipe', () => {
     it('should call pure pipes only if the arguments change', () => {
       @Component({
         template: '{{person.name | countingPipe}}',
+        standalone: false,
       })
       class App {
         person = {name: null as string | null};
@@ -381,7 +426,11 @@ describe('pipe', () => {
   describe('impure', () => {
     let impurePipeInstances: CountingImpurePipe[] = [];
 
-    @Pipe({name: 'countingImpurePipe', pure: false})
+    @Pipe({
+      name: 'countingImpurePipe',
+      pure: false,
+      standalone: false,
+    })
     class CountingImpurePipe implements PipeTransform {
       state: number = 0;
       transform(value: any) {
@@ -398,6 +447,7 @@ describe('pipe', () => {
     it('should call impure pipes on each change detection run', () => {
       @Component({
         template: '{{person.name | countingImpurePipe}}',
+        standalone: false,
       })
       class App {
         person = {name: 'bob'};
@@ -423,6 +473,7 @@ describe('pipe', () => {
           <div [id]="0 | countingImpurePipe">{{1 | countingImpurePipe}}</div>
           <div [id]="2 | countingImpurePipe">{{3 | countingImpurePipe}}</div>
         `,
+        standalone: false,
       })
       class App {}
 
@@ -444,7 +495,10 @@ describe('pipe', () => {
     it('should call ngOnDestroy on pipes', () => {
       let destroyCalls = 0;
 
-      @Pipe({name: 'pipeWithOnDestroy'})
+      @Pipe({
+        name: 'pipeWithOnDestroy',
+        standalone: false,
+      })
       class PipeWithOnDestroy implements PipeTransform, OnDestroy {
         ngOnDestroy() {
           destroyCalls++;
@@ -456,6 +510,7 @@ describe('pipe', () => {
 
       @Component({
         template: '{{1 | pipeWithOnDestroy}}',
+        standalone: false,
       })
       class App {}
 
@@ -475,7 +530,10 @@ describe('pipe', () => {
         title = 'Service Title';
       }
 
-      @Pipe({name: 'myConcatPipe'})
+      @Pipe({
+        name: 'myConcatPipe',
+        standalone: false,
+      })
       class ConcatPipe implements PipeTransform {
         constructor(public service: Service) {}
         transform(value: string): string {
@@ -485,6 +543,7 @@ describe('pipe', () => {
 
       @Component({
         template: '{{title | myConcatPipe}}',
+        standalone: false,
       })
       class App {
         title = 'MyComponent Title';
@@ -504,7 +563,10 @@ describe('pipe', () => {
 
       const token = new InjectionToken<Service>('service token');
 
-      @Pipe({name: 'myConcatPipe'})
+      @Pipe({
+        name: 'myConcatPipe',
+        standalone: false,
+      })
       class ConcatPipe implements PipeTransform {
         constructor(@Inject(token) public service: Service) {}
         transform(value: string): string {
@@ -514,6 +576,7 @@ describe('pipe', () => {
 
       @Component({
         template: '{{title | myConcatPipe}}',
+        standalone: false,
       })
       class App {
         title = 'MyComponent Title';
@@ -538,7 +601,10 @@ describe('pipe', () => {
       @NgModule({providers: [Service]})
       class SomeModule {}
 
-      @Pipe({name: 'myConcatPipe'})
+      @Pipe({
+        name: 'myConcatPipe',
+        standalone: false,
+      })
       class ConcatPipe implements PipeTransform {
         constructor(public service: Service) {}
         transform(value: string): string {
@@ -548,6 +614,7 @@ describe('pipe', () => {
 
       @Component({
         template: '{{title | myConcatPipe}}',
+        standalone: false,
       })
       class App {
         title = 'MyComponent Title';
@@ -567,6 +634,7 @@ describe('pipe', () => {
         changeDetection: ChangeDetectionStrategy.OnPush,
         selector: 'some-comp',
         template: 'Inner value: "{{displayValue}}"',
+        standalone: false,
       })
       class SomeComp {
         @Input() value: any;
@@ -579,6 +647,7 @@ describe('pipe', () => {
               <some-comp [value]="pipeValue | testPipe"></some-comp>
               Outer value: "{{displayValue}}"
             `,
+        standalone: false,
       })
       class App {
         @Input() something: any;
@@ -587,7 +656,10 @@ describe('pipe', () => {
         displayValue = 0;
       }
 
-      @Pipe({name: 'testPipe'})
+      @Pipe({
+        name: 'testPipe',
+        standalone: false,
+      })
       class TestPipe implements PipeTransform {
         constructor(changeDetectorRef: ChangeDetectorRef) {
           pipeChangeDetectorRef = changeDetectorRef;
@@ -618,6 +690,7 @@ describe('pipe', () => {
         changeDetection: ChangeDetectionStrategy.OnPush,
         selector: 'some-comp',
         template: 'Inner value: "{{displayValue}}" <ng-content></ng-content>',
+        standalone: false,
       })
       class SomeComp {
         @Input() value: any;
@@ -632,6 +705,7 @@ describe('pipe', () => {
               </some-comp>
               Outer value: "{{displayValue}}"
             `,
+        standalone: false,
       })
       class App {
         @Input() something: any;
@@ -640,7 +714,10 @@ describe('pipe', () => {
         displayValue = 0;
       }
 
-      @Pipe({name: 'testPipe'})
+      @Pipe({
+        name: 'testPipe',
+        standalone: false,
+      })
       class TestPipe implements PipeTransform {
         constructor(changeDetectorRef: ChangeDetectorRef) {
           pipeChangeDetectorRef = changeDetectorRef;
@@ -667,13 +744,20 @@ describe('pipe', () => {
 
   describe('pure pipe error handling', () => {
     it('should not re-invoke pure pipes if it fails initially', () => {
-      @Pipe({name: 'throwPipe', pure: true})
+      @Pipe({
+        name: 'throwPipe',
+        pure: true,
+        standalone: false,
+      })
       class ThrowPipe implements PipeTransform {
         transform(): never {
           throw new Error('ThrowPipeError');
         }
       }
-      @Component({template: `{{val | throwPipe}}`})
+      @Component({
+        template: `{{val | throwPipe}}`,
+        standalone: false,
+      })
       class App {
         val = 'anything';
       }
@@ -690,7 +774,11 @@ describe('pipe', () => {
     });
 
     it('should display the last known result from a pure pipe when it throws', () => {
-      @Pipe({name: 'throwPipe', pure: true})
+      @Pipe({
+        name: 'throwPipe',
+        pure: true,
+        standalone: false,
+      })
       class ThrowPipe implements PipeTransform {
         transform(value: string): string {
           if (value === 'KO') {
@@ -701,7 +789,10 @@ describe('pipe', () => {
         }
       }
 
-      @Component({template: `{{val | throwPipe}}`})
+      @Component({
+        template: `{{val | throwPipe}}`,
+        standalone: false,
+      })
       class App {
         val = 'anything';
       }
@@ -731,14 +822,21 @@ describe('pipe', () => {
         it(`should not invoke ${numberOfPipeArgs} argument pure pipe second time if it throws unless input changes`, () => {
           // https://stackblitz.com/edit/angular-mbx2pg
           const log: string[] = [];
-          @Pipe({name: 'throw', pure: true})
+          @Pipe({
+            name: 'throw',
+            pure: true,
+            standalone: false,
+          })
           class ThrowPipe implements PipeTransform {
             transform(): never {
               log.push('throw');
               throw new Error('ThrowPipeError');
             }
           }
-          @Component({template: `{{val | throw${args.slice(0, numberOfPipeArgs).join('')}}}`})
+          @Component({
+            template: `{{val | throw${args.slice(0, numberOfPipeArgs).join('')}}}`,
+            standalone: false,
+          })
           class App {
             val = 'anything';
           }
@@ -780,7 +878,10 @@ describe('pipe', () => {
       componentIsStandalone ? '' : 'non-'
     }standalone component)`, () => {
       it(`should throw an error if a pipe is not found in a component`, () => {
-        @Component({template: '{{ 1 | testMissingPipe }}', standalone: componentIsStandalone})
+        @Component({
+          template: '{{ 1 | testMissingPipe }}',
+          standalone: componentIsStandalone,
+        })
         class TestComponent {}
 
         if (!componentIsStandalone) {

@@ -54,7 +54,11 @@ describe('JsonPipe', () => {
   });
 
   describe('integration', () => {
-    @Component({selector: 'test-comp', template: '{{data | json}}'})
+    @Component({
+      selector: 'test-comp',
+      template: '{{data | json}}',
+      standalone: false,
+    })
     class TestComp {
       data: any;
     }
@@ -81,7 +85,6 @@ describe('JsonPipe', () => {
       selector: 'test-component',
       imports: [JsonPipe],
       template: '{{ value | json }}',
-      standalone: true,
     })
     class TestComponent {
       value = {'a': 1};

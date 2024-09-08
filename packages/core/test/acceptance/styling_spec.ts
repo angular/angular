@@ -34,7 +34,10 @@ describe('styling', () => {
 
   describe('apply in prioritization order', () => {
     it('should perform static bindings', () => {
-      @Component({template: `<div class="STATIC" style="color: blue"></div>`})
+      @Component({
+        template: `<div class="STATIC" style="color: blue"></div>`,
+        standalone: false,
+      })
       class Cmp {}
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -50,6 +53,7 @@ describe('styling', () => {
         template: `<div [class.dynamic]="true"
                         [style.color]="'blue'"
                         [style.width.px]="100"></div>`,
+        standalone: false,
       })
       class Cmp {}
 
@@ -66,6 +70,7 @@ describe('styling', () => {
       @Component({
         template: `<div [class]="{dynamic: true}"
                         [style]="{color: 'blue', width: '100px'}"></div>`,
+        standalone: false,
       })
       class Cmp {}
 
@@ -83,6 +88,7 @@ describe('styling', () => {
         template: `<div class="static {{'dynamic'}}"
                         style.color="blu{{'e'}}"
                         style="width: {{'100'}}px"></div>`,
+        standalone: false,
       })
       class Cmp {}
 
@@ -98,17 +104,20 @@ describe('styling', () => {
     it('should support hostBindings', () => {
       @Component({
         template: `<div my-host-bindings-2 my-host-bindings-1 class="STATIC" style="color: blue"></div>`,
+        standalone: false,
       })
       class Cmp {}
       @Directive({
         selector: '[my-host-bindings-1]',
         host: {'class': 'HOST_STATIC_1', 'style': 'font-family: "c1"'},
+        standalone: false,
       })
       class Dir1 {}
 
       @Directive({
         selector: '[my-host-bindings-2]',
         host: {'class': 'HOST_STATIC_2', 'style': 'font-family: "c2"'},
+        standalone: false,
       })
       class Dir2 {}
 
@@ -133,13 +142,20 @@ describe('styling', () => {
     });
 
     it('should support hostBindings inheritance', () => {
-      @Component({template: `<div my-host-bindings class="STATIC" style="color: blue;"></div>`})
+      @Component({
+        template: `<div my-host-bindings class="STATIC" style="color: blue;"></div>`,
+        standalone: false,
+      })
       class Cmp {}
-      @Directive({host: {'class': 'SUPER_STATIC', 'style': 'font-family: "super";'}})
+      @Directive({
+        host: {'class': 'SUPER_STATIC', 'style': 'font-family: "super";'},
+        standalone: false,
+      })
       class SuperDir {}
       @Directive({
         selector: '[my-host-bindings]',
         host: {'class': 'HOST_STATIC', 'style': 'font-family: "host font"'},
+        standalone: false,
       })
       class Dir extends SuperDir {}
 
@@ -164,6 +180,7 @@ describe('styling', () => {
           <div style='content: "foo"'></div>
           <div style="content: 'foo'"></div>
         `,
+        standalone: false,
       })
       class Cmp {}
 
@@ -185,6 +202,7 @@ describe('styling', () => {
              [class.bar]="true"
              [class.DELETE_PROP_B]="false"></div>
         `,
+        standalone: false,
       })
       class Cmp {}
 
@@ -204,6 +222,7 @@ describe('styling', () => {
              [style.color]=" 'blue' "
              [style.height.px]="undefined"></div>
         `,
+        standalone: false,
       })
       class Cmp {}
 
@@ -220,6 +239,7 @@ describe('styling', () => {
     it('should work with ngClass/ngStyle', () => {
       @Component({
         template: `<div [ngClass]="['dynamic']" [ngStyle]="{'font-family': 'dynamic'}"></div>`,
+        standalone: false,
       })
       class Cmp {}
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -251,6 +271,7 @@ describe('styling', () => {
             <span style="width: var(--my-var)">CONTENT</span>
           </div>
         `,
+        standalone: false,
       })
       class Cmp {}
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -267,7 +288,10 @@ describe('styling', () => {
         return;
       }
 
-      @Component({template: `<h1 style="width: var(--my-1337-var)">Hello</h1>`})
+      @Component({
+        template: `<h1 style="width: var(--my-1337-var)">Hello</h1>`,
+        standalone: false,
+      })
       class Cmp {
         @HostBinding('style') style = '--my-1337-var: 100px;';
       }
@@ -291,6 +315,7 @@ describe('styling', () => {
             <span style="width: var(--MyVar)">CONTENT</span>
           </div>
         `,
+        standalone: false,
       })
       class Cmp {}
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -306,7 +331,6 @@ describe('styling', () => {
     it('should allow null in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', null, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -319,7 +343,6 @@ describe('styling', () => {
     it('should allow undefined in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', undefined, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -332,7 +355,6 @@ describe('styling', () => {
     it('should allow zero in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', 0, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -345,7 +367,6 @@ describe('styling', () => {
     it('should allow false in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', false, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -358,7 +379,6 @@ describe('styling', () => {
     it('should ignore an empty string in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', '', 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -371,7 +391,6 @@ describe('styling', () => {
     it('should ignore a string containing spaces in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', 'hello there', 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -384,7 +403,6 @@ describe('styling', () => {
     it('should ignore a string containing spaces in a class object literal binding', () => {
       @Component({
         template: `<div [class]="{a: true, 'hello there': true, c: true}" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -397,7 +415,6 @@ describe('styling', () => {
     it('should ignore an object literal in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', {foo: true}, 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -410,7 +427,6 @@ describe('styling', () => {
     it('should handle a string array in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', ['foo', 'bar'], 'c']" [class.extra]="true"></div>`,
-        standalone: true,
       })
       class Cmp {}
 
@@ -427,10 +443,14 @@ describe('styling', () => {
       <div class="s1" [class]=" 'd1' " dir-shadows-class-input></div>
       <div class="s2 {{'d2'}}" dir-shadows-class-input></div>
       `,
+      standalone: false,
     })
     class Cmp {}
 
-    @Directive({selector: '[dir-shadows-class-input]'})
+    @Directive({
+      selector: '[dir-shadows-class-input]',
+      standalone: false,
+    })
     class DirectiveShadowsClassInput {
       constructor(private elementRef: ElementRef) {}
       @Input('class')
@@ -463,10 +483,15 @@ describe('styling', () => {
           <div class="s1" dir-shadows-class-input></div>
           <div class="s1" [class]=" 'd1' " dir-shadows-class-input></div>
           `,
+      standalone: false,
     })
     class Cmp {}
 
-    @Directive({selector: '[dir-shadows-class-input]', host: {'class': 'DIRECTIVE'}})
+    @Directive({
+      selector: '[dir-shadows-class-input]',
+      host: {'class': 'DIRECTIVE'},
+      standalone: false,
+    })
     class DirectiveShadowsClassInput {
       constructor(private elementRef: ElementRef) {}
       @Input('class')
@@ -498,10 +523,15 @@ describe('styling', () => {
           <div style="width: 1px;" dir-shadows-class-input></div>
           <div style="width: 1px;" [style]=" 'height:1px;' " dir-shadows-class-input></div>
           `,
+      standalone: false,
     })
     class Cmp {}
 
-    @Directive({selector: '[dir-shadows-class-input]', host: {'style': 'color: red;'}})
+    @Directive({
+      selector: '[dir-shadows-class-input]',
+      host: {'style': 'color: red;'},
+      standalone: false,
+    })
     class DirectiveShadowsStyleInput {
       constructor(private elementRef: ElementRef) {}
       @Input('style')
@@ -532,12 +562,16 @@ describe('styling', () => {
       template: `
                 <div class="s1" [class]="classBinding" dir-shadows-class-input></div>
               `,
+      standalone: false,
     })
     class Cmp {
       classBinding: any = undefined;
     }
 
-    @Directive({selector: '[dir-shadows-class-input]'})
+    @Directive({
+      selector: '[dir-shadows-class-input]',
+      standalone: false,
+    })
     class DirectiveShadowsClassInput {
       constructor(private elementRef: ElementRef) {}
       @Input('class')
@@ -575,10 +609,14 @@ describe('styling', () => {
       template: `
           <div style="color: red;" [style]=" 'width: 100px;' " dir-shadows-style-input></div>
           `,
+      standalone: false,
     })
     class Cmp {}
 
-    @Directive({selector: '[dir-shadows-style-input]'})
+    @Directive({
+      selector: '[dir-shadows-style-input]',
+      standalone: false,
+    })
     class DirectiveShadowsStyleInput {
       constructor(private elementRef: ElementRef) {}
       @Input('style')
@@ -597,10 +635,16 @@ describe('styling', () => {
   });
 
   it('should prevent circular ExpressionChangedAfterItHasBeenCheckedError on shadow inputs', () => {
-    @Component({template: `<div class="s1" dir-shadows-class-input></div>`})
+    @Component({
+      template: `<div class="s1" dir-shadows-class-input></div>`,
+      standalone: false,
+    })
     class Cmp {}
 
-    @Directive({selector: '[dir-shadows-class-input]'})
+    @Directive({
+      selector: '[dir-shadows-class-input]',
+      standalone: false,
+    })
     class DirectiveShadowsClassInput {
       @Input('class') klass: string | undefined;
 
@@ -625,6 +669,7 @@ describe('styling', () => {
         <span my-dir [class]="maybeThrow(klass)" [class.foo]="maybeThrow(foo)"></span>
       </div>
       `,
+      standalone: false,
     })
     class Cmp {
       id = 'throw_id';
@@ -640,7 +685,10 @@ describe('styling', () => {
     }
 
     let myDirHostBinding = false;
-    @Directive({selector: '[my-dir]'})
+    @Directive({
+      selector: '[my-dir]',
+      standalone: false,
+    })
     class MyDirective {
       @HostBinding('class.myDir')
       get myDir(): boolean {
@@ -687,10 +735,14 @@ describe('styling', () => {
       template: `
         <div directive-expecting-styling style="width:200px" class="abc xyz"></div>
       `,
+      standalone: false,
     })
     class Cmp {}
 
-    @Directive({selector: '[directive-expecting-styling]'})
+    @Directive({
+      selector: '[directive-expecting-styling]',
+      standalone: false,
+    })
     class DirectiveExpectingStyling {
       constructor(elm: ElementRef) {
         const native = elm.nativeElement;
@@ -715,10 +767,14 @@ describe('styling', () => {
       template: `
         <div directive-expecting-styling style="width:200px" class="abc"></div>
       `,
+      standalone: false,
     })
     class Cmp {}
 
-    @Directive({selector: '[directive-expecting-styling]'})
+    @Directive({
+      selector: '[directive-expecting-styling]',
+      standalone: false,
+    })
     class DirectiveExpectingStyling {
       constructor(elm: ElementRef) {
         const native = elm.nativeElement;
@@ -746,6 +802,7 @@ describe('styling', () => {
               </ng-container>
             </project>
           `,
+      standalone: false,
     })
     class MyApp {}
 
@@ -759,6 +816,7 @@ describe('styling', () => {
               <ng-content select=".inner"></ng-content>
             </div>
           `,
+      standalone: false,
     })
     class ProjectCmp {}
 
@@ -777,6 +835,7 @@ describe('styling', () => {
     @Component({
       selector: '[comp]',
       template: '',
+      standalone: false,
     })
     class Comp {}
 
@@ -786,6 +845,7 @@ describe('styling', () => {
           <p comp class="a">A</p>
         </ng-template>
       `,
+      standalone: false,
     })
     class App {
       items = [1, 2, 3];
@@ -801,7 +861,10 @@ describe('styling', () => {
   });
 
   it('should do nothing for empty style bindings', () => {
-    @Component({template: '<div [style.color]></div>'})
+    @Component({
+      template: '<div [style.color]></div>',
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({declarations: [App]});
@@ -812,7 +875,10 @@ describe('styling', () => {
   });
 
   it('should do nothing for empty class bindings', () => {
-    @Component({template: '<div [class.is-open]></div>'})
+    @Component({
+      template: '<div [class.is-open]></div>',
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({declarations: [App]});
@@ -823,7 +889,10 @@ describe('styling', () => {
   });
 
   it('should be able to bind zero', () => {
-    @Component({template: '<div #div [style.opacity]="opacity"></div>'})
+    @Component({
+      template: '<div #div [style.opacity]="opacity"></div>',
+      standalone: false,
+    })
     class App {
       @ViewChild('div') div!: ElementRef<HTMLElement>;
       opacity = 0;
@@ -837,7 +906,10 @@ describe('styling', () => {
   });
 
   it('should be able to bind a SafeValue to backgroundImage', () => {
-    @Component({template: '<div [style.backgroundImage]="image"></div>'})
+    @Component({
+      template: '<div [style.backgroundImage]="image"></div>',
+      standalone: false,
+    })
     class Cmp {
       image!: SafeStyle;
     }
@@ -859,7 +931,10 @@ describe('styling', () => {
   });
 
   it('should set !important on a single property', () => {
-    @Component({template: '<div [style.width]="width"></div>'})
+    @Component({
+      template: '<div [style.width]="width"></div>',
+      standalone: false,
+    })
     class Cmp {
       width!: string;
     }
@@ -881,7 +956,10 @@ describe('styling', () => {
   });
 
   it('should set !important that is not preceded by a space', () => {
-    @Component({template: '<div [style.width]="width"></div>'})
+    @Component({
+      template: '<div [style.width]="width"></div>',
+      standalone: false,
+    })
     class Cmp {
       width!: string;
     }
@@ -903,7 +981,10 @@ describe('styling', () => {
   });
 
   it('should set !important on a dash-case property', () => {
-    @Component({template: '<div [style.margin-right]="marginRight"></div>'})
+    @Component({
+      template: '<div [style.margin-right]="marginRight"></div>',
+      standalone: false,
+    })
     class Cmp {
       marginRight!: string;
     }
@@ -925,7 +1006,10 @@ describe('styling', () => {
   });
 
   it('should set !important on multiple properties', () => {
-    @Component({template: '<div [style]="styles"></div>'})
+    @Component({
+      template: '<div [style]="styles"></div>',
+      standalone: false,
+    })
     class Cmp {
       styles!: string;
     }
@@ -947,7 +1031,10 @@ describe('styling', () => {
   });
 
   it('should set !important if some properties are !important and other are not', () => {
-    @Component({template: '<div [style]="styles"></div>'})
+    @Component({
+      template: '<div [style]="styles"></div>',
+      standalone: false,
+    })
     class Cmp {
       styles!: string;
     }
@@ -972,12 +1059,20 @@ describe('styling', () => {
     // This ex is a bit contrived. In real apps, you might have a shared class that is extended
     // both by components with host elements and by directives on template nodes. In that case, the
     // host styles for the template directives should just be ignored.
-    @Directive({selector: 'ng-template[styleDir]', host: {'[style.display]': 'display'}})
+    @Directive({
+      selector: 'ng-template[styleDir]',
+      host: {'[style.display]': 'display'},
+      standalone: false,
+    })
     class StyleDir {
       display = 'block';
     }
 
-    @Component({selector: 'app-comp', template: `<ng-template styleDir></ng-template>`})
+    @Component({
+      selector: 'app-comp',
+      template: `<ng-template styleDir></ng-template>`,
+      standalone: false,
+    })
     class MyApp {}
 
     TestBed.configureTestingModule({declarations: [MyApp, StyleDir]});
@@ -985,7 +1080,10 @@ describe('styling', () => {
   });
 
   it('should be able to bind a SafeValue to clip-path', () => {
-    @Component({template: '<div [style.clip-path]="path"></div>'})
+    @Component({
+      template: '<div [style.clip-path]="path"></div>',
+      standalone: false,
+    })
     class Cmp {
       path!: SafeStyle;
     }
@@ -1018,6 +1116,7 @@ describe('styling', () => {
         <div class="a{{one}}b"></div>
         <div class="{{one}}"></div>
       `,
+      standalone: false,
     })
     class Cmp {
       one = '1';
@@ -1087,6 +1186,7 @@ describe('styling', () => {
         <div style="content: &quot;a{{one}}b&quot;"></div>
         <div style="{{self}}"></div>
       `,
+      standalone: false,
     })
     class Cmp {
       self = 'content: "self"';
@@ -1145,7 +1245,10 @@ describe('styling', () => {
   });
 
   it('should support interpolations inside a class binding when other classes are present', () => {
-    @Component({template: '<div class="zero i-{{one}} {{two}} three"></div>'})
+    @Component({
+      template: '<div class="zero i-{{one}} {{two}} three"></div>',
+      standalone: false,
+    })
     class Cmp {
       one = 'one';
       two = 'two';
@@ -1185,6 +1288,7 @@ describe('styling', () => {
         <div style.font-family="f{{one}}"></div>
         <div style.width="{{singleBinding}}"></div>
       `,
+      standalone: false,
     })
     class Cmp {
       singleBinding: string | null = '1337px';
@@ -1243,7 +1347,10 @@ describe('styling', () => {
   });
 
   it('should support interpolations when a style property has a unit suffix', () => {
-    @Component({template: '<div style.width.px="{{one}}{{three}}{{three}}7"></div>'})
+    @Component({
+      template: '<div style.width.px="{{one}}{{three}}{{three}}7"></div>',
+      standalone: false,
+    })
     class Cmp {
       one = 1;
       three = 3;
@@ -1269,13 +1376,19 @@ describe('styling', () => {
     let capturedMyClassBindingCount = 0;
     let capturedMyClassBindingValue: string | null | undefined = undefined;
 
-    @Component({template: '<div [class]="c" [my-class-dir]="x"></div>'})
+    @Component({
+      template: '<div [class]="c" [my-class-dir]="x"></div>',
+      standalone: false,
+    })
     class Cmp {
       c: any = null;
       x = 'foo';
     }
 
-    @Directive({selector: '[my-class-dir]'})
+    @Directive({
+      selector: '[my-class-dir]',
+      standalone: false,
+    })
     class MyClassDir {
       @Input('class')
       set classVal(v: string) {
@@ -1328,12 +1441,18 @@ describe('styling', () => {
     let capturedClassBindingCount = 0;
     let capturedClassBindingValue: string | null | undefined = undefined;
 
-    @Component({template: '<div [class]="c" my-class-dir></div>'})
+    @Component({
+      template: '<div [class]="c" my-class-dir></div>',
+      standalone: false,
+    })
     class Cmp {
       c: any = 'bar';
     }
 
-    @Directive({selector: '[my-class-dir]'})
+    @Directive({
+      selector: '[my-class-dir]',
+      standalone: false,
+    })
     class MyClassDir {
       @Input('class')
       set classVal(v: string) {
@@ -1363,12 +1482,18 @@ describe('styling', () => {
     let capturedMyClassBindingCount = 0;
     let capturedMyClassBindingValue: string | null = null;
 
-    @Component({template: '<div class="static-val" [my-class-dir]="x"></div>'})
+    @Component({
+      template: '<div class="static-val" [my-class-dir]="x"></div>',
+      standalone: false,
+    })
     class Cmp {
       x = 'foo';
     }
 
-    @Directive({selector: '[my-class-dir]'})
+    @Directive({
+      selector: '[my-class-dir]',
+      standalone: false,
+    })
     class MyClassDir {
       @Input('class')
       set classVal(v: string) {
@@ -1397,12 +1522,14 @@ describe('styling', () => {
     @Component({
       selector: 'comp',
       template: `{{className}}`,
+      standalone: false,
     })
     class Comp {
       @Input() className: string = '';
     }
     @Component({
       template: `<comp [className]="'my-className'"></comp>`,
+      standalone: false,
     })
     class App {}
 
@@ -1416,6 +1543,7 @@ describe('styling', () => {
     @Component({
       selector: 'comp',
       template: `{{className}}`,
+      standalone: false,
     })
     class Comp {
       @Input('class') className: string = '';
@@ -1423,6 +1551,7 @@ describe('styling', () => {
 
     @Component({
       template: `<comp class="static" [class]="'my-className'"></comp>`,
+      standalone: false,
     })
     class App {}
 
@@ -1438,13 +1567,19 @@ describe('styling', () => {
     let capturedMyClassBindingCount = 0;
     let capturedMyClassBindingValue: string | null = null;
 
-    @Component({template: '<div class="static-val" [class]="c" [my-class-dir]="x"></div>'})
+    @Component({
+      template: '<div class="static-val" [class]="c" [my-class-dir]="x"></div>',
+      standalone: false,
+    })
     class Cmp {
       c: any = null;
       x: any = 'foo';
     }
 
-    @Directive({selector: '[my-class-dir]'})
+    @Directive({
+      selector: '[my-class-dir]',
+      standalone: false,
+    })
     class MyClassDir {
       @Input('class')
       set classVal(v: string) {
@@ -1494,15 +1629,24 @@ describe('styling', () => {
       template: `
         <div dir-one dir-two></div>
       `,
+      standalone: false,
     })
     class Cmp {}
 
-    @Directive({selector: '[dir-one]', host: {'[class.dir-one]': 'dirOneExp'}})
+    @Directive({
+      selector: '[dir-one]',
+      host: {'[class.dir-one]': 'dirOneExp'},
+      standalone: false,
+    })
     class DirOne {
       dirOneExp = true;
     }
 
-    @Directive({selector: '[dir-two]', host: {'class': 'dir-two'}})
+    @Directive({
+      selector: '[dir-two]',
+      host: {'class': 'dir-two'},
+      standalone: false,
+    })
     class DirTwo {}
 
     TestBed.configureTestingModule({declarations: [Cmp, DirOne, DirTwo]});
@@ -1523,6 +1667,7 @@ describe('styling', () => {
             [style.margin]="''"
             [style.font-size]="'   '"></div>
         `,
+      standalone: false,
     })
     class Cmp {}
 
@@ -1539,10 +1684,16 @@ describe('styling', () => {
     // that TestDir's injector is not overwritten by NgClass, so TestDir should still
     // be found by DI when ChildDir is instantiated.
     it('should not overwrite other directive info when using NgClass', () => {
-      @Directive({selector: '[test-dir]'})
+      @Directive({
+        selector: '[test-dir]',
+        standalone: false,
+      })
       class TestDir {}
 
-      @Directive({selector: '[child-dir]'})
+      @Directive({
+        selector: '[child-dir]',
+        standalone: false,
+      })
       class ChildDir {
         constructor(public parent: TestDir) {}
       }
@@ -1554,6 +1705,7 @@ describe('styling', () => {
             <div *ngIf="showing" child-dir>Hello</div>
           </div>
         `,
+        standalone: false,
       })
       class AppComponent {
         classMap = {'with-button': true};
@@ -1579,7 +1731,10 @@ describe('styling', () => {
   });
 
   it('should be able to name inputs starting with `class` or `style`', () => {
-    @Directive({selector: '[dir]'})
+    @Directive({
+      selector: '[dir]',
+      standalone: false,
+    })
     class Dir {
       @Input('classesInSchool') classes = '';
       @Input('styleOfClothing') style = '';
@@ -1587,6 +1742,7 @@ describe('styling', () => {
 
     @Component({
       template: '<span dir [classesInSchool]="classes" [styleOfClothing]="style"></span>',
+      standalone: false,
     })
     class App {
       @ViewChild(Dir) dir!: Dir;
@@ -1605,7 +1761,10 @@ describe('styling', () => {
   });
 
   it('should be able to bind to `className`', () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class App {
       @HostBinding('className') klass = 'one two';
     }
@@ -1629,6 +1788,7 @@ describe('styling', () => {
              [class.abc]="abc"
              [class.xyz]="xyz"></div>
       `,
+      standalone: false,
     })
     class Cmp {
       w: string | null | undefined = '100px';
@@ -1672,12 +1832,19 @@ describe('styling', () => {
   });
 
   it('should apply single style/class across the template and directive host bindings', () => {
-    @Directive({selector: '[dir-that-sets-width]'})
+    @Directive({
+      selector: '[dir-that-sets-width]',
+      standalone: false,
+    })
     class DirThatSetsWidthDirective {
       @Input('dir-that-sets-width') @HostBinding('style.width') public width: string = '';
     }
 
-    @Directive({selector: '[another-dir-that-sets-width]', host: {'[style.width]': 'width'}})
+    @Directive({
+      selector: '[another-dir-that-sets-width]',
+      host: {'[style.width]': 'width'},
+      standalone: false,
+    })
     class AnotherDirThatSetsWidthDirective {
       @Input('another-dir-that-sets-width') public width: string = '';
     }
@@ -1688,6 +1855,7 @@ describe('styling', () => {
              [dir-that-sets-width]="w1"
              [another-dir-that-sets-width]="w2">
       `,
+      standalone: false,
     })
     class Cmp {
       w0: string | null | undefined = null;
@@ -1735,12 +1903,18 @@ describe('styling', () => {
   });
 
   it('should only run stylingFlush once when there are no collisions between styling properties', () => {
-    @Directive({selector: '[dir-with-styling]'})
+    @Directive({
+      selector: '[dir-with-styling]',
+      standalone: false,
+    })
     class DirWithStyling {
       @HostBinding('style.font-size') public fontSize = '100px';
     }
 
-    @Component({selector: 'comp-with-styling'})
+    @Component({
+      selector: 'comp-with-styling',
+      standalone: false,
+    })
     class CompWithStyling {
       @HostBinding('style.width') public width = '900px';
 
@@ -1753,6 +1927,7 @@ describe('styling', () => {
           [style.opacity]="opacity"
           dir-with-styling>...</comp-with-styling>
       `,
+      standalone: false,
     })
     class Cmp {
       opacity: string | null = '0.5';
@@ -1792,7 +1967,10 @@ describe('styling', () => {
   });
 
   it('should combine all styling across the template, directive and component host bindings', () => {
-    @Directive({selector: '[dir-with-styling]'})
+    @Directive({
+      selector: '[dir-with-styling]',
+      standalone: false,
+    })
     class DirWithStyling {
       @HostBinding('style.color') public color = 'red';
 
@@ -1801,7 +1979,10 @@ describe('styling', () => {
       @HostBinding('class.dir') public dirClass = true;
     }
 
-    @Component({selector: 'comp-with-styling'})
+    @Component({
+      selector: 'comp-with-styling',
+      standalone: false,
+    })
     class CompWithStyling {
       @HostBinding('style.width') public width = '900px';
 
@@ -1818,6 +1999,7 @@ describe('styling', () => {
           [class.tpl]="tplClass"
           dir-with-styling>...</comp-with-styling>
       `,
+      standalone: false,
     })
     class Cmp {
       opacity: string | null | undefined = '0.5';
@@ -1868,12 +2050,18 @@ describe('styling', () => {
   });
 
   it('should properly apply styling across sub and super class directive host bindings', () => {
-    @Directive({selector: '[super-class-dir]'})
+    @Directive({
+      selector: '[super-class-dir]',
+      standalone: false,
+    })
     class SuperClassDirective {
       @HostBinding('style.width') public w1 = '100px';
     }
 
-    @Component({selector: '[sub-class-dir]'})
+    @Component({
+      selector: '[sub-class-dir]',
+      standalone: false,
+    })
     class SubClassDirective extends SuperClassDirective {
       @HostBinding('style.width') public w2 = '200px';
     }
@@ -1882,6 +2070,7 @@ describe('styling', () => {
       template: `
           <div sub-class-dir [style.width]="w3"></div>
       `,
+      standalone: false,
     })
     class Cmp {
       w3: string | null | undefined = '300px';
@@ -1911,7 +2100,10 @@ describe('styling', () => {
   });
 
   it('should apply map-based style and class entries', () => {
-    @Component({template: '<div [style]="s" [class]="c"></div>'})
+    @Component({
+      template: '<div [style]="s" [class]="c"></div>',
+      standalone: false,
+    })
     class Cmp {
       public c: {[key: string]: any} | null = null;
       updateClasses(classes: string) {
@@ -1959,7 +2151,10 @@ describe('styling', () => {
   });
 
   it('should resolve styling collisions across templates, directives and components for prop and map-based entries', () => {
-    @Directive({selector: '[dir-that-sets-styling]'})
+    @Directive({
+      selector: '[dir-that-sets-styling]',
+      standalone: false,
+    })
     class DirThatSetsStyling {
       @HostBinding('style') public map: any = {color: 'red', width: '777px'};
     }
@@ -1973,6 +2168,7 @@ describe('styling', () => {
              #dir
              [class.xyz]="xyz"></div>
       `,
+      standalone: false,
     })
     class Cmp {
       map: any = {width: '111px', opacity: '0.5'};
@@ -2023,7 +2219,11 @@ describe('styling', () => {
   });
 
   it('should only apply each styling property once per CD across templates, components, directives', () => {
-    @Directive({selector: '[dir-that-sets-styling]', host: {'style': 'width:0px; height:0px'}})
+    @Directive({
+      selector: '[dir-that-sets-styling]',
+      host: {'style': 'width:0px; height:0px'},
+      standalone: false,
+    })
     class DirThatSetsStyling {
       @HostBinding('style') public map: any = {width: '999px', height: '999px'};
     }
@@ -2036,6 +2236,7 @@ describe('styling', () => {
                   [style]="map"
                   dir-that-sets-styling></div>
               `,
+      standalone: false,
     })
     class Cmp {
       width: string | null | undefined = '111px';
@@ -2164,6 +2365,7 @@ describe('styling', () => {
                         <div [style.width]="widthExp"
                              [style.background-image]="bgImageExp"></div>
                       `,
+      standalone: false,
     })
     class Cmp {
       widthExp = '';
@@ -2197,6 +2399,7 @@ describe('styling', () => {
                     <div [style.width]="widthExp"
                          [style]="styleMapExp"></div>
                   `,
+      standalone: false,
     })
     class Cmp {
       widthExp = '';
@@ -2231,6 +2434,7 @@ describe('styling', () => {
             <div [style.width.px]="widthExp"
                  [style.height.em]="heightExp"></div>
           `,
+      standalone: false,
     })
     class Cmp {
       widthExp: string | number | null = '';
@@ -2258,7 +2462,10 @@ describe('styling', () => {
   });
 
   it('should be able to bind a SafeValue to clip-path', () => {
-    @Component({template: '<div [style.clip-path]="path"></div>'})
+    @Component({
+      template: '<div [style.clip-path]="path"></div>',
+      standalone: false,
+    })
     class Cmp {
       path!: SafeStyle;
     }
@@ -2289,6 +2496,7 @@ describe('styling', () => {
         <!-- Verify regular style prop values not wrapped in SafeValue -->
         <span [style.color]="getColorUnsafe()"></span>
       `,
+      standalone: false,
     })
     class MyComp {
       constructor(private sanitizer: DomSanitizer) {}
@@ -2346,12 +2554,18 @@ describe('styling', () => {
   });
 
   it('should evaluate follow-up [style] maps even if a former map is null', () => {
-    @Directive({selector: '[dir-with-styling]'})
+    @Directive({
+      selector: '[dir-with-styling]',
+      standalone: false,
+    })
     class DirWithStyleMap {
       @HostBinding('style') public styleMap: any = {color: 'red'};
     }
 
-    @Directive({selector: '[dir-with-styling-part2]'})
+    @Directive({
+      selector: '[dir-with-styling-part2]',
+      standalone: false,
+    })
     class DirWithStyleMapPart2 {
       @HostBinding('style') public styleMap: any = {width: '200px'};
     }
@@ -2363,6 +2577,7 @@ describe('styling', () => {
               dir-with-styling
               dir-with-styling-part2></div>
       `,
+      standalone: false,
     })
     class Cmp {
       map: any = null;
@@ -2391,6 +2606,7 @@ describe('styling', () => {
               {{ item }}
             </div>
           `,
+      standalone: false,
     })
     class Cmp {
       items = [1, 2, 3];
@@ -2448,6 +2664,7 @@ describe('styling', () => {
             </div>
             <footer class="footer">footer</footer>
           `,
+      standalone: false,
     })
     class Cmp {
       items = [1, 2, 3];
@@ -2481,12 +2698,18 @@ describe('styling', () => {
   });
 
   it('should understand multiple directives which contain initial classes', () => {
-    @Directive({selector: 'dir-one'})
+    @Directive({
+      selector: 'dir-one',
+      standalone: false,
+    })
     class DirOne {
       @HostBinding('class') public className = 'dir-one';
     }
 
-    @Directive({selector: 'dir-two'})
+    @Directive({
+      selector: 'dir-two',
+      standalone: false,
+    })
     class DirTwo {
       @HostBinding('class') public className = 'dir-two';
     }
@@ -2497,6 +2720,7 @@ describe('styling', () => {
             <div class="initial"></div>
             <dir-two></dir-two>
           `,
+      standalone: false,
     })
     class Cmp {}
 
@@ -2514,12 +2738,18 @@ describe('styling', () => {
   });
 
   it('should evaluate styling across the template directives when there are multiple elements/sources of styling', () => {
-    @Directive({selector: '[one]'})
+    @Directive({
+      selector: '[one]',
+      standalone: false,
+    })
     class DirOne {
       @HostBinding('class') public className = 'dir-one';
     }
 
-    @Directive({selector: '[two]'})
+    @Directive({
+      selector: '[two]',
+      standalone: false,
+    })
     class DirTwo {
       @HostBinding('class') public className = 'dir-two';
     }
@@ -2530,6 +2760,7 @@ describe('styling', () => {
                 <div class="b" [style.height.px]="h" one two></div>
                 <div class="c" [style.color]="c" two></div>
               `,
+      standalone: false,
     })
     class Cmp {
       w = 100;
@@ -2551,7 +2782,10 @@ describe('styling', () => {
   });
 
   it('should evaluate styling across the template and directives within embedded views', () => {
-    @Directive({selector: '[some-dir-with-styling]'})
+    @Directive({
+      selector: '[some-dir-with-styling]',
+      standalone: false,
+    })
     class SomeDirWithStyling {
       @HostBinding('style')
       public styles = {
@@ -2573,6 +2807,7 @@ describe('styling', () => {
                 <section [style.width.px]="w"></section>
                 <p [style.height.px]="h"></p>
               `,
+      standalone: false,
     })
     class Cmp {
       items: any[] = [];
@@ -2602,19 +2837,28 @@ describe('styling', () => {
   });
 
   it("should flush bindings even if any styling hasn't changed in a previous directive", () => {
-    @Directive({selector: '[one]'})
+    @Directive({
+      selector: '[one]',
+      standalone: false,
+    })
     class DirOne {
       @HostBinding('style.width') w = '100px';
       @HostBinding('style.opacity') o = '0.5';
     }
 
-    @Directive({selector: '[two]'})
+    @Directive({
+      selector: '[two]',
+      standalone: false,
+    })
     class DirTwo {
       @HostBinding('style.height') h = '200px';
       @HostBinding('style.color') c = 'red';
     }
 
-    @Component({template: '<div #target one two></div>'})
+    @Component({
+      template: '<div #target one two></div>',
+      standalone: false,
+    })
     class Cmp {
       @ViewChild('target', {read: DirOne, static: true}) one!: DirOne;
       @ViewChild('target', {read: DirTwo, static: true}) two!: DirTwo;
@@ -2647,6 +2891,7 @@ describe('styling', () => {
               style.height="{{ h }}"
               [style.opacity]="o"></div>
           `,
+      standalone: false,
     })
     class Cmp {
       w: any = null;
@@ -2682,6 +2927,7 @@ describe('styling', () => {
       template: `
             <div [ngClass]="c" [ngStyle]="s"></div>
           `,
+      standalone: false,
     })
     class Cmp {
       c: any = 'foo bar';
@@ -2703,6 +2949,7 @@ describe('styling', () => {
       template: `
         <div [ngStyle]="s"></div>
       `,
+      standalone: false,
     })
     class Cmp {
       s: any = {opacity: '1'};
@@ -2732,6 +2979,7 @@ describe('styling', () => {
       template: `
           <div [class.ready-child]="readyTpl"></div>
         `,
+      standalone: false,
     })
     class ChildCmp {
       readyTpl = false;
@@ -2750,6 +2998,7 @@ describe('styling', () => {
       host: {
         '[style.color]': 'color',
       },
+      standalone: false,
     })
     class ParentCmp {
       private _prop = '';
@@ -2779,6 +3028,7 @@ describe('styling', () => {
 
     @Component({
       template: `<parent [prop]="prop"></parent>`,
+      standalone: false,
     })
     class App {
       prop = 'a';
@@ -2809,6 +3059,7 @@ describe('styling', () => {
       template: `
           <div [class.ready-child]="readyTpl"></div>
         `,
+      standalone: false,
     })
     class ChildCmp {
       readyTpl = false;
@@ -2824,6 +3075,7 @@ describe('styling', () => {
             <p>{{prop}}</p>
           </div>
         `,
+      standalone: false,
     })
     class ParentCmp {
       updateChild = false;
@@ -2847,6 +3099,7 @@ describe('styling', () => {
 
     @Component({
       template: `<parent #parent></parent>`,
+      standalone: false,
     })
     class App {
       @ViewChild('parent', {static: true}) public parent: ParentCmp | null = null;
@@ -2879,6 +3132,7 @@ describe('styling', () => {
                 [style]="s1"
                 [dir-with-styling]="s2">
          `,
+      standalone: false,
     })
     class Cmp {
       h = '100px';
@@ -2887,7 +3141,10 @@ describe('styling', () => {
       s2: any = {border: '10px solid red', width: '300px'};
     }
 
-    @Directive({selector: '[dir-with-styling]'})
+    @Directive({
+      selector: '[dir-with-styling]',
+      standalone: false,
+    })
     class DirectiveExpectingStyling {
       @Input('dir-with-styling') @HostBinding('style') public styles: any = null;
     }
@@ -2913,6 +3170,7 @@ describe('styling', () => {
     let dirInstance: any;
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       constructor(
@@ -2929,7 +3187,10 @@ describe('styling', () => {
       }
     }
 
-    @Component({template: `<div dir></div>`})
+    @Component({
+      template: `<div dir></div>`,
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({
@@ -2948,6 +3209,7 @@ describe('styling', () => {
     let dirInstance: any;
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       constructor(
@@ -2958,7 +3220,10 @@ describe('styling', () => {
       }
     }
 
-    @Component({template: `<div dir></div>`})
+    @Component({
+      template: `<div dir></div>`,
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({
@@ -2990,6 +3255,7 @@ describe('styling', () => {
         <span class="container" [ngClass]="{disabled: isDisabled}"></span>
         <div [style.background]="background"></div>
       `,
+      standalone: false,
     })
     class AppComponent {
       isDisabled = false;
@@ -3009,7 +3275,10 @@ describe('styling', () => {
   });
 
   it('should not set classes when falsy value is passed while a sanitizer from host bindings is present', () => {
-    @Directive({selector: '[blockStyles]'})
+    @Directive({
+      selector: '[blockStyles]',
+      standalone: false,
+    })
     class StylesDirective {
       @HostBinding('style.border') border = '1px solid red';
 
@@ -3018,6 +3287,7 @@ describe('styling', () => {
 
     @Component({
       template: `<div class="container" [ngClass]="{disabled: isDisabled}" blockStyles></div>`,
+      standalone: false,
     })
     class AppComponent {
       isDisabled = false;
@@ -3040,6 +3310,7 @@ describe('styling', () => {
       template: `
         <div [style.color]="color" [class.foo]="fooClass"></div>
       `,
+      standalone: false,
     })
     class Cmp {
       color = 'red';
@@ -3064,6 +3335,7 @@ describe('styling', () => {
       template: `
                 <div [style]="style" [class]="klass"></div>
               `,
+      standalone: false,
     })
     class Cmp {
       style: any = 'width: 100px';
@@ -3086,6 +3358,7 @@ describe('styling', () => {
   it('should properly merge class interpolation with class-based directives', () => {
     @Component({
       template: `<div class="zero {{one}}" [class.two]="true" [ngClass]="'three'"></div>`,
+      standalone: false,
     })
     class MyComp {
       one = 'one';
@@ -3108,6 +3381,7 @@ describe('styling', () => {
         <div id="first" class="zero {{one}}" [class]="'two'"></div>
         <div id="second" [class]="'two'" class="zero {{one}}"></div>
       `,
+      standalone: false,
     })
     class MyComp {
       one = 'one';
@@ -3134,6 +3408,7 @@ describe('styling', () => {
         <div id="first" style="margin: {{margin}}" [style]="'padding: 20px;'"></div>
         <div id="second" [style]="'padding: 20px;'" style="margin: {{margin}}"></div>
       `,
+      standalone: false,
     })
     class MyComp {
       margin = '10px';
@@ -3155,6 +3430,7 @@ describe('styling', () => {
   it('should allow to reset style property value defined using [style.prop.px] binding', () => {
     @Component({
       template: '<div [style.left.px]="left"></div>',
+      standalone: false,
     })
     class MyComp {
       left = '';
@@ -3181,7 +3457,10 @@ describe('styling', () => {
   });
 
   it('should retain classes added externally', () => {
-    @Component({template: `<div [class]="exp"></div>`})
+    @Component({
+      template: `<div [class]="exp"></div>`,
+      standalone: false,
+    })
     class MyComp {
       exp = '';
     }
@@ -3212,7 +3491,10 @@ describe('styling', () => {
 
   describe('ExpressionChangedAfterItHasBeenCheckedError', () => {
     it('should not throw when bound to SafeValue', () => {
-      @Component({template: `<div [style.background-image]="iconSafe"></div>`})
+      @Component({
+        template: `<div [style.background-image]="iconSafe"></div>`,
+        standalone: false,
+      })
       class MyComp {
         icon = 'https://i.imgur.com/4AiXzf8.jpg';
         get iconSafe() {
@@ -3243,6 +3525,7 @@ describe('styling', () => {
         <div></div>
       `,
         styles: ['div { width: 100px; }'],
+        standalone: false,
       })
       class MyComp {}
 
@@ -3267,10 +3550,14 @@ describe('styling', () => {
             [attr.title]="'my-title'"
             [attr.data-foo]="'my-foo'">
         </div>`,
+      standalone: false,
     })
     class MyComp {}
 
-    @Directive({selector: '[dir-that-sets-styles]'})
+    @Directive({
+      selector: '[dir-that-sets-styles]',
+      standalone: false,
+    })
     class DirThatSetsStyling {
       @HostBinding('style.width') public w = '100px';
       @HostBinding('style.height') public h = '200px';
@@ -3289,7 +3576,10 @@ describe('styling', () => {
   });
 
   it('should allow host styling on the root element with external styling', () => {
-    @Component({template: '...'})
+    @Component({
+      template: '...',
+      standalone: false,
+    })
     class MyComp {
       @HostBinding('class') public classes = '';
     }
@@ -3314,7 +3604,10 @@ describe('styling', () => {
   });
 
   it('should apply camelCased class names', () => {
-    @Component({template: `<div [class]="'fooBar'" [class.barFoo]="true"></div>`})
+    @Component({
+      template: `<div [class]="'fooBar'" [class.barFoo]="true"></div>`,
+      standalone: false,
+    })
     class MyComp {}
 
     TestBed.configureTestingModule({
@@ -3329,7 +3622,10 @@ describe('styling', () => {
   });
 
   it('should convert camelCased style property names to snake-case', () => {
-    @Component({template: `<div [style]="myStyles"></div>`})
+    @Component({
+      template: `<div [style]="myStyles"></div>`,
+      standalone: false,
+    })
     class MyComp {
       myStyles = {};
     }
@@ -3350,7 +3646,10 @@ describe('styling', () => {
   it('should recover from an error thrown in styling bindings', () => {
     let raiseWidthError = false;
 
-    @Component({template: `<div [style.width]="myWidth" [style.height]="'200px'"></div>`})
+    @Component({
+      template: `<div [style.width]="myWidth" [style.height]="'200px'"></div>`,
+      standalone: false,
+    })
     class MyComp {
       get myWidth() {
         if (raiseWidthError) {
@@ -3374,14 +3673,21 @@ describe('styling', () => {
   });
 
   it('should prioritize host bindings for templates first, then directives and finally components', () => {
-    @Component({selector: 'my-comp-with-styling', template: ''})
+    @Component({
+      selector: 'my-comp-with-styling',
+      template: '',
+      standalone: false,
+    })
     class MyCompWithStyling {
       @HostBinding('style') myStyles: any = {width: '300px'};
 
       @HostBinding('style.height') myHeight: any = '305px';
     }
 
-    @Directive({selector: '[my-dir-with-styling]'})
+    @Directive({
+      selector: '[my-dir-with-styling]',
+      standalone: false,
+    })
     class MyDirWithStyling {
       @HostBinding('style') myStyles: any = {width: '200px'};
 
@@ -3397,6 +3703,7 @@ describe('styling', () => {
             [style]="myStyles">
           </my-comp-with-styling>
       `,
+      standalone: false,
     })
     class MyComp {
       myStyles: {width?: string} = {width: '100px'};
@@ -3435,13 +3742,25 @@ describe('styling', () => {
   });
 
   it('should prioritize directive static bindings over components', () => {
-    @Component({selector: 'my-comp-with-styling', host: {style: 'color: blue'}, template: ''})
+    @Component({
+      selector: 'my-comp-with-styling',
+      host: {style: 'color: blue'},
+      template: '',
+      standalone: false,
+    })
     class MyCompWithStyling {}
 
-    @Directive({selector: '[my-dir-with-styling]', host: {style: 'color: red'}})
+    @Directive({
+      selector: '[my-dir-with-styling]',
+      host: {style: 'color: red'},
+      standalone: false,
+    })
     class MyDirWithStyling {}
 
-    @Component({template: `<my-comp-with-styling my-dir-with-styling></my-comp-with-styling>`})
+    @Component({
+      template: `<my-comp-with-styling my-dir-with-styling></my-comp-with-styling>`,
+      standalone: false,
+    })
     class MyComp {}
 
     TestBed.configureTestingModule({declarations: [MyComp, MyCompWithStyling, MyDirWithStyling]});
@@ -3456,6 +3775,7 @@ describe('styling', () => {
     @Directive({
       selector: '[dir-that-sets-one-two]',
       exportAs: 'one',
+      standalone: false,
     })
     class DirThatSetsOneTwo {
       @HostBinding('class.one') one = false;
@@ -3465,6 +3785,7 @@ describe('styling', () => {
     @Directive({
       selector: '[dir-that-sets-three-four]',
       exportAs: 'two',
+      standalone: false,
     })
     class DirThatSetsThreeFour {
       @HostBinding('class.three') three = false;
@@ -3481,6 +3802,7 @@ describe('styling', () => {
              dir-that-sets-one-two
              dir-that-sets-three-four></div>
          `,
+      standalone: false,
     })
     class MyComp {
       @ViewChild('div1', {static: true, read: DirThatSetsOneTwo})
@@ -3558,7 +3880,12 @@ describe('styling', () => {
   });
 
   it('should combine static host classes with component "class" host attribute', () => {
-    @Component({selector: 'comp-with-classes', template: '', host: {'class': 'host'}})
+    @Component({
+      selector: 'comp-with-classes',
+      template: '',
+      host: {'class': 'host'},
+      standalone: false,
+    })
     class CompWithClasses {
       constructor(ref: ElementRef) {
         ref.nativeElement.classList.add('custom');
@@ -3567,6 +3894,7 @@ describe('styling', () => {
 
     @Component({
       template: `<comp-with-classes class="inline" *ngFor="let item of items"></comp-with-classes>`,
+      standalone: false,
     })
     class MyComp {
       items = [1, 2, 3];
@@ -3595,10 +3923,16 @@ describe('styling', () => {
   });
 
   it('should allow a single style host binding on an element', () => {
-    @Component({template: `<div single-host-style-dir></div>`})
+    @Component({
+      template: `<div single-host-style-dir></div>`,
+      standalone: false,
+    })
     class Cmp {}
 
-    @Directive({selector: '[single-host-style-dir]'})
+    @Directive({
+      selector: '[single-host-style-dir]',
+      standalone: false,
+    })
     class SingleHostStyleDir {
       @HostBinding('style.width') width = '100px';
     }
@@ -3612,13 +3946,17 @@ describe('styling', () => {
   });
 
   it('should override class bindings when a directive extends another directive', () => {
-    @Component({template: `<child-comp class="template"></child-comp>`})
+    @Component({
+      template: `<child-comp class="template"></child-comp>`,
+      standalone: false,
+    })
     class Cmp {}
 
     @Component({
       selector: 'parent-comp',
       host: {'class': 'parent-comp', '[class.parent-comp-active]': 'true'},
       template: '...',
+      standalone: false,
     })
     class ParentComp {}
 
@@ -3631,6 +3969,7 @@ describe('styling', () => {
         '[class.parent-comp-active]': 'false',
       },
       template: '...',
+      standalone: false,
     })
     class ChildComp extends ParentComp {}
 
@@ -3651,7 +3990,10 @@ describe('styling', () => {
   it('should not set inputs called class if they are not being used in the template', () => {
     const logs: string[] = [];
 
-    @Directive({selector: '[test]'})
+    @Directive({
+      selector: '[test]',
+      standalone: false,
+    })
     class MyDir {
       @Input('class')
       set className(value: string) {
@@ -3662,6 +4004,7 @@ describe('styling', () => {
     @Component({
       // Note that we shouldn't have a `class` attribute here.
       template: `<div test></div>`,
+      standalone: false,
     })
     class MyComp {}
 
@@ -3680,6 +4023,7 @@ describe('styling', () => {
     @Component({
       template: `<span>Hello</span>`,
       styles: `span {font-size: 10px}`,
+      standalone: false,
     })
     class Cmp {}
     TestBed.configureTestingModule({declarations: [Cmp]});
@@ -3692,7 +4036,10 @@ describe('styling', () => {
 
   describe('regression', () => {
     it('should support sanitizer value in the [style] bindings', () => {
-      @Component({template: `<div [style]="style"></div>`})
+      @Component({
+        template: `<div [style]="style"></div>`,
+        standalone: false,
+      })
       class HostBindingTestComponent {
         style: SafeStyle = this.sanitizer.bypassSecurityTrustStyle('color: white; display: block;');
         constructor(private sanitizer: DomSanitizer) {}
@@ -3711,6 +4058,7 @@ describe('styling', () => {
         host: {
           '[class.foo]': 'hostClass',
         },
+        standalone: false,
       })
       class MyCmp {
         hostClass = true;
@@ -3721,12 +4069,16 @@ describe('styling', () => {
         host: {
           '[class]': 'hostClass',
         },
+        standalone: false,
       })
       class HostStylingsDir {
         hostClass = {'bar': true};
       }
 
-      @Component({template: `<my-cmp *ngFor="let i of [1,2]" host-styling></my-cmp>`})
+      @Component({
+        template: `<my-cmp *ngFor="let i of [1,2]" host-styling></my-cmp>`,
+        standalone: false,
+      })
       class MyApp {
         // When the first view in the list gets CD-ed, everything works.
         // When the second view gets CD-ed, the styling has already created the data structures
@@ -3750,11 +4102,15 @@ describe('styling', () => {
       @Component({
         selector: 'my-cmp',
         template: `className = {{className}}`,
+        standalone: false,
       })
       class MyCmp {
         @Input() className: string = 'unbound';
       }
-      @Component({template: `<my-cmp [class]="'bound'"></my-cmp>`})
+      @Component({
+        template: `<my-cmp [class]="'bound'"></my-cmp>`,
+        standalone: false,
+      })
       class MyApp {}
 
       TestBed.configureTestingModule({declarations: [MyApp, MyCmp]});
@@ -3767,11 +4123,15 @@ describe('styling', () => {
       @Component({
         selector: 'my-cmp',
         template: `className = {{className}}`,
+        standalone: false,
       })
       class MyCmp {
         @Input() className: string = 'unbound';
       }
-      @Component({template: `<my-cmp class="bound"></my-cmp>`})
+      @Component({
+        template: `<my-cmp class="bound"></my-cmp>`,
+        standalone: false,
+      })
       class MyApp {}
 
       TestBed.configureTestingModule({declarations: [MyApp, MyCmp]});

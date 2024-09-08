@@ -152,7 +152,6 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  */
 @Directive({
   selector: '[ngFor][ngForOf]',
-  standalone: true,
 })
 export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
   /**

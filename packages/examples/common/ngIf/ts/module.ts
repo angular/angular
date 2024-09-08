@@ -19,6 +19,7 @@ import {Subject} from 'rxjs';
     <br />
     <div *ngIf="show">Text to show</div>
   `,
+  standalone: false,
 })
 export class NgIfSimple {
   show = true;
@@ -35,6 +36,7 @@ export class NgIfSimple {
     <div *ngIf="show; else elseBlock">Text to show</div>
     <ng-template #elseBlock>Alternate text while primary text is hidden</ng-template>
   `,
+  standalone: false,
 })
 export class NgIfElse {
   show = true;
@@ -54,6 +56,7 @@ export class NgIfElse {
     <ng-template #secondaryBlock>Secondary text to show</ng-template>
     <ng-template #elseBlock>Alternate text while primary text is hidden</ng-template>
   `,
+  standalone: false,
 })
 export class NgIfThenElse implements OnInit {
   thenBlock: TemplateRef<any> | null = null;
@@ -83,6 +86,7 @@ export class NgIfThenElse implements OnInit {
     </div>
     <ng-template #loading let-user>Waiting... (user is {{ user | json }})</ng-template>
   `,
+  standalone: false,
 })
 export class NgIfAs {
   userObservable = new Subject<{first: string; last: string}>();
@@ -113,6 +117,7 @@ export class NgIfAs {
     <ng-if-as></ng-if-as>
     <hr />
   `,
+  standalone: false,
 })
 export class AppComponent {}
 

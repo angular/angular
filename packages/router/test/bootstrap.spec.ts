@@ -47,17 +47,28 @@ describe('bootstrap', () => {
   let log: any[] = [];
   let testProviders: any[] = null!;
 
-  @Component({template: 'simple'})
+  @Component({
+    template: 'simple',
+    standalone: false,
+  })
   class SimpleCmp {}
 
-  @Component({selector: 'test-app', template: 'root <router-outlet></router-outlet>'})
+  @Component({
+    selector: 'test-app',
+    template: 'root <router-outlet></router-outlet>',
+    standalone: false,
+  })
   class RootCmp {
     constructor() {
       log.push('RootCmp');
     }
   }
 
-  @Component({selector: 'test-app2', template: 'root <router-outlet></router-outlet>'})
+  @Component({
+    selector: 'test-app2',
+    template: 'root <router-outlet></router-outlet>',
+    standalone: false,
+  })
   class SecondRootCmp {}
 
   @Injectable({providedIn: 'root'})
@@ -139,7 +150,6 @@ describe('bootstrap', () => {
   it('should finish navigation when initial navigation is enabledBlocking and component renavigates on render', async () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class Renavigate {
       constructor(router: Router) {
@@ -148,7 +158,6 @@ describe('bootstrap', () => {
     }
     @Component({
       template: '',
-      standalone: true,
     })
     class BlankCmp {}
 
@@ -257,7 +266,11 @@ describe('bootstrap', () => {
   });
 
   it('should wait for resolvers to complete when initialNavigation = enabledBlocking', async () => {
-    @Component({selector: 'test', template: 'test'})
+    @Component({
+      selector: 'test',
+      template: 'test',
+      standalone: false,
+    })
     class TestCmpEnabled {}
 
     @NgModule({
@@ -291,7 +304,11 @@ describe('bootstrap', () => {
   });
 
   it('should NOT wait for resolvers to complete when initialNavigation = enabledNonBlocking', async () => {
-    @Component({selector: 'test', template: 'test'})
+    @Component({
+      selector: 'test',
+      template: 'test',
+      standalone: false,
+    })
     class TestCmpLegacyEnabled {}
 
     @NgModule({
@@ -337,7 +354,11 @@ describe('bootstrap', () => {
   });
 
   it('should NOT wait for resolvers to complete when initialNavigation is not set', async () => {
-    @Component({selector: 'test', template: 'test'})
+    @Component({
+      selector: 'test',
+      template: 'test',
+      standalone: false,
+    })
     class TestCmpLegacyEnabled {}
 
     @NgModule({
@@ -382,7 +403,11 @@ describe('bootstrap', () => {
   });
 
   it('should not run navigation when initialNavigation = disabled', (done) => {
-    @Component({selector: 'test', template: 'test'})
+    @Component({
+      selector: 'test',
+      template: 'test',
+      standalone: false,
+    })
     class TestCmpDiabled {}
 
     @NgModule({
@@ -479,6 +504,7 @@ describe('bootstrap', () => {
            <a name="marker3"></a>
            <div style="height: 3000px;"></div>
       `,
+        standalone: false,
       })
       class TallComponent {}
       @NgModule({

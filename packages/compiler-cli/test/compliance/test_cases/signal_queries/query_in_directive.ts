@@ -4,9 +4,7 @@ export class SomeToken {}
 
 const nonAnalyzableRefersToString = 'a, b, c';
 
-@Directive({
-  standalone: true,
-})
+@Directive({})
 export class TestDir {
   query1 = viewChild('locatorA');
   query2 = viewChildren('locatorB');

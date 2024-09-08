@@ -123,6 +123,7 @@ const resolvedPromise = (() => Promise.resolve())();
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   outputs: ['ngSubmit'],
   exportAs: 'ngForm',
+  standalone: false,
 })
 export class NgForm extends ControlContainer implements Form, AfterViewInit {
   /**

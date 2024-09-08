@@ -36,7 +36,11 @@ withEachNg1Version(() => {
 
     it('should instantiate ng2 in ng1 template and project content', waitForAsync(() => {
       // the ng2 component that will be used in ng1 (downgraded)
-      @Component({selector: 'ng2', template: `{{ prop }}(<ng-content></ng-content>)`})
+      @Component({
+        selector: 'ng2',
+        template: `{{ prop }}(<ng-content></ng-content>)`,
+        standalone: false,
+      })
       class Ng2Component {
         prop = 'NG2';
         ngContent = 'ng2-content';
@@ -69,7 +73,11 @@ withEachNg1Version(() => {
     }));
 
     it('should correctly project structural directives', waitForAsync(() => {
-      @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
+      @Component({
+        selector: 'ng2',
+        template: 'ng2-{{ itemId }}(<ng-content></ng-content>)',
+        standalone: false,
+      })
       class Ng2Component {
         @Input() itemId: string = '';
       }
@@ -109,13 +117,17 @@ withEachNg1Version(() => {
         selector: 'ng2',
         template: `{{ 'ng2(' }}<ng1>{{ transclude }}</ng1
           >{{ ')' }}`,
+        standalone: false,
       })
       class Ng2Component {
         prop = 'ng2';
         transclude = 'ng2-transclude';
       }
 
-      @Directive({selector: 'ng1'})
+      @Directive({
+        selector: 'ng1',
+        standalone: false,
+      })
       class Ng1WrapperComponent extends UpgradeComponent {
         constructor(elementRef: ElementRef, injector: Injector) {
           super('ng1', elementRef, injector);
@@ -155,6 +167,7 @@ withEachNg1Version(() => {
         template:
           '2a(<ng-content select=".ng1a"></ng-content>)' +
           '2b(<ng-content select=".ng1b"></ng-content>)',
+        standalone: false,
       })
       class Ng2Component {
         constructor() {}

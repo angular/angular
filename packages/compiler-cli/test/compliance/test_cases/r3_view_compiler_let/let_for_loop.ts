@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     @for (item of items; track item) {
       @let outerFirst = $first;
 
@@ -11,8 +11,7 @@ import {Component} from '@angular/core';
         {{outerFirst || innerFirst}}
       }
     }
-  `,
-  standalone: true,
+  `
 })
 export class MyApp {
   items: {children: any[]}[] = [];

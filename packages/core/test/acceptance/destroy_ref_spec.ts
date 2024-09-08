@@ -82,7 +82,6 @@ describe('DestroyRef', () => {
 
       @Component({
         selector: 'test',
-        standalone: true,
         template: ``,
       })
       class TestCmp {
@@ -103,7 +102,6 @@ describe('DestroyRef', () => {
 
       @Directive({
         selector: '[withCleanup]',
-        standalone: true,
       })
       class WithCleanupDirective {
         constructor() {
@@ -113,7 +111,6 @@ describe('DestroyRef', () => {
 
       @Component({
         selector: 'test',
-        standalone: true,
         imports: [WithCleanupDirective],
         // note: we are trying to register a LView-level cleanup _before_ TView-level one (event
         // listener)
@@ -136,7 +133,6 @@ describe('DestroyRef', () => {
 
       @Directive({
         selector: '[withCleanup]',
-        standalone: true,
       })
       class WithCleanupDirective {
         constructor() {
@@ -146,7 +142,6 @@ describe('DestroyRef', () => {
 
       @Component({
         selector: 'test',
-        standalone: true,
         imports: [WithCleanupDirective, NgIf],
         template: `<ng-template [ngIf]="show"><div withCleanup></div></ng-template>`,
       })
@@ -167,7 +162,6 @@ describe('DestroyRef', () => {
       const onDestroySpy = jasmine.createSpy('destroy spy');
       @Component({
         selector: 'child',
-        standalone: true,
         template: '',
       })
       class Child {
@@ -176,7 +170,6 @@ describe('DestroyRef', () => {
         }
       }
       @Component({
-        standalone: true,
         imports: [Child, NgIf],
         template: '<child *ngIf="showChild"></child>',
       })
@@ -197,7 +190,6 @@ describe('DestroyRef', () => {
 
     @Component({
       selector: 'test',
-      standalone: true,
       template: ``,
     })
     class TestCmp {
@@ -223,7 +215,6 @@ describe('DestroyRef', () => {
 
     @Component({
       selector: 'test',
-      standalone: true,
       template: ``,
     })
     class TestCmp {
@@ -251,7 +242,6 @@ describe('DestroyRef', () => {
   it('should throw when trying to register destroy callback on destroyed LView', () => {
     @Component({
       selector: 'test',
-      standalone: true,
       template: ``,
     })
     class TestCmp {
@@ -272,7 +262,6 @@ describe('DestroyRef', () => {
 
     @Component({
       selector: 'test',
-      standalone: true,
       template: ``,
     })
     class TestCmp {

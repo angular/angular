@@ -40,7 +40,10 @@ import {
 } from '../src/utils/config';
 
 describe('RouterPreloader', () => {
-  @Component({template: ''})
+  @Component({
+    template: '',
+    standalone: false,
+  })
   class LazyLoadedCmp {}
 
   describe('should properly handle', () => {
@@ -729,7 +732,9 @@ describe('RouterPreloader', () => {
     });
 
     it('base case', fakeAsync(() => {
-      @Component({template: '', standalone: true})
+      @Component({
+        template: '',
+      })
       class LoadedComponent {}
 
       const preloader = TestBed.inject(RouterPreloader);
@@ -771,7 +776,9 @@ describe('RouterPreloader', () => {
     }));
 
     it('should recover from errors', fakeAsync(() => {
-      @Component({template: '', standalone: true})
+      @Component({
+        template: '',
+      })
       class LoadedComponent {}
 
       const preloader = TestBed.inject(RouterPreloader);
@@ -793,7 +800,9 @@ describe('RouterPreloader', () => {
     }));
 
     it('works when there is both loadComponent and loadChildren', fakeAsync(() => {
-      @Component({template: '', standalone: true})
+      @Component({
+        template: '',
+      })
       class LoadedComponent {}
 
       @NgModule({
@@ -822,7 +831,9 @@ describe('RouterPreloader', () => {
     }));
 
     it('loadComponent does not block loadChildren', fakeAsync(() => {
-      @Component({template: '', standalone: true})
+      @Component({
+        template: '',
+      })
       class LoadedComponent {}
 
       lazyComponentSpy.and.returnValue(of(LoadedComponent).pipe(delay(5)));
@@ -865,7 +876,9 @@ describe('RouterPreloader', () => {
     }));
 
     it('loads nested components', () => {
-      @Component({template: '', standalone: true})
+      @Component({
+        template: '',
+      })
       class LoadedComponent {}
       lazyComponentSpy.and.returnValue(LoadedComponent);
 

@@ -28,7 +28,6 @@ import {
     <li><a routerLink="/item/3" routerLinkActive="active">List Item 3</a></li>
   </ul>
   `,
-  standalone: true,
   imports: [RouterLink, RouterLinkActive],
 })
 class ListComponent {}
@@ -38,7 +37,6 @@ class ListComponent {}
   template: `
   Item {{id}}
   <p><button (click)="viewList()">Back to List</button></p>`,
-  standalone: true,
 })
 class ItemComponent implements OnInit {
   id = -1;
@@ -61,7 +59,6 @@ class ItemComponent implements OnInit {
 @Component({
   selector: 'app-root',
   template: `<router-outlet></router-outlet>`,
-  standalone: true,
   imports: [RouterOutlet],
 })
 class RootComponent {}

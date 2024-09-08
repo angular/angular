@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     @for (item of items; track item.name[0].toUpperCase()) {
       {{item.name}}
     }
@@ -10,6 +10,7 @@ import {Component} from '@angular/core';
       {{otherItem.name}}
     }
   `,
+    standalone: false
 })
 export class MyApp {
   items = [{name: 'one'}, {name: 'two'}, {name: 'three'}];

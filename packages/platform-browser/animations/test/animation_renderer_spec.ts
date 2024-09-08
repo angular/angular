@@ -172,6 +172,7 @@ import {el} from '../../testing/src/browser_util';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any;
@@ -214,6 +215,7 @@ import {el} from '../../testing/src/browser_util';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any;
@@ -255,6 +257,7 @@ import {el} from '../../testing/src/browser_util';
             trigger('animation1', [transition('a => b', [])]),
             trigger('animation2', [transition(':leave', [])]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp1: any = true;
@@ -335,6 +338,7 @@ import {el} from '../../testing/src/browser_util';
           <div [@myAnimation]="exp"></div>
         `,
         animations: [trigger('myAnimation', [])],
+        standalone: false,
       })
       class Cmp {
         public exp: any;
@@ -367,7 +371,11 @@ import {el} from '../../testing/src/browser_util';
     it(
       'should clear bootstrapped component contents when the `BrowserAnimationsModule` is imported',
       withBody('<div>before</div><app-root></app-root><div>after</div>', async () => {
-        @Component({selector: 'app-root', template: 'app-root content'})
+        @Component({
+          selector: 'app-root',
+          template: 'app-root content',
+          standalone: false,
+        })
         class AppComponent {}
 
         @NgModule({
@@ -406,7 +414,11 @@ import {el} from '../../testing/src/browser_util';
           constructor(rendererFactory: RendererFactory2) {}
         }
 
-        @Component({selector: 'app-root', template: 'app-root content'})
+        @Component({
+          selector: 'app-root',
+          template: 'app-root content',
+          standalone: false,
+        })
         class AppComponent {}
 
         @NgModule({
@@ -456,7 +468,10 @@ import {el} from '../../testing/src/browser_util';
           constructor(rendererFactory: RendererFactory2) {}
         }
 
-        @Component({selector: 'app-root', template: 'app-root content', standalone: true})
+        @Component({
+          selector: 'app-root',
+          template: 'app-root content',
+        })
         class AppComponent {}
 
         const appRef = await bootstrapApplication(AppComponent, {
@@ -488,7 +503,10 @@ import {el} from '../../testing/src/browser_util';
     it(
       'should clear bootstrapped component contents when async animations are used',
       withBody('<div>before</div><app-root></app-root><div>after</div>', async () => {
-        @Component({selector: 'app-root', template: 'app-root content', standalone: true})
+        @Component({
+          selector: 'app-root',
+          template: 'app-root content',
+        })
         class AppComponent {}
 
         const appRef = await bootstrapApplication(AppComponent, {

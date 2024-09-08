@@ -7,7 +7,10 @@ export interface ForOfContext {
   odd: boolean;
 }
 
-@Directive({selector: '[forOf]'})
+@Directive({
+    selector: '[forOf]',
+    standalone: false
+})
 export class ForOfDirective {
   private previous!: any[];
 

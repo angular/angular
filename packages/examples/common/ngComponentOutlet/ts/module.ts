@@ -20,12 +20,17 @@ import {
 import {BrowserModule} from '@angular/platform-browser';
 
 // #docregion SimpleExample
-@Component({selector: 'hello-world', template: 'Hello World!'})
+@Component({
+  selector: 'hello-world',
+  template: 'Hello World!',
+  standalone: false,
+})
 export class HelloWorld {}
 
 @Component({
   selector: 'ng-component-outlet-simple-example',
   template: `<ng-container *ngComponentOutlet="HelloWorld"></ng-container>`,
+  standalone: false,
 })
 export class NgComponentOutletSimpleExample {
   // This field is necessary to expose HelloWorld to the template.
@@ -42,6 +47,7 @@ export class Greeter {
 @Component({
   selector: 'complete-component',
   template: `{{ label }}: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`,
+  standalone: false,
 })
 export class CompleteComponent {
   @Input() label!: string;
@@ -61,6 +67,7 @@ export class CompleteComponent {
         content: myContent
       "
     ></ng-container>`,
+  standalone: false,
 })
 export class NgComponentOutletCompleteExample implements OnInit {
   // This field is necessary to expose CompleteComponent to the template.
@@ -98,6 +105,7 @@ export class NgComponentOutletCompleteExample implements OnInit {
   template: `<ng-component-outlet-simple-example></ng-component-outlet-simple-example>
     <hr />
     <ng-component-outlet-complete-example></ng-component-outlet-complete-example>`,
+  standalone: false,
 })
 export class AppComponent {}
 

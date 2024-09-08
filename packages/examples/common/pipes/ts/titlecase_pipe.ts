@@ -25,6 +25,7 @@ import {Component} from '@angular/core';
     <p>{{ 'foo-vs-bar' | titlecase }}</p>
     <!-- output is expected to be "Foo-vs-bar" -->
   </div>`,
+  standalone: false,
 })
 export class TitleCasePipeComponent {}
 // #enddocregion

@@ -16,7 +16,11 @@ import * as diViewChildExample from './di/ts/viewChild/module';
 import * as diViewChildrenExample from './di/ts/viewChildren/module';
 import * as testabilityWhenStableExample from './testability/ts/whenStable/module';
 
-@Component({selector: 'example-app', template: '<router-outlet></router-outlet>'})
+@Component({
+  selector: 'example-app',
+  template: '<router-outlet></router-outlet>',
+  standalone: false,
+})
 export class TestsAppComponent {}
 
 @NgModule({

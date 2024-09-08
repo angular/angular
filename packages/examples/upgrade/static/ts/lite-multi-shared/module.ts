@@ -42,6 +42,7 @@ export class Ng2RootModule {
 @Component({
   selector: 'ng2A',
   template: 'Component A (Service ID: {{ service.id }})',
+  standalone: false,
 })
 export class Ng2AComponent {
   constructor(public service: Ng2Service) {}
@@ -58,6 +59,7 @@ export class Ng2AModule {
 @Component({
   selector: 'ng2B',
   template: 'Component B (Service ID: {{ service.id }})',
+  standalone: false,
 })
 export class Ng2BComponent {
   constructor(public service: Ng2Service) {}
@@ -74,6 +76,7 @@ export class Ng2BModule {
 @Component({
   selector: 'ng2C',
   template: 'Component C (Service ID: {{ service.id }})',
+  standalone: false,
 })
 export class Ng2CComponent {
   constructor(public service: Ng2Service) {}

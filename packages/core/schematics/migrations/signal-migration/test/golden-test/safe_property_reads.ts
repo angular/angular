@@ -14,6 +14,7 @@ import {Component, Input} from '@angular/core';
   template: `
     {{bla?.myInput}}
   `,
+  standalone: false,
 })
 class WithSafePropertyReads {
   @Input() myInput = 0;

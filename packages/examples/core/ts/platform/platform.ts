@@ -12,24 +12,28 @@ import {BrowserModule} from '@angular/platform-browser';
 @Component({
   selector: 'app-root',
   template: ` <h1>Component One</h1> `,
+  standalone: false,
 })
 export class ComponentOne {}
 
 @Component({
   selector: 'app-root',
   template: ` <h1>Component Two</h1> `,
+  standalone: false,
 })
 export class ComponentTwo {}
 
 @Component({
   selector: 'app-root',
   template: ` <h1>Component Three</h1> `,
+  standalone: false,
 })
 export class ComponentThree {}
 
 @Component({
   selector: 'app-root',
   template: ` <h1>Component Four</h1> `,
+  standalone: false,
 })
 export class ComponentFour {}
 

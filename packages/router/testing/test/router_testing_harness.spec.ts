@@ -23,7 +23,9 @@ describe('navigateForTest', () => {
     expect(harness.routeDebugElement).toBeNull();
   });
   it('navigates to routed component', async () => {
-    @Component({standalone: true, template: 'hello {{name}}'})
+    @Component({
+      template: 'hello {{name}}',
+    })
     class TestCmp {
       name = 'world';
     }
@@ -82,7 +84,10 @@ describe('navigateForTest', () => {
   });
 
   it('can observe param changes on routed component with second navigation', async () => {
-    @Component({standalone: true, template: '{{(route.params | async)?.id}}', imports: [AsyncPipe]})
+    @Component({
+      template: '{{(route.params | async)?.id}}',
+      imports: [AsyncPipe],
+    })
     class TestCmp {
       constructor(readonly route: ActivatedRoute) {}
     }
@@ -99,9 +104,13 @@ describe('navigateForTest', () => {
   });
 
   it('throws an error if the routed component instance does not match the one required', async () => {
-    @Component({standalone: true, template: ''})
+    @Component({
+      template: '',
+    })
     class TestCmp {}
-    @Component({standalone: true, template: ''})
+    @Component({
+      template: '',
+    })
     class OtherCmp {}
 
     TestBed.configureTestingModule({
@@ -112,7 +121,9 @@ describe('navigateForTest', () => {
   });
 
   it('throws an error if navigation fails but expected a component instance', async () => {
-    @Component({standalone: true, template: ''})
+    @Component({
+      template: '',
+    })
     class TestCmp {}
 
     TestBed.configureTestingModule({
@@ -123,9 +134,13 @@ describe('navigateForTest', () => {
   });
 
   it('waits for redirects using router.navigate', async () => {
-    @Component({standalone: true, template: 'test'})
+    @Component({
+      template: 'test',
+    })
     class TestCmp {}
-    @Component({standalone: true, template: 'redirect'})
+    @Component({
+      template: 'redirect',
+    })
     class OtherCmp {}
 
     TestBed.configureTestingModule({

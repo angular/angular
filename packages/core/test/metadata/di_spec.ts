@@ -84,27 +84,46 @@ describe('ViewChildren', () => {
   });
 });
 
-@Directive({selector: 'simple'})
+@Directive({
+  selector: 'simple',
+  standalone: false,
+})
 class Simple {
   @Input() marker: string | undefined;
 }
 
-@Component({selector: 'view-child-type-selector', template: ''})
+@Component({
+  selector: 'view-child-type-selector',
+  template: '',
+  standalone: false,
+})
 class ViewChildTypeSelectorComponent {
   @ViewChild(Simple) child!: Simple;
 }
 
-@Component({selector: 'view-child-string-selector', template: ''})
+@Component({
+  selector: 'view-child-string-selector',
+  template: '',
+  standalone: false,
+})
 class ViewChildStringSelectorComponent {
   @ViewChild('child') child!: ElementRef;
 }
 
-@Component({selector: 'view-children-type-selector', template: ''})
+@Component({
+  selector: 'view-children-type-selector',
+  template: '',
+  standalone: false,
+})
 class ViewChildrenTypeSelectorComponent {
   @ViewChildren(Simple) children!: QueryList<Simple>;
 }
 
-@Component({selector: 'view-child-string-selector', template: ''})
+@Component({
+  selector: 'view-child-string-selector',
+  template: '',
+  standalone: false,
+})
 class ViewChildrenStringSelectorComponent {
   // Allow comma separated selector (with spaces).
   @ViewChildren('child1 , child2') children!: QueryList<ElementRef>;
