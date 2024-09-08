@@ -792,7 +792,8 @@ runInEachFileSystem((os) => {
         import {Component, Directive, Input, Output, EventEmitter, Pipe, NgModule} from '@angular/core';
 
         @Directive({
-          selector: '[ngModel],[attr],[ngModelChange]'
+          selector: '[ngModel],[attr],[ngModelChange]',
+          standalone: false,
         })
         export class AllDirective {
           @Input() ngModel!: any;
@@ -800,14 +801,18 @@ runInEachFileSystem((os) => {
           @Input() attr!: any;
         }
 
-        @Pipe({name: 'percent'})
+        @Pipe({
+          name: 'percent',
+          standalone: false,
+        })
         export class PercentPipe {
           transform(v: any) {}
         }
 
         @Component({
           selector: 'test-cmp',
-          ${templateConfig}
+          ${templateConfig},
+          standalone: false,
         })
         export class TestCmp {
           name = '';

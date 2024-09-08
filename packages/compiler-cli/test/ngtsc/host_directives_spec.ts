@@ -49,7 +49,8 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'my-comp',
           template: '',
-          hostDirectives: [DirectiveA, DirectiveB]
+          hostDirectives: [DirectiveA, DirectiveB],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -97,6 +98,7 @@ runInEachFileSystem(() => {
             inputs: ['value', 'color: colorAlias'],
             outputs: ['opened', 'closed: closedAlias'],
           }],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -146,6 +148,7 @@ runInEachFileSystem(() => {
             inputs: ['valueAlias', 'colorAlias: customColorAlias'],
             outputs: ['openedAlias', 'closedAlias: customClosedAlias'],
           }],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -198,6 +201,7 @@ runInEachFileSystem(() => {
           selector: 'my-comp',
           template: '',
           hostDirectives: [DirectiveC],
+          standalone: false,
         })
         export class MyComp {
         }
@@ -252,7 +256,8 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'my-component',
           template: '',
-          hostDirectives: [forwardRef(() => DirectiveB)]
+          hostDirectives: [forwardRef(() => DirectiveB)],
+          standalone: false,
         })
         export class MyComponent {
         }
@@ -352,7 +357,8 @@ runInEachFileSystem(() => {
               inputs: ['input: inputAlias'],
               outputs: ['output: outputAlias']
             }
-          ]
+          ],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -402,7 +408,8 @@ runInEachFileSystem(() => {
 
         @Component({
           template: '',
-          hostDirectives: [{directive: ExternalDir, inputs: ['input: inputAlias'], outputs: ['output: outputAlias']}]
+          hostDirectives: [{directive: ExternalDir, inputs: ['input: inputAlias'], outputs: ['output: outputAlias']}],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -452,7 +459,8 @@ runInEachFileSystem(() => {
 
         @Component({
           template: '',
-          hostDirectives: [ExternalDir]
+          hostDirectives: [ExternalDir],
+          standalone: false,
         })
         export class MyComp {}
       `,
@@ -548,11 +556,14 @@ runInEachFileSystem(() => {
           `
           import {Directive, Component, NgModule} from '@angular/core';
 
-          @Directive()
+          @Directive({
+            standalone: false
+          })
           export class HostDir {}
 
           @Directive({
             hostDirectives: [HostDir],
+            standalone: false,
           })
           export class Dir {}
         `,
@@ -675,6 +686,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir-b]',
+            standalone: false,
           })
           export class HostDirB {}
 
@@ -689,6 +701,7 @@ runInEachFileSystem(() => {
             selector: '[dir]',
             template: '',
             hostDirectives: [HostDirA],
+            standalone: false,
           })
           export class Host {}
         `,
@@ -717,7 +730,8 @@ runInEachFileSystem(() => {
             hostDirectives: [{
               directive: HostDir,
               outputs: ['doesNotExist'],
-            }]
+            }],
+            standalone: false,
           })
           class Dir {}
         `,
@@ -745,7 +759,8 @@ runInEachFileSystem(() => {
             hostDirectives: [{
               directive: HostDir,
               outputs: ['foo'],
-            }]
+            }],
+            standalone: false,
           })
           class Dir {}
         `,
@@ -773,7 +788,8 @@ runInEachFileSystem(() => {
             hostDirectives: [{
               directive: HostDir,
               inputs: ['doesNotExist'],
-            }]
+            }],
+            standalone: false,
           })
           class Dir {}
         `,
@@ -799,6 +815,7 @@ runInEachFileSystem(() => {
           @Directive({
             selector: '[dir]',
             hostDirectives: [{directive: HostDir, inputs: ['foo']}],
+            standalone: false,
           })
           class Dir {}
         `,
@@ -824,7 +841,8 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
-            hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}]
+            hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
+            standalone: false,
           })
           class Dir {}
         `,

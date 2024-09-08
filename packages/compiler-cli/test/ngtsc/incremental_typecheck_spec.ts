@@ -37,6 +37,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input('dir')
@@ -52,6 +53,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -82,6 +84,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input('dir')
@@ -102,6 +105,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             dir = input.required<string>();
@@ -116,6 +120,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -146,6 +151,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             dirRenamed = input.required<string>({alias: 'dir'});
@@ -163,6 +169,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input() dir!: string;
@@ -177,6 +184,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -208,6 +216,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             dir = input<string>();
@@ -225,6 +234,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             dir = input.required<string>();
@@ -239,6 +249,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -269,6 +280,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             dir = input.required<string, boolean>({
@@ -294,6 +306,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Output('dir')
@@ -309,6 +322,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div (dir)="foo($event)"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo(bar: string) {}
@@ -339,6 +353,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Output('dir')
@@ -362,6 +377,7 @@ runInEachFileSystem(() => {
           @Directive({
             selector: '[dir]',
             inputs: ['dir'],
+            standalone: false,
           })
           export class Dir {
             dir!: string;
@@ -376,6 +392,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = true;
@@ -411,6 +428,7 @@ runInEachFileSystem(() => {
           @Directive({
             selector: '[dir]',
             inputs: ['dir'],
+            standalone: false,
           })
           export class Dir {}
         `,
@@ -433,6 +451,7 @@ runInEachFileSystem(() => {
           @Directive({
             selector: '[dir]',
             inputs: ['dir'],
+            standalone: false,
           })
           export class Dir {
             dir!: string;
@@ -447,6 +466,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -478,6 +498,7 @@ runInEachFileSystem(() => {
           @Directive({
             selector: '[dir]',
             inputs: ['dir'],
+            standalone: false,
           })
           export class Dir {
             readonly dir!: string;
@@ -498,6 +519,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input()
@@ -513,6 +535,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = true;
@@ -548,6 +571,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input()
@@ -570,6 +594,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input()
@@ -585,6 +610,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div *dir="let bar">{{ foo(bar) }}</div>',
+            standalone: false,
           })
           export class Cmp {
             foo(bar: string) {}
@@ -620,6 +646,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input()
@@ -646,6 +673,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input()
@@ -661,6 +689,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div *dir="foo !== null">{{ test(foo) }}</div>',
+            standalone: false,
           })
           export class Cmp {
             foo!: string | null;
@@ -701,6 +730,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input()
@@ -727,6 +757,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T> {
             @Input()
@@ -744,6 +775,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div *dir="foo !== null">{{ test(foo) }}</div>',
+            standalone: false,
           })
           export class Cmp {
             foo!: string | null;
@@ -783,6 +815,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T> {
             @Input()
@@ -806,6 +839,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T> {
             @Input()
@@ -823,6 +857,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div *dir="foo !== null">{{ test(foo) }}</div>',
+            standalone: false,
           })
           export class Cmp {
             foo!: string | null;
@@ -858,6 +893,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T> {
             @Input()
@@ -889,6 +925,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input()
@@ -904,6 +941,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -933,6 +971,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T> {
             @Input()
@@ -956,6 +995,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T> {
             @Input()
@@ -971,6 +1011,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -1000,6 +1041,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T, U> {
             @Input()
@@ -1023,6 +1065,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T> {
             @Input()
@@ -1038,6 +1081,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -1067,6 +1111,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input()
@@ -1089,6 +1134,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T, U> {
             @Input()
@@ -1104,6 +1150,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -1133,6 +1180,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T> {
             @Input()
@@ -1162,6 +1210,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T> {
             @Input()
@@ -1177,6 +1226,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo: string;
@@ -1209,6 +1259,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T extends Foo> {
             @Input()
@@ -1230,6 +1281,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T> {
             @Input()
@@ -1277,6 +1329,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T extends Foo> {
             @Input()
@@ -1293,6 +1346,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo: Foo = {a: true};
@@ -1325,6 +1379,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir<T extends Foo> {
             @Input()
@@ -1355,6 +1410,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo: Foo = {b: true};
@@ -1390,6 +1446,7 @@ runInEachFileSystem(() => {
 
              @Directive({
                selector: '[dir]',
+               standalone: false,
              })
              export class Dir extends Parent {
                @Input()
@@ -1405,6 +1462,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'test-cmp',
                template: '<div [dir]="foo" [parent]="foo"></div>',
+               standalone: false,
              })
              export class Cmp {
                foo = 'foo';
@@ -1483,6 +1541,7 @@ runInEachFileSystem(() => {
 
              @Directive({
                selector: '[dir]',
+               standalone: false,
              })
              export class Dir extends Parent {
                @Input()
@@ -1498,6 +1557,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'test-cmp',
                template: '<div [dir]="foo" [parent]="foo" [grandparent]="foo"></div>',
+               standalone: false,
              })
              export class Cmp {
                foo = 'foo';
@@ -1589,6 +1649,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir extends Parent {
             @Input()
@@ -1604,6 +1665,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo" [parent]="foo" [grandgrandparent]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -1701,6 +1763,7 @@ runInEachFileSystem(() => {
 
              @Directive({
                selector: '[dir]',
+               standalone: false,
              })
              export class Dir extends Parent {
                @Input()
@@ -1716,6 +1779,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'test-cmp',
                template: '<div [dir]="foo" [parent]="foo" [grandgrandparent]="foo"></div>',
+               standalone: false,
              })
              export class Cmp {
                foo = 'foo';
@@ -1821,6 +1885,7 @@ runInEachFileSystem(() => {
 
              @Directive({
                selector: '[dir]',
+               standalone: false,
              })
              export class Dir extends Parent {
                @Input()
@@ -1836,6 +1901,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'test-cmp',
                template: '<div [dir]="foo" [parent]="foo" [grandgrandparentA]="foo"></div>',
+               standalone: false,
              })
              export class Cmp {
                foo = 'foo';
@@ -1891,6 +1957,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             @Input() dir: string = '';
@@ -1905,6 +1972,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div [dir]="foo"></div>',
+            standalone: false,
           })
           export class Cmp {
             foo = 'foo';
@@ -1934,6 +2002,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {
             dir = input.required<string>();
@@ -1957,6 +2026,7 @@ runInEachFileSystem(() => {
 
             @Directive({
               selector: '[dir]',
+              standalone: false,
             })
             export class Dir<T extends SomeNonExportedClass> {
               @Input() dir: T|undefined;
@@ -1971,6 +2041,7 @@ runInEachFileSystem(() => {
             @Component({
               selector: 'test-cmp',
               template: '<div [dir]="foo"></div>',
+              standalone: false,
             })
             export class Cmp {
               foo = 'foo';
@@ -2002,6 +2073,7 @@ runInEachFileSystem(() => {
 
             @Directive({
               selector: '[dir]',
+              standalone: false,
             })
             export class Dir<T extends SomeNonExportedClass> {
               dir = input.required<T>();
