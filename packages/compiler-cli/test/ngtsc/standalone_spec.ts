@@ -198,6 +198,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'module-cmp',
             template: '<standalone-cmp></standalone-cmp>',
+            standalone: false,
           })
           export class ModuleCmp {}
 
@@ -253,6 +254,7 @@ runInEachFileSystem(() => {
                 selector: 'test-cmp',
                 template: '<div dir></div>',
                 imports: [TestDir],
+                standalone: false,
               })
               export class TestCmp {}
             `,
@@ -306,6 +308,7 @@ runInEachFileSystem(() => {
                 selector: 'test-cmp',
                 template: '<div></div>',
                 schemas: [NO_ERRORS_SCHEMA],
+                standalone: false,
               })
               export class TestCmp {}
             `,
@@ -327,6 +330,7 @@ runInEachFileSystem(() => {
 
               @Directive({
                 selector: '[dir]',
+                standalone: false,
               })
               export class TestDir {}
 
@@ -411,6 +415,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class TestDir {}
 
@@ -527,6 +532,7 @@ runInEachFileSystem(() => {
 
             @Directive({
               selector: '[dir]',
+              standalone: false,
             })
             export class TestDir {}
 
@@ -565,6 +571,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'not-standalone',
             template: '',
+            standalone: false,
           })
           export class NotStandaloneCmp {
             @Input() value!: string;
@@ -615,11 +622,12 @@ runInEachFileSystem(() => {
           export class DepCmp {}
 
           @Component({
-            // missing standalone: true, would ordinarily cause template type-checking errors
+            // standalone: false, would ordinarily cause template type-checking errors
             // as well as an error about imports on a non-standalone component.
             imports: [DepCmp],
             selector: 'test-cmp',
             template: '<dep-cmp></dep-cmp>',
+            standalone: false,
           })
           export class TestCmp {}
         `,
@@ -727,6 +735,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<st-cmp></st-cmp>',
+            standalone: false,
           })
           export class TestCmp {}
 
@@ -756,6 +765,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div st-dir></div>',
+            standalone: false,
           })
           export class TestCmp {}
 
@@ -789,6 +799,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '{{data | stpipe}}',
+            standalone: false,
           })
           export class TestCmp {
             data = 'test';
@@ -840,6 +851,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class TestDir {}
 

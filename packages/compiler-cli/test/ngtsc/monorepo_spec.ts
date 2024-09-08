@@ -37,6 +37,7 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'app-cmp',
           template: '<lib-cmp></lib-cmp>',
+          standalone: false,
         })
         export class AppCmp {}
 
@@ -68,6 +69,7 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'lib-cmp',
           template: '...',
+          standalone: false,
         })
         export class LibCmp {}
       `,
@@ -89,6 +91,7 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'app-cmp',
           template: '<target-cmp></target-cmp>',
+          standalone: false,
         })
         export class AppCmp {}
 
@@ -108,6 +111,7 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'target-cmp',
           template: '...',
+          standalone: false,
         })
         export class TargetCmp {}
 
