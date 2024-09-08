@@ -69,7 +69,7 @@
 | Commit | Type | Description |
 | -- | -- | -- |
 | [8da9fb49b5](https://github.com/angular/angular/commit/8da9fb49b54e50de2d028691f73fb773def62ecd) | feat | add code fix for unused standalone imports ([#57605](https://github.com/angular/angular/pull/57605)) |
-| [1f067f4507](https://github.com/angular/angular/commit/1f067f4507b6e908fe991d5de0dc4d3a627ab2f9) | feat | add code reactoring action to migrate `@Input` to signal-input ([#57214](https://github.com/angular/angular/pull/57214)) |
+| [1f067f4507](https://github.com/angular/angular/commit/1f067f4507b6e908fe991d5de0dc4d3a627ab2f9) | feat | add code refactoring action to migrate `@Input` to signal-input ([#57214](https://github.com/angular/angular/pull/57214)) |
 | [56ee47f2ec](https://github.com/angular/angular/commit/56ee47f2ec6e983e2ffdf59476ab29a92590811e) | feat | allow code refactorings to compute edits asynchronously ([#57214](https://github.com/angular/angular/pull/57214)) |
 
 <!-- CHANGELOG SPLIT MARKER -->
