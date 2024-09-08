@@ -35,7 +35,7 @@ export function traverseFlowForInterestingNodes(flow: FlowNode): ts.Node[] | nul
 
   const queue = new Set<FlowNode>([flow]);
 
-  // Seen is evolved during iteration, and new items will be added
+  // Queue is evolved during iteration, and new items will be added
   // to the end of the iteration. Effectively implementing a queue
   // with deduping out of the box.
   for (const flow of queue) {
