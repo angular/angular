@@ -34,14 +34,21 @@ export function traverseFlowForInterestingNodes(flow: FlowNode): ts.Node[] | nul
   let interestingNodes: ts.Node[] = [];
 
   const queue: FlowNode[] = [flow];
+  const seen = new Set<FlowNode>();
 
   while (queue.length) {
     flow = queue.shift()!;
 
+    // Flow already visited, don't repeat work unnecessarily.
+    if (seen.has(flow)) {
+      continue;
+    }
+    seen.add(flow);
+
     if (++flowDepth === 2000) {
       // We have made 2000 recursive invocations. To avoid overflowing the call stack we report an
       // error and disable further control flow analysis in the containing function or module body.
-      return null;
+      return interestingNodes;
     }
 
     const flags = flow.flags;
