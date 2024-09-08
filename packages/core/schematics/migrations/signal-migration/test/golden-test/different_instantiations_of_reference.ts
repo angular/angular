@@ -14,7 +14,6 @@ export class MatHint {
 
 @Component({
   template: ``,
-  standalone: false,
 })
 export class MatFormFieldTest {
   private declare _hintChildren: MatHint[];

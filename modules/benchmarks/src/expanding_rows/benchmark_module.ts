@@ -25,6 +25,7 @@ import {Component, ErrorHandler, Injectable, NgModule} from '@angular/core';
   host: {
     'class': 'cfc-ng2-region',
   },
+  standalone: false,
 })
 export class BenchmarkArea {}
 

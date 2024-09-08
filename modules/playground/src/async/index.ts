@@ -43,6 +43,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
       </button>
     </div>
   `,
+  standalone: false,
 })
 class AsyncApplication {
   val1: number = 0;

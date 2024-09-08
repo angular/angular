@@ -24,6 +24,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
     >
       {{ shiftEnter ? 'You pressed shift.enter!' : '' }}
     </div>`,
+  standalone: false,
 })
 export class KeyEventsApp {
   lastKey: string = '(none)';

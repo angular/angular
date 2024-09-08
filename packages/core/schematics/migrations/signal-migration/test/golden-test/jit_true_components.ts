@@ -13,7 +13,6 @@ import {Component, Input} from '@angular/core';
 @Component({
   jit: true,
   template: '{{test}}',
-  standalone: false,
 })
 class JitTrueComponent {
   @Input() test = true;
@@ -22,7 +21,6 @@ class JitTrueComponent {
 @Component({
   jit: true,
   templateUrl: './jit_true_component_external_tmpl.html',
-  standalone: false,
 })
 class JitTrueComponentExternalTmpl {
   @Input() test = true;

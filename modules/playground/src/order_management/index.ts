@@ -115,6 +115,7 @@ export class DataService {
       <button (click)="select(order)">Select</button>
     </div>
   `,
+  standalone: false,
 })
 export class OrderListComponent {
   orders: Order[];
@@ -158,6 +159,7 @@ export class OrderListComponent {
       <button (click)="onDelete()">Delete</button>
     </div>
   `,
+  standalone: false,
 })
 export class OrderItemComponent {
   @Input() item: OrderItem;
@@ -203,6 +205,7 @@ export class OrderItemComponent {
       ></order-item-cmp>
     </div>
   `,
+  standalone: false,
 })
 export class OrderDetailsComponent {
   constructor(private _service: DataService) {}
@@ -227,6 +230,7 @@ export class OrderDetailsComponent {
     <order-list-cmp></order-list-cmp>
     <order-details-cmp></order-details-cmp>
   `,
+  standalone: false,
 })
 export class OrderManagementApplication {}
 

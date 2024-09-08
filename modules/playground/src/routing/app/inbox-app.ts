@@ -92,7 +92,11 @@ export class DbService {
   }
 }
 
-@Component({selector: 'inbox', templateUrl: './inbox.html'})
+@Component({
+  selector: 'inbox',
+  templateUrl: './inbox.html',
+  standalone: false,
+})
 export class InboxCmp {
   items: InboxRecord[] = [];
   private ready: boolean = false;
@@ -119,7 +123,11 @@ export class InboxCmp {
   }
 }
 
-@Component({selector: 'drafts', templateUrl: './drafts.html'})
+@Component({
+  selector: 'drafts',
+  templateUrl: './drafts.html',
+  standalone: false,
+})
 export class DraftsCmp {
   items: InboxRecord[] = [];
   private ready: boolean = false;
@@ -142,5 +150,9 @@ export const ROUTER_CONFIG: Routes = [
   {path: 'detail', loadChildren: () => import('./inbox-detail').then((mod) => mod.default)},
 ];
 
-@Component({selector: 'inbox-app', templateUrl: './inbox-app.html'})
+@Component({
+  selector: 'inbox-app',
+  templateUrl: './inbox-app.html',
+  standalone: false,
+})
 export class InboxApp {}

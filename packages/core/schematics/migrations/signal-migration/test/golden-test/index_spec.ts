@@ -13,7 +13,6 @@ describe('bla', () => {
         <app-component #ref />
         {{ref.input.ok}}
         `,
-      standalone: false,
     })
     class TestCmp {}
     TestBed.configureTestingModule({
@@ -28,6 +27,7 @@ describe('bla', () => {
       // Define `Ng2Component`
       @Component({
         selector: 'ng2',
+        standalone: true,
         template: '<div *ngIf="show()"><ng1A></ng1A> | <ng1B></ng1B></div>',
         imports: [NgIf],
       })

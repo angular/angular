@@ -10,6 +10,5 @@ class Base {
 
 @Directive({
   inputs: [{name: 'bla', alias: 'matDerivedBla'}],
-  standalone: false,
 })
 class Derived extends Base {}

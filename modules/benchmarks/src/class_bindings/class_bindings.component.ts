@@ -29,6 +29,7 @@ import {Component, Input} from '@angular/core';
       </div>
     </div>
   `,
+  standalone: false,
 })
 export class ClassBindingsComponent {
   @Input() msg: string = '';
