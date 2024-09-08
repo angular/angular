@@ -46,7 +46,7 @@ runInEachFileSystem(() => {
       expect(dts).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, ' +
           '{ "value": { "alias": "value"; "required": false; "isSignal": true; }; }, ' +
-          '{ "value": "valueChange"; }, never, never, false, never>;',
+          '{ "value": "valueChange"; }, never, never, true, never>;',
       );
     });
 
@@ -72,7 +72,7 @@ runInEachFileSystem(() => {
       expect(dts).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, ' +
           '{ "value": { "alias": "alias"; "required": false; "isSignal": true; }; }, ' +
-          '{ "value": "aliasChange"; }, never, never, false, never>;',
+          '{ "value": "aliasChange"; }, never, never, true, never>;',
       );
     });
 
@@ -98,7 +98,7 @@ runInEachFileSystem(() => {
       expect(dts).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, ' +
           '{ "value": { "alias": "value"; "required": true; "isSignal": true; }; }, ' +
-          '{ "value": "valueChange"; }, never, never, false, never>;',
+          '{ "value": "valueChange"; }, never, never, true, never>;',
       );
     });
 

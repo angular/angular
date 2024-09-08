@@ -55,7 +55,10 @@ runInEachFileSystem(() => {
         'index.ts',
         `
         import {Pipe, NgModule} from '@angular/core';
-        @Pipe({name: 'shorten'})
+        @Pipe({
+          name: 'shorten',
+          standalone: false, 
+        })
         export class ShortenPipe {
           transform(value: string): string { return ''; }
         }

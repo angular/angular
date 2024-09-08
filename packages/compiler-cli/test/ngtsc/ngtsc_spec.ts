@@ -66,6 +66,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           templateUrl: 'test.html',
+          standalone: false,
         })
         export class TestCmp {}
     `,
@@ -351,7 +352,10 @@ runInEachFileSystem((os: string) => {
         `
         import {Directive} from '@angular/core';
 
-        @Directive({selector: '[dir]'})
+        @Directive({
+          selector: '[dir]',
+          standalone: false,
+        })
         export class TestDir {}
       `,
       );
@@ -390,7 +394,7 @@ runInEachFileSystem((os: string) => {
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain(
-        'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, {}, never, never, false, never>',
+        'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, {}, never, never, true, never>',
       );
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>');
     });
@@ -404,6 +408,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           template: 'this is a test',
+          standalone: false,
         })
         export class TestCmp {}
     `,
@@ -432,6 +437,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           template: 'this is ' + 'a test',
+          standalone: false,
         })
         export class TestCmp {}
     `,
@@ -465,6 +471,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           template: getTemplate(),
+          standalone: false,
         })
         export class TestCmp {}
     `,
@@ -493,6 +500,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           templateUrl: './dir/test.html',
+          standalone: false,
         })
         export class TestCmp {}
     `,
@@ -514,6 +522,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'broken-cmp',
           template: '{{ broken = "true" }}', // assignment not legal in this context
+          standalone: false,
         })
         export class BrokenCmp {}
 
@@ -541,10 +550,16 @@ runInEachFileSystem((os: string) => {
         `
             import {Directive, NgModule} from '@angular/core';
 
-            @Directive({selector: 'internal'})
+            @Directive({
+              selector: 'internal',
+              standalone: false,
+            })
             export class InternalDir {}
 
-            @Directive({selector: 'external'})
+            @Directive({
+              selector: 'external',
+              standalone: false,
+            })
             export class ExternalDir {}
 
             @NgModule({
@@ -572,7 +587,10 @@ runInEachFileSystem((os: string) => {
         `
             import {Directive, NgModule} from '@angular/core';
 
-            @Directive({selector: 'internal'})
+            @Directive({
+              selector: 'internal',
+              standalone: false,
+            })
             export class InternalDir {}
 
             @NgModule({
@@ -581,7 +599,10 @@ runInEachFileSystem((os: string) => {
             })
             export class DepModule {}
 
-            @Directive({selector: 'external'})
+            @Directive({
+              selector: 'external',
+              standalone: false,
+            })
             export class ExternalDir {}
 
             @NgModule({
@@ -759,12 +780,14 @@ runInEachFileSystem((os: string) => {
                   <some-dir>Has a directive, should be okay</some-dir>
                   <not-a-cmp>Should trigger a schema error</not-a-cmp>
                 </ng-template>
-              \`
+              \`,
+              standalone: false,
             })
             export class TestCmp {}
 
             @Directive({
               selector: 'some-dir',
+              standalone: false,
             })
             export class TestDir {}
 
@@ -950,7 +973,8 @@ runInEachFileSystem((os: string) => {
 
       @AngularComponent({
         selector: 'test-component',
-        template: '...'
+        template: '...',
+        standalone: false,
       })
       export class TestComponent {
         @AngularInput() input: any;
@@ -958,12 +982,14 @@ runInEachFileSystem((os: string) => {
       }
 
       @AngularDirective({
-        selector: 'test-directive'
+        selector: 'test-directive',
+        standalone: false,
       })
       export class TestDirective {}
 
       @AngularPipe({
-        name: 'test-pipe'
+        name: 'test-pipe',
+        standalone: false,
       })
       export class TestPipe {}
 
@@ -1009,7 +1035,10 @@ runInEachFileSystem((os: string) => {
 
         // ModuleA classes
 
-        @Pipe({name: 'number'})
+        @Pipe({
+          name: 'number',
+          standalone: false,
+        })
         class PipeA {
           transform() {}
         }
@@ -1022,14 +1051,18 @@ runInEachFileSystem((os: string) => {
 
         // ModuleB classes
 
-        @Pipe({name: 'number'})
+        @Pipe({
+          name: 'number',
+          standalone: false,
+        })
         class PipeB {
           transform() {}
         }
 
         @Component({
           selector: 'app',
-          template: '{{ count | number }}'
+          template: '{{ count | number }}',
+          standalone: false,
         })
         export class App {
           count = 0;
@@ -1058,7 +1091,10 @@ runInEachFileSystem((os: string) => {
 
             // ModuleA classes
 
-            @Pipe({name: 'number'})
+            @Pipe({
+              name: 'number',
+              standalone: false,
+            })
             class PipeA {
               transform() {}
             }
@@ -1071,7 +1107,10 @@ runInEachFileSystem((os: string) => {
 
             // ModuleB classes
 
-            @Pipe({name: 'number'})
+            @Pipe({
+              name: 'number',
+              standalone: false,
+            })
             class PipeB {
               transform() {}
             }
@@ -1086,7 +1125,8 @@ runInEachFileSystem((os: string) => {
 
             @Component({
               selector: 'app',
-              template: '{{ count | number }}'
+              template: '{{ count | number }}',
+              standalone: false,
             })
             export class App {
               count = 0;
@@ -1115,12 +1155,16 @@ runInEachFileSystem((os: string) => {
 
         // ModuleA classes
 
-        @Directive({selector: '[dir]'})
+        @Directive({
+          selector: '[dir]',
+          standalone: false,
+        })
         class DirectiveA {}
 
         @Component({
           selector: 'comp',
-          template: '...'
+          template: '...',
+          standalone: false,
         })
         class ComponentA {}
 
@@ -1132,12 +1176,16 @@ runInEachFileSystem((os: string) => {
 
         // ModuleB classes
 
-        @Directive({selector: '[dir]'})
+        @Directive({
+          selector: '[dir]',
+          standalone: false,
+        })
         class DirectiveB {}
 
         @Component({
           selector: 'comp',
           template: '...',
+          standalone: false,
         })
         export class ComponentB {}
 
@@ -1147,6 +1195,7 @@ runInEachFileSystem((os: string) => {
             <div dir></div>
             <comp></comp>
           \`,
+          standalone: false,
         })
         export class App {}
 
@@ -1175,12 +1224,16 @@ runInEachFileSystem((os: string) => {
 
         // ModuleA classes
 
-        @Directive({selector: '[dir]'})
+        @Directive({
+          selector: '[dir]',
+          standalone: false,
+        })
         class DirectiveA {}
 
         @Component({
           selector: 'comp',
-          template: '...'
+          template: '...',
+          standalone: false,
         })
         class ComponentA {}
 
@@ -1192,12 +1245,16 @@ runInEachFileSystem((os: string) => {
 
         // ModuleB classes
 
-        @Directive({selector: '[dir]'})
+        @Directive({
+          selector: '[dir]',
+          standalone: false,
+        })
         class DirectiveB {}
 
         @Component({
           selector: 'comp',
-          template: '...'
+          template: '...',
+          standalone: false,
         })
         class ComponentB {}
 
@@ -1215,6 +1272,7 @@ runInEachFileSystem((os: string) => {
             <div dir></div>
             <comp></comp>
           \`,
+          standalone: false,
         })
         export class App {}
 
@@ -1245,6 +1303,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           templateUrl: 'test.html',
+          standalone: false,
         })
         export class TestCmp {}
     `,
@@ -1267,6 +1326,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           templateUrl: '/test.html',
+          standalone: false,
         })
         export class TestCmp {}
     `,
@@ -1288,6 +1348,7 @@ runInEachFileSystem((os: string) => {
           selector: 'test-cmp',
           styleUrls: ['./dir/style.css'],
           template: '',
+          standalone: false,
         })
         export class TestCmp {}
     `,
@@ -1310,6 +1371,7 @@ runInEachFileSystem((os: string) => {
           selector: 'test-cmp',
           styleUrls: ['./dir/style.scss'],
           template: '',
+          standalone: false,
         })
         export class TestCmp {}
     `,
@@ -1339,11 +1401,11 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" } });',
+        'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" }, standalone: true });',
       );
 
       const dtsContents = env.getContents('test.d.ts');
-      const expectedDirectiveDeclaration = `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, false, never>;`;
+      const expectedDirectiveDeclaration = `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, true, never>;`;
       expect(dtsContents).toContain(expectedDirectiveDeclaration);
     });
 
@@ -1433,6 +1495,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           template: 'this is a test',
+          standalone: false,
         })
         export class TestCmp {}
 
@@ -1578,16 +1641,29 @@ runInEachFileSystem((os: string) => {
         `
       import {Component, Directive, Pipe} from '@angular/core';
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       export class Dir {}
 
-      @Directive({selector: '[other]'})
+      @Directive({
+        selector: '[other]',
+        standalone: false,
+      })
       export class OtherDir {}
 
-      @Pipe({name:'pipe'})
+      @Pipe({
+        name:'pipe',
+        standalone: false,
+      })
       export class MyPipe {}
 
-      @Component({selector: 'test', template: ''})
+      @Component({
+        selector: 'test', 
+        template: '',
+        standalone: false
+      })
       export class Comp {}
     `,
       );
@@ -1633,6 +1709,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           template: 'this is a test',
+          standalone: false,
         })
         export class TestCmp {}
 
@@ -1679,6 +1756,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           template: 'this is a test',
+          standalone: false,
         })
         export class TestCmp {}
 
@@ -1729,6 +1807,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test-cmp',
           template: 'this is a test',
+          standalone: false,
         })
         export class TestCmp {}
 
@@ -1778,7 +1857,11 @@ runInEachFileSystem((os: string) => {
         'foo.ts',
         `
       import {Component} from '@angular/core';
-      @Component({selector: 'foo', template: ''})
+      @Component({
+        selector: 'foo', 
+        template: '',
+        standalone: false,
+      })
       export class Foo {}
     `,
       );
@@ -1826,6 +1909,7 @@ runInEachFileSystem((os: string) => {
       @Component({
         selector: 'foo',
         template: '',
+        standalone: false,
       })
       export class Foo {
       }
@@ -1853,7 +1937,11 @@ runInEachFileSystem((os: string) => {
       })
       export class FooModule {}
 
-      @Component({selector: 'foo', template: 'foo'})
+      @Component({
+        selector: 'foo', 
+        template: 'foo',
+        standalone: false,
+      })
       export class Foo {}
     `,
       );
@@ -1875,7 +1963,10 @@ runInEachFileSystem((os: string) => {
       })
       export class FooModule {}
 
-      @Directive({selector: 'foo'})
+      @Directive({
+        selector: 'foo', 
+        standalone: false,
+      })
       export class Foo {}
     `,
       );
@@ -1938,7 +2029,10 @@ runInEachFileSystem((os: string) => {
 
           export const useFoo = forwardRef(() => Foo);
 
-          @Directive({selector: 'foo'})
+          @Directive({
+            selector: 'foo',
+            standalone: false,
+          })
           export class Foo {}
           `,
       );
@@ -1970,7 +2064,10 @@ runInEachFileSystem((os: string) => {
 
           export const useFoo = forwardRef(() => Foo);
 
-          @Directive({selector: 'foo'})
+          @Directive({
+            selector: 'foo',
+            standalone: false,
+          })
           export class Foo {}
           `,
       );
@@ -2003,6 +2100,7 @@ runInEachFileSystem((os: string) => {
         @Pipe({
           name: 'test-pipe',
           pure: false,
+          standalone: false,
         })
         export class TestPipe {}
     `,
@@ -2033,6 +2131,7 @@ runInEachFileSystem((os: string) => {
 
         @Pipe({
           name: 'test-pipe',
+          standalone: false,
         })
         export class TestPipe {}
     `,
@@ -2066,6 +2165,7 @@ runInEachFileSystem((os: string) => {
         @Pipe({
           name: 'test-pipe',
           pure: false,
+          standalone: false,
         })
         export class TestPipe {
           constructor(dep: Dep) {}
@@ -2089,6 +2189,7 @@ runInEachFileSystem((os: string) => {
 
         @Pipe({
           name: 'test-pipe',
+          standalone: false,
         })
         export class TestPipe<T> {}
     `,
@@ -2111,12 +2212,19 @@ runInEachFileSystem((os: string) => {
         `
         import {Component, NgModule, Pipe} from '@angular/core';
 
-        @Pipe({name: 'test'})
+        @Pipe({
+          name: 'test',
+          standalone: false,
+        })
         export class TestPipe {
           transform() {}
         }
 
-        @Component({selector: 'test-cmp', template: '{{value | test}}'})
+        @Component({
+          selector: 'test-cmp', 
+          template: '{{value | test}}',
+          standalone: false,
+        })
         export class TestCmp {
           value = '';
         }
@@ -2146,6 +2254,7 @@ runInEachFileSystem((os: string) => {
 
         @Component({
           template: '...',
+          standalone: false,
         })
         export class TestCmp {}
       `,
@@ -2166,6 +2275,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: '',
           template: '...',
+          standalone: false,
         })
         export class TestCmp {}
       `,
@@ -2193,7 +2303,8 @@ runInEachFileSystem((os: string) => {
           export abstract class EmptyDir {}
 
           @Directive({
-            inputs: ['a', 'b']
+            inputs: ['a', 'b'],
+            standalone: false,
           })
           export class TestDirWithInputs {}
         `,
@@ -2229,7 +2340,10 @@ runInEachFileSystem((os: string) => {
           import {NgModule, Directive} from '@angular/core';
           import {BaseClass} from 'lib1_built';
 
-          @Directive({selector: 'my-dir'})
+          @Directive({
+            selector: 'my-dir',
+            standalone: false,
+          })
           export class MyDirective extends BaseClass {}
 
           @NgModule({declarations: [MyDirective]})
@@ -2246,7 +2360,9 @@ runInEachFileSystem((os: string) => {
           `
           import {Directive, NgModule} from '@angular/core';
 
-          @Directive({})
+          @Directive({
+            standalone: false,
+          })
           export class BaseDir {}
 
           @NgModule({
@@ -2268,7 +2384,8 @@ runInEachFileSystem((os: string) => {
         import {Directive} from '@angular/core';
 
         @Directive({
-          selector: ''
+          selector: '',
+          standalone: false,
         })
         export class TestDir {}
       `,
@@ -3076,15 +3193,25 @@ runInEachFileSystem((os: string) => {
           `
         import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
 
-        @Component({selector: 'test', template: 'test'})
+        @Component({
+          selector: 'test', 
+          template: 'test',
+          standalone: false,
+        })
         @Injectable()
         export class TestCmp {}
 
-        @Directive({selector: 'test'})
+        @Directive({
+          selector: 'test',
+          standalone: false,
+        })
         @Injectable()
         export class TestDir {}
 
-        @Pipe({name: 'test'})
+        @Pipe({
+          name: 'test',
+          standalone: false,
+        })
         @Injectable()
         export class TestPipe {}
 
@@ -3130,7 +3257,11 @@ runInEachFileSystem((os: string) => {
           `
         import {Component, Directive} from '@angular/core';
 
-        @Component({selector: 'test', template: 'test'})
+        @Component({
+          selector: 'test', 
+          template: 'test',
+          standalone: false,
+        })
         @Directive({selector: 'test'})
         class ShouldNotCompile {}
       `,
@@ -3150,6 +3281,7 @@ runInEachFileSystem((os: string) => {
         @Directive({
           selector: 'test',
           jit: true,
+          standalone: false,
         })
         export class Test {
           constructor(@Inject('foo') foo: string) {}
@@ -4703,6 +4835,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'test',
           template: '<ng-content></ng-content> <ng-content select=".foo"></ng-content>',
+          standalone: false,
         })
         export class TestCmp {
         }
@@ -5497,12 +5630,14 @@ runInEachFileSystem((os: string) => {
 
         @Directive({
           selector: '[dir]',
+          standalone: false,
         })
         export class Dir {}
 
         @Component({
           selector: 'test',
           template: '<div dir>Test</div>',
+          standalone: false,
         })
         export class Comp {}
     `,
@@ -5522,6 +5657,7 @@ runInEachFileSystem((os: string) => {
         @Directive({
           selector: '[test]',
           exportAs: 'foo',
+          standalone: false,
         })
         class Dir {}
     `,
@@ -5542,6 +5678,7 @@ runInEachFileSystem((os: string) => {
         @Directive({
           selector: '[test]',
           exportAs: 'foo, bar',
+          standalone: false,
         })
         class Dir {}
     `,
@@ -5561,7 +5698,8 @@ runInEachFileSystem((os: string) => {
 
         @Component({
           template: '<div *tmpl [(bananaInABox)]="prop"></div>',
-          selector: 'test'
+          selector: 'test',
+          standalone: false,
         })
         class TestCmp {}
     `,
@@ -5644,12 +5782,14 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'cmp-a',
           template: '<cmp-b></cmp-b>',
+          standalone: false,
         })
         class CmpA {}
 
         @Component({
           selector: 'cmp-b',
           template: 'This is B',
+          standalone: false,
         })
         class CmpB {}
 
@@ -5693,6 +5833,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'comp',
           template: '<custom-el></custom-el>',
+          standalone: false,
         })
         class MyComp {}
         @NgModule({
@@ -5732,11 +5873,11 @@ runInEachFileSystem((os: string) => {
         `
       import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
 
-      @Component({selector: 'cmp', template: 'I am a component!'}) class TestComponent {}
-      @Directive({selector: 'dir'}) class TestDirective {}
+      @Component({selector: 'cmp', template: 'I am a component!', standalone: false}) class TestComponent {}
+      @Directive({selector: 'dir', standalone: false}) class TestDirective {}
       @Injectable() class TestInjectable {}
       @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
-      @Pipe({name: 'pipe'}) class TestPipe {}
+      @Pipe({name: 'pipe', standalone: false}) class TestPipe {}
     `,
       );
 
@@ -5754,11 +5895,11 @@ runInEachFileSystem((os: string) => {
         `
       import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
 
-      @Component({selector: 'cmp', template: 'I am a component!'}) class TestComponent {}
-      @Directive({selector: 'dir'}) class TestDirective {}
+      @Component({selector: 'cmp', template: 'I am a component!', standalone: false}) class TestComponent {}
+      @Directive({selector: 'dir', standalone: false}) class TestDirective {}
       @Injectable() class TestInjectable {}
       @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
-      @Pipe({name: 'pipe'}) class TestPipe {}
+      @Pipe({name: 'pipe', standalone: false}) class TestPipe {}
     `,
       );
 
@@ -5776,11 +5917,11 @@ runInEachFileSystem((os: string) => {
         `
       import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
 
-      @Component({selector: 'cmp', template: 'I am a component!'}) class TestComponent {}
-      @Directive({selector: 'dir'}) class TestDirective {}
+      @Component({selector: 'cmp', template: 'I am a component!', standalone: false}) class TestComponent {}
+      @Directive({selector: 'dir', standalone: false}) class TestDirective {}
       @Injectable() class TestInjectable {}
       @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
-      @Pipe({name: 'pipe'}) class TestPipe {}
+      @Pipe({name: 'pipe', standalone: false}) class TestPipe {}
     `,
       );
 
@@ -5795,11 +5936,11 @@ runInEachFileSystem((os: string) => {
         `
       import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
 
-      @Component({selector: 'cmp', template: 'I am a component!'}) class TestComponent {}
-      @Directive({selector: 'dir'}) class TestDirective {}
+      @Component({selector: 'cmp', template: 'I am a component!', standalone: false}) class TestComponent {}
+      @Directive({selector: 'dir', standalone: false}) class TestDirective {}
       @Injectable() class TestInjectable {}
       @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
-      @Pipe({name: 'pipe'}) class TestPipe {}
+      @Pipe({name: 'pipe', standalone: false}) class TestPipe {}
     `,
       );
 
@@ -5821,11 +5962,11 @@ runInEachFileSystem((os: string) => {
         `
       import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
 
-      @Component({selector: 'cmp', template: 'I am a component!'}) class TestComponent {}
-      @Directive({selector: 'dir'}) class TestDirective {}
+      @Component({selector: 'cmp', template: 'I am a component!', standalone: false}) class TestComponent {}
+      @Directive({selector: 'dir', standalone: false}) class TestDirective {}
       @Injectable() class TestInjectable {}
       @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
-      @Pipe({name: 'pipe'}) class TestPipe {}
+      @Pipe({name: 'pipe', standalone: false}) class TestPipe {}
     `,
       );
 
@@ -5847,11 +5988,11 @@ runInEachFileSystem((os: string) => {
         `
       import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
 
-      @Component({selector: 'cmp', template: 'I am a component!'}) class TestComponent {}
-      @Directive({selector: 'dir'}) class TestDirective {}
+      @Component({selector: 'cmp', template: 'I am a component!', standalone: false}) class TestComponent {}
+      @Directive({selector: 'dir', standalone: false}) class TestDirective {}
       @Injectable() class TestInjectable {}
       @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
-      @Pipe({name: 'pipe'}) class TestPipe {}
+      @Pipe({name: 'pipe', standalone: false}) class TestPipe {}
     `,
       );
 
@@ -5977,6 +6118,7 @@ runInEachFileSystem((os: string) => {
               </rect>
             </svg>
           \`,
+          standalone: false,
         })
         export class SvgCmp {}
         @NgModule({
@@ -6317,14 +6459,21 @@ runInEachFileSystem((os: string) => {
         `
       import {Component, Directive, NgModule} from '@angular/core';
 
-      @Directive({selector: '[test]'})
+      @Directive({
+        selector: '[test]',
+        standalone: false,
+      })
       class DirA {}
 
-      @Directive({selector: '[test]'})
+      @Directive({
+        selector: '[test]',
+        standalone: false,
+      })
       class DirB {}
 
       @Component({
         template: '<div test></div>',
+        standalone: false,
       })
       class Cmp {}
 
@@ -6351,6 +6500,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'cyclic-component',
           template: 'Importing this causes a cycle',
+          standalone: false,
         })
         export class CyclicComponent {}
 
@@ -6369,6 +6519,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'normal-component',
           template: '<cyclic-component></cyclic-component>',
+          standalone: false,
         })
         export class NormalComponent {}
       `,
@@ -6402,6 +6553,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'a-cmp',
           template: '<b-cmp></b-cmp>',
+          standalone: false,
         })
         export class ACmp {}
       `,
@@ -6414,6 +6566,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'b-cmp',
           template: '<a-cmp></a-cmp>',
+          standalone: false,
         })
         export class BCmp {}
       `,
@@ -6445,6 +6598,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'a-cmp',
           template: '<b-cmp></b-cmp>',
+          standalone: false,
         })
         export class ACmp {}
       `,
@@ -6457,6 +6611,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'b-cmp',
           template: 'does not use a-cmp',
+          standalone: false,
         })
         export class BCmp {}
       `,
@@ -6486,6 +6641,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'a-cmp',
           template: '<b-cmp></b-cmp>',
+          standalone: false,
         })
         export class ACmp {}
       `,
@@ -6499,6 +6655,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'b-cmp',
           template: 'does not use a-cmp',
+          standalone: false,
         })
         export class BCmp {
           a: ACmp;
@@ -6530,12 +6687,14 @@ runInEachFileSystem((os: string) => {
               @Component({
                 selector: 'shared-one-cmp',
                 template: '<cyclic-cmp></cyclic-cmp>',
+                standalone: false,
               })
               export class SharedOne {}
 
               @Component({
                 selector: 'shared-two-cmp',
                 template: '<cyclic-cmp></cyclic-cmp>',
+                standalone: false,
               })
               export class SharedTwo {}
             `,
@@ -6549,6 +6708,7 @@ runInEachFileSystem((os: string) => {
               @Component({
                 selector: 'cyclic-cmp',
                 template: 'does not use shared components',
+                standalone: false,
               })
               export class CyclicCmp {
                 one: SharedOne;
@@ -6573,6 +6733,7 @@ runInEachFileSystem((os: string) => {
           @Component({
             selector: 'cyclic-component',
             template: 'Importing this causes a cycle',
+            standalone: false,
           })
           export class CyclicComponent {}
 
@@ -6591,6 +6752,7 @@ runInEachFileSystem((os: string) => {
           @Component({
             selector: 'normal-component',
             template: '<cyclic-component></cyclic-component>',
+            standalone: false,
           })
           export class NormalComponent {}
         `,
@@ -6604,6 +6766,7 @@ runInEachFileSystem((os: string) => {
           @Component({
             selector: 'other-component',
             template: 'An unused other component',
+            standalone: false,
           })
           export class OtherComponent {}
         `,
@@ -6628,6 +6791,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'cyclic-component',
           template: 'Importing this causes a cycle',
+          standalone: false,
         })
         export class CyclicComponent {}
 
@@ -6646,6 +6810,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'normal-component',
           template: '<cyclic-component></cyclic-component>',
+          standalone: false,
         })
         export class NormalComponent {}
       `,
@@ -6691,7 +6856,11 @@ runInEachFileSystem((os: string) => {
       const getComponentScript = (template: string): string => `
       import {Component, Directive, NgModule} from '@angular/core';
 
-      @Component({selector: 'my-cmp', template: \`${template}\`})
+      @Component({
+        selector: 'my-cmp', 
+        template: \`${template}\`,
+        standalone: false,
+      })
       class Cmp {}
 
       @NgModule({declarations: [Cmp]})
@@ -6779,7 +6948,10 @@ runInEachFileSystem((os: string) => {
         `
         import {Directive, Input} from '@angular/core';
 
-        @Directive({selector: '[dir]'})
+        @Directive({
+          selector: '[dir]',
+          standalone: false,
+        })
         export class TestDir {
           @Input() noArgs: any;
           @Input('aliasedStringArg') stringArg: any;
@@ -6817,7 +6989,8 @@ runInEachFileSystem((os: string) => {
             {name: 'aliasedLiteral', alias: 'alisedLiteralAlias'},
             {name: 'requiredLiteral', required: true},
             {name: 'requiredAlisedLiteral', alias: 'requiredAlisedLiteralAlias', required: true}
-          ]
+          ],
+          standalone: false,
         })
         export class TestDir {
           plainLiteral: any;
@@ -6962,6 +7135,7 @@ runInEachFileSystem((os: string) => {
 
         @Component({
           template: '<div test></div>',
+          standalone: false,
         })
         class Cmp {}
 
@@ -7011,6 +7185,7 @@ runInEachFileSystem((os: string) => {
 
         @Component({
           template: '<div test></div>',
+          standalone: false,
         })
         class Cmp {}
 
@@ -7188,7 +7363,10 @@ runInEachFileSystem((os: string) => {
         import {Directive, NgModule} from '@angular/core';
 
         // The directive is not exported.
-        @Directive({selector: 'test'})
+        @Directive({
+          selector: 'test',
+          standalone: false,
+        })
         class Dir {}
 
         // The module is, which makes the directive visible.
@@ -7243,7 +7421,10 @@ runInEachFileSystem((os: string) => {
         import {Directive, NgModule} from '@angular/core';
 
         // The directive is not exported.
-        @Directive({selector: 'test'})
+        @Directive({
+          selector: 'test',
+          standalone: false,
+        })
         class Dir {}
 
         // Neither is the module which declares it - meaning the directive is not visible here.
@@ -7278,7 +7459,10 @@ runInEachFileSystem((os: string) => {
         import {Directive, NgModule} from '@angular/core';
 
         // The directive is exported.
-        @Directive({selector: 'test'})
+        @Directive({
+          selector: 'test',
+          standalone: false,
+        })
         export class Dir {}
 
         // The module which declares it is not.
@@ -7308,7 +7492,10 @@ runInEachFileSystem((os: string) => {
         import {Directive, NgModule} from '@angular/core';
 
         // The directive is not exported.
-        @Directive({selector: 'test'})
+        @Directive({
+          selector: 'test',
+          standalone: false,
+        })
         class Dir {}
 
         // Neither is the module which declares it.
@@ -7374,6 +7561,7 @@ runInEachFileSystem((os: string) => {
 
           @Directive({
             selector: 'dir',
+            standalone: false,
           })
           export class Dir {}
         `,
@@ -7384,7 +7572,10 @@ runInEachFileSystem((os: string) => {
           import {Directive, NgModule} from '@angular/core';
           import {Dir} from './dir';
 
-          @Directive({selector: '[inline]'})
+          @Directive({
+            selector: '[inline]',
+            standalone: false,
+          })
           export class InlineDir {}
 
           @NgModule({
@@ -7413,6 +7604,7 @@ runInEachFileSystem((os: string) => {
 
           @Directive({
             selector: 'dir',
+            standalone: false,
           })
           export class Dir {}
 
@@ -7452,6 +7644,7 @@ runInEachFileSystem((os: string) => {
 
              @Directive({
                selector: 'dir',
+               standalone: false,
              })
              export class Dir {}
            `,
@@ -7486,6 +7679,7 @@ runInEachFileSystem((os: string) => {
 
           @Directive({
             selector: 'dir',
+            standalone: false,
           })
           export class Dir {}
         `,
@@ -7556,6 +7750,7 @@ runInEachFileSystem((os: string) => {
 
           @Directive({
             selector: 'dir',
+            standalone: false,
           })
           export class Dir {}
         `,
@@ -7567,6 +7762,7 @@ runInEachFileSystem((os: string) => {
 
           @Directive({
             selector: 'dir',
+            standalone: false,
           })
           export class Dir {}
         `,
@@ -7599,6 +7795,7 @@ runInEachFileSystem((os: string) => {
 
              @Directive({
                selector: 'dir',
+               standalone: false,
              })
              export class Dir {}
            `,
@@ -7610,6 +7807,7 @@ runInEachFileSystem((os: string) => {
 
              @Directive({
                selector: 'dir',
+               standalone: false,
              })
              export class Dir {}
            `,
@@ -7669,6 +7867,7 @@ runInEachFileSystem((os: string) => {
           @Component({
             selector: 'test-cmp',
             template: '<div test></div>',
+            standalone: false,
           })
           class Cmp {}
 
@@ -7697,6 +7896,7 @@ runInEachFileSystem((os: string) => {
 
           @Directive({
             selector: 'dir',
+            standalone: false,
           })
           export class Dir {}
         `,
@@ -7765,7 +7965,8 @@ runInEachFileSystem((os: string) => {
         import {Component, Directive, HostBinding, NgModule, Input} from '@angular/core';
 
         @Directive({
-          selector: '[unsafeAttrs]'
+          selector: '[unsafeAttrs]',
+          standalone: false,
         })
         class UnsafeAttrsDirective {
           @HostBinding('attr.href')
@@ -7791,7 +7992,8 @@ runInEachFileSystem((os: string) => {
 
         @Component({
           selector: 'foo',
-          template: '<a [unsafeAttrs]="ctxProp">Link Title</a>'
+          template: '<a [unsafeAttrs]="ctxProp">Link Title</a>',
+          standalone: false,
         })
         class FooCmp {
           ctxProp = '';
@@ -7822,7 +8024,8 @@ runInEachFileSystem((os: string) => {
         import {Component, Directive, HostBinding, Input, NgModule} from '@angular/core';
 
         @Directive({
-          selector: '[unsafeProps]'
+          selector: '[unsafeProps]',
+          standalone: false,
         })
         class UnsafePropsDirective {
           @HostBinding('href')
@@ -7848,7 +8051,8 @@ runInEachFileSystem((os: string) => {
 
         @Component({
           selector: 'foo',
-          template: '<a [unsafeProps]="ctxProp">Link Title</a>'
+          template: '<a [unsafeProps]="ctxProp">Link Title</a>',
+          standalone: false,
         })
         class FooCmp {
           ctxProp = '';
@@ -7953,6 +8157,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'cmp',
           template: '<div test></div>',
+          standalone: false,
         })
         export class Cmp {}
 
@@ -8014,6 +8219,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'cmp',
           template: '<div test></div>',
+          standalone: false,
         })
         export class Cmp {}
 
@@ -8069,7 +8275,10 @@ runInEachFileSystem((os: string) => {
         import {Directive, NgModule} from '@angular/core';
         import {ExternalModule} from './external';
 
-        @Directive({selector: '[foo]'})
+        @Directive({
+          selector: '[foo]',
+          standalone: false,
+        })
         export class FooDir {}
 
         @NgModule({
@@ -8088,6 +8297,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'index',
           template: '<div foo test lib></div>',
+          standalone: false,
         })
         export class IndexCmp {}
 
@@ -8142,7 +8352,10 @@ runInEachFileSystem((os: string) => {
         import {Directive, NgModule} from '@angular/core';
         import {ExternalModule} from './external';
 
-        @Directive({selector: '[foo]'})
+        @Directive({
+          selector: '[foo]',
+          standalone: false,
+        })
         export class FooDir {}
 
         @NgModule({
@@ -8161,6 +8374,7 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'index',
           template: '<div foo test lib></div>',
+          standalone: false,
         })
         export class IndexCmp {}
 
@@ -8185,7 +8399,10 @@ runInEachFileSystem((os: string) => {
           `
         import {Directive, NgModule} from '@angular/core';
 
-        @Directive({selector: 'test'})
+        @Directive({
+          selector: 'test',
+          standalone: false,
+        })
         export class TestDir {}
 
         @NgModule({
@@ -9248,7 +9465,8 @@ runInEachFileSystem((os: string) => {
 
           @Directive({
             selector: '[some-dir]',
-            providers: [NotAService]
+            providers: [NotAService],
+            standalone: false,
           })
           class SomeDirective {}
 
@@ -9277,7 +9495,8 @@ runInEachFileSystem((os: string) => {
           @Component({
             selector: 'some-comp',
             template: '',
-            providers: [NotAService]
+            providers: [NotAService],
+            standalone: false,
           })
           class SomeComponent {}
 
@@ -9306,7 +9525,8 @@ runInEachFileSystem((os: string) => {
           @Component({
             selector: 'some-comp',
             template: '',
-            viewProviders: [NotAService]
+            viewProviders: [NotAService],
+            standalone: false,
           })
           class SomeComponent {}
 
@@ -9329,7 +9549,8 @@ runInEachFileSystem((os: string) => {
           import {NgModule, Pipe} from '@angular/core';
 
           @Pipe({
-            name: 'some-pipe'
+            name: 'some-pipe',
+            standalone: false,
           })
           class SomePipe {}
 
