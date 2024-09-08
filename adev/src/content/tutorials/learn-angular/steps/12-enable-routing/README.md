@@ -8,7 +8,7 @@ In this activity, you'll learn how to setup and configure your app to use Angula
 
 <docs-workflow>
 
-<docs-step title="Create an app.route.ts file">
+<docs-step title="Create an app.routes.ts file">
 
 Inside `app.routes.ts`, make the following changes:
 
