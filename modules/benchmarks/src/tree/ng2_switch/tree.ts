@@ -19,6 +19,7 @@ import {emptyTree, TreeNode} from '../util';
     <tree *ngIf="data.right != null" [data]="data.right"></tree
     ><tree *ngIf="data.left != null" [data]="data.left"></tree
   ></ng-container>`,
+  standalone: false,
 })
 export class TreeComponent {
   @Input() data: TreeNode = emptyTree;

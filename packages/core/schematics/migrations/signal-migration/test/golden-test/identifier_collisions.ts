@@ -12,10 +12,7 @@ import {Component, Input} from '@angular/core';
 
 const complex = 'some global variable';
 
-@Component({
-  template: '',
-  standalone: false,
-})
+@Component({template: ''})
 class MyComp {
   @Input() name: string | null = null;
   @Input() complex: string | null = null;

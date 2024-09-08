@@ -17,6 +17,7 @@ import {Component} from '@angular/core';
       ><class-bindings> </class-bindings
     ></class-bindings>
   `,
+  standalone: false,
 })
 export class AppComponent {
   show = false;

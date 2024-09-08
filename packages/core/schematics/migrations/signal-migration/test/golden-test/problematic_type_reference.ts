@@ -6,7 +6,6 @@ import {Component, Directive, QueryList, Input} from '@angular/core';
   template: `
     {{label}}
   `,
-  standalone: false,
 })
 class Group {
   @Input() label!: string;
@@ -19,9 +18,7 @@ class Base {
   }>();
 }
 
-@Directive({
-  standalone: false,
-})
+@Directive({})
 class Option extends Base {
   _items = new QueryList<Group>();
 }
