@@ -157,7 +157,7 @@ describe('type check blocks', () => {
         'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "fieldA" | "fieldB">) => i0.Dir<T> = null!;',
       );
       expect(actual).toContain(
-        'var _t1 = _ctor1({ "fieldA": (((this).foo)), "fieldB": 0 as any });',
+        'var _t1 = _ctor1({ "fieldA": (((this).foo)), "fieldB": 0 as never });',
       );
     });
 

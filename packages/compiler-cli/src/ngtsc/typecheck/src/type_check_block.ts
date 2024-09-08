@@ -69,7 +69,7 @@ import {
 } from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
-import {astToTypescript, ANY_EXPRESSION} from './expression';
+import {astToTypescript, ANY_EXPRESSION, NEVER_EXPRESSION} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {
   tsCallMethod,
@@ -2921,8 +2921,8 @@ function tcbCallTypeCtor(
       return assignment;
     } else {
       // A type constructor is required to be called with all input properties, so any unset
-      // inputs are simply assigned a value of type `any` to ignore them.
-      return ts.factory.createPropertyAssignment(propertyName, ANY_EXPRESSION);
+      // inputs are assigned a value of type `never` to exclude them from type inference.
+      return ts.factory.createPropertyAssignment(propertyName, NEVER_EXPRESSION);
     }
   });
 
