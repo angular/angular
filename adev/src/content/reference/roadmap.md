@@ -142,7 +142,7 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="iframe support in Angular DevTools" link="Completed in Q2 2024" href="">
   We enabled debugging and profiling of Angular apps embedded within an iframe on the page.
   </docs-card>
-  <docs-card title="Automation for transition of existing hybrid rendering projects to esbuild and vite" link="Completed in Q2 2024" href="tools/cli/esbuild">
+  <docs-card title="Automation for transition of existing hybrid rendering projects to esbuild and vite" link="Completed in Q2 2024" href="tools/cli/build-system-migration">
   In v17 we shipped a vite and esbuild-based application builder and enabled it for new projects by default. It improves build time for projects using hybrid rendering with up to 87%. As part of v18 we shipped schematics and a guide that migrate existing projects using hybrid rendering to the new build pipeline.
   </docs-card>
   <docs-card title="Make Angular.dev the official home for Angular developers" link="Completed in Q2 2024" href="https://goo.gle/angular-dot-dev">

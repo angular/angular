@@ -33,21 +33,22 @@ export function traverseFlowForInterestingNodes(flow: FlowNode): ts.Node[] | nul
   let flowDepth = 0;
   let interestingNodes: ts.Node[] = [];
 
-  const queue: FlowNode[] = [flow];
+  const queue = new Set<FlowNode>([flow]);
 
-  while (queue.length) {
-    flow = queue.shift()!;
-
+  // Queue is evolved during iteration, and new items will be added
+  // to the end of the iteration. Effectively implementing a queue
+  // with deduping out of the box.
+  for (const flow of queue) {
     if (++flowDepth === 2000) {
       // We have made 2000 recursive invocations. To avoid overflowing the call stack we report an
       // error and disable further control flow analysis in the containing function or module body.
-      return null;
+      return interestingNodes;
     }
 
     const flags = flow.flags;
     if (flags & FlowFlags.Assignment) {
       const assignment = flow as FlowAssignment;
-      queue.push(assignment.antecedent);
+      queue.add(assignment.antecedent);
 
       if (ts.isVariableDeclaration(assignment.node)) {
         interestingNodes.push(assignment.node.name);
@@ -57,37 +58,39 @@ export function traverseFlowForInterestingNodes(flow: FlowNode): ts.Node[] | nul
         interestingNodes.push(assignment.node);
       }
     } else if (flags & FlowFlags.Call) {
-      queue.push((flow as FlowCall).antecedent);
+      queue.add((flow as FlowCall).antecedent);
       // Arguments can be narrowed using `FlowCall`s.
       // See: node_modules/typescript/stable/src/compiler/checker.ts;l=28786-28810
       interestingNodes.push(...(flow as FlowCall).node.arguments);
     } else if (flags & FlowFlags.Condition) {
-      queue.push((flow as FlowCondition).antecedent);
+      queue.add((flow as FlowCondition).antecedent);
       interestingNodes.push((flow as FlowCondition).node);
     } else if (flags & FlowFlags.SwitchClause) {
-      queue.push((flow as FlowSwitchClause).antecedent);
+      queue.add((flow as FlowSwitchClause).antecedent);
       // The switch expression can be narrowed, so it's an interesting node.
       interestingNodes.push((flow as FlowSwitchClause).node.switchStatement.expression);
     } else if (flags & FlowFlags.Label) {
       // simple label, a single ancestor.
       if ((flow as FlowLabel).antecedent?.length === 1) {
-        queue.push((flow as FlowLabel).antecedent![0]);
+        queue.add((flow as FlowLabel).antecedent![0]);
         continue;
       }
 
       if (flags & FlowFlags.BranchLabel) {
         // Normal branches. e.g. switch.
-        queue.push(...((flow as FlowLabel).antecedent ?? []));
+        for (const f of (flow as FlowLabel).antecedent ?? []) {
+          queue.add(f);
+        }
       } else {
         // Branch for loops.
         // The first antecedent always points to the flow node before the loop
         // was entered. All other narrowing expressions, if present, are direct
         // antecedents of the starting flow node, so we only need to look at the first.
         // See: node_modules/typescript/stable/src/compiler/checker.ts;l=28108-28109
-        queue.push((flow as FlowLabel).antecedent![0]);
+        queue.add((flow as FlowLabel).antecedent![0]);
       }
     } else if (flags & FlowFlags.ArrayMutation) {
-      queue.push((flow as FlowArrayMutation).antecedent);
+      queue.add((flow as FlowArrayMutation).antecedent);
       // Array mutations are never interesting for inputs, as we cannot migrate
       // assignments to inputs.
     } else if (flags & FlowFlags.ReduceLabel) {
@@ -96,8 +99,10 @@ export function traverseFlowForInterestingNodes(flow: FlowNode): ts.Node[] | nul
       // TODO: explore this more.
 
       // See: node_modules/typescript/stable/src/compiler/binder.ts;l=1636-1649.
-      queue.push((flow as FlowReduceLabel).antecedent);
-      queue.push(...(flow as FlowReduceLabel).node.antecedents);
+      queue.add((flow as FlowReduceLabel).antecedent);
+      for (const f of (flow as FlowReduceLabel).node.antecedents) {
+        queue.add(f);
+      }
     } else if (flags & FlowFlags.Start) {
       // Note: TS itself only ever continues with parent control flows, if the pre-determined `flowContainer`
       // of the referenced is different. E.g. narrowing might decide to choose a higher flow container if we
