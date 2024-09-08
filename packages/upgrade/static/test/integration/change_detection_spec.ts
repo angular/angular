@@ -35,7 +35,11 @@ withEachNg1Version(() => {
     it('should not break if a $digest is already in progress', waitForAsync(() => {
       const element = html('<my-app></my-app>');
 
-      @Component({selector: 'my-app', template: ''})
+      @Component({
+        selector: 'my-app',
+        template: '',
+        standalone: false,
+      })
       class AppComponent {}
 
       @NgModule({declarations: [AppComponent], imports: [BrowserModule, UpgradeModule]})
@@ -92,14 +96,20 @@ withEachNg1Version(() => {
         return value + ';';
       };
 
-      @Directive({selector: 'ng1a'})
+      @Directive({
+        selector: 'ng1a',
+        standalone: false,
+      })
       class Ng1aComponent extends UpgradeComponent {
         constructor(elementRef: ElementRef, injector: Injector) {
           super('ng1a', elementRef, injector);
         }
       }
 
-      @Directive({selector: 'ng1b'})
+      @Directive({
+        selector: 'ng1b',
+        standalone: false,
+      })
       class Ng1bComponent extends UpgradeComponent {
         constructor(elementRef: ElementRef, injector: Injector) {
           super('ng1b', elementRef, injector);
@@ -109,6 +119,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2',
         template: `{{ l('2A') }}<ng1a></ng1a>{{ l('2B') }}<ng1b></ng1b>{{ l('2C') }}`,
+        standalone: false,
       })
       class Ng2Component {
         l = l;
@@ -143,7 +154,11 @@ withEachNg1Version(() => {
       const element = html('<my-app></my-app>');
       let appComponent: AppComponent;
 
-      @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
+      @Component({
+        selector: 'my-app',
+        template: '<my-child [value]="value"></my-child>',
+        standalone: false,
+      })
       class AppComponent {
         value?: number;
         constructor() {
@@ -154,6 +169,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'my-child',
         template: '<div>{{ valueFromPromise }}</div>',
+        standalone: false,
       })
       class ChildComponent {
         valueFromPromise?: number;

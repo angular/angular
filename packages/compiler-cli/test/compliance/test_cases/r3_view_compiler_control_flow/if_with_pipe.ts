@@ -1,6 +1,8 @@
 import {Component, Pipe} from '@angular/core';
 
-@Pipe({standalone: true, name: 'test'})
+@Pipe({
+    name: 'test'
+})
 export class TestPipe {
   transform(value: unknown) {
     return value;
@@ -8,7 +10,7 @@ export class TestPipe {
 }
 
 @Component({
-  template: `
+    template: `
     <div>
       {{message}}
       @if ((val | test) === 1) {
@@ -20,8 +22,7 @@ export class TestPipe {
       }
     </div>
   `,
-  standalone: true,
-  imports: [TestPipe],
+    imports: [TestPipe]
 })
 export class MyApp {
   message = 'hello';

@@ -2,18 +2,16 @@ import {Component} from '@angular/core';
 
 
 @Component({
-  selector: 'my-lazy-cmp',
-  standalone: true,
-  template: 'Hi!',
+    selector: 'my-lazy-cmp',
+    template: 'Hi!'
 })
 class MyLazyCmp {
 }
 
 @Component({
-  standalone: true,
-  selector: 'app',
-  imports: [MyLazyCmp],
-  template: `
+    selector: 'app',
+    imports: [MyLazyCmp],
+    template: `
 		Visible: {{ isVisible }}.
 
 		@defer (when isVisible) {

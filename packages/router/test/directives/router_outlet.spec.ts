@@ -31,7 +31,6 @@ import {InjectionToken} from '../../../core/src/di';
 describe('router outlet name', () => {
   it('should support name binding', fakeAsync(() => {
     @Component({
-      standalone: true,
       template: '<router-outlet [name]="name"></router-outlet>',
       imports: [RouterOutlet],
     })
@@ -41,7 +40,6 @@ describe('router outlet name', () => {
 
     @Component({
       template: 'popup component',
-      standalone: true,
     })
     class PopupCmp {}
 
@@ -55,7 +53,6 @@ describe('router outlet name', () => {
 
   it('should be able to change the name of the outlet', fakeAsync(() => {
     @Component({
-      standalone: true,
       template: '<router-outlet [name]="name"></router-outlet>',
       imports: [RouterOutlet],
     })
@@ -65,13 +62,11 @@ describe('router outlet name', () => {
 
     @Component({
       template: 'hello world',
-      standalone: true,
     })
     class GreetingCmp {}
 
     @Component({
       template: 'goodbye cruel world',
-      standalone: true,
     })
     class FarewellCmp {}
 
@@ -102,7 +97,6 @@ describe('router outlet name', () => {
 
   it('should support outlets in ngFor', fakeAsync(() => {
     @Component({
-      standalone: true,
       template: `
             <div *ngFor="let outlet of outlets">
                 <router-outlet [name]="outlet"></router-outlet>
@@ -116,19 +110,16 @@ describe('router outlet name', () => {
 
     @Component({
       template: 'component 1',
-      standalone: true,
     })
     class Cmp1 {}
 
     @Component({
       template: 'component 2',
-      standalone: true,
     })
     class Cmp2 {}
 
     @Component({
       template: 'component 3',
-      standalone: true,
     })
     class Cmp3 {}
 
@@ -164,7 +155,6 @@ describe('router outlet name', () => {
 
   it('should not activate if route is changed', fakeAsync(() => {
     @Component({
-      standalone: true,
       template: '<div *ngIf="initDone"><router-outlet></router-outlet></div>',
       imports: [RouterOutlet, CommonModule],
     })
@@ -177,7 +167,6 @@ describe('router outlet name', () => {
 
     @Component({
       template: 'child component',
-      standalone: true,
     })
     class ChildCmp {}
 
@@ -209,6 +198,7 @@ describe('component input binding', () => {
   it('sets component inputs from matching query params', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() language?: string;
@@ -237,6 +227,7 @@ describe('component input binding', () => {
   it('sets component inputs from resolved and static data', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() resolveA?: string;
@@ -268,6 +259,7 @@ describe('component input binding', () => {
   it('sets component inputs from path params', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() language?: string;
@@ -287,6 +279,7 @@ describe('component input binding', () => {
   it('when keys conflict, sets inputs based on priority: data > path params > query params', async () => {
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input() result?: string;
@@ -332,6 +325,7 @@ describe('component input binding', () => {
     let resultLog: Array<string | undefined> = [];
     @Component({
       template: '',
+      standalone: false,
     })
     class MyComponent {
       @Input()
@@ -357,7 +351,6 @@ describe('component input binding', () => {
   it('Should have inputs available to all outlets after navigation', async () => {
     @Component({
       template: '{{myInput}}',
-      standalone: true,
     })
     class MyComponent {
       @Input() myInput?: string;
@@ -366,7 +359,6 @@ describe('component input binding', () => {
     @Component({
       template: '<router-outlet/>',
       imports: [RouterOutlet],
-      standalone: true,
     })
     class OutletWrapper {}
 
@@ -398,7 +390,6 @@ describe('injectors', () => {
 
     @Component({
       template: '',
-      standalone: true,
     })
     class Child {
       constructor() {
@@ -414,7 +405,6 @@ describe('injectors', () => {
     @Component({
       template: '<router-outlet/>',
       imports: [RouterOutlet, ModWithProviders],
-      standalone: true,
     })
     class App {}
 
@@ -433,7 +423,6 @@ describe('injectors', () => {
     const TOKEN = new InjectionToken<any>('');
     @Component({
       template: '',
-      standalone: true,
     })
     class Child {
       constructor() {
@@ -444,7 +433,6 @@ describe('injectors', () => {
     @Component({
       template: '<router-outlet/>',
       imports: [RouterOutlet],
-      standalone: true,
     })
     class App {}
 
@@ -469,12 +457,17 @@ describe('injectors', () => {
 
 describe('router outlet data', () => {
   it('is injectable even when not set', async () => {
-    @Component({template: '', standalone: true})
+    @Component({
+      template: '',
+    })
     class MyComponent {
       data = inject(ROUTER_OUTLET_DATA);
     }
 
-    @Component({template: '<router-outlet />', standalone: true, imports: [RouterOutlet]})
+    @Component({
+      template: '<router-outlet />',
+      imports: [RouterOutlet],
+    })
     class App {}
 
     TestBed.configureTestingModule({
@@ -491,7 +484,9 @@ describe('router outlet data', () => {
   });
 
   it('can set and update value', async () => {
-    @Component({template: '', standalone: true})
+    @Component({
+      template: '',
+    })
     class MyComponent {
       data = inject(ROUTER_OUTLET_DATA);
     }
@@ -516,7 +511,6 @@ describe('router outlet data', () => {
   it('overrides parent provided data with nested', async () => {
     @Component({
       imports: [RouterOutlet],
-      standalone: true,
       template: `{{outletData()}}|<router-outlet [routerOutletData]="'child'" />`,
     })
     class Child {
@@ -524,7 +518,6 @@ describe('router outlet data', () => {
     }
 
     @Component({
-      standalone: true,
       template: '{{outletData()}}',
     })
     class GrandChild {
@@ -553,7 +546,6 @@ describe('router outlet data', () => {
   it('does not inherit ancestor data when not provided in nested', async () => {
     @Component({
       imports: [RouterOutlet],
-      standalone: true,
       template: `{{outletData()}}|<router-outlet />`,
     })
     class Child {
@@ -561,7 +553,6 @@ describe('router outlet data', () => {
     }
 
     @Component({
-      standalone: true,
       template: '{{outletData() ?? "not provided"}}',
     })
     class GrandChild {

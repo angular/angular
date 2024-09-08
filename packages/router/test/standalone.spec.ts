@@ -11,7 +11,9 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {By} from '@angular/platform-browser';
 import {provideRoutes, Router, RouterModule, ROUTES} from '@angular/router';
 
-@Component({template: '<div>simple standalone</div>', standalone: true})
+@Component({
+  template: '<div>simple standalone</div>',
+})
 export class SimpleStandaloneComponent {}
 
 @Component({template: '<div>not standalone</div>', standalone: false})
@@ -19,7 +21,6 @@ export class NotStandaloneComponent {}
 
 @Component({
   template: '<router-outlet></router-outlet>',
-  standalone: true,
   imports: [RouterModule],
 })
 export class RootCmp {}
@@ -113,7 +114,10 @@ describe('standalone in Router API', () => {
         value = 'my service';
       }
 
-      @Component({template: `{{service.value}}`})
+      @Component({
+        template: `{{service.value}}`,
+        standalone: false,
+      })
       class MyComponent {
         constructor(readonly service: Service) {}
       }
@@ -142,7 +146,10 @@ describe('standalone in Router API', () => {
       @NgModule({providers: [Service]})
       class LazyModule {}
 
-      @Component({template: `{{service.value}}`})
+      @Component({
+        template: `{{service.value}}`,
+        standalone: false,
+      })
       class MyComponent {
         constructor(readonly service: Service) {}
       }
@@ -168,7 +175,10 @@ describe('standalone in Router API', () => {
         value = 'my service';
       }
 
-      @Component({template: `{{service.value}}`})
+      @Component({
+        template: `{{service.value}}`,
+        standalone: false,
+      })
       class MyComponent {
         constructor(readonly service: Service) {}
       }
@@ -215,16 +225,25 @@ describe('standalone in Router API', () => {
         override name = 'service3';
       }
 
-      @Component({template: `parent<router-outlet></router-outlet>`})
+      @Component({
+        template: `parent<router-outlet></router-outlet>`,
+        standalone: false,
+      })
       class ParentCmp {
         constructor(readonly service: ServiceBase) {}
       }
-      @Component({template: `child`})
+      @Component({
+        template: `child`,
+        standalone: false,
+      })
       class ChildCmp {
         constructor(readonly service: ServiceBase) {}
       }
 
-      @Component({template: `child2`})
+      @Component({
+        template: `child2`,
+        standalone: false,
+      })
       class ChildCmp2 {
         constructor(readonly service: ServiceBase) {}
       }

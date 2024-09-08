@@ -1,8 +1,8 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
     <ul *ngFor="let outer of items">
       <li *ngFor="let middle of outer.items">
         <div *ngFor="let inner of items"
@@ -12,7 +12,8 @@ import {Component, NgModule} from '@angular/core';
           {{format(outer, middle, inner, component)}}
         </div>
       </li>
-    </ul>`
+    </ul>`,
+    standalone: false
 })
 export class MyComponent {
   component = this;

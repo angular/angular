@@ -120,7 +120,10 @@ describe('environment injector', () => {
   it('should expose the ComponentFactoryResolver token bound to env injector with specified providers', () => {
     class Service {}
 
-    @Component({selector: 'test-cmp'})
+    @Component({
+      selector: 'test-cmp',
+      standalone: false,
+    })
     class TestComponent {
       constructor(readonly service: Service) {}
     }
@@ -228,7 +231,6 @@ describe('environment injector', () => {
       });
 
       @Component({
-        standalone: true,
         template: '',
         providers: [{provide: TOKEN, useValue: 'from component'}],
       })

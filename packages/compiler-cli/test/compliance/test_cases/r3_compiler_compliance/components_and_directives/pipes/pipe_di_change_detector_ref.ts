@@ -1,6 +1,9 @@
 import {ChangeDetectorRef, Component, NgModule, Optional, Pipe, PipeTransform} from '@angular/core';
 
-@Pipe({name: 'myPipe'})
+@Pipe({
+    name: 'myPipe',
+    standalone: false
+})
 export class MyPipe implements PipeTransform {
   constructor(changeDetectorRef: ChangeDetectorRef) {}
 
@@ -9,7 +12,10 @@ export class MyPipe implements PipeTransform {
   }
 }
 
-@Pipe({name: 'myOtherPipe'})
+@Pipe({
+    name: 'myOtherPipe',
+    standalone: false
+})
 export class MyOtherPipe implements PipeTransform {
   constructor(@Optional() changeDetectorRef: ChangeDetectorRef) {}
 
@@ -18,7 +24,10 @@ export class MyOtherPipe implements PipeTransform {
   }
 }
 
-@Component({selector: 'my-app', template: '{{name | myPipe }}<p>{{ name | myOtherPipe }}</p>'})
+@Component({
+    selector: 'my-app', template: '{{name | myPipe }}<p>{{ name | myOtherPipe }}</p>',
+    standalone: false
+})
 export class MyApp {
   name = 'World';
 }

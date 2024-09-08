@@ -9,6 +9,7 @@ class SomeDir {
 
 @Component({
   template: ``,
+  standalone: false,
 })
 export class ScopeMismatchTest {
   eachScopeRedeclared() {

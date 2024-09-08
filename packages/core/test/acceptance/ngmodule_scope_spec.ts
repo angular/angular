@@ -29,17 +29,27 @@ describe('NgModule scopes', () => {
       // The scenario cannot be tested using TestBed as it influences how NgModule
       // scopes are applied, preventing the issue from occurring.
 
-      @Pipe({name: 'multiply'})
+      @Pipe({
+        name: 'multiply',
+        standalone: false,
+      })
       class MultiplyPipe implements PipeTransform {
         transform(value: number, factor: number): number {
           return value * factor;
         }
       }
 
-      @Component({template: '...'})
+      @Component({
+        template: '...',
+        standalone: false,
+      })
       class BaseComponent {}
 
-      @Component({selector: 'my-app', template: 'App - {{ 3 | multiply:2 }}'})
+      @Component({
+        selector: 'my-app',
+        template: 'App - {{ 3 | multiply:2 }}',
+        standalone: false,
+      })
       class App extends BaseComponent {}
 
       @NgModule({

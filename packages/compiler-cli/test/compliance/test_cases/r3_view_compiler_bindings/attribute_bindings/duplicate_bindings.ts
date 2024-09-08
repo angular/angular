@@ -1,9 +1,8 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  standalone: true,
-  template: `
+    selector: 'my-component',
+    template: `
     <div aria-label="hello" aria-label="hi"></div>
     <div style="width: 0" style="height: 0">
     <div class="cls1" class="cls2"></div>
@@ -12,7 +11,7 @@ import {Component} from '@angular/core';
     <div [class]="value1" [class]="value2"></div>
     <div [style]="value1" [style]="value2"></div>
     <div (click)="$event.stopPropagation()" (click)="$event.preventDefault()"></div>
-  `,
+  `
 })
 export class MyComponent {
   value1: any;

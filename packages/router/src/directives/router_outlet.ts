@@ -206,7 +206,6 @@ export interface RouterOutletContract {
 @Directive({
   selector: 'router-outlet',
   exportAs: 'outlet',
-  standalone: true,
 })
 export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private activated: ComponentRef<any> | null = null;

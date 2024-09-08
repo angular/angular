@@ -1,6 +1,9 @@
 import {Directive, NgModule} from '@angular/core';
 
-@Directive({selector: '[some-directive]', exportAs: 'someDir, otherDir'})
+@Directive({
+    selector: '[some-directive]', exportAs: 'someDir, otherDir',
+    standalone: false
+})
 export class SomeDirective {
 }
 

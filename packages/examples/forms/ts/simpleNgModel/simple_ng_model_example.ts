@@ -19,6 +19,7 @@ import {Component} from '@angular/core';
 
     <button (click)="setValue()">Set value</button>
   `,
+  standalone: false,
 })
 export class SimpleNgModelComp {
   name: string = '';

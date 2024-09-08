@@ -17,12 +17,14 @@ export class Service {}
   selector: 'hierarchy-app',
   template: '<child-cmp></child-cmp>',
   providers: [Service],
+  standalone: false,
 })
 export class AppComponent {}
 
 @Component({
   selector: 'child-cmp',
   template: '{{found}}',
+  standalone: false,
 })
 export class ChildComponent {
   found: boolean;

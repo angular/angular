@@ -1,7 +1,8 @@
 import {Directive} from '@angular/core';
 
 @Directive({
-  selector: '[someDir]',
+    selector: '[someDir]',
+    standalone: false
 })
 export class SomeDirective {
 }

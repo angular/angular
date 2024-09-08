@@ -2,7 +2,9 @@
 
 import {Directive, Input} from '@angular/core';
 
-@Directive({})
+@Directive({
+  standalone: false,
+})
 export class WithGetters {
   @Input()
   get disabled() {

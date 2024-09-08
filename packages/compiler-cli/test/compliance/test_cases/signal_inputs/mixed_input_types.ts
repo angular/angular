@@ -4,9 +4,7 @@ function convertToBoolean(value: string|boolean) {
   return value === true || value !== '';
 }
 
-@Directive({
-  standalone: true,
-})
+@Directive({})
 export class TestDir {
   counter = input(0);
   signalWithTransform = input(false, {transform: convertToBoolean});

@@ -13,6 +13,7 @@ import {Component, Directive, EventEmitter, NgModule} from '@angular/core';
   selector: 'app-bank-account',
   inputs: ['bankName', 'id: account-id'],
   template: ` Bank Name: {{ bankName }} Account Id: {{ id }} `,
+  standalone: false,
 })
 export class BankAccountComponent {
   bankName: string | null = null;
@@ -25,12 +26,17 @@ export class BankAccountComponent {
 @Component({
   selector: 'app-my-input',
   template: ` <app-bank-account bankName="RBC" account-id="4747"> </app-bank-account> `,
+  standalone: false,
 })
 export class MyInputComponent {}
 // #enddocregion component-input
 
 // #docregion component-output-interval
-@Directive({selector: 'app-interval-dir', outputs: ['everySecond', 'fiveSecs: everyFiveSeconds']})
+@Directive({
+  selector: 'app-interval-dir',
+  outputs: ['everySecond', 'fiveSecs: everyFiveSeconds'],
+  standalone: false,
+})
 export class IntervalDirComponent {
   everySecond = new EventEmitter<string>();
   fiveSecs = new EventEmitter<string>();
@@ -47,6 +53,7 @@ export class IntervalDirComponent {
     <app-interval-dir (everySecond)="onEverySecond()" (everyFiveSeconds)="onEveryFiveSeconds()">
     </app-interval-dir>
   `,
+  standalone: false,
 })
 export class MyOutputComponent {
   onEverySecond() {

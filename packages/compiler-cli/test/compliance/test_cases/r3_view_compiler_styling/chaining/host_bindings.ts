@@ -1,13 +1,14 @@
 import {Component, HostBinding} from '@angular/core';
 
 @Component({
-  template: '',
-  host: {
-    '[class.apple]': 'yesToApple',
-    '[style.color]': 'color',
-    '[class.tomato]': 'yesToTomato',
-    '[style.transition]': 'transition'
-  }
+    template: '',
+    host: {
+        '[class.apple]': 'yesToApple',
+        '[style.color]': 'color',
+        '[class.tomato]': 'yesToTomato',
+        '[style.transition]': 'transition'
+    },
+    standalone: false
 })
 export class MyComponent {
   color = 'red';

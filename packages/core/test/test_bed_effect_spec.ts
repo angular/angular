@@ -32,7 +32,6 @@ describe('effects in TestBed', () => {
     const log: string[] = [];
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       template: '',
     })
     class Cmp {
@@ -68,7 +67,6 @@ describe('effects in TestBed', () => {
     const log: string[] = [];
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       template: '',
     })
     class Cmp {
@@ -112,7 +110,6 @@ describe('effects in TestBed', () => {
     let observed = '';
     @Component({
       selector: 'test-cmp',
-      standalone: true,
       template: '',
     })
     class Cmp {

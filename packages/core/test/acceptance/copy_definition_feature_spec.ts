@@ -65,6 +65,7 @@ describe('CopyDefinitionFeature', () => {
     @Component({
       selector: 'test-cmp',
       template: '<some-cmp name="Success!"></some-cmp>',
+      standalone: false,
     })
     class TestCmp {}
 

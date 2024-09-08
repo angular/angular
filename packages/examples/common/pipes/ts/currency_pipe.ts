@@ -39,6 +39,7 @@ registerLocaleData(localeFr);
     <!--output 'CLP1' because CLP has no cents-->
     <p>B: {{ b | currency: 'CLP' }}</p>
   </div>`,
+  standalone: false,
 })
 export class CurrencyPipeComponent {
   a: number = 0.259;

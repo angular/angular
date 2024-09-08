@@ -39,6 +39,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     <hr />
     <div class="toggle-container" [@openClose]="stateExpression">Look at this box</div>
   `,
+  standalone: false,
 })
 export class MyExpandoCmp {
   // TODO(issue/24571): remove '!'.

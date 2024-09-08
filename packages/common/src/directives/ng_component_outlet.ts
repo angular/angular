@@ -93,7 +93,6 @@ import {
  */
 @Directive({
   selector: '[ngComponentOutlet]',
-  standalone: true,
 })
 export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
   @Input() ngComponentOutlet: Type<any> | null = null;

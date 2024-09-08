@@ -61,6 +61,7 @@ function noopAnimationTests() {
           ]),
         ]),
       ],
+      standalone: false,
     })
     class Cmp {
       exp: any;
@@ -105,6 +106,7 @@ function noopAnimationTests() {
           transition(':leave', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))]),
         ]),
       ],
+      standalone: false,
     })
     class Cmp {
       exp: any;

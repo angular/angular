@@ -109,7 +109,11 @@ export const ngGroupStatusHost = {
  * @ngModule FormsModule
  * @publicApi
  */
-@Directive({selector: '[formControlName],[ngModel],[formControl]', host: ngControlStatusHost})
+@Directive({
+  selector: '[formControlName],[ngModel],[formControl]',
+  host: ngControlStatusHost,
+  standalone: false,
+})
 export class NgControlStatus extends AbstractControlStatus {
   constructor(@Self() cd: NgControl) {
     super(cd);
@@ -132,6 +136,7 @@ export class NgControlStatus extends AbstractControlStatus {
   selector:
     '[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]',
   host: ngGroupStatusHost,
+  standalone: false,
 })
 export class NgControlStatusGroup extends AbstractControlStatus {
   constructor(@Optional() @Self() cd: ControlContainer) {

@@ -55,6 +55,7 @@ export class TextFormatter {
       >
     </div>
     <button (click)="addHero.emit()">Add Hero</button>`,
+  standalone: false,
 })
 export class Ng2HeroesComponent {
   @Input() heroes!: Hero[];
@@ -94,7 +95,10 @@ export class HeroesService {
 
 // #docregion ng1-hero-wrapper
 // This Angular directive will act as an interface to the "upgraded" AngularJS component
-@Directive({selector: 'ng1-hero'})
+@Directive({
+  selector: 'ng1-hero',
+  standalone: false,
+})
 export class Ng1HeroComponentWrapper extends UpgradeComponent {
   // The names of the input and output properties here must match the names of the
   // `<` and `&` bindings in the AngularJS component that is being wrapped

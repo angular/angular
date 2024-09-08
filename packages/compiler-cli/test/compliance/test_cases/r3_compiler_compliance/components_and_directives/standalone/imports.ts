@@ -1,10 +1,16 @@
 import {Component, Directive, NgModule, Pipe} from '@angular/core';
 
-@Directive({selector: '[not-standalone]'})
+@Directive({
+    selector: '[not-standalone]',
+    standalone: false
+})
 export class NotStandaloneDir {
 }
 
-@Pipe({name: 'nspipe'})
+@Pipe({
+    name: 'nspipe',
+    standalone: false
+})
 export class NotStandalonePipe {
   transform(value: any): any {}
 }
@@ -17,15 +23,13 @@ export class NotStandaloneStuffModule {
 }
 
 @Directive({
-  standalone: true,
-  selector: '[indirect]',
+    selector: '[indirect]'
 })
 export class IndirectDir {
 }
 
 @Pipe({
-  standalone: true,
-  name: 'indirectpipe',
+    name: 'indirectpipe'
 })
 export class IndirectPipe {
   transform(value: any): any {}
@@ -40,29 +44,26 @@ export class SomeModule {
 
 
 @Directive({
-  standalone: true,
-  selector: '[direct]',
+    selector: '[direct]'
 })
 export class DirectDir {
 }
 
 @Pipe({
-  standalone: true,
-  name: 'directpipe',
+    name: 'directpipe'
 })
 export class DirectPipe {
   transform(value: any): any {}
 }
 
 @Component({
-  standalone: true,
-  selector: 'test-cmp',
-  template: `
+    selector: 'test-cmp',
+    template: `
     <p>Reference some non-standalone things:<span not-standalone>{{data | nspipe}}</span></p>
     <p>Reference some indirect standalone things:<span indirect>{{data | indirectpipe}}</span></p>
     <p>Reference some standalone things directly:<span direct>{{data | directpipe}}</span></p>
   `,
-  imports: [SomeModule, DirectDir, DirectPipe],
+    imports: [SomeModule, DirectDir, DirectPipe]
 })
 export class TestCmp {
   data = true;

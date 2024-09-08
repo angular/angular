@@ -1,6 +1,9 @@
 import {Component, NgModule} from '@angular/core';
 
-@Component({selector: 'my-component', animations: [], template: ''})
+@Component({
+    selector: 'my-component', animations: [], template: '',
+    standalone: false
+})
 export class MyComponent {
 }
 

@@ -13,6 +13,7 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 @Component({
   selector: 'hello-world',
   template: `<div i18n i18n-title title="Hello Title!">Hello World!</div>`,
+  standalone: false,
 })
 export class HelloWorld {}
 

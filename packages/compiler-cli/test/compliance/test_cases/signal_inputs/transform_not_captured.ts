@@ -4,9 +4,7 @@ function convertToBoolean(value: string|boolean) {
   return value === true || value !== '';
 }
 
-@Directive({
-  standalone: true,
-})
+@Directive({})
 export class TestDir {
   name = input.required<boolean, string|boolean>({
     transform: convertToBoolean,

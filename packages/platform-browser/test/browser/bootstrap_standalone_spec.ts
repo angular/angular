@@ -46,7 +46,6 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        standalone: true,
         template: `({{testToken}})`,
         imports: [AmbientModule],
       })
@@ -70,7 +69,6 @@ describe('bootstrapApplication for standalone components', () => {
     withBody('<test-app></test-app>', async () => {
       @Component({
         selector: 'test-app',
-        standalone: true,
         template: ``,
       })
       class StandaloneCmp {}
@@ -114,7 +112,6 @@ describe('bootstrapApplication for standalone components', () => {
       @Component({
         selector: 'test-app',
         template: `({{service.ambientToken}})`,
-        standalone: true,
         imports: [AmbientModule],
       })
       class StandaloneCmp {
@@ -143,7 +140,6 @@ describe('bootstrapApplication for standalone components', () => {
       @Component({
         selector: 'test-app',
         template: '...',
-        standalone: true,
         imports: [BrowserModule],
       })
       class StandaloneCmp {}
@@ -177,7 +173,6 @@ describe('bootstrapApplication for standalone components', () => {
       @Component({
         selector: 'test-app',
         template: '...',
-        standalone: true,
         imports: [SomeDependencyModule],
       })
       class StandaloneCmp {}
@@ -216,7 +211,6 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        standalone: true,
         template: 'Hello',
       })
       class ComponentWithOnDestroy {

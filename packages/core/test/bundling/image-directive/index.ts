@@ -28,7 +28,6 @@ import {PlaygroundComponent} from './playground';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterModule],
   template: '<router-outlet></router-outlet>',
 })

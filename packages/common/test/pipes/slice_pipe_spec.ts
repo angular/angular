@@ -90,7 +90,11 @@ describe('SlicePipe', () => {
   });
 
   describe('integration', () => {
-    @Component({selector: 'test-comp', template: '{{(data | slice:1).join(",") }}'})
+    @Component({
+      selector: 'test-comp',
+      template: '{{(data | slice:1).join(",") }}',
+      standalone: false,
+    })
     class TestComp {
       data: any;
     }
@@ -117,7 +121,6 @@ describe('SlicePipe', () => {
       selector: 'test-component',
       imports: [SlicePipe],
       template: '{{ title | slice:0:5 }}',
-      standalone: true,
     })
     class TestComponent {
       title = 'Hello World!';

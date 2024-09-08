@@ -13,6 +13,7 @@ import {Service} from './root_service';
 @Component({
   selector: 'lazy-route',
   template: '{{service}}:{{serviceInLazyInjector}}',
+  standalone: false,
 })
 export class RouteComponent {
   service: boolean;

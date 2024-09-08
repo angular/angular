@@ -99,5 +99,8 @@ describe('`navigationExtras handling with redirects`', () => {
   });
 });
 
-@Component({selector: 'simple-cmp', template: `simple`, standalone: true})
+@Component({
+  selector: 'simple-cmp',
+  template: `simple`,
+})
 class SimpleCmp {}

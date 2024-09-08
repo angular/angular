@@ -197,6 +197,7 @@ describe('ngInjectableDef Bazel Integration', () => {
       selector: 'test-cmp',
       template: 'test',
       providers: [{provide: 'foo', useValue: 'bar'}],
+      standalone: false,
     })
     class TestCmp {}
 

@@ -123,7 +123,9 @@ describe('title strategy', () => {
     });
 
     it('pushes updates through the title observable', async () => {
-      @Component({template: '', standalone: true})
+      @Component({
+        template: '',
+      })
       class HomeCmp {
         private readonly title$ = inject(ActivatedRoute).title.pipe(takeUntilDestroyed());
         title?: string;
@@ -190,7 +192,10 @@ describe('title strategy', () => {
   });
 });
 
-@Component({template: ''})
+@Component({
+  template: '',
+  standalone: false,
+})
 export class BlankCmp {}
 
 @Component({
@@ -198,6 +203,7 @@ export class BlankCmp {}
 <router-outlet></router-outlet>
 <router-outlet name="aux"></router-outlet>
 `,
+  standalone: false,
 })
 export class RootCmp {}
 

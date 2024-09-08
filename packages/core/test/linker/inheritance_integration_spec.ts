@@ -9,33 +9,51 @@
 import {Component, Directive, HostBinding} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-@Directive({selector: '[directiveA]'})
+@Directive({
+  selector: '[directiveA]',
+  standalone: false,
+})
 class DirectiveA {}
 
-@Directive({selector: '[directiveB]'})
+@Directive({
+  selector: '[directiveB]',
+  standalone: false,
+})
 class DirectiveB {
   @HostBinding('title') title = 'DirectiveB Title';
 }
 
-@Component({selector: 'component-a', template: 'ComponentA Template'})
+@Component({
+  selector: 'component-a',
+  template: 'ComponentA Template',
+  standalone: false,
+})
 class ComponentA {}
 
 @Component({
   selector: 'component-extends-directive',
   template: 'ComponentExtendsDirective Template',
+  standalone: false,
 })
 class ComponentExtendsDirective extends DirectiveA {}
 
 class ComponentWithNoAnnotation extends ComponentA {}
 
-@Directive({selector: '[directiveExtendsComponent]'})
+@Directive({
+  selector: '[directiveExtendsComponent]',
+  standalone: false,
+})
 class DirectiveExtendsComponent extends ComponentA {
   @HostBinding('title') title = 'DirectiveExtendsComponent Title';
 }
 
 class DirectiveWithNoAnnotation extends DirectiveB {}
 
-@Component({selector: 'my-app', template: '...'})
+@Component({
+  selector: 'my-app',
+  template: '...',
+  standalone: false,
+})
 class App {}
 
 describe('Inheritance logic', () => {

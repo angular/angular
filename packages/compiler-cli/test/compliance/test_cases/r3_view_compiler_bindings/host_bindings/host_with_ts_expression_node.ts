@@ -8,12 +8,11 @@ export function getBar(): string {
 export const BAR_CONST = getBar();
 
 @Component({
-  selector: 'my-cmp',
-  standalone: true,
-  host: {
-    'foo': BAR_CONST,
-  },
-  template: ``
+    selector: 'my-cmp',
+    host: {
+        'foo': BAR_CONST,
+    },
+    template: ``
 })
 export class MyComponent {
 }

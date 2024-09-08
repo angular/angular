@@ -1,6 +1,9 @@
 import {Directive, HostBinding} from '@angular/core';
 
-@Directive({selector: '[myWidthDir]'})
+@Directive({
+    selector: '[myWidthDir]',
+    standalone: false
+})
 export class WidthDirective {
   @HostBinding('style.width') myWidth = 200;
 

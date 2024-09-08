@@ -1,11 +1,12 @@
 import {Component, ContentChild, ContentChildren, NgModule, QueryList} from '@angular/core';
 
 @Component({
-  selector: 'content-query-component',
-  template: `
+    selector: 'content-query-component',
+    template: `
     <div #myRef></div>
     <div #myRef1></div>
-  `
+  `,
+    standalone: false
 })
 export class ContentQueryComponent {
   @ContentChild('myRef') myRef: any;

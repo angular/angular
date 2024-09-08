@@ -27,7 +27,6 @@ describe('queries as signals', () => {
   describe('view', () => {
     it('should query for an optional element in a template', () => {
       @Component({
-        standalone: true,
         template: `<div #el></div>`,
       })
       class AppComponent {
@@ -50,7 +49,6 @@ describe('queries as signals', () => {
       let result: {} | undefined = {};
 
       @Component({
-        standalone: true,
         template: `<div #el></div>`,
       })
       class AppComponent {
@@ -67,7 +65,6 @@ describe('queries as signals', () => {
 
     it('should query for a required element in a template', () => {
       @Component({
-        standalone: true,
         template: `<div #el></div>`,
       })
       class AppComponent {
@@ -87,7 +84,6 @@ describe('queries as signals', () => {
 
     it('should throw if required query is read in the constructor', () => {
       @Component({
-        standalone: true,
         template: `<div #el></div>`,
       })
       class AppComponent {
@@ -106,7 +102,6 @@ describe('queries as signals', () => {
 
     it('should query for multiple elements in a template', () => {
       @Component({
-        standalone: true,
         template: `
           <div #el></div>
           @if (show) {
@@ -143,7 +138,6 @@ describe('queries as signals', () => {
       let result: readonly ElementRef[] | undefined;
 
       @Component({
-        standalone: true,
         template: `<div #el></div>`,
       })
       class AppComponent {
@@ -160,7 +154,6 @@ describe('queries as signals', () => {
 
     it('should return the same array instance when there were no changes in results', () => {
       @Component({
-        standalone: true,
         template: `<div #el></div>`,
       })
       class AppComponent {
@@ -182,7 +175,6 @@ describe('queries as signals', () => {
       let computeCount = 0;
 
       @Component({
-        standalone: true,
         template: `
             <div #el></div>
             @if (show) {
@@ -211,7 +203,6 @@ describe('queries as signals', () => {
 
     it('should return the same array instance when there were no changes in results after view manipulation', () => {
       @Component({
-        standalone: true,
         template: `
             <div #el></div>
             @if (show) {
@@ -241,7 +232,6 @@ describe('queries as signals', () => {
 
     it('should be empty when no query matches exist', () => {
       @Component({
-        standalone: true,
         template: ``,
       })
       class AppComponent {
@@ -261,7 +251,6 @@ describe('queries as signals', () => {
     it('should run content queries defined on components', () => {
       @Component({
         selector: 'query-cmp',
-        standalone: true,
         template: `{{noOfEls()}}`,
       })
       class QueryComponent {
@@ -278,7 +267,6 @@ describe('queries as signals', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [QueryComponent],
         template: `
           <query-cmp>
@@ -309,7 +297,6 @@ describe('queries as signals', () => {
     it('should run content queries defined on directives', () => {
       @Directive({
         selector: '[query]',
-        standalone: true,
         host: {'[textContent]': `noOfEls()`},
       })
       class QueryDir {
@@ -326,7 +313,6 @@ describe('queries as signals', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [QueryDir],
         template: `
           <div query>
@@ -355,18 +341,21 @@ describe('queries as signals', () => {
     });
 
     it('should not return partial results during the first-time view rendering', () => {
-      @Directive({selector: '[marker]', standalone: true})
+      @Directive({
+        selector: '[marker]',
+      })
       class MarkerForResults {}
 
       @Directive({
         selector: '[declare]',
-        standalone: true,
       })
       class DeclareQuery {
         results = contentChildren(MarkerForResults);
       }
 
-      @Directive({selector: '[inspect]', standalone: true})
+      @Directive({
+        selector: '[inspect]',
+      })
       class InspectsQueryResults {
         constructor(declaration: DeclareQuery) {
           // we should _not_ get partial query results while the view is still creating
@@ -375,7 +364,6 @@ describe('queries as signals', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [MarkerForResults, InspectsQueryResults, DeclareQuery],
         template: `
                 <div declare>
@@ -399,7 +387,6 @@ describe('queries as signals', () => {
     it('should be empty when no query matches exist', () => {
       @Directive({
         selector: '[declare]',
-        standalone: true,
       })
       class DeclareQuery {
         result = contentChild('unknown');
@@ -407,7 +394,6 @@ describe('queries as signals', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [DeclareQuery],
         template: `<div declare></div>`,
       })
@@ -429,7 +415,6 @@ describe('queries as signals', () => {
       let recomputeCount = 0;
 
       @Component({
-        standalone: true,
         template: `
           <div #el></div>
           @if (show) {
@@ -465,7 +450,6 @@ describe('queries as signals', () => {
       let recomputeCount = 0;
 
       @Component({
-        standalone: true,
         template: `
           <div #el></div>
           @if (show) {
@@ -504,7 +488,6 @@ describe('queries as signals', () => {
       // https://github.com/angular/angular/issues/54450
       @Component({
         selector: 'query-cmp',
-        standalone: true,
         template: ``,
       })
       class QueryComponent {
@@ -513,7 +496,6 @@ describe('queries as signals', () => {
       }
 
       @Component({
-        standalone: true,
         template: ``,
       })
       class TestComponent {
@@ -536,7 +518,6 @@ describe('queries as signals', () => {
   describe('mix of signal and decorator queries', () => {
     it('should allow specifying both types of queries in one component', () => {
       @Component({
-        standalone: true,
         template: `
           <div #el></div>
           @if (show) {
@@ -570,7 +551,6 @@ describe('queries as signals', () => {
 
     it('should allow combination via inheritance of both types of queries in one component', () => {
       @Component({
-        standalone: true,
         template: `
             <div #el></div>
             @if (show) {
@@ -584,7 +564,6 @@ describe('queries as signals', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
             <div #el></div>
             @if (show) {

@@ -104,6 +104,7 @@ function _extractId(valueString: string): string {
     'select:not([multiple])[formControlName],select:not([multiple])[formControl],select:not([multiple])[ngModel]',
   host: {'(change)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [SELECT_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class SelectControlValueAccessor
   extends BuiltInControlValueAccessor
@@ -188,7 +189,10 @@ export class SelectControlValueAccessor
  * @ngModule FormsModule
  * @publicApi
  */
-@Directive({selector: 'option'})
+@Directive({
+  selector: 'option',
+  standalone: false,
+})
 export class NgSelectOption implements OnDestroy {
   /**
    * @description

@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     @let one = value + 1;
 
     <ng-template>
@@ -18,8 +18,7 @@ import {Component} from '@angular/core';
         }
       }
     </ng-template>
-  `,
-  standalone: true,
+  `
 })
 export class MyApp {
   value = 1;

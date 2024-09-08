@@ -305,6 +305,7 @@ describe('toSignal()', () => {
       @Component({
         template: '{{counter()}}',
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class TestCmp {
         // Component creation should not run inside the template effect/consumer,

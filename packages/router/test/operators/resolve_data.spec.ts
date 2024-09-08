@@ -121,7 +121,10 @@ describe('resolveData operator', () => {
   });
 
   it('should have correct data when parent resolver runs but data is not inherited', async () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class Empty {}
 
     TestBed.configureTestingModule({
@@ -150,7 +153,10 @@ describe('resolveData operator', () => {
   });
 
   it('should have static title when there is a resolver', async () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class Empty {}
 
     TestBed.configureTestingModule({
@@ -180,7 +186,10 @@ describe('resolveData operator', () => {
   });
 
   it('should inherit resolved data from parent of parent route', async () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class Empty {}
 
     TestBed.configureTestingModule({
