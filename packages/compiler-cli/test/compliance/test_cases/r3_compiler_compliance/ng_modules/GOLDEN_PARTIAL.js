@@ -62,7 +62,10 @@ FooComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0
 FooComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: FooComponent, selector: "foo", ngImport: i0, template: '<div>Hello, {{name}}!</div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'foo', template: '<div>Hello, {{name}}!</div>' }]
+            args: [{
+                    selector: 'foo', template: '<div>Hello, {{name}}!</div>',
+                    standalone: false
+                }]
         }] });
 export class BarDirective {
 }
@@ -70,7 +73,10 @@ BarDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0
 BarDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: BarDirective, selector: "[bar]", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BarDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[bar]' }]
+            args: [{
+                    selector: '[bar]',
+                    standalone: false
+                }]
         }] });
 export class QuxPipe {
     transform() { }
@@ -79,7 +85,10 @@ QuxPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 QuxPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: QuxPipe, name: "qux" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: QuxPipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'qux' }]
+            args: [{
+                    name: 'qux',
+                    standalone: false
+                }]
         }] });
 export class FooModule {
 }
@@ -130,7 +139,10 @@ FooComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0
 FooComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: FooComponent, selector: "foo", ngImport: i0, template: '<div>Hello, {{name}}!</div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'foo', template: '<div>Hello, {{name}}!</div>' }]
+            args: [{
+                    selector: 'foo', template: '<div>Hello, {{name}}!</div>',
+                    standalone: false
+                }]
         }] });
 export class BarDirective {
 }
@@ -138,7 +150,10 @@ BarDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0
 BarDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: BarDirective, selector: "[bar]", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BarDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[bar]' }]
+            args: [{
+                    selector: '[bar]',
+                    standalone: false
+                }]
         }] });
 export class QuxPipe {
     transform() { }
@@ -147,7 +162,10 @@ QuxPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 QuxPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: QuxPipe, name: "qux" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: QuxPipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'qux' }]
+            args: [{
+                    name: 'qux',
+                    standalone: false
+                }]
         }] });
 export class FooModule {
 }
@@ -272,7 +290,10 @@ A1Component.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 A1Component.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: A1Component, selector: "a1", ngImport: i0, template: 'A1', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: A1Component, decorators: [{
             type: Component,
-            args: [{ selector: 'a1', template: 'A1' }]
+            args: [{
+                    selector: 'a1', template: 'A1',
+                    standalone: false
+                }]
         }] });
 export class A2Component {
 }
@@ -280,7 +301,10 @@ A2Component.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 A2Component.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: A2Component, selector: "a2", ngImport: i0, template: 'A2', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: A2Component, decorators: [{
             type: Component,
-            args: [{ selector: 'a2', template: 'A2' }]
+            args: [{
+                    selector: 'a2', template: 'A2',
+                    standalone: false
+                }]
         }] });
 export class AModule {
 }
@@ -297,7 +321,10 @@ B1Component.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 B1Component.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: B1Component, selector: "b1", ngImport: i0, template: 'B1', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: B1Component, decorators: [{
             type: Component,
-            args: [{ selector: 'b1', template: 'B1' }]
+            args: [{
+                    selector: 'b1', template: 'B1',
+                    standalone: false
+                }]
         }] });
 export class B2Component {
 }
@@ -305,7 +332,10 @@ B2Component.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 B2Component.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: B2Component, selector: "b2", ngImport: i0, template: 'B2', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: B2Component, decorators: [{
             type: Component,
-            args: [{ selector: 'b2', template: 'B2' }]
+            args: [{
+                    selector: 'b2', template: 'B2',
+                    standalone: false
+                }]
         }] });
 export class BModule {
 }
@@ -373,7 +403,10 @@ A1Component.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 A1Component.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: A1Component, selector: "a1", ngImport: i0, template: 'A1', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: A1Component, decorators: [{
             type: Component,
-            args: [{ selector: 'a1', template: 'A1' }]
+            args: [{
+                    selector: 'a1', template: 'A1',
+                    standalone: false
+                }]
         }] });
 export class A2Component {
 }
@@ -381,7 +414,10 @@ A2Component.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 A2Component.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: A2Component, selector: "a2", ngImport: i0, template: 'A2', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: A2Component, decorators: [{
             type: Component,
-            args: [{ selector: 'a2', template: 'A2' }]
+            args: [{
+                    selector: 'a2', template: 'A2',
+                    standalone: false
+                }]
         }] });
 export class AModule {
 }
@@ -398,7 +434,10 @@ B1Component.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 B1Component.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: B1Component, selector: "b1", ngImport: i0, template: 'B1', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: B1Component, decorators: [{
             type: Component,
-            args: [{ selector: 'b1', template: 'B1' }]
+            args: [{
+                    selector: 'b1', template: 'B1',
+                    standalone: false
+                }]
         }] });
 export class B2Component {
 }
@@ -406,7 +445,10 @@ B2Component.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 B2Component.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: B2Component, selector: "b2", ngImport: i0, template: 'B2', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: B2Component, decorators: [{
             type: Component,
-            args: [{ selector: 'b2', template: 'B2' }]
+            args: [{
+                    selector: 'b2', template: 'B2',
+                    standalone: false
+                }]
         }] });
 export class BModule {
 }

@@ -43,7 +43,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         before<span>seven</span>after
       }
     </div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -90,7 +91,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         @default {before<button>otherwise</button>after}
       }
     </div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -137,7 +139,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         before<div>empty</div>after
       }!
     </div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -192,7 +195,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         before<h1>error</h1>after
       }
     </div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 

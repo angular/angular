@@ -9,7 +9,10 @@ SimpleComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version:
 SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SimpleComponent, selector: "simple", ngImport: i0, template: '<div><ng-content></ng-content></div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SimpleComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'simple', template: '<div><ng-content></ng-content></div>' }]
+            args: [{
+                    selector: 'simple', template: '<div><ng-content></ng-content></div>',
+                    standalone: false
+                }]
         }] });
 export class ComplexComponent {
 }
@@ -23,7 +26,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'complex',
                     template: `
     <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
-    <div id="second"><ng-content SELECT="span[title=toSecond]"></ng-content></div>`
+    <div id="second"><ng-content SELECT="span[title=toSecond]"></ng-content></div>`,
+                    standalone: false
                 }]
         }] });
 export class MyApp {
@@ -32,7 +36,10 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: '<simple>content</simple> <complex></complex>', isInline: true, dependencies: [{ kind: "component", type: SimpleComponent, selector: "simple" }, { kind: "component", type: ComplexComponent, selector: "complex" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
-            args: [{ selector: 'my-app', template: '<simple>content</simple> <complex></complex>' }]
+            args: [{
+                    selector: 'my-app', template: '<simple>content</simple> <complex></complex>',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -87,6 +94,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <ng-content select="[spacer]"></ng-content>
     <ng-content></ng-content>
   `,
+                    standalone: false
                 }]
         }] });
 class Module {
@@ -137,6 +145,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       '*' selector: <ng-content></ng-content>
     </ng-template>
   `,
+                    standalone: false
                 }]
         }] });
 class Module {
@@ -191,6 +200,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     </ng-template>
     <ng-content select="[id=toMainAfter]"></ng-content>
   `,
+                    standalone: false
                 }]
         }] });
 class Module {
@@ -219,7 +229,10 @@ SimpleComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version:
 SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SimpleComponent, selector: "simple", ngImport: i0, template: '<div><ng-content select="[title]"></ng-content></div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SimpleComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'simple', template: '<div><ng-content select="[title]"></ng-content></div>' }]
+            args: [{
+                    selector: 'simple', template: '<div><ng-content select="[title]"></ng-content></div>',
+                    standalone: false
+                }]
         }] });
 export class MyApp {
 }
@@ -227,7 +240,10 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: '<simple><h1 ngProjectAs="[title]"></h1></simple>', isInline: true, dependencies: [{ kind: "component", type: SimpleComponent, selector: "simple" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
-            args: [{ selector: 'my-app', template: '<simple><h1 ngProjectAs="[title]"></h1></simple>' }]
+            args: [{
+                    selector: 'my-app', template: '<simple><h1 ngProjectAs="[title]"></h1></simple>',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -268,7 +284,10 @@ SimpleComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version:
 SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SimpleComponent, selector: "simple", ngImport: i0, template: '<div><ng-content select="[title]"></ng-content></div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SimpleComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'simple', template: '<div><ng-content select="[title]"></ng-content></div>' }]
+            args: [{
+                    selector: 'simple', template: '<div><ng-content select="[title]"></ng-content></div>',
+                    standalone: false
+                }]
         }] });
 export class MyApp {
 }
@@ -276,7 +295,10 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: '<simple><h1 ngProjectAs="[title],[header]"></h1></simple>', isInline: true, dependencies: [{ kind: "component", type: SimpleComponent, selector: "simple" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
-            args: [{ selector: 'my-app', template: '<simple><h1 ngProjectAs="[title],[header]"></h1></simple>' }]
+            args: [{
+                    selector: 'my-app', template: '<simple><h1 ngProjectAs="[title],[header]"></h1></simple>',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -320,7 +342,10 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: '<div *ngIf="show" ngProjectAs=".someclass"></div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
-            args: [{ selector: 'my-app', template: '<div *ngIf="show" ngProjectAs=".someclass"></div>' }]
+            args: [{
+                    selector: 'my-app', template: '<div *ngIf="show" ngProjectAs=".someclass"></div>',
+                    standalone: false
+                }]
         }] });
 
 /****************************************************************************************************
@@ -344,7 +369,10 @@ SimpleComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version:
 SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SimpleComponent, selector: "simple", ngImport: i0, template: '<ng-content *ngIf="showContent"></ng-content>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SimpleComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'simple', template: '<ng-content *ngIf="showContent"></ng-content>' }]
+            args: [{
+                    selector: 'simple', template: '<ng-content *ngIf="showContent"></ng-content>',
+                    standalone: false
+                }]
         }] });
 
 /****************************************************************************************************
@@ -377,7 +405,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 		<ng-content select="[card-title]"></ng-content>
 		---
 		<ng-content select="[card-content]"></ng-content>
-	`
+	`,
+                    standalone: false
                 }]
         }] });
 class CardWithTitle {
@@ -398,7 +427,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 			<h1 ngProjectAs="[card-title]">Title</h1>
 			<ng-content ngProjectAs="[card-content]"></ng-content>
 		</card>
-	`
+	`,
+                    standalone: false
                 }]
         }] });
 class App {
@@ -413,7 +443,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'app',
                     template: `
 		<card-with-title>content</card-with-title>
-	`
+	`,
+                    standalone: false
                 }]
         }] });
 class Module {
@@ -467,7 +498,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'test',
-                    standalone: true,
                     template: `
     <ng-content select="basic">Basic fallback</ng-content>
 

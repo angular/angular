@@ -20,7 +20,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: '<div></div>',
                     providers: [GreeterEN, { provide: Greeter, useClass: GreeterEN }],
-                    viewProviders: [GreeterEN]
+                    viewProviders: [GreeterEN],
+                    standalone: false
                 }]
         }] });
 export class MyModule {

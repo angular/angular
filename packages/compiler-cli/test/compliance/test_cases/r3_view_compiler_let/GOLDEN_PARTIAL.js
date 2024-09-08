@@ -19,8 +19,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     @let result = value * 2;
     The result is {{result}}
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -59,8 +58,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let two = one + 1;
     @let result = two + 1;
     The result is {{result}}
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -89,8 +87,7 @@ DoublePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DoublePipe, decorators: [{
             type: Pipe,
             args: [{
-                    name: 'double',
-                    standalone: true,
+                    name: 'double'
                 }]
         }] });
 export class MyApp {
@@ -112,8 +109,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let result = one | double;
     The result is {{result}}
   `,
-                    standalone: true,
-                    imports: [DoublePipe],
+                    imports: [DoublePipe]
                 }]
         }] });
 
@@ -161,8 +157,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let two = one + 1;
 
     <button (click)="callback(one, two)"></button>
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -209,8 +204,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
 
     @let one = 1;
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -243,8 +237,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let value = 123;
     {{value}}
     <ng-template>{{value}}</ng-template>
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -309,8 +302,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }
       }
     </ng-template>
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -349,8 +341,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 
     @let fullName = name.value + ' ' + lastName.value;
     Hello, {{fullName}}
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -383,8 +374,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let message = 'Hello, ' + name.value;
     {{message}}
     <input #name>
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -432,8 +422,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         {{outerFirst || innerFirst}}
       }
     }
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -474,8 +463,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{result}}
       @let result = value * 2;
     </ng-template>
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -512,8 +500,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {{value}}
     @let result = value * 2;
     {{value}}
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -556,8 +543,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let three = two + 1;
     @let four = three + 1;
     {{value}}
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -600,8 +586,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let three = two + 1;
     @let four = three + 1;
     {{two}}
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -649,8 +634,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @let four = three + 1;
     {{value}}
     <button (click)="callback(three)"></button>
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -700,8 +684,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @if (true) {
       {{three}}
     }
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 
@@ -741,8 +724,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       @let value = 'local';
       The value comes from {{value}}
     }
-  `,
-                    standalone: true,
+  `
                 }]
         }] });
 

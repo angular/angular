@@ -17,9 +17,7 @@ TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, outputs: { a: "a", b: "b", c: "cPublic", d: "d", e: "e" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
-            args: [{
-                    standalone: true,
-                }]
+            args: [{}]
         }] });
 
 /****************************************************************************************************
@@ -56,8 +54,7 @@ TestComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
-                    template: 'Works',
+                    template: 'Works'
                 }]
         }] });
 
@@ -97,9 +94,7 @@ TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, outputs: { click1: "click1", click2: "click2", click3: "click3", _bla: "decoratorPublicName", _bla2: "decoratorPublicName2", clickDecorator1: "clickDecorator1", clickDecorator2: "clickDecorator2", _blaDecorator: "decoratorPublicName" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
-            args: [{
-                    standalone: true,
-                }]
+            args: [{}]
         }], propDecorators: { clickDecorator1: [{
                 type: Output
             }], clickDecorator2: [{

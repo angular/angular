@@ -16,7 +16,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     template: `
-    <div>Hello {{ name }}</div>`
+    <div>Hello {{ name }}</div>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {

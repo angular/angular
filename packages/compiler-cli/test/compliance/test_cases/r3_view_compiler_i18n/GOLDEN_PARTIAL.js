@@ -18,6 +18,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div i18n>Hello, {{ placeholder }}! You are a very good {{ placeholder }}.</div>
     <div i18n>Hello, {{ placeholder // i18n(ph = "ph") }}! Hello again {{ placeholder // i18n(ph = "ph") }}.</div>
   `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -65,6 +66,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div i18n>{{ valueA | pipeA }} and {{ valueB | pipeB }}</div>
   <div i18n><span>{{ valueA | pipeA }}</span> and {{ valueB | pipeB }} <span>and {{ valueC | pipeC }}</span></div>
 `,
+                    standalone: false
                 }]
         }] });
 export class PipeA {
@@ -76,7 +78,10 @@ PipeA.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 PipeA.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipeA, name: "pipeA" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipeA, decorators: [{
             type: Pipe,
-            args: [{ name: 'pipeA' }]
+            args: [{
+                    name: 'pipeA',
+                    standalone: false
+                }]
         }] });
 export class PipeB {
     transform() {
@@ -87,7 +92,10 @@ PipeB.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 PipeB.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipeB, name: "pipeB" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipeB, decorators: [{
             type: Pipe,
-            args: [{ name: 'pipeB' }]
+            args: [{
+                    name: 'pipeB',
+                    standalone: false
+                }]
         }] });
 export class PipeC {
     transform() {
@@ -98,7 +106,10 @@ PipeC.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 PipeC.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipeC, name: "pipeC" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipeC, decorators: [{
             type: Pipe,
-            args: [{ name: 'pipeC' }]
+            args: [{
+                    name: 'pipeC',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -162,14 +173,13 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
     <div i18n>
       <div *ngFor="let diskView of disks">
         {{diskView.name}} has {diskView.length, plural, =1 {VM} other {VMs}}
       </div>
     </div>
-  `,
+  `
                 }]
         }] });
 

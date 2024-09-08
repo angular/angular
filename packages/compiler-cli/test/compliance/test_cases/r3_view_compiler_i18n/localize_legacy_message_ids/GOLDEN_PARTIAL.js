@@ -29,7 +29,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div i18n>&amp;&quot;</div>
   <div i18n-title title="&quot;"></div>
   <div i18n-title title="&quot;&quot;"></div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -73,7 +74,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n>Some Message</div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
