@@ -11,7 +11,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: '<div class="my-app" title="Hello"><svg><circle cx="20" cy="30" r="50"/></svg><p>test</p></div>'
+                    template: '<div class="my-app" title="Hello"><svg><circle cx="20" cy="30" r="50"/></svg><p>test</p></div>',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -66,7 +67,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         <text>Hello</text>
       </ng-template>
     </svg>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -105,7 +107,10 @@ MathCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 MathCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MathCmp, selector: "math", ngImport: i0, template: '', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MathCmp, decorators: [{
             type: Component,
-            args: [{ selector: 'math', template: '' }]
+            args: [{
+                    selector: 'math', template: '',
+                    standalone: false
+                }]
         }] });
 export class InfinityCmp {
 }
@@ -113,7 +118,10 @@ InfinityCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 InfinityCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: InfinityCmp, selector: "infinity", ngImport: i0, template: '', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: InfinityCmp, decorators: [{
             type: Component,
-            args: [{ selector: 'infinity', template: '' }]
+            args: [{
+                    selector: 'infinity', template: '',
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
 }
@@ -123,7 +131,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: '<div class="my-app" title="Hello"><math><infinity/></math><p>test</p></div>'
+                    template: '<div class="my-app" title="Hello"><math><infinity/></math><p>test</p></div>',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -171,7 +180,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: '<div class="my-app" title="Hello">Hello <b>World</b>!</div>'
+                    template: '<div class="my-app" title="Hello">Hello <b>World</b>!</div>',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -211,7 +221,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: '<div xmlns:foo="http://someuri/foo" class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>'
+                    template: '<div xmlns:foo="http://someuri/foo" class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -251,7 +262,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: '<ng-container><span>in a </span>container</ng-container>'
+                    template: '<ng-container><span>in a </span>container</ng-container>',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -289,7 +301,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<ng-container></ng-container>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: '<ng-container></ng-container>' }]
+            args: [{
+                    selector: 'my-component', template: '<ng-container></ng-container>',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -329,7 +344,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<div [id]="id"></div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: '<div [id]="id"></div>' }]
+            args: [{
+                    selector: 'my-component', template: '<div [id]="id"></div>',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -367,7 +385,10 @@ DivDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-P
 DivDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: DivDir, selector: "div", inputs: { ternary: "ternary", pipe: "pipe", and: "and", or: "or" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DivDir, decorators: [{
             type: Directive,
-            args: [{ selector: 'div' }]
+            args: [{
+                    selector: 'div',
+                    standalone: false
+                }]
         }], propDecorators: { ternary: [{
                 type: Input
             }], pipe: [{
@@ -384,7 +405,10 @@ PipePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0
 PipePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipePipe, name: "pipe" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipePipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'pipe' }]
+            args: [{
+                    name: 'pipe',
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
     constructor() {
@@ -412,7 +436,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     [pipe]="value | pipe:1:2"
     [and]="cond && [b]"
     [or]="cond || [c]"
-  ></div>`
+  ></div>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -490,7 +515,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         expandedWidth: expandedWidth
       }
     }`
-                    }
+                    },
+                    standalone: false
                 }]
         }], propDecorators: { expandedHeight: [{
                 type: Input
@@ -547,7 +573,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: '<div [class.error]="error" [style.background-color]="color"></div>'
+                    template: '<div [class.error]="error" [style.background-color]="color"></div>',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -595,7 +622,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div title="hi"></div>
     <span title="hi"></span>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -657,7 +685,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 
     <!-- Another element with a src attribute that is not security sensitive -->
     <img src="https://angular.io/" />
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -704,7 +733,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <iframe allow="camera 'none'" [attr.fetchpriority]="'low'" [attr.allowfullscreen]="fullscreen"></iframe>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -734,7 +764,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
     <svg:use [attr.xlink:href]="value"/>
     <svg:use id="foo" xlink:href="/foo" name="foo"/>

@@ -10,7 +10,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `<div (click)="onClick($event); 1 == 1"></div>`, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: `<div (click)="onClick($event); 1 == 1"></div>` }]
+            args: [{
+                    selector: 'my-component', template: `<div (click)="onClick($event); 1 == 1"></div>`,
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -48,7 +51,10 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: `<div>My App</div>`, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
-            args: [{ selector: 'my-app', template: `<div>My App</div>` }]
+            args: [{
+                    selector: 'my-app', template: `<div>My App</div>`,
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
     onClick(event) { }
@@ -57,7 +63,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `<my-app (click)="onClick($event);"></my-app>`, isInline: true, dependencies: [{ kind: "component", type: MyApp, selector: "my-app" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: `<my-app (click)="onClick($event);"></my-app>` }]
+            args: [{
+                    selector: 'my-component', template: `<my-app (click)="onClick($event);"></my-app>`,
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -113,7 +122,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <div (click)="onClick(foo)"></div>
       <button (click)="onClick2(bar)"></button>
     </div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -162,7 +172,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <button (click)="onClick(user.value)">Save</button>
     <input #user>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -206,6 +217,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     template: `<div (click)="click()" (change)="change()"></div>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -252,6 +264,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'some-comp',
                     template: '',
+                    standalone: false
                 }]
         }], propDecorators: { update: [{
                 type: Output
@@ -276,7 +289,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
       <div (click)="click()" (change)="change()"></div>
       <some-comp (update)="update()" (delete)="delete()"></some-comp>
-    `
+    `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -327,7 +341,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: `<ng-template (click)="click()" (change)="change()"></ng-template>`
+                    template: `<ng-template (click)="click()" (change)="change()"></ng-template>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -366,7 +381,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "ng-component", ngImport: i0, template: `<div (click)="onClick();"></div>`, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ template: `<div (click)="onClick();"></div>` }]
+            args: [{
+                    template: `<div (click)="onClick();"></div>`,
+                    standalone: false
+                }]
         }] });
 
 /****************************************************************************************************
@@ -397,7 +415,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: '',
                     host: {
                         '(mousedown)': 'mousedown()',
-                    }
+                    },
+                    standalone: false
                 }]
         }], propDecorators: { click: [{
                 type: HostListener,
@@ -425,7 +444,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-MyComponent.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, host: { listeners: { "click": "click($event.target)" } }, ngImport: i0 });
+MyComponent.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, host: { listeners: { "click": "click($event.target)" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Directive
         }], propDecorators: { click: [{
@@ -440,7 +459,7 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     click(target: any): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MyComponent, never, never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyComponent, never, never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************
@@ -455,7 +474,10 @@ Comp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLA
 Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div (click)="c($event)"></div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
             type: Component,
-            args: [{ template: '<div (click)="c($event)"></div>' }]
+            args: [{
+                    template: '<div (click)="c($event)"></div>',
+                    standalone: false
+                }]
         }] });
 
 /****************************************************************************************************
@@ -478,7 +500,10 @@ Comp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLA
 Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div (click)="c(this.$event)"></div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
             type: Component,
-            args: [{ template: '<div (click)="c(this.$event)"></div>' }]
+            args: [{
+                    template: '<div (click)="c(this.$event)"></div>',
+                    standalone: false
+                }]
         }] });
 
 /****************************************************************************************************
@@ -497,7 +522,10 @@ DivDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-P
 DivDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: DivDir, selector: "div", inputs: { event: "event" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DivDir, decorators: [{
             type: Directive,
-            args: [{ selector: 'div' }]
+            args: [{
+                    selector: 'div',
+                    standalone: false
+                }]
         }], propDecorators: { event: [{
                 type: Input
             }] } });
@@ -510,7 +538,10 @@ Comp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLA
 Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div [event]="$event"></div>', isInline: true, dependencies: [{ kind: "directive", type: DivDir, selector: "div", inputs: ["event"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
             type: Component,
-            args: [{ template: '<div [event]="$event"></div>' }]
+            args: [{
+                    template: '<div [event]="$event"></div>',
+                    standalone: false
+                }]
         }] });
 export class MyMod {
 }
@@ -549,7 +580,10 @@ Dir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLAC
 Dir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Dir, host: { listeners: { "click": "c($event)" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dir, decorators: [{
             type: Directive,
-            args: [{ host: { '(click)': 'c($event)' } }]
+            args: [{
+                    host: { '(click)': 'c($event)' },
+                    standalone: false
+                }]
         }] });
 
 /****************************************************************************************************
@@ -575,7 +609,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     host: {
                         '(click)': 'c(this.$event)',
-                    }
+                    },
+                    standalone: false
                 }]
         }] });
 
@@ -608,7 +643,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <ng-template #template>
       <button (click)="this['mes' + 'sage'] = 'hello'">Click me</button>
     </ng-template>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -657,7 +693,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <ng-template let-obj>
       <button (click)="obj.value = 1">Change</button>
     </ng-template>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -701,6 +738,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'test-cmp',
                     template: 'Name: <input [(ngModel)]="name">',
+                    standalone: false
                 }]
         }] });
 export class NgModelDirective {
@@ -713,7 +751,10 @@ NgModelDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version
 NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, selector: "[ngModel]", inputs: { ngModel: "ngModel" }, outputs: { ngModelChanges: "ngModelChanges" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[ngModel]' }]
+            args: [{
+                    selector: '[ngModel]',
+                    standalone: false
+                }]
         }], propDecorators: { ngModel: [{
                 type: Input
             }], ngModelChanges: [{
@@ -768,6 +809,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'test-cmp',
                     template: 'Name: <ng-template><input [(ngModel)]="name"></ng-template>',
+                    standalone: false
                 }]
         }] });
 export class NgModelDirective {
@@ -780,7 +822,10 @@ NgModelDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version
 NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, selector: "[ngModel]", inputs: { ngModel: "ngModel" }, outputs: { ngModelChanges: "ngModelChanges" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[ngModel]' }]
+            args: [{
+                    selector: '[ngModel]',
+                    standalone: false
+                }]
         }], propDecorators: { ngModel: [{
                 type: Input
             }], ngModelChanges: [{
@@ -833,7 +878,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     host: { '(click)': '$event.preventDefault(); $event.target.blur()' },
                     template: `
     <div (click)="$event.preventDefault(); $event.target.blur()"></div>
@@ -861,7 +905,9 @@ Dir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLAC
 Dir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Dir, isStandalone: true, selector: "[dir]", inputs: { a: "a", c: "c" }, outputs: { aChange: "aChange", b: "b", cChange: "cChange", d: "d" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dir, decorators: [{
             type: Directive,
-            args: [{ standalone: true, selector: '[dir]' }]
+            args: [{
+                    selector: '[dir]'
+                }]
         }], propDecorators: { a: [{
                 type: Input
             }], aChange: [{
@@ -888,11 +934,10 @@ App.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PL
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: App, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
                     imports: [Dir],
                     template: `
     <div dir [(a)]="value" (b)="noop()" [(c)]="value" (d)="noop()"></div>
-  `,
+  `
                 }]
         }] });
 
@@ -932,8 +977,7 @@ NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", versi
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, decorators: [{
             type: Directive,
             args: [{
-                    selector: '[ngModel]',
-                    standalone: true,
+                    selector: '[ngModel]'
                 }]
         }] });
 export class TestCmp {
@@ -955,8 +999,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <input [(ngModel)]="name" />
     }
   `,
-                    standalone: true,
-                    imports: [NgModelDirective],
+                    imports: [NgModelDirective]
                 }]
         }] });
 

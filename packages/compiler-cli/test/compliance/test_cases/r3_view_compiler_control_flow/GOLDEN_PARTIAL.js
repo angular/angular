@@ -53,6 +53,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -114,6 +115,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -196,6 +198,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -225,7 +228,9 @@ TestPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0
 TestPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, isStandalone: true, name: "test" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, decorators: [{
             type: Pipe,
-            args: [{ standalone: true, name: 'test' }]
+            args: [{
+                    name: 'test'
+                }]
         }] });
 export class MyApp {
     constructor() {
@@ -269,7 +274,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
-                    standalone: true,
                     imports: [TestPipe]
                 }]
         }] });
@@ -318,6 +322,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{message}}
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -362,6 +367,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -411,6 +417,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -469,6 +476,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -544,6 +552,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -573,7 +582,9 @@ TestPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0
 TestPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, isStandalone: true, name: "test" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, decorators: [{
             type: Pipe,
-            args: [{ standalone: true, name: 'test' }]
+            args: [{
+                    name: 'test'
+                }]
         }] });
 export class MyApp {
     constructor() {
@@ -609,8 +620,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
-                    standalone: true,
-                    imports: [TestPipe],
+                    imports: [TestPipe]
                 }]
         }] });
 
@@ -661,6 +671,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -715,6 +726,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -769,6 +781,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -814,6 +827,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -865,6 +879,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -912,6 +927,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -959,6 +975,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1016,6 +1033,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1074,6 +1092,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1129,6 +1148,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1198,6 +1218,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1255,6 +1276,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1304,6 +1326,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1339,6 +1362,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `@for (item of items; track item) {
     {{$odd + ''}}
   }`,
+                    standalone: false
                 }]
         }] });
 
@@ -1386,6 +1410,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     }
     <ng-template/>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1432,6 +1457,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 
     {{$index}} {{$count}} {{$first}} {{$last}}
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1480,6 +1506,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       @for (item of items; track trackFn($index, item)) {}
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1531,6 +1558,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       </ng-template>
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1578,6 +1606,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       @for (item of items; track trackFn($index)) {}
     </div>
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1628,6 +1657,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{otherItem.name}}
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1683,6 +1713,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{otherItem.name}}
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1730,6 +1761,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {{item.name}}
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -1760,7 +1792,9 @@ TestPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0
 TestPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, isStandalone: true, name: "test" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestPipe, decorators: [{
             type: Pipe,
-            args: [{ standalone: true, name: 'test' }]
+            args: [{
+                    name: 'test'
+                }]
         }] });
 export class MyApp {
     constructor() {
@@ -1788,8 +1822,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
-                    standalone: true,
-                    imports: [TestPipe],
+                    imports: [TestPipe]
                 }]
         }] });
 
@@ -1823,7 +1856,9 @@ Binding.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 Binding.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Binding, isStandalone: true, selector: "[binding]", inputs: { binding: "binding" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, decorators: [{
             type: Directive,
-            args: [{ standalone: true, selector: '[binding]' }]
+            args: [{
+                    selector: '[binding]'
+                }]
         }], propDecorators: { binding: [{
                 type: Input
             }] } });
@@ -1854,8 +1889,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <div foo="7" bar="8" [binding]="9">{{expr}}</div>
     }
   `,
-                    standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -1888,7 +1922,9 @@ Binding.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 Binding.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Binding, isStandalone: true, selector: "[binding]", inputs: { binding: "binding" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, decorators: [{
             type: Directive,
-            args: [{ standalone: true, selector: '[binding]' }]
+            args: [{
+                    selector: '[binding]'
+                }]
         }], propDecorators: { binding: [{
                 type: Input
             }] } });
@@ -1919,8 +1955,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <ng-template foo="7" bar="8" [binding]="9">{{expr}}</ng-template>
     }
   `,
-                    standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -1953,7 +1988,9 @@ Binding.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 Binding.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Binding, isStandalone: true, selector: "[binding]", inputs: { binding: "binding" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, decorators: [{
             type: Directive,
-            args: [{ standalone: true, selector: '[binding]' }]
+            args: [{
+                    selector: '[binding]'
+                }]
         }], propDecorators: { binding: [{
                 type: Input
             }] } });
@@ -1980,8 +2017,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <span empty-foo="1" empty-bar="2" [binding]="3">Empty!</span>
     }
   `,
-                    standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -2014,7 +2050,9 @@ Binding.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 Binding.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Binding, isStandalone: true, selector: "[binding]", inputs: { binding: "binding" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, decorators: [{
             type: Directive,
-            args: [{ standalone: true, selector: '[binding]' }]
+            args: [{
+                    selector: '[binding]'
+                }]
         }], propDecorators: { binding: [{
                 type: Input
             }] } });
@@ -2041,8 +2079,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       <ng-template empty-foo="1" empty-bar="2" [binding]="3">Empty!</ng-template>
     }
   `,
-                    standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -2075,7 +2112,9 @@ Binding.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 Binding.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Binding, isStandalone: true, selector: "[binding]", inputs: { binding: "binding" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, decorators: [{
             type: Directive,
-            args: [{ standalone: true, selector: '[binding]' }]
+            args: [{
+                    selector: '[binding]'
+                }]
         }], propDecorators: { binding: [{
                 type: Input
             }] } });
@@ -2114,8 +2153,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
-                    standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -2148,7 +2186,9 @@ Binding.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 Binding.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Binding, isStandalone: true, selector: "[binding]", inputs: { binding: "binding" }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Binding, decorators: [{
             type: Directive,
-            args: [{ standalone: true, selector: '[binding]' }]
+            args: [{
+                    selector: '[binding]'
+                }]
         }], propDecorators: { binding: [{
                 type: Input
             }] } });
@@ -2187,8 +2227,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
-                    standalone: true,
-                    imports: [Binding],
+                    imports: [Binding]
                 }]
         }] });
 
@@ -2255,6 +2294,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -2317,6 +2357,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -2368,6 +2409,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
   `,
+                    standalone: false
                 }]
         }] });
 
@@ -2411,6 +2453,7 @@ it('case 1', () => {
         Second
       }
     `,
+                        standalone: false
                     }]
             }] });
 });
@@ -2435,6 +2478,7 @@ it('case 2', () => {
         Second
       }
     `,
+                        standalone: false
                     }]
             }] });
 });

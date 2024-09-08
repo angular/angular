@@ -9,7 +9,10 @@ Comp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLA
 Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div [tabIndex]="$any(10)"></div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
             type: Component,
-            args: [{ template: '<div [tabIndex]="$any(10)"></div>' }]
+            args: [{
+                    template: '<div [tabIndex]="$any(10)"></div>',
+                    standalone: false
+                }]
         }] });
 
 /****************************************************************************************************
@@ -31,7 +34,10 @@ Comp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLA
 Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div [tabIndex]="this.$any(null)"></div>', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
             type: Component,
-            args: [{ template: '<div [tabIndex]="this.$any(null)"></div>' }]
+            args: [{
+                    template: '<div [tabIndex]="this.$any(null)"></div>',
+                    standalone: false
+                }]
         }] });
 
 /****************************************************************************************************

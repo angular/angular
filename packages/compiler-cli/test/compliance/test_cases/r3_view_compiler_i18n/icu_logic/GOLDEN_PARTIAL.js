@@ -18,7 +18,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n>before {gender, select, male {male} female {female} other {other}} after</div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -66,7 +67,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n>{gender, select, single {'single quotes'} double {"double quotes"} other {other}}</div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -115,6 +117,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   {age, select, 10 {ten} 20 {twenty} other {other}}
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -174,7 +177,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div *ngIf="available" title="icu and text">
     You have {count, select, 0 {no emails} 1 {one email} other {{{count}} emails}}.
   </div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -225,6 +229,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div i18n>{age, select, 10 {ten} 20 {twenty} other {{% other %}}}</div>
 `,
                     interpolation: ['{%', '%}'],
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -281,7 +286,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <b>Other content</b>
     <div class="other"><i>Another content</i></div>
   </div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -332,7 +338,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n>{gender, select, male {male of age: {{ ageA + ageB + ageC }}} female {female} other {other}}</div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -391,6 +398,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {age, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}
   </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -455,7 +463,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {gender, select, male {male} female {female} other {other}}
     </div>
   </div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -516,7 +525,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       other {other}
     }
   </div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -580,7 +590,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
           other {animals}} !}
     other {other - {{count}}}
   }</div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -639,7 +650,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {age, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}
   </span>
 </div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -699,7 +711,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       {age, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {{ otherAge }}}}
     </span>
   </div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -764,7 +777,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       female {female {{ height // i18n(ph="PH_B") }}}
       other {other {{ age // i18n(ph="PH WITH SPACES") }}}
   }</div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -815,7 +829,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n="meaningA|descA@@idA">{count, select, 1 {one} other {more than one}}</div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -869,7 +884,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {count, select , 1 {one} other {more than one}}
     {count, plural , =1 {one} other {more than one}}
   </div>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -928,7 +944,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
     <span i18n="someText1">{
       someField,
@@ -947,7 +962,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     }
     </span>
-`,
+`
                 }]
         }] });
 
@@ -980,7 +995,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-comp',
-                    standalone: true,
                     template: `
   <div i18n>
     <span title="{{foo}}-{{foo}}"></span>

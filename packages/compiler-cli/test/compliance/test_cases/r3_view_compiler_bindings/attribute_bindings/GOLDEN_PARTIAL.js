@@ -18,7 +18,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     <button [attr.title]="myTitle" attr.id="{{buttonId}}" [attr.tabindex]="1"></button>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -53,7 +54,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     <button attr.title="{{myTitle}}" attr.id="{{buttonId}}" attr.tabindex="{{1}}"></button>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -86,7 +88,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <button [attr.title]="1" [id]="2" [attr.tabindex]="3" attr.aria-label="prefix-{{1 + 3}}">
     </button>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
@@ -121,7 +124,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       [attr.title]="1"
       [attr.id]="2"
       attr.tabindex="prefix-{{0 + 3}}"
-      attr.aria-label="hello-{{1 + 3}}-{{2 + 3}}"></button>`
+      attr.aria-label="hello-{{1 + 3}}-{{2 + 3}}"></button>`,
+                    standalone: false
                 }]
         }] });
 
@@ -145,7 +149,10 @@ CustomEl.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0
 CustomEl.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: CustomEl, selector: "custom-element", ngImport: i0, template: '', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomEl, decorators: [{
             type: Component,
-            args: [{ selector: 'custom-element', template: '' }]
+            args: [{
+                    selector: 'custom-element', template: '',
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
     constructor() {
@@ -166,7 +173,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <button [attr.title]="myTitle" [attr.id]="buttonId" [attr.tabindex]="1"></button>
     <span [attr.id]="1" [attr.title]="'hello'" [attr.some-attr]="1 + 2"></span>
     <custom-element [attr.some-attr]="'one'" [attr.some-other-attr]="2"></custom-element>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyMod {
@@ -221,7 +229,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <button [attr.title]="myTitle" [attr.id]="buttonId" [attr.tabindex]="1">
       <span [attr.id]="1" [attr.title]="'hello'" [attr.some-attr]="1 + 2"></span>
-    </button>`
+    </button>`,
+                    standalone: false
                 }]
         }] });
 
@@ -266,7 +275,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     [attr.bar]="'two'"
     [id]="2"
     aria-label="link"
-    [attr.baz]="three"></a>`
+    [attr.baz]="three"></a>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -333,7 +343,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div attr.title="a{{one}}b{{two}}c"></div>
     <div attr.title="a{{one}}b"></div>
     <div attr.title="{{one}}"></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -392,7 +403,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
     <div aria-label="hello" aria-label="hi"></div>
     <div style="width: 0" style="height: 0">
@@ -402,7 +412,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div [class]="value1" [class]="value2"></div>
     <div [style]="value1" [style]="value2"></div>
     <div (click)="$event.stopPropagation()" (click)="$event.preventDefault()"></div>
-  `,
+  `
                 }]
         }] });
 

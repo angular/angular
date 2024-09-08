@@ -12,7 +12,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `<div [style]="myStyleExp"></div>`, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: `<div [style]="myStyleExp"></div>` }]
+            args: [{
+                    selector: 'my-component', template: `<div [style]="myStyleExp"></div>`,
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -65,7 +68,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component-with-interpolation',
                     template: `
     <div class="foo foo-{{ fooId }}"></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyComponentWithMuchosInterpolation {
@@ -84,7 +88,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component-with-muchos-interpolation',
                     template: `
     <div class="foo foo-{{ fooId }}-{{ fooUsername }}"></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyComponentWithoutInterpolation {
@@ -102,7 +107,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component-without-interpolation',
                     template: `
     <div [class]="exp"></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -172,7 +178,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                    [attr.style]="'border-width: 10px'"
                    [style.width]="myWidth"
                    [style]="myStyleExp"
-                   [style.height]="myHeight"></div>`
+                   [style.height]="myHeight"></div>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -222,7 +229,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `<div [style.background-image]="myImage"></div>`, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: `<div [style.background-image]="myImage"></div>` }]
+            args: [{
+                    selector: 'my-component', template: `<div [style.background-image]="myImage"></div>`,
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -260,7 +270,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `<div [style.font-size.px]="12"></div>`, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: `<div [style.font-size.px]="12"></div>` }]
+            args: [{
+                    selector: 'my-component', template: `<div [style.font-size.px]="12"></div>`,
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -297,7 +310,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: `<div [style.color]></div>`, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: `<div [style.color]></div>` }]
+            args: [{
+                    selector: 'my-component', template: `<div [style.color]></div>`,
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -338,7 +354,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
 		<div style=":root {color: red;}"></div>
 	`
@@ -369,10 +384,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
     <div style="width: 1px; width: 10px;" class="cls1 cls1"></div>
-  `,
+  `
                 }]
         }] });
 
@@ -410,7 +424,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       [style.--kebab-case]="value" 
       style="--camelCase: foo; --kebab-case: foo">
     </div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 
