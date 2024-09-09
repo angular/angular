@@ -70,6 +70,20 @@ export function identifyTemplateReferences(
     for (const res of visitor.result) {
       const templateFilePath = res.context.sourceSpan.start.file.url;
 
+      // Templates without an URL are non-mappable artifacts of e.g.
+      // string concatenated templates. See the `indirect` template
+      // source mapping concept in the compiler. We skip such references
+      // as those cannot be migrated, but print an error for now.
+      if (templateFilePath === '') {
+        // TODO: Incorporate a TODO potentially.
+        console.error(
+          `Found reference to input ${res.targetInput.key} that cannot be ` +
+            `migrated because the template cannot be parsed with source map information ` +
+            `(in file: ${node.getSourceFile().fileName}).`,
+        );
+        continue;
+      }
+
       result.references.push({
         kind: InputReferenceKind.InTemplate,
         from: {
