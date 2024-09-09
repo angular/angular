@@ -98,6 +98,7 @@ export class AdapterResourceLoader implements ResourceLoader {
         type: 'style',
         containingFile: context.containingFile,
         resourceFile: resolvedUrl,
+        className: context.className,
       };
       result = Promise.resolve(result).then(async (str) => {
         const transformResult = await this.adapter.transformResource!(str, resourceContext);
@@ -135,6 +136,8 @@ export class AdapterResourceLoader implements ResourceLoader {
       type: 'style',
       containingFile: context.containingFile,
       resourceFile: null,
+      order: context.order,
+      className: context.className,
     });
     if (transformResult === null) {
       return data;

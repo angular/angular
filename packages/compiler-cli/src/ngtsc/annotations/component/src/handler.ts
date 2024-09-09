@@ -332,7 +332,11 @@ export class ComponentDecoratorHandler
     const resolveStyleUrl = (styleUrl: string): Promise<void> | undefined => {
       try {
         const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
-        return this.resourceLoader.preload(resourceUrl, {type: 'style', containingFile});
+        return this.resourceLoader.preload(resourceUrl, {
+          type: 'style',
+          containingFile,
+          className: node.name.text,
+        });
       } catch {
         // Don't worry about failures to preload. We can handle this problem during analysis by
         // producing a diagnostic.
@@ -378,11 +382,18 @@ export class ComponentDecoratorHandler
     return templateAndTemplateStyleResources.then(async (templateInfo) => {
       // Extract inline styles, process, and cache for use in synchronous analyze phase
       let styles: string[] | null = null;
+      // Order plus className allows inline styles to be identified per component by a preprocessor
+      let orderOffset = 0;
       const rawStyles = parseDirectiveStyles(component, this.evaluator, this.compilationMode);
       if (rawStyles?.length) {
         styles = await Promise.all(
           rawStyles.map((style) =>
-            this.resourceLoader.preprocessInline(style, {type: 'style', containingFile}),
+            this.resourceLoader.preprocessInline(style, {
+              type: 'style',
+              containingFile,
+              order: orderOffset++,
+              className: node.name.text,
+            }),
           ),
         );
       }
@@ -394,6 +405,8 @@ export class ComponentDecoratorHandler
               this.resourceLoader.preprocessInline(style, {
                 type: 'style',
                 containingFile: templateInfo.templateUrl ?? containingFile,
+                order: orderOffset++,
+                className: node.name.text,
               }),
             ),
           )),
@@ -766,8 +779,13 @@ export class ComponentDecoratorHandler
     if (this.preanalyzeStylesCache.has(node)) {
       inlineStyles = this.preanalyzeStylesCache.get(node)!;
       this.preanalyzeStylesCache.delete(node);
-      if (inlineStyles !== null) {
-        styles.push(...inlineStyles);
+      if (inlineStyles?.length) {
+        if (this.externalRuntimeStyles) {
+          // When external runtime styles is enabled, a list of URLs is provided
+          externalStyles.push(...inlineStyles);
+        } else {
+          styles.push(...inlineStyles);
+        }
       }
     } else {
       // Preprocessing is only supported asynchronously

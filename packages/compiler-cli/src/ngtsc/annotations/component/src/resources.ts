@@ -429,6 +429,7 @@ export function preloadAndParseTemplate(
       const templatePromise = resourceLoader.preload(resourceUrl, {
         type: 'template',
         containingFile,
+        className: node.name.text,
       });
 
       // If the preload worked, then actually load and parse the template, and wait for any
