@@ -27,7 +27,10 @@ describe('definitions', () => {
       'app.ts': `
          import {Component} from '@angular/core';
 
-         @Component({templateUrl: '/app.html'})
+         @Component({
+          templateUrl: '/app.html',
+          standalone: false,
+         })
          export class AppCmp {}
        `,
     };
@@ -51,7 +54,10 @@ describe('definitions', () => {
          import {Component, NgModule} from '@angular/core';
          import {CommonModule} from '@angular/common';
 
-         @Component({templateUrl: 'app.html'})
+         @Component({
+          templateUrl: 'app.html',
+          standalone: false,
+         })
          export class AppCmp {}
        `,
       'app.html': '{{"1/1/2020" | date}}',
@@ -81,21 +87,30 @@ describe('definitions', () => {
          import {Component, NgModule} from '@angular/core';
          import {CommonModule} from '@angular/common';
 
-         @Component({templateUrl: 'app.html'})
+         @Component({
+          templateUrl: 'app.html',
+          standalone: false,
+         })
          export class AppCmp {}
        `,
       'app.html': '<div dir inputA="abc"></div>',
       'dir.ts': `
        import {Directive, Input} from '@angular/core';
 
-       @Directive({selector: '[dir]'})
+       @Directive({
+        selector: '[dir]',
+        standalone: false,
+       })
        export class MyDir {
          @Input() inputA!: any;
        }`,
       'dir2.ts': `
        import {Directive, Input} from '@angular/core';
 
-       @Directive({selector: '[dir]'})
+       @Directive({
+        selector: '[dir]',
+        standalone: false,
+       })
        export class MyDir2 {
          @Input() inputA!: any;
        }`,
@@ -126,21 +141,30 @@ describe('definitions', () => {
          import {Component, NgModule} from '@angular/core';
          import {CommonModule} from '@angular/common';
 
-         @Component({templateUrl: 'app.html'})
+         @Component({
+          templateUrl: 'app.html',
+          standalone: false,
+         })
          export class AppCmp {}
        `,
       'app.html': '<div dir inputA="abc"></div>',
       'dir.ts': `
        import {Directive, input} from '@angular/core';
 
-       @Directive({selector: '[dir]'})
+       @Directive({
+        selector: '[dir]',
+        standalone: false,
+       })
        export class MyDir {
          inputA = input();
        }`,
       'dir2.ts': `
        import {Directive, input} from '@angular/core';
 
-       @Directive({selector: '[dir]'})
+       @Directive({
+        selector: '[dir]',
+        standalone: false,
+       })
        export class MyDir2 {
          inputA = input();
        }`,
@@ -171,21 +195,30 @@ describe('definitions', () => {
       'dir.ts': `
        import {Directive, Output, EventEmitter} from '@angular/core';
 
-       @Directive({selector: '[dir]'})
+       @Directive({
+        selector: '[dir]',
+        standalone: false,
+       })
        export class MyDir {
          @Output() someEvent = new EventEmitter<void>();
        }`,
       'dir2.ts': `
        import {Directive, Output, EventEmitter} from '@angular/core';
 
-       @Directive({selector: '[dir]'})
+       @Directive({
+        selector: '[dir]',
+        standalone: false,
+       })
        export class MyDir2 {
          @Output() someEvent = new EventEmitter<void>();
        }`,
       'dir3.ts': `
        import {Directive, output, EventEmitter} from '@angular/core';
 
-       @Directive({selector: '[dir]'})
+       @Directive({
+        selector: '[dir]',
+        standalone: false,
+       })
        export class MyDir3 {
          someEvent = output();
        }`,
@@ -193,7 +226,10 @@ describe('definitions', () => {
          import {Directive, EventEmitter} from '@angular/core';
          import {outputFromObservable} from '@angular/core/rxjs-interop';
 
-         @Directive({selector: '[dir]'})
+         @Directive({
+          selector: '[dir]',
+          standalone: false,
+         })
          export class MyDir4 {
            someEvent = outputFromObservable(new EventEmitter<void>);
          }
@@ -202,7 +238,10 @@ describe('definitions', () => {
          import {Component, NgModule} from '@angular/core';
          import {CommonModule} from '@angular/common';
 
-         @Component({templateUrl: 'app.html'})
+         @Component({
+          templateUrl: 'app.html',
+          standalone: false,
+         })
          export class AppCmp {
            doSomething() {}
          }
@@ -238,21 +277,30 @@ describe('definitions', () => {
           import {Component, NgModule} from '@angular/core';
           import {CommonModule} from '@angular/common';
 
-          @Component({templateUrl: 'app.html'})
+          @Component({
+            templateUrl: 'app.html',
+            standalone: false,
+          })
           export class AppCmp {}
         `,
       'app.html': '<div dir inputA="abc"></div>',
       'dir.ts': `
         import {Directive, model} from '@angular/core';
 
-        @Directive({selector: '[dir]'})
+        @Directive({
+          selector: '[dir]',
+          standalone: false,
+        })
         export class MyDir {
           inputA = model('');
         }`,
       'dir2.ts': `
         import {Directive, model} from '@angular/core';
 
-        @Directive({selector: '[dir]'})
+        @Directive({
+          selector: '[dir]',
+          standalone: false,
+        })
         export class MyDir2 {
           inputA = model('');
         }`,
@@ -283,7 +331,10 @@ describe('definitions', () => {
             import {Component, NgModule} from '@angular/core';
             import {CommonModule} from '@angular/common';
 
-            @Component({templateUrl: 'app.html'})
+            @Component({
+              templateUrl: 'app.html',
+              standalone: false,
+            })
             export class AppCmp {
               value = 'abc';
             }
@@ -292,14 +343,20 @@ describe('definitions', () => {
       'dir.ts': `
             import {Directive, model} from '@angular/core';
 
-          @Directive({selector: '[dir]'})
+          @Directive({
+            selector: '[dir]',
+            standalone: false,
+          })
           export class MyDir {
             inputA = model('');
           }`,
       'dir2.ts': `
           import {Directive, model} from '@angular/core';
 
-          @Directive({selector: '[dir]'})
+          @Directive({
+            selector: '[dir]',
+            standalone: false,
+          })
           export class MyDir2 {
             inputA = model('');
           }`,
@@ -335,6 +392,7 @@ describe('definitions', () => {
        @Component({
          template: '',
          styleUrls: ['./style.css'],
+         standalone: false,
        })
        export class AppCmp {}
        `,
@@ -364,7 +422,10 @@ describe('definitions', () => {
       'app.ts': `
          import {Component} from '@angular/core';
 
-         @Component({templateUrl: '/app.html'})
+         @Component({
+          templateUrl: '/app.html',
+          standalone: false,
+         })
          export class AppCmp {
            myVal = {name: 'Andrew'};
          }
@@ -389,7 +450,10 @@ describe('definitions', () => {
       'app.ts': `
          import {Component} from '@angular/core';
 
-         @Component({templateUrl: '/app.html'})
+         @Component({
+          templateUrl: '/app.html',
+          standalone: false,
+         })
          export class AppCmp {}
        `,
     };
@@ -425,12 +489,18 @@ describe('definitions', () => {
       'app.ts': `
 	 import {Component, NgModule, Input} from '@angular/core';
 
-	 @Component({selector: 'dollar-cmp', template: ''})
+	 @Component({
+    selector: 'dollar-cmp', template: '',
+    standalone: false,
+   })
 	 export class DollarCmp {
 	   @Input() obs$!: string;
 	 }
 
-	 @Component({template: '<dollar-cmp [obs$]="greeting"></dollar-cmp>'})
+	 @Component({
+    template: '<dollar-cmp [obs$]="greeting"></dollar-cmp>',
+    standalone: false,
+   })
 	 export class AppCmp {
 	   greeting = 'hello';
 	 }
@@ -472,12 +542,18 @@ describe('definitions', () => {
         'app.ts': `
 	 import {Component, Directive, NgModule, Input} from '@angular/core';
 
-	 @Directive({selector: '[dollar\\\\$]'})
+	 @Directive({
+    selector: '[dollar\\\\$]',
+    standalone: false,
+   })
 	 export class DollarDir {
 	   @Input() dollar$!: string;
 	 }
 
-	 @Component({template: '<div [dollar$]="greeting"></div>'})
+	 @Component({
+    template: '<div [dollar$]="greeting"></div>',
+    standalone: false,
+   })
 	 export class AppCmp {
 	   greeting = 'hello';
 	 }

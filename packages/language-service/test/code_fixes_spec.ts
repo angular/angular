@@ -325,6 +325,7 @@ describe('code fixes', () => {
          @Component({
            selector: 'foo',
            template: '<bar></bar>',
+           standalone: false,
          })
          export class FooComponent {}
          @NgModule({
