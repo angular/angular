@@ -186,7 +186,7 @@ To set up a wildcard route, add the following code to your `routes` definition.
 
 <docs-code>
 
-{ path: '\*\*', component: <component-name> }
+{ path: '**', component: <component-name> }
 
 </docs-code>
 

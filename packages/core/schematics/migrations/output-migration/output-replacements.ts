@@ -35,8 +35,7 @@ export function calculateDeclarationReplacement(
     (modifier) => !ts.isDecorator(modifier) && modifier.kind !== ts.SyntaxKind.ReadonlyKeyword,
   );
 
-  const updatedOutputDeclaration = ts.factory.updatePropertyDeclaration(
-    node,
+  const updatedOutputDeclaration = ts.factory.createPropertyDeclaration(
     // Think: this logic of dealing with modifiers is applicable to all signal-based migrations
     ts.factory.createNodeArray([
       ...existingModifiers,
@@ -96,19 +95,67 @@ export function calculateCompleteCallReplacement(
   info: ProgramInfo,
   node: ts.ExpressionStatement,
 ): Replacement {
-  return prepareTextReplacement(info, node, '');
+  return prepareTextReplacement(info, node, '', node.getFullStart());
+}
+
+export function calculatePipeCallReplacement(
+  info: ProgramInfo,
+  node: ts.CallExpression,
+): Replacement[] {
+  if (ts.isPropertyAccessExpression(node.expression)) {
+    const sf = node.getSourceFile();
+    const importManager = new ImportManager();
+
+    const outputToObservableIdent = importManager.addImport({
+      requestedFile: sf,
+      exportModuleSpecifier: '@angular/core/rxjs-interop',
+      exportSymbolName: 'outputToObservable',
+    });
+    const toObsCallExp = ts.factory.createCallExpression(outputToObservableIdent, undefined, [
+      node.expression.expression,
+    ]);
+    const pipePropAccessExp = ts.factory.updatePropertyAccessExpression(
+      node.expression,
+      toObsCallExp,
+      node.expression.name,
+    );
+    const pipeCallExp = ts.factory.updateCallExpression(
+      node,
+      pipePropAccessExp,
+      [],
+      node.arguments,
+    );
+
+    const replacements = [
+      prepareTextReplacement(
+        info,
+        node,
+        printer.printNode(ts.EmitHint.Unspecified, pipeCallExp, sf),
+      ),
+    ];
+
+    applyImportManagerChanges(importManager, replacements, [sf], info);
+
+    return replacements;
+  } else {
+    // TODO: assert instead?
+    throw new Error(
+      `Unexpected call expression for .pipe - expected a property access but got "${node.getText()}"`,
+    );
+  }
 }
 
 function prepareTextReplacement(
   info: ProgramInfo,
   node: ts.Node,
   replacement: string,
+  start?: number,
 ): Replacement {
   const sf = node.getSourceFile();
   return new Replacement(
     projectFile(sf, info),
     new TextUpdate({
-      position: node.getStart(),
+      position: start ?? node.getStart(),
       end: node.getEnd(),
       toInsert: replacement,
     }),
