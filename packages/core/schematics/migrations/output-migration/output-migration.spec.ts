@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as diff from 'diff';
-import chalk from 'chalk';
 import {initMockFileSystem} from '../../../../compiler-cli/src/ngtsc/file_system/testing';
 import {runTsurgeMigration} from '../../utils/tsurge/testing';
+import {diffText} from '../../utils/tsurge/testing/diff';
 import {absoluteFrom} from '@angular/compiler-cli';
 import {OutputMigration} from './output-migration';
 
@@ -421,21 +420,7 @@ async function verify(testCase: {before: string; after: string}) {
   const actual = fs.readFile(absoluteFrom('/app.component.ts')).trim();
   const expected = testCase.after.trim();
 
-  const diffResult = diff.diffChars(actual, expected);
-  const diffMsg = diffResult
-    .map((part) => {
-      const value = part.value.trim();
-      if (part.added) {
-        return chalk.green(value ? part.value : '+' + part.value);
-      } else if (part.removed) {
-        return chalk.red(value ? part.value : '-' + part.value);
-      } else {
-        return part.value;
-      }
-    })
-    .join('');
-
-  expect(actual).withContext(diffMsg).toEqual(expected);
+  expect(actual).withContext(diffText(expected, actual)).toEqual(expected);
 }
 
 function populateDeclarationTestCase(declaration: string): string {

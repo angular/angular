@@ -139,7 +139,9 @@ export function calculatePipeCallReplacement(
     return replacements;
   } else {
     // TODO: assert instead?
-    throw new Error('unexpected call expression');
+    throw new Error(
+      `Unexpected call expression for .pipe - expected a property access but got "${node.getText()}"`,
+    );
   }
 }
 
