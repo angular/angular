@@ -106,7 +106,6 @@ function assertNoStandaloneComponents(
       if (component && (component.standalone === undefined || component.standalone === true)) {
         throw new Error(ɵgenerateStandaloneInDeclarationsError(type, location));
       }
-
     }
   });
 }

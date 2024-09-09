@@ -125,7 +125,7 @@ export function convertNgModuleDeclarationToStandalone(
   const directiveMeta = typeChecker.getDirectiveMetadata(decl);
 
   if (directiveMeta && directiveMeta.decorator && !directiveMeta.isStandalone) {
-    let decorator = addStandaloneToDecorator(directiveMeta.decorator);
+    let decorator = removeStandaloneFalseFromDecorator(directiveMeta.decorator);
 
     if (directiveMeta.isComponent) {
       const importsToAdd = getComponentImportExpressions(
@@ -157,7 +157,10 @@ export function convertNgModuleDeclarationToStandalone(
     const pipeMeta = typeChecker.getPipeMetadata(decl);
 
     if (pipeMeta && pipeMeta.decorator && !pipeMeta.isStandalone) {
-      tracker.replaceNode(pipeMeta.decorator, addStandaloneToDecorator(pipeMeta.decorator));
+      tracker.replaceNode(
+        pipeMeta.decorator,
+        removeStandaloneFalseFromDecorator(pipeMeta.decorator),
+      );
     }
   }
 }
@@ -427,11 +430,31 @@ function moveDeclarationsToImports(
 }
 
 /** Adds `standalone: true` to a decorator node. */
-function addStandaloneToDecorator(node: ts.Decorator): ts.Decorator {
-  return setPropertyOnAngularDecorator(
-    node,
-    'standalone',
-    ts.factory.createToken(ts.SyntaxKind.TrueKeyword),
+function removeStandaloneFalseFromDecorator(node: ts.Decorator): ts.Decorator {
+  // Invalid decorator.
+  if (!ts.isCallExpression(node.expression) || node.expression.arguments.length !== 1) {
+    return node;
+  }
+
+  if (!ts.isObjectLiteralExpression(node.expression.arguments[0])) {
+    // Unsupported case (e.g. `@Component(SOME_CONST)`). Return the original node.
+    return node;
+  }
+
+  const hasTrailingComma = node.expression.arguments[0].properties.hasTrailingComma;
+
+  const properties = node.expression.arguments[0].properties;
+  const literalProperties = properties.filter((element) => !isStandaloneProperty(element));
+
+  // Use `createDecorator` instead of `updateDecorator`, because
+  // the latter ends up duplicating the node's leading comment.
+  return ts.factory.createDecorator(
+    ts.factory.createCallExpression(node.expression.expression, node.expression.typeArguments, [
+      ts.factory.createObjectLiteralExpression(
+        ts.factory.createNodeArray(literalProperties, hasTrailingComma),
+        literalProperties.length > 1,
+      ),
+    ]),
   );
 }
 
@@ -489,6 +512,11 @@ function setPropertyOnAngularDecorator(
   );
 }
 
+function isStandaloneProperty(prop: ts.Node): prop is ts.PropertyAssignment {
+  return (
+    ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name) && prop.name.text === 'standalone'
+  );
+}
 /** Checks if a node is a `PropertyAssignment` with a name. */
 function isNamedPropertyAssignment(
   node: ts.Node,
@@ -746,13 +774,13 @@ export function migrateTestDeclarations(
     const closestClass = closestNode(decorator.node, ts.isClassDeclaration);
 
     if (decorator.name === 'Pipe' || decorator.name === 'Directive') {
-      tracker.replaceNode(decorator.node, addStandaloneToDecorator(decorator.node));
+      tracker.replaceNode(decorator.node, removeStandaloneFalseFromDecorator(decorator.node));
 
       if (closestClass) {
         allDeclarations.add(closestClass);
       }
     } else if (decorator.name === 'Component') {
-      const newDecorator = addStandaloneToDecorator(decorator.node);
+      const newDecorator = removeStandaloneFalseFromDecorator(decorator.node);
       const importsToAdd = componentImports.get(decorator.node);
 
       if (closestClass) {
