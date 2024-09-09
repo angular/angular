@@ -208,7 +208,7 @@ You can also set multiple style values in one binding. Angular accepts the follo
   ...
 })
 export class UserProfile {
-  listStyle = 'display: flex; padding: 8px';
+  listStyles = 'display: flex; padding: 8px';
   sectionStyles = {
     border: '1px solid black',
     font-weight: 'bold',
