@@ -16,7 +16,7 @@ import {
   InlineTemplateDeclaration,
 } from '@angular/compiler-cli/src/ngtsc/annotations/component/src/resources';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler';
-import path from 'path';
+import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
 
 /**
  * Attempts to extract the `TemplateDefinition` for the given
@@ -30,6 +30,7 @@ export function attemptExtractTemplateDefinition(
   checker: ts.TypeChecker,
   reflector: ReflectionHost,
   host: MigrationHost,
+  resourceLoader: ResourceLoader,
 ): InlineTemplateDeclaration | ExternalTemplateDeclaration | null {
   const classDecorators = reflector.getDecoratorsOfDeclaration(node);
   const evaluator = new PartialEvaluator(reflector, checker, null);
@@ -68,19 +69,23 @@ export function attemptExtractTemplateDefinition(
     }
   }
 
-  // external template.
-  if (templateUrlProp !== undefined) {
-    const templateUrl = evaluator.evaluate(templateUrlProp);
-    if (typeof templateUrl === 'string') {
-      return {
-        isInline: false,
-        interpolationConfig: DEFAULT_INTERPOLATION_CONFIG,
-        preserveWhitespaces: false,
-        templateUrlExpression: templateUrlProp,
-        templateUrl,
-        resolvedTemplateUrl: path.join(path.dirname(containingFile), templateUrl),
-      };
+  try {
+    // external template.
+    if (templateUrlProp !== undefined) {
+      const templateUrl = evaluator.evaluate(templateUrlProp);
+      if (typeof templateUrl === 'string') {
+        return {
+          isInline: false,
+          interpolationConfig: DEFAULT_INTERPOLATION_CONFIG,
+          preserveWhitespaces: false,
+          templateUrlExpression: templateUrlProp,
+          templateUrl,
+          resolvedTemplateUrl: resourceLoader.resolve(templateUrl, containingFile),
+        };
+      }
     }
+  } catch (e) {
+    console.error(`Could not parse external template: ${e}`);
   }
 
   return null;

@@ -24,6 +24,7 @@ import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {CompilationMode} from '@angular/compiler-cli/src/ngtsc/transform';
 import {TmplAstNode} from '@angular/compiler';
 import {projectFile} from '../../../../../utils/tsurge';
+import path from 'path';
 
 /**
  * Checks whether the given class has an Angular template, and resolves
@@ -114,7 +115,7 @@ function extractTemplateWithoutCompilerAnalysis(
   if (node.name === undefined) {
     return null;
   }
-  const tmplDef = attemptExtractTemplateDefinition(node, checker, reflector, host);
+  const tmplDef = attemptExtractTemplateDefinition(node, checker, reflector, host, resourceLoader);
   if (tmplDef === null) {
     return null;
   }
