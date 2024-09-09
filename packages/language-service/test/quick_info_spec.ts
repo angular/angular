@@ -34,6 +34,7 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
         /*BeginTestComponent*/ @Component({
           selector: 'test-comp',
           template: '<div>Testing: {{name}}</div>',
+          standalone: false,
         })
         export class TestComponent {
           @Input('tcName') name!: string;
@@ -43,6 +44,7 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
         @Component({
           selector: 'app-cmp',
           templateUrl: './app.html',
+          standalone: false,
         })
         export class AppCmp {
           hero!: Hero;
@@ -77,6 +79,7 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
         @Directive({
           selector: '[string-model]',
           exportAs: 'stringModel',
+          standalone: false,
         })
         export class StringModel {
           @Input() model!: string;
@@ -86,12 +89,16 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
         @Directive({
           selector: '[signal-model]',
           exportAs: 'signalModel',
+          standalone: false,
         })
         export class SignalModel {
           signalModel = model<string>();
         }
 
-        @Directive({selector: 'button[custom-button][compound]'})
+        @Directive({
+          selector: 'button[custom-button][compound]',
+          standalone: false,
+        })
         export class CompoundCustomButtonDirective {
           @Input() config?: {color?: string};
         }
@@ -811,6 +818,7 @@ describe('quick info', () => {
             @Component({
               selector: 'some-cmp',
               templateUrl: './app.html',
+              standalone: false,
             })
             export class SomeCmp {
               val1 = 'one';
@@ -859,14 +867,16 @@ describe('quick info', () => {
           interface PrivateInterface {}
 
           @Directive({
-            selector: '[dir]'
+            selector: '[dir]',
+            standalone: false,
           })export class GenericDir <T extends PrivateInterface>{
             @Input('input') input: T = null!;
           }
 
           @Component({
             selector: 'some-cmp',
-            templateUrl: './app.html'
+            templateUrl: './app.html',
+            standalone: false,
           })export class SomeCmp{}
 
           @NgModule({
@@ -930,6 +940,7 @@ describe('quick info', () => {
            selector: 'some-cmp',
            templateUrl: './app.html',
            styleUrls: ['./does_not_exist'],
+           standalone: false,
          })
          export class SomeCmp {
            myValue!: string;
