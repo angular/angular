@@ -547,6 +547,122 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should populate externalStyles from inline style transform when externalRuntimeStyles is enabled', async () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            styles: ['.abc {}']
+          }) class TestCmp {}
+      `,
+        },
+      ]);
+      const {reflectionHost, handler, resourceLoader} = setup(program, options, host, {
+        externalRuntimeStyles: true,
+      });
+      resourceLoader.canPreload = true;
+      resourceLoader.canPreprocess = true;
+      resourceLoader.preprocessInline = async function (data, context) {
+        expect(data).toBe('.abc {}');
+        expect(context.containingFile).toBe(_('/entry.ts').toLowerCase());
+        expect(context.type).toBe('style');
+        expect(context.order).toBe(0);
+
+        return 'abc/myInlineStyle.css';
+      };
+
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+
+      await handler.preanalyze(TestCmp, detected.metadata);
+
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      expect(analysis?.resources.styles.size).toBe(1);
+      expect(analysis?.meta.externalStyles).toEqual(['abc/myInlineStyle.css']);
+      expect(analysis?.meta.styles).toEqual([]);
+    });
+
+    it('should not populate externalStyles from inline style when externalRuntimeStyles is enabled and no transform', async () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            styles: ['.abc {}']
+          }) class TestCmp {}
+      `,
+        },
+      ]);
+      const {reflectionHost, handler} = setup(program, options, host, {
+        externalRuntimeStyles: true,
+      });
+
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+
+      await handler.preanalyze(TestCmp, detected.metadata);
+
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      expect(analysis?.resources.styles.size).toBe(1);
+      expect(analysis?.meta.externalStyles).toEqual([]);
+      expect(analysis?.meta.styles).toEqual(['.abc {}']);
+    });
+
+    it('should not populate externalStyles from inline style when externalRuntimeStyles is enabled and no preanalyze', async () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            styles: ['.abc {}']
+          }) class TestCmp {}
+      `,
+        },
+      ]);
+      const {reflectionHost, handler} = setup(program, options, host, {
+        externalRuntimeStyles: true,
+      });
+
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      expect(analysis?.resources.styles.size).toBe(1);
+      expect(analysis?.meta.externalStyles).toEqual([]);
+      expect(analysis?.meta.styles).toEqual(['.abc {}']);
+    });
+
     it('should replace inline style content with transformed content', async () => {
       const {program, options, host} = makeProgram([
         {

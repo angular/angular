@@ -92,6 +92,22 @@ export interface ResourceHostContext {
    * The absolute path to the file that contains the resource or reference to the resource.
    */
   readonly containingFile: string;
+
+  /**
+   * For style resources, the placement of the style within the containing file with lower numbers
+   * being before higher numbers.
+   * The value is primarily used by the Angular CLI to create a deterministic identifier for each
+   * style in HMR scenarios.
+   * This is undefined for templates.
+   */
+  readonly order?: number;
+
+  /**
+   * The name of the class that defines the component using the resource.
+   * This allows identifying the source usage of a resource in cases where multiple components are
+   * contained in a single source file.
+   */
+  className: string;
 }
 
 /**
