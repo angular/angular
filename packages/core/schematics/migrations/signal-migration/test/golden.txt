@@ -243,6 +243,20 @@ class ExistingSignalImport {
   signalInput = input<boolean>();
   readonly thisCanBeMigrated = input(true);
 }
+@@@@@@ external_templates.html @@@@@@
+
+<span>{{test()}}</span>
+@@@@@@ external_templates.ts @@@@@@
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  templateUrl: './external_templates.html',
+  selector: 'with-template',
+})
+export class WithTemplate {
+  readonly test = input(true);
+}
 @@@@@@ getters.ts @@@@@@
 
 // tslint:disable
