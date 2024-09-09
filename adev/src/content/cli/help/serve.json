@@ -39,6 +39,16 @@
       "description": "Force the development server to use the 'browser-esbuild' builder when building. This is a developer preview option for the esbuild-based build system."
     },
     {
+      "name": "headers",
+      "type": "array",
+      "description": "Custom HTTP headers to be added to all responses."
+    },
+    {
+      "name": "headers",
+      "type": "string",
+      "description": "Custom HTTP headers to be added to all responses."
+    },
+    {
       "name": "help",
       "type": "boolean",
       "description": "Shows a help message for this command in the console."
