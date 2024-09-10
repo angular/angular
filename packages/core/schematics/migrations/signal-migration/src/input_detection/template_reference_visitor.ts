@@ -35,7 +35,7 @@ import {
 } from '../../../../../../compiler';
 import {BoundAttribute, BoundEvent} from '../../../../../../compiler/src/render3/r3_ast';
 import {lookupPropertyAccess} from '../../../../utils/tsurge/helpers/ast/lookup_property_access';
-import {ClassFieldDescriptor, KnownFields} from '../passes/references/known_fields';
+import {ClassFieldDescriptor, KnownFields} from '../passes/reference_resolution/known_fields';
 
 /**
  * Interface describing a reference to an input from within

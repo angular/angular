@@ -9,7 +9,7 @@
 import {MigrationResult} from '../result';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {Replacement, TextUpdate} from '../../../../utils/tsurge';
-import {isTemplateReference} from './references/reference_kinds';
+import {isTemplateReference} from './reference_resolution/reference_kinds';
 
 /**
  * Phase that migrates Angular template references to

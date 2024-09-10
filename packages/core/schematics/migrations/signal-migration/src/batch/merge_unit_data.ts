@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Reference, ReferenceKind, TsReference} from '../passes/references/reference_kinds';
+import {
+  Reference,
+  ReferenceKind,
+  TsReference,
+} from '../passes/reference_resolution/reference_kinds';
 import {InputDescriptor} from '../utils/input_id';
 import {CompilationUnitData, SerializableForBatching} from './unit_data';
 

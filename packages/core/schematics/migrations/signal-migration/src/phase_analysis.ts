@@ -20,7 +20,7 @@ import {
   isHostBindingReference,
   isTemplateReference,
   isTsReference,
-} from './passes/references/reference_kinds';
+} from './passes/reference_resolution/reference_kinds';
 import {InputIncompatibilityReason} from './input_detection/incompatibility';
 
 /**

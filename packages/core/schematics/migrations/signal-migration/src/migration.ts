@@ -29,7 +29,7 @@ import assert from 'assert';
 import {InputIncompatibilityReason} from './input_detection/incompatibility';
 import {isInputDescriptor} from './utils/input_id';
 import {MigrationConfig} from './migration_config';
-import {ClassFieldUniqueKey} from './passes/references/known_fields';
+import {ClassFieldUniqueKey} from './passes/reference_resolution/known_fields';
 
 /**
  * Tsurge migration for migrating Angular `@Input()` declarations to

@@ -18,8 +18,8 @@ import {
   NarrowableTsReferences,
 } from './migrate_ts_reference/standard_reference';
 import {ProgramInfo} from '../../../../utils/tsurge';
-import {ClassFieldUniqueKey} from './references/known_fields';
-import {isTsReference} from './references/reference_kinds';
+import {ClassFieldUniqueKey} from './reference_resolution/known_fields';
+import {isTsReference} from './reference_resolution/reference_kinds';
 
 /**
  * Phase that migrates TypeScript input references to be signal compatible.
