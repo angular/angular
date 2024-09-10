@@ -9,8 +9,8 @@
 import ts from 'typescript';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../utils/tsurge';
 import {MigrationResult} from '../result';
-import {isHostBindingInputReference} from '../utils/input_reference';
 import {KnownInputs} from '../input_detection/known_inputs';
+import {isHostBindingReference} from './references/reference_kinds';
 
 /**
  * Phase that migrates Angular host binding references to
@@ -25,7 +25,7 @@ export function pass8__migrateHostBindings(
 
   for (const reference of result.references) {
     // This pass only deals with host binding references.
-    if (!isHostBindingInputReference(reference)) {
+    if (!isHostBindingReference(reference)) {
       continue;
     }
     // Skip references to incompatible inputs.

@@ -7,7 +7,6 @@
  */
 
 import ts from 'typescript';
-import {InputUniqueKey} from '../../utils/input_id';
 import {analyzeControlFlow} from '../../flow_analysis';
 import {MigrationResult} from '../../result';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../utils/tsurge';
@@ -15,12 +14,12 @@ import {traverseAccess} from '../../utils/traverse_access';
 import {UniqueNamesGenerator} from '../../utils/unique_names';
 import {createNewBlockToInsertVariable} from './create_block_arrow_function';
 
-export interface NarrowableTsReference {
+export interface NarrowableTsReferences {
   accesses: ts.Identifier[];
 }
 
 export function migrateStandardTsReference(
-  tsReferencesWithNarrowing: Map<InputUniqueKey, NarrowableTsReference>,
+  tsReferencesWithNarrowing: Map<unknown, NarrowableTsReferences>,
   checker: ts.TypeChecker,
   result: MigrationResult,
   info: ProgramInfo,

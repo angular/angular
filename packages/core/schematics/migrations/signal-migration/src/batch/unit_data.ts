@@ -12,16 +12,17 @@ import {
   ClassIncompatibilityReason,
   InputIncompatibilityReason,
 } from '../input_detection/incompatibility';
-import {InputReference} from '../utils/input_reference';
-import {InputDescriptor, InputUniqueKey} from '../utils/input_id';
+import {ClassFieldDescriptor, ClassFieldUniqueKey} from '../passes/references/known_fields';
+import {Reference} from '../passes/references/reference_kinds';
+import {InputDescriptor} from '../utils/input_id';
 
 /** Helper that ensures given type `T` is serializable. */
 export type SerializableForBatching<T> = {
   [K in keyof T]: T[K] extends ts.Node | TmplAstNode | AST
     ? {positionEndInFile: number}
     : // Input descriptor should only be the serializable string.
-      T[K] extends InputDescriptor
-      ? InputUniqueKey
+      T[K] extends ClassFieldDescriptor
+      ? ClassFieldUniqueKey
       : // If no known type, recursively step into it.
         SerializableForBatching<T[K]>;
 };
@@ -50,5 +51,5 @@ export interface CompilationUnitData {
     };
   };
 
-  references: SerializableForBatching<InputReference>[];
+  references: SerializableForBatching<Reference<InputDescriptor>>[];
 }

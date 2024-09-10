@@ -9,10 +9,10 @@
 import ts from 'typescript';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationResult} from '../result';
-import {isTsInputClassTypeReference} from '../utils/input_reference';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../utils/tsurge';
 import assert from 'assert';
 import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
+import {isTsClassTypeReference} from './references/reference_kinds';
 
 /**
  * Migrates TypeScript "ts.Type" references. E.g.
@@ -30,7 +30,7 @@ export function pass9__migrateTypeScriptTypeReferences(
 
   for (const reference of result.references) {
     // This pass only deals with TS input class type references.
-    if (!isTsInputClassTypeReference(reference)) {
+    if (!isTsClassTypeReference(reference)) {
       continue;
     }
     // Skip references to classes that are not fully migrated.

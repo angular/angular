@@ -7,7 +7,7 @@
  */
 
 import ts from 'typescript';
-import {KnownInputs} from '../input_detection/known_inputs';
+import {ClassFieldDescriptor, KnownFields} from '../passes/references/known_fields';
 
 /**
  * Recognizes `Partial<T>` instances in Catalyst tests. Those type queries
@@ -21,10 +21,10 @@ import {KnownInputs} from '../input_detection/known_inputs';
  *
  * We can enable this heuristic when we detect Catalyst as we know it supports unwrapping.
  */
-export class PartialDirectiveTypeInCatalystTests {
+export class PartialDirectiveTypeInCatalystTests<D extends ClassFieldDescriptor> {
   constructor(
     private checker: ts.TypeChecker,
-    private knownInputs: KnownInputs,
+    private knownFields: KnownFields<D>,
   ) {}
 
   detect(
@@ -61,7 +61,7 @@ export class PartialDirectiveTypeInCatalystTests {
     if (
       symbol?.valueDeclaration === undefined ||
       !ts.isClassDeclaration(symbol.valueDeclaration) ||
-      !this.knownInputs.isInputContainingClass(symbol.valueDeclaration)
+      !this.knownFields.isClassContainingKnownFields(symbol.valueDeclaration)
     ) {
       return null;
     }

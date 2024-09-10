@@ -101,7 +101,7 @@ export function pass4__checkInheritanceOfInputs(
       }
 
       for (const derived of derivedMembers) {
-        const derivedInput = attemptRetrieveInputFromSymbol(host, derived, knownInputs);
+        const derivedInput = attemptRetrieveInputFromSymbol(host.programInfo, derived, knownInputs);
         if (derivedInput !== null) {
           continue;
         }

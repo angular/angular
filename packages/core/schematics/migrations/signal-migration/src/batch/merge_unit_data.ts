@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Reference, ReferenceKind, TsReference} from '../passes/references/reference_kinds';
+import {InputDescriptor} from '../utils/input_id';
 import {CompilationUnitData, SerializableForBatching} from './unit_data';
-import {InputReference, InputReferenceKind} from '../utils/input_reference';
 
 /** Merges a list of compilation units into a combined unit. */
 export function mergeCompilationUnitData(
@@ -46,10 +47,12 @@ export function mergeCompilationUnitData(
 }
 
 /** Computes a unique ID for the given reference. */
-function computeReferenceId(reference: SerializableForBatching<InputReference>): string {
-  if (reference.kind === InputReferenceKind.InTemplate) {
+function computeReferenceId(
+  reference: SerializableForBatching<Reference<InputDescriptor>>,
+): string {
+  if (reference.kind === ReferenceKind.InTemplate) {
     return `${reference.from.templateFile.id}@@${reference.from.read.positionEndInFile}`;
-  } else if (reference.kind === InputReferenceKind.InHostBinding) {
+  } else if (reference.kind === ReferenceKind.InHostBinding) {
     // `read` position is commonly relative to the host property node position— so we need
     // to make it absolute by incorporating the host node position.
     return (

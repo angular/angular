@@ -11,7 +11,7 @@ import {confirmAsSerializable, Serializable} from '../../../utils/tsurge/helpers
 import {BaseProgramInfo, ProgramInfo} from '../../../utils/tsurge/program_info';
 import {TsurgeComplexMigration} from '../../../utils/tsurge/migration';
 import {CompilationUnitData} from './batch/unit_data';
-import {KnownInputInfo, KnownInputs} from './input_detection/known_inputs';
+import {KnownInputs} from './input_detection/known_inputs';
 import {AnalysisProgramInfo, prepareAnalysisInfo} from './analysis_deps';
 import {MigrationResult} from './result';
 import {MigrationHost} from './migration_host';
@@ -27,8 +27,9 @@ import {filterIncompatibilitiesForBestEffortMode} from './best_effort_mode';
 import {createNgtscProgram} from '../../../utils/tsurge/helpers/ngtsc_program';
 import assert from 'assert';
 import {InputIncompatibilityReason} from './input_detection/incompatibility';
-import {InputUniqueKey, isInputDescriptor} from './utils/input_id';
+import {isInputDescriptor} from './utils/input_id';
 import {MigrationConfig} from './migration_config';
+import {ClassFieldUniqueKey} from './passes/references/known_fields';
 
 /**
  * Tsurge migration for migrating Angular `@Input()` declarations to
@@ -74,7 +75,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
   override async analyze(info: ProgramInfo) {
     const analysisDeps = this.prepareAnalysisDeps(info);
     const {metaRegistry} = analysisDeps;
-    const knownInputs = new KnownInputs();
+    const knownInputs = new KnownInputs(info, this.config);
     const result = new MigrationResult();
     const host = createMigrationHost(info, this.config);
 
@@ -131,7 +132,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
       analysisDeps: AnalysisProgramInfo;
     },
   ): Promise<Replacement[]> {
-    const knownInputs = nonBatchData?.knownInputs ?? new KnownInputs();
+    const knownInputs = nonBatchData?.knownInputs ?? new KnownInputs(info, this.config);
     const result = nonBatchData?.result ?? new MigrationResult();
     const host = nonBatchData?.host ?? createMigrationHost(info, this.config);
     const analysisDeps = nonBatchData?.analysisDeps ?? this.prepareAnalysisDeps(info);
@@ -174,7 +175,7 @@ function filterInputsViaConfig(
     return;
   }
 
-  const skippedInputs = new Set<InputUniqueKey>();
+  const skippedInputs = new Set<ClassFieldUniqueKey>();
 
   // Mark all skipped inputs as incompatible for migration.
   for (const input of knownInputs.knownInputIds.values()) {
