@@ -35,6 +35,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
+        "//packages/core/schematics/utils/tsurge/helpers/ast",
         "@npm//@types/node",
         "@npm//magic-string",
         "@npm//typescript",

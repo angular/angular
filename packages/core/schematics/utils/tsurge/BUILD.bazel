@@ -1,12 +1,17 @@
 load("//tools:defaults.bzl", "ts_library")
 
+package_group(
+    name = "users",
+    packages = [
+        "//packages/core/schematics/...",
+        "//packages/language-service/src/refactorings/...",
+    ],
+)
+
 ts_library(
     name = "tsurge",
     srcs = glob(["**/*.ts"]),
-    visibility = [
-        "//packages/core/schematics:__subpackages__",
-        "//packages/language-service/src/refactorings:__pkg__",
-    ],
+    visibility = [":users"],
     deps = [
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/core",
