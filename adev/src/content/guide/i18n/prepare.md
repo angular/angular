@@ -29,6 +29,16 @@ To mark the greeting for translation, add the `i18n` attribute to the `<h1>` tag
 
 <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute"/>
 
+
+### using conditional statement with `i18n`
+
+The following `<div>` tag will display translated text as part of `div` and `aria-label` based on toggle status 
+
+<docs-code-multifile>
+    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html"  visibleRegion="i18n-conditional"/>
+    <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/i18n/src/app/app.component.ts" visibleLines="[[14,16],[17,24],[37,39]]"/>
+</docs-code-multifile>
+
 ### Translate inline text without HTML element
 
 Use the `<ng-container>` element to associate a translation behavior for specific text without changing the way text is displayed.
@@ -82,7 +92,7 @@ Use the [`$localize`][ApiLocalizeInitLocalize] tagged message string to mark a s
 <!--todo: replace with docs-code -->
 
 <docs-code language="typescript">
-$localize `string_to_translate`;
+$localize`string_to_translate`;
 </docs-code>
 
 The i18n metadata is surrounded by colon \(`:`\) characters and prepends the translation source text.
@@ -90,7 +100,7 @@ The i18n metadata is surrounded by colon \(`:`\) characters and prepends the tra
 <!--todo: replace with docs-code -->
 
 <docs-code language="typescript">
-$localize `:{i18n_metadata}:string_to_translate`
+$localize`:{i18n_metadata}:string_to_translate`
 </docs-code>
 
 ### Include interpolated text
@@ -100,14 +110,22 @@ Include [interpolations](guide/templates/binding#render-dynamic-text-with-text-i
 <!--todo: replace with docs-code -->
 
 <docs-code language="typescript">
-$localize `string_to_translate ${variable_name}`;
+$localize`string_to_translate ${variable_name}`;
 </docs-code>
 
 ### Name the interpolation placeholder
 
 <docs-code language="typescript">
-$localize `string_to_translate ${variable_name}:placeholder_name:`;
+$localize`string_to_translate ${variable_name}:placeholder_name:`;
 </docs-code>
+
+### Conditional syntax for translations
+
+<docs-code language="typescript">
+return this.show ? $localize`Show Tabs` : $localize`Hide tabs`;
+</docs-code>
+
+
 
 ## i18n metadata for translation
 
@@ -143,7 +161,7 @@ The following example shows the value of the [`$localize`][ApiLocalizeInitLocali
 
 <docs-code language="typescript">
 
-$localize `:An introduction header for this sample:Hello i18n!`;
+$localize`:An introduction header for this sample:Hello i18n!`;
 
 </docs-code>
 
@@ -166,7 +184,7 @@ The following code example shows the value of the [`$localize`][ApiLocalizeInitL
 
 <docs-code language="typescript">
 
-$localize `:site header|An introduction header for this sample:Hello i18n!`;
+$localize`:site header|An introduction header for this sample:Hello i18n!`;
 
 </docs-code>
 

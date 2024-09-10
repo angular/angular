@@ -1,5 +1,6 @@
 // #docregion
-import {Component} from '@angular/core';
+import {Component, computed, signal} from '@angular/core';
+import {$localize} from '@angular/localize/init';
 
 @Component({
   standalone: true,
@@ -11,6 +12,13 @@ export class AppComponent {
   gender = 'female';
   fly = true;
   logo = '${this.baseUrl}/angular.svg';
+  toggle = signal(false);
+  toggleAriaLabel = computed(() => {
+    return this.toggle()
+      ? $localize`:Toggle Button|A button to toggle status:Show`
+      : $localize`:Toggle Button|A button to toggle status:Hide`;
+  });
+
   inc(i: number) {
     this.minutes = Math.min(5, Math.max(0, this.minutes + i));
   }
@@ -22,5 +30,8 @@ export class AppComponent {
   }
   other() {
     this.gender = 'other';
+  }
+  toggleDisplay() {
+    this.toggle.update((toggle) => !toggle);
   }
 }
