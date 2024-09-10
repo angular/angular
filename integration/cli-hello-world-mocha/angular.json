@@ -11,7 +11,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputHashing": "none",
             "outputPath": {
@@ -54,27 +54,27 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
-            "browserTarget": "cli-hello-world:build"
+            "buildTarget": "cli-hello-world:build"
           },
           "configurations": {
             "dev": {
-              "browserTarget": "cli-hello-world:build:dev"
+              "buildTarget": "cli-hello-world:build:dev"
             },
             "production": {
-              "browserTarget": "cli-hello-world:build:production"
+              "buildTarget": "cli-hello-world:build:production"
             },
             "ci": {},
             "ci-production": {
-              "browserTarget": "cli-hello-world:build:production"
+              "buildTarget": "cli-hello-world:build:production"
             }
           }
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
-            "browserTarget": "cli-hello-world:build"
+            "buildTarget": "cli-hello-world:build"
           }
         },
         "test": {
@@ -94,7 +94,7 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular/build:tslint",
           "options": {
             "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json", "e2e/tsconfig.json"],
             "exclude": ["**/node_modules/**"]

@@ -15,6 +15,8 @@ NPM_PACKAGE_ARCHIVES = [
     "terser",
     "rollup",
     "rollup-plugin-sourcemaps",
+    "@angular/ssr",
+    "@angular/build",
     "@angular/cli",
     "@angular-devkit/build-angular",
     "@bazel/bazelisk",

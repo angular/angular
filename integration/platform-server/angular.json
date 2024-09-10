@@ -11,7 +11,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "namedChunks": true,
             "outputPath": "dist/ngmodule",
@@ -60,13 +60,13 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "ngmodule:build:production"
+              "buildTarget": "ngmodule:build:production"
             },
             "development": {
-              "browserTarget": "ngmodule:build:development"
+              "buildTarget": "ngmodule:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -109,16 +109,14 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "namedChunks": true,
             "outputPath": "dist/standalone",
             "index": "projects/standalone/src/index.html",
             "browser": "projects/standalone/src/main.ts",
             "server": "projects/standalone/src/main.server.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "ssr": {
               "entry": "projects/standalone/server.ts"
             },
@@ -158,13 +156,13 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "standalone:build:production"
+              "buildTarget": "standalone:build:production"
             },
             "development": {
-              "browserTarget": "standalone:build:development"
+              "buildTarget": "standalone:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -179,9 +177,9 @@
           }
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
-            "browserTarget": "standalone:build"
+            "buildTarget": "standalone:build"
           }
         },
         "test": {
