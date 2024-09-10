@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript';
 import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
 import {unwrapExpression} from '@angular/compiler-cli/src/ngtsc/annotations/common';
 import {ReflectionHost, reflectObjectLiteral} from '@angular/compiler-cli/src/ngtsc/reflection';
+import ts from 'typescript';
 import {
   AST,
   ParseLocation,
@@ -18,27 +18,26 @@ import {
   ParsedProperty,
   makeBindingParser,
 } from '../../../../../../../compiler/public_api';
-import {KnownInputs} from '../../input_detection/known_inputs';
+import {ProgramInfo, projectFile} from '../../../../../utils/tsurge';
 import {
   TemplateExpressionReferenceVisitor,
   TmplInputExpressionReference,
 } from '../../input_detection/template_reference_visitor';
-import {MigrationHost} from '../../migration_host';
-import {MigrationResult} from '../../result';
-import {InputReferenceKind} from '../../utils/input_reference';
-import {projectFile} from '../../../../../utils/tsurge';
+import {ReferenceResult} from './reference_result';
+import {ClassFieldDescriptor, KnownFields} from './known_fields';
+import {ReferenceKind} from './reference_kinds';
 
 /**
  * Checks host bindings of the given class and tracks all
  * references to inputs within bindings.
  */
-export function identifyHostBindingReferences(
+export function identifyHostBindingReferences<D extends ClassFieldDescriptor>(
   node: ts.ClassDeclaration,
-  host: MigrationHost,
+  programInfo: ProgramInfo,
   checker: ts.TypeChecker,
   reflector: ReflectionHost,
-  result: MigrationResult,
-  knownDecoratorInputs: KnownInputs,
+  result: ReferenceResult<D>,
+  knownFields: KnownFields<D>,
 ) {
   if (node.name === undefined) {
     return;
@@ -51,7 +50,7 @@ export function identifyHostBindingReferences(
   const angularDecorators = getAngularDecorators(
     decorators,
     ['Directive', 'Component'],
-    host.isMigratingCore,
+    /* isAngularCore */ false,
   );
   if (angularDecorators.length === 0) {
     return;
@@ -92,13 +91,12 @@ export function identifyHostBindingReferences(
     return;
   }
   const hostMap = reflectObjectLiteral(hostField);
-  const expressionResult: TmplInputExpressionReference<ts.Node>[] = [];
-  const expressionVisitor = new TemplateExpressionReferenceVisitor<ts.Node>(
-    host,
+  const expressionResult: TmplInputExpressionReference<ts.Node, D>[] = [];
+  const expressionVisitor = new TemplateExpressionReferenceVisitor<ts.Node, D>(
     checker,
     null,
     node,
-    knownDecoratorInputs,
+    knownFields,
   );
 
   for (const [rawName, expression] of hostMap.entries()) {
@@ -161,14 +159,15 @@ export function identifyHostBindingReferences(
 
   for (const ref of expressionResult) {
     result.references.push({
-      kind: InputReferenceKind.InHostBinding,
+      kind: ReferenceKind.InHostBinding,
       from: {
         read: ref.read,
         isObjectShorthandExpression: ref.isObjectShorthandExpression,
-        file: projectFile(ref.context.getSourceFile(), host.programInfo),
+        isWrite: ref.isWrite,
+        file: projectFile(ref.context.getSourceFile(), programInfo),
         hostPropertyNode: ref.context,
       },
-      target: ref.targetInput,
+      target: ref.targetField,
     });
   }
 }

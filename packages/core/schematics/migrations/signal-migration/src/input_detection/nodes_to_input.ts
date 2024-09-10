@@ -7,17 +7,17 @@
  */
 
 import ts from 'typescript';
-import {MigrationHost} from '../migration_host';
 import {isInputContainerNode} from '../input_detection/input_node';
 import {getInputDescriptor} from '../utils/input_id';
-import {KnownInputInfo, KnownInputs} from './known_inputs';
+import type {KnownInputInfo, KnownInputs} from './known_inputs';
+import {ProgramInfo} from '../../../../utils/tsurge';
 
 /**
  * Attempts to resolve the known `@Input` metadata for the given
  * type checking symbol. Returns `null` if it's not for an input.
  */
 export function attemptRetrieveInputFromSymbol(
-  host: MigrationHost,
+  programInfo: ProgramInfo,
   memberSymbol: ts.Symbol,
   knownInputs: KnownInputs,
 ): KnownInputInfo | null {
@@ -30,8 +30,10 @@ export function attemptRetrieveInputFromSymbol(
     const member = memberSymbol.valueDeclaration;
     // If the member itself is an input that is being migrated, we
     // do not need to check, as overriding would be fine then— like before.
-    const memberInputDescr = isInputContainerNode(member) ? getInputDescriptor(host, member) : null;
-    return memberInputDescr !== null ? knownInputs.get(memberInputDescr) ?? null : null;
+    const memberInputDescr = isInputContainerNode(member)
+      ? getInputDescriptor(programInfo, member)
+      : null;
+    return memberInputDescr !== null ? (knownInputs.get(memberInputDescr) ?? null) : null;
   }
   return null;
 }

@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {unwrapExpression} from '@angular/compiler-cli/src/ngtsc/annotations/common';
 import assert from 'assert';
 import ts from 'typescript';
-import {unwrapExpression} from '@angular/compiler-cli/src/ngtsc/annotations/common';
 import {ClassIncompatibilityReason} from '../input_detection/incompatibility';
 import {KnownInputs} from '../input_detection/known_inputs';
-import {getMemberName} from '../utils/class_member_names';
-import {InheritanceGraph} from '../utils/inheritance_graph';
-import {SpyOnInputPattern} from '../pattern_advisors/spy_on_pattern';
 import {MigrationHost} from '../migration_host';
+import {SpyOnInputPattern} from '../pattern_advisors/spy_on_pattern';
+import {getMemberName} from '../utils/class_member_names';
 import {GroupedTsAstVisitor} from '../utils/grouped_ts_ast_visitor';
+import {InheritanceGraph} from '../utils/inheritance_graph';
 
 /**
  * Phase where problematic patterns are detected and advise

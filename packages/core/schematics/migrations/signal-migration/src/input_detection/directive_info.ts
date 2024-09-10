@@ -8,8 +8,9 @@
 
 import ts from 'typescript';
 import {ExtractedInput} from './input_decorator';
-import {InputDescriptor, InputUniqueKey} from '../utils/input_id';
+import {InputDescriptor} from '../utils/input_id';
 import {ClassIncompatibilityReason, InputMemberIncompatibility} from './incompatibility';
+import {ClassFieldUniqueKey} from '../passes/references/known_fields';
 
 /**
  * Class that holds information about a given directive and its input fields.
@@ -19,10 +20,13 @@ export class DirectiveInfo {
    * Map of inputs detected in the given class.
    * Maps string-based input ids to the detailed input metadata.
    */
-  inputFields = new Map<InputUniqueKey, {descriptor: InputDescriptor; metadata: ExtractedInput}>();
+  inputFields = new Map<
+    ClassFieldUniqueKey,
+    {descriptor: InputDescriptor; metadata: ExtractedInput}
+  >();
 
   /** Map of input IDs and their incompatibilities. */
-  memberIncompatibility = new Map<InputUniqueKey, InputMemberIncompatibility>();
+  memberIncompatibility = new Map<ClassFieldUniqueKey, InputMemberIncompatibility>();
 
   /**
    * Whether the whole class is incompatible.

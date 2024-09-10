@@ -9,17 +9,17 @@
 import ts from 'typescript';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationResult} from '../result';
-import {InputUniqueKey} from '../utils/input_id';
-import {isTsInputReference} from '../utils/input_reference';
 import {
   migrateBindingElementInputReference,
   IdentifierOfBindingElement,
 } from './migrate_ts_reference/object_expansion_refs';
 import {
   migrateStandardTsReference,
-  NarrowableTsReference,
+  NarrowableTsReferences,
 } from './migrate_ts_reference/standard_reference';
 import {ProgramInfo} from '../../../../utils/tsurge';
+import {ClassFieldUniqueKey} from './references/known_fields';
+import {isTsReference} from './references/reference_kinds';
 
 /**
  * Phase that migrates TypeScript input references to be signal compatible.
@@ -52,14 +52,14 @@ export function pass5__migrateTypeScriptReferences(
   knownInputs: KnownInputs,
   info: ProgramInfo,
 ) {
-  const tsReferencesWithNarrowing = new Map<InputUniqueKey, NarrowableTsReference>();
+  const tsReferencesWithNarrowing = new Map<ClassFieldUniqueKey, NarrowableTsReferences>();
   const tsReferencesInBindingElements = new Set<IdentifierOfBindingElement>();
 
   const seenIdentifiers = new WeakSet<ts.Identifier>();
 
   for (const reference of result.references) {
     // This pass only deals with TS references.
-    if (!isTsInputReference(reference)) {
+    if (!isTsReference(reference)) {
       continue;
     }
     // Skip references to incompatible inputs.

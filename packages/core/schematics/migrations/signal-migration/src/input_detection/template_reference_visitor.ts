@@ -8,6 +8,7 @@
 
 import ts from 'typescript';
 
+import {SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {
   AST,
   BindingType,
@@ -32,26 +33,22 @@ import {
   TmplAstTemplate,
   tmplAstVisitAll,
 } from '../../../../../../compiler';
-import {SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {KnownInputs} from './known_inputs';
-import {attemptRetrieveInputFromSymbol} from './nodes_to_input';
-import {MigrationHost} from '../migration_host';
-import {InputDescriptor, InputUniqueKey} from '../utils/input_id';
-import {InputIncompatibilityReason} from './incompatibility';
 import {BoundAttribute, BoundEvent} from '../../../../../../compiler/src/render3/r3_ast';
 import {lookupPropertyAccess} from '../../../../utils/tsurge/helpers/ast/lookup_property_access';
+import {ClassFieldDescriptor, KnownFields} from '../passes/references/known_fields';
 
 /**
  * Interface describing a reference to an input from within
  * an Angular template, or host binding "template expression".
  */
-export interface TmplInputExpressionReference<ExprContext> {
-  target: ts.Node;
-  targetInput: InputDescriptor;
+export interface TmplInputExpressionReference<ExprContext, D extends ClassFieldDescriptor> {
+  targetNode: ts.Node;
+  targetField: D;
   read: PropertyRead;
   context: ExprContext;
   isObjectShorthandExpression: boolean;
   isLikelyNarrowed: boolean;
+  isWrite: boolean;
 }
 
 /**
@@ -61,8 +58,10 @@ export interface TmplInputExpressionReference<ExprContext> {
  * This resolution is important to be able to migrate references to inputs
  * that will be migrated to signal inputs.
  */
-export class TemplateReferenceVisitor extends TmplAstRecursiveVisitor {
-  result: TmplInputExpressionReference<TmplAstNode>[] = [];
+export class TemplateReferenceVisitor<
+  D extends ClassFieldDescriptor,
+> extends TmplAstRecursiveVisitor {
+  result: TmplInputExpressionReference<TmplAstNode, D>[] = [];
 
   /**
    * Whether we are currently descending into HTML AST nodes
@@ -70,57 +69,55 @@ export class TemplateReferenceVisitor extends TmplAstRecursiveVisitor {
    *
    * Keeps track of all referenced inputs in such attribute expressions.
    */
-  private templateAttributeReferencedInputs: TmplInputExpressionReference<TmplAstNode>[] | null =
+  private templateAttributeReferencedFields: TmplInputExpressionReference<TmplAstNode, D>[] | null =
     null;
 
-  private expressionVisitor: TemplateExpressionReferenceVisitor<TmplAstNode>;
-  private seenInputsCount = new Map<InputUniqueKey, number>();
+  private expressionVisitor: TemplateExpressionReferenceVisitor<TmplAstNode, D>;
+  private seenKnownFieldsCount = new Map<D['key'], number>();
 
   constructor(
-    host: MigrationHost,
     typeChecker: ts.TypeChecker,
     templateTypeChecker: TemplateTypeChecker,
     componentClass: ts.ClassDeclaration,
-    knownInputs: KnownInputs,
+    knownFields: KnownFields<D>,
   ) {
     super();
     this.expressionVisitor = new TemplateExpressionReferenceVisitor(
-      host,
       typeChecker,
       templateTypeChecker,
       componentClass,
-      knownInputs,
+      knownFields,
     );
   }
 
-  private checkExpressionForReferencedInputs(activeNode: TmplAstNode, expressionNode: AST) {
-    const referencedInputs = this.expressionVisitor.checkTemplateExpression(
+  private checkExpressionForReferencedFields(activeNode: TmplAstNode, expressionNode: AST) {
+    const referencedFields = this.expressionVisitor.checkTemplateExpression(
       activeNode,
       expressionNode,
     );
     // Add all references to the overall visitor result.
-    this.result.push(...referencedInputs);
+    this.result.push(...referencedFields);
 
     // Count usages of seen input references. We'll use this to make decisions
     // based on whether inputs are potentially narrowed or not.
-    for (const input of referencedInputs) {
-      this.seenInputsCount.set(
-        input.targetInput.key,
-        (this.seenInputsCount.get(input.targetInput.key) ?? 0) + 1,
+    for (const input of referencedFields) {
+      this.seenKnownFieldsCount.set(
+        input.targetField.key,
+        (this.seenKnownFieldsCount.get(input.targetField.key) ?? 0) + 1,
       );
     }
 
-    return referencedInputs;
+    return referencedFields;
   }
 
   private descendAndCheckForNarrowedSimilarReferences(
-    potentiallyNarrowedInputs: TmplInputExpressionReference<TmplAstNode>[],
+    potentiallyNarrowedInputs: TmplInputExpressionReference<TmplAstNode, D>[],
     descend: () => void,
   ) {
     const inputs = potentiallyNarrowedInputs.map((i) => ({
       ref: i,
-      key: i.targetInput.key,
-      pastCount: this.seenInputsCount.get(i.targetInput.key) ?? 0,
+      key: i.targetField.key,
+      pastCount: this.seenKnownFieldsCount.get(i.targetField.key) ?? 0,
     }));
 
     descend();
@@ -128,7 +125,7 @@ export class TemplateReferenceVisitor extends TmplAstRecursiveVisitor {
     for (const input of inputs) {
       // Input was referenced inside a narrowable spot, and is used in child nodes.
       // This is a sign for the input to be narrowed. Mark it as such.
-      if ((this.seenInputsCount.get(input.key) ?? 0) > input.pastCount) {
+      if ((this.seenKnownFieldsCount.get(input.key) ?? 0) > input.pastCount) {
         input.ref.isLikelyNarrowed = true;
       }
     }
@@ -139,7 +136,7 @@ export class TemplateReferenceVisitor extends TmplAstRecursiveVisitor {
     // to TCB narrowing. This is relevant for now until we support narrowing
     // of signal calls in templates.
     // TODO: Remove with: https://github.com/angular/angular/pull/55456.
-    this.templateAttributeReferencedInputs = [];
+    this.templateAttributeReferencedFields = [];
 
     tmplAstVisitAll(this, template.attributes);
     tmplAstVisitAll(this, template.templateAttrs);
@@ -152,8 +149,8 @@ export class TemplateReferenceVisitor extends TmplAstRecursiveVisitor {
       tmplAstVisitAll(this, template.outputs);
     }
 
-    const referencedInputs = this.templateAttributeReferencedInputs;
-    this.templateAttributeReferencedInputs = null;
+    const referencedInputs = this.templateAttributeReferencedFields;
+    this.templateAttributeReferencedFields = null;
 
     this.descendAndCheckForNarrowedSimilarReferences(referencedInputs, () => {
       tmplAstVisitAll(this, template.children);
@@ -164,8 +161,8 @@ export class TemplateReferenceVisitor extends TmplAstRecursiveVisitor {
 
   override visitIfBlockBranch(block: TmplAstIfBlockBranch): void {
     if (block.expression) {
-      const referencedInputs = this.checkExpressionForReferencedInputs(block, block.expression);
-      this.descendAndCheckForNarrowedSimilarReferences(referencedInputs, () => {
+      const referencedFields = this.checkExpressionForReferencedFields(block, block.expression);
+      this.descendAndCheckForNarrowedSimilarReferences(referencedFields, () => {
         super.visitIfBlockBranch(block);
       });
     } else {
@@ -174,22 +171,22 @@ export class TemplateReferenceVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitForLoopBlock(block: TmplAstForLoopBlock): void {
-    this.checkExpressionForReferencedInputs(block, block.expression);
-    this.checkExpressionForReferencedInputs(block, block.trackBy);
+    this.checkExpressionForReferencedFields(block, block.expression);
+    this.checkExpressionForReferencedFields(block, block.trackBy);
     super.visitForLoopBlock(block);
   }
 
   override visitSwitchBlock(block: TmplAstSwitchBlock): void {
-    const referencedInputs = this.checkExpressionForReferencedInputs(block, block.expression);
-    this.descendAndCheckForNarrowedSimilarReferences(referencedInputs, () => {
+    const referencedFields = this.checkExpressionForReferencedFields(block, block.expression);
+    this.descendAndCheckForNarrowedSimilarReferences(referencedFields, () => {
       super.visitSwitchBlock(block);
     });
   }
 
   override visitSwitchBlockCase(block: TmplAstSwitchBlockCase): void {
     if (block.expression) {
-      const referencedInputs = this.checkExpressionForReferencedInputs(block, block.expression);
-      this.descendAndCheckForNarrowedSimilarReferences(referencedInputs, () => {
+      const referencedFields = this.checkExpressionForReferencedFields(block, block.expression);
+      this.descendAndCheckForNarrowedSimilarReferences(referencedFields, () => {
         super.visitSwitchBlockCase(block);
       });
     } else {
@@ -199,29 +196,29 @@ export class TemplateReferenceVisitor extends TmplAstRecursiveVisitor {
 
   override visitDeferredBlock(deferred: TmplAstDeferredBlock): void {
     if (deferred.triggers.when) {
-      this.checkExpressionForReferencedInputs(deferred, deferred.triggers.when.value);
+      this.checkExpressionForReferencedFields(deferred, deferred.triggers.when.value);
     }
     if (deferred.prefetchTriggers.when) {
-      this.checkExpressionForReferencedInputs(deferred, deferred.prefetchTriggers.when.value);
+      this.checkExpressionForReferencedFields(deferred, deferred.prefetchTriggers.when.value);
     }
     super.visitDeferredBlock(deferred);
   }
 
   override visitBoundText(text: TmplAstBoundText): void {
-    this.checkExpressionForReferencedInputs(text, text.value);
+    this.checkExpressionForReferencedFields(text, text.value);
   }
 
   override visitBoundEvent(attribute: TmplAstBoundEvent): void {
-    this.checkExpressionForReferencedInputs(attribute, attribute.handler);
+    this.checkExpressionForReferencedFields(attribute, attribute.handler);
   }
 
   override visitBoundAttribute(attribute: TmplAstBoundAttribute): void {
-    const referencedInputs = this.checkExpressionForReferencedInputs(attribute, attribute.value);
+    const referencedFields = this.checkExpressionForReferencedFields(attribute, attribute.value);
 
     // Attributes inside templates are potentially "narrowed" and hence we
     // keep track of all referenced inputs to see if they actually are.
-    if (this.templateAttributeReferencedInputs !== null) {
-      this.templateAttributeReferencedInputs.push(...referencedInputs);
+    if (this.templateAttributeReferencedFields !== null) {
+      this.templateAttributeReferencedFields.push(...referencedFields);
     }
   }
 }
@@ -233,18 +230,20 @@ export class TemplateReferenceVisitor extends TmplAstRecursiveVisitor {
  * This resolution is important to be able to migrate references to inputs
  * that will be migrated to signal inputs.
  */
-export class TemplateExpressionReferenceVisitor<ExprContext> extends RecursiveAstVisitor {
+export class TemplateExpressionReferenceVisitor<
+  ExprContext,
+  D extends ClassFieldDescriptor,
+> extends RecursiveAstVisitor {
   private activeTmplAstNode: ExprContext | null = null;
-  private detectedInputReferences: TmplInputExpressionReference<ExprContext>[] = [];
+  private detectedInputReferences: TmplInputExpressionReference<ExprContext, D>[] = [];
 
   private isInsideObjectShorthandExpression = false;
 
   constructor(
-    private host: MigrationHost,
     private typeChecker: ts.TypeChecker,
     private templateTypeChecker: TemplateTypeChecker | null,
     private componentClass: ts.ClassDeclaration,
-    private knownInputs: KnownInputs,
+    private knownFields: KnownFields<D>,
   ) {
     super();
   }
@@ -253,7 +252,7 @@ export class TemplateExpressionReferenceVisitor<ExprContext> extends RecursiveAs
   checkTemplateExpression(
     activeNode: ExprContext,
     expressionNode: AST,
-  ): TmplInputExpressionReference<ExprContext>[] {
+  ): TmplInputExpressionReference<ExprContext, D>[] {
     this.detectedInputReferences = [];
     this.activeTmplAstNode = activeNode;
 
@@ -289,25 +288,16 @@ export class TemplateExpressionReferenceVisitor<ExprContext> extends RecursiveAs
 
   /**
    * Inspects the property access and attempts to resolve whether they access
-   * a known decorator input. If so, the result is captured.
+   * a known field. If so, the result is captured.
    */
   private _inspectPropertyAccess(ast: PropertyRead | PropertyWrite) {
-    const matchingInputId =
-      this._checkAccessViaTemplateTypeCheckBlock(ast) ??
-      this._checkAccessViaOwningComponentClassType(ast);
+    const isWrite = !!(
+      ast instanceof PropertyWrite ||
+      (this.activeTmplAstNode && isTwoWayBindingNode(this.activeTmplAstNode))
+    );
 
-    // If the input matched and is a write, mark it as incompatible.
-    // An input may also be considered written if it's part of a two-way binding syntax.
-    if (
-      matchingInputId !== null &&
-      (ast instanceof PropertyWrite ||
-        (this.activeTmplAstNode && isTwoWayBindingNode(this.activeTmplAstNode)))
-    ) {
-      this.knownInputs.markInputAsIncompatible(matchingInputId, {
-        context: null,
-        reason: InputIncompatibilityReason.WriteAssignment,
-      });
-    }
+    this._checkAccessViaTemplateTypeCheckBlock(ast, isWrite) ||
+      this._checkAccessViaOwningComponentClassType(ast, isWrite);
   }
 
   /**
@@ -316,40 +306,38 @@ export class TemplateExpressionReferenceVisitor<ExprContext> extends RecursiveAs
    */
   private _checkAccessViaTemplateTypeCheckBlock(
     ast: PropertyRead | PropertyWrite,
-  ): InputDescriptor | null {
+    isWrite: boolean,
+  ): boolean {
     // There might be no template type checker. E.g. if we check host bindings.
     if (this.templateTypeChecker === null) {
-      return null;
+      return false;
     }
 
     const symbol = this.templateTypeChecker.getSymbolOfNode(ast, this.componentClass);
     if (symbol?.kind !== SymbolKind.Expression || symbol.tsSymbol === null) {
-      return null;
+      return false;
     }
 
     // Dangerous: Type checking symbol retrieval is a totally different `ts.Program`,
     // than the one where we analyzed `knownInputs`.
     // --> Find the input via its input id.
-    const targetInput = attemptRetrieveInputFromSymbol(
-      this.host,
-      symbol.tsSymbol,
-      this.knownInputs,
-    );
+    const targetInput = this.knownFields.attemptRetrieveDescriptorFromSymbol(symbol.tsSymbol);
 
     if (targetInput === null) {
-      return null;
+      return false;
     }
 
     this.detectedInputReferences.push({
-      target: targetInput.descriptor.node,
-      targetInput: targetInput.descriptor,
+      targetNode: targetInput.node,
+      targetField: targetInput,
       read: ast,
       context: this.activeTmplAstNode!,
       isLikelyNarrowed: false,
       isObjectShorthandExpression: this.isInsideObjectShorthandExpression,
+      isWrite,
     });
 
-    return targetInput.descriptor;
+    return true;
   }
 
   /**
@@ -361,9 +349,10 @@ export class TemplateExpressionReferenceVisitor<ExprContext> extends RecursiveAs
    */
   private _checkAccessViaOwningComponentClassType(
     ast: PropertyRead | PropertyWrite,
-  ): InputDescriptor | null {
+    isWrite: boolean,
+  ): void {
     // We might check host bindings, which can never point to template variables or local refs.
-    const target =
+    const expressionTemplateTarget =
       this.templateTypeChecker === null
         ? null
         : this.templateTypeChecker.getExpressionTarget(ast, this.componentClass);
@@ -371,8 +360,8 @@ export class TemplateExpressionReferenceVisitor<ExprContext> extends RecursiveAs
     // Skip checking if:
     // - the reference resolves to a template variable or local ref. No way to resolve without TCB.
     // - the owning component does not have a name (should not happen technically).
-    if (target !== null || this.componentClass.name === undefined) {
-      return null;
+    if (expressionTemplateTarget !== null || this.componentClass.name === undefined) {
+      return;
     }
 
     const property = traverseReceiverAndLookupSymbol(
@@ -381,23 +370,23 @@ export class TemplateExpressionReferenceVisitor<ExprContext> extends RecursiveAs
       this.typeChecker,
     );
     if (property === null) {
-      return null;
+      return;
     }
 
-    const matchingTarget = attemptRetrieveInputFromSymbol(this.host, property, this.knownInputs);
+    const matchingTarget = this.knownFields.attemptRetrieveDescriptorFromSymbol(property);
     if (matchingTarget === null) {
-      return null;
+      return;
     }
 
     this.detectedInputReferences.push({
-      target: matchingTarget.descriptor.node,
-      targetInput: matchingTarget.descriptor,
+      targetNode: matchingTarget.node,
+      targetField: matchingTarget,
       read: ast,
       context: this.activeTmplAstNode!,
       isLikelyNarrowed: false,
       isObjectShorthandExpression: this.isInsideObjectShorthandExpression,
+      isWrite,
     });
-    return matchingTarget.descriptor;
   }
 }
 

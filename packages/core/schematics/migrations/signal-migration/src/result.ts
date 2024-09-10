@@ -8,9 +8,10 @@
 
 import ts from 'typescript';
 import {InputDescriptor} from './utils/input_id';
-import {InputReference} from './utils/input_reference';
 import {ConvertInputPreparation} from './convert-input/prepare_and_check';
 import {Replacement} from '../../../utils/tsurge/replacement';
+import {ReferenceResult} from './passes/references/reference_result';
+import {Reference} from './passes/references/reference_kinds';
 
 /**
  * State of the migration that is passed between
@@ -22,7 +23,7 @@ import {Replacement} from '../../../utils/tsurge/replacement';
  *    - keeps track of computed replacements.
  *    - imports that may need to be updated.
  */
-export class MigrationResult {
+export class MigrationResult implements ReferenceResult<InputDescriptor> {
   printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
 
   // May be `null` if the input cannot be converted. This is also
@@ -30,7 +31,7 @@ export class MigrationResult {
   // still is a "source input".
   sourceInputs = new Map<InputDescriptor, ConvertInputPreparation | null>();
 
-  references: InputReference[] = [];
+  references: Reference<InputDescriptor>[] = [];
 
   // Execution data
   replacements: Replacement[] = [];

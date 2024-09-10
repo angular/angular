@@ -28,7 +28,6 @@ export function attemptExtractTemplateDefinition(
   node: ts.ClassDeclaration,
   checker: ts.TypeChecker,
   reflector: ReflectionHost,
-  host: MigrationHost,
   resourceLoader: ResourceLoader,
 ): InlineTemplateDeclaration | ExternalTemplateDeclaration | null {
   const classDecorators = reflector.getDecoratorsOfDeclaration(node);
@@ -36,7 +35,7 @@ export function attemptExtractTemplateDefinition(
 
   const ngDecorators =
     classDecorators !== null
-      ? getAngularDecorators(classDecorators, ['Component'], host.isMigratingCore)
+      ? getAngularDecorators(classDecorators, ['Component'], /* isAngularCore */ false)
       : [];
 
   if (

@@ -16,11 +16,7 @@ export {
   type InputNode,
   isInputContainerNode,
 } from './input_detection/input_node';
-export {
-  type InputDescriptor,
-  type InputUniqueKey,
-  getInputDescriptor,
-  isInputDescriptor,
-} from './utils/input_id';
+export {type ClassFieldDescriptor} from './passes/references/known_fields';
+export {type InputDescriptor, getInputDescriptor, isInputDescriptor} from './utils/input_id';
 export {SignalInputMigration} from './migration';
 export {type MigrationConfig} from './migration_config';

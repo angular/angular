@@ -6,27 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MigrationHost} from '../migration_host';
 import {MigrationResult} from '../result';
-import {isTemplateInputReference} from '../utils/input_reference';
 import {KnownInputs} from '../input_detection/known_inputs';
-import {ProgramInfo, Replacement, TextUpdate} from '../../../../utils/tsurge';
+import {Replacement, TextUpdate} from '../../../../utils/tsurge';
+import {isTemplateReference} from './references/reference_kinds';
 
 /**
  * Phase that migrates Angular template references to
  * unwrap signals.
  */
 export function pass7__migrateTemplateReferences(
-  host: MigrationHost,
   result: MigrationResult,
   knownInputs: KnownInputs,
-  info: ProgramInfo,
 ) {
   const seenFileReferences = new Set<string>();
 
   for (const reference of result.references) {
     // This pass only deals with HTML template references.
-    if (!isTemplateInputReference(reference)) {
+    if (!isTemplateReference(reference)) {
       continue;
     }
     // Skip references to incompatible inputs.

@@ -39,12 +39,12 @@ export class SpyOnInputPattern {
         return;
       }
 
-      const inputTarget = attemptRetrieveInputFromSymbol(this.host, spyProperty, this.knownInputs);
+      const inputTarget = this.knownInputs.attemptRetrieveDescriptorFromSymbol(spyProperty);
       if (inputTarget === null) {
         return;
       }
 
-      this.knownInputs.markInputAsIncompatible(inputTarget.descriptor, {
+      this.knownInputs.markInputAsIncompatible(inputTarget, {
         context: node,
         reason: InputIncompatibilityReason.SpyOnThatOverwritesField,
       });

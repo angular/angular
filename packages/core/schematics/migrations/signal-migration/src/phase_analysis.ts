@@ -16,6 +16,12 @@ import {pass2_IdentifySourceFileReferences} from './passes/2_find_source_file_re
 import {MigrationResult} from './result';
 import {InheritanceGraph} from './utils/inheritance_graph';
 import {GroupedTsAstVisitor} from './utils/grouped_ts_ast_visitor';
+import {
+  isHostBindingReference,
+  isTemplateReference,
+  isTsReference,
+} from './passes/references/reference_kinds';
+import {InputIncompatibilityReason} from './input_detection/incompatibility';
 
 /**
  * Executes the analysis phase of the migration.
@@ -68,7 +74,7 @@ export function executeAnalysisPhase(
 
   // Register pass 2. Find all source file references.
   pass2_IdentifySourceFileReferences(
-    host,
+    host.programInfo,
     typeChecker,
     reflector,
     resourceLoader,
@@ -89,6 +95,39 @@ export function executeAnalysisPhase(
 
   // Perform Pass 2 and Pass 3, efficiently in one pass.
   pass2And3SourceFileVisitor.execute();
+
+  // Determine incompatible inputs based on resolved references.
+  for (const reference of result.references) {
+    if (isTsReference(reference) && reference.from.isWrite) {
+      knownInputs.markInputAsIncompatible(reference.target, {
+        reason: InputIncompatibilityReason.WriteAssignment,
+        context: reference.from.node,
+      });
+    }
+    if (isTemplateReference(reference) || isHostBindingReference(reference)) {
+      if (reference.from.isWrite) {
+        knownInputs.markInputAsIncompatible(reference.target, {
+          reason: InputIncompatibilityReason.WriteAssignment,
+          // No TS node context available for template or host bindings.
+          context: null,
+        });
+      }
+    }
+
+    // TODO: Remove this when we support signal narrowing in templates.
+    // https://github.com/angular/angular/pull/55456.
+    if (isTemplateReference(reference)) {
+      if (
+        process.env['MIGRATE_NARROWED_NARROWED_IN_TEMPLATES'] !== '1' &&
+        reference.from.isLikelyPartOfNarrowing
+      ) {
+        knownInputs.markInputAsIncompatible(reference.target, {
+          reason: InputIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet,
+          context: null,
+        });
+      }
+    }
+  }
 
   return {inheritanceGraph};
 }

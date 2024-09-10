@@ -7,38 +7,37 @@
  */
 
 import ts from 'typescript';
-import {InputIncompatibilityReason} from '../../input_detection/incompatibility';
-import {KnownInputs} from '../../input_detection/known_inputs';
-import {attemptRetrieveInputFromSymbol} from '../../input_detection/nodes_to_input';
-import {MigrationHost} from '../../migration_host';
+import {ProgramInfo, projectFile} from '../../../../../utils/tsurge';
+import {lookupPropertyAccess} from '../../../../../utils/tsurge/helpers/ast/lookup_property_access';
 import {DebugElementComponentInstance} from '../../pattern_advisors/debug_element_component_instance';
-import {MigrationResult} from '../../result';
-import {InputReferenceKind} from '../../utils/input_reference';
+import {resolveBindingElement} from '../../utils/binding_elements';
 import {traverseAccess} from '../../utils/traverse_access';
 import {unwrapParent} from '../../utils/unwrap_parent';
 import {writeBinaryOperators} from '../../utils/write_operators';
-import {resolveBindingElement} from '../../utils/binding_elements';
-import {lookupPropertyAccess} from '../../../../../utils/tsurge/helpers/ast/lookup_property_access';
-import {projectFile} from '../../../../../utils/tsurge';
+import {ReferenceResult} from './reference_result';
+import {ClassFieldDescriptor, KnownFields} from './known_fields';
+import {ReferenceKind} from './reference_kinds';
 
 /**
  * Checks whether given TypeScript reference refers to an Angular input, and captures
  * the reference if possible.
  */
-export function identifyPotentialTypeScriptReference(
+export function identifyPotentialTypeScriptReference<D extends ClassFieldDescriptor>(
   node: ts.Identifier,
-  host: MigrationHost,
+  programInfo: ProgramInfo,
   checker: ts.TypeChecker,
-  knownInputs: KnownInputs,
-  result: MigrationResult,
-  migratedInputFieldNames: Set<string>,
+  knownFields: KnownFields<D>,
+  result: ReferenceResult<D>,
   advisors: {
     debugElComponentInstanceTracker: DebugElementComponentInstance;
   },
 ): void {
-  // Skip all identifiers that never can point to a migrated input.
+  // Skip all identifiers that never can point to a migrated field.
   // TODO: Capture these assumptions and performance optimizations in the design doc.
-  if (!migratedInputFieldNames.has(node.text)) {
+  if (
+    knownFields.fieldNamesToConsiderForReferenceLookup !== null &&
+    !knownFields.fieldNamesToConsiderForReferenceLookup.has(node.text)
+  ) {
     return;
   }
 
@@ -87,7 +86,7 @@ export function identifyPotentialTypeScriptReference(
     return;
   }
 
-  let targetInput = attemptRetrieveInputFromSymbol(host, target, knownInputs);
+  let targetInput = knownFields.attemptRetrieveDescriptorFromSymbol(target);
   if (targetInput === null) {
     return;
   }
@@ -97,22 +96,15 @@ export function identifyPotentialTypeScriptReference(
     ts.isBinaryExpression(accessParent) &&
     writeBinaryOperators.includes(accessParent.operatorToken.kind);
 
-  // track accesses from source files to inputs.
+  // track accesses from source files to known fields.
   result.references.push({
-    kind: InputReferenceKind.TsInputReference,
+    kind: ReferenceKind.TsReference,
     from: {
       node,
-      file: projectFile(node.getSourceFile(), host.programInfo),
+      file: projectFile(node.getSourceFile(), programInfo),
       isWrite: isWriteReference,
       isPartOfElementBinding: ts.isBindingElement(node.parent),
     },
-    target: targetInput?.descriptor,
+    target: targetInput,
   });
-
-  if (isWriteReference) {
-    knownInputs.markInputAsIncompatible(targetInput.descriptor, {
-      context: accessParent,
-      reason: InputIncompatibilityReason.WriteAssignment,
-    });
-  }
 }
