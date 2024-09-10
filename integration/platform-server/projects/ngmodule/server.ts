@@ -9,7 +9,7 @@
 import {APP_BASE_HREF} from '@angular/common';
 import {renderModule} from '@angular/platform-server';
 import express from 'express';
-import {AppServerModule} from './src/main.server';
+import AppServerModule from './src/main.server';
 import {fileURLToPath} from 'node:url';
 import {dirname, join, resolve} from 'node:path';
 import {readFileSync} from 'node:fs';
