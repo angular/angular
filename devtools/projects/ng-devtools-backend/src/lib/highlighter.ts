@@ -83,6 +83,7 @@ export function getDirectiveName(dir: Type<unknown> | undefined | null): string 
 }
 
 export function highlightSelectedElement(el: Node): void {
+  unHighlight();
   selectedElementOverlay = addHighlightForElement(el);
 }
 
