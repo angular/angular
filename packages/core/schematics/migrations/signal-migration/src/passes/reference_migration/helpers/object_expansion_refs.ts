@@ -13,11 +13,10 @@ import {
   ProgramInfo,
   projectFile,
   ProjectFile,
-} from '../../../../../utils/tsurge';
-import {getBindingElementDeclaration} from '../../utils/binding_elements';
-import {UniqueNamesGenerator} from '../../utils/unique_names';
+} from '../../../../../../utils/tsurge';
+import {getBindingElementDeclaration} from '../../../utils/binding_elements';
+import {UniqueNamesGenerator} from '../../../utils/unique_names';
 import assert from 'assert';
-import {MigrationResult} from '../../result';
 import {createNewBlockToInsertVariable} from './create_block_arrow_function';
 
 /** An identifier part of a binding element. */
@@ -44,7 +43,8 @@ export interface IdentifierOfBindingElement extends ts.Identifier {
 export function migrateBindingElementInputReference(
   tsReferencesInBindingElements: Set<IdentifierOfBindingElement>,
   info: ProgramInfo,
-  result: MigrationResult,
+  replacements: Replacement[],
+  printer: ts.Printer,
 ) {
   const nameGenerator = new UniqueNamesGenerator(['Input', 'Signal', 'Ref']);
 
@@ -90,13 +90,13 @@ export function migrateBindingElementInputReference(
       continue;
     }
 
-    result.replacements.push(
+    replacements.push(
       new Replacement(
         file,
         new TextUpdate({
           position: bindingElement.getStart(),
           end: bindingElement.getEnd(),
-          toInsert: result.printer.printNode(
+          toInsert: printer.printNode(
             ts.EmitHint.Unspecified,
             newBindingToAccessInputField,
             sourceFile,

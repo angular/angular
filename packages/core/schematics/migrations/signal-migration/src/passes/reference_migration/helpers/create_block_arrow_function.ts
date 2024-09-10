@@ -7,7 +7,7 @@
  */
 
 import ts from 'typescript';
-import {ProjectFile, Replacement, TextUpdate} from '../../../../../utils/tsurge';
+import {ProjectFile, Replacement, TextUpdate} from '../../../../../../utils/tsurge';
 
 /**
  * Creates replacements to insert the given statement as

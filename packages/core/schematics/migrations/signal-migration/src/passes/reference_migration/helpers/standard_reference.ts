@@ -7,12 +7,11 @@
  */
 
 import ts from 'typescript';
-import {analyzeControlFlow} from '../../flow_analysis';
-import {MigrationResult} from '../../result';
-import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../utils/tsurge';
-import {traverseAccess} from '../../utils/traverse_access';
-import {UniqueNamesGenerator} from '../../utils/unique_names';
-import {createNewBlockToInsertVariable} from './create_block_arrow_function';
+import {analyzeControlFlow} from '../../../flow_analysis';
+import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../../utils/tsurge';
+import {traverseAccess} from '../../../utils/traverse_access';
+import {UniqueNamesGenerator} from '../../../utils/unique_names';
+import {createNewBlockToInsertVariable} from '../helpers/create_block_arrow_function';
 
 export interface NarrowableTsReferences {
   accesses: ts.Identifier[];
@@ -21,8 +20,8 @@ export interface NarrowableTsReferences {
 export function migrateStandardTsReference(
   tsReferencesWithNarrowing: Map<unknown, NarrowableTsReferences>,
   checker: ts.TypeChecker,
-  result: MigrationResult,
   info: ProgramInfo,
+  replacements: Replacement[],
 ) {
   const nameGenerator = new UniqueNamesGenerator(['Value', 'Val', 'Input']);
 
@@ -38,7 +37,7 @@ export function migrateStandardTsReference(
       // Unwrap the signal directly.
       if (recommendedNode === 'preserve') {
         // Append `()` to unwrap the signal.
-        result.replacements.push(
+        replacements.push(
           new Replacement(
             projectFile(sf, info),
             new TextUpdate({
@@ -55,7 +54,7 @@ export function migrateStandardTsReference(
       // with the temporary variable.
       if (typeof recommendedNode === 'number') {
         const replaceNode = traverseAccess(originalNode);
-        result.replacements.push(
+        replacements.push(
           new Replacement(
             projectFile(sf, info),
             new TextUpdate({
@@ -94,13 +93,13 @@ export function migrateStandardTsReference(
       // without a block, convert the arrow function to a block and insert the temporary
       // variable at the beginning.
       if (ts.isArrowFunction(parent) && !ts.isBlock(parent.body)) {
-        result.replacements.push(
+        replacements.push(
           ...createNewBlockToInsertVariable(parent, filePath, temporaryVariableStr),
         );
       } else {
         const leadingSpace = ts.getLineAndCharacterOfPosition(sf, referenceNodeInBlock.getStart());
 
-        result.replacements.push(
+        replacements.push(
           new Replacement(
             filePath,
             new TextUpdate({
@@ -112,7 +111,7 @@ export function migrateStandardTsReference(
         );
       }
 
-      result.replacements.push(
+      replacements.push(
         new Replacement(
           projectFile(sf, info),
           new TextUpdate({
