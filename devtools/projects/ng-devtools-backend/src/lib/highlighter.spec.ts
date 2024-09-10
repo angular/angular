@@ -183,12 +183,17 @@ describe('highlighter', () => {
   });
 
   describe('highlightSelectedElement', () => {
+    function createElement(name: string) {
+      const element = document.createElement(name);
+      element.style.width = '25px';
+      element.style.height = '20px';
+      element.style.display = 'block';
+      document.body.appendChild(element);
+      return element;
+    }
+
     it('should show overlay', () => {
-      const appNode = document.createElement('app');
-      appNode.style.width = '25px';
-      appNode.style.height = '20px';
-      appNode.style.display = 'block';
-      document.body.appendChild(appNode);
+      const appNode = createElement('app');
       (window as any).ng = {
         getComponent: (el: any) => new (class FakeComponent {})(),
       };
@@ -201,6 +206,20 @@ describe('highlighter', () => {
 
       highlighter.unHighlight();
       expect(document.body.querySelectorAll('.ng-devtools-overlay').length).toBe(0);
+    });
+
+    it('should remove the previous overlay when calling highlightSelectedElement again', () => {
+      const appNode = createElement('app');
+      const appNode2 = createElement('app-two');
+
+      (window as any).ng = {
+        getComponent: (el: any) => new (class FakeComponent {})(),
+      };
+
+      highlighter.highlightSelectedElement(appNode);
+      highlighter.highlightSelectedElement(appNode2);
+      const overlay = document.body.querySelectorAll('.ng-devtools-overlay');
+      expect(overlay.length).toBe(1);
     });
   });
 });
