@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
-import assert from 'assert';
 import ts from 'typescript';
-import {ReferenceMigrationHost} from './reference_migration/reference_migration_host';
-import {ClassFieldDescriptor} from './reference_resolution/known_fields';
-import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../utils/tsurge';
-import {isTsClassTypeReference, Reference} from './reference_resolution/reference_kinds';
+import {KnownInputs} from '../../input_detection/known_inputs';
+import {MigrationResult} from '../../result';
+import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../utils/tsurge';
+import assert from 'assert';
+import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
+import {isTsClassTypeReference} from '../reference_resolution/reference_kinds';
 
 /**
  * Migrates TypeScript "ts.Type" references. E.g.
@@ -20,21 +20,21 @@ import {isTsClassTypeReference, Reference} from './reference_resolution/referenc
  *  - `Partial<MyComp>` will be converted to `UnwrapSignalInputs<Partial<MyComp>>`.
       in Catalyst test files.
  */
-export function pass9__migrateTypeScriptTypeReferences<D extends ClassFieldDescriptor>(
-  host: ReferenceMigrationHost<D>,
-  references: Reference<D>[],
+export function migrateTypeScriptTypeReferences(
+  result: MigrationResult,
+  knownInputs: KnownInputs,
   importManager: ImportManager,
   info: ProgramInfo,
 ) {
   const seenTypeNodes = new WeakSet<ts.TypeReferenceNode>();
 
-  for (const reference of references) {
+  for (const reference of result.references) {
     // This pass only deals with TS input class type references.
     if (!isTsClassTypeReference(reference)) {
       continue;
     }
     // Skip references to classes that are not fully migrated.
-    if (!host.shouldMigrateReferencesToClass(reference.target)) {
+    if (knownInputs.getDirectiveInfoForClass(reference.target)?.hasIncompatibleMembers()) {
       continue;
     }
     // Skip duplicate references. E.g. in batching.
@@ -49,30 +49,24 @@ export function pass9__migrateTypeScriptTypeReferences<D extends ClassFieldDescr
 
       const firstArg = reference.from.node.typeArguments[0];
       const sf = firstArg.getSourceFile();
-      // Naive detection of the import. Sufficient for this test file migration.
-      const catalystImport = sf.text.includes(
-        'google3/javascript/angular2/testing/catalyst/fake_async',
-      )
-        ? 'google3/javascript/angular2/testing/catalyst/fake_async'
-        : 'google3/javascript/angular2/testing/catalyst/async';
 
       const unwrapImportExpr = importManager.addImport({
-        exportModuleSpecifier: catalystImport,
+        exportModuleSpecifier: 'google3/javascript/angular2/testing/catalyst',
         exportSymbolName: 'UnwrapSignalInputs',
         requestedFile: sf,
       });
 
-      host.replacements.push(
+      result.replacements.push(
         new Replacement(
           projectFile(sf, info),
           new TextUpdate({
             position: firstArg.getStart(),
             end: firstArg.getStart(),
-            toInsert: `${host.printer.printNode(ts.EmitHint.Unspecified, unwrapImportExpr, sf)}<`,
+            toInsert: `${result.printer.printNode(ts.EmitHint.Unspecified, unwrapImportExpr, sf)}<`,
           }),
         ),
       );
-      host.replacements.push(
+      result.replacements.push(
         new Replacement(
           projectFile(sf, info),
           new TextUpdate({position: firstArg.getEnd(), end: firstArg.getEnd(), toInsert: '>'}),

@@ -7,16 +7,16 @@
  */
 
 import ts from 'typescript';
-import {ReferenceMigrationHost} from './reference_migration/reference_migration_host';
-import {ClassFieldDescriptor} from './reference_resolution/known_fields';
-import {isHostBindingReference, Reference} from './reference_resolution/reference_kinds';
-import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../utils/tsurge';
+import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../utils/tsurge';
+import {ClassFieldDescriptor} from '../reference_resolution/known_fields';
+import {isHostBindingReference, Reference} from '../reference_resolution/reference_kinds';
+import {ReferenceMigrationHost} from './reference_migration_host';
 
 /**
  * Phase that migrates Angular host binding references to
  * unwrap signals.
  */
-export function pass8__migrateHostBindings<D extends ClassFieldDescriptor>(
+export function migrateHostBindings<D extends ClassFieldDescriptor>(
   host: ReferenceMigrationHost<D>,
   references: Reference<D>[],
   info: ProgramInfo,

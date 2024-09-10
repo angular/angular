@@ -117,10 +117,7 @@ export function executeAnalysisPhase(
     // TODO: Remove this when we support signal narrowing in templates.
     // https://github.com/angular/angular/pull/55456.
     if (isTemplateReference(reference)) {
-      if (
-        process.env['MIGRATE_NARROWED_NARROWED_IN_TEMPLATES'] !== '1' &&
-        reference.from.isLikelyPartOfNarrowing
-      ) {
+      if (reference.from.isLikelyPartOfNarrowing) {
         knownInputs.markInputAsIncompatible(reference.target, {
           reason: InputIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet,
           context: null,

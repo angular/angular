@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Replacement, TextUpdate} from '../../../../utils/tsurge';
-import {ReferenceMigrationHost} from './reference_migration/reference_migration_host';
-import {ClassFieldDescriptor} from './reference_resolution/known_fields';
-import {isTemplateReference, Reference} from './reference_resolution/reference_kinds';
+import {Replacement, TextUpdate} from '../../../../../utils/tsurge';
+import {ClassFieldDescriptor} from '../reference_resolution/known_fields';
+import {isTemplateReference, Reference} from '../reference_resolution/reference_kinds';
+import {ReferenceMigrationHost} from './reference_migration_host';
+
 /**
  * Phase that migrates Angular template references to
  * unwrap signals.
  */
-export function pass7__migrateTemplateReferences<D extends ClassFieldDescriptor>(
+export function migrateTemplateReferences<D extends ClassFieldDescriptor>(
   host: ReferenceMigrationHost<D>,
   references: Reference<D>[],
 ) {
