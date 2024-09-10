@@ -9,41 +9,39 @@
 import {Component} from '@angular/core';
 import {initializeGraph} from './signal-graph-builder';
 import {signalBroker} from './MessageBroker';
+import {DebugSignalGraph} from './signal-graph-types';
 
 @Component({
   selector: 'ng-signal-graph',
   template: `
-      SIGNAL GRAPH GOES HERE
       <span id="graph"></span>
     `,
-  styles: [``],
   standalone: true,
-  imports: [],
 })
 export class SignalGraphComponent {
   ngOnInit() {
     initializeGraph(signalBroker);
 
-    const exampleGraphDefinition = {
+    const exampleGraphDefinition: DebugSignalGraph<unknown> = {
       edges: [
-        {from: 0, to: 1},
-        {from: 0, to: 2},
-        {from: 0, to: 3},
-        {from: 2, to: 1},
-        {from: 3, to: 4},
-        {from: 3, to: 2},
-        {from: 3, to: 5},
-        {from: 6, to: 1},
-        {from: 6, to: 2},
+        {producer: 1, consumer: 0},
+        {producer: 2, consumer: 0},
+        {producer: 3, consumer: 0},
+        {producer: 1, consumer: 2},
+        {producer: 4, consumer: 3},
+        {producer: 2, consumer: 3},
+        {producer: 5, consumer: 3},
+        {producer: 1, consumer: 6},
+        {producer: 2, consumer: 6},
       ],
       nodes: [
-        {label: 'app-sample-properties', value: 'ref to Component', type: 'TEMPLATE'},
-        {label: 'basicSignal', value: 123, type: 'SIGNAL'},
-        {label: 'computedSignal', value: 15129, type: 'COMPUTED'},
-        {label: 'computedObject', value: {value: 123}, type: 'COMPUTED'},
-        {label: 'signalObject', value: {another: 'value'}, type: 'SIGNAL'},
-        {label: 'outsideSignal', value: 'signal located outside of the component', type: 'SIGNAL'},
-        {label: 'effect', value: 'ref to Effect', type: 'EFFECT'},
+        {label: 'app-sample-properties', /*value: 'ref to Component',*/ type: 'template'},
+        {label: 'basicSignal', value: 123, type: 'signal'},
+        {label: 'computedSignal', value: 15129, type: 'computed'},
+        {label: 'computedObject', value: {value: 123}, type: 'computed'},
+        {label: 'signalObject', value: {another: 'value'}, type: 'signal'},
+        {label: 'outsideSignal', value: 'signal located outside of the component', type: 'signal'},
+        {label: 'effect', /*value: 'ref to Effect',*/ type: 'effect'},
       ],
     };
 

@@ -1,21 +1,8 @@
 import * as d3 from 'd3';
+import {DebugSignalGraphEdge, DebugSignalGraphNode} from './signal-graph-types';
 
 // TODO: type-safety
 type ANY_TODO = any;
-
-interface SignalGraphNode {
-  label: string;
-  value: unknown;
-  type: 'SIGNAL' | 'COMPUTED' | 'EFFECT' | 'TEMPLATE';
-}
-interface SignalGraphEdge {
-  from: number;
-  to: number;
-}
-interface SignalGraphDefinition {
-  nodes: SignalGraphNode[];
-  edges: SignalGraphEdge[];
-}
 
 const visualConfig = {
   area: {
@@ -29,10 +16,10 @@ const visualConfig = {
   },
   signal: {
     color: {
-      SIGNAL: '#FF85BE',
-      COMPUTED: '#85CEFF',
-      EFFECT: '#BFA6DD',
-      TEMPLATE: '#FFD285',
+      signal: '#FF85BE',
+      computed: '#85CEFF',
+      effect: '#BFA6DD',
+      template: '#FFD285',
     },
   },
   edge: {
@@ -45,8 +32,8 @@ export function initializeGraph(broker: any) {
   // set up initial nodes and links
   //  - nodes are known by 'id', not by index in array.
   //  - edges are always source < target; edge directions are set by 'left' and 'right'.
-  let nodes: SignalGraphNode[] = [];
-  let edges: SignalGraphEdge[] = [];
+  let nodes: DebugSignalGraphNode<unknown>[] = [];
+  let edges: DebugSignalGraphEdge[] = [];
 
   // d3 types?
   const d3Nodes: ANY_TODO[] = [];
@@ -54,10 +41,10 @@ export function initializeGraph(broker: any) {
 
   function tooltipMarkup(d: ANY_TODO) {
     const node = nodes[d.id];
-    const labels = [
-      `<div><strong>type</strong>: ${node.type}</div>`,
-      `<div><strong>value</strong>: ${node.value}</div>`,
-    ];
+    const labels = [`<div><strong>type</strong>: ${node.type}</div>`];
+    if ('value' in node) {
+      labels.push(`<div><strong>value</strong>: ${node.value}</div>`);
+    }
     return labels.join('');
   }
 
@@ -265,14 +252,14 @@ export function initializeGraph(broker: any) {
     restart();
   });
 
-  broker.subscribe('edges-set', (newEdges: SignalGraphEdge[]) => {
+  broker.subscribe('edges-set', (newEdges: DebugSignalGraphEdge[]) => {
     while (d3Links.length) {
       d3Links.pop();
     }
     for (const edge of newEdges) {
       d3Links.push({
-        source: edge.from,
-        target: edge.to,
+        source: edge.producer,
+        target: edge.consumer,
         left: false,
         right: true,
       });
@@ -281,7 +268,7 @@ export function initializeGraph(broker: any) {
     restart();
   });
 
-  broker.subscribe('node-add', (node: SignalGraphNode, idx: number) => {
+  broker.subscribe('node-add', (node: DebugSignalGraphNode<unknown>, idx: number) => {
     d3Nodes.push({
       id: idx,
       type: node.type,
@@ -290,10 +277,10 @@ export function initializeGraph(broker: any) {
     restart();
   });
 
-  broker.subscribe('link-add', ({from, to}: SignalGraphEdge) => {
+  broker.subscribe('link-add', ({producer, consumer}: DebugSignalGraphEdge) => {
     d3Links.push({
-      source: from,
-      target: to,
+      source: producer,
+      target: consumer,
       left: false,
       right: true,
     });
