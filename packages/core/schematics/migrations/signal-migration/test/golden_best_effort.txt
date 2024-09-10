@@ -73,14 +73,37 @@ class BothInputImported {
     this.decoratorInput = false;
   }
 }
-@@@@@@ catalyst_test.ts @@@@@@
+@@@@@@ catalyst_async_test.ts @@@@@@
 
-import { UnwrapSignalInputs } from "google3/javascript/angular2/testing/catalyst";
+import { UnwrapSignalInputs } from "google3/javascript/angular2/testing/catalyst/async";
 // tslint:disable
 
 import {input} from '@angular/core';
 
-// angular2/testing/catalyst
+// google3/javascript/angular2/testing/catalyst/async
+// ^^ this allows the advisor to even consider this file.
+
+function it(msg: string, fn: () => void) {}
+function bootstrapTemplate(tmpl: string, inputs: unknown) {}
+
+class MyComp {
+  readonly hello = input('');
+}
+
+it('should work', () => {
+  const inputs = {
+    hello: 'test',
+  } as Partial<UnwrapSignalInputs<MyComp>>;
+  bootstrapTemplate('<my-comp [hello]="hello">', inputs);
+});
+@@@@@@ catalyst_test.ts @@@@@@
+
+import { UnwrapSignalInputs } from "google3/javascript/angular2/testing/catalyst/fake_async";
+// tslint:disable
+
+import {input} from '@angular/core';
+
+// google3/javascript/angular2/testing/catalyst/fake_async
 // ^^ this allows the advisor to even consider this file.
 
 function it(msg: string, fn: () => void) {}

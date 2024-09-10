@@ -2,7 +2,7 @@
 
 import {Input} from '@angular/core';
 
-// google3/javascript/angular2/testing/catalyst/fake_async
+// google3/javascript/angular2/testing/catalyst/async
 // ^^ this allows the advisor to even consider this file.
 
 function it(msg: string, fn: () => void) {}
