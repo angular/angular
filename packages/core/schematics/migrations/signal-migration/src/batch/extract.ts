@@ -7,12 +7,12 @@
  */
 
 import {KnownInputs} from '../input_detection/known_inputs';
-import {ClassFieldUniqueKey} from '../passes/references/known_fields';
+import {ClassFieldUniqueKey} from '../passes/reference_resolution/known_fields';
 import {
   isHostBindingReference,
   isTsClassTypeReference,
   isTsReference,
-} from '../passes/references/reference_kinds';
+} from '../passes/reference_resolution/reference_kinds';
 import {MigrationResult} from '../result';
 import {CompilationUnitData, IncompatibilityType} from './unit_data';
 

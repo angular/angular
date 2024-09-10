@@ -10,8 +10,8 @@ import ts from 'typescript';
 import {InputDescriptor} from './utils/input_id';
 import {ConvertInputPreparation} from './convert-input/prepare_and_check';
 import {Replacement} from '../../../utils/tsurge/replacement';
-import {ReferenceResult} from './passes/references/reference_result';
-import {Reference} from './passes/references/reference_kinds';
+import {ReferenceResult} from './passes/reference_resolution/reference_result';
+import {Reference} from './passes/reference_resolution/reference_kinds';
 
 /**
  * State of the migration that is passed between

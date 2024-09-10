@@ -10,7 +10,7 @@ import ts from 'typescript';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../utils/tsurge';
 import {MigrationResult} from '../result';
 import {KnownInputs} from '../input_detection/known_inputs';
-import {isHostBindingReference} from './references/reference_kinds';
+import {isHostBindingReference} from './reference_resolution/reference_kinds';
 
 /**
  * Phase that migrates Angular host binding references to

@@ -10,7 +10,10 @@ import ts from 'typescript';
 import {InputNode} from '../input_detection/input_node';
 import {ProgramInfo, projectFile} from '../../../../utils/tsurge';
 import {MigrationHost} from '../migration_host';
-import {ClassFieldDescriptor, ClassFieldUniqueKey} from '../passes/references/known_fields';
+import {
+  ClassFieldDescriptor,
+  ClassFieldUniqueKey,
+} from '../passes/reference_resolution/known_fields';
 
 /**
  * Interface that describes an input recognized in the

@@ -7,7 +7,7 @@
  */
 
 import {KnownInputs} from '../input_detection/known_inputs';
-import {ClassFieldUniqueKey} from '../passes/references/known_fields';
+import {ClassFieldUniqueKey} from '../passes/reference_resolution/known_fields';
 import {CompilationUnitData, IncompatibilityType} from './unit_data';
 
 export function populateKnownInputsFromGlobalData(

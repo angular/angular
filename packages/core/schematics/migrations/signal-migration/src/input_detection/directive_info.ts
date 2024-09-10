@@ -10,7 +10,7 @@ import ts from 'typescript';
 import {ExtractedInput} from './input_decorator';
 import {InputDescriptor} from '../utils/input_id';
 import {ClassIncompatibilityReason, InputMemberIncompatibility} from './incompatibility';
-import {ClassFieldUniqueKey} from '../passes/references/known_fields';
+import {ClassFieldUniqueKey} from '../passes/reference_resolution/known_fields';
 
 /**
  * Class that holds information about a given directive and its input fields.

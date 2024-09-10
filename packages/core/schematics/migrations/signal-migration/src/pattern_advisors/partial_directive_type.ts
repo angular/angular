@@ -7,7 +7,7 @@
  */
 
 import ts from 'typescript';
-import {ClassFieldDescriptor, KnownFields} from '../passes/references/known_fields';
+import {ClassFieldDescriptor, KnownFields} from '../passes/reference_resolution/known_fields';
 
 /**
  * Recognizes `Partial<T>` instances in Catalyst tests. Those type queries

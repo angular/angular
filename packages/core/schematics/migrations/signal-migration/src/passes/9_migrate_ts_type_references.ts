@@ -12,7 +12,7 @@ import {MigrationResult} from '../result';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../utils/tsurge';
 import assert from 'assert';
 import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
-import {isTsClassTypeReference} from './references/reference_kinds';
+import {isTsClassTypeReference} from './reference_resolution/reference_kinds';
 
 /**
  * Migrates TypeScript "ts.Type" references. E.g.

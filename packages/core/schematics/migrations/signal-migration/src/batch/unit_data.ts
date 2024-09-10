@@ -12,8 +12,11 @@ import {
   ClassIncompatibilityReason,
   InputIncompatibilityReason,
 } from '../input_detection/incompatibility';
-import {ClassFieldDescriptor, ClassFieldUniqueKey} from '../passes/references/known_fields';
-import {Reference} from '../passes/references/reference_kinds';
+import {
+  ClassFieldDescriptor,
+  ClassFieldUniqueKey,
+} from '../passes/reference_resolution/known_fields';
+import {Reference} from '../passes/reference_resolution/reference_kinds';
 import {InputDescriptor} from '../utils/input_id';
 
 /** Helper that ensures given type `T` is serializable. */

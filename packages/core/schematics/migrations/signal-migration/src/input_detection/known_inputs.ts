@@ -12,7 +12,7 @@ import {ExtractedInput} from './input_decorator';
 import {InputNode} from './input_node';
 import {DirectiveInfo} from './directive_info';
 import {ClassIncompatibilityReason, InputMemberIncompatibility} from './incompatibility';
-import {ClassFieldUniqueKey, KnownFields} from '../passes/references/known_fields';
+import {ClassFieldUniqueKey, KnownFields} from '../passes/reference_resolution/known_fields';
 import {attemptRetrieveInputFromSymbol} from './nodes_to_input';
 import {ProgramInfo} from '../../../../utils/tsurge';
 import {MigrationConfig} from '../migration_config';
