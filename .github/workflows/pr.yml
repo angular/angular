@@ -39,7 +39,7 @@ jobs:
       - name: Check code format
         run: yarn ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
       - name: Check Package Licenses
-        uses: angular/dev-infra/github-actions/linting/licenses@56966c765e97f463c4795fac85d46543d1e6b342
+        uses: angular/dev-infra/github-actions/linting/licenses@a6dcd24107d12114198251ee5d20cda814a1986a
         with:
           allow-dependencies-licenses: 'pkg:npm/google-protobuf@'
 
@@ -109,7 +109,7 @@ jobs:
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@a6dcd24107d12114198251ee5d20cda814a1986a
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@03b8a7dffd1205e061f0bee949024ebefc2a6592
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@a6dcd24107d12114198251ee5d20cda814a1986a
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Build adev in fast mode to ensure it continues to work
@@ -122,7 +122,7 @@ jobs:
       labels: ubuntu-latest-4core
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@03b8a7dffd1205e061f0bee949024ebefc2a6592
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@a6dcd24107d12114198251ee5d20cda814a1986a
         with:
           cache-node-modules: true
           node-module-directories: |
@@ -130,9 +130,9 @@ jobs:
             ./packages/zone.js/node_modules
             ./packages/zone.js/test/typings/node_modules
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@03b8a7dffd1205e061f0bee949024ebefc2a6592
+        uses: angular/dev-infra/github-actions/bazel/setup@a6dcd24107d12114198251ee5d20cda814a1986a
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@03b8a7dffd1205e061f0bee949024ebefc2a6592
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@a6dcd24107d12114198251ee5d20cda814a1986a
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - run: |
@@ -169,15 +169,15 @@ jobs:
       SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@03b8a7dffd1205e061f0bee949024ebefc2a6592
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@a6dcd24107d12114198251ee5d20cda814a1986a
         with:
           cache-node-modules: true
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@03b8a7dffd1205e061f0bee949024ebefc2a6592
+        uses: angular/dev-infra/github-actions/bazel/setup@a6dcd24107d12114198251ee5d20cda814a1986a
       - name: Setup Saucelabs Variables
-        uses: angular/dev-infra/github-actions/saucelabs@03b8a7dffd1205e061f0bee949024ebefc2a6592
+        uses: angular/dev-infra/github-actions/saucelabs@a6dcd24107d12114198251ee5d20cda814a1986a
       - name: Starting Saucelabs tunnel service
         run: ./tools/saucelabs/sauce-service.sh run &
       # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
