@@ -28,6 +28,20 @@ platformBrowser().bootstrapModule(AppModule);
 export class AppModule {}
 ```
 
+## Removing ZoneJS
+
+Zoneless applications should remove ZoneJS entirely from the build to reduce bundle size. ZoneJS is typically
+loaded via the `polyfills` option in `angular.json`, both in the `build` and `test` targets. Remove `zone.js`
+and `zone.js/testing` from both to remove it from the build. Projects which use an explicit `polyfills.ts` file
+should remove `import 'zone.js';` and `import 'zone.js/testing';` from the file.
+
+After removing ZoneJS from the build, there is no longer a need for a `zone.js` dependency either and the
+package can be removed entirely:
+
+```shell
+npm uninstall zone.js
+```
+
 ## Requirements for Zoneless compatibility
 
 Angular relies on notifications from core APIs in order to determine when to run change detection and on which views.
@@ -102,7 +116,7 @@ await fixture.whenStable();
 ```
 
 To ensure tests have the most similar behavior to production code,
-avoid using `fixture.detectChanges()` when possibe. This forces
+avoid using `fixture.detectChanges()` when possible. This forces
 change detection to run when Angular might otherwise have not
 scheduled change detection. Tests should ensure these notifications
 are happening and allow Angular to handle when to synchronize
