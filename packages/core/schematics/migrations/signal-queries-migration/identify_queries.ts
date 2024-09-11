@@ -6,26 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript';
+import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {
   getAngularDecorators,
   queryDecoratorNames,
 } from '@angular/compiler-cli/src/ngtsc/annotations';
-import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {ProgramInfo, projectFile, UniqueID} from '../../utils/tsurge';
 import {extractDecoratorQueryMetadata} from '@angular/compiler-cli/src/ngtsc/annotations/directive';
-import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
+import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import ts from 'typescript';
 import {R3QueryMetadata} from '../../../../compiler';
-
-/** Branded type to uniquely identify class properties in a project. */
-export type ClassPropertyID = UniqueID<'ClassPropertyID; Potentially a query'>;
+import {ProgramInfo} from '../../utils/tsurge';
+import {ClassFieldUniqueKey} from '../signal-migration/src/passes/reference_resolution/known_fields';
+import {getUniqueIDForClassProperty} from './field_tracking';
 
 /** Type describing an extracted decorator query that can be migrated. */
 export interface ExtractedQuery {
-  id: ClassPropertyID;
+  id: ClassFieldUniqueKey;
   kind: 'viewChild' | 'viewChildren' | 'contentChild' | 'contentChildren';
   args: ts.Expression[];
   queryInfo: R3QueryMetadata;
+  node: ts.PropertyDeclaration;
 }
 
 /**
@@ -86,31 +86,6 @@ export function extractSourceQueryDefinition(
     kind,
     args: decorator.args ?? [],
     queryInfo,
+    node,
   };
-}
-
-/**
- * Gets a unique ID for the given class property.
- *
- * This is useful for matching class fields across compilation units.
- * E.g. a reference may point to the field via `.d.ts`, while the other
- * may reference it via actual `.ts` sources. IDs for the same fields
- * would then match identity.
- */
-export function getUniqueIDForClassProperty(
-  property: ts.PropertyDeclaration,
-  info: ProgramInfo,
-): ClassPropertyID | null {
-  if (!ts.isClassDeclaration(property.parent) || property.parent.name === undefined) {
-    return null;
-  }
-  const id = projectFile(property.getSourceFile(), info).id.replace(/\.d\.ts$/, '.ts');
-
-  // Note: If a class is nested, there could be an ID clash.
-  // This is highly unlikely though, and this is not a problem because
-  // in such cases, there is even less chance there are any references to
-  // a non-exported classes; in which case, cross-compilation unit references
-  // likely can't exist anyway.
-
-  return `${id}-${property.parent.name.text}-${property.name.getText()}` as ClassPropertyID;
 }

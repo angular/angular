@@ -11,6 +11,8 @@ import {runTsurgeMigration} from '../../utils/tsurge/testing';
 import {SignalQueriesMigration} from './migration';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {diffText} from '../../utils/tsurge/testing/diff';
+import {dedent} from '../../utils/tsurge/testing/dedent';
+import {setupTsurgeJasmineHelpers} from '../../utils/tsurge/testing/jasmine';
 
 interface TestCase {
   id: string;
@@ -178,6 +180,7 @@ const declarationTestCases: TestCase[] = [
 
 describe('signal queries migration', () => {
   beforeEach(() => {
+    setupTsurgeJasmineHelpers();
     initMockFileSystem('Native');
   });
 
@@ -251,6 +254,192 @@ describe('signal queries migration', () => {
     const actual = fs.readFile(absoluteFrom('/app.component.ts'));
     expect(actual).toContain(`import {ElementRef, Directive, viewChild} from '@angular/core';`);
     expect(actual).toContain(`label = viewChild<ElementRef>('labelRef')`);
+  });
+
+  it('should update TS references when migrating', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChild, ElementRef, Directive} from '@angular/core';
+
+          @Directive()
+          class MyComp {
+            @ViewChild('labelRef') label?: ElementRef;
+            @ViewChild('always', {read: ElementRef}) always!: ElementRef;
+
+            doSmth() {
+              if (this.label !== undefined) {
+                this.label.nativeElement.textContent;
+              }
+
+              this.always.nativeElement.textContent;
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Directive, viewChild} from '@angular/core';
+
+      @Directive()
+      class MyComp {
+        readonly label = viewChild<ElementRef>('labelRef');
+        readonly always = viewChild.required('always', { read: ElementRef });
+
+        doSmth() {
+          const label = this.label();
+          if (label !== undefined) {
+            label.nativeElement.textContent;
+          }
+
+          this.always().nativeElement.textContent;
+        }
+      }
+    `);
+  });
+
+  it('should update template references when migrating', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChild, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '<div>{{label}}</div>'
+          })
+          class MyComp {
+            @ViewChild('labelRef') label?: ElementRef;
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, viewChild} from '@angular/core';
+
+      @Component({
+        template: '<div>{{label()}}</div>'
+      })
+      class MyComp {
+        readonly label = viewChild<ElementRef>('labelRef');
+      }
+    `);
+  });
+
+  it(
+    'should update references part of control flow expressions that cannot narrow ' +
+      '(due to no second usage inside the template)',
+    async () => {
+      const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: dedent`
+          import {ViewChild, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '<div *ngIf="label !== undefined">Showing</div>'
+          })
+          class MyComp {
+            @ViewChild('labelRef') label?: ElementRef;
+          }
+        `,
+        },
+      ]);
+
+      const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+      expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, viewChild} from '@angular/core';
+
+      @Component({
+        template: '<div *ngIf="label() !== undefined">Showing</div>'
+      })
+      class MyComp {
+        readonly label = viewChild<ElementRef>('labelRef');
+      }
+    `);
+    },
+  );
+
+  it('should not update references part of narrowing template expressions', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChild, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              <div *ngIf="label !== undefined">
+                {{label.nativeElement.textContent}}
+              </div>\`
+          })
+          class MyComp {
+            @ViewChild('labelRef') label?: ElementRef;
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ViewChild, ElementRef, Component} from '@angular/core';
+
+      @Component({
+        template: \`
+          <div *ngIf="label !== undefined">
+            {{label.nativeElement.textContent}}
+          </div>\`
+      })
+      class MyComp {
+        @ViewChild('labelRef') label?: ElementRef;
+      }
+    `);
+  });
+
+  it('should update references in host bindings', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChild, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            host: {
+              '(click)': 'label.textContent',
+            }
+          })
+          class MyComp {
+            @ViewChild('labelRef') label?: ElementRef;
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, viewChild} from '@angular/core';
+
+      @Component({
+        template: '',
+        host: {
+          '(click)': 'label().textContent',
+        }
+      })
+      class MyComp {
+        readonly label = viewChild<ElementRef>('labelRef');
+      }
+    `);
   });
 
   it('should not remove imports when partially migrating', async () => {
