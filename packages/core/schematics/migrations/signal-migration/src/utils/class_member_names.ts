@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-export function getMemberName(member: ts.ClassElement): string | null {
+export function getMemberName(member: ts.ClassElement | ts.PropertyAssignment): string | null {
   if (member.name === undefined) {
     return null;
   }
