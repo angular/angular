@@ -15,8 +15,6 @@ import {WrappedNodeExpr} from '@angular/compiler';
 import {removeFromUnionIfPossible} from '../signal-migration/src/utils/remove_from_union';
 import {extractQueryListType} from './query_list_type';
 
-const printer = ts.createPrinter();
-
 /**
  *  A few notes on changes:
  *
@@ -43,6 +41,7 @@ export function computeReplacementsToMigrateQuery(
   metadata: ExtractedQuery,
   importManager: ImportManager,
   info: ProgramInfo,
+  printer: ts.Printer,
 ): Replacement[] {
   const sf = node.getSourceFile();
   let newQueryFn = importManager.addImport({

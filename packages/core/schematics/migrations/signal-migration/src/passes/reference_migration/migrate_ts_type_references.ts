@@ -12,7 +12,9 @@ import {MigrationResult} from '../../result';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../utils/tsurge';
 import assert from 'assert';
 import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
-import {isTsClassTypeReference} from '../reference_resolution/reference_kinds';
+import {isTsClassTypeReference, Reference} from '../reference_resolution/reference_kinds';
+import {ReferenceMigrationHost} from './reference_migration_host';
+import {ClassFieldDescriptor} from '../reference_resolution/known_fields';
 
 /**
  * Migrates TypeScript "ts.Type" references. E.g.
@@ -20,21 +22,21 @@ import {isTsClassTypeReference} from '../reference_resolution/reference_kinds';
  *  - `Partial<MyComp>` will be converted to `UnwrapSignalInputs<Partial<MyComp>>`.
       in Catalyst test files.
  */
-export function migrateTypeScriptTypeReferences(
-  result: MigrationResult,
-  knownInputs: KnownInputs,
+export function migrateTypeScriptTypeReferences<D extends ClassFieldDescriptor>(
+  host: ReferenceMigrationHost<D>,
+  references: Reference<D>[],
   importManager: ImportManager,
   info: ProgramInfo,
 ) {
   const seenTypeNodes = new WeakSet<ts.TypeReferenceNode>();
 
-  for (const reference of result.references) {
+  for (const reference of references) {
     // This pass only deals with TS input class type references.
     if (!isTsClassTypeReference(reference)) {
       continue;
     }
     // Skip references to classes that are not fully migrated.
-    if (knownInputs.getDirectiveInfoForClass(reference.target)?.hasIncompatibleMembers()) {
+    if (!host.shouldMigrateReferencesToClass(reference.target)) {
       continue;
     }
     // Skip duplicate references. E.g. in batching.
@@ -56,17 +58,17 @@ export function migrateTypeScriptTypeReferences(
         requestedFile: sf,
       });
 
-      result.replacements.push(
+      host.replacements.push(
         new Replacement(
           projectFile(sf, info),
           new TextUpdate({
             position: firstArg.getStart(),
             end: firstArg.getStart(),
-            toInsert: `${result.printer.printNode(ts.EmitHint.Unspecified, unwrapImportExpr, sf)}<`,
+            toInsert: `${host.printer.printNode(ts.EmitHint.Unspecified, unwrapImportExpr, sf)}<`,
           }),
         ),
       );
-      result.replacements.push(
+      host.replacements.push(
         new Replacement(
           projectFile(sf, info),
           new TextUpdate({position: firstArg.getEnd(), end: firstArg.getEnd(), toInsert: '>'}),
