@@ -1,3 +1,12 @@
+<a name="19.0.0-next.5"></a>
+# 19.0.0-next.5 (2024-09-11)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c93b510f9b](https://github.com/angular/angular/commit/c93b510f9b2e23aa7a3848a04c05249fde14a9b1) | feat | allow passing `undefined` without needing to include it in the type argument of `input` ([#57621](https://github.com/angular/angular/pull/57621)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.4"></a>
 # 18.2.4 (2024-09-11)
 ### compiler
