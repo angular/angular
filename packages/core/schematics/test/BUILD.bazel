@@ -6,6 +6,7 @@ ts_library(
     srcs = glob(["*.ts"]),
     deps = [
         "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
         "@npm//@bazel/runfiles",
