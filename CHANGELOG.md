@@ -1,3 +1,16 @@
+<a name="18.2.4"></a>
+# 18.2.4 (2024-09-11)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b619d6987e](https://github.com/angular/angular/commit/b619d6987efe054b9b37c24e578f58792b25d146) | fix | produce less noisy errors when parsing control flow ([#57711](https://github.com/angular/angular/pull/57711)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9895e4492f](https://github.com/angular/angular/commit/9895e4492fbe357b584ca5a6dd86d2c9d50d9fda) | fix | replace leftover modules with their exports during pruning ([#57684](https://github.com/angular/angular/pull/57684)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.0-next.4"></a>
 # 19.0.0-next.4 (2024-09-09)
 ### compiler
