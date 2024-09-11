@@ -404,6 +404,8 @@ export interface ComponentDecorator {
    * When running Angular with NgModule, a component must belong to an NgModule in
    * order for it to be available to another component or application. To make it a
    * member of an NgModule, list it in the `declarations` field of the `NgModule` metadata.
+   * However, Angular now recommends using standalone components, which do not require an 
+   * NgModule and can be directly imported and used in other components or applications.
    *
    * Note that, in addition to these options for configuring a directive,
    * you can control a component's runtime behavior by implementing
