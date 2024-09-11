@@ -18,16 +18,46 @@ import {UniqueID} from '../../../../../utils/tsurge';
  */
 export type ClassFieldUniqueKey = UniqueID<'ClassField Unique ID'>;
 
+/**
+ * Interface describing a recognized class field that can be
+ * uniquely identified throughout the whole migration project
+ * (not necessarily just within an isolated compilation unit)
+ */
 export interface ClassFieldDescriptor {
   node: ts.Node;
   key: ClassFieldUniqueKey;
 }
 
+/**
+ * Registry of known fields that are considered when inspecting
+ * references throughout the project.
+ */
 export interface KnownFields<D extends ClassFieldDescriptor> {
-  // For performance lookups to avoid expensive TS symbol lookups.
-  // May be null if all identifiers should be inspected.
+  /**
+   * List of field names that should be respected when expensively
+   * looking up references to known fields.
+   *
+   * This is useful for integrations with e.g. language service
+   * where only a subset of fields is targeted, and otherwise
+   * checking references would take up a significant portion of time.
+   *
+   * May be null if all identifiers should be inspected.
+   */
   fieldNamesToConsiderForReferenceLookup: Set<string> | null;
 
+  /**
+   * Attempt to retrieve a known field descriptor for the given symbol.
+   *
+   * May be null if this is an irrelevant field.
+   */
   attemptRetrieveDescriptorFromSymbol(symbol: ts.Symbol): D | null;
-  isClassContainingKnownFields(clazz: ts.ClassDeclaration): boolean;
+
+  /**
+   * Whether the given class should also be respected for reference resolution.
+   *
+   * E.g. commonly may be implemented to check whether the given contains any
+   * known fields. E.g. a reference to the class may be tracked when fields inside
+   * are migrated to signal inputs and the public class signature therefore changed.
+   */
+  shouldTrackReferencesToClass(clazz: ts.ClassDeclaration): boolean;
 }

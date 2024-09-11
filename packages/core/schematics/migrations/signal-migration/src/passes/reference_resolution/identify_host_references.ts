@@ -22,7 +22,7 @@ import {ProgramInfo, projectFile} from '../../../../../utils/tsurge';
 import {
   TemplateExpressionReferenceVisitor,
   TmplInputExpressionReference,
-} from '../../input_detection/template_reference_visitor';
+} from './template_reference_visitor';
 import {ReferenceResult} from './reference_result';
 import {ClassFieldDescriptor, KnownFields} from './known_fields';
 import {ReferenceKind} from './reference_kinds';
