@@ -18,8 +18,8 @@ export function diffText(expected: string, actual: string): string {
   let result = '';
 
   for (const part of goldenDiff) {
-    // space cannot be highlighted, so we use a tiny indicator character.
-    const valueForColor = part.value === ' ' ? '·' : part.value;
+    // whitespace cannot be highlighted, so we use a tiny indicator character.
+    const valueForColor = part.value.replace(/[ \t]/g, '·');
     // green for additions, red for deletions
     const text = part.added
       ? chalk.green(valueForColor)
