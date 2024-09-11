@@ -17,7 +17,7 @@ import {CompilationMode} from '@angular/compiler-cli/src/ngtsc/transform';
 import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 import {ProgramInfo, projectFile} from '../../../../../utils/tsurge';
-import {TemplateReferenceVisitor} from '../../input_detection/template_reference_visitor';
+import {TemplateReferenceVisitor} from './template_reference_visitor';
 import {attemptExtractTemplateDefinition} from '../../utils/extract_template';
 import {ReferenceResult} from './reference_result';
 import {ClassFieldDescriptor, KnownFields} from './known_fields';

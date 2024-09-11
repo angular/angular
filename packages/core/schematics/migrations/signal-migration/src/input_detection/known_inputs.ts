@@ -131,7 +131,7 @@ export class KnownInputs implements KnownFields<InputDescriptor> {
     return attemptRetrieveInputFromSymbol(this.programInfo, symbol, this)?.descriptor ?? null;
   }
 
-  isClassContainingKnownFields(clazz: ts.ClassDeclaration): boolean {
+  shouldTrackReferencesToClass(clazz: ts.ClassDeclaration): boolean {
     return this.isInputContainingClass(clazz);
   }
 }
