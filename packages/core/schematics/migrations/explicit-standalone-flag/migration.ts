@@ -68,11 +68,11 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
           return;
       }
 
-      const [firstArg] = callExpression.arguments;
-      if (!firstArg || !ts.isObjectLiteralExpression(firstArg)) {
+      const [decoratorArgument] = callExpression.arguments;
+      if (!decoratorArgument || !ts.isObjectLiteralExpression(decoratorArgument)) {
         return;
       }
-      const properties = firstArg.properties;
+      const properties = decoratorArgument.properties;
       const standaloneProp = getStandaloneProperty(properties);
 
       // Need to take care of 3 cases
@@ -80,7 +80,8 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
       // - standalone: false => nothing
       // - No standalone property => add a standalone: false property
 
-      let newProperties;
+      let newProperties: undefined | ts.ObjectLiteralElementLike[];
+
       if (!standaloneProp) {
         const standaloneFalseProperty = ts.factory.createPropertyAssignment(
           'standalone',
@@ -89,7 +90,8 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
 
         newProperties = [...properties, standaloneFalseProperty];
       } else if (standaloneProp.value === ts.SyntaxKind.TrueKeyword) {
-        newProperties = properties.filter((p) => p !== standaloneProp.property);
+        // TODO: uncomment once we want to enable removing `standalone: true`
+        // newProperties = properties.filter((p) => p !== standaloneProp.property);
       }
 
       if (newProperties) {
@@ -97,7 +99,7 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
         // remove an existing standalone: true property.
         const newPropsArr = ts.factory.createNodeArray(newProperties);
         const newFirstArg = ts.factory.createObjectLiteralExpression(newPropsArr, true);
-        changeTracker.replaceNode(firstArg, newFirstArg);
+        changeTracker.replaceNode(decoratorArgument, newFirstArg);
       }
     });
   });
@@ -112,15 +114,26 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
 
 function getStandaloneProperty(properties: ts.NodeArray<ts.ObjectLiteralElementLike>) {
   for (const prop of properties) {
-    if (
-      ts.isPropertyAssignment(prop) &&
-      ts.isIdentifier(prop.name) &&
-      prop.name.text === 'standalone' &&
-      (prop.initializer.kind === ts.SyntaxKind.TrueKeyword ||
-        prop.initializer.kind === ts.SyntaxKind.FalseKeyword)
-    ) {
-      return {property: prop, value: prop.initializer.kind};
+    if (ts.isShorthandPropertyAssignment(prop) && prop.name.text) {
+      return {property: prop, value: prop.objectAssignmentInitializer};
+    }
+
+    if (isStandaloneProperty(prop)) {
+      if (
+        prop.initializer.kind === ts.SyntaxKind.TrueKeyword ||
+        prop.initializer.kind === ts.SyntaxKind.FalseKeyword
+      ) {
+        return {property: prop, value: prop.initializer.kind};
+      } else {
+        return {property: prop, value: prop.initializer};
+      }
     }
   }
   return undefined;
+}
+
+function isStandaloneProperty(prop: ts.Node): prop is ts.PropertyAssignment {
+  return (
+    ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name) && prop.name.text === 'standalone'
+  );
 }

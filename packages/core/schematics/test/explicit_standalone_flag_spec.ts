@@ -13,7 +13,7 @@ import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/test
 import {runfiles} from '@bazel/runfiles';
 import shx from 'shelljs';
 
-describe('standalone:false migration', () => {
+describe('explicit-standalone-flag migration', () => {
   let runner: SchematicTestRunner;
   let host: TempScopedNodeJsSyncHost;
   let tree: UnitTestTree;
@@ -116,7 +116,8 @@ describe('standalone:false migration', () => {
     expect(content).toContain('standalone: false');
   });
 
-  it('should remove standalone:true', async () => {
+  // TODO: Change this test once we enable removing standalone:true
+  it('should not remove standalone:true', async () => {
     writeFile(
       '/index.ts',
       `
@@ -133,7 +134,9 @@ describe('standalone:false migration', () => {
     await runMigration();
 
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
-    expect(content).not.toContain('standalone');
+
+    // TODO: alter this expectation once we enable removing standalone:true
+    expect(content).toContain('standalone: true');
   });
 
   it('should not update a directive with standalone:false', async () => {
@@ -170,5 +173,59 @@ describe('standalone:false migration', () => {
 
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
     expect(content).not.toContain('standalone');
+  });
+
+  it('should not migrate standalone if its a shorthard property assignment', async () => {
+    writeFile(
+      '/index.ts',
+      `
+          import { Directive } from '@angular/core';
+          const standalone = true;
+
+          function directiveFactory(standalone: boolean) {  
+            @Directive({
+              selector: '[someDirective]',
+              standalone,
+            })
+            export class SomeDirective {
+            }
+
+            return SomeDirective
+          }`,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
+    expect(content).not.toContain('standalone: true');
+    expect(content).not.toContain('standalone: false');
+    expect(content).toContain('standalone,');
+  });
+
+  it('should not migrate standalone if the property is assigned by a variable', async () => {
+    writeFile(
+      '/index.ts',
+      `
+          import { Directive } from '@angular/core';
+          const isStandalone = true;
+
+          function directiveFactory(standalone: boolean) {  
+            @Directive({
+              selector: '[someDirective]',
+              standalone: isStandalone,
+            })
+            export class SomeDirective {
+            }
+
+            return SomeDirective
+          }`,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
+    expect(content).not.toContain('standalone: true');
+    expect(content).not.toContain('standalone: false');
+    expect(content).toContain('standalone');
   });
 });

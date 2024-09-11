@@ -20,7 +20,7 @@ export function migrate(): Rule {
 
     if (!allPaths.length) {
       throw new SchematicsException(
-        'Could not find any tsconfig file. Cannot run the standalone:false migration.',
+        'Could not find any tsconfig file. Cannot run the explicit-standalone-flag migration.',
       );
     }
 
