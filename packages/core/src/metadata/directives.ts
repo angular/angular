@@ -401,9 +401,8 @@ export interface ComponentDecorator {
    * Unlike other directives, only one component can be instantiated for a given element in a
    * template.
    *
-   * Angular now recommends using standalone components, which do not require an 
-   * NgModule and can be directly imported and used in other components or applications.
-   * However, if running Angular with NgModule, a component must belong to an NgModule in
+   * Standalone components can be directly imported in any other standalone component or NgModule.
+   * NgModule based apps on the other hand require components to belong to an NgModule in
    * order for it to be available to another component or application. To make it a
    * member of an NgModule, list it in the `declarations` field of the `NgModule` metadata.
    *
