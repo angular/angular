@@ -1422,6 +1422,9 @@
     "name": "remove"
   },
   {
+    "name": "removeAll"
+  },
+  {
     "name": "removeClass"
   },
   {

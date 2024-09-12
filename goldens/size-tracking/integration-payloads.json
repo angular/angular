@@ -41,13 +41,13 @@
   },
   "standalone-bootstrap": {
     "uncompressed": {
-      "main": 94681,
+      "main": 89354,
       "polyfills": 33802
     }
   },
   "defer": {
     "uncompressed": {
-      "main": 13449,
+      "main": 12148,
       "polyfills": 33807,
       "defer.component": 371
     }

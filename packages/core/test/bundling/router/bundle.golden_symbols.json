@@ -1956,6 +1956,9 @@
     "name": "remove"
   },
   {
+    "name": "removeAll"
+  },
+  {
     "name": "removeFromArray"
   },
   {
