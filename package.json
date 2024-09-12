@@ -72,7 +72,7 @@
     "@rollup/plugin-babel": "^6.0.0",
     "@rollup/plugin-commonjs": "^26.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
-    "@schematics/angular": "19.0.0-next.4",
+    "@schematics/angular": "19.0.0-next.5",
     "@stackblitz/sdk": "^1.11.0",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "7.20.5",
