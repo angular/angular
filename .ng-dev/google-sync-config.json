@@ -1,12 +1,6 @@
 {
-  "syncedFilePatterns": [
-    "LICENSE",
-    "modules/benchmarks/**",
-    "packages/**"
-  ],
-  "separateFilePatterns": [
-    "packages/core/primitives/**"
-  ],
+  "syncedFilePatterns": ["LICENSE", "modules/benchmarks/**", "packages/**"],
+  "separateFilePatterns": ["packages/core/primitives/**"],
   "alwaysExternalFilePatterns": [
     "packages/*",
     "packages/bazel/*",
@@ -26,6 +20,7 @@
     "packages/compiler-cli/private/tooling.ts",
     "packages/compiler-cli/private/babel.d.ts",
     "packages/compiler-cli/src/bin/**",
+    "packages/core/schematics/utils/tsurge/helpers/angular_devkit/**",
     "packages/docs/**",
     "packages/elements/schematics/**",
     "packages/examples/**",
