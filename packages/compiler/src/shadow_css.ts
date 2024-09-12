@@ -808,9 +808,9 @@ export class ShadowCss {
     let scopedSelector = '';
     let startIndex = 0;
     let res: RegExpExecArray | null;
-    // Spaces aren't used as a delimeter if they are within parenthesis, for example
+    // Combinators aren't used as a delimeter if they are within parenthesis, for example
     // `:where(.one .two)` stays intact.
-    const sep = /( (?![^\(]*\))|>|\+|~(?!=))\s*/g;
+    const sep = /( |>|\+|~(?!=))(?![^\(]*\))\s*/g;
 
     // If a selector appears before :host it should not be shimmed as it
     // matches on ancestor elements and not on elements in the host's shadow
