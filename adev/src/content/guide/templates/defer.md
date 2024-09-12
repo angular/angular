@@ -216,7 +216,7 @@ Alternatively, you can specify a [template reference variable](/guide/templates/
 
 ```angular-html
 <div #greeting>Hello!</div>
-@defer (on interaction(greeting)) {
+@defer (on hover(greeting)) {
   <greetings-cmp />
 }
 ```
