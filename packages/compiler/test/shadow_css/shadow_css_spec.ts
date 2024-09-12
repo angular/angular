@@ -104,6 +104,15 @@ describe('ShadowCss', () => {
     expect(shim(':where(.one, .two) {}', 'contenta', 'hosta')).toEqualCss(
       ':where(.one[contenta], .two[contenta]) {}',
     );
+    expect(shim(':where(.one > .two) {}', 'contenta', 'hosta')).toEqualCss(
+      ':where(.one[contenta] > .two[contenta]) {}',
+    );
+    expect(shim(':where(> .one) {}', 'contenta', 'hosta')).toEqualCss(
+      ':where( > .one[contenta]) {}',
+    );
+    expect(shim(':where(:not(.one) ~ .two) {}', 'contenta', 'hosta')).toEqualCss(
+      ':where([contenta]:not(.one) ~ .two[contenta]) {}',
+    );
 
     // :is()
     expect(shim('div:is(.foo) {}', 'contenta', 'a-host')).toEqualCss('div[contenta]:is(.foo) {}');
@@ -147,6 +156,9 @@ describe('ShadowCss', () => {
     expect(shim('div:has(a) :host {}', 'contenta', 'hosta')).toEqualCss('div:has(a) [hosta] {}');
     expect(shim(':has(a) :host :has(b) {}', 'contenta', 'hosta')).toEqualCss(
       ':has(a) [hosta] [contenta]:has(b) {}',
+    );
+    expect(shim('div:has(~ .one) {}', 'contenta', 'hosta')).toEqualCss(
+      'div[contenta]:has(~ .one) {}',
     );
     // Unlike `:is()` or `:where()` the attribute selector isn't placed inside
     // of `:has()`. That is deliberate, `[contenta]:has(a)` would select all
