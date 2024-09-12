@@ -616,7 +616,7 @@ export class ShadowCss {
       let selector = rule.selector;
       let content = rule.content;
       if (rule.selector[0] !== '@') {
-        selector = this._scopeSelector(rule.selector, scopeSelector, hostSelector);
+        selector = this._scopeSelector({selector, scopeSelector, hostSelector});
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
@@ -656,15 +656,34 @@ export class ShadowCss {
     });
   }
 
-  private _scopeSelector(selector: string, scopeSelector: string, hostSelector: string): string {
+  private _scopeSelector({
+    selector,
+    scopeSelector,
+    hostSelector,
+    shouldScope,
+  }: {
+    selector: string;
+    scopeSelector: string;
+    hostSelector: string;
+    shouldScope?: boolean;
+  }): string {
+    // Split the selector into independent parts by `,` (comma) unless
+    // comma is within parenthesis, for example `:is(.one, two)`.
+    const selectorSplitRe = / ?,(?![^\(]*\)) ?/;
+
     return selector
-      .split(/ ?, ?/)
+      .split(selectorSplitRe)
       .map((part) => part.split(_shadowDeepSelectors))
       .map((deepParts) => {
         const [shallowPart, ...otherParts] = deepParts;
         const applyScope = (shallowPart: string) => {
           if (this._selectorNeedsScoping(shallowPart, scopeSelector)) {
-            return this._applySelectorScope(shallowPart, scopeSelector, hostSelector);
+            return this._applySelectorScope({
+              selector: shallowPart,
+              scopeSelector,
+              hostSelector,
+              shouldScope,
+            });
           } else {
             return shallowPart;
           }
@@ -713,11 +732,17 @@ export class ShadowCss {
 
   // return a selector with [name] suffix on each simple selector
   // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]  /** @internal */
-  private _applySelectorScope(
-    selector: string,
-    scopeSelector: string,
-    hostSelector: string,
-  ): string {
+  private _applySelectorScope({
+    selector,
+    scopeSelector,
+    hostSelector,
+    shouldScope,
+  }: {
+    selector: string;
+    scopeSelector: string;
+    hostSelector: string;
+    shouldScope?: boolean;
+  }): string {
     const isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = scopeSelector.replace(isRe, (_: string, ...parts: string[]) => parts[0]);
 
@@ -746,13 +771,46 @@ export class ShadowCss {
       return scopedP;
     };
 
+    // Wraps `_scopeSelectorPart()` to not use it directly on selectors with
+    // pseudo selector functions like `:where()`. Selectors within pseudo selector
+    // functions are recursively sent to `_scopeSelector()` with the `shouldScope`
+    // argument, so the selectors get scoped correctly.
+    const _pseudoFunctionAwareScopeSelectorPart = (selectorPart: string) => {
+      let scopedPart = '';
+
+      const cssPseudoSelectorFunctionMatch = selectorPart.match(_cssPseudoSelectorFunctionPrefix);
+      if (cssPseudoSelectorFunctionMatch) {
+        const [cssPseudoSelectorFunction] = cssPseudoSelectorFunctionMatch;
+        // Unwrap the pseudo selector, to scope its contents.
+        // For example, `:where(selectorToScope)` -> `selectorToScope`.
+        const selectorToScope = selectorPart.slice(cssPseudoSelectorFunction.length, -1);
+
+        const scopedInnerPart = this._scopeSelector({
+          selector: selectorToScope,
+          scopeSelector,
+          hostSelector,
+          shouldScope: shouldScopeIndicator,
+        });
+        // Put the result back into the pseudo selector function.
+        scopedPart = `${cssPseudoSelectorFunction}${scopedInnerPart})`;
+      } else {
+        shouldScopeIndicator =
+          shouldScopeIndicator || selectorPart.includes(_polyfillHostNoCombinator);
+        scopedPart = shouldScopeIndicator ? _scopeSelectorPart(selectorPart) : selectorPart;
+      }
+
+      return scopedPart;
+    };
+
     const safeContent = new SafeSelector(selector);
     selector = safeContent.content();
 
     let scopedSelector = '';
     let startIndex = 0;
     let res: RegExpExecArray | null;
-    const sep = /( |>|\+|~(?!=))\s*/g;
+    // Spaces aren't used as a delimeter if they are within parenthesis, for example
+    // `:where(.one .two)` stays intact.
+    const sep = /( (?![^\(]*\))|>|\+|~(?!=))\s*/g;
 
     // If a selector appears before :host it should not be shimmed as it
     // matches on ancestor elements and not on elements in the host's shadow
@@ -767,7 +825,7 @@ export class ShadowCss {
     //   `:host-context(tag)`)
     const hasHost = selector.includes(_polyfillHostNoCombinator);
     // Only scope parts after the first `-shadowcsshost-no-combinator` when it is present
-    let shouldScope = !hasHost;
+    let shouldScopeIndicator = shouldScope ?? !hasHost;
 
     while ((res = sep.exec(selector)) !== null) {
       const separator = res[1];
@@ -786,15 +844,13 @@ export class ShadowCss {
         continue;
       }
 
-      shouldScope = shouldScope || part.includes(_polyfillHostNoCombinator);
-      const scopedPart = shouldScope ? _scopeSelectorPart(part) : part;
+      const scopedPart = _pseudoFunctionAwareScopeSelectorPart(part);
       scopedSelector += `${scopedPart} ${separator} `;
       startIndex = sep.lastIndex;
     }
 
     const part = selector.substring(startIndex);
-    shouldScope = shouldScope || part.includes(_polyfillHostNoCombinator);
-    scopedSelector += shouldScope ? _scopeSelectorPart(part) : part;
+    scopedSelector += _pseudoFunctionAwareScopeSelectorPart(part);
 
     // replace the placeholders with their original values
     return safeContent.restore(scopedSelector);
@@ -862,6 +918,7 @@ class SafeSelector {
   }
 }
 
+const _cssPseudoSelectorFunctionPrefix = /^:(where|is)\(/gi;
 const _cssContentNextSelectorRe =
   /polyfill-next-selector[^}]*content:[\s]*?(['"])(.*?)\1[;\s]*}([^{]*?){/gim;
 const _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
