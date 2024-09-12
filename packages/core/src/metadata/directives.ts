@@ -403,7 +403,7 @@ export interface ComponentDecorator {
    *
    * Standalone components can be directly imported in any other standalone component or NgModule.
    * NgModule based apps on the other hand require components to belong to an NgModule in
-   * order for it to be available to another component or application. To make it a
+   * order for them to be available to another component or application. To make a component a
    * member of an NgModule, list it in the `declarations` field of the `NgModule` metadata.
    *
    * Note that, in addition to these options for configuring a directive,
