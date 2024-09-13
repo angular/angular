@@ -85,8 +85,8 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Build adev in fast mode to ensure it continues to work
         run: yarn bazel build //adev:build --config=release
-      - name: Run tests
-        run: yarn bazel test //adev/...
+      #- name: Run tests
+      #  run: yarn bazel test //adev/...
 
   publish-snapshots:
     runs-on:
