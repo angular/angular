@@ -2218,6 +2218,32 @@ describe('standalone migration', () => {
     );
   });
 
+  it('should handle a directive that is explicitly standalone: false', async () => {
+    writeFile(
+      'module.ts',
+      `
+      import {NgModule, Directive} from '@angular/core';
+
+      @Directive({selector: '[dir]', standalone: false})
+      export class MyDir {}
+
+      @NgModule({declarations: [MyDir], exports: [MyDir]})
+      export class Mod {}
+    `,
+    );
+
+    await runMigration('convert-to-standalone');
+
+    const result = tree.readContent('module.ts');
+
+    expect(stripWhitespace(result)).toContain(
+      stripWhitespace(`@Directive({selector: '[dir]', standalone: true})`),
+    );
+    expect(stripWhitespace(result)).toContain(
+      stripWhitespace(`@NgModule({imports: [MyDir], exports: [MyDir]})`),
+    );
+  });
+
   it('should remove a module that only has imports and exports', async () => {
     writeFile(
       'app.module.ts',
