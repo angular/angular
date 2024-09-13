@@ -107,7 +107,7 @@
     "bluebird": "^3.7.2",
     "canonical-path": "1.0.0",
     "chalk": "^4.1.0",
-    "chokidar": "^3.5.1",
+    "chokidar": "^4.0.0",
     "convert-source-map": "^1.5.1",
     "d3": "^7.0.0",
     "diff": "^7.0.0",
