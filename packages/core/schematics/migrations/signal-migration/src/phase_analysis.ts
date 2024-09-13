@@ -38,7 +38,7 @@ export function executeAnalysisPhase(
   result: MigrationResult,
   {
     sourceFiles,
-    programFiles,
+    fullProgramSourceFiles,
     reflector,
     dtsMetadataReader,
     typeChecker,
@@ -49,7 +49,7 @@ export function executeAnalysisPhase(
   }: AnalysisProgramInfo,
 ) {
   // Pass 1
-  programFiles.forEach(
+  fullProgramSourceFiles.forEach(
     (sf) =>
       // Shim shim files. Those are unnecessary and might cause unexpected slowness.
       // e.g. `ngtypecheck` files.

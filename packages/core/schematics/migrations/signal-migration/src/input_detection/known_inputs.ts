@@ -14,7 +14,7 @@ import {DirectiveInfo} from './directive_info';
 import {ClassIncompatibilityReason, InputMemberIncompatibility} from './incompatibility';
 import {ClassFieldUniqueKey, KnownFields} from '../passes/reference_resolution/known_fields';
 import {attemptRetrieveInputFromSymbol} from './nodes_to_input';
-import {ProgramInfo} from '../../../../utils/tsurge';
+import {ProgramInfo, projectFile, ProjectFile} from '../../../../utils/tsurge';
 import {MigrationConfig} from '../migration_config';
 
 /**
@@ -25,6 +25,7 @@ import {MigrationConfig} from '../migration_config';
  * loaded into the program.
  */
 export type KnownInputInfo = {
+  file: ProjectFile;
   metadata: ExtractedInput;
   descriptor: InputDescriptor;
   container: DirectiveInfo;
@@ -88,6 +89,7 @@ export class KnownInputs implements KnownFields<InputDescriptor> {
     }
     const directiveInfo = this._classToDirectiveInfo.get(data.node.parent)!;
     const inputInfo: KnownInputInfo = {
+      file: projectFile(data.node.getSourceFile(), this.programInfo),
       metadata: data.metadata,
       descriptor: data.descriptor,
       container: directiveInfo,
