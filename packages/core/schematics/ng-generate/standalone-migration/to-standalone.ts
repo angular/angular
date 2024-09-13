@@ -140,15 +140,13 @@ export function convertNgModuleDeclarationToStandalone(
         const hasTrailingComma =
           importsToAdd.length > 2 &&
           !!extractMetadataLiteral(directiveMeta.decorator)?.properties.hasTrailingComma;
-        decorator = addPropertyToAngularDecorator(
+        decorator = setPropertyOnAngularDecorator(
           decorator,
-          ts.factory.createPropertyAssignment(
-            'imports',
-            ts.factory.createArrayLiteralExpression(
-              // Create a multi-line array when it has a trailing comma.
-              ts.factory.createNodeArray(importsToAdd, hasTrailingComma),
-              hasTrailingComma,
-            ),
+          'imports',
+          ts.factory.createArrayLiteralExpression(
+            // Create a multi-line array when it has a trailing comma.
+            ts.factory.createNodeArray(importsToAdd, hasTrailingComma),
+            hasTrailingComma,
           ),
         );
       }
@@ -430,23 +428,24 @@ function moveDeclarationsToImports(
 
 /** Adds `standalone: true` to a decorator node. */
 function addStandaloneToDecorator(node: ts.Decorator): ts.Decorator {
-  return addPropertyToAngularDecorator(
+  return setPropertyOnAngularDecorator(
     node,
-    ts.factory.createPropertyAssignment(
-      'standalone',
-      ts.factory.createToken(ts.SyntaxKind.TrueKeyword),
-    ),
+    'standalone',
+    ts.factory.createToken(ts.SyntaxKind.TrueKeyword),
   );
 }
 
 /**
- * Adds a property to an Angular decorator node.
+ * Sets a property on an Angular decorator node. If the property
+ * already exists, its initializer will be replaced.
  * @param node Decorator to which to add the property.
- * @param property Property to add.
+ * @param name Name of the property to be added.
+ * @param initializer Initializer for the new property.
  */
-function addPropertyToAngularDecorator(
+function setPropertyOnAngularDecorator(
   node: ts.Decorator,
-  property: ts.PropertyAssignment,
+  name: string,
+  initializer: ts.Expression,
 ): ts.Decorator {
   // Invalid decorator.
   if (!ts.isCallExpression(node.expression) || node.expression.arguments.length > 1) {
@@ -457,10 +456,22 @@ function addPropertyToAngularDecorator(
   let hasTrailingComma = false;
 
   if (node.expression.arguments.length === 0) {
-    literalProperties = [property];
+    literalProperties = [ts.factory.createPropertyAssignment(name, initializer)];
   } else if (ts.isObjectLiteralExpression(node.expression.arguments[0])) {
-    hasTrailingComma = node.expression.arguments[0].properties.hasTrailingComma;
-    literalProperties = [...node.expression.arguments[0].properties, property];
+    const literal = node.expression.arguments[0];
+    const existingProperty = findLiteralProperty(literal, name);
+    hasTrailingComma = literal.properties.hasTrailingComma;
+
+    if (existingProperty && ts.isPropertyAssignment(existingProperty)) {
+      literalProperties = literal.properties.slice();
+      literalProperties[literalProperties.indexOf(existingProperty)] =
+        ts.factory.updatePropertyAssignment(existingProperty, existingProperty.name, initializer);
+    } else {
+      literalProperties = [
+        ...literal.properties,
+        ts.factory.createPropertyAssignment(name, initializer),
+      ];
+    }
   } else {
     // Unsupported case (e.g. `@Component(SOME_CONST)`). Return the original node.
     return node;
@@ -756,12 +767,10 @@ export function migrateTestDeclarations(
 
         tracker.replaceNode(
           decorator.node,
-          addPropertyToAngularDecorator(
+          setPropertyOnAngularDecorator(
             newDecorator,
-            ts.factory.createPropertyAssignment(
-              'imports',
-              ts.factory.createArrayLiteralExpression(importsArray),
-            ),
+            'imports',
+            ts.factory.createArrayLiteralExpression(importsArray),
           ),
         );
       } else {
