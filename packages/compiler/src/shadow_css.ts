@@ -808,8 +808,8 @@ export class ShadowCss {
     let scopedSelector = '';
     let startIndex = 0;
     let res: RegExpExecArray | null;
-    // Combinators aren't used as a delimeter if they are within parenthesis, for example
-    // `:where(.one .two)` stays intact.
+    // Combinators aren't used as a delimiter if they are within parenthesis,
+    // for example `:where(.one .two)` stays intact.
     const sep = /( |>|\+|~(?!=))(?![^\(]*\))\s*/g;
 
     // If a selector appears before :host it should not be shimmed as it
