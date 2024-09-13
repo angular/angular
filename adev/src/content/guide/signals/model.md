@@ -3,8 +3,6 @@
 **Model inputs** are a special type of input that enable a component to propagate new values
 back to another component.
 
-HELPFUL: Model inputs are currently in [developer preview](/reference/releases#developer-preview).
-
 When creating a component, you can define a model input similarly to how you create a standard
 input.
 

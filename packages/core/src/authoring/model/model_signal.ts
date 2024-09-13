@@ -25,7 +25,7 @@ import {OutputEmitterRef} from '../output/output_emitter_ref';
 import {OutputRef} from '../output/output_ref';
 
 /**
- * @developerPreview
+ * @publicAPI
  *
  * Options for model signals.
  */
@@ -43,7 +43,7 @@ export interface ModelOptions {
  * A model signal is a writeable signal that can be exposed as an output.
  * Whenever its value is updated, it emits to the output.
  *
- * @developerPreview
+ * @publicAPI
  */
 export interface ModelSignal<T> extends WritableSignal<T>, InputSignal<T>, OutputRef<T> {
   [SIGNAL]: InputSignalNode<T, T>;

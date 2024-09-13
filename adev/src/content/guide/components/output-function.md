@@ -3,8 +3,6 @@
 The `output()` function declares an output in a directive or component.
 Outputs allow you to emit values to parent components.
 
-HELPFUL: The `output()` function is currently in [developer preview](/reference/releases#developer-preview).
-
 <docs-code language="ts" highlight="[[5], [8]]">
 import {Component, output} from '@angular/core';
 

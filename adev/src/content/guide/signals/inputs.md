@@ -3,8 +3,6 @@
 Signal inputs allow values to be bound from parent components.
 Those values are exposed using a `Signal` and can change during the lifecycle of your component.
 
-HELPFUL: Signal inputs are currently in [developer preview](/reference/releases#developer-preview).
-
 Angular supports two variants of inputs:
 
 **Optional inputs**

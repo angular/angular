@@ -40,7 +40,7 @@ export function inputRequiredFunction<ReadT, WriteT = ReadT>(
  * The function exposes an API for also declaring required inputs via the
  * `input.required` function.
  *
- * @developerPreview
+ * @publicAPI
  * @docsPrivate Ignored because `input` is the canonical API entry.
  */
 export interface InputFunction {
@@ -81,7 +81,7 @@ export interface InputFunction {
    * Consumers of your directive/component need to bind to this
    * input. If unset, a compile time error will be reported.
    *
-   * @developerPreview
+   * @publicAPI
    */
   required: {
     /** Declares a required input of type `T`. */
@@ -143,7 +143,7 @@ export interface InputFunction {
  * <span>{{firstName()}}</span>
  * ```
  *
- * @developerPreview
+ * @publicAPI
  * @initializerApiFunction
  */
 export const input: InputFunction = (() => {

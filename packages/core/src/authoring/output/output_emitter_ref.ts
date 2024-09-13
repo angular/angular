@@ -26,7 +26,7 @@ import {OutputRef, OutputRefSubscription} from './output_ref';
  * <my-comp (valueChange)="processNewValue($event)" />
  * ```
  *
- * @developerPreview
+ * @publicAPI
  */
 export class OutputEmitterRef<T> implements OutputRef<T> {
   private destroyed = false;
