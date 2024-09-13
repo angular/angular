@@ -172,6 +172,15 @@ export class LSParseConfigHost implements ConfigurationHost {
       },
     };
   }
+  readdir(path: AbsoluteFsPath): PathSegment[] {
+    return this.serverHost.readDirectory(
+      path,
+      undefined,
+      undefined,
+      undefined,
+      /* depth */ 1,
+    ) as PathSegment[];
+  }
   pwd(): AbsoluteFsPath {
     return this.serverHost.getCurrentDirectory() as AbsoluteFsPath;
   }
