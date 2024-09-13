@@ -11,6 +11,7 @@ import ts from 'typescript';
 import {
   absoluteFrom,
   AbsoluteFsPath,
+  createFileSystemTsReadDirectoryFn,
   FileSystem,
   getFileSystem,
   ReadonlyFileSystem,
@@ -46,7 +47,7 @@ export function formatDiagnostics(
 /** Used to read configuration files. */
 export type ConfigurationHost = Pick<
   ReadonlyFileSystem,
-  'readFile' | 'exists' | 'lstat' | 'resolve' | 'join' | 'dirname' | 'extname' | 'pwd'
+  'readFile' | 'exists' | 'lstat' | 'resolve' | 'join' | 'dirname' | 'extname' | 'pwd' | 'readdir'
 >;
 
 export interface ParsedConfiguration {
@@ -175,7 +176,7 @@ export function readConfiguration(
 function createParseConfigHost(host: ConfigurationHost, fs = getFileSystem()): ts.ParseConfigHost {
   return {
     fileExists: host.exists.bind(host),
-    readDirectory: ts.sys.readDirectory,
+    readDirectory: createFileSystemTsReadDirectoryFn(fs),
     readFile: host.readFile.bind(host),
     useCaseSensitiveFileNames: fs.isCaseSensitive(),
   };

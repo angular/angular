@@ -34,3 +34,4 @@ export {
   ReadonlyFileSystem,
 } from './src/types';
 export {getSourceFileOrError} from './src/util';
+export {createFileSystemTsReadDirectoryFn} from './src/ts_read_directory';
