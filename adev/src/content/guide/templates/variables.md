@@ -6,8 +6,6 @@ Angular has two types of variable declarations in templates: local template vari
 
 Angular's `@let` syntax allows you to define a local variable and re-use it across a template, similar to the [JavaScript `let` syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let).
 
-IMPORTANT: the `@let` syntax is currently in [Developer Preview](/reference/releases#developer-preview).
-
 ### Using `@let`
 
 Use `@let` to declare a variable whose value is based on the result of a template expression. Angular automatically keeps the variable's value up-to-date with the given expression, similar to [bindings](./bindings).

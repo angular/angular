@@ -1,5 +1,3 @@
-@developerPreview
-
 `@let` allows you to define a local variable and re-use it across the template.
 
 ## Syntax
@@ -14,7 +12,7 @@
 `@let` declarations are similar to [JavaScript's `let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) and
 their values can be any valid Angular expression. The expressions will be re-evaluated everytime the template is executed.
 
-Similarly to javascript variables, variables declared `@let`, can be used:
+Similarly to JavaScript variables, variables declared with `@let`, can be used:
 
 - After they have been declared
 - Within the bound of the same scope and nested scopes
