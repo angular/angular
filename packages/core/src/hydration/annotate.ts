@@ -526,8 +526,10 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
 
       ngh[CONTAINERS] ??= {};
       ngh[CONTAINERS][noOffsetIndex] = serializeLContainer(lView[i], context);
-    } else if (Array.isArray(lView[i])) {
+    } else if (Array.isArray(lView[i]) && (tNode.type & TNodeType.LetDeclaration) === 0) {
       // This is a component, annotate the host node with an `ngh` attribute.
+      // Let declarations that return an array are also storing an array in the LView,
+      // we need to exclude them.
       const targetNode = unwrapRNode(lView[i][HOST]!);
       if (!(targetNode as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
         annotateHostElementForHydration(targetNode as RElement, lView[i], context);
