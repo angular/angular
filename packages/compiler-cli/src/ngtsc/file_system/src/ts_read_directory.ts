@@ -49,9 +49,9 @@ export function createFileSystemTsReadDirectoryFn(
 ): NonNullable<ts.CompilerHost['readDirectory']> {
   if (ts.matchFiles === undefined) {
     throw Error(
-      'Unable to read directory in virtual file system host. This means that ' +
+      'Unable to read directory in configured file system. This means that ' +
         'TypeScript changed its file matching internals.\n\nPlease consider downgrading your ' +
-        'TypeScript version, and report an issue in the Angular Components repository.',
+        'TypeScript version, and report an issue in the Angular framework repository.',
     );
   }
 
