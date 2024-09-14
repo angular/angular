@@ -122,6 +122,10 @@ export function isTNodeShape(value: unknown): value is TNode {
   );
 }
 
+export function isLetDeclaration(tNode: TNode): boolean {
+  return !!(tNode.type & TNodeType.LetDeclaration);
+}
+
 /**
  * Corresponds to the TNode.flags property.
  */

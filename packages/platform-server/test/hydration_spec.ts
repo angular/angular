@@ -7917,6 +7917,37 @@ describe('platform-server hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('inside  before|after');
       });
+
+      it('should handle let declaration with array inside of an embedded view', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            @let foo = ['foo'];
+            @if (true) {
+              {{foo}}
+            }
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('foo');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await renderAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('foo');
+      });
     });
 
     describe('Router', () => {
