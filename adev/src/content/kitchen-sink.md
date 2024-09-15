@@ -66,11 +66,11 @@ Get ready to:
 
 ### `<docs-callout>` Attributes
 
-| Attributes                                     | Details                                                   |
-|:---                                            |:---                                                       |
-| `title`                                        | Callout title                                             |
-| card body contents                             | Anything between `<docs-callout>` and `</docs-callout>`   |
-| `helpful` (default) | `critical` | `important` | (Optional) Adds styling and icons based on severity level |
+| Attributes                                       | Details                                                   |
+|:---                                              |:---                                                       |
+| `title`                                          | Callout title                                             |
+| card body contents                               | Anything between `<docs-callout>` and `</docs-callout>`   |
+| `helpful` (default) \| `critical` \| `important` | (Optional) Adds styling and icons based on severity level |
 
 ## Pills
 
