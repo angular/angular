@@ -63,7 +63,7 @@ export function pass1__IdentifySourceFileAndDeclarationInputs(
         );
 
         if (isInputMemberIncompatibility(conversionPreparation)) {
-          knownDecoratorInputs.markInputAsIncompatible(inputDescr, conversionPreparation);
+          knownDecoratorInputs.markFieldIncompatible(inputDescr, conversionPreparation);
           result.sourceInputs.set(inputDescr, null);
         } else {
           result.sourceInputs.set(inputDescr, conversionPreparation);

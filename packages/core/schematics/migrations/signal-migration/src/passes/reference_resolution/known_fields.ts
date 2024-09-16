@@ -24,7 +24,7 @@ export type ClassFieldUniqueKey = UniqueID<'ClassField Unique ID'>;
  * (not necessarily just within an isolated compilation unit)
  */
 export interface ClassFieldDescriptor {
-  node: ts.Node;
+  node: ts.ClassElement;
   key: ClassFieldUniqueKey;
 }
 
@@ -59,5 +59,5 @@ export interface KnownFields<D extends ClassFieldDescriptor> {
    * known fields. E.g. a reference to the class may be tracked when fields inside
    * are migrated to signal inputs and the public class signature therefore changed.
    */
-  shouldTrackReferencesToClass(clazz: ts.ClassDeclaration): boolean;
+  shouldTrackClassReference(clazz: ts.ClassDeclaration): boolean;
 }

@@ -89,7 +89,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         // turned out to refer to queries.
         // TODO: Consider skipping this extra work when running in non-batch mode.
         {
-          shouldTrackReferencesToClass: (_class) => false,
+          shouldTrackClassReference: (_class) => false,
           attemptRetrieveDescriptorFromSymbol: (s) => getClassFieldDescriptorForSymbol(s, info),
           fieldNamesToConsiderForReferenceLookup: null,
         },
