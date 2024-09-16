@@ -20,129 +20,190 @@ import {
 /** The style elements attribute name used to set value of `APP_ID` token. */
 const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
 
-@Injectable()
-export class SharedStylesHost implements OnDestroy {
-  // Maps all registered host nodes to a list of style nodes that have been added to the host node.
-  private readonly styleRef = new Map<
-    string /** Style string */,
-    {
-      elements: HTMLStyleElement[];
-      usage: number;
-    }
-  >();
-  private readonly hostNodes = new Set<Node>();
-  private readonly styleNodesInDOM: Map<string, HTMLStyleElement> | null;
-  private readonly platformIsServer: boolean;
+/**
+ * A record of usage for a specific style including all elements added to the DOM
+ * that contain a given style.
+ */
+interface UsageRecord<T> {
+  elements: T[];
+  usage: number;
+}
 
-  constructor(
-    @Inject(DOCUMENT) private readonly doc: Document,
-    @Inject(APP_ID) private readonly appId: string,
-    @Inject(CSP_NONCE) @Optional() private nonce?: string | null,
-    @Inject(PLATFORM_ID) readonly platformId: object = {},
-  ) {
-    this.styleNodesInDOM = this.collectServerRenderedStyles();
-    this.platformIsServer = isPlatformServer(platformId);
-    this.resetHostNodes();
+/**
+ * Removes all provided elements from the document.
+ * @param elements An array of HTML Elements.
+ */
+function removeAll(elements: Iterable<HTMLElement>): void {
+  for (const element of elements) {
+    element.remove();
   }
+}
 
-  addStyles(styles: string[]): void {
-    for (const style of styles) {
-      const usageCount = this.changeUsageCount(style, 1);
+/**
+ * Searches a DOM document's head element for style elements with a matching application
+ * identifier attribute (`ng-app-id`) to the provide identifier.
+ * @param doc An HTML DOM document instance.
+ * @param appId A string containing an Angular application identifer.
+ * @returns A map of style strings to style elements if found; Otherwise, `null`.
+ */
+function findServerStyles(doc: Document, appId: string): Map<string, HTMLStyleElement> | null {
+  const styleElements = doc.head?.querySelectorAll<HTMLStyleElement>(
+    `style[${APP_ID_ATTRIBUTE_NAME}="${appId}"]`,
+  );
 
-      if (usageCount === 1) {
-        this.onStyleAdded(style);
+  let styles: null | Map<string, HTMLStyleElement> = null;
+  if (styleElements) {
+    for (const styleElement of styleElements) {
+      if (styleElement.textContent) {
+        styles ??= new Map();
+        styles.set(styleElement.textContent, styleElement);
       }
     }
   }
 
-  removeStyles(styles: string[]): void {
-    for (const style of styles) {
-      const usageCount = this.changeUsageCount(style, -1);
+  return styles;
+}
 
-      if (usageCount <= 0) {
-        this.onStyleRemoved(style);
+@Injectable()
+export class SharedStylesHost implements OnDestroy {
+  /**
+   * Provides usage information for active embedded style content and associated HTML <style> elements.
+   * Embedded styles typically originate from the `styles` metadata of a rendered component.
+   */
+  private readonly embeddedStyles = new Map<string /** content */, UsageRecord<HTMLStyleElement>>();
+
+  /**
+   * Set of host DOM nodes that will have styles attached.
+   */
+  private readonly hosts = new Set<Node>();
+
+  /**
+   * A lookup for server rendered styles if any are present in the DOM on initialization.
+   * `null` if no server rendered styles are present in the DOM.
+   */
+  private readonly serverStyles: Map<string, HTMLStyleElement> | null;
+
+  /**
+   * Whether the application code is currently executing on a server.
+   */
+  private readonly isServer: boolean;
+
+  constructor(
+    @Inject(DOCUMENT) private readonly doc: Document,
+    @Inject(APP_ID) private readonly appId: string,
+    @Inject(CSP_NONCE) @Optional() private readonly nonce?: string | null,
+    @Inject(PLATFORM_ID) platformId: object = {},
+  ) {
+    this.isServer = isPlatformServer(platformId);
+    this.serverStyles = findServerStyles(doc, appId);
+    this.hosts.add(doc.head);
+  }
+
+  /**
+   * Adds embedded styles to the DOM via HTML `style` elements.
+   * @param styles An array of style content strings.
+   */
+  addStyles(styles: string[]): void {
+    const creator = this.getStyleElement.bind(this);
+    for (const value of styles) {
+      this.add(value, this.embeddedStyles, creator);
+    }
+  }
+
+  /**
+   * Removes embedded styles from the DOM that were added as HTML `style` elements.
+   * @param styles An array of style content strings.
+   */
+  removeStyles(styles: string[]): void {
+    for (const value of styles) {
+      this.remove(value, this.embeddedStyles);
+    }
+  }
+
+  protected add<T extends HTMLElement>(
+    value: string,
+    usages: Map<string, UsageRecord<T>>,
+    creator: (host: Node, value: string) => T,
+  ): void {
+    // Attempt to get any current usage of the value
+    const record = usages.get(value);
+
+    // If existing, just increment the usage count
+    if (record) {
+      record.usage++;
+    } else {
+      // Otherwise, create an entry to track the elements and add element for each host
+      usages.set(value, {usage: 1, elements: [...this.hosts].map((host) => creator(host, value))});
+    }
+  }
+
+  protected remove<T extends HTMLElement>(
+    value: string,
+    usages: Map<string, UsageRecord<T>>,
+  ): void {
+    // Attempt to get any current usage of the value
+    const record = usages.get(value);
+
+    // If there is a record, reduce the usage count and if no longer used,
+    // remove from DOM and delete usage record.
+    if (record) {
+      record.usage--;
+      if (record.usage <= 0) {
+        removeAll(record.elements);
+        usages.delete(value);
       }
     }
   }
 
   ngOnDestroy(): void {
-    const styleNodesInDOM = this.styleNodesInDOM;
-    if (styleNodesInDOM) {
-      styleNodesInDOM.forEach((node) => node.remove());
-      styleNodesInDOM.clear();
+    const serverStyles = this.serverStyles;
+    if (serverStyles) {
+      removeAll(serverStyles.values());
+      serverStyles.clear();
     }
 
-    for (const style of this.getAllStyles()) {
-      this.onStyleRemoved(style);
+    for (const [, {elements}] of this.embeddedStyles) {
+      removeAll(elements);
     }
-
-    this.resetHostNodes();
+    this.hosts.clear();
   }
 
+  /**
+   * Adds a host node to the set of style hosts and adds all existing style usage to
+   * the newly added host node.
+   *
+   * This is currently only used for Shadow DOM encapsulation mode.
+   */
   addHost(hostNode: Node): void {
-    this.hostNodes.add(hostNode);
+    this.hosts.add(hostNode);
 
-    for (const style of this.getAllStyles()) {
-      this.addStyleToHost(hostNode, style);
+    for (const [style, {elements}] of this.embeddedStyles) {
+      elements.push(this.getStyleElement(hostNode, style));
     }
   }
 
   removeHost(hostNode: Node): void {
-    this.hostNodes.delete(hostNode);
+    this.hosts.delete(hostNode);
   }
 
-  private getAllStyles(): IterableIterator<string> {
-    return this.styleRef.keys();
-  }
-
-  private onStyleAdded(style: string): void {
-    for (const host of this.hostNodes) {
-      this.addStyleToHost(host, style);
-    }
-  }
-
-  private onStyleRemoved(style: string): void {
-    const styleRef = this.styleRef;
-    styleRef.get(style)?.elements?.forEach((node) => node.remove());
-    styleRef.delete(style);
-  }
-
-  private collectServerRenderedStyles(): Map<string, HTMLStyleElement> | null {
-    const styles = this.doc.head?.querySelectorAll<HTMLStyleElement>(
-      `style[${APP_ID_ATTRIBUTE_NAME}="${this.appId}"]`,
-    );
-
-    if (styles?.length) {
-      const styleMap = new Map<string, HTMLStyleElement>();
-
-      styles.forEach((style) => {
-        if (style.textContent != null) {
-          styleMap.set(style.textContent, style);
-        }
-      });
-
-      return styleMap;
+  private addElement<T extends HTMLElement>(host: Node, element: T): T {
+    // Add a nonce if present
+    if (this.nonce) {
+      element.setAttribute('nonce', this.nonce);
     }
 
-    return null;
-  }
-
-  private changeUsageCount(style: string, delta: number): number {
-    const map = this.styleRef;
-    if (map.has(style)) {
-      const styleRefValue = map.get(style)!;
-      styleRefValue.usage += delta;
-
-      return styleRefValue.usage;
+    // Add application identifier when on the server to support client-side reuse
+    if (this.isServer) {
+      element.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
     }
 
-    map.set(style, {usage: delta, elements: []});
-    return delta;
+    // Insert the element into the DOM with the host node as parent
+    return host.appendChild(element);
   }
 
   private getStyleElement(host: Node, style: string): HTMLStyleElement {
-    const styleNodesInDOM = this.styleNodesInDOM;
-    const styleEl = styleNodesInDOM?.get(style);
+    const styleNodesInDOM = this.serverStyles;
+    let styleEl = styleNodesInDOM?.get(style);
     if (styleEl?.parentNode === host) {
       // `styleNodesInDOM` cannot be undefined due to the above `styleNodesInDOM?.get`.
       styleNodesInDOM!.delete(style);
@@ -153,42 +214,12 @@ export class SharedStylesHost implements OnDestroy {
         // This attribute is solely used for debugging purposes.
         styleEl.setAttribute('ng-style-reused', '');
       }
-
-      return styleEl;
     } else {
-      const styleEl = this.doc.createElement('style');
-
-      if (this.nonce) {
-        styleEl.setAttribute('nonce', this.nonce);
-      }
-
+      styleEl = this.doc.createElement('style');
       styleEl.textContent = style;
-
-      if (this.platformIsServer) {
-        styleEl.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
-      }
-
-      host.appendChild(styleEl);
-
-      return styleEl;
+      this.addElement(host, styleEl);
     }
-  }
 
-  private addStyleToHost(host: Node, style: string): void {
-    const styleEl = this.getStyleElement(host, style);
-    const styleRef = this.styleRef;
-    const styleElRef = styleRef.get(style)?.elements;
-    if (styleElRef) {
-      styleElRef.push(styleEl);
-    } else {
-      styleRef.set(style, {elements: [styleEl], usage: 1});
-    }
-  }
-
-  private resetHostNodes(): void {
-    const hostNodes = this.hostNodes;
-    hostNodes.clear();
-    // Re-add the head element back since this is the default host.
-    hostNodes.add(this.doc.head);
+    return styleEl;
   }
 }
