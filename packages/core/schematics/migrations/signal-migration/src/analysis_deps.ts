@@ -45,13 +45,17 @@ export function prepareAnalysisInfo(
   compiler: NgCompiler,
   programAbsoluteRootPaths?: string[],
 ) {
-  // Get template type checker & analyze sync.
-  const templateTypeChecker = compiler.getTemplateTypeChecker();
+  // Analyze sync and retrieve necessary dependencies.
+  // Note: `getTemplateTypeChecker` requires the `enableTemplateTypeChecker` flag, but
+  // this has negative effects as it causes optional TCB operations to execute, which may
+  // error with unsuccessful reference emits that previously were ignored outside of the migration.
+  // The migration is resilient to TCB information missing, so this is fine, and all the information
+  // we need is part of required TCB operations anyway.
+  const {refEmitter, metaReader, templateTypeChecker} = compiler['ensureAnalyzed']();
 
   // Generate all type check blocks.
   templateTypeChecker.generateAllTypeCheckBlocks();
 
-  const {refEmitter, metaReader} = compiler['ensureAnalyzed']();
   const typeChecker = userProgram.getTypeChecker();
 
   const reflector = new TypeScriptReflectionHost(typeChecker);
