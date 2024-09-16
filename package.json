@@ -178,7 +178,7 @@
     "@codemirror/search": "^6.5.5",
     "@codemirror/state": "^6.3.3",
     "@codemirror/view": "^6.22.2",
-    "@inquirer/prompts": "^5.3.6",
+    "@inquirer/prompts": "^6.0.0",
     "@lezer/common": "^1.1.2",
     "@lezer/highlight": "^1.2.0",
     "@lezer/javascript": "^1.4.10",
