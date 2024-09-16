@@ -21,7 +21,7 @@ export class BaseButton {}
 ```angular-ts
 // ./app.component.ts
 import { Component } from '@angular/core';
-import { BaseButtonComponent } from './base-button/base-button.component.ts';
+import { BaseButton } from './base-button/base-button.component.ts';
 
 @Component({
   selector: 'app-root',
