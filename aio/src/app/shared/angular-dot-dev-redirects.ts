@@ -222,7 +222,7 @@ const linksMap = new Map<string, string>([
   ['guide/file-structure', 'reference/configs/file-structure'],
   ['guide/workspace-config', 'reference/configs/workspace-config'],
   ['guide/npm-packages', 'reference/configs/npm-packages'],
-  ['guide/typescript-configuration', 'reference/configs/typescript-configuration'],
+  ['guide/typescript-configuration', 'reference/configs/angular-compiler-options'],
   ['guide/strict-mode', 'tools/cli/template-typecheck#strict-mode'],
   ['guide/ngmodules', 'guide/ngmodules'],
   ['guide/ngmodules-vs-jsmodule', 'guide/ngmodules'],
