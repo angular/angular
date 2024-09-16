@@ -86,7 +86,6 @@ export function executeAnalysisPhase(
   );
   // Register pass 3. Check incompatible patterns pass.
   pass3__checkIncompatiblePatterns(
-    host,
     inheritanceGraph,
     typeChecker,
     pass2And3SourceFileVisitor,
@@ -99,14 +98,14 @@ export function executeAnalysisPhase(
   // Determine incompatible inputs based on resolved references.
   for (const reference of result.references) {
     if (isTsReference(reference) && reference.from.isWrite) {
-      knownInputs.markInputAsIncompatible(reference.target, {
+      knownInputs.markFieldIncompatible(reference.target, {
         reason: InputIncompatibilityReason.WriteAssignment,
         context: reference.from.node,
       });
     }
     if (isTemplateReference(reference) || isHostBindingReference(reference)) {
       if (reference.from.isWrite) {
-        knownInputs.markInputAsIncompatible(reference.target, {
+        knownInputs.markFieldIncompatible(reference.target, {
           reason: InputIncompatibilityReason.WriteAssignment,
           // No TS node context available for template or host bindings.
           context: null,
@@ -118,7 +117,7 @@ export function executeAnalysisPhase(
     // https://github.com/angular/angular/pull/55456.
     if (isTemplateReference(reference)) {
       if (reference.from.isLikelyPartOfNarrowing) {
-        knownInputs.markInputAsIncompatible(reference.target, {
+        knownInputs.markFieldIncompatible(reference.target, {
           reason: InputIncompatibilityReason.PotentiallyNarrowedInTemplateButNoSupportYet,
           context: null,
         });

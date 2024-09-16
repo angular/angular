@@ -7,9 +7,8 @@
  */
 
 import ts from 'typescript';
-import {KnownInputs} from '../input_detection/known_inputs';
-import {attemptRetrieveInputFromSymbol} from '../input_detection/nodes_to_input';
-import {MigrationHost} from '../migration_host';
+import {ClassFieldDescriptor, KnownFields} from '../passes/reference_resolution/known_fields';
+import {ProblematicFieldRegistry} from '../passes/problematic_patterns/problematic_field_registry';
 import {InputIncompatibilityReason} from '../input_detection/incompatibility';
 
 /**
@@ -17,11 +16,10 @@ import {InputIncompatibilityReason} from '../input_detection/incompatibility';
  * the input signal. There is no way to change the value inside the input signal,
  * and hence observing is not possible.
  */
-export class SpyOnInputPattern {
+export class SpyOnFieldPattern<D extends ClassFieldDescriptor> {
   constructor(
-    private host: MigrationHost,
     private checker: ts.TypeChecker,
-    private knownInputs: KnownInputs,
+    private fields: KnownFields<D> & ProblematicFieldRegistry<D>,
   ) {}
 
   detect(node: ts.Node) {
@@ -39,14 +37,14 @@ export class SpyOnInputPattern {
         return;
       }
 
-      const inputTarget = this.knownInputs.attemptRetrieveDescriptorFromSymbol(spyProperty);
-      if (inputTarget === null) {
+      const fieldTarget = this.fields.attemptRetrieveDescriptorFromSymbol(spyProperty);
+      if (fieldTarget === null) {
         return;
       }
 
-      this.knownInputs.markInputAsIncompatible(inputTarget, {
-        context: node,
+      this.fields.markFieldIncompatible(fieldTarget, {
         reason: InputIncompatibilityReason.SpyOnThatOverwritesField,
+        context: node,
       });
     }
   }
