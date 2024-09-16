@@ -345,12 +345,12 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#04c3622a81b04febb31ad4da26b18bb80a80fe14":
-  version "0.0.0-67489d145ae6769e0ca5408ecc91b6bbf8e56733"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#04c3622a81b04febb31ad4da26b18bb80a80fe14"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#3ca0e724cf24354bc2344b51cc0028a0ebeeed75":
+  version "0.0.0-a95d79881ee8d7da8d65579948b296edfe6722c1"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#3ca0e724cf24354bc2344b51cc0028a0ebeeed75"
   dependencies:
     "@angular/benchpress" "0.3.0"
-    "@angular/build" "19.0.0-next.0"
+    "@angular/build" "19.0.0-next.6"
     "@babel/core" "^7.16.0"
     "@babel/helper-annotate-as-pure" "^7.18.6"
     "@babel/plugin-proposal-async-generator-functions" "^7.20.1"
@@ -361,7 +361,7 @@
     "@bazel/runfiles" "5.8.1"
     "@bazel/terser" "5.8.1"
     "@bazel/typescript" "5.8.1"
-    "@microsoft/api-extractor" "7.47.6"
+    "@microsoft/api-extractor" "7.47.9"
     "@types/browser-sync" "^2.26.3"
     "@types/minimatch" "^5.1.2"
     "@types/node" "^18.19.21"
@@ -376,12 +376,12 @@
     prettier "3.3.3"
     protractor "^7.0.0"
     selenium-webdriver "^4.18.1"
-    send "^0.18.0"
+    send "^0.19.0"
     source-map "^0.7.4"
     tmp "^0.2.1"
     "true-case-path" "^2.2.1"
     tslib "^2.5.2"
-    typescript "5.5.4"
+    typescript "5.6.2"
     uuid "^10.0.0"
     yargs "^17.0.0"
 
@@ -548,11 +548,11 @@
     "@material/typography" "15.0.0-canary.7f224ddd4.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#806cbfc987d0df61f2ed90a24e2d4176e8a50a5b":
-  version "0.0.0-03b8a7dffd1205e061f0bee949024ebefc2a6592"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#806cbfc987d0df61f2ed90a24e2d4176e8a50a5b"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#8b01aab7d66a133165744f0ef947d56015831887":
+  version "0.0.0-a95d79881ee8d7da8d65579948b296edfe6722c1"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#8b01aab7d66a133165744f0ef947d56015831887"
   dependencies:
-    "@octokit/rest" "20.1.1"
+    "@octokit/rest" "21.0.2"
     "@types/semver" "^7.3.6"
     "@types/supports-color" "^8.1.1"
     "@yarnpkg/lockfile" "^1.1.0"
@@ -561,6 +561,7 @@
     supports-color "9.4.0"
     typed-graphqlify "^3.1.1"
     typescript "~4.9.0"
+    yaml "2.5.1"
 
 "@apidevtools/json-schema-ref-parser@^9.0.3":
   version "9.1.2"

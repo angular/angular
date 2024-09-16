@@ -1,7 +1,7 @@
-diff --git a/node_modules/@angular/ng-dev/bundles/chunk-UNUYI25Y.mjs b/node_modules/@angular/ng-dev/bundles/chunk-UNUYI25Y.mjs
-index ff6ab3e..58998e7 100755
---- a/node_modules/@angular/ng-dev/bundles/chunk-UNUYI25Y.mjs
-+++ b/node_modules/@angular/ng-dev/bundles/chunk-UNUYI25Y.mjs
+diff --git a/node_modules/@angular/ng-dev/bundles/chunk-VUE4T6L6.mjs b/node_modules/@angular/ng-dev/bundles/chunk-VUE4T6L6.mjs
+index e96daf9..c3555a3 100755
+--- a/node_modules/@angular/ng-dev/bundles/chunk-VUE4T6L6.mjs
++++ b/node_modules/@angular/ng-dev/bundles/chunk-VUE4T6L6.mjs
 @@ -820,7 +820,7 @@ function getCachedConfig() {
  }
  
