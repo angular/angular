@@ -52,7 +52,6 @@ export class SignalInputMigration extends TsurgeComplexMigration<
   // Override the default ngtsc program creation, to add extra flags.
   override createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo {
     return createNgtscProgram(tsconfigAbsPath, fs, {
-      _enableTemplateTypeChecker: true,
       _compilePoisonedComponents: true,
       // We want to migrate non-exported classes too.
       compileNonExportedClasses: true,

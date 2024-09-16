@@ -57,6 +57,9 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     // TODO: This stage for this migration doesn't necessarily need a full
     // compilation unit program.
 
+    // Pre-Analyze the program and get access to the template type checker.
+    const {templateTypeChecker} = await info.ngCompiler['ensureAnalyzed']();
+
     const {sourceFiles, program} = info;
     const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
@@ -82,7 +85,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         reflector,
         info.ngCompiler['resourceManager'],
         evaluator,
-        info.ngCompiler.getTemplateTypeChecker(),
+        templateTypeChecker,
         // Eager, rather expensive tracking of all references.
         // We don't know yet if something refers to a different query or not, so we
         // eagerly detect such and later filter those problematic references that
@@ -140,6 +143,8 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
   ): Promise<Replacement[]> {
     assert(info.ngCompiler !== null, 'Expected queries migration to have an Angular program.');
 
+    // Pre-Analyze the program and get access to the template type checker.
+    const {templateTypeChecker} = await info.ngCompiler['ensureAnalyzed']();
     const {program, sourceFiles} = info;
     const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
@@ -206,7 +211,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         reflector,
         info.ngCompiler['resourceManager'],
         evaluator,
-        info.ngCompiler.getTemplateTypeChecker(),
+        templateTypeChecker,
         knownQueries,
         referenceResult,
       ).visitor,

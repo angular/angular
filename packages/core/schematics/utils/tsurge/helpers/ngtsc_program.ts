@@ -45,8 +45,6 @@ export function createNgtscProgram(
     tsconfig.rootNames,
     {
       ...tsconfig.options,
-      // Migrations commonly make use of TCB information.
-      _enableTemplateTypeChecker: true,
       // Avoid checking libraries to speed up migrations.
       skipLibCheck: true,
       skipDefaultLibCheck: true,
