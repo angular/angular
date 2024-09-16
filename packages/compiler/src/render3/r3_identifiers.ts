@@ -252,6 +252,32 @@ export class Identifiers {
     name: 'ɵɵdeferPrefetchOnViewport',
     moduleName: CORE,
   };
+  static deferHydrateWhen: o.ExternalReference = {name: 'ɵɵdeferHydrateWhen', moduleName: CORE};
+  static deferHydrateNever: o.ExternalReference = {name: 'ɵɵdeferHydrateNever', moduleName: CORE};
+  static deferHydrateOnIdle: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnIdle',
+    moduleName: CORE,
+  };
+  static deferHydrateOnImmediate: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnImmediate',
+    moduleName: CORE,
+  };
+  static deferHydrateOnTimer: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnTimer',
+    moduleName: CORE,
+  };
+  static deferHydrateOnHover: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnHover',
+    moduleName: CORE,
+  };
+  static deferHydrateOnInteraction: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnInteraction',
+    moduleName: CORE,
+  };
+  static deferHydrateOnViewport: o.ExternalReference = {
+    name: 'ɵɵdeferHydrateOnViewport',
+    moduleName: CORE,
+  };
   static deferEnableTimerScheduling: o.ExternalReference = {
     name: 'ɵɵdeferEnableTimerScheduling',
     moduleName: CORE,
