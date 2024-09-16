@@ -1269,6 +1269,9 @@
     "name": "remove"
   },
   {
+    "name": "removeAll"
+  },
+  {
     "name": "removeDehydratedView"
   },
   {
