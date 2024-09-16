@@ -510,6 +510,16 @@ export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: 
   }
 }
 
+// TODO: implement these instructions.
+export function ɵɵdeferHydrateWhen(): void {}
+export function ɵɵdeferHydrateNever(): void {}
+export function ɵɵdeferHydrateOnIdle(): void {}
+export function ɵɵdeferHydrateOnImmediate(): void {}
+export function ɵɵdeferHydrateOnTimer(): void {}
+export function ɵɵdeferHydrateOnHover(): void {}
+export function ɵɵdeferHydrateOnInteraction(): void {}
+export function ɵɵdeferHydrateOnViewport(): void {}
+
 /********** Helper functions **********/
 
 /**

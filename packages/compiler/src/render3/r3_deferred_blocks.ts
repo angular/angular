@@ -64,7 +64,7 @@ export function createDeferredBlock(
   const errors: ParseError[] = [];
   const {placeholder, loading, error} = parseConnectedBlocks(connectedBlocks, errors, visitor);
   const {triggers, prefetchTriggers, hydrateTriggers} = parsePrimaryTriggers(
-    ast.parameters,
+    ast,
     bindingParser,
     errors,
     placeholder,
@@ -264,7 +264,7 @@ function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBloc
 }
 
 function parsePrimaryTriggers(
-  params: html.BlockParameter[],
+  ast: html.Block,
   bindingParser: BindingParser,
   errors: ParseError[],
   placeholder: t.DeferredBlockPlaceholder | null,
@@ -273,7 +273,7 @@ function parsePrimaryTriggers(
   const prefetchTriggers: t.DeferredBlockTriggers = {};
   const hydrateTriggers: t.DeferredBlockTriggers = {};
 
-  for (const param of params) {
+  for (const param of ast.parameters) {
     // The lexer ignores the leading spaces so we can assume
     // that the expression starts with a keyword.
     if (WHEN_PARAMETER_PATTERN.test(param.expression)) {
@@ -293,6 +293,15 @@ function parsePrimaryTriggers(
     } else {
       errors.push(new ParseError(param.sourceSpan, 'Unrecognized trigger'));
     }
+  }
+
+  if (hydrateTriggers.never && Object.keys(hydrateTriggers).length > 1) {
+    errors.push(
+      new ParseError(
+        ast.startSourceSpan,
+        'Cannot specify additional `hydrate` triggers if `hydrate never` is present',
+      ),
+    );
   }
 
   return {triggers, prefetchTriggers, hydrateTriggers};

@@ -1676,6 +1676,16 @@ describe('type check blocks', () => {
 
       expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
     });
+
+    it('should generate `hydrate when` trigger', () => {
+      const TEMPLATE = `
+        @defer (hydrate when shouldShow() && isVisible) {
+          {{main()}}
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
+    });
   });
 
   describe('conditional blocks', () => {

@@ -279,14 +279,19 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           case ir.DeferTriggerKind.Interaction:
           case ir.DeferTriggerKind.Hover:
           case ir.DeferTriggerKind.Viewport:
-            if (op.trigger.targetSlot?.slot == null || op.trigger.targetSlotViewSteps === null) {
-              throw new Error(
-                `Slot or view steps not set in trigger reification for trigger kind ${op.trigger.kind}`,
-              );
-            }
-            args = [op.trigger.targetSlot.slot];
-            if (op.trigger.targetSlotViewSteps !== 0) {
-              args.push(op.trigger.targetSlotViewSteps);
+            // `hydrate` triggers don't support targets.
+            if (op.modifier === ir.DeferOpModifierKind.HYDRATE) {
+              args = [];
+            } else {
+              if (op.trigger.targetSlot?.slot == null || op.trigger.targetSlotViewSteps === null) {
+                throw new Error(
+                  `Slot or view steps not set in trigger reification for trigger kind ${op.trigger.kind}`,
+                );
+              }
+              args = [op.trigger.targetSlot.slot];
+              if (op.trigger.targetSlotViewSteps !== 0) {
+                args.push(op.trigger.targetSlotViewSteps);
+              }
             }
             break;
           default:
@@ -296,10 +301,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
               }`,
             );
         }
-        ir.OpList.replace(
-          op,
-          ng.deferOn(op.trigger.kind, args, op.prefetch, op.hydrate, op.sourceSpan),
-        );
+        ir.OpList.replace(op, ng.deferOn(op.trigger.kind, args, op.modifier, op.sourceSpan));
         break;
       case ir.OpKind.ProjectionDef:
         ir.OpList.replace<ir.CreateOp>(op, ng.projectionDef(op.def));
@@ -542,7 +544,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.repeater(op.collection, op.sourceSpan));
         break;
       case ir.OpKind.DeferWhen:
-        ir.OpList.replace(op, ng.deferWhen(op.prefetch, op.hydrate, op.expr, op.sourceSpan));
+        ir.OpList.replace(op, ng.deferWhen(op.modifier, op.expr, op.sourceSpan));
         break;
       case ir.OpKind.StoreLet:
         throw new Error(`AssertionError: unexpected storeLet ${op.declaredName}`);

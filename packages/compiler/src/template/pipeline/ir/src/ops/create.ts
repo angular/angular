@@ -12,6 +12,7 @@ import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {
   BindingKind,
+  DeferOpModifierKind,
   DeferTriggerKind,
   I18nContextKind,
   I18nParamValueFlags,
@@ -1055,14 +1056,9 @@ export interface DeferOnOp extends Op<CreateOp> {
   trigger: DeferTrigger;
 
   /**
-   * Whether to emit the prefetch version of the instruction.
+   * Modifier set on the trigger by the user (e.g. `hydrate`, `prefetch` etc).
    */
-  prefetch: boolean;
-
-  /**
-   * Whether to emit the hydrate version of the instruction.
-   */
-  hydrate: boolean;
+  modifier: DeferOpModifierKind;
 
   sourceSpan: ParseSourceSpan;
 }
@@ -1070,16 +1066,14 @@ export interface DeferOnOp extends Op<CreateOp> {
 export function createDeferOnOp(
   defer: XrefId,
   trigger: DeferTrigger,
-  prefetch: boolean,
-  hydrate: boolean,
+  modifier: DeferOpModifierKind,
   sourceSpan: ParseSourceSpan,
 ): DeferOnOp {
   return {
     kind: OpKind.DeferOn,
     defer,
     trigger,
-    prefetch,
-    hydrate,
+    modifier,
     sourceSpan,
     ...NEW_OP,
   };

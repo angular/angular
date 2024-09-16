@@ -38,6 +38,13 @@ enum OnTriggerType {
   NEVER = 'never',
 }
 
+/** Function that validates the structure of a reference-based trigger. */
+type ReferenceTriggerValidator = (
+  type: OnTriggerType,
+  parameters: string[],
+  placeholder: t.DeferredBlockPlaceholder | null,
+) => void;
+
 /** Parses a `when` deferred trigger. */
 export function parseNeverTrigger(
   {expression, sourceSpan}: html.BlockParameter,
@@ -79,6 +86,7 @@ export function parseWhenTrigger(
     sourceSpan.start.moveBy(whenIndex + 'when'.length),
   );
   const prefetchSpan = getPrefetchSpan(expression, sourceSpan);
+  const hydrateSpan = getHydrateSpan(expression, sourceSpan);
 
   // This is here just to be safe, we shouldn't enter this function
   // in the first place if a block doesn't have the "when" keyword.
@@ -96,7 +104,7 @@ export function parseWhenTrigger(
       'when',
       triggers,
       errors,
-      new t.BoundDeferredTrigger(parsed, sourceSpan, prefetchSpan, whenSourceSpan, null),
+      new t.BoundDeferredTrigger(parsed, sourceSpan, prefetchSpan, whenSourceSpan, hydrateSpan),
     );
   }
 }
@@ -128,6 +136,9 @@ export function parseOnTrigger(
       sourceSpan,
       triggers,
       errors,
+      expression.startsWith('hydrate')
+        ? validateHydrateReferenceBasedTrigger
+        : validatePlainReferenceBasedTrigger,
       placeholder,
       prefetchSpan,
       onSourceSpan,
@@ -161,6 +172,7 @@ class OnTriggerParser {
     private span: ParseSourceSpan,
     private triggers: t.DeferredBlockTriggers,
     private errors: ParseError[],
+    private validator: ReferenceTriggerValidator,
     private placeholder: t.DeferredBlockPlaceholder | null,
     private prefetchSpan: ParseSourceSpan | null,
     private onSourceSpan: ParseSourceSpan,
@@ -279,6 +291,7 @@ class OnTriggerParser {
               this.onSourceSpan,
               this.hydrateSpan,
               this.placeholder,
+              this.validator,
             ),
           );
           break;
@@ -308,6 +321,7 @@ class OnTriggerParser {
               this.onSourceSpan,
               this.hydrateSpan,
               this.placeholder,
+              this.validator,
             ),
           );
           break;
@@ -323,6 +337,7 @@ class OnTriggerParser {
               this.onSourceSpan,
               this.hydrateSpan,
               this.placeholder,
+              this.validator,
             ),
           );
           break;
@@ -441,21 +456,6 @@ function trackTrigger(
   }
 }
 
-function createNeverTrigger(
-  parameters: string[],
-  nameSpan: ParseSourceSpan,
-  sourceSpan: ParseSourceSpan,
-  prefetchSpan: ParseSourceSpan | null,
-  onSourceSpan: ParseSourceSpan | null,
-  hydrateSpan: ParseSourceSpan | null,
-): t.NeverDeferredTrigger {
-  if (parameters.length > 0) {
-    throw new Error(`"${OnTriggerType.NEVER}" trigger cannot have parameters`);
-  }
-
-  return new t.NeverDeferredTrigger(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
-}
-
 function createIdleTrigger(
   parameters: string[],
   nameSpan: ParseSourceSpan,
@@ -528,8 +528,9 @@ function createHoverTrigger(
   onSourceSpan: ParseSourceSpan | null,
   hydrateSpan: ParseSourceSpan | null,
   placeholder: t.DeferredBlockPlaceholder | null,
+  validator: ReferenceTriggerValidator,
 ): t.HoverDeferredTrigger {
-  validateReferenceBasedTrigger(OnTriggerType.HOVER, parameters, placeholder, hydrateSpan);
+  validator(OnTriggerType.HOVER, parameters, placeholder);
   return new t.HoverDeferredTrigger(
     parameters[0] ?? null,
     nameSpan,
@@ -548,8 +549,9 @@ function createInteractionTrigger(
   onSourceSpan: ParseSourceSpan | null,
   hydrateSpan: ParseSourceSpan | null,
   placeholder: t.DeferredBlockPlaceholder | null,
+  validator: ReferenceTriggerValidator,
 ): t.InteractionDeferredTrigger {
-  validateReferenceBasedTrigger(OnTriggerType.INTERACTION, parameters, placeholder, hydrateSpan);
+  validator(OnTriggerType.INTERACTION, parameters, placeholder);
   return new t.InteractionDeferredTrigger(
     parameters[0] ?? null,
     nameSpan,
@@ -568,8 +570,9 @@ function createViewportTrigger(
   onSourceSpan: ParseSourceSpan | null,
   hydrateSpan: ParseSourceSpan | null,
   placeholder: t.DeferredBlockPlaceholder | null,
+  validator: ReferenceTriggerValidator,
 ): t.ViewportDeferredTrigger {
-  validateReferenceBasedTrigger(OnTriggerType.VIEWPORT, parameters, placeholder, hydrateSpan);
+  validator(OnTriggerType.VIEWPORT, parameters, placeholder);
   return new t.ViewportDeferredTrigger(
     parameters[0] ?? null,
     nameSpan,
@@ -580,17 +583,22 @@ function createViewportTrigger(
   );
 }
 
-function validateReferenceBasedTrigger(
+/**
+ * Checks whether the structure of a non-hydrate reference-based trigger is valid.
+ * @param type Type of the trigger being validated.
+ * @param parameters Parameters of the trigger.
+ * @param placeholder Placeholder of the defer block.
+ */
+function validatePlainReferenceBasedTrigger(
   type: OnTriggerType,
   parameters: string[],
   placeholder: t.DeferredBlockPlaceholder | null,
-  hydrateSpan: ParseSourceSpan | null,
 ) {
   if (parameters.length > 1) {
     throw new Error(`"${type}" trigger can only have zero or one parameters`);
   }
 
-  if (parameters.length === 0 && hydrateSpan === null) {
+  if (parameters.length === 0) {
     if (placeholder === null) {
       throw new Error(
         `"${type}" trigger with no parameters can only be placed on an @defer that has a @placeholder block`,
@@ -603,6 +611,17 @@ function validateReferenceBasedTrigger(
           `@placeholder block with exactly one root element node`,
       );
     }
+  }
+}
+
+/**
+ * Checks whether the structure of a hydrate trigger is valid.
+ * @param type Type of the trigger being validated.
+ * @param parameters Parameters of the trigger.
+ */
+function validateHydrateReferenceBasedTrigger(type: OnTriggerType, parameters: string[]) {
+  if (parameters.length > 0) {
+    throw new Error(`Hydration trigger "${type}" cannot have parameters`);
   }
 }
 

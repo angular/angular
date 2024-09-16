@@ -373,9 +373,10 @@ export class DeferredBlock extends BlockNode implements Node {
   }
 
   visitAll(visitor: Visitor<unknown>): void {
+    // Visit the hydrate triggers first to match their insertion order.
+    this.visitTriggers(this.definedHydrateTriggers, this.hydrateTriggers, visitor);
     this.visitTriggers(this.definedTriggers, this.triggers, visitor);
     this.visitTriggers(this.definedPrefetchTriggers, this.prefetchTriggers, visitor);
-    this.visitTriggers(this.definedHydrateTriggers, this.hydrateTriggers, visitor);
     visitAll(visitor, this.children);
     const remainingBlocks = [this.placeholder, this.loading, this.error].filter(
       (x) => x !== null,

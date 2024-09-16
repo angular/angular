@@ -2586,7 +2586,11 @@ class Scope {
   private appendDeferredBlock(block: TmplAstDeferredBlock): void {
     this.appendDeferredTriggers(block, block.triggers);
     this.appendDeferredTriggers(block, block.prefetchTriggers);
-    this.appendDeferredTriggers(block, block.hydrateTriggers);
+
+    // Only the `when` hydration trigger needs to be checked.
+    if (block.hydrateTriggers.when) {
+      this.opQueue.push(new TcbExpressionOp(this.tcb, this, block.hydrateTriggers.when.value));
+    }
 
     this.appendChildren(block);
 
@@ -2611,15 +2615,15 @@ class Scope {
       this.opQueue.push(new TcbExpressionOp(this.tcb, this, triggers.when.value));
     }
 
-    if (triggers.hover !== undefined && triggers.hover.hydrateSpan === null) {
+    if (triggers.hover !== undefined) {
       this.appendReferenceBasedDeferredTrigger(block, triggers.hover);
     }
 
-    if (triggers.interaction !== undefined && triggers.interaction.hydrateSpan === null) {
+    if (triggers.interaction !== undefined) {
       this.appendReferenceBasedDeferredTrigger(block, triggers.interaction);
     }
 
-    if (triggers.viewport !== undefined && triggers.viewport.hydrateSpan === null) {
+    if (triggers.viewport !== undefined) {
       this.appendReferenceBasedDeferredTrigger(block, triggers.viewport);
     }
   }

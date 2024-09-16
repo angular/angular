@@ -4469,6 +4469,32 @@ suppress
         ]);
       });
 
+      it('should check `hydrate when` trigger expression', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @defer (hydrate when isVisible() || does_not_exist) {Hello}
+            \`,
+            standalone: true,
+          })
+          export class Main {
+            isVisible() {
+              return true;
+            }
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Property 'does_not_exist' does not exist on type 'Main'.`,
+        ]);
+      });
+
       it('should report if a deferred trigger reference does not exist', () => {
         env.write(
           'test.ts',

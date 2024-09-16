@@ -646,6 +646,14 @@ describe('quick info', () => {
             });
           });
 
+          it('hydrate (when)', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (hydra¦te when title) { }`,
+              expectedSpanText: 'hydrate',
+              expectedDisplayString: '(keyword) hydrate',
+            });
+          });
+
           it('on', () => {
             expectQuickInfo({
               templateOverride: `@defer (o¦n immediate) { } `,
@@ -659,6 +667,14 @@ describe('quick info', () => {
               templateOverride: `@defer (prefet¦ch on immediate) { }`,
               expectedSpanText: 'prefetch',
               expectedDisplayString: '(keyword) prefetch',
+            });
+          });
+
+          it('hydrate (on)', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (hydra¦te on immediate) { }`,
+              expectedSpanText: 'hydrate',
+              expectedDisplayString: '(keyword) hydrate',
             });
           });
         });

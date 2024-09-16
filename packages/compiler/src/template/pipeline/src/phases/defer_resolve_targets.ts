@@ -121,7 +121,13 @@ export function resolveDeferTargetNames(job: ComponentCompilationJob): void {
           break;
         case ir.OpKind.DeferOn:
           const deferOp = defers.get(op.defer)!;
-          resolveTrigger(unit, op, op.hydrate ? deferOp.mainView : deferOp.placeholderView);
+          resolveTrigger(
+            unit,
+            op,
+            op.modifier === ir.DeferOpModifierKind.HYDRATE
+              ? deferOp.mainView
+              : deferOp.placeholderView,
+          );
           break;
       }
     }

@@ -592,3 +592,12 @@ export enum TemplateKind {
   Structural,
   Block,
 }
+
+/**
+ * Kinds of modifiers for a defer block.
+ */
+export const enum DeferOpModifierKind {
+  NONE = 'none',
+  PREFETCH = 'prefetch',
+  HYDRATE = 'hydrate',
+}
