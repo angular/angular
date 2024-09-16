@@ -271,62 +271,71 @@ export function defer(
 const deferTriggerToR3TriggerInstructionsMap = new Map([
   [
     ir.DeferTriggerKind.Idle,
-    [Identifiers.deferOnIdle, Identifiers.deferPrefetchOnIdle, Identifiers.deferHydrateOnIdle],
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnIdle,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnIdle,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnIdle,
+    },
   ],
   [
     ir.DeferTriggerKind.Immediate,
-    [
-      Identifiers.deferOnImmediate,
-      Identifiers.deferPrefetchOnImmediate,
-      Identifiers.deferHydrateOnImmediate,
-    ],
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnImmediate,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnImmediate,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnImmediate,
+    },
   ],
   [
     ir.DeferTriggerKind.Timer,
-    [Identifiers.deferOnTimer, Identifiers.deferPrefetchOnTimer, Identifiers.deferHydrateOnTimer],
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnTimer,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnTimer,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnTimer,
+    },
   ],
   [
     ir.DeferTriggerKind.Hover,
-    [Identifiers.deferOnHover, Identifiers.deferPrefetchOnHover, Identifiers.deferHydrateOnHover],
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnHover,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnHover,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnHover,
+    },
   ],
   [
     ir.DeferTriggerKind.Interaction,
-    [
-      Identifiers.deferOnInteraction,
-      Identifiers.deferPrefetchOnInteraction,
-      Identifiers.deferHydrateOnInteraction,
-    ],
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnInteraction,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnInteraction,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnInteraction,
+    },
   ],
   [
     ir.DeferTriggerKind.Viewport,
-    [
-      Identifiers.deferOnViewport,
-      Identifiers.deferPrefetchOnViewport,
-      Identifiers.deferHydrateOnViewport,
-    ],
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferOnViewport,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferPrefetchOnViewport,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateOnViewport,
+    },
   ],
   [
     ir.DeferTriggerKind.Never,
-    [Identifiers.deferHydrateNever, Identifiers.deferHydrateNever, Identifiers.deferHydrateNever],
+    {
+      [ir.DeferOpModifierKind.NONE]: Identifiers.deferHydrateNever,
+      [ir.DeferOpModifierKind.PREFETCH]: Identifiers.deferHydrateNever,
+      [ir.DeferOpModifierKind.HYDRATE]: Identifiers.deferHydrateNever,
+    },
   ],
 ]);
 
 export function deferOn(
   trigger: ir.DeferTriggerKind,
   args: number[],
-  prefetch: boolean,
-  hydrate: boolean,
+  modifier: ir.DeferOpModifierKind,
   sourceSpan: ParseSourceSpan | null,
 ): ir.CreateOp {
-  const instructions = deferTriggerToR3TriggerInstructionsMap.get(trigger);
-  if (instructions === undefined) {
+  const instructionToCall = deferTriggerToR3TriggerInstructionsMap.get(trigger)?.[modifier];
+  if (instructionToCall === undefined) {
     throw new Error(`Unable to determine instruction for trigger ${trigger}`);
-  }
-  let instructionToCall = instructions[0];
-  if (prefetch) {
-    instructionToCall = instructions[1];
-  } else if (hydrate) {
-    instructionToCall = instructions[2];
   }
   return call(
     instructionToCall,
@@ -425,14 +434,13 @@ export function repeater(
 }
 
 export function deferWhen(
-  prefetch: boolean,
-  hydrate: boolean,
+  modifier: ir.DeferOpModifierKind,
   expr: o.Expression,
   sourceSpan: ParseSourceSpan | null,
 ): ir.UpdateOp {
-  if (prefetch) {
+  if (modifier === ir.DeferOpModifierKind.PREFETCH) {
     return call(Identifiers.deferPrefetchWhen, [expr], sourceSpan);
-  } else if (hydrate) {
+  } else if (modifier === ir.DeferOpModifierKind.HYDRATE) {
     return call(Identifiers.deferHydrateWhen, [expr], sourceSpan);
   }
   return call(Identifiers.deferWhen, [expr], sourceSpan);
