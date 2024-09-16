@@ -61,7 +61,7 @@ export class PartialDirectiveTypeInCatalystTests<D extends ClassFieldDescriptor>
     if (
       symbol?.valueDeclaration === undefined ||
       !ts.isClassDeclaration(symbol.valueDeclaration) ||
-      !this.knownFields.shouldTrackReferencesToClass(symbol.valueDeclaration)
+      !this.knownFields.shouldTrackClassReference(symbol.valueDeclaration)
     ) {
       return null;
     }

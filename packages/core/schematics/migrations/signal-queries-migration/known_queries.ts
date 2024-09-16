@@ -50,7 +50,7 @@ export class KnownQueries implements KnownFields<ClassFieldDescriptor> {
     return null;
   }
 
-  shouldTrackReferencesToClass(clazz: ts.ClassDeclaration): boolean {
+  shouldTrackClassReference(clazz: ts.ClassDeclaration): boolean {
     return this.classToQueryFields.has(clazz);
   }
 

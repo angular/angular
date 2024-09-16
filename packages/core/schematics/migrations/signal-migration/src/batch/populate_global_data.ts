@@ -26,12 +26,12 @@ export function populateKnownInputsFromGlobalData(
     const inputMetadata = knownInputs.get({key})!;
     if (!inputMetadata.isIncompatible() && info.isIncompatible) {
       if (info.isIncompatible.kind === IncompatibilityType.VIA_CLASS) {
-        knownInputs.markDirectiveAsIncompatible(
+        knownInputs.markClassIncompatible(
           inputMetadata.container.clazz,
           info.isIncompatible.reason,
         );
       } else {
-        knownInputs.markInputAsIncompatible(inputMetadata.descriptor, {
+        knownInputs.markFieldIncompatible(inputMetadata.descriptor, {
           context: null, // No context serializable.
           reason: info.isIncompatible.reason,
         });
