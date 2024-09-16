@@ -1010,6 +1010,10 @@ interface DeferImmediateTrigger extends DeferTriggerBase {
   kind: DeferTriggerKind.Immediate;
 }
 
+interface DeferNeverTrigger extends DeferTriggerBase {
+  kind: DeferTriggerKind.Never;
+}
+
 interface DeferHoverTrigger extends DeferTriggerWithTargetBase {
   kind: DeferTriggerKind.Hover;
 }
@@ -1037,7 +1041,8 @@ export type DeferTrigger =
   | DeferTimerTrigger
   | DeferHoverTrigger
   | DeferInteractionTrigger
-  | DeferViewportTrigger;
+  | DeferViewportTrigger
+  | DeferNeverTrigger;
 
 export interface DeferOnOp extends Op<CreateOp> {
   kind: OpKind.DeferOn;
@@ -1054,6 +1059,11 @@ export interface DeferOnOp extends Op<CreateOp> {
    */
   prefetch: boolean;
 
+  /**
+   * Whether to emit the hydrate version of the instruction.
+   */
+  hydrate: boolean;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -1061,6 +1071,7 @@ export function createDeferOnOp(
   defer: XrefId,
   trigger: DeferTrigger,
   prefetch: boolean,
+  hydrate: boolean,
   sourceSpan: ParseSourceSpan,
 ): DeferOnOp {
   return {
@@ -1068,6 +1079,7 @@ export function createDeferOnOp(
     defer,
     trigger,
     prefetch,
+    hydrate,
     sourceSpan,
     ...NEW_OP,
   };
