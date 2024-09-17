@@ -49,7 +49,7 @@ export class ComponentFixture<T> {
     whenStable(): Promise<any>;
 }
 
-// @public (undocumented)
+// @public
 export const ComponentFixtureAutoDetect: InjectionToken<boolean>;
 
 // @public (undocumented)
@@ -121,7 +121,7 @@ export interface TestBed {
     // (undocumented)
     configureTestingModule(moduleDef: TestModuleMetadata): TestBed;
     // (undocumented)
-    createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    createComponent<T>(component: Type<T>, options?: TestBedCreateComponentOptions): ComponentFixture<T>;
     // (undocumented)
     execute(tokens: any[], fn: Function, context?: any): any;
     flushEffects(): void;
@@ -183,6 +183,13 @@ export interface TestBed {
 
 // @public
 export const TestBed: TestBedStatic;
+
+// @public
+export interface TestBedCreateComponentOptions {
+    inputs?: {
+        [templateName: string]: unknown;
+    };
+}
 
 // @public
 export interface TestBedStatic extends TestBed {

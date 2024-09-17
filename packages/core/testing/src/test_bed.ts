@@ -66,6 +66,28 @@ export interface TestBedStatic extends TestBed {
 }
 
 /**
+ * Additional options for configuring the component fixture on creation.
+ *
+ * @publicApi
+ * @see TestBed#createComponent
+ */
+export interface TestBedCreateComponentOptions {
+  /**
+   * The initial inputs for the component.
+   *
+   * These key/value pairs will be used with `ComponentRef#setInput` after the
+   * test component is created and before the fixture is returned from `createComponent`.
+   *
+   * Specifying inputs at creation is useful in conjunction with `ComponentFixtureAutoDetect`
+   * to ensure that the inputs are set before change detection runs on the component.
+   *
+   * @see ComponentRef#setInput
+   * @see ComponentFixture#componentRef
+   */
+  inputs?: {[templateName: string]: unknown};
+}
+
+/**
  * @publicApi
  */
 export interface TestBed {
@@ -160,7 +182,10 @@ export interface TestBed {
 
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBed;
 
-  createComponent<T>(component: Type<T>): ComponentFixture<T>;
+  createComponent<T>(
+    component: Type<T>,
+    options?: TestBedCreateComponentOptions,
+  ): ComponentFixture<T>;
 
   /**
    * Execute any pending effects.
@@ -398,8 +423,11 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.runInInjectionContext(fn);
   }
 
-  static createComponent<T>(component: Type<T>): ComponentFixture<T> {
-    return TestBedImpl.INSTANCE.createComponent(component);
+  static createComponent<T>(
+    component: Type<T>,
+    options?: TestBedCreateComponentOptions,
+  ): ComponentFixture<T> {
+    return TestBedImpl.INSTANCE.createComponent(component, options);
   }
 
   static resetTestingModule(): TestBed {
@@ -668,7 +696,10 @@ export class TestBedImpl implements TestBed {
     return this.overrideComponent(component, {set: {template, templateUrl: null!}});
   }
 
-  createComponent<T>(type: Type<T>): ComponentFixture<T> {
+  createComponent<T>(
+    type: Type<T>,
+    {inputs = {}}: TestBedCreateComponentOptions = {},
+  ): ComponentFixture<T> {
     const testComponentRenderer = this.inject(TestComponentRenderer);
     const rootElId = `root${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
@@ -694,7 +725,11 @@ export class TestBedImpl implements TestBed {
         `#${rootElId}`,
         this.testModuleRef,
       ) as ComponentRef<T>;
-      return this.runInInjectionContext(() => new ComponentFixture(componentRef));
+      const fixture = this.runInInjectionContext(() => new ComponentFixture(componentRef));
+      for (const key of Object.keys(inputs)) {
+        fixture.componentRef.setInput(key, inputs[key]);
+      }
+      return fixture;
     };
     const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
     const ngZone = noNgZone ? null : this.inject(NgZone, null);

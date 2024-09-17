@@ -78,6 +78,8 @@ These are rarely needed.
 ## The `ComponentFixture`
 
 The `TestBed.createComponent<T>` creates an instance of the component `T` and returns a strongly typed `ComponentFixture` for that component.
+You can also pass inputs to the `createComponent` method to ensure initial input values are set up correctly, for example
+`TestBed.createComponent(ExampleComponent, {inputs: {'name': 'Angular'}})`.
 
 The `ComponentFixture` properties and methods provide access to the component, its DOM representation, and aspects of its Angular environment.
 

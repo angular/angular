@@ -36,6 +36,14 @@ export class TestComponentRenderer {
 
 /**
  * @publicApi
+ *
+ * When true, ensures components created with `TestBed#createComponent` are attached to the application.
+ * This more closely matches production behavior for the vast majority of components in Angular.
+ * When using `ComponentFixtureAutoDetect`, consider also defining the initial inputs in the
+ * options of `TestBed#createComponent` to ensure they are set prior to the first change detection
+ * of the component.
+ *
+ * @see TestBedCreateComponentOptions
  */
 export const ComponentFixtureAutoDetect = new InjectionToken<boolean>('ComponentFixtureAutoDetect');
 
