@@ -4631,10 +4631,10 @@
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.5.tgz#db9468cb1b1b5a925b8f34822f1669df0c5472f5"
   integrity sha512-hWtVTC2q7hc7xZ/RLbxapMvDMgUnDvKvMOpKal4DrMyfGBUfB1oKaZlIRr6mJL+If3bAP6sV/QneGzF6tJjZDg==
 
-"@types/chrome@^0.0.269":
-  version "0.0.269"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.269.tgz#5bc2a536bb72a3332119742f31b42b5250d39905"
-  integrity sha512-vF7x8YywnhXX2F06njQ/OE7a3Qeful43C5GUOsUksXWk89WoSFUU3iLeZW8lDpVO9atm8iZIEiLQTRC3H7NOXQ==
+"@types/chrome@^0.0.271":
+  version "0.0.271"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.271.tgz#a7b2525291d35137d595b345f70ffde530b2d744"
+  integrity sha512-K0qgXvkwA5ic+/eygF1xiypHEvCoBgH5lwrhg3yva2mqJuCWyYm0vpZQ22GksAxgGfo0PWev9Zx3plp2clMlwg==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -5277,10 +5277,10 @@
   resolved "https://registry.yarnpkg.com/@types/supports-color/-/supports-color-8.1.3.tgz#b769cdce1d1bb1a3fa794e35b62c62acdf93c139"
   integrity sha512-Hy6UMpxhE3j1tLpl27exp1XqHD7n8chAiNPzWfz16LPZoMMoSc4dzLl6w9qijkEb/r5O1ozdu1CWGA2L83ZeZg==
 
-"@types/systemjs@6.13.5":
-  version "6.13.5"
-  resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-6.13.5.tgz#dcc763ddf50558cea14019f2c17fc3b704ef0141"
-  integrity sha512-VWG7Z1/cb90UQF3HjkVcE+PB2kts93mW/94XQ2XUyHk+4wpzVrTdfXw0xeoaVyI/2XUuBRuCA7Is25RhEfHXNg==
+"@types/systemjs@6.15.1":
+  version "6.15.1"
+  resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-6.15.1.tgz#dae1ec2fbe66af7c6ca1a110e2c9ca6b85135eec"
+  integrity sha512-MfDFIN+jRQOX1JRBrbbb72tsFJnK0n7mtLC+L2Y3t7As/vFxJiFGA/09FE+6ssFheHAibd8Q3gs959c+Sgf/9A==
 
 "@types/tmp@^0.2.1":
   version "0.2.6"
@@ -10896,10 +10896,10 @@ human-signals@^2.1.0:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
   integrity sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==
 
-husky@9.1.4:
-  version "9.1.4"
-  resolved "https://registry.yarnpkg.com/husky/-/husky-9.1.4.tgz#926fd19c18d345add5eab0a42b2b6d9a80259b34"
-  integrity sha512-bho94YyReb4JV7LYWRWxZ/xr6TtOTt8cMfmQ39MQYJ7f/YE268s3GdghGwi+y4zAeqewE5zYLvuhV0M0ijsDEA==
+husky@9.1.6:
+  version "9.1.6"
+  resolved "https://registry.yarnpkg.com/husky/-/husky-9.1.6.tgz#e23aa996b6203ab33534bdc82306b0cf2cb07d6c"
+  integrity sha512-sqbjZKK7kf44hfdE94EoX8MZNk0n7HeW37O4YrVGCF4wzgQjp+akPAkfUK5LZ6KuR/6sqeAVuXHji+RzQgOn5A==
 
 hyperdyperid@^1.2.0:
   version "1.2.0"
@@ -15507,16 +15507,15 @@ select-hose@^2.0.0:
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
   integrity sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==
 
-"selenium-webdriver4@npm:selenium-webdriver@4.23.0", selenium-webdriver@^4.18.1:
-  name selenium-webdriver4
-  version "4.23.0"
-  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.23.0.tgz#6d9d219a560dffff1fbbc0f2c8a115d81d279a21"
-  integrity sha512-DdvtInpnMt95Td8VApvmAw7oSydBD9twIRXqoMyRoGMvL1dAnMFxdrwnW6L0d/pF/uoNTjbVUarwGZ9wIGNStA==
+"selenium-webdriver4@npm:selenium-webdriver@4.24.1":
+  version "4.24.1"
+  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.24.1.tgz#4315214420cc26dddaa21ae26863dd452aec2829"
+  integrity sha512-fcK5BTI/54cSqIhiVtrd9li1YL6LW109yIwuVw6V+FlVE6y4riGiX2qdZxVzHq+sm2TJyps+D2sjzXrpDZe1Og==
   dependencies:
     "@bazel/runfiles" "^5.8.1"
     jszip "^3.10.1"
     tmp "^0.2.3"
-    ws "^8.17.1"
+    ws "^8.18.0"
 
 selenium-webdriver@3.5.0:
   version "3.5.0"
@@ -15537,6 +15536,17 @@ selenium-webdriver@3.6.0, selenium-webdriver@^3.0.1:
     rimraf "^2.5.4"
     tmp "0.0.30"
     xml2js "^0.4.17"
+
+selenium-webdriver@^4.18.1:
+  name selenium-webdriver4
+  version "4.23.0"
+  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.23.0.tgz#6d9d219a560dffff1fbbc0f2c8a115d81d279a21"
+  integrity sha512-DdvtInpnMt95Td8VApvmAw7oSydBD9twIRXqoMyRoGMvL1dAnMFxdrwnW6L0d/pF/uoNTjbVUarwGZ9wIGNStA==
+  dependencies:
+    "@bazel/runfiles" "^5.8.1"
+    jszip "^3.10.1"
+    tmp "^0.2.3"
+    ws "^8.17.1"
 
 selfsigned@^2.4.1:
   version "2.4.1"
