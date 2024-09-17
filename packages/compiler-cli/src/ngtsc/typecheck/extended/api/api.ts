@@ -228,7 +228,10 @@ class TemplateVisitor<Code extends ErrorCode>
   visitBoundText(text: TmplAstBoundText): void {
     this.visitAst(text.value);
   }
-  visitIcu(icu: TmplAstIcu): void {}
+  visitIcu(icu: TmplAstIcu): void {
+    Object.keys(icu.vars).forEach((key) => this.visit(icu.vars[key]));
+    Object.keys(icu.placeholders).forEach((key) => this.visit(icu.placeholders[key]));
+  }
 
   visitDeferredBlock(deferred: TmplAstDeferredBlock): void {
     deferred.visitAll(this);
