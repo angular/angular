@@ -38,7 +38,7 @@ import {ProblematicFieldRegistry} from './problematic_field_registry';
  * The logic here detects such cases and marks `bla` as incompatible. If `Derived`
  * would then have other derived classes as well, it would propagate the status.
  */
-export function checkInheritanceOfInputs<D extends ClassFieldDescriptor>(
+export function checkInheritanceOfKnownFields<D extends ClassFieldDescriptor>(
   inheritanceGraph: InheritanceGraph,
   metaRegistry: MetadataReader,
   fields: KnownFields<D> & ProblematicFieldRegistry<D>,

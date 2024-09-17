@@ -470,6 +470,81 @@ describe('signal queries migration', () => {
     expect(actual).toContain(`label = viewChild<ElementRef>('labelRef')`);
     expect(actual).toContain(`@ViewChild('labelRef2') label2?: ElementRef;`);
   });
+
+  it('should not migrate if query class is manually instantiated', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: `
+          import {ViewChild, ElementRef, Directive} from '@angular/core';
+
+          @Directive()
+          class MyComp implements CompInterface {
+            @ViewChild('labelRef') label?: ElementRef;
+          }
+
+          new MyComp();
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).not.toContain(`viewChild`);
+    expect(actual).toContain(`@ViewChild`);
+  });
+
+  describe('inheritance', () => {
+    it('should not migrate if member is inherited from interface', async () => {
+      const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: `
+            import {ViewChild, ElementRef, Directive} from '@angular/core';
+
+            interface CompInterface {
+              label: ElementRef;
+            }
+
+            @Directive()
+            class MyComp implements CompInterface {
+              @ViewChild('labelRef') label?: ElementRef;
+            }
+          `,
+        },
+      ]);
+
+      const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+      expect(actual).not.toContain(`viewChild`);
+      expect(actual).toContain(`@ViewChild`);
+    });
+
+    it('should not migrate if member is overridden via derived class', async () => {
+      const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: `
+            import {ViewChild, ElementRef, Directive} from '@angular/core';
+
+            @Directive()
+            class MyComp implements CompInterface {
+              @ViewChild('labelRef') label?: ElementRef;
+            }
+
+            class Derived extends MyComp {
+              override label: ElementRef;
+            }
+          `,
+        },
+      ]);
+
+      const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+      expect(actual).not.toContain(`viewChild`);
+      expect(actual).toContain(`@ViewChild`);
+    });
+  });
 });
 
 function populateDeclarationTestCaseComponent(declaration: string): string {

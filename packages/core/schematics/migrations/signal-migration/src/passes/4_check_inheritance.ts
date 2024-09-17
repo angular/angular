@@ -9,9 +9,8 @@
 import {MetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
 import assert from 'assert';
 import {KnownInputs} from '../input_detection/known_inputs';
-import {MigrationHost} from '../migration_host';
 import {InheritanceGraph} from '../utils/inheritance_graph';
-import {checkInheritanceOfInputs} from './problematic_patterns/check_inheritance';
+import {checkInheritanceOfKnownFields} from './problematic_patterns/check_inheritance';
 
 /**
  * Phase that propagates incompatibilities to derived classes or
@@ -38,7 +37,7 @@ export function pass4__checkInheritanceOfInputs(
   metaRegistry: MetadataReader,
   knownInputs: KnownInputs,
 ) {
-  checkInheritanceOfInputs(inheritanceGraph, metaRegistry, knownInputs, {
+  checkInheritanceOfKnownFields(inheritanceGraph, metaRegistry, knownInputs, {
     isClassWithKnownFields: (clazz) => knownInputs.isInputContainingClass(clazz),
     getFieldsForClass: (clazz) => {
       const directiveInfo = knownInputs.getDirectiveInfoForClass(clazz);
