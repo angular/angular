@@ -70,10 +70,7 @@
 
     {
       "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
-      "matchPaths": [
-        "packages/**",
-        "adev/src/content/tutorials/**"
-      ],
+      "matchPaths": ["packages/**", "adev/src/content/tutorials/**"],
       "followTag": null
     },
 
@@ -101,7 +98,11 @@
     {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},
 
     {
-      "matchPaths": ["integration/**", "packages/zone.js/test/typings/package.json"],
+      "matchPaths": [
+        "integration/**",
+        "packages/zone.js/test/typings/package.json",
+        "packages/core/schematics/migrations/signal-migration/test/**"
+      ],
       "enabled": false
     }
   ]
