@@ -108,5 +108,14 @@ runInEachFileSystem(() => {
 
       expect(diags.length).toBe(0);
     });
+
+    it('should not report a @let declaration that is only used in an ICU', () => {
+      const diags = diagnose(`
+        @let value = 1;
+        <h1 i18n>{value, select, 1 {one} 2 {two} other {other}}</h1>
+      `);
+
+      expect(diags.length).toBe(0);
+    });
   });
 });
