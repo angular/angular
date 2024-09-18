@@ -61,4 +61,4 @@ export class UserComponent {
 
 Great job learning how to display the input values in your template and access them programmatically.
 
-Time to progress onto the next way of managing forms with Angular: reactive forms. If you'd like to learn more about template-driven forms, please refer to the [Angular forms documentation](guide/forms/reactive-forms).
+Time to progress onto the next way of managing forms with Angular: reactive forms. If you'd like to learn more about template-driven forms, please refer to the [Angular forms documentation](guide/forms/template-driven-forms).
