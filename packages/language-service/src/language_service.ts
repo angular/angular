@@ -51,6 +51,16 @@ import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
+// Whether the language service should suppress the below for google3.
+const enableG3Suppression = false;
+
+// The Copybara config that syncs the language service into g3 will be patched to
+// always suppress any diagnostics in this list.
+// See `angular2/copy.bara.sky` for more information.
+const suppressDiagnosticsInG3: number[] = [
+  parseInt(`-99${ErrorCode.COMPONENT_RESOURCE_NOT_FOUND}`),
+];
+
 export class LanguageService {
   private options: CompilerOptions;
   readonly compilerFactory: CompilerFactory;
@@ -83,17 +93,12 @@ export class LanguageService {
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     return this.withCompilerAndPerfTracing(PerfPhase.LsDiagnostics, (compiler) => {
-      const diagnostics: ts.Diagnostic[] = [];
+      let diagnostics: ts.Diagnostic[] = [];
       if (isTypeScriptFile(fileName)) {
         const program = compiler.getCurrentProgram();
         const sourceFile = program.getSourceFile(fileName);
         if (sourceFile) {
           let ngDiagnostics = compiler.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile);
-          if (this.config.suppressAngularDiagnosticCodes) {
-            ngDiagnostics = ngDiagnostics.filter(
-              (diag) => !this.config.suppressAngularDiagnosticCodes!.includes(diag.code),
-            );
-          }
           // There are several kinds of diagnostics returned by `NgCompiler` for a source file:
           //
           // 1. Angular-related non-template diagnostics from decorated classes within that
@@ -129,6 +134,14 @@ export class LanguageService {
             diagnostics.push(...compiler.getDiagnosticsForComponent(component));
           }
         }
+      }
+      if (this.config.suppressAngularDiagnosticCodes) {
+        diagnostics = diagnostics.filter(
+          (diag) => !this.config.suppressAngularDiagnosticCodes!.includes(diag.code),
+        );
+      }
+      if (enableG3Suppression) {
+        diagnostics = diagnostics.filter((diag) => !suppressDiagnosticsInG3.includes(diag.code));
       }
       return diagnostics;
     });
