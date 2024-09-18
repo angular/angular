@@ -13,8 +13,29 @@
         }
       } @else {
         <p class="text-message" matTooltip="A dev build is when the `optimization` flag is set to `false` in the angular.json config file.">
-          We detected an application built with production configuration. Angular DevTools only supports development build.
+          We detected an application built with production configuration. Angular DevTools only supports development builds.
         </p>
+      
+        <div class="ng-dev-mode-causes">
+          <p>
+            If this application was built in development mode, please check if the <code>window.ng</code> global object is available in your
+            application. If it is missing, then something is preventing Angular from running in development mode properly.
+          </p>
+          <ul>
+            <li>
+              Are you calling <code>enableProdMode()</code> in your application? Read more about <a target="_blank" href="https://angular.dev/api/core/enableProdMode">enableProdMode()</a> on angular.dev.
+            </li>
+            <li>
+              Is <code>"optimization": true</code> set in your angular.json? Read more about <a target="_blank" href="https://angular.dev/reference/configs/workspace-config#optimization-configuration">optimization configuration</a> on angular.dev.
+            </li>
+            <li>
+              Is <code>"defaultConfiguration": "production"</code> set in your angular.json? Read more about <a target="_blank" href="https://angular.dev/tools/cli/environments#using-environment-specific-variables-in-your-app">default configurations</a> on angular.dev.
+            </li>
+          </ul>
+          <p>
+            If you are still experiencing problems, you can open an issue with a reproduction on our <a target="_blank" href="https://github.com/angular/angular/issues/new?assignees=&labels=&projects=&template=4-devtools.yaml">issue tracker</a>.
+          </p>
+        </div>      
       }
     }
     @case (AngularStatus.DOES_NOT_EXIST) {
