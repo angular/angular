@@ -9,4 +9,4 @@
 /**
  * Controls whether effects use the legacy `microtaskEffect` by default.
  */
-export const USE_MICROTASK_EFFECT_BY_DEFAULT = true;
+export const USE_MICROTASK_EFFECT_BY_DEFAULT = false;
