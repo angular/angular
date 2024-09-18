@@ -215,3 +215,24 @@
     color: #000;
   }
 }
+
+.ng-dev-mode-causes {
+  font-weight: 500;
+  font-size: 1.2em;
+  padding: 1rem;
+  width: 80%;
+  margin: auto;
+  border: 1px solid;
+  border-radius: 16px;
+
+  code {
+    padding: 2px;
+    color: lightgreen;
+    background: #3e3e3e;
+    border-radius: 5px;
+  }
+
+  li {
+    margin-bottom: 1rem;
+  }
+}
