@@ -8,15 +8,9 @@
 
 import {KnownInputs} from '../input_detection/known_inputs';
 import {ClassFieldUniqueKey} from '../passes/reference_resolution/known_fields';
-import {
-  isHostBindingReference,
-  isTsClassTypeReference,
-  isTsReference,
-} from '../passes/reference_resolution/reference_kinds';
-import {MigrationResult} from '../result';
 import {CompilationUnitData, IncompatibilityType} from './unit_data';
 
-export function getCompilationUnitMetadata(knownInputs: KnownInputs, result: MigrationResult) {
+export function getCompilationUnitMetadata(knownInputs: KnownInputs) {
   const struct: CompilationUnitData = {
     knownInputs: Array.from(knownInputs.knownInputIds.entries()).reduce(
       (res, [inputClassFieldIdStr, info]) => {
@@ -43,56 +37,6 @@ export function getCompilationUnitMetadata(knownInputs: KnownInputs, result: Mig
       },
       {} as CompilationUnitData['knownInputs'],
     ),
-    references: result.references.map((r) => {
-      if (isTsReference(r)) {
-        return {
-          kind: r.kind,
-          target: r.target.key,
-          from: {
-            file: r.from.file,
-            node: {positionEndInFile: r.from.node.getEnd()},
-            isWrite: r.from.isWrite,
-            isPartOfElementBinding: r.from.isPartOfElementBinding,
-          },
-        };
-      } else if (isHostBindingReference(r)) {
-        return {
-          kind: r.kind,
-          target: r.target.key,
-          from: {
-            file: r.from.file,
-            hostPropertyNode: {positionEndInFile: r.from.hostPropertyNode.getEnd()},
-            isObjectShorthandExpression: r.from.isObjectShorthandExpression,
-            isWrite: r.from.isWrite,
-            read: {positionEndInFile: r.from.read.sourceSpan.end},
-          },
-        };
-      } else if (isTsClassTypeReference(r)) {
-        return {
-          kind: r.kind,
-          target: {positionEndInFile: r.target.getEnd()},
-          from: {
-            file: r.from.file,
-            node: {positionEndInFile: r.from.node.getEnd()},
-          },
-          isPartOfCatalystFile: r.isPartOfCatalystFile,
-          isPartialReference: r.isPartialReference,
-        };
-      }
-      return {
-        kind: r.kind,
-        target: r.target.key,
-        from: {
-          originatingTsFile: r.from.originatingTsFile,
-          templateFile: r.from.templateFile,
-          isObjectShorthandExpression: r.from.isObjectShorthandExpression,
-          isLikelyPartOfNarrowing: r.from.isLikelyPartOfNarrowing,
-          isWrite: r.from.isWrite,
-          node: {positionEndInFile: r.from.node.sourceSpan.end.offset},
-          read: {positionEndInFile: r.from.read.sourceSpan.end},
-        },
-      };
-    }),
   };
 
   return struct;
