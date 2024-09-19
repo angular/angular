@@ -99,22 +99,31 @@ export function patchFetch(Zone: ZoneType): void {
       options.signal = fetchSignal;
       args[1] = options;
 
+      let onAbort: () => void;
       if (signal) {
         const nativeAddEventListener =
           signal[Zone.__symbol__('addEventListener') as 'addEventListener'] ||
           signal.addEventListener;
 
-        nativeAddEventListener.call(
-          signal,
-          'abort',
-          function () {
-            ac!.abort();
-          },
-          {once: true},
-        );
+        onAbort = () => ac!.abort();
+        nativeAddEventListener.call(signal, 'abort', onAbort, {once: true});
       }
 
-      return createFetchTask('fetch', {fetchArgs: args} as FetchTaskData, fetch, this, args, ac);
+      return createFetchTask(
+        'fetch',
+        {fetchArgs: args} as FetchTaskData,
+        fetch,
+        this,
+        args,
+        ac,
+      ).finally(() => {
+        // We need to be good citizens and remove the `abort` listener once
+        // the fetch is settled. The `abort` listener may not be called at all,
+        // which means the event listener closure would retain a reference to
+        // the `ac` object even if it goes out of scope. Since browser's garbage
+        // collectors work differently, some may not be smart enough to collect a signal.
+        signal?.removeEventListener('abort', onAbort);
+      });
     };
 
     if (OriginalResponse?.prototype) {
