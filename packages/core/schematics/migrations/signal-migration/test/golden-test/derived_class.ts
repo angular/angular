@@ -16,3 +16,13 @@ class Derived extends Base {
 export class Base2 {
   @Input() bla = true;
 }
+
+// overridden in separate file
+@Directive()
+export class Base3 {
+  @Input() bla = true;
+
+  click() {
+    this.bla = false;
+  }
+}

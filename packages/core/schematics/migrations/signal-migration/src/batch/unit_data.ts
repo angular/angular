@@ -34,6 +34,7 @@ export interface CompilationUnitData {
         | {kind: IncompatibilityType.VIA_INPUT; reason: InputIncompatibilityReason}
         | null;
       seenAsSourceInput: boolean;
+      extendsFrom: ClassFieldUniqueKey | null;
     };
   };
 }

@@ -6,11 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GraphNode, InheritanceGraph} from './inheritance_graph';
+export interface GraphNode<T> {
+  data: T;
+  incoming: Set<GraphNode<T>>;
+  outgoing: Set<GraphNode<T>>;
+}
 
 /**
  * Sorts the inheritance graph topologically, so that
- * classes without incoming edges are returned first.
+ * nodes without incoming edges are returned first.
  *
  * I.e. The returned list is sorted, so that dependencies
  * of a given class are guaranteed to be included at
@@ -20,32 +24,34 @@ import {GraphNode, InheritanceGraph} from './inheritance_graph';
  * for the migration in simpler ways, without having to
  * check in both directions (base classes, and derived classes).
  */
-export function topologicalSort(graph: InheritanceGraph) {
-  // All classes without incoming edges.
-  const S = Array.from(graph.classParents.keys()).filter(
-    (n) => !graph.parentToChildren.has(n) || graph.parentToChildren.get(n)!.length === 0,
-  );
-  const result: GraphNode[] = [];
-  const classParents = new Map(graph.classParents);
-  const parentToChildren = new Map(graph.parentToChildren);
+export function topologicalSort<T>(graph: GraphNode<T>[]) {
+  // All nodes without incoming edges.
+  const S = graph.filter((n) => n.incoming.size === 0);
+  const result: GraphNode<T>[] = [];
+  const invalidatedEdges = new WeakMap<GraphNode<T>, WeakSet<GraphNode<T>>>();
+  const invalidateEdge = (from: GraphNode<T>, to: GraphNode<T>) => {
+    if (!invalidatedEdges.has(from)) {
+      invalidatedEdges.set(from, new Set());
+    }
+    invalidatedEdges.get(from)!.add(to);
+  };
+  const filterEdges = (from: GraphNode<T>, edges: Set<GraphNode<T>>) => {
+    return Array.from(edges).filter(
+      (e) => !invalidatedEdges.has(from) || !invalidatedEdges.get(from)!.has(e),
+    );
+  };
 
   while (S.length) {
     const node = S.pop()!;
     result.push(node);
-    for (const next of classParents.get(node) ?? []) {
+    for (const next of filterEdges(node, node.outgoing)) {
       // Remove edge from "node -> next".
-      classParents.set(
-        node,
-        classParents.get(node)!.filter((n) => n !== next),
-      );
-      // Remove edge from "next -> node". Do not modify original array as it might
-      // be the one from the original graph
-      const newParentToChildrenForNext = [...parentToChildren.get(next)!];
-      newParentToChildrenForNext.splice(newParentToChildrenForNext.indexOf(node), 1);
-      parentToChildren.set(next, newParentToChildrenForNext);
+      invalidateEdge(node, next);
+      // Remove edge from "next -> node".
+      invalidateEdge(next, node);
 
       // if there are no incoming edges for `next`. add it to `S`.
-      if (parentToChildren.get(next)!.length === 0) {
+      if (filterEdges(next, next.incoming).length === 0) {
         S.push(next);
       }
     }

@@ -24,17 +24,22 @@ export type GraphNode = ts.ClassDeclaration | ts.ClassExpression | ts.InterfaceD
  */
 export class InheritanceGraph {
   /** Maps nodes to their parent nodes. */
-  classParents = new Map<GraphNode, GraphNode[]>();
+  classToParents = new Map<GraphNode, GraphNode[]>();
   /** Maps nodes to their derived nodes. */
   parentToChildren = new Map<GraphNode, GraphNode[]>();
+  /** All classes seen participating in inheritance chains. */
+  allClassesInInheritance = new Set<GraphNode>();
 
   constructor(private checker: ts.TypeChecker) {}
 
   /** Registers a given class in the graph. */
   registerClass(clazz: GraphNode, parents: GraphNode[]) {
-    this.classParents.set(clazz, parents);
+    this.classToParents.set(clazz, parents);
+    this.allClassesInInheritance.add(clazz);
 
     for (const parent of parents) {
+      this.allClassesInInheritance.add(parent);
+
       if (!this.parentToChildren.has(parent)) {
         this.parentToChildren.set(parent, []);
       }
@@ -56,7 +61,7 @@ export class InheritanceGraph {
     inherited: ts.Symbol | undefined;
     derivedMembers: ts.Symbol[];
   } {
-    const inheritedTypes = (this.classParents.get(clazz) ?? []).map((c) =>
+    const inheritedTypes = (this.classToParents.get(clazz) ?? []).map((c) =>
       this.checker.getTypeAtLocation(c),
     );
     const derivedLeafs = this._traceDerivedChainToLeafs(clazz).map((c) =>
