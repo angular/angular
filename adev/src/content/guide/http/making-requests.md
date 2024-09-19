@@ -263,7 +263,7 @@ export class UserProfileComponent {
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.user$ = userService.getUser(this.userId);
+    this.user$ = this.userService.getUser(this.userId);
   }
 }
 </docs-code>
