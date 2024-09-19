@@ -6,29 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript';
-import {AST, TmplAstNode} from '../../../../../../compiler/public_api';
 import {
   ClassIncompatibilityReason,
   InputIncompatibilityReason,
 } from '../input_detection/incompatibility';
-import {
-  ClassFieldDescriptor,
-  ClassFieldUniqueKey,
-} from '../passes/reference_resolution/known_fields';
-import {Reference} from '../passes/reference_resolution/reference_kinds';
-import {InputDescriptor} from '../utils/input_id';
-
-/** Helper that ensures given type `T` is serializable. */
-export type SerializableForBatching<T> = {
-  [K in keyof T]: T[K] extends ts.Node | TmplAstNode | AST
-    ? {positionEndInFile: number}
-    : // Input descriptor should only be the serializable string.
-      T[K] extends ClassFieldDescriptor
-      ? ClassFieldUniqueKey
-      : // If no known type, recursively step into it.
-        SerializableForBatching<T[K]>;
-};
+import {ClassFieldUniqueKey} from '../passes/reference_resolution/known_fields';
 
 /** Type of incompatibility. */
 export enum IncompatibilityType {
@@ -54,6 +36,4 @@ export interface CompilationUnitData {
       seenAsSourceInput: boolean;
     };
   };
-
-  references: SerializableForBatching<Reference<InputDescriptor>>[];
 }
