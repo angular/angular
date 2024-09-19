@@ -169,6 +169,10 @@ describe(
                       'invokeTask:fetch:macroTask',
                       'scheduleTask:Promise.then:microTask',
                       'invokeTask:Promise.then:microTask',
+
+                      // This is the `finally` task, which is used for cleanup.
+                      'scheduleTask:Promise.then:microTask',
+                      'invokeTask:Promise.then:microTask',
                     ]);
                     done();
                   },
@@ -194,6 +198,11 @@ describe(
                       'invokeTask:fetch:macroTask',
                       'scheduleTask:Promise.then:microTask',
                       'invokeTask:Promise.then:microTask',
+
+                      // This is the `finally` task, which is used for cleanup.
+                      'scheduleTask:Promise.then:microTask',
+                      'invokeTask:Promise.then:microTask',
+
                       // Please refer to the issue link above. Previously, `Response` methods were not
                       // patched by zone.js, and their return values were considered only as
                       // microtasks (not macrotasks). The Angular zone stabilized prematurely,
