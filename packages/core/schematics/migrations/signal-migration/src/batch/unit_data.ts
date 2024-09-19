@@ -51,6 +51,7 @@ export interface CompilationUnitData {
         | {kind: IncompatibilityType.VIA_CLASS; reason: ClassIncompatibilityReason}
         | {kind: IncompatibilityType.VIA_INPUT; reason: InputIncompatibilityReason}
         | null;
+      seenAsSourceInput: boolean;
     };
   };
 
