@@ -167,6 +167,15 @@
       "description": "Define the output filename cache-busting hashing mode."
     },
     {
+      "name": "output-mode",
+      "type": "string",
+      "enum": [
+        "static",
+        "server"
+      ],
+      "description": "Defines the build output target. 'static': Generates a static site for deployment on any static hosting service. 'server': Produces an application designed for deployment on a server that supports server-side rendering (SSR)."
+    },
+    {
       "name": "output-path",
       "type": "string",
       "description": "Specify the output path relative to workspace root."
