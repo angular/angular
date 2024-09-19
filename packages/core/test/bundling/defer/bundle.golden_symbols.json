@@ -201,9 +201,6 @@
     "name": "ErrorHandler"
   },
   {
-    "name": "EventDelegationPlugin"
-  },
-  {
     "name": "EventEmitter"
   },
   {
@@ -211,9 +208,6 @@
   },
   {
     "name": "EventManagerPlugin"
-  },
-  {
-    "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
     "name": "GenericBrowserDomAdapter"
@@ -1453,9 +1447,6 @@
   },
   {
     "name": "init_event_contract_defines"
-  },
-  {
-    "name": "init_event_delegation"
   },
   {
     "name": "init_event_delegation_utils"
