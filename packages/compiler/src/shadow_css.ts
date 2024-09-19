@@ -47,6 +47,13 @@ const animationKeywords = new Set([
   'start',
 ]);
 
+/** Contains parts of selectors that should never be scoped. */
+const unscopeableSelectorParts = new Set([
+  // Ampersands don't need scoping, because it's assumed that
+  // the selector above them has been scoped already.
+  '&',
+]);
+
 /**
  * The following array contains all of the CSS at-rule identifiers which are scoped.
  */
@@ -615,14 +622,15 @@ export class ShadowCss {
     return processRules(cssText, (rule: CssRule) => {
       let selector = rule.selector;
       let content = rule.content;
-      if (rule.selector[0] !== '@') {
+      if (rule.selector[0] !== '@' && rule.isBlock) {
         selector = this._scopeSelector(rule.selector, scopeSelector, hostSelector);
+        content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
         content = this._stripScopingSelectors(rule.content);
       }
-      return new CssRule(selector, content);
+      return new CssRule(selector, content, rule.isBlock);
     });
   }
 
@@ -652,7 +660,7 @@ export class ShadowCss {
       const selector = rule.selector
         .replace(_shadowDeepSelectors, ' ')
         .replace(_polyfillHostNoCombinatorRe, ' ');
-      return new CssRule(selector, rule.content);
+      return new CssRule(selector, rule.content, rule.isBlock);
     });
   }
 
@@ -730,7 +738,11 @@ export class ShadowCss {
         return p;
       }
 
-      if (p.includes(_polyfillHostNoCombinator)) {
+      if (unscopeableSelectorParts.has(scopedP)) {
+        return scopedP;
+      }
+
+      if (p.indexOf(_polyfillHostNoCombinator) > -1) {
         scopedP = this._applySimpleSelectorScope(p, scopeSelector, hostSelector);
       } else {
         // remove :host since it should be unnecessary
@@ -905,6 +917,7 @@ const _ruleRe = new RegExp(
   'g',
 );
 const CONTENT_PAIRS = new Map([['{', '}']]);
+const QUOTES = new Set([`'`, `"`]);
 
 const COMMA_IN_PLACEHOLDER = '%COMMA_IN_PLACEHOLDER%';
 const SEMI_IN_PLACEHOLDER = '%SEMI_IN_PLACEHOLDER%';
@@ -918,6 +931,7 @@ export class CssRule {
   constructor(
     public selector: string,
     public content: string,
+    readonly isBlock: boolean,
   ) {}
 }
 
@@ -930,12 +944,14 @@ export function processRules(input: string, ruleCallback: (rule: CssRule) => Css
     let content = '';
     let suffix = m[4];
     let contentPrefix = '';
+    let isBlock = false;
     if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
       content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
       suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
       contentPrefix = '{';
+      isBlock = true;
     }
-    const rule = ruleCallback(new CssRule(selector, content));
+    const rule = ruleCallback(new CssRule(selector, content, isBlock));
     return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
   });
   return unescapeInStrings(escapedResult);
@@ -960,11 +976,18 @@ function escapeBlocks(
   let blockStartIndex = -1;
   let openChar: string | undefined;
   let closeChar: string | undefined;
+  let currentQuote: string | undefined;
 
   for (let i = 0; i < input.length; i++) {
     const char = input[i];
     if (char === '\\') {
       i++;
+    } else if (QUOTES.has(char)) {
+      if (!currentQuote) {
+        currentQuote = char;
+      } else if (currentQuote === char) {
+        currentQuote = undefined;
+      }
     } else if (char === closeChar) {
       openCharCount--;
       if (openCharCount === 0) {
@@ -976,7 +999,7 @@ function escapeBlocks(
       }
     } else if (char === openChar) {
       openCharCount++;
-    } else if (openCharCount === 0 && charPairs.has(char)) {
+    } else if (openCharCount === 0 && charPairs.has(char) && !currentQuote) {
       openChar = char;
       closeChar = charPairs.get(char);
       openCharCount = 1;

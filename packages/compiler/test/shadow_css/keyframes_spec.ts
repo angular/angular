@@ -129,12 +129,12 @@ describe('ShadowCss, keyframes and animations', () => {
     const css = `.test {
       animation:my-anim 1s,my-anim2 2s, my-anim3 3s,my-anim4 4s;
     }
-    
+
     @keyframes my-anim {
       0% {color: red}
       100% {color: blue}
     }
-    
+
     @keyframes my-anim2 {
       0% {font-size: 1em}
       100% {font-size: 1.2em}
@@ -162,12 +162,12 @@ describe('ShadowCss, keyframes and animations', () => {
     const css = `.test {
       animation:, my-anim 1s,my-anim2 2s, my-anim3 3s,my-anim4 4s;
     }
-    
+
     @keyframes my-anim {
       0% {color: red}
       100% {color: blue}
     }
-    
+
     @keyframes my-anim2 {
       0% {font-size: 1em}
       100% {font-size: 1.2em}
@@ -460,14 +460,14 @@ describe('ShadowCss, keyframes and animations', () => {
         div {
             animation: 1s 'foo', 1.5s 'bar';
             animation: 2s 'fo\\'o', 2.5s 'bar';
-            animation: 3s 'foo\\'', 3.5s 'bar', 3.7s 'ba\\'r';
+            animation: 3s 'foo', 3.5s 'bar', 3.7s 'ba\\'r';
             animation: 4s 'foo\\\\', 4.5s 'bar', 4.7s 'baz\\'';
             animation: 5s 'fo\\\\\\'o', 5.5s 'bar', 5.7s 'baz\\'';
         }
 
         @keyframes foo {}
         @keyframes 'fo\\'o' {}
-        @keyframes 'foo'' {}
+        @keyframes 'foo' {}
         @keyframes 'foo\\\\' {}
         @keyframes "bar" {}
         @keyframes 'ba\\'r' {}
@@ -476,7 +476,7 @@ describe('ShadowCss, keyframes and animations', () => {
     const result = shim(css, 'host-a');
     expect(result).toContain('@keyframes host-a_foo {}');
     expect(result).toContain("@keyframes 'host-a_fo\\'o' {}");
-    expect(result).toContain("@keyframes 'host-a_foo'' {}");
+    expect(result).toContain("@keyframes 'host-a_foo' {}");
     expect(result).toContain("@keyframes 'host-a_foo\\\\' {}");
     expect(result).toContain('@keyframes "host-a_bar" {}');
     expect(result).toContain("@keyframes 'host-a_ba\\'r' {}");
@@ -484,7 +484,7 @@ describe('ShadowCss, keyframes and animations', () => {
     expect(result).toContain("animation: 1s 'host-a_foo', 1.5s 'host-a_bar';");
     expect(result).toContain("animation: 2s 'host-a_fo\\'o', 2.5s 'host-a_bar';");
     expect(result).toContain(
-      "animation: 3s 'host-a_foo\\'', 3.5s 'host-a_bar', 3.7s 'host-a_ba\\'r';",
+      "animation: 3s 'host-a_foo', 3.5s 'host-a_bar', 3.7s 'host-a_ba\\'r';",
     );
     expect(result).toContain("animation: 4s 'host-a_foo\\\\', 4.5s 'host-a_bar', 4.7s 'baz\\'';");
     expect(result).toContain("animation: 5s 'host-a_fo\\\\\\'o', 5.5s 'host-a_bar', 5.7s 'baz\\''");
