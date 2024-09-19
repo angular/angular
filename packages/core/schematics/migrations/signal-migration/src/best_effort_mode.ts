@@ -11,6 +11,8 @@ import {KnownInputs} from './input_detection/known_inputs';
 
 /** Input reasons that cannot be ignored. */
 const nonIgnorableInputIncompatibilities: InputIncompatibilityReason[] = [
+  // Outside of scope inputs should not be migrated. E.g. references to inputs in `node_modules/`.
+  InputIncompatibilityReason.OutsideOfMigrationScope,
   // Explicitly filtered inputs cannot be skipped via best effort mode.
   InputIncompatibilityReason.SkippedViaConfigFilter,
   // There is no good output for accessor inputs.

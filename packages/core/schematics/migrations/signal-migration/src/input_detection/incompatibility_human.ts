@@ -74,6 +74,11 @@ export function getMessageForInputIncompatibility(reason: InputIncompatibilityRe
         short: 'Your application code writes to the input. This prevents migration.',
         extra: 'Signal inputs are readonly, so migrating would break your build.',
       };
+    case InputIncompatibilityReason.OutsideOfMigrationScope:
+      return {
+        short: 'This input is not part of any source files in your project.',
+        extra: 'The migration excludes inputs if no source file declaring the input was seen.',
+      };
   }
 }
 

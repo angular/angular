@@ -10,6 +10,7 @@ import ts from 'typescript';
 
 /** Reasons why an input cannot be migrated. */
 export enum InputIncompatibilityReason {
+  OutsideOfMigrationScope,
   SkippedViaConfigFilter,
   Accessor,
   WriteAssignment,

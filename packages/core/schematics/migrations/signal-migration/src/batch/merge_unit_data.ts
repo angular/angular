@@ -30,20 +30,28 @@ export function mergeCompilationUnitData(
       const existing = result.knownInputs[key];
       if (existing === undefined) {
         result.knownInputs[key] = info;
-      } else if (existing.isIncompatible === null && info.isIncompatible) {
+        continue;
+      }
+
+      if (existing.isIncompatible === null && info.isIncompatible) {
         // input might not be incompatible in one target, but others might invalidate it.
         // merge the incompatibility state.
         existing.isIncompatible = info.isIncompatible;
       }
-    }
-
-    for (const reference of file.references) {
-      const referenceId = computeReferenceId(reference);
-      if (seenReferenceFromIds.has(referenceId)) {
-        continue;
+      if (!existing.seenAsSourceInput && info.seenAsSourceInput) {
+        existing.seenAsSourceInput = true;
       }
-      seenReferenceFromIds.add(referenceId);
-      result.references.push(reference);
+    }
+  }
+
+  for (const info of Object.values(result.knownInputs)) {
+    // We never saw a source file for this input, globally. Mark it as incompatible,
+    // so that all references and inheritance checks can propagate accordingly.
+    if (!info.seenAsSourceInput) {
+      info.isIncompatible = {
+        kind: IncompatibilityType.VIA_INPUT,
+        reason: InputIncompatibilityReason.OutsideOfMigrationScope,
+      };
     }
   }
 
