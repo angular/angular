@@ -21,6 +21,10 @@ import {ReferenceKind} from './reference_kinds';
 /**
  * Checks whether given TypeScript reference refers to an Angular input, and captures
  * the reference if possible.
+ *
+ * @param fieldNamesToConsiderForReferenceLookup List of field names that should be
+ *   respected when expensively looking up references to known fields.
+ *   May be null if all identifiers should be inspected.
  */
 export function identifyPotentialTypeScriptReference<D extends ClassFieldDescriptor>(
   node: ts.Identifier,
@@ -28,6 +32,7 @@ export function identifyPotentialTypeScriptReference<D extends ClassFieldDescrip
   checker: ts.TypeChecker,
   knownFields: KnownFields<D>,
   result: ReferenceResult<D>,
+  fieldNamesToConsiderForReferenceLookup: Set<string> | null,
   advisors: {
     debugElComponentInstanceTracker: DebugElementComponentInstance;
   },
@@ -35,8 +40,8 @@ export function identifyPotentialTypeScriptReference<D extends ClassFieldDescrip
   // Skip all identifiers that never can point to a migrated field.
   // TODO: Capture these assumptions and performance optimizations in the design doc.
   if (
-    knownFields.fieldNamesToConsiderForReferenceLookup !== null &&
-    !knownFields.fieldNamesToConsiderForReferenceLookup.has(node.text)
+    fieldNamesToConsiderForReferenceLookup !== null &&
+    !fieldNamesToConsiderForReferenceLookup.has(node.text)
   ) {
     return;
   }

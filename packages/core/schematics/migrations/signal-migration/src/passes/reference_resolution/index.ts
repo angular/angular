@@ -44,6 +44,7 @@ export function createFindAllSourceFileReferencesVisitor<D extends ClassFieldDes
   evaluator: PartialEvaluator,
   templateTypeChecker: TemplateTypeChecker,
   knownFields: KnownFields<D>,
+  fieldNamesToConsiderForReferenceLookup: Set<string> | null,
   result: ReferenceResult<D>,
 ) {
   const debugElComponentInstanceTracker = new DebugElementComponentInstance(checker);
@@ -91,9 +92,17 @@ export function createFindAllSourceFileReferencesVisitor<D extends ClassFieldDes
       ts.isIdentifier(node) &&
       !(isInputContainerNode(node.parent) && node.parent.name === node)
     ) {
-      identifyPotentialTypeScriptReference(node, programInfo, checker, knownFields, result, {
-        debugElComponentInstanceTracker,
-      });
+      identifyPotentialTypeScriptReference(
+        node,
+        programInfo,
+        checker,
+        knownFields,
+        result,
+        fieldNamesToConsiderForReferenceLookup,
+        {
+          debugElComponentInstanceTracker,
+        },
+      );
     }
 
     perfCounters.tsReferences += (performance.now() - lastTime) / 1000;

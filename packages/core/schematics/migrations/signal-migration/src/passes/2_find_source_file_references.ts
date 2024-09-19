@@ -37,6 +37,7 @@ export function pass2_IdentifySourceFileReferences(
   groupedTsAstVisitor: GroupedTsAstVisitor,
   knownInputs: KnownInputs,
   result: MigrationResult,
+  fieldNamesToConsiderForReferenceLookup: Set<string> | null,
 ) {
   groupedTsAstVisitor.register(
     createFindAllSourceFileReferencesVisitor(
@@ -47,6 +48,7 @@ export function pass2_IdentifySourceFileReferences(
       evaluator,
       templateTypeChecker,
       knownInputs,
+      fieldNamesToConsiderForReferenceLookup,
       result,
     ).visitor,
   );

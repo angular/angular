@@ -47,9 +47,6 @@ export class KnownInputs
    */
   knownInputIds = new Map<ClassFieldUniqueKey, KnownInputInfo>();
 
-  // TODO: perf comment
-  fieldNamesToConsiderForReferenceLookup: Set<string> = new Set<string>();
-
   /** Known container classes of inputs. */
   private _allClasses = new Set<ts.ClassDeclaration>();
   /** Maps classes to their directive info. */
@@ -105,10 +102,6 @@ export class KnownInputs
     });
     this.knownInputIds.set(data.descriptor.key, inputInfo);
     this._allClasses.add(data.node.parent);
-
-    if (this.config.shouldMigrateInput?.(inputInfo) ?? true) {
-      this.fieldNamesToConsiderForReferenceLookup.add(data.descriptor.node.name.text);
-    }
   }
 
   /** Whether the given input is incompatible for migration. */
