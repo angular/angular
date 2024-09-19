@@ -62,19 +62,13 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     });
   }
 
-  // Extend the program info with the analysis information we need in every phase.
-  prepareAnalysisDeps(info: ProgramInfo): AnalysisProgramInfo {
-    assert(info.ngCompiler !== null, 'Expected `NgCompiler` to be configured.');
-    const analysisInfo = {
-      ...info,
-      ...prepareAnalysisInfo(info.program, info.ngCompiler, info.programAbsoluteRootFileNames),
-    };
-
+  override prepareProgram(baseInfo: BaseProgramInfo): ProgramInfo {
+    const info = super.prepareProgram(baseInfo);
     // Optional filter for testing. Allows for simulation of parallel execution
     // even if some tsconfig's have overlap due to sharing of TS sources.
     // (this is commonly not the case in g3 where deps are `.d.ts` files).
     const limitToRootNamesOnly = process.env['LIMIT_TO_ROOT_NAMES_ONLY'] === '1';
-    analysisInfo.sourceFiles = analysisInfo.sourceFiles.filter(
+    const filteredSourceFiles = info.sourceFiles.filter(
       (f) =>
         // Optional replacement filter. Allows parallel execution in case
         // some tsconfig's have overlap due to sharing of TS sources.
@@ -82,12 +76,24 @@ export class SignalInputMigration extends TsurgeComplexMigration<
         !limitToRootNamesOnly || info.programAbsoluteRootFileNames!.includes(f.fileName),
     );
 
+    return {
+      ...info,
+      sourceFiles: filteredSourceFiles,
+    };
+  }
+
+  // Extend the program info with the analysis information we need in every phase.
+  prepareAnalysisDeps(info: ProgramInfo): AnalysisProgramInfo {
+    assert(info.ngCompiler !== null, 'Expected `NgCompiler` to be configured.');
+    const analysisInfo = {
+      ...info,
+      ...prepareAnalysisInfo(info.program, info.ngCompiler, info.programAbsoluteRootFileNames),
+    };
     return analysisInfo;
   }
 
   override async analyze(info: ProgramInfo) {
     const analysisDeps = this.prepareAnalysisDeps(info);
-    const {metaRegistry} = analysisDeps;
     const knownInputs = new KnownInputs(info, this.config);
     const result = new MigrationResult();
     const host = createMigrationHost(info, this.config);
