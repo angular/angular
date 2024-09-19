@@ -49,10 +49,3 @@ export const IS_EVENT_REPLAY_ENABLED = new InjectionToken<boolean>(
 );
 
 export const EVENT_REPLAY_ENABLED_DEFAULT = false;
-
-/**
- * Internal token that indicates whether global event delegation support is enabled.
- */
-export const IS_GLOBAL_EVENT_DELEGATION_ENABLED = new InjectionToken<boolean>(
-  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_GLOBAL_EVENT_DELEGATION_ENABLED' : '',
-);

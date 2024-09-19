@@ -27,11 +27,7 @@ import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
 
-import {
-  EVENT_REPLAY_ENABLED_DEFAULT,
-  IS_EVENT_REPLAY_ENABLED,
-  IS_GLOBAL_EVENT_DELEGATION_ENABLED,
-} from './tokens';
+import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './tokens';
 import {
   sharedStashFunction,
   removeListeners,
@@ -47,18 +43,11 @@ import {performanceMarkFeature} from '../util/performance';
  */
 const jsactionSet = new Set<Element>();
 
-function isGlobalEventDelegationEnabled(injector: Injector) {
-  return injector.get(IS_GLOBAL_EVENT_DELEGATION_ENABLED, false);
-}
-
 /**
  * Determines whether Event Replay feature should be activated on the client.
  */
 function shouldEnableEventReplay(injector: Injector) {
-  return (
-    injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT) &&
-    !isGlobalEventDelegationEnabled(injector)
-  );
+  return injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT);
 }
 
 /**
