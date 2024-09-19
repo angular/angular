@@ -1,6 +1,6 @@
 # Common Routing Tasks
 
-This topic describes how to implement many of the common tasks associated with adding the Angular router to your application.
+This guide describes how to implement many of the common tasks associated with adding the Angular router to your application.
 
 ## Generate an application with routing enabled
 
@@ -12,7 +12,7 @@ ng new routing-app
 
 ### Adding components for routing
 
-To use the Angular router, an application needs to have at least two components so that it can navigate from one to the other. To create a component using the CLI, enter the following at the command line where `first` is the name of your component:
+Using the Angular router typically involves having at least two components to navigate from one to another. To create a component using the CLI, enter the following at the command line where `first` is the name of your component:
 
 ```shell
 ng generate component first
