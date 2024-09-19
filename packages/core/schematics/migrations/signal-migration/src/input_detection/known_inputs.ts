@@ -11,12 +11,17 @@ import {InputDescriptor} from '../utils/input_id';
 import {ExtractedInput} from './input_decorator';
 import {InputNode} from './input_node';
 import {DirectiveInfo} from './directive_info';
-import {ClassIncompatibilityReason, InputMemberIncompatibility} from './incompatibility';
+import {
+  ClassIncompatibilityReason,
+  InputIncompatibilityReason,
+  InputMemberIncompatibility,
+} from './incompatibility';
 import {ClassFieldUniqueKey, KnownFields} from '../passes/reference_resolution/known_fields';
 import {attemptRetrieveInputFromSymbol} from './nodes_to_input';
 import {ProgramInfo, projectFile, ProjectFile} from '../../../../utils/tsurge';
 import {MigrationConfig} from '../migration_config';
 import {ProblematicFieldRegistry} from '../passes/problematic_patterns/problematic_field_registry';
+import {InheritanceTracker} from '../passes/problematic_patterns/check_inheritance';
 
 /**
  * Public interface describing a single known `@Input()` in the
@@ -30,6 +35,7 @@ export type KnownInputInfo = {
   metadata: ExtractedInput;
   descriptor: InputDescriptor;
   container: DirectiveInfo;
+  extendsFrom: InputDescriptor | null;
   isIncompatible: () => boolean;
 };
 
@@ -40,7 +46,10 @@ export type KnownInputInfo = {
  * loaded into the program.
  */
 export class KnownInputs
-  implements KnownFields<InputDescriptor>, ProblematicFieldRegistry<InputDescriptor>
+  implements
+    KnownFields<InputDescriptor>,
+    ProblematicFieldRegistry<InputDescriptor>,
+    InheritanceTracker<InputDescriptor>
 {
   /**
    * Known inputs from the whole program.
@@ -93,6 +102,7 @@ export class KnownInputs
       metadata: data.metadata,
       descriptor: data.descriptor,
       container: directiveInfo,
+      extendsFrom: null,
       isIncompatible: () => directiveInfo.isInputMemberIncompatible(data.descriptor),
     };
 
@@ -133,5 +143,29 @@ export class KnownInputs
 
   shouldTrackClassReference(clazz: ts.ClassDeclaration): boolean {
     return this.isInputContainingClass(clazz);
+  }
+
+  captureKnownFieldInheritanceRelationship(
+    derived: InputDescriptor,
+    parent: InputDescriptor,
+  ): void {
+    if (!this.has(derived)) {
+      throw new Error(`Expected input to exist in registry: ${derived.key}`);
+    }
+    this.get(derived)!.extendsFrom = parent;
+  }
+
+  captureUnknownDerivedField(field: InputDescriptor): void {
+    this.markFieldIncompatible(field, {
+      context: null,
+      reason: InputIncompatibilityReason.OverriddenByDerivedClass,
+    });
+  }
+
+  captureUnknownParentField(field: InputDescriptor): void {
+    this.markFieldIncompatible(field, {
+      context: null,
+      reason: InputIncompatibilityReason.TypeConflictWithBaseClass,
+    });
   }
 }

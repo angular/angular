@@ -16,9 +16,13 @@ import {
 } from '../signal-migration/src/passes/reference_resolution/known_fields';
 import {getClassFieldDescriptorForSymbol} from './field_tracking';
 import type {CompilationUnitData} from './migration';
+import {InheritanceTracker} from '../signal-migration/src/passes/problematic_patterns/check_inheritance';
 
 export class KnownQueries
-  implements KnownFields<ClassFieldDescriptor>, ProblematicFieldRegistry<ClassFieldDescriptor>
+  implements
+    KnownFields<ClassFieldDescriptor>,
+    ProblematicFieldRegistry<ClassFieldDescriptor>,
+    InheritanceTracker<ClassFieldDescriptor>
 {
   private readonly classToQueryFields = new Map<ts.ClassLikeDeclaration, ClassFieldDescriptor[]>();
   private readonly knownQueryIDs = new Set<ClassFieldUniqueKey>();
@@ -72,5 +76,23 @@ export class KnownQueries
 
   getAllClassesWithQueries(): ts.ClassDeclaration[] {
     return Array.from(this.classToQueryFields.keys()).filter((c) => ts.isClassDeclaration(c));
+  }
+
+  captureKnownFieldInheritanceRelationship(
+    derived: ClassFieldDescriptor,
+    parent: ClassFieldDescriptor,
+  ): void {
+    if (this.isFieldIncompatible(parent) || this.isFieldIncompatible(derived)) {
+      this.markFieldIncompatible(parent);
+      this.markFieldIncompatible(derived);
+    }
+  }
+
+  captureUnknownDerivedField(field: ClassFieldDescriptor): void {
+    this.markFieldIncompatible(field);
+  }
+
+  captureUnknownParentField(field: ClassFieldDescriptor): void {
+    this.markFieldIncompatible(field);
   }
 }

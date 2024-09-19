@@ -11,12 +11,16 @@ import {MetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {ClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import assert from 'assert';
 import ts from 'typescript';
-import {InputIncompatibilityReason} from '../../input_detection/incompatibility';
 import {getMemberName} from '../../utils/class_member_names';
 import {InheritanceGraph} from '../../utils/inheritance_graph';
 import {topologicalSort} from '../../utils/inheritance_sort';
 import {ClassFieldDescriptor, KnownFields} from '../reference_resolution/known_fields';
-import {ProblematicFieldRegistry} from './problematic_field_registry';
+
+export interface InheritanceTracker<D extends ClassFieldDescriptor> {
+  captureKnownFieldInheritanceRelationship(derived: D, parent: D): void;
+  captureUnknownDerivedField(field: D): void;
+  captureUnknownParentField(field: D): void;
+}
 
 /**
  * Phase that propagates incompatibilities to derived classes or
@@ -41,21 +45,17 @@ import {ProblematicFieldRegistry} from './problematic_field_registry';
 export function checkInheritanceOfKnownFields<D extends ClassFieldDescriptor>(
   inheritanceGraph: InheritanceGraph,
   metaRegistry: MetadataReader,
-  fields: KnownFields<D> & ProblematicFieldRegistry<D>,
+  fields: KnownFields<D> & InheritanceTracker<D>,
   opts: {
     getFieldsForClass: (node: ts.ClassDeclaration) => D[];
     isClassWithKnownFields: (node: ts.ClassDeclaration) => boolean;
   },
 ) {
-  // Sort topologically and iterate super classes first, so that we can trivially
-  // propagate incompatibility statuses (and other checks) without having to check
-  // in both directions (derived classes, or base classes). This simplifies the logic
-  // further down in this function significantly.
-  const topologicalSortedClasses = topologicalSort(inheritanceGraph)
-    .filter((t) => ts.isClassDeclaration(t) && opts.isClassWithKnownFields(t))
-    .reverse();
+  const allInputClasses = Array.from(inheritanceGraph.allClassesInInheritance).filter(
+    (t) => ts.isClassDeclaration(t) && opts.isClassWithKnownFields(t),
+  );
 
-  for (const inputClass of topologicalSortedClasses) {
+  for (const inputClass of allInputClasses) {
     // Note: Class parents of `inputClass` were already checked by
     // the previous iterations (given the reverse topological sort)—
     // hence it's safe to assume that incompatibility of parent classes will
@@ -97,25 +97,20 @@ export function checkInheritanceOfKnownFields<D extends ClassFieldDescriptor>(
         (ts.isIdentifier(fieldDescr.node.name) || ts.isStringLiteralLike(fieldDescr.node.name)) &&
         inputFieldNamesFromMetadataArray.has(fieldDescr.node.name.text)
       ) {
-        fields.markFieldIncompatible(fieldDescr, {
-          context: null,
-          reason: InputIncompatibilityReason.RedeclaredViaDerivedClassInputsArray,
-        });
+        fields.captureUnknownDerivedField(fieldDescr);
       }
 
       for (const derived of derivedMembers) {
         const derivedInput = fields.attemptRetrieveDescriptorFromSymbol(derived);
         if (derivedInput !== null) {
+          // Note: We always track dependencies from the child to the parent,
+          // so skip here for now.
           continue;
         }
 
         // If we discover a derived, non-input member, then it will cause
         // conflicts, and we mark the current input as incompatible.
-        fields.markFieldIncompatible(fieldDescr, {
-          context: derived.valueDeclaration ?? inputNode,
-          reason: InputIncompatibilityReason.OverriddenByDerivedClass,
-        });
-
+        fields.captureUnknownDerivedField(fieldDescr);
         continue inputCheck;
       }
 
@@ -127,21 +122,10 @@ export function checkInheritanceOfKnownFields<D extends ClassFieldDescriptor>(
       const inheritedMemberInput = fields.attemptRetrieveDescriptorFromSymbol(inherited);
       // Parent is not an input, and hence will conflict..
       if (inheritedMemberInput === null) {
-        fields.markFieldIncompatible(fieldDescr, {
-          context: inherited.valueDeclaration ?? inputNode,
-          reason: InputIncompatibilityReason.TypeConflictWithBaseClass,
-        });
+        fields.captureUnknownParentField(fieldDescr);
         continue;
       }
-      // Parent is incompatible, so this input also needs to be.
-      // It cannot be migrated.
-      if (fields.isFieldIncompatible(inheritedMemberInput)) {
-        fields.markFieldIncompatible(fieldDescr, {
-          context: inheritedMemberInput.node,
-          reason: InputIncompatibilityReason.ParentIsIncompatible,
-        });
-        continue;
-      }
+      fields.captureKnownFieldInheritanceRelationship(fieldDescr, inheritedMemberInput);
     }
   }
 }

@@ -182,6 +182,16 @@ class Derived extends Base {
 export class Base2 {
   @Input() bla = true;
 }
+
+// overridden in separate file
+@Directive()
+export class Base3 {
+  @Input() bla = true;
+
+  click() {
+    this.bla = false;
+  }
+}
 @@@@@@ derived_class_meta_input_alias.ts @@@@@@
 
 // tslint:disable
@@ -198,14 +208,32 @@ class Base {
   inputs: [{name: 'bla', alias: 'matDerivedBla'}],
 })
 class Derived extends Base {}
+@@@@@@ derived_class_second_separate.ts @@@@@@
+
+// tslint:disable
+
+import {Input} from '@angular/core';
+import {DerivedExternalWithInput} from './derived_class_separate_file';
+
+class Derived extends DerivedExternalWithInput {
+  // this should be incompatible, because the final superclass
+  // within its own batch unit, detected a write that should
+  // propagate to this input.
+  @Input() override bla = false;
+}
 @@@@@@ derived_class_separate_file.ts @@@@@@
 
 // tslint:disable
 
-import {Base2} from './derived_class';
+import {Input} from '@angular/core';
+import {Base2, Base3} from './derived_class';
 
 class DerivedExternal extends Base2 {
   override bla = false;
+}
+
+export class DerivedExternalWithInput extends Base3 {
+  @Input() override bla = true;
 }
 @@@@@@ different_instantiations_of_reference.ts @@@@@@
 

@@ -32,6 +32,7 @@ export function getCompilationUnitMetadata(knownInputs: KnownInputs) {
           [inputClassFieldIdStr as string & ClassFieldUniqueKey]: {
             isIncompatible: incompatibility,
             seenAsSourceInput: info.metadata.inSourceFile,
+            extendsFrom: info.extendsFrom?.key ?? null,
           },
         };
       },
