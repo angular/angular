@@ -23,16 +23,10 @@ export class KnownQueries
   private readonly classToQueryFields = new Map<ts.ClassLikeDeclaration, ClassFieldDescriptor[]>();
   private readonly knownQueryIDs = new Set<ClassFieldUniqueKey>();
 
-  fieldNamesToConsiderForReferenceLookup: Set<string>;
-
   constructor(
     private readonly info: ProgramInfo,
     private globalMetadata: CompilationUnitData,
-  ) {
-    this.fieldNamesToConsiderForReferenceLookup = new Set(
-      Object.values(globalMetadata.knownQueryFields).map((f) => f.fieldName),
-    );
-  }
+  ) {}
 
   isFieldIncompatible(descriptor: ClassFieldDescriptor): boolean {
     return this.globalMetadata.problematicQueries[descriptor.key] !== undefined;

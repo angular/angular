@@ -97,8 +97,8 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         {
           shouldTrackClassReference: (_class) => false,
           attemptRetrieveDescriptorFromSymbol: (s) => getClassFieldDescriptorForSymbol(s, info),
-          fieldNamesToConsiderForReferenceLookup: null,
         },
+        null,
         referenceResult,
       ).visitor,
     );
@@ -193,6 +193,12 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       ts.forEachChild(sf, queryWholeProgramVisitor);
     }
 
+    // Set of all queries in the program. Useful for speeding up reference
+    // lookups below.
+    const fieldNamesToConsiderForReferenceLookup = new Set(
+      Object.values(globalMetadata.knownQueryFields).map((f) => f.fieldName),
+    );
+
     // Find all references.
     const groupedAstVisitor = new GroupedTsAstVisitor(sourceFiles);
     groupedAstVisitor.register(
@@ -204,6 +210,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         evaluator,
         templateTypeChecker,
         knownQueries,
+        fieldNamesToConsiderForReferenceLookup,
         referenceResult,
       ).visitor,
     );
