@@ -17,6 +17,7 @@ import {
 
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
+import semver from 'semver';
 
 export const PLACEHOLDER_VERSION = '0.0.0-PLACEHOLDER';
 
@@ -112,4 +113,12 @@ export function extractForwardRef<TExpression>(
     wrapperFn.getFunctionReturnValue().getOpaque(),
     ForwardRefHandling.Unwrapped,
   );
+}
+
+const STANDALONE_IS_DEFAULT_RANGE = new semver.Range('>= 19.0.0', {
+  includePrerelease: true,
+});
+
+export function getDefaultStandaloneValue(version: string): boolean {
+  return STANDALONE_IS_DEFAULT_RANGE.test(version);
 }

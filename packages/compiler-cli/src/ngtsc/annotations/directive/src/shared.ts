@@ -334,7 +334,7 @@ export function extractDirectiveMetadata(
         dep.token.value.name === 'TemplateRef',
     );
 
-  let isStandalone = false;
+  let isStandalone = true;
   if (directive.has('standalone')) {
     const expr = directive.get('standalone')!;
     const resolved = evaluator.evaluate(expr);

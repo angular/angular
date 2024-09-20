@@ -32,7 +32,7 @@ import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef, wrapReference} from './util';
+import {extractForwardRef, getDefaultStandaloneValue, wrapReference} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.
@@ -46,8 +46,9 @@ export class PartialDirectiveLinkerVersion1<TExpression> implements PartialLinke
   linkPartialDeclaration(
     constantPool: ConstantPool,
     metaObj: AstObject<R3PartialDeclaration, TExpression>,
+    version: string,
   ): LinkedDefinition {
-    const meta = toR3DirectiveMeta(metaObj, this.code, this.sourceUrl);
+    const meta = toR3DirectiveMeta(metaObj, this.code, this.sourceUrl, version);
     return compileDirectiveFromMetadata(meta, constantPool, makeBindingParser());
   }
 }
@@ -59,6 +60,7 @@ export function toR3DirectiveMeta<TExpression>(
   metaObj: AstObject<R3DeclareDirectiveMetadata, TExpression>,
   code: string,
   sourceUrl: AbsoluteFsPath,
+  version: string,
 ): R3DirectiveMetadata {
   const typeExpr = metaObj.getValue('type');
   const typeName = typeExpr.getSymbolName();
@@ -96,7 +98,9 @@ export function toR3DirectiveMeta<TExpression>(
     },
     name: typeName,
     usesInheritance: metaObj.has('usesInheritance') ? metaObj.getBoolean('usesInheritance') : false,
-    isStandalone: metaObj.has('isStandalone') ? metaObj.getBoolean('isStandalone') : false,
+    isStandalone: metaObj.has('isStandalone')
+      ? metaObj.getBoolean('isStandalone')
+      : getDefaultStandaloneValue(version),
     isSignal: metaObj.has('isSignal') ? metaObj.getBoolean('isSignal') : false,
     hostDirectives: metaObj.has('hostDirectives')
       ? toHostDirectivesMetadata(metaObj.getValue('hostDirectives'))

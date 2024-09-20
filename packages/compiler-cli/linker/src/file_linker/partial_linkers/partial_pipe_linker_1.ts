@@ -18,7 +18,7 @@ import {AstObject} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {wrapReference} from './util';
+import {getDefaultStandaloneValue, wrapReference} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclarePipe()` call expressions.
@@ -29,8 +29,9 @@ export class PartialPipeLinkerVersion1<TExpression> implements PartialLinker<TEx
   linkPartialDeclaration(
     constantPool: ConstantPool,
     metaObj: AstObject<R3PartialDeclaration, TExpression>,
+    version: string,
   ): LinkedDefinition {
-    const meta = toR3PipeMeta(metaObj);
+    const meta = toR3PipeMeta(metaObj, version);
     return compilePipeFromMetadata(meta);
   }
 }
@@ -40,6 +41,7 @@ export class PartialPipeLinkerVersion1<TExpression> implements PartialLinker<TEx
  */
 export function toR3PipeMeta<TExpression>(
   metaObj: AstObject<R3DeclarePipeMetadata, TExpression>,
+  version: string,
 ): R3PipeMetadata {
   const typeExpr = metaObj.getValue('type');
   const typeName = typeExpr.getSymbolName();
@@ -51,7 +53,9 @@ export function toR3PipeMeta<TExpression>(
   }
 
   const pure = metaObj.has('pure') ? metaObj.getBoolean('pure') : true;
-  const isStandalone = metaObj.has('isStandalone') ? metaObj.getBoolean('isStandalone') : false;
+  const isStandalone = metaObj.has('isStandalone')
+    ? metaObj.getBoolean('isStandalone')
+    : getDefaultStandaloneValue(version);
 
   return {
     name: typeName,

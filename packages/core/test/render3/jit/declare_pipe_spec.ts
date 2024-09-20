@@ -11,7 +11,11 @@ import {PipeDef} from '../../../src/render3';
 
 describe('Pipe declaration jit compilation', () => {
   it('should compile a named Pipe declaration', () => {
-    const def = ɵɵngDeclarePipe({type: TestClass, name: 'foo'}) as PipeDef<TestClass>;
+    const def = ɵɵngDeclarePipe({
+      type: TestClass,
+      name: 'foo',
+      version: '18.0.0',
+    }) as PipeDef<TestClass>;
 
     expect(def.type).toBe(TestClass);
     expect(def.name).toEqual('foo');
@@ -19,7 +23,12 @@ describe('Pipe declaration jit compilation', () => {
   });
 
   it('should compile an impure Pipe declaration', () => {
-    const def = ɵɵngDeclarePipe({type: TestClass, name: 'foo', pure: false}) as PipeDef<TestClass>;
+    const def = ɵɵngDeclarePipe({
+      type: TestClass,
+      name: 'foo',
+      pure: false,
+      version: '18.0.0',
+    }) as PipeDef<TestClass>;
 
     expect(def.type).toBe(TestClass);
     expect(def.name).toEqual('foo');
