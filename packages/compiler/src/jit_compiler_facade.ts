@@ -105,6 +105,7 @@ import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 import {SelectorMatcher} from './selector';
+import {getJitStandaloneDefaultForVersion} from './util';
 
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget;
@@ -567,7 +568,8 @@ function convertDeclareDirectiveFacadeToMetadata(
     deps: null,
     typeArgumentCount: 0,
     fullInheritance: false,
-    isStandalone: declaration.isStandalone ?? false,
+    isStandalone:
+      declaration.isStandalone ?? getJitStandaloneDefaultForVersion(declaration.version),
     isSignal: declaration.isSignal ?? false,
     hostDirectives,
   };
@@ -1018,7 +1020,8 @@ function convertDeclarePipeFacadeToMetadata(declaration: R3DeclarePipeFacade): R
     pipeName: declaration.name,
     deps: null,
     pure: declaration.pure ?? true,
-    isStandalone: declaration.isStandalone ?? false,
+    isStandalone:
+      declaration.isStandalone ?? getJitStandaloneDefaultForVersion(declaration.version),
   };
 }
 
