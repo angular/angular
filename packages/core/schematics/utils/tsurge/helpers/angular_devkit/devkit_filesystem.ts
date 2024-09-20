@@ -14,7 +14,6 @@ import {
   dirname,
   Path as DevkitAbsPath,
   PathFragment as DevkitPathFragment,
-  resolve,
 } from '@angular-devkit/core';
 import {DirEntry, FileEntry, Tree} from '@angular-devkit/schematics';
 import {
@@ -90,7 +89,7 @@ export class DevkitMigrationFilesystem implements FileSystem {
   }
 
   exists(path: AbsoluteFsPath): boolean {
-    return this.tree.exists(path);
+    return statPath(this.tree, path) !== null;
   }
 
   readFile(path: AbsoluteFsPath): string {

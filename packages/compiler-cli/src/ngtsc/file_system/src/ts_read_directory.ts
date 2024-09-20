@@ -100,10 +100,7 @@ export function createFileSystemTsReadDirectoryFn(
         return {files, directories};
       },
       (p) => fs.resolve(p),
-      (p) => {
-        const resolvedPath = fs.resolve(p);
-        return fs.exists(resolvedPath) && fs.stat(resolvedPath).isDirectory();
-      },
+      (p) => directoryExists(p),
     );
   };
 }
