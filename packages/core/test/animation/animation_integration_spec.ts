@@ -104,7 +104,7 @@ const DEFAULT_COMPONENT_ID = '1';
       });
     });
 
-    @Component({template: '<p>template text</p>'})
+    @Component({template: '<p>template text</p>', standalone: false})
     class SharedAnimationCmp {
       constructor(
         @Inject(ANIMATION_MODULE_TYPE) public animationType: 'NoopAnimations' | 'BrowserAnimations',
@@ -123,6 +123,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('* => on, * => off', [animate(1000, style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -165,6 +166,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 <div [@myAnimation]="exp" (@myAnimation.start)="cb('start')" (@myAnimation.done)="cb('done')"></div>
           `,
           animations: [trigger('myAnimation', [transition('* => go', [])])],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -194,6 +196,7 @@ const DEFAULT_COMPONENT_ID = '1';
           animations: [
             trigger('myAnimation', [transition('* => go', [animate('1s', style({opacity: 0}))])]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -233,6 +236,7 @@ const DEFAULT_COMPONENT_ID = '1';
             animations: [
               trigger('myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])]),
             ],
+            standalone: false,
           })
           class Cmp {
             exp: any = false;
@@ -270,6 +274,7 @@ const DEFAULT_COMPONENT_ID = '1';
             animations: [
               trigger('myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])]),
             ],
+            standalone: false,
           })
           class Cmp {
             exp: any = false;
@@ -306,6 +311,7 @@ const DEFAULT_COMPONENT_ID = '1';
             animations: [
               trigger('myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])]),
             ],
+            standalone: false,
           })
           class Cmp {
             exp: any = false;
@@ -349,6 +355,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -393,6 +400,7 @@ const DEFAULT_COMPONENT_ID = '1';
           <div @myAnimation></div>
         `,
           animations: [REUSABLE_ANIMATION],
+          standalone: false,
         })
         class Cmp {}
 
@@ -432,6 +440,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition(transitionFn, [style({opacity: 0}), animate(1234, style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           @ViewChild('element') element: any;
@@ -479,6 +488,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition(transitionFn, [style({opacity: 0}), animate(3333, style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           doMatch = false;
@@ -521,6 +531,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('* => 1', [style({width: '0px'}), animate(4567, style({width: '100px'}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -559,6 +570,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any;
@@ -636,6 +648,7 @@ const DEFAULT_COMPONENT_ID = '1';
           </div>
         `,
           animations: [trigger('myAnimation', [])],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -680,6 +693,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp1: any = false;
@@ -815,6 +829,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('1 => 0', [style({opacity: 1}), animate(1000, style({opacity: 0}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -875,6 +890,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -912,6 +928,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('true <=> false', [animate(1000, style({color: 'gold'})), animate(1000)]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -950,10 +967,20 @@ const DEFAULT_COMPONENT_ID = '1';
       });
 
       it('should not throw an error if a trigger with the same name exists in separate components', () => {
-        @Component({selector: 'cmp1', template: '...', animations: [trigger('trig', [])]})
+        @Component({
+          selector: 'cmp1',
+          template: '...',
+          animations: [trigger('trig', [])],
+          standalone: false,
+        })
         class Cmp1 {}
 
-        @Component({selector: 'cmp2', template: '...', animations: [trigger('trig', [])]})
+        @Component({
+          selector: 'cmp2',
+          template: '...',
+          animations: [trigger('trig', [])],
+          standalone: false,
+        })
         class Cmp2 {}
 
         TestBed.configureTestingModule({declarations: [Cmp1, Cmp2]});
@@ -974,6 +1001,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 ]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             @HostBinding('@myAnimation') exp = 'a';
@@ -1013,6 +1041,7 @@ const DEFAULT_COMPONENT_ID = '1';
             template: `
              <child-cmp *ngIf="exp"></child-cmp>
            `,
+            standalone: false,
           })
           class ParentCmp {
             public exp = true;
@@ -1026,6 +1055,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 transition(':leave', [style({opacity: 1}), animate(1000, style({opacity: 0}))]),
               ]),
             ],
+            standalone: false,
           })
           class ChildCmp {
             @HostBinding('@host') public hostAnimation = true;
@@ -1070,6 +1100,7 @@ const DEFAULT_COMPONENT_ID = '1';
             template: `
                 <child-cmp *ngIf="exp"></child-cmp>
               `,
+            standalone: false,
           })
           class ParentCmp {
             public exp = true;
@@ -1083,6 +1114,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 transition(':leave', [style({opacity: 1}), animate(1000, style({opacity: 0}))]),
               ]),
             ],
+            standalone: false,
           })
           class ChildCmp {
             @HostBinding('@host') public hostAnimation = true;
@@ -1128,6 +1160,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 transition(':leave', [group([query('@*', animateChild())])]),
               ]),
             ],
+            standalone: false,
           })
           class ParentCmp {
             exp = true;
@@ -1141,6 +1174,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 transition(':leave', [style({opacity: 1}), animate('200ms', style({opacity: 0}))]),
               ]),
             ],
+            standalone: false,
           })
           class ChildCmp {}
 
@@ -1188,6 +1222,7 @@ const DEFAULT_COMPONENT_ID = '1';
             template: `
                 <child-cmp *ngIf="exp" @host></child-cmp>
               `,
+            standalone: false,
           })
           class ParentCmp {
             public exp = true;
@@ -1196,6 +1231,7 @@ const DEFAULT_COMPONENT_ID = '1';
           @Component({
             selector: 'child-cmp',
             template: '...',
+            standalone: false,
           })
           class ChildCmp {}
 
@@ -1246,6 +1282,7 @@ const DEFAULT_COMPONENT_ID = '1';
             template: `
                 <child-cmp *ngIf="exp" @host></child-cmp>
               `,
+            standalone: false,
           })
           class ParentCmp {
             public exp = true;
@@ -1262,6 +1299,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 ]),
               ]),
             ],
+            standalone: false,
           })
           class ChildCmp {
             @HostBinding('@host') public hostAnimation = true;
@@ -1318,6 +1356,7 @@ const DEFAULT_COMPONENT_ID = '1';
             template: `
                 <child-cmp *ngIf="exp"></child-cmp>
               `,
+            standalone: false,
           })
           class ParentCmp {
             public exp = true;
@@ -1327,6 +1366,7 @@ const DEFAULT_COMPONENT_ID = '1';
             selector: 'child-cmp',
             template: '...',
             animations: [trigger('host', [transition('a => b', [style({height: '100px'})])])],
+            standalone: false,
           })
           class ChildCmp {
             @HostBinding('@host') public hostAnimation = 'a';
@@ -1360,6 +1400,7 @@ const DEFAULT_COMPONENT_ID = '1';
             template: `
                 <child-cmp *ngFor="let item of items"></child-cmp>
               `,
+            standalone: false,
           })
           class ParentCmp {
             items: any[] = [1, 2, 3, 4, 5];
@@ -1371,6 +1412,7 @@ const DEFAULT_COMPONENT_ID = '1';
             animations: [
               trigger('host', [transition(':leave', [animate(1000, style({opacity: 0}))])]),
             ],
+            standalone: false,
           })
           class ChildCmp {
             @HostBinding('@host') public hostAnimation = 'a';
@@ -1416,6 +1458,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -1472,6 +1515,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -1535,6 +1579,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -1587,6 +1632,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition(':enter', animate(1000)),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: boolean = false;
@@ -1635,6 +1681,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: boolean = false;
@@ -1679,6 +1726,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition(':enter', [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           items: number[] = [];
@@ -1723,6 +1771,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('* => *', animate(500)),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           @ViewChild('green') public element: any;
@@ -1751,6 +1800,7 @@ const DEFAULT_COMPONENT_ID = '1';
             </div>
           `,
           animations: [trigger('color', [state('green', style({backgroundColor: 'green'}))])],
+          standalone: false,
         })
         class Cmp {
           public colorExp = 'green';
@@ -1806,6 +1856,7 @@ const DEFAULT_COMPONENT_ID = '1';
               state('green', style({backgroundColor: 'green'})),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public colorExp = 'green';
@@ -1861,6 +1912,7 @@ const DEFAULT_COMPONENT_ID = '1';
           </div>
         `,
           animations: [trigger('myAnimation', [])],
+          standalone: false,
         })
         class Cmp {
           public items: number[] = [];
@@ -1931,6 +1983,7 @@ const DEFAULT_COMPONENT_ID = '1';
             trigger('trig1', [transition('state => void', [animate(1000, style({opacity: 0}))])]),
             trigger('trig2', [transition(':leave', [animate(1000, style({width: '0px'}))])]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp = true;
@@ -2002,6 +2055,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: string | null | undefined;
@@ -2044,6 +2098,7 @@ const DEFAULT_COMPONENT_ID = '1';
           animations: [
             trigger('myAnimation', [transition('a => b', [animate(1000, style({width: '0px'}))])]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp = true;
@@ -2086,6 +2141,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('a => b', [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -2137,6 +2193,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('a => b', [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -2195,6 +2252,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('a => b', [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -2252,6 +2310,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition(':leave', [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -2308,6 +2367,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('* => 2', [animate(5678, style({opacity: 0}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -2344,6 +2404,7 @@ const DEFAULT_COMPONENT_ID = '1';
           animations: [
             trigger('myAnimation', [transition('* => *', [animate(1234, style({opacity: 0}))])]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -2385,6 +2446,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('* => 1', animate(500)),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -2439,6 +2501,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -2498,6 +2561,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('start => final', animate(500)),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -2578,6 +2642,7 @@ const DEFAULT_COMPONENT_ID = '1';
               }),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -2634,6 +2699,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -2678,6 +2744,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition(':enter', [style({opacity: 0}), animate('1s', style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class OuterCmp {
           @ViewChild('inner') public inner: any;
@@ -2704,6 +2771,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition(':enter', [style({opacity: 0}), animate('1s', style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class InnerCmp {
           public exp: any;
@@ -2742,6 +2810,7 @@ const DEFAULT_COMPONENT_ID = '1';
                   transition(':increment', [animate(1234, style({background: 'red'}))]),
                 ]),
               ],
+              standalone: false,
             })
             class Cmp {
               exp: number = 0;
@@ -2781,6 +2850,7 @@ const DEFAULT_COMPONENT_ID = '1';
                   transition(':decrement', [animate(1234, style({background: 'red'}))]),
                 ]),
               ],
+              standalone: false,
             })
             class Cmp {
               exp: number = 5;
@@ -2827,6 +2897,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition('* => 1, * => 2', [animate(1000)]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           items = [
@@ -2876,6 +2947,7 @@ const DEFAULT_COMPONENT_ID = '1';
       @Component({
         template: `<div i18n>Hello <span>World</span>!</div>`,
         animations: [trigger('myAnimation', [transition('* => *', [animate(1000)])])],
+        standalone: false,
       })
       class Cmp {}
 
@@ -2904,6 +2976,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -2944,6 +3017,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -2998,6 +3072,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp1: any = false;
@@ -3061,6 +3136,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp1: any = false;
@@ -3114,6 +3190,7 @@ const DEFAULT_COMPONENT_ID = '1';
             ]),
             trigger('bar', [transition(':leave', [animate(1000, style({opacity: 0}))])]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: boolean = false;
@@ -3158,6 +3235,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           event: AnimationEvent | undefined;
@@ -3193,6 +3271,7 @@ const DEFAULT_COMPONENT_ID = '1';
               <div [@myAnimation]="exp" (@myAnimation.start)="callback($event)" (@myAnimation.done)="callback($event)"></div>
             `,
           animations: [trigger('myAnimation', [])],
+          standalone: false,
         })
         class Cmp {
           exp: string | undefined;
@@ -3228,6 +3307,7 @@ const DEFAULT_COMPONENT_ID = '1';
               <div *ngIf="exp" @myAnimation (@myAnimation.start)="callback($event)" (@myAnimation.done)="callback($event)"></div>
             `,
           animations: [trigger('myAnimation', [])],
+          standalone: false,
         })
         class Cmp {
           exp: boolean = false;
@@ -3290,6 +3370,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           log: string[] = [];
@@ -3366,6 +3447,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition(':enter', [style({opacity: 0}), animate(1500, style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           log: string[] = [];
@@ -3463,6 +3545,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 transition('* => 1, * => 2', [animate(1234, style({width: '100px'}))]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             exp: any = false;
@@ -3508,6 +3591,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 transition('* => *', animate(500)),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             exp: any = false;
@@ -3556,6 +3640,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 transition('* => 1, * => 2', [animate(1234, style({width: '100px'}))]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             exp: any = false;
@@ -3601,6 +3686,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 transition('* => 1, * => 2, * => 3', [animate(1234, style({width: '100px'}))]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             disableParentExp = false;
@@ -3652,6 +3738,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 transition(':leave', [animate(1234, style({opacity: 0}))]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             @ViewChild('parent') public parentElm: any;
@@ -3696,6 +3783,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 ]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             disableExp = false;
@@ -3739,6 +3827,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 <child-cmp #child></child-cmp>
               </div>
                 `,
+            standalone: false,
           })
           class ParentCmp {
             @ViewChild('child') public child: ChildCmp | null = null;
@@ -3758,6 +3847,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 ]),
               ]),
             ],
+            standalone: false,
           })
           class ChildCmp {
             public exp = '';
@@ -3797,6 +3887,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 <div [@myAnimation]="exp"></div>
               </div>
                 `,
+            standalone: false,
           })
           class Cmp {
             exp = '';
@@ -3834,6 +3925,7 @@ const DEFAULT_COMPONENT_ID = '1';
                 </div>
               </div>
                 `,
+            standalone: false,
           })
           class Cmp {
             @ViewChild('container') public container: any;
@@ -3889,6 +3981,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -3932,6 +4025,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;
@@ -3967,6 +4061,7 @@ const DEFAULT_COMPONENT_ID = '1';
           <div [@myAnimation]="exp"></div>
         `,
         animations: [trigger('myAnimation', [animate(1000, style({width: '100px'}))])],
+        standalone: false,
       })
       class Cmp {
         exp: any = false;
@@ -3995,6 +4090,7 @@ const DEFAULT_COMPONENT_ID = '1';
          </div>
        `,
           animations: [trigger('anim', [transition(':enter', useAnimation(animationMetaData))])],
+          standalone: false,
         })
         class Cmp {
           exp: boolean = false;
@@ -4040,6 +4136,7 @@ const DEFAULT_COMPONENT_ID = '1';
          </div>
        `,
           animations: [trigger('anim', [transition(':enter', useAnimation(animationMetaData))])],
+          standalone: false,
         })
         class Cmp {
           exp: boolean = false;
@@ -4087,6 +4184,7 @@ const DEFAULT_COMPONENT_ID = '1';
           animations: [
             trigger('anim', [transition(':enter', useAnimation(animationMetaData, {delay: 1500}))]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: boolean = false;
@@ -4142,6 +4240,7 @@ const DEFAULT_COMPONENT_ID = '1';
               ),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: boolean = false;
@@ -4191,6 +4290,7 @@ const DEFAULT_COMPONENT_ID = '1';
               transition(':enter', useAnimation(animationMetaData, {delay: 34}), {delay: 200}),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: boolean = false;
@@ -4240,6 +4340,7 @@ const DEFAULT_COMPONENT_ID = '1';
             transition('* => *', [query('bar', animate(1000, style({background: 'blue'})))]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         fooExp: any = false;
@@ -4284,6 +4385,7 @@ const DEFAULT_COMPONENT_ID = '1';
             ]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         exp: any = false;
@@ -4329,6 +4431,7 @@ const DEFAULT_COMPONENT_ID = '1';
             ),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         exp: boolean = false;
@@ -4377,6 +4480,7 @@ const DEFAULT_COMPONENT_ID = '1';
             ]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         exp: boolean = false;
@@ -4426,7 +4530,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
       describe('when modules are missing', () => {
         it('should throw when using an @prop binding without the animation module', () => {
-          @Component({template: `<div [@myAnimation]="true"></div>`})
+          @Component({template: `<div [@myAnimation]="true"></div>`, standalone: false})
           class Cmp {}
 
           TestBed.configureTestingModule({declarations: [Cmp]});
@@ -4437,7 +4541,7 @@ const DEFAULT_COMPONENT_ID = '1';
         });
 
         it('should throw when using an @prop listener without the animation module', () => {
-          @Component({template: `<div (@myAnimation.start)="a = true"></div>`})
+          @Component({template: `<div (@myAnimation.start)="a = true"></div>`, standalone: false})
           class Cmp {
             a = false;
           }
@@ -4452,7 +4556,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
       describe('when modules are present, but animations are missing', () => {
         it('should throw when using an @prop property, BrowserAnimationModule is imported, but there is no animation rule', () => {
-          @Component({template: `<div [@myAnimation]="true"></div>`})
+          @Component({template: `<div [@myAnimation]="true"></div>`, standalone: false})
           class Cmp {}
 
           TestBed.configureTestingModule({declarations: [Cmp], imports: [BrowserAnimationsModule]});
@@ -4463,7 +4567,7 @@ const DEFAULT_COMPONENT_ID = '1';
         });
 
         it('should throw when using an @prop listener, BrowserAnimationModule is imported, but there is no animation rule', () => {
-          @Component({template: `<div (@myAnimation.start)="true"></div>`})
+          @Component({template: `<div (@myAnimation.start)="true"></div>`, standalone: false})
           class Cmp {}
 
           TestBed.configureTestingModule({declarations: [Cmp], imports: [BrowserAnimationsModule]});
@@ -4485,6 +4589,7 @@ const DEFAULT_COMPONENT_ID = '1';
           </div>
         `,
           animations: [trigger('myAnimation', [transition('void => *', triggerAnimationData)])],
+          standalone: false,
         })
         class Cmp {
           exp: any = false;

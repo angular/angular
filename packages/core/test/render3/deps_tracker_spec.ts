@@ -51,13 +51,13 @@ describe('runtime dependency tracker', () => {
 
     describe('exports specs', () => {
       it('should include the exported components/directives/pipes in exported scope', () => {
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
         // No ɵcmp added yet.
@@ -77,13 +77,13 @@ describe('runtime dependency tracker', () => {
       });
 
       it('should include the exported scope of an exported module in the exported scope and compilation scope', () => {
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
         @NgModule({
@@ -110,13 +110,13 @@ describe('runtime dependency tracker', () => {
       });
 
       it('should combine the directly exported elements with the exported scope of exported module in both exported and compilation scopes', () => {
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
         @NgModule({
@@ -124,7 +124,7 @@ describe('runtime dependency tracker', () => {
         })
         class SubModule {}
 
-        @Component({})
+        @Component({standalone: false})
         class MainComponent {}
 
         @NgModule({
@@ -148,16 +148,16 @@ describe('runtime dependency tracker', () => {
 
     describe('import specs', () => {
       it('should contain the exported scope of an imported module in compilation scope', () => {
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Component({})
+        @Component({standalone: false})
         class PrivateComponent {}
 
         @NgModule({
@@ -203,16 +203,16 @@ describe('runtime dependency tracker', () => {
       });
 
       it('should contain the exported scope of a depth-2 transitively imported module in compilation scope', () => {
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Component({})
+        @Component({standalone: false})
         class PrivateComponent {}
 
         @NgModule({
@@ -253,13 +253,13 @@ describe('runtime dependency tracker', () => {
 
     describe('declarations specs', () => {
       it('should include declared components/directives/pipes as part of compilation scope', () => {
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
         // No ɵcmp added yet.
@@ -313,7 +313,7 @@ describe('runtime dependency tracker', () => {
 
     describe('cache specs', () => {
       it('should use cache for re-calculation', () => {
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
         @NgModule({
@@ -340,7 +340,7 @@ describe('runtime dependency tracker', () => {
       });
 
       it('should bust the cache correctly', () => {
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
         @NgModule({
@@ -373,13 +373,13 @@ describe('runtime dependency tracker', () => {
         @NgModule({imports: [forwardRef(() => SubModule)]})
         class MainModule {}
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         @NgModule({exports: [Component1, Directive1, Pipe1]})
@@ -397,13 +397,13 @@ describe('runtime dependency tracker', () => {
         class MainModule {}
         (MainModule as NgModuleType).ɵmod = createNgModuleDef({imports: () => [SubModule]});
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         @NgModule({exports: [Component1, Directive1, Pipe1]})
@@ -457,13 +457,13 @@ describe('runtime dependency tracker', () => {
         })
         class MainModule {}
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
@@ -480,13 +480,13 @@ describe('runtime dependency tracker', () => {
           declarations: () => [Component1, Directive1, Pipe1],
         });
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
@@ -507,13 +507,13 @@ describe('runtime dependency tracker', () => {
         })
         class MainModule {}
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
@@ -530,13 +530,13 @@ describe('runtime dependency tracker', () => {
           exports: () => [Component1, Directive1, Pipe1],
         });
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
@@ -551,13 +551,13 @@ describe('runtime dependency tracker', () => {
         @NgModule({exports: [forwardRef(() => SubModule)]})
         class MainModule {}
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         @NgModule({exports: [Component1, Directive1, Pipe1]})
@@ -579,13 +579,13 @@ describe('runtime dependency tracker', () => {
         class MainModule {}
         (MainModule as NgModuleType).ɵmod = createNgModuleDef({exports: () => [SubModule]});
 
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         @NgModule({exports: [Component1, Directive1, Pipe1]})
@@ -668,7 +668,7 @@ describe('runtime dependency tracker', () => {
     });
 
     it('should poison the compilation scope if an import is not standalone', () => {
-      @Component({})
+      @Component({standalone: false})
       class Component1 {}
 
       class MainComponent {}
@@ -681,16 +681,16 @@ describe('runtime dependency tracker', () => {
     });
 
     it('should include the imported module and its exported scope in the compilation scope', () => {
-      @Directive({})
+      @Directive({standalone: false})
       class Directive1 {}
 
-      @Pipe({name: 'pipe1'})
+      @Pipe({name: 'pipe1', standalone: false})
       class Pipe1 {}
 
-      @Component({})
+      @Component({standalone: false})
       class Component1 {}
 
-      @Component({})
+      @Component({standalone: false})
       class PrivateComponent {}
 
       @NgModule({
@@ -713,16 +713,16 @@ describe('runtime dependency tracker', () => {
     });
 
     it('should include the imported module and its exported scope in the compilation scope - case of nested array imports', () => {
-      @Directive({})
+      @Directive({standalone: false})
       class Directive1 {}
 
-      @Pipe({name: 'pipe1'})
+      @Pipe({name: 'pipe1', standalone: false})
       class Pipe1 {}
 
-      @Component({})
+      @Component({standalone: false})
       class Component1 {}
 
-      @Component({})
+      @Component({standalone: false})
       class PrivateComponent {}
 
       @NgModule({
@@ -754,13 +754,13 @@ describe('runtime dependency tracker', () => {
       @Pipe({name: 'pipe1', standalone: true})
       class Pipe1 {}
 
-      @Component({})
+      @Component({standalone: false})
       class SubModuleComponent {}
 
-      @Directive({})
+      @Directive({standalone: false})
       class SubModuleDirective {}
 
-      @Pipe({name: 'submodule pipe'})
+      @Pipe({name: 'submodule pipe', standalone: false})
       class SubModulePipe {}
 
       @NgModule({exports: [SubModuleComponent, SubModulePipe, SubModuleDirective]})
@@ -798,13 +798,13 @@ describe('runtime dependency tracker', () => {
       @Pipe({name: 'pipe1', standalone: true})
       class Pipe1 {}
 
-      @Component({})
+      @Component({standalone: false})
       class SubModuleComponent {}
 
-      @Directive({})
+      @Directive({standalone: false})
       class SubModuleDirective {}
 
-      @Pipe({name: 'submodule pipe'})
+      @Pipe({name: 'submodule pipe', standalone: false})
       class SubModulePipe {}
 
       @NgModule({exports: [SubModuleComponent, SubModulePipe, SubModuleDirective]})
@@ -875,7 +875,7 @@ describe('runtime dependency tracker', () => {
       @Pipe({name: 'pipe1', standalone: true})
       class Pipe1 {}
 
-      @Component({})
+      @Component({standalone: false})
       class MainComponent {}
 
       let ans = depsTracker.getStandaloneComponentScope(MainComponent as ComponentType<any>, [
@@ -904,16 +904,16 @@ describe('runtime dependency tracker', () => {
   describe('getComponentDependencies method', () => {
     describe('for non-standalone component', () => {
       it('should include the compilation scope of the declaring module', () => {
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
-        @Component({})
+        @Component({standalone: false})
         class MainComponent {}
 
         @NgModule({
@@ -930,16 +930,16 @@ describe('runtime dependency tracker', () => {
       });
 
       it('should include the compilation scope of the declaring module when it is forward referenced', () => {
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
-        @Component({})
+        @Component({standalone: false})
         class MainComponent {}
 
         class MainModule {}
@@ -956,7 +956,7 @@ describe('runtime dependency tracker', () => {
       });
 
       it('should return empty dependencies if component has no registered module', () => {
-        @Component({})
+        @Component({standalone: false})
         class MainComponent {}
         ɵsetClassDebugInfo(MainComponent, {
           className: 'MainComponent',
@@ -972,7 +972,7 @@ describe('runtime dependency tracker', () => {
       it('should return empty deps if the compilation scope of the declaring module is corrupted', () => {
         class RandomClass {}
 
-        @Component({})
+        @Component({standalone: false})
         class MainComponent {}
 
         class MainModule {}
@@ -1048,13 +1048,13 @@ describe('runtime dependency tracker', () => {
       });
 
       it('should ignore imported non-standalone component/directive/pipe', () => {
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         @Component({standalone: true})
@@ -1070,13 +1070,13 @@ describe('runtime dependency tracker', () => {
       });
 
       it('should include the imported module and its exported scope', () => {
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         @NgModule({
@@ -1097,13 +1097,13 @@ describe('runtime dependency tracker', () => {
       });
 
       it('should include the imported forward ref module and its exported scope', () => {
-        @Component({})
+        @Component({standalone: false})
         class Component1 {}
 
-        @Directive({})
+        @Directive({standalone: false})
         class Directive1 {}
 
-        @Pipe({name: 'pipe1'})
+        @Pipe({name: 'pipe1', standalone: false})
         class Pipe1 {}
 
         @NgModule({
@@ -1151,7 +1151,7 @@ describe('runtime dependency tracker', () => {
 
   describe('isOrphanComponent method', () => {
     it('should return true for non-standalone component without NgModule', () => {
-      @Component({})
+      @Component({standalone: false})
       class MainComponent {}
 
       expect(depsTracker.isOrphanComponent(MainComponent as ComponentType<any>)).toBeTrue();
@@ -1167,7 +1167,7 @@ describe('runtime dependency tracker', () => {
     });
 
     it('should return false for non-standalone component with its NgModule', () => {
-      @Component({})
+      @Component({standalone: false})
       class MainComponent {}
 
       @NgModule({

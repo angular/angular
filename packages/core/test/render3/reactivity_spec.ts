@@ -852,6 +852,7 @@ describe('reactivity', () => {
       it('inside template effect', () => {
         @Component({
           template: '{{someFn()}}',
+          standalone: false,
         })
         class Cmp {
           someFn() {
@@ -876,6 +877,7 @@ describe('reactivity', () => {
       it('inside an effect', () => {
         @Component({
           template: '',
+          standalone: false,
         })
         class Cmp {
           constructor() {

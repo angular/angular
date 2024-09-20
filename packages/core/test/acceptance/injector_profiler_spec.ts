@@ -107,6 +107,7 @@ describe('setProfiler', () => {
       selector: 'my-comp',
       template: 'hello world',
       providers: [MyService],
+      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService);
@@ -150,6 +151,7 @@ describe('setProfiler', () => {
       selector: 'my-comp',
       template: 'hello world',
       providers: [MyService, {provide: MyServiceB, useValue: 0}],
+      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService, {self: true});
@@ -199,6 +201,7 @@ describe('setProfiler', () => {
         {provide: MyServiceD, useValue: 'hello world'},
         {provide: MyServiceE, useClass: class MyExampleClass {}},
       ],
+      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService);
@@ -251,6 +254,7 @@ describe('setProfiler', () => {
         {provide: MyService, useFactory: () => new MyService(), multi: true},
         {provide: MyService, useValue: 'hello world', multi: true},
       ],
+      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService);
@@ -290,6 +294,7 @@ describe('setProfiler', () => {
     @Component({
       selector: 'my-comp',
       template: 'hello world',
+      standalone: false,
     })
     class MyComponent {
       rootService = inject(RootService);
@@ -484,6 +489,7 @@ describe('getInjectorProviders', () => {
       {{b | percent:'4.3-5' }}
     `,
       providers: [MyService],
+      standalone: false,
     })
     class MyComponent {
       b = 1.3495;
@@ -506,6 +512,7 @@ describe('getInjectorProviders', () => {
       {{b | percent:'4.3-5' }}
     `,
       viewProviders: [MyService],
+      standalone: false,
     })
     class MyComponent {
       b = 1.3495;
@@ -563,6 +570,7 @@ describe('getInjectorProviders', () => {
     @Component({
       selector: 'my-comp',
       template: 'hello world',
+      standalone: false,
     })
     class MyComponent {}
 

@@ -463,7 +463,7 @@ describe('component declaration jit compilation', () => {
       ],
     }) as ComponentDef<TestClass>;
 
-    @Directive({selector: '[forward]'})
+    @Directive({selector: '[forward]', standalone: false})
     class ForwardDir {}
 
     expectComponentDef(def, {
@@ -490,7 +490,7 @@ describe('component declaration jit compilation', () => {
       ],
     }) as ComponentDef<TestClass>;
 
-    @Directive({selector: '[forward]'})
+    @Directive({selector: '[forward]', standalone: false})
     class ForwardDir {}
 
     expectComponentDef(def, {
@@ -525,7 +525,7 @@ describe('component declaration jit compilation', () => {
       },
     }) as ComponentDef<TestClass>;
 
-    @Pipe({name: 'forward'})
+    @Pipe({name: 'forward', standalone: false})
     class ForwardPipe {}
 
     expectComponentDef(def, {
@@ -546,7 +546,7 @@ describe('component declaration jit compilation', () => {
       },
     }) as ComponentDef<TestClass>;
 
-    @Pipe({name: 'forward'})
+    @Pipe({name: 'forward', standalone: false})
     class ForwardPipe {}
 
     expectComponentDef(def, {
@@ -656,11 +656,11 @@ function expectComponentDef(
 
 class TestClass {}
 
-@Directive({selector: '[dir]'})
+@Directive({selector: '[dir]', standalone: false})
 class TestDir {}
 
-@Component({selector: 'cmp', template: ''})
+@Component({selector: 'cmp', template: '', standalone: false})
 class TestCmp {}
 
-@Pipe({name: 'test'})
+@Pipe({name: 'test', standalone: false})
 class TestPipe {}

@@ -283,6 +283,7 @@ describe('importProvidersFrom', () => {
         // The double array here is necessary to escape the compile-time error, via Provider's
         // `any[]` option.
         providers: [[importProvidersFrom(Module)]],
+        standalone: false,
       })
       class Cmp {}
 
@@ -411,6 +412,7 @@ describe('EnvironmentProviders', () => {
   it('should be rejected by @Component.providers', () => {
     @Component({
       providers: [environmentProviders as any],
+      standalone: false,
     })
     class TestCmp {
       readonly token = inject(TOKEN);
@@ -423,11 +425,11 @@ describe('EnvironmentProviders', () => {
 describe('di', () => {
   describe('no dependencies', () => {
     it('should create directive with no deps', () => {
-      @Directive({selector: '[dir]', exportAs: 'dir'})
+      @Directive({selector: '[dir]', exportAs: 'dir', standalone: false})
       class MyDirective {
         value = 'Created';
       }
-      @Component({template: '<div dir #dir="dir">{{ dir.value }}</div>'})
+      @Component({template: '<div dir #dir="dir">{{ dir.value }}</div>', standalone: false})
       class MyComp {}
       TestBed.configureTestingModule({declarations: [MyDirective, MyComp]});
       const fixture = TestBed.createComponent(MyComp);
@@ -465,7 +467,7 @@ describe('di', () => {
   describe('directive injection', () => {
     let log: string[] = [];
 
-    @Directive({selector: '[dirB]', exportAs: 'dirB'})
+    @Directive({selector: '[dirB]', exportAs: 'dirB', standalone: false})
     class DirectiveB {
       @Input() value = 'DirB';
 
@@ -477,12 +479,12 @@ describe('di', () => {
     beforeEach(() => (log = []));
 
     it('should create directive with intra view dependencies', () => {
-      @Directive({selector: '[dirA]', exportAs: 'dirA'})
+      @Directive({selector: '[dirA]', exportAs: 'dirA', standalone: false})
       class DirectiveA {
         value = 'DirA';
       }
 
-      @Directive({selector: '[dirC]', exportAs: 'dirC'})
+      @Directive({selector: '[dirC]', exportAs: 'dirC', standalone: false})
       class DirectiveC {
         value: string;
 
@@ -497,6 +499,7 @@ describe('di', () => {
           <span dirB dirC #dir="dirC">{{ dir.value }}</span>
         </div>
       `,
+        standalone: false,
       })
       class MyComp {}
 
@@ -509,7 +512,7 @@ describe('di', () => {
     });
 
     it('should instantiate injected directives in dependency order', () => {
-      @Directive({selector: '[dirA]'})
+      @Directive({selector: '[dirA]', standalone: false})
       class DirectiveA {
         value = 'dirA';
 
@@ -518,7 +521,7 @@ describe('di', () => {
         }
       }
 
-      @Component({template: '<div dirA dirB></div>'})
+      @Component({template: '<div dirA dirB></div>', standalone: false})
       class MyComp {}
 
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
@@ -529,7 +532,7 @@ describe('di', () => {
     });
 
     it('should fallback to the module injector', () => {
-      @Directive({selector: '[dirA]'})
+      @Directive({selector: '[dirA]', standalone: false})
       class DirectiveA {
         value = 'dirA';
 
@@ -541,7 +544,7 @@ describe('di', () => {
       // - dirB is know to the node injectors
       // - then when dirA tries to inject dirB, it will check the node injector first tree
       // - if not found, it will check the module injector tree
-      @Component({template: '<div dirB></div><div dirA></div>'})
+      @Component({template: '<div dirB></div><div dirA></div>', standalone: false})
       class MyComp {}
 
       TestBed.configureTestingModule({
@@ -555,14 +558,14 @@ describe('di', () => {
     });
 
     it('should instantiate injected directives before components', () => {
-      @Component({selector: 'my-comp', template: ''})
+      @Component({selector: 'my-comp', template: '', standalone: false})
       class MyComp {
         constructor(dirB: DirectiveB) {
           log.push(`Comp (dep: ${dirB.value})`);
         }
       }
 
-      @Component({template: '<my-comp dirB></my-comp>'})
+      @Component({template: '<my-comp dirB></my-comp>', standalone: false})
       class MyApp {}
 
       TestBed.configureTestingModule({declarations: [DirectiveB, MyComp, MyApp]});
@@ -573,14 +576,14 @@ describe('di', () => {
     });
 
     it('should inject directives in the correct order in a for loop', () => {
-      @Directive({selector: '[dirA]'})
+      @Directive({selector: '[dirA]', standalone: false})
       class DirectiveA {
         constructor(dir: DirectiveB) {
           log.push(`DirA (dep: ${dir.value})`);
         }
       }
 
-      @Component({template: '<div dirA dirB *ngFor="let i of array"></div>'})
+      @Component({template: '<div dirA dirB *ngFor="let i of array"></div>', standalone: false})
       class MyComp {
         array = [1, 2, 3];
       }
@@ -600,7 +603,7 @@ describe('di', () => {
     });
 
     it('should instantiate directives with multiple out-of-order dependencies', () => {
-      @Directive({selector: '[dirA]'})
+      @Directive({selector: '[dirA]', standalone: false})
       class DirectiveA {
         value = 'DirA';
 
@@ -609,7 +612,7 @@ describe('di', () => {
         }
       }
 
-      @Directive({selector: '[dirC]'})
+      @Directive({selector: '[dirC]', standalone: false})
       class DirectiveC {
         value = 'DirC';
 
@@ -618,14 +621,14 @@ describe('di', () => {
         }
       }
 
-      @Directive({selector: '[dirB]'})
+      @Directive({selector: '[dirB]', standalone: false})
       class DirectiveB {
         constructor(dirA: DirectiveA, dirC: DirectiveC) {
           log.push(`DirB (deps: ${dirA.value} and ${dirC.value})`);
         }
       }
 
-      @Component({template: '<div dirA dirB dirC></div>'})
+      @Component({template: '<div dirA dirB dirC></div>', standalone: false})
       class MyComp {}
 
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, DirectiveC, MyComp]});
@@ -636,7 +639,7 @@ describe('di', () => {
     });
 
     it('should instantiate in the correct order for complex case', () => {
-      @Directive({selector: '[dirC]'})
+      @Directive({selector: '[dirC]', standalone: false})
       class DirectiveC {
         value = 'DirC';
 
@@ -645,7 +648,7 @@ describe('di', () => {
         }
       }
 
-      @Directive({selector: '[dirA]'})
+      @Directive({selector: '[dirA]', standalone: false})
       class DirectiveA {
         value = 'DirA';
 
@@ -654,7 +657,7 @@ describe('di', () => {
         }
       }
 
-      @Directive({selector: '[dirD]'})
+      @Directive({selector: '[dirD]', standalone: false})
       class DirectiveD {
         value = 'DirD';
 
@@ -663,14 +666,14 @@ describe('di', () => {
         }
       }
 
-      @Component({selector: 'my-comp', template: ''})
+      @Component({selector: 'my-comp', template: '', standalone: false})
       class MyComp {
         constructor(dirD: DirectiveD) {
           log.push(`Comp (dep: ${dirD.value})`);
         }
       }
 
-      @Component({template: '<my-comp dirA dirB dirC dirD></my-comp>'})
+      @Component({template: '<my-comp dirA dirB dirC dirD></my-comp>', standalone: false})
       class MyApp {}
 
       TestBed.configureTestingModule({
@@ -689,12 +692,12 @@ describe('di', () => {
     });
 
     it('should instantiate in correct order with mixed parent and peer dependencies', () => {
-      @Component({template: '<div dirA dirB dirC></div>'})
+      @Component({template: '<div dirA dirB dirC></div>', standalone: false})
       class MyApp {
         value = 'App';
       }
 
-      @Directive({selector: '[dirA]'})
+      @Directive({selector: '[dirA]', standalone: false})
       class DirectiveA {
         constructor(dirB: DirectiveB, app: MyApp) {
           log.push(`DirA (deps: ${dirB.value} and ${app.value})`);
@@ -711,7 +714,7 @@ describe('di', () => {
     it('should not use a parent when peer dep is available', () => {
       let count = 1;
 
-      @Directive({selector: '[dirB]'})
+      @Directive({selector: '[dirB]', standalone: false})
       class DirectiveB {
         count: number;
 
@@ -721,17 +724,17 @@ describe('di', () => {
         }
       }
 
-      @Directive({selector: '[dirA]'})
+      @Directive({selector: '[dirA]', standalone: false})
       class DirectiveA {
         constructor(dirB: DirectiveB) {
           log.push(`DirA (dep: DirB - ${dirB.count})`);
         }
       }
 
-      @Component({selector: 'my-comp', template: '<div dirA dirB></div>'})
+      @Component({selector: 'my-comp', template: '<div dirA dirB></div>', standalone: false})
       class MyComp {}
 
-      @Component({template: '<my-comp dirB></my-comp>'})
+      @Component({template: '<my-comp dirB></my-comp>', standalone: false})
       class MyApp {}
 
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
@@ -742,7 +745,7 @@ describe('di', () => {
     });
 
     describe('dependencies in parent views', () => {
-      @Directive({selector: '[dirA]', exportAs: 'dirA'})
+      @Directive({selector: '[dirA]', exportAs: 'dirA', standalone: false})
       class DirectiveA {
         injector: Injector;
 
@@ -757,11 +760,12 @@ describe('di', () => {
       @Component({
         selector: 'my-comp',
         template: '<div dirA #dir="dirA">{{ dir.dirB.value }}</div>',
+        standalone: false,
       })
       class MyComp {}
 
       it('should find dependencies on component hosts', () => {
-        @Component({template: '<my-comp dirB></my-comp>'})
+        @Component({template: '<my-comp dirB></my-comp>', standalone: false})
         class MyApp {}
 
         TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
@@ -779,6 +783,7 @@ describe('di', () => {
               <div dirA #dir="dirA">{{ dir.dirB.value }}</div>
             </div>
           </div>`,
+          standalone: false,
         })
         class MyApp {
           showing = false;
@@ -802,6 +807,7 @@ describe('di', () => {
               </ng-container>
             </ng-container>
           </div>`,
+          standalone: false,
         })
         class MyApp {
           skipContent = false;
@@ -817,7 +823,7 @@ describe('di', () => {
       });
 
       it('should find dependencies in declaration tree of ng-template (not insertion tree)', () => {
-        @Directive({selector: '[structuralDir]'})
+        @Directive({selector: '[structuralDir]', standalone: false})
         class StructuralDirective {
           @Input() tmp!: TemplateRef<any>;
 
@@ -839,6 +845,7 @@ describe('di', () => {
            <div structuralDir [tmp]="foo"></div>
            <!-- insertion point -->
          </div>`,
+          standalone: false,
         })
         class MyComp {
           @ViewChild(StructuralDirective) structuralDir!: StructuralDirective;
@@ -862,6 +869,7 @@ describe('di', () => {
             <my-comp dirB></my-comp>
             <my-comp dirB></my-comp>
           </div>`,
+          standalone: false,
         })
         class MyApp {}
 
@@ -874,7 +882,7 @@ describe('di', () => {
       });
 
       it('should create injectors and host bindings in same view', () => {
-        @Directive({selector: '[hostBindingDir]'})
+        @Directive({selector: '[hostBindingDir]', standalone: false})
         class HostBindingDirective {
           @HostBinding('id') id = 'foo';
         }
@@ -883,6 +891,7 @@ describe('di', () => {
           template: `<div dirB hostBindingDir>
             <p dirA #dir="dirA">{{ dir.dirB.value }}</p>
           </div>`,
+          standalone: false,
         })
         class MyApp {
           @ViewChild(HostBindingDirective) hostBindingDir!: HostBindingDirective;
@@ -909,11 +918,11 @@ describe('di', () => {
       });
 
       it('dynamic components should find dependencies when parent is projected', () => {
-        @Directive({selector: '[dirA]'})
+        @Directive({selector: '[dirA]', standalone: false})
         class DirA {}
-        @Directive({selector: '[dirB]'})
+        @Directive({selector: '[dirB]', standalone: false})
         class DirB {}
-        @Component({selector: 'child', template: ''})
+        @Component({selector: 'child', template: '', standalone: false})
         class Child {
           constructor(
             @Optional() readonly dirA: DirA,
@@ -923,6 +932,7 @@ describe('di', () => {
         @Component({
           selector: 'projector',
           template: '<ng-content></ng-content>',
+          standalone: false,
         })
         class Projector {}
 
@@ -934,6 +944,7 @@ describe('di', () => {
               <ng-container #childOriginWithDirB dirB></ng-container>
             </div>
           </projector>`,
+          standalone: false,
         })
         class MyApp {
           @ViewChild('childOrigin', {read: ViewContainerRef, static: true})
@@ -972,17 +983,17 @@ describe('di', () => {
     });
 
     it('should throw if directive is not found anywhere', () => {
-      @Directive({selector: '[dirB]'})
+      @Directive({selector: '[dirB]', standalone: false})
       class DirectiveB {
         constructor() {}
       }
 
-      @Directive({selector: '[dirA]'})
+      @Directive({selector: '[dirA]', standalone: false})
       class DirectiveA {
         constructor(siblingDir: DirectiveB) {}
       }
 
-      @Component({template: '<div dirA></div>'})
+      @Component({template: '<div dirA></div>', standalone: false})
       class MyComp {}
 
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
@@ -990,17 +1001,17 @@ describe('di', () => {
     });
 
     it('should throw if directive is not found in ancestor tree', () => {
-      @Directive({selector: '[dirB]'})
+      @Directive({selector: '[dirB]', standalone: false})
       class DirectiveB {
         constructor() {}
       }
 
-      @Directive({selector: '[dirA]'})
+      @Directive({selector: '[dirA]', standalone: false})
       class DirectiveA {
         constructor(siblingDir: DirectiveB) {}
       }
 
-      @Component({template: '<div dirA></div><div dirB></div>'})
+      @Component({template: '<div dirA></div><div dirB></div>', standalone: false})
       class MyComp {}
 
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
@@ -1039,6 +1050,7 @@ describe('di', () => {
           {provide: TestA, useFactory: () => new TestA('component'), deps: []},
           {provide: TestB, useFactory: createTestB},
         ],
+        standalone: false,
       })
       class MyComp {
         constructor(public readonly testB: TestB) {}
@@ -1077,6 +1089,7 @@ describe('di', () => {
           {provide: TestA, useFactory: () => new TestA('component'), deps: []},
           {provide: TestB, useFactory: createTestB},
         ],
+        standalone: false,
       })
       class MyComp {
         constructor(public readonly testB: TestB) {}
@@ -1093,12 +1106,12 @@ describe('di', () => {
     });
 
     it('should throw if directive tries to inject itself', () => {
-      @Directive({selector: '[dirA]'})
+      @Directive({selector: '[dirA]', standalone: false})
       class DirectiveA {
         constructor(siblingDir: DirectiveA) {}
       }
 
-      @Component({template: '<div dirA></div>'})
+      @Component({template: '<div dirA></div>', standalone: false})
       class MyComp {}
 
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
@@ -1108,19 +1121,19 @@ describe('di', () => {
     });
 
     describe('flags', () => {
-      @Directive({selector: '[dirB]'})
+      @Directive({selector: '[dirB]', standalone: false})
       class DirectiveB {
         @Input('dirB') value = '';
       }
 
       describe('Optional', () => {
-        @Directive({selector: '[dirA]'})
+        @Directive({selector: '[dirA]', standalone: false})
         class DirectiveA {
           constructor(@Optional() public dirB: DirectiveB) {}
         }
 
         it('should not throw if dependency is @Optional (module injector)', () => {
-          @Component({template: '<div dirA></div>'})
+          @Component({template: '<div dirA></div>', standalone: false})
           class MyComp {
             @ViewChild(DirectiveA) dirA!: DirectiveA;
           }
@@ -1134,12 +1147,12 @@ describe('di', () => {
         });
 
         it('should return null if @Optional dependency has @Self flag', () => {
-          @Directive({selector: '[dirC]'})
+          @Directive({selector: '[dirC]', standalone: false})
           class DirectiveC {
             constructor(@Optional() @Self() public dirB: DirectiveB) {}
           }
 
-          @Component({template: '<div dirC></div>'})
+          @Component({template: '<div dirC></div>', standalone: false})
           class MyComp {
             @ViewChild(DirectiveC) dirC!: DirectiveC;
           }
@@ -1153,12 +1166,12 @@ describe('di', () => {
         });
 
         it('should not throw if dependency is @Optional but defined elsewhere', () => {
-          @Directive({selector: '[dirC]'})
+          @Directive({selector: '[dirC]', standalone: false})
           class DirectiveC {
             constructor(@Optional() public dirB: DirectiveB) {}
           }
 
-          @Component({template: '<div dirB></div><div dirC></div>'})
+          @Component({template: '<div dirB></div><div dirC></div>', standalone: false})
           class MyComp {
             @ViewChild(DirectiveC) dirC!: DirectiveC;
           }
@@ -1174,7 +1187,7 @@ describe('di', () => {
         it('should imply @Optional in presence of a default value', () => {
           const NON_EXISTING_PROVIDER = new InjectionToken<string>('non-existing');
 
-          @Component({template: ''})
+          @Component({template: '', standalone: false})
           class MyComp {
             value: string | undefined;
             constructor(injector: Injector) {
@@ -1191,12 +1204,12 @@ describe('di', () => {
       });
 
       it('should check only the current node with @Self', () => {
-        @Directive({selector: '[dirA]'})
+        @Directive({selector: '[dirA]', standalone: false})
         class DirectiveA {
           constructor(@Self() public dirB: DirectiveB) {}
         }
 
-        @Component({template: '<div dirB><div dirA></div></div>'})
+        @Component({template: '<div dirB><div dirA></div></div>', standalone: false})
         class MyComp {}
         TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
         expect(() => TestBed.createComponent(MyComp)).toThrowError(
@@ -1216,6 +1229,7 @@ describe('di', () => {
                   useValue: 'PARENT',
                 },
               ],
+              standalone: false,
             })
             class ParentComponent {}
 
@@ -1228,6 +1242,7 @@ describe('di', () => {
                   useValue: 'CHILD',
                 },
               ],
+              standalone: false,
             })
             class ChildComponent {
               constructor(
@@ -1261,6 +1276,7 @@ describe('di', () => {
                   useValue: 'CHILD',
                 },
               ],
+              standalone: false,
             })
             class MyComponent {
               constructor(@SkipSelf() public injector: Injector) {
@@ -1305,6 +1321,7 @@ describe('di', () => {
                   useValue: 'CHILD',
                 },
               ],
+              standalone: false,
             })
             class MyComponent {
               constructor(@Host() @SkipSelf() public injector: Injector) {
@@ -1346,6 +1363,7 @@ describe('di', () => {
                   useValue: 'PARENT',
                 },
               ],
+              standalone: false,
             })
             class ParentComponent {}
 
@@ -1358,6 +1376,7 @@ describe('di', () => {
                   useValue: 'CHILD',
                 },
               ],
+              standalone: false,
             })
             class ChildComponent {
               constructor(@Host() @SkipSelf() public injector: Injector) {}
@@ -1383,6 +1402,7 @@ describe('di', () => {
                   useValue: 'PARENT',
                 },
               ],
+              standalone: false,
             })
             class ParentComponent {}
 
@@ -1395,6 +1415,7 @@ describe('di', () => {
                   useValue: 'CHILD',
                 },
               ],
+              standalone: false,
             })
             class ChildComponent {
               constructor(@Host() @SkipSelf() @Optional() public injector: Injector) {}
@@ -1418,7 +1439,7 @@ describe('di', () => {
           it('should lookup module injector in case @SkipSelf is used for `ElementRef` token and Component has no parent', () => {
             let componentElement: ElementRef;
             let moduleElement: ElementRef;
-            @Component({template: '<div>component</div>'})
+            @Component({template: '<div>component</div>', standalone: false})
             class MyComponent {
               constructor(@SkipSelf() public el: ElementRef) {
                 componentElement = el;
@@ -1453,7 +1474,7 @@ describe('di', () => {
           it('should return host node when @SkipSelf is used for `ElementRef` token and Component has no parent node', () => {
             let parentElement: ElementRef;
             let componentElement: ElementRef;
-            @Component({selector: 'child', template: '...'})
+            @Component({selector: 'child', template: '...', standalone: false})
             class MyComponent {
               constructor(@SkipSelf() public el: ElementRef) {
                 componentElement = el;
@@ -1462,6 +1483,7 @@ describe('di', () => {
 
             @Component({
               template: '<child></child>',
+              standalone: false,
             })
             class ParentComponent {
               constructor(public el: ElementRef) {
@@ -1483,21 +1505,24 @@ describe('di', () => {
             let parentRef: ElementRef;
             let childRef: ElementRef;
 
-            @Directive({selector: '[parent]'})
+            @Directive({selector: '[parent]', standalone: false})
             class ParentDirective {
               constructor(elementRef: ElementRef) {
                 parentRef = elementRef;
               }
             }
 
-            @Directive({selector: '[child]'})
+            @Directive({selector: '[child]', standalone: false})
             class ChildDirective {
               constructor(@SkipSelf() elementRef: ElementRef) {
                 childRef = elementRef;
               }
             }
 
-            @Component({template: '<div parent>parent <span child>child</span></div>'})
+            @Component({
+              template: '<div parent>parent <span child>child</span></div>',
+              standalone: false,
+            })
             class MyComp {}
 
             TestBed.configureTestingModule({
@@ -1518,6 +1543,7 @@ describe('di', () => {
             @Component({
               selector: 'child',
               template: '...',
+              standalone: false,
             })
             class ChildComponent {
               constructor(@SkipSelf() public elementRef: ElementRef) {
@@ -1527,6 +1553,7 @@ describe('di', () => {
             @Component({
               selector: 'root',
               template: '<div><child *ngIf="true"></child></div>',
+              standalone: false,
             })
             class ParentComponent {}
 
@@ -1546,6 +1573,7 @@ describe('di', () => {
             @Component({
               selector: 'child',
               template: '...',
+              standalone: false,
             })
             class ChildComponent {
               constructor(@SkipSelf() public elementRef: ElementRef) {
@@ -1555,6 +1583,7 @@ describe('di', () => {
             @Component({
               selector: 'root',
               template: '<div><ng-template [ngIf]="true"><child></child></ng-template></div>',
+              standalone: false,
             })
             class ParentComponent {}
 
@@ -1574,6 +1603,7 @@ describe('di', () => {
             @Component({
               selector: 'child',
               template: '...',
+              standalone: false,
             })
             class ChildComponent {
               constructor(@SkipSelf() public ref: ViewContainerRef) {
@@ -1584,6 +1614,7 @@ describe('di', () => {
             @Component({
               selector: 'root',
               template: '<div><child *ngIf="true"></child></div>',
+              standalone: false,
             })
             class ParentComponent {}
 
@@ -1603,6 +1634,7 @@ describe('di', () => {
             @Component({
               selector: 'child',
               template: '...',
+              standalone: false,
             })
             class ChildComponent {
               constructor(@SkipSelf() public changeDetectorRef: ChangeDetectorRef) {
@@ -1613,6 +1645,7 @@ describe('di', () => {
             @Component({
               selector: 'root',
               template: '<child *ngIf="true"></child>',
+              standalone: false,
             })
             class ParentComponent {}
 
@@ -1640,6 +1673,7 @@ describe('di', () => {
                   useValue: 'PARENT',
                 },
               ],
+              standalone: false,
             })
             class ParentComponent {
               constructor(public injector: Injector) {
@@ -1656,6 +1690,7 @@ describe('di', () => {
                   useValue: 'CHILD',
                 },
               ],
+              standalone: false,
             })
             class ChildComponent {
               constructor(@SkipSelf() public injector: Injector) {
@@ -1686,6 +1721,7 @@ describe('di', () => {
                   useValue: 'PARENT',
                 },
               ],
+              standalone: false,
             })
             class ParentComponent {
               constructor(public injector: Injector) {
@@ -1702,6 +1738,7 @@ describe('di', () => {
                   useValue: 'CHILD',
                 },
               ],
+              standalone: false,
             })
             class ChildComponent {
               constructor(@SkipSelf() public injector: Injector) {
@@ -1727,12 +1764,16 @@ describe('di', () => {
           // a child component on a nested `<ng-template>` only when a component/directive
           // on a parent `<ng-template>` is initialized.
           it('should throw when using @SkipSelf for TemplateRef', () => {
-            @Directive({selector: '[dir]', exportAs: 'dir'})
+            @Directive({selector: '[dir]', exportAs: 'dir', standalone: false})
             class MyDir {
               constructor(@SkipSelf() public templateRef: TemplateRef<any>) {}
             }
 
-            @Component({selector: '[child]', template: '<ng-template dir></ng-template>'})
+            @Component({
+              selector: '[child]',
+              template: '<ng-template dir></ng-template>',
+              standalone: false,
+            })
             class ChildComp {
               constructor(public templateRef: TemplateRef<any>) {}
               @ViewChild(MyDir) directive!: MyDir;
@@ -1741,6 +1782,7 @@ describe('di', () => {
             @Component({
               selector: 'root',
               template: '<div child></div>',
+              standalone: false,
             })
             class MyComp {
               @ViewChild(ChildComp) child!: ChildComp;
@@ -1758,7 +1800,7 @@ describe('di', () => {
           });
 
           it('should throw when SkipSelf and no parent TemplateRef', () => {
-            @Directive({selector: '[dirA]', exportAs: 'dirA'})
+            @Directive({selector: '[dirA]', exportAs: 'dirA', standalone: false})
             class DirA {
               constructor(@SkipSelf() public templateRef: TemplateRef<any>) {}
             }
@@ -1766,6 +1808,7 @@ describe('di', () => {
             @Component({
               selector: 'root',
               template: '<ng-template dirA></ng-template>',
+              standalone: false,
             })
             class MyComp {}
 
@@ -1782,7 +1825,7 @@ describe('di', () => {
 
           it('should not throw when SkipSelf and Optional', () => {
             let directiveTemplateRef;
-            @Directive({selector: '[dirA]', exportAs: 'dirA'})
+            @Directive({selector: '[dirA]', exportAs: 'dirA', standalone: false})
             class DirA {
               constructor(@SkipSelf() @Optional() templateRef: TemplateRef<any>) {
                 directiveTemplateRef = templateRef;
@@ -1792,6 +1835,7 @@ describe('di', () => {
             @Component({
               selector: 'root',
               template: '<ng-template dirA></ng-template>',
+              standalone: false,
             })
             class MyComp {}
 
@@ -1807,7 +1851,7 @@ describe('di', () => {
           });
 
           it('should not throw when SkipSelf, Optional, and Host', () => {
-            @Directive({selector: '[dirA]', exportAs: 'dirA'})
+            @Directive({selector: '[dirA]', exportAs: 'dirA', standalone: false})
             class DirA {
               constructor(@SkipSelf() @Optional() @Host() public templateRef: TemplateRef<any>) {}
             }
@@ -1815,6 +1859,7 @@ describe('di', () => {
             @Component({
               selector: 'root',
               template: '<ng-template dirA></ng-template>',
+              standalone: false,
             })
             class MyComp {}
 
@@ -1832,21 +1877,24 @@ describe('di', () => {
             let parentViewContainer: ViewContainerRef;
             let childViewContainer: ViewContainerRef;
 
-            @Directive({selector: '[parent]'})
+            @Directive({selector: '[parent]', standalone: false})
             class ParentDirective {
               constructor(vc: ViewContainerRef) {
                 parentViewContainer = vc;
               }
             }
 
-            @Directive({selector: '[child]'})
+            @Directive({selector: '[child]', standalone: false})
             class ChildDirective {
               constructor(@SkipSelf() vc: ViewContainerRef) {
                 childViewContainer = vc;
               }
             }
 
-            @Component({template: '<div parent>parent <span child>child</span></div>'})
+            @Component({
+              template: '<div parent>parent <span child>child</span></div>',
+              standalone: false,
+            })
             class MyComp {}
 
             TestBed.configureTestingModule({
@@ -1866,21 +1914,24 @@ describe('di', () => {
             let parentViewContainer: ViewContainerRef;
             let childViewContainer: ViewContainerRef;
 
-            @Directive({selector: '[parent]'})
+            @Directive({selector: '[parent]', standalone: false})
             class ParentDirective {
               constructor(vc: ViewContainerRef) {
                 parentViewContainer = vc;
               }
             }
 
-            @Directive({selector: '[child]'})
+            @Directive({selector: '[child]', standalone: false})
             class ChildDirective {
               constructor(@SkipSelf() @Host() vc: ViewContainerRef) {
                 childViewContainer = vc;
               }
             }
 
-            @Component({template: '<div parent>parent <span child>child</span></div>'})
+            @Component({
+              template: '<div parent>parent <span child>child</span></div>',
+              standalone: false,
+            })
             class MyComp {}
 
             TestBed.configureTestingModule({
@@ -1899,14 +1950,14 @@ describe('di', () => {
           it('should get ViewContainerRef using @SkipSelf and @Host on parent', () => {
             let parentViewContainer: ViewContainerRef;
 
-            @Directive({selector: '[parent]'})
+            @Directive({selector: '[parent]', standalone: false})
             class ParentDirective {
               constructor(@SkipSelf() vc: ViewContainerRef) {
                 parentViewContainer = vc;
               }
             }
 
-            @Component({template: '<div parent>parent</div>'})
+            @Component({template: '<div parent>parent</div>', standalone: false})
             class MyComp {}
 
             TestBed.configureTestingModule({declarations: [ParentDirective, MyComp]});
@@ -1918,7 +1969,7 @@ describe('di', () => {
           });
 
           it('should throw when injecting ViewContainerRef using @SkipSelf and no ViewContainerRef are available in a current view', () => {
-            @Component({template: '<span>component</span>'})
+            @Component({template: '<span>component</span>', standalone: false})
             class MyComp {
               constructor(@SkipSelf() vc: ViewContainerRef) {}
             }
@@ -1936,21 +1987,24 @@ describe('di', () => {
             let parentRef: ChangeDetectorRef | undefined;
             let childRef: ChangeDetectorRef | undefined;
 
-            @Directive({selector: '[parent]'})
+            @Directive({selector: '[parent]', standalone: false})
             class ParentDirective {
               constructor(cdr: ChangeDetectorRef) {
                 parentRef = cdr;
               }
             }
 
-            @Directive({selector: '[child]'})
+            @Directive({selector: '[child]', standalone: false})
             class ChildDirective {
               constructor(@SkipSelf() cdr: ChangeDetectorRef) {
                 childRef = cdr;
               }
             }
 
-            @Component({template: '<div parent>parent <span child>child</span></div>'})
+            @Component({
+              template: '<div parent>parent <span child>child</span></div>',
+              standalone: false,
+            })
             class MyComp {}
 
             TestBed.configureTestingModule({
@@ -1968,14 +2022,14 @@ describe('di', () => {
           it('should inject host component ChangeDetectorRef when @SkipSelf', () => {
             let childRef: ChangeDetectorRef | undefined;
 
-            @Component({selector: 'child', template: '...'})
+            @Component({selector: 'child', template: '...', standalone: false})
             class ChildComp {
               constructor(@SkipSelf() cdr: ChangeDetectorRef) {
                 childRef = cdr;
               }
             }
 
-            @Component({template: '<div><child></child></div>'})
+            @Component({template: '<div><child></child></div>', standalone: false})
             class MyComp {
               constructor(public cdr: ChangeDetectorRef) {}
             }
@@ -1991,7 +2045,7 @@ describe('di', () => {
           });
 
           it('should throw when ChangeDetectorRef and @SkipSelf and not found', () => {
-            @Component({template: '<div></div>'})
+            @Component({template: '<div></div>', standalone: false})
             class MyComponent {
               constructor(@SkipSelf() public injector: ChangeDetectorRef) {}
             }
@@ -2013,7 +2067,7 @@ describe('di', () => {
           it('should lookup module injector in case @SkipSelf is used for `ChangeDetectorRef` token and Component has no parent', () => {
             let componentCDR: ChangeDetectorRef;
             let moduleCDR: ChangeDetectorRef;
-            @Component({selector: 'child', template: '...'})
+            @Component({selector: 'child', template: '...', standalone: false})
             class MyComponent {
               constructor(@SkipSelf() public injector: ChangeDetectorRef) {
                 componentCDR = injector;
@@ -2056,6 +2110,7 @@ describe('di', () => {
                 {provide: 'Foo', useValue: 'Foo as ViewProvider'},
                 {provide: 'Bar', useValue: 'Bar as ViewProvider'},
               ],
+              standalone: false,
             })
             class Child {
               constructor(
@@ -2076,10 +2131,15 @@ describe('di', () => {
                 {provide: 'Foo', useValue: 'Foo as ViewProvider'},
                 {provide: 'Bar', useValue: 'Bar as ViewProvider'},
               ],
+              standalone: false,
             })
             class Parent {}
 
-            @Component({selector: 'my-app', template: '<parent><child></child></parent>'})
+            @Component({
+              selector: 'my-app',
+              template: '<parent><child></child></parent>',
+              standalone: false,
+            })
             class MyApp {
               @ViewChild(Parent) parent!: Parent;
               @ViewChild(Child) child!: Child;
@@ -2102,6 +2162,7 @@ describe('di', () => {
                 {provide: 'Foo', useValue: 'Foo as ViewProvider'},
                 {provide: 'Bar', useValue: 'Bar as ViewProvider'},
               ],
+              standalone: false,
             })
             class Child {
               constructor(
@@ -2119,10 +2180,15 @@ describe('di', () => {
                 {provide: 'Foo', useValue: 'Foo as ViewProvider'},
                 {provide: 'Bar', useValue: 'Bar as ViewProvider'},
               ],
+              standalone: false,
             })
             class Parent {}
 
-            @Component({selector: 'my-app', template: '<parent><child></child></parent>'})
+            @Component({
+              selector: 'my-app',
+              template: '<parent><child></child></parent>',
+              standalone: false,
+            })
             class MyApp {}
 
             TestBed.configureTestingModule({declarations: [Child, Parent, MyApp]});
@@ -2139,6 +2205,7 @@ describe('di', () => {
                 {provide: 'Foo', useValue: 'Foo as ViewProvider'},
                 {provide: 'Bar', useValue: 'Bar as ViewProvider'},
               ],
+              standalone: false,
             })
             class Child {
               constructor(
@@ -2156,10 +2223,15 @@ describe('di', () => {
                 {provide: 'Foo', useValue: 'Foo as ViewProvider'},
                 {provide: 'Bar', useValue: 'Bar as ViewProvider'},
               ],
+              standalone: false,
             })
             class Parent {}
 
-            @Component({selector: 'my-app', template: '<parent><child></child></parent>'})
+            @Component({
+              selector: 'my-app',
+              template: '<parent><child></child></parent>',
+              standalone: false,
+            })
             class MyApp {}
 
             TestBed.configureTestingModule({declarations: [Child, Parent, MyApp]});
@@ -2170,12 +2242,12 @@ describe('di', () => {
       });
 
       describe('@Host', () => {
-        @Directive({selector: '[dirA]'})
+        @Directive({selector: '[dirA]', standalone: false})
         class DirectiveA {
           constructor(@Host() public dirB: DirectiveB) {}
         }
 
-        @Directive({selector: '[dirString]'})
+        @Directive({selector: '[dirString]', standalone: false})
         class DirectiveString {
           constructor(@Host() public s: String) {}
         }
@@ -2185,12 +2257,13 @@ describe('di', () => {
             selector: 'my-comp',
             template: '<div dirString></div>',
             viewProviders: [{provide: String, useValue: 'Foo'}],
+            standalone: false,
           })
           class MyComp {
             @ViewChild(DirectiveString) dirString!: DirectiveString;
           }
 
-          @Component({template: '<my-comp></my-comp>'})
+          @Component({template: '<my-comp></my-comp>', standalone: false})
           class MyApp {
             @ViewChild(MyComp) myComp!: MyComp;
           }
@@ -2208,10 +2281,11 @@ describe('di', () => {
             selector: 'my-comp',
             template: '<div dirString></div>',
             providers: [{provide: String, useValue: 'Foo'}],
+            standalone: false,
           })
           class MyComp {}
 
-          @Component({template: '<my-comp></my-comp>'})
+          @Component({template: '<my-comp></my-comp>', standalone: false})
           class MyApp {}
 
           TestBed.configureTestingModule({declarations: [DirectiveString, MyComp, MyApp]});
@@ -2221,10 +2295,10 @@ describe('di', () => {
         });
 
         it('should not find other directives on the host itself', () => {
-          @Component({selector: 'my-comp', template: '<div dirA></div>'})
+          @Component({selector: 'my-comp', template: '<div dirA></div>', standalone: false})
           class MyComp {}
 
-          @Component({template: '<my-comp dirB></my-comp>'})
+          @Component({template: '<my-comp dirB></my-comp>', standalone: false})
           class MyApp {}
 
           TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
@@ -2237,12 +2311,13 @@ describe('di', () => {
           @Component({
             selector: 'my-comp',
             template: '<ng-container *ngIf="showing"><div dirA></div></ng-container>',
+            standalone: false,
           })
           class MyComp {
             showing = false;
           }
 
-          @Component({template: '<my-comp dirB></my-comp>'})
+          @Component({template: '<my-comp dirB></my-comp>', standalone: false})
           class MyApp {
             @ViewChild(MyComp) myComp!: MyComp;
           }
@@ -2257,7 +2332,10 @@ describe('di', () => {
         });
 
         it('should find providers across embedded views if not passing component boundary', () => {
-          @Component({template: '<div dirB><div *ngIf="showing" dirA></div></div>'})
+          @Component({
+            template: '<div dirB><div *ngIf="showing" dirA></div></div>',
+            standalone: false,
+          })
           class MyApp {
             showing = false;
             @ViewChild(DirectiveA) dirA!: DirectiveA;
@@ -2276,15 +2354,15 @@ describe('di', () => {
         });
 
         it('should not find component above the host', () => {
-          @Component({template: '<my-comp></my-comp>'})
+          @Component({template: '<my-comp></my-comp>', standalone: false})
           class MyApp {}
 
-          @Directive({selector: '[dirComp]'})
+          @Directive({selector: '[dirComp]', standalone: false})
           class DirectiveComp {
             constructor(@Host() public comp: MyApp) {}
           }
 
-          @Component({selector: 'my-comp', template: '<div dirComp></div>'})
+          @Component({selector: 'my-comp', template: '<div dirComp></div>', standalone: false})
           class MyComp {}
 
           TestBed.configureTestingModule({declarations: [DirectiveComp, MyComp, MyApp]});
@@ -2303,6 +2381,7 @@ describe('di', () => {
             @Directive({
               selector: '[group]',
               providers: [{provide: ControlContainer, useExisting: GroupDirective}],
+              standalone: false,
             })
             class GroupDirective {
               constructor() {
@@ -2310,7 +2389,7 @@ describe('di', () => {
               }
             }
 
-            @Directive({selector: '[control]'})
+            @Directive({selector: '[control]', standalone: false})
             class ControlDirective {
               constructor(@Host() @SkipSelf() @Inject(ControlContainer) parent: ControlContainer) {
                 injectedControlContainer = parent;
@@ -2321,6 +2400,7 @@ describe('di', () => {
               selector: 'my-comp',
               template: '<input control>',
               viewProviders: [{provide: ControlContainer, useExisting: GroupDirective}],
+              standalone: false,
             })
             class MyComp {}
 
@@ -2330,6 +2410,7 @@ describe('di', () => {
                      <my-comp></my-comp>
                    </div>
                  `,
+              standalone: false,
             })
             class MyApp {}
 
@@ -2348,7 +2429,7 @@ describe('di', () => {
       describe('`InjectFlags` support in NodeInjector', () => {
         it('should support Optional flag in NodeInjector', () => {
           const NON_EXISTING_PROVIDER = new InjectionToken<string>('non-existing');
-          @Component({template: '...'})
+          @Component({template: '...', standalone: false})
           class MyComp {
             tokenViaInjector = this.injector.get(NON_EXISTING_PROVIDER, null, InjectFlags.Optional);
             constructor(
@@ -2375,6 +2456,7 @@ describe('di', () => {
                 useValue: 'PARENT',
               },
             ],
+            standalone: false,
           })
           class ParentComponent {}
 
@@ -2387,6 +2469,7 @@ describe('di', () => {
                 useValue: 'CHILD',
               },
             ],
+            standalone: false,
           })
           class ChildComponent {
             tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.SkipSelf);
@@ -2410,7 +2493,7 @@ describe('di', () => {
         });
         it('should support Host flag in NodeInjector', () => {
           const TOKEN = new InjectionToken<string>('token');
-          @Directive({selector: '[dirString]'})
+          @Directive({selector: '[dirString]', standalone: false})
           class DirectiveString {
             tokenViaInjector = this.injector.get(TOKEN, null, InjectFlags.Host);
             constructor(
@@ -2422,6 +2505,7 @@ describe('di', () => {
           @Component({
             template: '<div dirString></div>',
             viewProviders: [{provide: TOKEN, useValue: 'Foo'}],
+            standalone: false,
           })
           class MyComp {
             @ViewChild(DirectiveString) dirString!: DirectiveString;
@@ -2436,9 +2520,9 @@ describe('di', () => {
           expect(dirString.tokenViaConstructor).toBe(dirString.tokenViaInjector!);
         });
         it('should support multiple flags in NodeInjector', () => {
-          @Directive({selector: '[dirA]'})
+          @Directive({selector: '[dirA]', standalone: false})
           class DirectiveA {}
-          @Directive({selector: '[dirB]'})
+          @Directive({selector: '[dirB]', standalone: false})
           class DirectiveB {
             public tokenSelfViaInjector = this.injector.get(
               DirectiveA,
@@ -2457,7 +2541,7 @@ describe('di', () => {
             ) {}
           }
 
-          @Component({template: '<div dirB></div>'})
+          @Component({template: '<div dirB></div>', standalone: false})
           class MyComp {
             @ViewChild(DirectiveB) dirB!: DirectiveB;
           }
@@ -2520,7 +2604,7 @@ describe('di', () => {
         value = this._dep.getNumber() + 2;
       }
 
-      @Component({template: ''})
+      @Component({template: '', standalone: false})
       class Comp {
         constructor(public provider: Provider) {}
       }
@@ -2540,7 +2624,7 @@ describe('di', () => {
       class MyService {
         value = 'MyService';
       }
-      @Component({template: '<div>{{myService.value}}</div>'})
+      @Component({template: '<div>{{myService.value}}</div>', standalone: false})
       class MyComp {
         constructor(public myService: MyService) {}
       }
@@ -2565,7 +2649,7 @@ describe('di', () => {
       class SubClass extends SuperClass {}
       class SubSubClass extends SubClass {}
 
-      @Component({template: ''})
+      @Component({template: '', standalone: false})
       class MyComp {
         constructor(public myService: SuperClass) {}
       }
@@ -2594,7 +2678,7 @@ describe('di', () => {
         override id = 2;
       }
 
-      @Component({template: ''})
+      @Component({template: '', standalone: false})
       class App {}
 
       TestBed.configureTestingModule({declarations: [App], providers: [MyRootService]});
@@ -2620,7 +2704,7 @@ describe('di', () => {
       @Injectable({providedIn: 'root'})
       class MyOtherService {}
 
-      @Component({template: ''})
+      @Component({template: '', standalone: false})
       class MyComp {
         constructor(myService: MyService);
         constructor(
@@ -2667,7 +2751,7 @@ describe('di', () => {
     it('should use @Injectable useClass config when token is not provided', () => {
       let provider: FooService | BarService;
 
-      @Component({template: ''})
+      @Component({template: '', standalone: false})
       class App {
         constructor(service: FooService) {
           provider = service;
@@ -2685,7 +2769,7 @@ describe('di', () => {
     it('should use constructor config directly when token is explicitly provided via useClass', () => {
       let provider: FooService | BarService;
 
-      @Component({template: ''})
+      @Component({template: '', standalone: false})
       class App {
         constructor(service: FooService) {
           provider = service;
@@ -2706,7 +2790,7 @@ describe('di', () => {
       let directProvider: FooService | BarService;
       let overriddenProvider: FooService | BarService;
 
-      @Component({template: ''})
+      @Component({template: '', standalone: false})
       class App {
         constructor(@Inject('stringToken') overriddenService: FooService, service: FooService) {
           overriddenProvider = overriddenService;
@@ -2730,7 +2814,7 @@ describe('di', () => {
     it('should use constructor config directly when token is explicitly provided as a type provider', () => {
       let provider: FooService | BarService;
 
-      @Component({template: ''})
+      @Component({template: '', standalone: false})
       class App {
         constructor(service: FooService) {
           provider = service;
@@ -2748,10 +2832,10 @@ describe('di', () => {
 
   describe('inject', () => {
     it('should inject from parent view', () => {
-      @Directive({selector: '[parentDir]'})
+      @Directive({selector: '[parentDir]', standalone: false})
       class ParentDirective {}
 
-      @Directive({selector: '[childDir]', exportAs: 'childDir'})
+      @Directive({selector: '[childDir]', exportAs: 'childDir', standalone: false})
       class ChildDirective {
         value: string;
         constructor(public parent: ParentDirective) {
@@ -2759,7 +2843,7 @@ describe('di', () => {
         }
       }
 
-      @Directive({selector: '[child2Dir]', exportAs: 'child2Dir'})
+      @Directive({selector: '[child2Dir]', exportAs: 'child2Dir', standalone: false})
       class Child2Directive {
         value: boolean;
         constructor(parent: ParentDirective, child: ChildDirective) {
@@ -2773,6 +2857,7 @@ describe('di', () => {
             <span childDir child2Dir #child1="childDir" #child2="child2Dir">{{ child1.value }}-{{ child2.value }}</span>
           </ng-container>
         </div>`,
+        standalone: false,
       })
       class MyComp {
         showing = true;
@@ -2791,12 +2876,12 @@ describe('di', () => {
   describe('Special tokens', () => {
     describe('Injector', () => {
       it('should inject the injector', () => {
-        @Directive({selector: '[injectorDir]'})
+        @Directive({selector: '[injectorDir]', standalone: false})
         class InjectorDir {
           constructor(public injector: Injector) {}
         }
 
-        @Directive({selector: '[otherInjectorDir]'})
+        @Directive({selector: '[otherInjectorDir]', standalone: false})
         class OtherInjectorDir {
           constructor(
             public otherDir: InjectorDir,
@@ -2804,7 +2889,7 @@ describe('di', () => {
           ) {}
         }
 
-        @Component({template: '<div injectorDir otherInjectorDir></div>'})
+        @Component({template: '<div injectorDir otherInjectorDir></div>', standalone: false})
         class MyComp {
           @ViewChild(InjectorDir) injectorDir!: InjectorDir;
           @ViewChild(OtherInjectorDir) otherInjectorDir!: OtherInjectorDir;
@@ -2825,12 +2910,12 @@ describe('di', () => {
       });
 
       it('should inject INJECTOR', () => {
-        @Directive({selector: '[injectorDir]'})
+        @Directive({selector: '[injectorDir]', standalone: false})
         class InjectorDir {
           constructor(@Inject(INJECTOR) public injector: Injector) {}
         }
 
-        @Component({template: '<div injectorDir></div>'})
+        @Component({template: '<div injectorDir></div>', standalone: false})
         class MyComp {
           @ViewChild(InjectorDir) injectorDir!: InjectorDir;
         }
@@ -2850,7 +2935,7 @@ describe('di', () => {
 
     describe('ElementRef', () => {
       it('should create directive with ElementRef dependencies', () => {
-        @Directive({selector: '[dir]'})
+        @Directive({selector: '[dir]', standalone: false})
         class MyDir {
           value: string;
           constructor(public elementRef: ElementRef) {
@@ -2858,7 +2943,7 @@ describe('di', () => {
           }
         }
 
-        @Directive({selector: '[otherDir]'})
+        @Directive({selector: '[otherDir]', standalone: false})
         class MyOtherDir {
           isSameInstance: boolean;
           constructor(
@@ -2869,7 +2954,7 @@ describe('di', () => {
           }
         }
 
-        @Component({template: '<div dir otherDir></div>'})
+        @Component({template: '<div dir otherDir></div>', standalone: false})
         class MyComp {
           @ViewChild(MyDir) directive!: MyDir;
           @ViewChild(MyOtherDir) otherDirective!: MyOtherDir;
@@ -2892,7 +2977,7 @@ describe('di', () => {
       });
 
       it('should create ElementRef with comment if requesting directive is on <ng-template> node', () => {
-        @Directive({selector: '[dir]'})
+        @Directive({selector: '[dir]', standalone: false})
         class MyDir {
           value: string;
           constructor(public elementRef: ElementRef<Node>) {
@@ -2900,7 +2985,7 @@ describe('di', () => {
           }
         }
 
-        @Component({template: '<ng-template dir></ng-template>'})
+        @Component({template: '<ng-template dir></ng-template>', standalone: false})
         class MyComp {
           @ViewChild(MyDir) directive!: MyDir;
         }
@@ -2929,7 +3014,7 @@ describe('di', () => {
           }
         }
 
-        @Directive({selector: '[dir]'})
+        @Directive({selector: '[dir]', standalone: false})
         class DirectiveA {
           constructor(
             public service: ServiceA,
@@ -2940,6 +3025,7 @@ describe('di', () => {
         @Component({
           selector: 'child',
           template: `<div id="test-id" dir></div>`,
+          standalone: false,
         })
         class ChildComp {
           @ViewChild(DirectiveA) directive!: DirectiveA;
@@ -2948,6 +3034,7 @@ describe('di', () => {
         @Component({
           selector: 'root',
           template: '...',
+          standalone: false,
         })
         class RootComp {
           public childCompRef!: ComponentRef<ChildComp>;
@@ -2976,7 +3063,7 @@ describe('di', () => {
     });
 
     describe('TemplateRef', () => {
-      @Directive({selector: '[dir]', exportAs: 'dir'})
+      @Directive({selector: '[dir]', exportAs: 'dir', standalone: false})
       class MyDir {
         value: string;
         constructor(public templateRef: TemplateRef<any>) {
@@ -2985,7 +3072,7 @@ describe('di', () => {
       }
 
       it('should create directive with TemplateRef dependencies', () => {
-        @Directive({selector: '[otherDir]', exportAs: 'otherDir'})
+        @Directive({selector: '[otherDir]', exportAs: 'otherDir', standalone: false})
         class MyOtherDir {
           isSameInstance: boolean;
           constructor(
@@ -2998,6 +3085,7 @@ describe('di', () => {
 
         @Component({
           template: '<ng-template dir otherDir #dir="dir" #otherDir="otherDir"></ng-template>',
+          standalone: false,
         })
         class MyComp {
           @ViewChild(MyDir) directive!: MyDir;
@@ -3020,7 +3108,7 @@ describe('di', () => {
       });
 
       it('should throw if injected on an element', () => {
-        @Component({template: '<div dir></div>'})
+        @Component({template: '<div dir></div>', standalone: false})
         class MyComp {}
 
         TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
@@ -3028,7 +3116,7 @@ describe('di', () => {
       });
 
       it('should throw if injected on an ng-container', () => {
-        @Component({template: '<ng-container dir></ng-container>'})
+        @Component({template: '<ng-container dir></ng-container>', standalone: false})
         class MyComp {}
 
         TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
@@ -3036,11 +3124,11 @@ describe('di', () => {
       });
 
       it('should NOT throw if optional and injected on an element', () => {
-        @Directive({selector: '[optionalDir]', exportAs: 'optionalDir'})
+        @Directive({selector: '[optionalDir]', exportAs: 'optionalDir', standalone: false})
         class OptionalDir {
           constructor(@Optional() public templateRef: TemplateRef<any>) {}
         }
-        @Component({template: '<div optionalDir></div>'})
+        @Component({template: '<div optionalDir></div>', standalone: false})
         class MyComp {
           @ViewChild(OptionalDir) directive!: OptionalDir;
         }
@@ -3054,14 +3142,14 @@ describe('di', () => {
 
     describe('ViewContainerRef', () => {
       it('should create directive with ViewContainerRef dependencies', () => {
-        @Directive({selector: '[dir]', exportAs: 'dir'})
+        @Directive({selector: '[dir]', exportAs: 'dir', standalone: false})
         class MyDir {
           value: string;
           constructor(public viewContainerRef: ViewContainerRef) {
             this.value = (viewContainerRef.constructor as any).name;
           }
         }
-        @Directive({selector: '[otherDir]', exportAs: 'otherDir'})
+        @Directive({selector: '[otherDir]', exportAs: 'otherDir', standalone: false})
         class MyOtherDir {
           isSameInstance: boolean;
           constructor(
@@ -3071,7 +3159,10 @@ describe('di', () => {
             this.isSameInstance = viewContainerRef === directive.viewContainerRef;
           }
         }
-        @Component({template: '<div dir otherDir #dir="dir" #otherDir="otherDir"></div>'})
+        @Component({
+          template: '<div dir otherDir #dir="dir" #otherDir="otherDir"></div>',
+          standalone: false,
+        })
         class MyComp {
           @ViewChild(MyDir) directive!: MyDir;
           @ViewChild(MyOtherDir) otherDirective!: MyOtherDir;
@@ -3096,6 +3187,7 @@ describe('di', () => {
         @Component({
           selector: 'root',
           template: `<ng-template #tmpl>Test</ng-template>`,
+          standalone: false,
         })
         class Root {
           @ViewChild(TemplateRef, {static: true}) tmpl!: TemplateRef<any>;
@@ -3129,18 +3221,18 @@ describe('di', () => {
     });
 
     describe('ChangeDetectorRef', () => {
-      @Directive({selector: '[dir]', exportAs: 'dir'})
+      @Directive({selector: '[dir]', exportAs: 'dir', standalone: false})
       class MyDir {
         value: string;
         constructor(public cdr: ChangeDetectorRef) {
           this.value = (cdr.constructor as any).name;
         }
       }
-      @Directive({selector: '[otherDir]', exportAs: 'otherDir'})
+      @Directive({selector: '[otherDir]', exportAs: 'otherDir', standalone: false})
       class MyOtherDir {
         constructor(public cdr: ChangeDetectorRef) {}
       }
-      @Component({selector: 'my-comp', template: '<ng-content></ng-content>'})
+      @Component({selector: 'my-comp', template: '<ng-content></ng-content>', standalone: false})
       class MyComp {
         constructor(public cdr: ChangeDetectorRef) {}
       }
@@ -3148,7 +3240,7 @@ describe('di', () => {
       it('should inject host component ChangeDetectorRef into directives on templates', () => {
         let pipeInstance: MyPipe;
 
-        @Pipe({name: 'pipe'})
+        @Pipe({name: 'pipe', standalone: false})
         class MyPipe implements PipeTransform {
           constructor(public cdr: ChangeDetectorRef) {
             pipeInstance = this;
@@ -3162,6 +3254,7 @@ describe('di', () => {
         @Component({
           selector: 'my-app',
           template: `<div *ngIf="showing | pipe">Visible</div>`,
+          standalone: false,
         })
         class MyApp {
           showing = true;
@@ -3178,7 +3271,11 @@ describe('di', () => {
       });
 
       it('should inject current component ChangeDetectorRef into directives on the same node as components', () => {
-        @Component({selector: 'my-app', template: '<my-comp dir otherDir #dir="dir"></my-comp>'})
+        @Component({
+          selector: 'my-app',
+          template: '<my-comp dir otherDir #dir="dir"></my-comp>',
+          standalone: false,
+        })
         class MyApp {
           @ViewChild(MyComp) component!: MyComp;
           @ViewChild(MyDir) directive!: MyDir;
@@ -3199,7 +3296,11 @@ describe('di', () => {
       });
 
       it('should inject host component ChangeDetectorRef into directives on normal elements', () => {
-        @Component({selector: 'my-comp', template: '<div dir otherDir #dir="dir"></div>'})
+        @Component({
+          selector: 'my-comp',
+          template: '<div dir otherDir #dir="dir"></div>',
+          standalone: false,
+        })
         class MyComp {
           constructor(public cdr: ChangeDetectorRef) {}
           @ViewChild(MyDir) directive!: MyDir;
@@ -3225,6 +3326,7 @@ describe('di', () => {
                <div dir otherDir #dir="dir"></div>
              </my-comp>
               `,
+          standalone: false,
         })
         class MyApp {
           constructor(public cdr: ChangeDetectorRef) {}
@@ -3252,6 +3354,7 @@ describe('di', () => {
           template: `<ng-container *ngIf="showing">
             <div dir otherDir #dir="dir" *ngIf="showing"></div>
           </ng-container>`,
+          standalone: false,
         })
         class MyComp {
           showing = true;
@@ -3277,6 +3380,7 @@ describe('di', () => {
         @Component({
           selector: 'my-comp',
           template: '<div dir otherDir #dir="dir" *ngIf="showing"></div>',
+          standalone: false,
         })
         class MyComp {
           showing = true;
@@ -3301,7 +3405,7 @@ describe('di', () => {
       it('should inject host component ChangeDetectorRef into directives on ng-container', () => {
         let dirInstance: MyDirective;
 
-        @Directive({selector: '[getCDR]'})
+        @Directive({selector: '[getCDR]', standalone: false})
         class MyDirective {
           constructor(public cdr: ChangeDetectorRef) {
             dirInstance = this;
@@ -3311,6 +3415,7 @@ describe('di', () => {
         @Component({
           selector: 'my-app',
           template: `<ng-container getCDR>Visible</ng-container>`,
+          standalone: false,
         })
         class MyApp {
           constructor(public cdr: ChangeDetectorRef) {}
@@ -3328,12 +3433,16 @@ describe('di', () => {
 
   describe('string tokens', () => {
     it('should be able to provide a string token', () => {
-      @Directive({selector: '[injectorDir]', providers: [{provide: 'test', useValue: 'provided'}]})
+      @Directive({
+        selector: '[injectorDir]',
+        providers: [{provide: 'test', useValue: 'provided'}],
+        standalone: false,
+      })
       class InjectorDir {
         constructor(@Inject('test') public value: string) {}
       }
 
-      @Component({template: '<div injectorDir></div>'})
+      @Component({template: '<div injectorDir></div>', standalone: false})
       class MyComp {
         @ViewChild(InjectorDir) injectorDirInstance!: InjectorDir;
       }
@@ -3364,12 +3473,13 @@ describe('di', () => {
             useFactory: factory,
           },
         ],
+        standalone: false,
       })
       class MyComp {
         constructor(@Inject(TOKEN) readonly token: string) {}
       }
 
-      @Component({template: `<my-comp token='token'></my-comp>`})
+      @Component({template: `<my-comp token='token'></my-comp>`, standalone: false})
       class WrapperComp {
         @ViewChild(MyComp) myComp!: MyComp;
       }
@@ -3918,7 +4028,7 @@ describe('di', () => {
 
     it('should not throw if in an element injector context', () => {
       expect(() => {
-        @Component({template: ''})
+        @Component({template: '', standalone: false})
         class EmptyCmp {}
 
         const fixture = TestBed.createComponent(EmptyCmp);
@@ -3944,6 +4054,7 @@ describe('di', () => {
           useValue: 'A from Root',
         },
       ],
+      standalone: false,
     })
     class Root {}
 
@@ -3957,6 +4068,7 @@ describe('di', () => {
           useFactory: (token: string) => `${token} (processed by useFactory)`,
         },
       ],
+      standalone: false,
     })
     class Comp {
       constructor(@Inject('B') readonly token: string) {}
@@ -3964,6 +4076,7 @@ describe('di', () => {
 
     @Component({
       template: `<root></root>`,
+      standalone: false,
     })
     class App {}
 
@@ -3992,12 +4105,14 @@ describe('di', () => {
           useValue: 'A from Root',
         },
       ],
+      standalone: false,
     })
     class Root {}
 
     @Component({
       selector: 'intermediate',
       template: '<comp></comp>',
+      standalone: false,
     })
     class Intermediate {}
 
@@ -4012,6 +4127,7 @@ describe('di', () => {
             token ? `${token} (processed by useFactory)` : 'No token A found',
         },
       ],
+      standalone: false,
     })
     class Comp {
       constructor(@Inject('B') readonly token: string) {}
@@ -4019,6 +4135,7 @@ describe('di', () => {
 
     @Component({
       template: `<root></root>`,
+      standalone: false,
     })
     class App {}
 
@@ -4046,6 +4163,7 @@ describe('di', () => {
           deps: [[new Inject(LOCALE_ID), new Optional(), new SkipSelf()]],
         },
       ],
+      standalone: false,
     })
     class MyComp {
       constructor(@Inject(LOCALE_ID) public localeId: string) {}
@@ -4067,6 +4185,7 @@ describe('di', () => {
           useValue: 'LOCALE_ID_DEP_VALUE',
         },
       ],
+      standalone: false,
     })
     class MyComp {
       constructor(@Inject(LOCALE_ID) public localeId: string) {}
@@ -4093,6 +4212,7 @@ describe('di', () => {
       selector: 'my-comp',
       template: '...',
       providers: [{provide: LOCALE_ID, useFactory: () => 'en-GB'}],
+      standalone: false,
     })
     class MyComp {
       constructor(@SkipSelf() @Inject(LOCALE_ID) public localeId: string) {}
@@ -4109,6 +4229,7 @@ describe('di', () => {
     @Directive({
       selector: '[dir]', //
       providers: [{provide: LOCALE_ID, useValue: 'ja-JP'}],
+      standalone: false,
     })
     class MyDir {
       constructor(@SkipSelf() @Inject(LOCALE_ID) public localeId: string) {}
@@ -4117,6 +4238,7 @@ describe('di', () => {
       selector: 'my-comp',
       template: '<div dir></div>',
       providers: [{provide: LOCALE_ID, useValue: 'en-GB'}],
+      standalone: false,
     })
     class MyComp {
       @ViewChild(MyDir) myDir!: MyDir;
@@ -4131,7 +4253,7 @@ describe('di', () => {
 
   describe('@Attribute', () => {
     it('should inject attributes', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({selector: '[dir]', standalone: false})
       class MyDir {
         constructor(
           @Attribute('exist') public exist: string,
@@ -4139,7 +4261,7 @@ describe('di', () => {
         ) {}
       }
 
-      @Component({template: '<div dir exist="existValue" other="ignore"></div>'})
+      @Component({template: '<div dir exist="existValue" other="ignore"></div>', standalone: false})
       class MyComp {
         @ViewChild(MyDir) directiveInstance!: MyDir;
       }
@@ -4155,7 +4277,7 @@ describe('di', () => {
     });
 
     it('should inject attributes on <ng-template>', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({selector: '[dir]', standalone: false})
       class MyDir {
         constructor(
           @Attribute('exist') public exist: string,
@@ -4165,6 +4287,7 @@ describe('di', () => {
 
       @Component({
         template: '<ng-template dir="initial" exist="existValue" other="ignore"></ng-template>',
+        standalone: false,
       })
       class MyComp {
         @ViewChild(MyDir) directiveInstance!: MyDir;
@@ -4181,7 +4304,7 @@ describe('di', () => {
     });
 
     it('should inject attributes on <ng-container>', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({selector: '[dir]', standalone: false})
       class MyDir {
         constructor(
           @Attribute('exist') public exist: string,
@@ -4191,6 +4314,7 @@ describe('di', () => {
 
       @Component({
         template: '<ng-container dir="initial" exist="existValue" other="ignore"></ng-container>',
+        standalone: false,
       })
       class MyComp {
         @ViewChild(MyDir) directiveInstance!: MyDir;
@@ -4207,7 +4331,7 @@ describe('di', () => {
     });
 
     it('should be able to inject different kinds of attributes', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({selector: '[dir]', standalone: false})
       class MyDir {
         constructor(
           @Attribute('class') public className: string,
@@ -4219,6 +4343,7 @@ describe('di', () => {
       @Component({
         template:
           '<div dir style="margin: 1px; color: red;" class="hello there" other-attr="value"></div>',
+        standalone: false,
       })
       class MyComp {
         @ViewChild(MyDir) directiveInstance!: MyDir;
@@ -4237,7 +4362,7 @@ describe('di', () => {
     });
 
     it('should not inject attributes with namespace', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({selector: '[dir]', standalone: false})
       class MyDir {
         constructor(
           @Attribute('exist') public exist: string,
@@ -4249,6 +4374,7 @@ describe('di', () => {
       @Component({
         template:
           '<div dir exist="existValue" svg:exist="testExistValue" other="otherValue"></div>',
+        standalone: false,
       })
       class MyComp {
         @ViewChild(MyDir) directiveInstance!: MyDir;
@@ -4266,7 +4392,7 @@ describe('di', () => {
     });
 
     it('should not inject attributes representing bindings and outputs', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({selector: '[dir]', standalone: false})
       class MyDir {
         @Input() binding!: string;
         @Output() output = new EventEmitter();
@@ -4281,6 +4407,7 @@ describe('di', () => {
       @Component({
         template:
           '<div dir exist="existValue" [binding]="bindingValue" (output)="outputValue" other="otherValue" ignore="ignoreValue"></div>',
+        standalone: false,
       })
       class MyComp {
         @ViewChild(MyDir) directiveInstance!: MyDir;
@@ -4299,12 +4426,12 @@ describe('di', () => {
     });
 
     it('should inject `null` for attributes with data bindings', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({selector: '[dir]', standalone: false})
       class MyDir {
         constructor(@Attribute('title') public attrValue: string) {}
       }
 
-      @Component({template: '<div dir title="title {{ value }}"></div>'})
+      @Component({template: '<div dir title="title {{ value }}"></div>', standalone: false})
       class MyComp {
         @ViewChild(MyDir) directiveInstance!: MyDir;
         value = 'value';
@@ -4709,7 +4836,7 @@ describe('di', () => {
       }
     }
 
-    @Pipe({name: 'somePipe'})
+    @Pipe({name: 'somePipe', standalone: false})
     class MyPipe {
       constructor(private service: MyService) {}
       transform(value: any): any {
@@ -4725,6 +4852,7 @@ describe('di', () => {
           other {Other value is: {{count | somePipe}}}
         }</div>
       `,
+      standalone: false,
     })
     class MyComp {
       count = '2';
@@ -4748,7 +4876,7 @@ describe('di', () => {
       }
     }
 
-    @Pipe({name: 'somePipe'})
+    @Pipe({name: 'somePipe', standalone: false})
     class MyPipe {
       constructor(private service: MyService) {}
       transform(value: any): any {
@@ -4763,6 +4891,7 @@ describe('di', () => {
         </ng-template>
         <ng-container #target></ng-container>
       `,
+      standalone: false,
     })
     class MyComp {
       count = '2';
@@ -4791,19 +4920,19 @@ describe('di', () => {
   // TODO: https://angular-team.atlassian.net/browse/FW-1779
   it('should prioritize useFactory over useExisting', () => {
     abstract class Base {}
-    @Directive({selector: '[dirA]'})
+    @Directive({selector: '[dirA]', standalone: false})
     class DirA implements Base {}
-    @Directive({selector: '[dirB]'})
+    @Directive({selector: '[dirB]', standalone: false})
     class DirB implements Base {}
 
     const PROVIDER = {provide: Base, useExisting: DirA, useFactory: () => new DirB()};
 
-    @Component({selector: 'child', template: '', providers: [PROVIDER]})
+    @Component({selector: 'child', template: '', providers: [PROVIDER], standalone: false})
     class Child {
       constructor(readonly base: Base) {}
     }
 
-    @Component({template: `<div dirA> <child></child> </div>`})
+    @Component({template: `<div dirA> <child></child> </div>`, standalone: false})
     class App {
       @ViewChild(DirA) dirA!: DirA;
       @ViewChild(Child) child!: Child;
@@ -4823,7 +4952,7 @@ describe('di', () => {
     const token = new InjectionToken<number>('token');
 
     it('pipes should access providers from the component they are on', () => {
-      @Pipe({name: 'token'})
+      @Pipe({name: 'token', standalone: false})
       class TokenPipe {
         constructor(@Inject(token) private _token: string) {}
 
@@ -4836,6 +4965,7 @@ describe('di', () => {
         selector: 'child-comp',
         template: '{{value}}',
         providers: [{provide: token, useValue: 'child'}],
+        standalone: false,
       })
       class ChildComp {
         @Input() value: any;
@@ -4844,6 +4974,7 @@ describe('di', () => {
       @Component({
         template: `<child-comp [value]="'' | token"></child-comp>`,
         providers: [{provide: token, useValue: 'parent'}],
+        standalone: false,
       })
       class App {}
 
@@ -4855,7 +4986,7 @@ describe('di', () => {
     });
 
     it('pipes should not access viewProviders from the component they are on', () => {
-      @Pipe({name: 'token'})
+      @Pipe({name: 'token', standalone: false})
       class TokenPipe {
         constructor(@Inject(token) private _token: string) {}
 
@@ -4868,6 +4999,7 @@ describe('di', () => {
         selector: 'child-comp',
         template: '{{value}}',
         viewProviders: [{provide: token, useValue: 'child'}],
+        standalone: false,
       })
       class ChildComp {
         @Input() value: any;
@@ -4876,6 +5008,7 @@ describe('di', () => {
       @Component({
         template: `<child-comp [value]="'' | token"></child-comp>`,
         viewProviders: [{provide: token, useValue: 'parent'}],
+        standalone: false,
       })
       class App {}
 
@@ -4887,7 +5020,7 @@ describe('di', () => {
     });
 
     it('directives should access providers from the component they are on', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({selector: '[dir]', standalone: false})
       class Dir {
         constructor(@Inject(token) public token: string) {}
       }
@@ -4896,12 +5029,14 @@ describe('di', () => {
         selector: 'child-comp',
         template: '',
         providers: [{provide: token, useValue: 'child'}],
+        standalone: false,
       })
       class ChildComp {}
 
       @Component({
         template: '<child-comp dir></child-comp>',
         providers: [{provide: token, useValue: 'parent'}],
+        standalone: false,
       })
       class App {
         @ViewChild(Dir) dir!: Dir;
@@ -4915,7 +5050,7 @@ describe('di', () => {
     });
 
     it('directives should not access viewProviders from the component they are on', () => {
-      @Directive({selector: '[dir]'})
+      @Directive({selector: '[dir]', standalone: false})
       class Dir {
         constructor(@Inject(token) public token: string) {}
       }
@@ -4924,12 +5059,14 @@ describe('di', () => {
         selector: 'child-comp',
         template: '',
         viewProviders: [{provide: token, useValue: 'child'}],
+        standalone: false,
       })
       class ChildComp {}
 
       @Component({
         template: '<child-comp dir></child-comp>',
         viewProviders: [{provide: token, useValue: 'parent'}],
+        standalone: false,
       })
       class App {
         @ViewChild(Dir) dir!: Dir;
@@ -4944,7 +5081,7 @@ describe('di', () => {
   });
 
   it('should not be able to inject ViewRef', () => {
-    @Component({template: ''})
+    @Component({template: '', standalone: false})
     class App {
       constructor(_viewRef: ViewRef) {}
     }
@@ -4956,7 +5093,7 @@ describe('di', () => {
   describe('injector when creating embedded view', () => {
     const token = new InjectionToken<string>('greeting');
 
-    @Directive({selector: 'menu-trigger'})
+    @Directive({selector: 'menu-trigger', standalone: false})
     class MenuTrigger {
       @Input('triggerFor') menu!: TemplateRef<unknown>;
 
@@ -4968,7 +5105,7 @@ describe('di', () => {
     }
 
     it('should be able to provide an injection token through a custom injector', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -4980,6 +5117,7 @@ describe('di', () => {
             <menu></menu>
           </ng-template>
       `,
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -4998,7 +5136,7 @@ describe('di', () => {
     });
 
     it('should check only the current node with @Self when providing an injection token through an embedded view injector', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) @Self() @Optional() public tokenValue: string) {}
       }
@@ -5011,6 +5149,7 @@ describe('di', () => {
           </ng-template>
         `,
         providers: [{provide: token, useValue: 'root'}],
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5029,7 +5168,7 @@ describe('di', () => {
     });
 
     it('should be able to provide an injection token to a nested template through a custom injector', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5046,6 +5185,7 @@ describe('di', () => {
               </ng-template>
             </ng-template>
           `,
+        standalone: false,
       })
       class App {
         @ViewChild('outerTrigger', {read: MenuTrigger}) outerTrigger!: MenuTrigger;
@@ -5069,7 +5209,7 @@ describe('di', () => {
     });
 
     it('should be able to resolve a token from a custom grandparent injector if the token is not provided in the parent', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5091,6 +5231,7 @@ describe('di', () => {
               </ng-template>
             </ng-template>
           `,
+        standalone: false,
       })
       class App {
         @ViewChild('grandparentTrigger', {read: MenuTrigger}) grandparentTrigger!: MenuTrigger;
@@ -5118,7 +5259,7 @@ describe('di', () => {
     });
 
     it('should resolve value from node injector if it is lower than embedded view injector', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5132,6 +5273,7 @@ describe('di', () => {
             <menu></menu>
           </ng-template>
         `,
+        standalone: false,
       })
       class Wrapper {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5145,6 +5287,7 @@ describe('di', () => {
             <wrapper></wrapper>
           </ng-template>
         `,
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5167,7 +5310,7 @@ describe('di', () => {
     });
 
     it('should be able to inject a value provided at the module level', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5179,6 +5322,7 @@ describe('di', () => {
             <menu></menu>
           </ng-template>
       `,
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5204,7 +5348,7 @@ describe('di', () => {
     });
 
     it('should have value from custom injector take precedence over module injector', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5216,6 +5360,7 @@ describe('di', () => {
             <menu></menu>
           </ng-template>
       `,
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5243,7 +5388,7 @@ describe('di', () => {
     });
 
     it('should have value from custom injector take precedence over parent injector', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5256,6 +5401,7 @@ describe('di', () => {
           </ng-template>
       `,
         providers: [{provide: token, useValue: 'hello from parent'}],
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5282,7 +5428,7 @@ describe('di', () => {
     });
 
     it('should be able to inject built-in tokens when a custom injector is provided', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(
           public elementRef: ElementRef,
@@ -5297,6 +5443,7 @@ describe('di', () => {
             <menu></menu>
           </ng-template>
       `,
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5318,7 +5465,7 @@ describe('di', () => {
     });
 
     it('should have value from parent component injector take precedence over module injector', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5331,6 +5478,7 @@ describe('di', () => {
             </ng-template>
           `,
         providers: [{provide: token, useValue: 'hello from parent'}],
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5365,7 +5513,7 @@ describe('di', () => {
         }
       }
 
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(public greeter: Greeter) {}
       }
@@ -5377,6 +5525,7 @@ describe('di', () => {
             <menu></menu>
           </ng-template>
       `,
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5407,7 +5556,7 @@ describe('di', () => {
     });
 
     it('should be able to inject a value from a grandparent component when a custom injector is provided', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5420,6 +5569,7 @@ describe('di', () => {
               <menu></menu>
             </ng-template>
            `,
+        standalone: false,
       })
       class Parent {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5429,6 +5579,7 @@ describe('di', () => {
       @Component({
         template: '<parent></parent>',
         providers: [{provide: token, useValue: 'hello from grandparent'}],
+        standalone: false,
       })
       class GrandParent {
         @ViewChild(Parent) parent!: Parent;
@@ -5448,7 +5599,7 @@ describe('di', () => {
     it('should be able to use a custom injector when created through TemplateRef', () => {
       let injectedValue: string | undefined;
 
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) tokenValue: string) {
           injectedValue = tokenValue;
@@ -5461,6 +5612,7 @@ describe('di', () => {
             <menu></menu>
           </ng-template>
         `,
+        standalone: false,
       })
       class App {
         @ViewChild(TemplateRef) template!: TemplateRef<unknown>;
@@ -5490,7 +5642,7 @@ describe('di', () => {
       const declarerToken = new InjectionToken<string>('declarerToken');
       const creatorToken = new InjectionToken<string>('creatorToken');
 
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(
           @Inject(token) public tokenValue: string,
@@ -5503,6 +5655,7 @@ describe('di', () => {
         selector: 'declarer',
         template: '<ng-template><menu></menu></ng-template>',
         providers: [{provide: declarerToken, useValue: 'hello from declarer'}],
+        standalone: false,
       })
       class Declarer {
         @ViewChild(Menu) menu!: Menu;
@@ -5513,6 +5666,7 @@ describe('di', () => {
         selector: 'creator',
         template: '<menu-trigger></menu-trigger>',
         providers: [{provide: creatorToken, useValue: 'hello from creator'}],
+        standalone: false,
       })
       class Creator {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5523,6 +5677,7 @@ describe('di', () => {
               <declarer></declarer>
               <creator></creator>
             `,
+        standalone: false,
       })
       class App {
         @ViewChild(Declarer) declarer!: Declarer;
@@ -5545,7 +5700,7 @@ describe('di', () => {
     });
 
     it('should give precedence to value provided lower in the tree over custom injector', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5553,6 +5708,7 @@ describe('di', () => {
       @Directive({
         selector: '[provide-token]',
         providers: [{provide: token, useValue: 'hello from directive'}],
+        standalone: false,
       })
       class ProvideToken {}
 
@@ -5568,6 +5724,7 @@ describe('di', () => {
           </ng-template>
         `,
         providers: [{provide: token, useValue: 'hello from parent'}],
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5594,7 +5751,7 @@ describe('di', () => {
     });
 
     it('should give precedence to value provided in custom injector over one provided higher', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5602,6 +5759,7 @@ describe('di', () => {
       @Directive({
         selector: '[provide-token]',
         providers: [{provide: token, useValue: 'hello from directive'}],
+        standalone: false,
       })
       class ProvideToken {}
 
@@ -5615,6 +5773,7 @@ describe('di', () => {
               </div>
             `,
         providers: [{provide: token, useValue: 'hello from parent'}],
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5641,7 +5800,7 @@ describe('di', () => {
     });
 
     it('should give precedence to value provided lower in the tree over custom injector when crossing view boundaries', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5649,10 +5808,11 @@ describe('di', () => {
       @Directive({
         selector: '[provide-token]',
         providers: [{provide: token, useValue: 'hello from directive'}],
+        standalone: false,
       })
       class ProvideToken {}
 
-      @Component({selector: 'wrapper', template: `<div><menu></menu></div>`})
+      @Component({selector: 'wrapper', template: `<div><menu></menu></div>`, standalone: false})
       class Wrapper {
         @ViewChild(Menu) menu!: Menu;
       }
@@ -5667,6 +5827,7 @@ describe('di', () => {
               </ng-template>
             `,
         providers: [{provide: token, useValue: 'hello from parent'}],
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5693,7 +5854,7 @@ describe('di', () => {
     });
 
     it('should give precedence to value provided in custom injector over one provided higher when crossing view boundaries', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5701,10 +5862,11 @@ describe('di', () => {
       @Directive({
         selector: '[provide-token]',
         providers: [{provide: token, useValue: 'hello from directive'}],
+        standalone: false,
       })
       class ProvideToken {}
 
-      @Component({selector: 'wrapper', template: `<div><menu></menu></div>`})
+      @Component({selector: 'wrapper', template: `<div><menu></menu></div>`, standalone: false})
       class Wrapper {
         @ViewChild(Menu) menu!: Menu;
       }
@@ -5719,6 +5881,7 @@ describe('di', () => {
               </div>
             `,
         providers: [{provide: token, useValue: 'hello from parent'}],
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;
@@ -5745,7 +5908,7 @@ describe('di', () => {
     });
 
     it('should not resolve value at insertion location', () => {
-      @Directive({selector: 'menu'})
+      @Directive({selector: 'menu', standalone: false})
       class Menu {
         constructor(@Inject(token) public tokenValue: string) {}
       }
@@ -5753,6 +5916,7 @@ describe('di', () => {
       @Directive({
         selector: '[provide-token]',
         providers: [{provide: token, useValue: 'hello from directive'}],
+        standalone: false,
       })
       class ProvideToken {}
 
@@ -5767,6 +5931,7 @@ describe('di', () => {
           </ng-template>
         `,
         providers: [{provide: token, useValue: 'hello from parent'}],
+        standalone: false,
       })
       class App {
         @ViewChild(MenuTrigger) trigger!: MenuTrigger;

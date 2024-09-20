@@ -222,7 +222,7 @@ describe('query logic', () => {
         @ViewChild('foo') foo: any;
       }
 
-      @Component({selector: 'sub-comp', template: '<div #foo></div>'})
+      @Component({selector: 'sub-comp', template: '<div #foo></div>', standalone: false})
       class SubComp extends MyComp {}
 
       TestBed.configureTestingModule({declarations: [SubComp]});
@@ -239,7 +239,7 @@ describe('query logic', () => {
 
       class MyComp extends MySuperComp {}
 
-      @Component({selector: 'sub-comp', template: '<div #foo></div>'})
+      @Component({selector: 'sub-comp', template: '<div #foo></div>', standalone: false})
       class SubComp extends MyComp {}
 
       TestBed.configureTestingModule({declarations: [SubComp]});
@@ -250,7 +250,7 @@ describe('query logic', () => {
     });
 
     it('should support ViewChildren query inherited from undecorated superclasses', () => {
-      @Directive({selector: '[some-dir]'})
+      @Directive({selector: '[some-dir]', standalone: false})
       class SomeDir {}
 
       class MyComp {
@@ -263,6 +263,7 @@ describe('query logic', () => {
           <div some-dir></div>
           <div some-dir></div>
         `,
+        standalone: false,
       })
       class SubComp extends MyComp {}
 
@@ -275,7 +276,7 @@ describe('query logic', () => {
     });
 
     it('should support ViewChildren query inherited from undecorated grand superclasses', () => {
-      @Directive({selector: '[some-dir]'})
+      @Directive({selector: '[some-dir]', standalone: false})
       class SomeDir {}
 
       class MySuperComp {
@@ -290,6 +291,7 @@ describe('query logic', () => {
           <div some-dir></div>
           <div some-dir></div>
         `,
+        standalone: false,
       })
       class SubComp extends MyComp {}
 
@@ -302,12 +304,13 @@ describe('query logic', () => {
     });
 
     it('should support ViewChild query where template is inserted in child component', () => {
-      @Component({selector: 'required', template: ''})
+      @Component({selector: 'required', template: '', standalone: false})
       class Required {}
 
       @Component({
         selector: 'insertion',
         template: `<ng-container [ngTemplateOutlet]="content"></ng-container>`,
+        standalone: false,
       })
       class Insertion {
         @Input() content!: TemplateRef<{}>;
@@ -320,6 +323,7 @@ describe('query logic', () => {
           </ng-template>
           <insertion [content]="template"></insertion>
           `,
+        standalone: false,
       })
       class App {
         @ViewChild(Required) requiredEl!: Required;
@@ -343,6 +347,7 @@ describe('query logic', () => {
       @Component({
         selector: 'comp-with-view-query',
         template: '<div #foo>Content</div>',
+        standalone: false,
       })
       class ComponentWithViewQuery {
         @ViewChildren('foo')
@@ -361,6 +366,7 @@ describe('query logic', () => {
             <comp-with-view-query></comp-with-view-query>
           </ng-container>
         `,
+        standalone: false,
       })
       class Root {
         condition = true;
@@ -619,10 +625,10 @@ describe('query logic', () => {
         @ContentChild('foo') foo: any;
       }
 
-      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>'})
+      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>', standalone: false})
       class SubComp extends MyComp {}
 
-      @Component({template: '<sub-comp><div #foo></div></sub-comp>'})
+      @Component({template: '<sub-comp><div #foo></div></sub-comp>', standalone: false})
       class App {
         @ViewChild(SubComp) subComp!: SubComp;
       }
@@ -641,10 +647,10 @@ describe('query logic', () => {
 
       class MyComp extends MySuperComp {}
 
-      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>'})
+      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>', standalone: false})
       class SubComp extends MyComp {}
 
-      @Component({template: '<sub-comp><div #foo></div></sub-comp>'})
+      @Component({template: '<sub-comp><div #foo></div></sub-comp>', standalone: false})
       class App {
         @ViewChild(SubComp) subComp!: SubComp;
       }
@@ -657,14 +663,14 @@ describe('query logic', () => {
     });
 
     it('should support ContentChildren query inherited from undecorated superclasses', () => {
-      @Directive({selector: '[some-dir]'})
+      @Directive({selector: '[some-dir]', standalone: false})
       class SomeDir {}
 
       class MyComp {
         @ContentChildren(SomeDir) foo!: QueryList<SomeDir>;
       }
 
-      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>'})
+      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>', standalone: false})
       class SubComp extends MyComp {}
 
       @Component({
@@ -674,6 +680,7 @@ describe('query logic', () => {
           <div some-dir></div>
         </sub-comp>
       `,
+        standalone: false,
       })
       class App {
         @ViewChild(SubComp) subComp!: SubComp;
@@ -688,7 +695,7 @@ describe('query logic', () => {
     });
 
     it('should support ContentChildren query inherited from undecorated grand superclasses', () => {
-      @Directive({selector: '[some-dir]'})
+      @Directive({selector: '[some-dir]', standalone: false})
       class SomeDir {}
 
       class MySuperComp {
@@ -697,7 +704,7 @@ describe('query logic', () => {
 
       class MyComp extends MySuperComp {}
 
-      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>'})
+      @Component({selector: 'sub-comp', template: '<ng-content></ng-content>', standalone: false})
       class SubComp extends MyComp {}
 
       @Component({
@@ -707,6 +714,7 @@ describe('query logic', () => {
           <div some-dir></div>
         </sub-comp>
       `,
+        standalone: false,
       })
       class App {
         @ViewChild(SubComp) subComp!: SubComp;
@@ -728,6 +736,7 @@ describe('query logic', () => {
             <div *ngIf="showing" #foo></div>
           </shallow-comp>
         `,
+        standalone: false,
       })
       class TestComponent {
         showing = false;
@@ -736,6 +745,7 @@ describe('query logic', () => {
       @Component({
         selector: 'shallow-comp',
         template: '',
+        standalone: false,
       })
       class ShallowComp {
         @ContentChildren('foo', {descendants: false}) foos!: QueryList<ElementRef>;
@@ -766,6 +776,7 @@ describe('query logic', () => {
 
       @Directive({
         selector: '[with-content]',
+        standalone: false,
       })
       class DirWithContentQuery {
         constructor() {
@@ -795,6 +806,7 @@ describe('query logic', () => {
             </div>
           </ng-container>
         `,
+        standalone: false,
       })
       class Root {
         items = [1, 2, 3];
@@ -1117,14 +1129,18 @@ describe('query logic', () => {
     }
 
     it('should match directives on elements that used to be wrapped by a required parent in HTML parser', () => {
-      @Directive({selector: '[myDef]'})
+      @Directive({selector: '[myDef]', standalone: false})
       class MyDef {}
 
-      @Component({selector: 'my-container', template: ``})
+      @Component({selector: 'my-container', template: ``, standalone: false})
       class MyContainer {
         @ContentChildren(MyDef) myDefs!: QueryList<MyDef>;
       }
-      @Component({selector: 'test-cmpt', template: `<my-container><tr myDef></tr></my-container>`})
+      @Component({
+        selector: 'test-cmpt',
+        template: `<my-container><tr myDef></tr></my-container>`,
+        standalone: false,
+      })
       class TestCmpt {}
 
       TestBed.configureTestingModule({declarations: [TestCmpt, MyContainer, MyDef]});
@@ -1136,7 +1152,7 @@ describe('query logic', () => {
     });
 
     it('should match elements with local refs inside <ng-container>', () => {
-      @Component({selector: 'needs-target', template: ``})
+      @Component({selector: 'needs-target', template: ``, standalone: false})
       class NeedsTarget {
         @ContentChildren('target') targets!: QueryList<ElementRef>;
       }
@@ -1149,6 +1165,7 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
+        standalone: false,
       })
       class TestCmpt {}
 
@@ -1162,7 +1179,7 @@ describe('query logic', () => {
     });
 
     it('should match elements with local refs inside nested <ng-container>', () => {
-      @Component({selector: 'needs-target', template: ``})
+      @Component({selector: 'needs-target', template: ``, standalone: false})
       class NeedsTarget {
         @ContentChildren('target') targets!: QueryList<ElementRef>;
       }
@@ -1180,6 +1197,7 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
+        standalone: false,
       })
       class TestCmpt {}
 
@@ -1193,10 +1211,10 @@ describe('query logic', () => {
     });
 
     it('should match directives inside <ng-container>', () => {
-      @Directive({selector: '[targetDir]'})
+      @Directive({selector: '[targetDir]', standalone: false})
       class TargetDir {}
 
-      @Component({selector: 'needs-target', template: ``})
+      @Component({selector: 'needs-target', template: ``, standalone: false})
       class NeedsTarget {
         @ContentChildren(TargetDir) targets!: QueryList<HTMLElement>;
       }
@@ -1210,6 +1228,7 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
+        standalone: false,
       })
       class TestCmpt {}
 
@@ -1223,10 +1242,10 @@ describe('query logic', () => {
     });
 
     it('should match directives inside nested <ng-container>', () => {
-      @Directive({selector: '[targetDir]'})
+      @Directive({selector: '[targetDir]', standalone: false})
       class TargetDir {}
 
-      @Component({selector: 'needs-target', template: ``})
+      @Component({selector: 'needs-target', template: ``, standalone: false})
       class NeedsTarget {
         @ContentChildren(TargetDir) targets!: QueryList<HTMLElement>;
       }
@@ -1244,6 +1263,7 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
+        standalone: false,
       })
       class TestCmpt {}
 
@@ -1257,10 +1277,10 @@ describe('query logic', () => {
     });
 
     it('should cross child ng-container when query is declared on ng-container', () => {
-      @Directive({selector: '[targetDir]'})
+      @Directive({selector: '[targetDir]', standalone: false})
       class TargetDir {}
 
-      @Directive({selector: '[needs-target]'})
+      @Directive({selector: '[needs-target]', standalone: false})
       class NeedsTarget {
         @ContentChildren(TargetDir) targets!: QueryList<HTMLElement>;
       }
@@ -1276,6 +1296,7 @@ describe('query logic', () => {
             </ng-container>
           </ng-container>
         `,
+        standalone: false,
       })
       class TestCmpt {}
 
@@ -1289,10 +1310,10 @@ describe('query logic', () => {
     });
 
     it('should match nodes when using structural directives (*syntax) on <ng-container>', () => {
-      @Directive({selector: '[targetDir]'})
+      @Directive({selector: '[targetDir]', standalone: false})
       class TargetDir {}
 
-      @Component({selector: 'needs-target', template: ``})
+      @Component({selector: 'needs-target', template: ``, standalone: false})
       class NeedsTarget {
         @ContentChildren(TargetDir) dirTargets!: QueryList<TargetDir>;
         @ContentChildren('target') localRefsTargets!: QueryList<ElementRef>;
@@ -1308,6 +1329,7 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
+        standalone: false,
       })
       class TestCmpt {}
 
@@ -1323,10 +1345,10 @@ describe('query logic', () => {
     });
 
     it('should match directives on <ng-container> when crossing nested <ng-container>', () => {
-      @Directive({selector: '[targetDir]'})
+      @Directive({selector: '[targetDir]', standalone: false})
       class TargetDir {}
 
-      @Component({selector: 'needs-target', template: ``})
+      @Component({selector: 'needs-target', template: ``, standalone: false})
       class NeedsTarget {
         @ContentChildren(TargetDir) targets!: QueryList<HTMLElement>;
       }
@@ -1344,6 +1366,7 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
+        standalone: false,
       })
       class TestCmpt {}
 
@@ -1727,6 +1750,7 @@ describe('query logic', () => {
           <div #foo #bar id="target"></div>
           <div></div>
         `,
+        standalone: false,
       })
       class MultipleLocalRefsComp {
         @ViewChildren('foo') fooQuery!: QueryList<any>;
@@ -1977,7 +2001,7 @@ describe('query logic', () => {
 
   describe('view boundaries', () => {
     describe('ViewContainerRef', () => {
-      @Directive({selector: '[vc]', exportAs: 'vc'})
+      @Directive({selector: '[vc]', exportAs: 'vc', standalone: false})
       class ViewContainerManipulatorDirective {
         constructor(private _vcRef: ViewContainerRef) {}
 
@@ -2002,6 +2026,7 @@ describe('query logic', () => {
               <div #foo></div>
             </ng-template>
           `,
+          standalone: false,
         })
         class TestComponent {
           value: boolean = false;
@@ -2033,6 +2058,7 @@ describe('query logic', () => {
               <div #foo [id]="item"></div>
             </ng-template>
           `,
+          standalone: false,
         })
         class TestComponent {
           value: string[] | undefined;
@@ -2075,6 +2101,7 @@ describe('query logic', () => {
               <ng-template #tpl><div #foo>match</div></ng-template>
               <ng-template vc></ng-template>
             `,
+          standalone: false,
         })
         class TestComponent implements AfterViewInit {
           queryListNotificationCounter = 0;
@@ -2109,13 +2136,13 @@ describe('query logic', () => {
       });
 
       it('should support a mix of content queries from the declaration and embedded view', () => {
-        @Directive({selector: '[query-for-lots-of-content]'})
+        @Directive({selector: '[query-for-lots-of-content]', standalone: false})
         class QueryForLotsOfContent {
           @ContentChildren('foo', {descendants: true}) foos1!: QueryList<ElementRef>;
           @ContentChildren('foo', {descendants: true}) foos2!: QueryList<ElementRef>;
         }
 
-        @Directive({selector: '[query-for-content]'})
+        @Directive({selector: '[query-for-content]', standalone: false})
         class QueryForContent {
           @ContentChildren('foo') foos!: QueryList<ElementRef>;
         }
@@ -2131,6 +2158,7 @@ describe('query logic', () => {
               </ng-template>
             </div>
           `,
+          standalone: false,
         })
         class TestComponent {
           items = [1, 2];
@@ -2176,6 +2204,7 @@ describe('query logic', () => {
 
                <ng-template vc></ng-template>
              `,
+          standalone: false,
         })
         class TestComponent {
           @ViewChild(ViewContainerManipulatorDirective) vc!: ViewContainerManipulatorDirective;
@@ -2247,6 +2276,7 @@ describe('query logic', () => {
                <ng-template vc #vi0="vc"></ng-template>
                <ng-template vc #vi1="vc"></ng-template>
              `,
+          standalone: false,
         })
         class TestComponent {
           @ViewChild('tpl') tpl!: TemplateRef<any>;
@@ -2298,6 +2328,7 @@ describe('query logic', () => {
 
             <ng-template [ngTemplateOutlet]="show ? tpl : null"></ng-template>
           `,
+          standalone: false,
         })
         class MyApp {
           show = false;
@@ -2325,15 +2356,20 @@ describe('query logic', () => {
 
   describe('non-regression', () => {
     it('should query by provider super-type in an embedded view', () => {
-      @Directive({selector: '[child]'})
+      @Directive({selector: '[child]', standalone: false})
       class Child {}
 
-      @Directive({selector: '[parent]', providers: [{provide: Child, useExisting: Parent}]})
+      @Directive({
+        selector: '[parent]',
+        providers: [{provide: Child, useExisting: Parent}],
+        standalone: false,
+      })
       class Parent extends Child {}
 
       @Component({
         selector: 'test-cmpt',
         template: `<ng-template [ngIf]="true"><ng-template [ngIf]="true"><div parent></div></ng-template></ng-template>`,
+        standalone: false,
       })
       class TestCmpt {
         @ViewChildren(Child) instances!: QueryList<Child>;
@@ -2355,10 +2391,15 @@ describe('query logic', () => {
         providers: [
           {provide: MyClass, useExisting: forwardRef(() => WithMultiProvider), multi: true},
         ],
+        standalone: false,
       })
       class WithMultiProvider {}
 
-      @Component({selector: 'test-cmpt', template: `<with-multi-provider></with-multi-provider>`})
+      @Component({
+        selector: 'test-cmpt',
+        template: `<with-multi-provider></with-multi-provider>`,
+        standalone: false,
+      })
       class TestCmpt {
         @ViewChildren(MyClass) queryResults!: QueryList<WithMultiProvider>;
       }
@@ -2380,6 +2421,7 @@ describe('query logic', () => {
         providers: [
           {provide: MyClass, useExisting: forwardRef(() => WithMultiProvider), multi: true},
         ],
+        standalone: false,
       })
       class WithMultiProvider {}
 
@@ -2389,6 +2431,7 @@ describe('query logic', () => {
           <ng-template [ngIf]="true"><with-multi-provider></with-multi-provider></ng-template>
           <with-multi-provider></with-multi-provider>
         `,
+        standalone: false,
       })
       class TestCmpt {
         @ViewChildren(MyClass) queryResults!: QueryList<WithMultiProvider>;
@@ -2404,12 +2447,13 @@ describe('query logic', () => {
     });
 
     it('should allow undefined provider value in a [View/Content]Child queries', () => {
-      @Directive({selector: '[group]'})
+      @Directive({selector: '[group]', standalone: false})
       class GroupDir {}
 
       @Directive({
         selector: '[undefinedGroup]',
         providers: [{provide: GroupDir, useValue: undefined}],
+        standalone: false,
       })
       class UndefinedGroup {}
 
@@ -2420,6 +2464,7 @@ describe('query logic', () => {
             <div undefinedGroup></div>
           </ng-template>
         `,
+        standalone: false,
       })
       class App {
         @ViewChild(GroupDir) group!: GroupDir;
@@ -2436,15 +2481,20 @@ describe('query logic', () => {
     });
 
     it('should allow null / undefined provider value in a [View/Content]Children queries', () => {
-      @Directive({selector: '[group]'})
+      @Directive({selector: '[group]', standalone: false})
       class GroupDir {}
 
-      @Directive({selector: '[nullGroup]', providers: [{provide: GroupDir, useValue: null}]})
+      @Directive({
+        selector: '[nullGroup]',
+        providers: [{provide: GroupDir, useValue: null}],
+        standalone: false,
+      })
       class NullGroup {}
 
       @Directive({
         selector: '[undefinedGroup]',
         providers: [{provide: GroupDir, useValue: undefined}],
+        standalone: false,
       })
       class UndefinedGroup {}
 
@@ -2458,6 +2508,7 @@ describe('query logic', () => {
             <div undefinedGroup></div>
           </ng-template>
         `,
+        standalone: false,
       })
       class App {
         @ViewChildren(GroupDir) groups!: QueryList<GroupDir>;
@@ -2484,11 +2535,12 @@ describe('query logic', () => {
     @Directive({
       selector: '[text-token]',
       providers: [{provide: 'Token', useExisting: TextTokenDirective}],
+      standalone: false,
     })
     class TextTokenDirective {}
 
     it('should match string injection token in a ViewChild query', () => {
-      @Component({template: '<div text-token></div>'})
+      @Component({template: '<div text-token></div>', standalone: false})
       class App {
         @ViewChild('Token') token: any;
       }
@@ -2500,7 +2552,7 @@ describe('query logic', () => {
     });
 
     it('should give precedence to local reference if both a reference and a string injection token provider match a ViewChild query', () => {
-      @Component({template: '<div text-token #Token></div>'})
+      @Component({template: '<div text-token #Token></div>', standalone: false})
       class App {
         @ViewChild('Token') token: any;
       }
@@ -2512,7 +2564,7 @@ describe('query logic', () => {
     });
 
     it('should match string injection token in a ViewChildren query', () => {
-      @Component({template: '<div text-token></div>'})
+      @Component({template: '<div text-token></div>', standalone: false})
       class App {
         @ViewChildren('Token') tokens!: QueryList<any>;
       }
@@ -2527,7 +2579,7 @@ describe('query logic', () => {
     });
 
     it('should match both string injection token and local reference inside a ViewChildren query', () => {
-      @Component({template: '<div text-token #Token></div>'})
+      @Component({template: '<div text-token #Token></div>', standalone: false})
       class App {
         @ViewChildren('Token') tokens!: QueryList<any>;
       }
@@ -2543,12 +2595,12 @@ describe('query logic', () => {
     });
 
     it('should match string injection token in a ContentChild query', () => {
-      @Component({selector: 'has-query', template: '<ng-content></ng-content>'})
+      @Component({selector: 'has-query', template: '<ng-content></ng-content>', standalone: false})
       class HasQuery {
         @ContentChild('Token') token: any;
       }
 
-      @Component({template: '<has-query><div text-token></div></has-query>'})
+      @Component({template: '<has-query><div text-token></div></has-query>', standalone: false})
       class App {
         @ViewChild(HasQuery) queryComp!: HasQuery;
       }
@@ -2561,12 +2613,15 @@ describe('query logic', () => {
     });
 
     it('should give precedence to local reference if both a reference and a string injection token provider match a ContentChild query', () => {
-      @Component({selector: 'has-query', template: '<ng-content></ng-content>'})
+      @Component({selector: 'has-query', template: '<ng-content></ng-content>', standalone: false})
       class HasQuery {
         @ContentChild('Token') token: any;
       }
 
-      @Component({template: '<has-query><div text-token #Token></div></has-query>'})
+      @Component({
+        template: '<has-query><div text-token #Token></div></has-query>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HasQuery) queryComp!: HasQuery;
       }
@@ -2579,12 +2634,12 @@ describe('query logic', () => {
     });
 
     it('should match string injection token in a ContentChildren query', () => {
-      @Component({selector: 'has-query', template: '<ng-content></ng-content>'})
+      @Component({selector: 'has-query', template: '<ng-content></ng-content>', standalone: false})
       class HasQuery {
         @ContentChildren('Token') tokens!: QueryList<any>;
       }
 
-      @Component({template: '<has-query><div text-token></div></has-query>'})
+      @Component({template: '<has-query><div text-token></div></has-query>', standalone: false})
       class App {
         @ViewChild(HasQuery) queryComp!: HasQuery;
       }
@@ -2599,12 +2654,15 @@ describe('query logic', () => {
     });
 
     it('should match both string injection token and local reference inside a ContentChildren query', () => {
-      @Component({selector: 'has-query', template: '<ng-content></ng-content>'})
+      @Component({selector: 'has-query', template: '<ng-content></ng-content>', standalone: false})
       class HasQuery {
         @ContentChildren('Token') tokens!: QueryList<any>;
       }
 
-      @Component({template: '<has-query><div text-token #Token></div></has-query>'})
+      @Component({
+        template: '<has-query><div text-token #Token></div></has-query>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HasQuery) queryComp!: HasQuery;
       }
@@ -2620,7 +2678,7 @@ describe('query logic', () => {
     });
 
     it('should match string token specified through the `read` option of a view query', () => {
-      @Component({template: '<div text-token #Token></div>'})
+      @Component({template: '<div text-token #Token></div>', standalone: false})
       class App {
         @ViewChild('Token', {read: 'Token'}) token: any;
       }
@@ -2632,12 +2690,15 @@ describe('query logic', () => {
     });
 
     it('should match string token specified through the `read` option of a content query', () => {
-      @Component({selector: 'has-query', template: '<ng-content></ng-content>'})
+      @Component({selector: 'has-query', template: '<ng-content></ng-content>', standalone: false})
       class HasQuery {
         @ContentChild('Token', {read: 'Token'}) token: any;
       }
 
-      @Component({template: '<has-query><div text-token #Token></div></has-query>'})
+      @Component({
+        template: '<has-query><div text-token #Token></div></has-query>',
+        standalone: false,
+      })
       class App {
         @ViewChild(HasQuery) queryComp!: HasQuery;
       }
@@ -2658,7 +2719,11 @@ function initWithTemplate(compType: Type<any>, template: string) {
   return fixture;
 }
 
-@Component({selector: 'local-ref-query-component', template: '<ng-content></ng-content>'})
+@Component({
+  selector: 'local-ref-query-component',
+  template: '<ng-content></ng-content>',
+  standalone: false,
+})
 class QueryComp {
   @ViewChild('viewQuery') viewChild!: any;
   @ContentChild('contentQuery') contentChild!: any;
@@ -2667,16 +2732,16 @@ class QueryComp {
   @ContentChildren('contentQuery') contentChildren!: QueryList<any>;
 }
 
-@Component({selector: 'app-comp', template: ``})
+@Component({selector: 'app-comp', template: ``, standalone: false})
 class AppComp {}
 
-@Component({selector: 'simple-comp-a', template: ''})
+@Component({selector: 'simple-comp-a', template: '', standalone: false})
 class SimpleCompA {}
 
-@Component({selector: 'simple-comp-b', template: ''})
+@Component({selector: 'simple-comp-b', template: '', standalone: false})
 class SimpleCompB {}
 
-@Directive({selector: '[text]'})
+@Directive({selector: '[text]', standalone: false})
 class TextDirective {
   @Input() text = '';
 }
@@ -2687,6 +2752,7 @@ class TextDirective {
     <div [text]="text"></div>
     <span #foo></span>
   `,
+  standalone: false,
 })
 class StaticViewQueryComp {
   private _textDir!: TextDirective;
@@ -2725,6 +2791,7 @@ class StaticViewQueryComp {
     <div #bar></div>
     <span #baz></span>
   `,
+  standalone: false,
 })
 class SubclassStaticViewQueryComp extends StaticViewQueryComp {
   @ViewChild('bar', {static: true}) bar!: ElementRef;
@@ -2732,7 +2799,11 @@ class SubclassStaticViewQueryComp extends StaticViewQueryComp {
   @ViewChild('baz') baz!: ElementRef;
 }
 
-@Component({selector: 'static-content-query-comp', template: `<ng-content></ng-content>`})
+@Component({
+  selector: 'static-content-query-comp',
+  template: `<ng-content></ng-content>`,
+  standalone: false,
+})
 class StaticContentQueryComp {
   private _textDir!: TextDirective;
   private _foo!: ElementRef;
@@ -2759,7 +2830,7 @@ class StaticContentQueryComp {
   }
 }
 
-@Directive({selector: '[staticContentQueryDir]'})
+@Directive({selector: '[staticContentQueryDir]', standalone: false})
 class StaticContentQueryDir {
   private _textDir!: TextDirective;
   private _foo!: ElementRef;
@@ -2786,7 +2857,11 @@ class StaticContentQueryDir {
   }
 }
 
-@Component({selector: 'subclass-static-content-query-comp', template: `<ng-content></ng-content>`})
+@Component({
+  selector: 'subclass-static-content-query-comp',
+  template: `<ng-content></ng-content>`,
+  standalone: false,
+})
 class SubclassStaticContentQueryComp extends StaticContentQueryComp {
   @ContentChild('bar', {static: true}) bar!: ElementRef;
 
@@ -2798,6 +2873,7 @@ class SubclassStaticContentQueryComp extends StaticContentQueryComp {
   template: `
     <div *ngIf="showing" #foo></div>
   `,
+  standalone: false,
 })
 export class QueryCompWithChanges {
   @ViewChildren('foo') foos!: QueryList<any>;
@@ -2816,6 +2892,7 @@ export class QueryCompWithChanges {
       </div>
     </query-component>
   `,
+  standalone: false,
 })
 export class QueryCompWithNoChanges {
   showing: boolean = true;
@@ -2823,7 +2900,7 @@ export class QueryCompWithNoChanges {
   queryComp!: QueryCompWithStrictChangeEmitParent;
 }
 
-@Component({selector: 'query-component', template: `<ng-content></ng-content>`})
+@Component({selector: 'query-component', template: `<ng-content></ng-content>`, standalone: false})
 export class QueryCompWithStrictChangeEmitParent {
   @ContentChildren('foo', {
     descendants: true,
@@ -2836,10 +2913,10 @@ export class QueryCompWithStrictChangeEmitParent {
   }
 }
 
-@Component({selector: 'query-target', template: '<ng-content></ng-content>'})
+@Component({selector: 'query-target', template: '<ng-content></ng-content>', standalone: false})
 class SuperDirectiveQueryTarget {}
 
-@Directive({selector: '[super-directive]'})
+@Directive({selector: '[super-directive]', standalone: false})
 class SuperDirective {
   @ViewChildren(SuperDirectiveQueryTarget) headers!: QueryList<SuperDirectiveQueryTarget>;
 }
@@ -2849,6 +2926,7 @@ class SuperDirective {
     <query-target>One</query-target>
     <query-target>Two</query-target>
   `,
+  standalone: false,
 })
 class SubComponent extends SuperDirective {}
 
@@ -2858,6 +2936,7 @@ const MY_OPTION_TOKEN = new InjectionToken<TestComponentWithToken>('ComponentWit
   selector: 'my-option',
   template: 'Option',
   providers: [{provide: MY_OPTION_TOKEN, useExisting: TestComponentWithToken}],
+  standalone: false,
 })
 class TestComponentWithToken {}
 
@@ -2868,6 +2947,7 @@ class TestComponentWithToken {}
     <my-option></my-option>
     <ng-content></ng-content>
   `,
+  standalone: false,
 })
 class TestInjectionTokenQueries {
   @ViewChild(MY_OPTION_TOKEN) viewFirstOption!: TestComponentWithToken;
@@ -2883,5 +2963,6 @@ class TestInjectionTokenQueries {
       <my-option></my-option>
     </test-injection-token>
   `,
+  standalone: false,
 })
 class TestInjectionTokenContentQueries {}

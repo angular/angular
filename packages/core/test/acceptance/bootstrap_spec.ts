@@ -97,6 +97,7 @@ describe('bootstrap', () => {
         encapsulation: options.encapsulation,
         preserveWhitespaces: options.preserveWhitespaces,
         jit: true,
+        standalone: false,
       })
       class TestComponent {}
 
@@ -337,6 +338,7 @@ describe('bootstrap', () => {
           @Component({
             selector: 'my-app',
             template: '...',
+            standalone: false,
           })
           class App {}
 
@@ -359,6 +361,7 @@ describe('bootstrap', () => {
           @Component({
             selector: 'my-app',
             template: '...',
+            standalone: false,
           })
           class App {}
 
@@ -559,6 +562,7 @@ describe('bootstrap', () => {
 @Component({
   selector: '#my-app',
   template: 'works!',
+  standalone: false,
 })
 export class IdSelectorAppComponent {}
 
@@ -572,6 +576,7 @@ export class IdSelectorAppModule {}
 @Component({
   selector: '[foo],span,.bar',
   template: 'works!',
+  standalone: false,
 })
 export class MultipleSelectorsAppComponent {}
 

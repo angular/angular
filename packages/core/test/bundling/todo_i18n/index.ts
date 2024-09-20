@@ -126,6 +126,7 @@ class TodoStore {
     </footer>
   </section>
   `,
+  standalone: false,
   // TODO(misko): switch over to OnPush
   // changeDetection: ChangeDetectionStrategy.OnPush
 })

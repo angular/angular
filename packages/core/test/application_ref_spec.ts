@@ -53,7 +53,7 @@ if (isNode) {
   serverPlatformModule = import('@angular/platform-server').then((m) => m.ServerModule);
 }
 
-@Component({selector: 'bootstrap-app', template: 'hello'})
+@Component({selector: 'bootstrap-app', template: 'hello', standalone: false})
 class SomeComponent {}
 
 describe('bootstrap', () => {
@@ -116,6 +116,7 @@ describe('bootstrap', () => {
       @Component({
         selector: 'bootstrap-app',
         template: '',
+        standalone: false,
       })
       class SomeComponent {}
 
@@ -143,6 +144,7 @@ describe('bootstrap', () => {
       @Component({
         selector: 'bootstrap-app',
         template: '',
+        standalone: false,
       })
       class SomeComponent {}
 
@@ -171,7 +173,7 @@ describe('bootstrap', () => {
     });
 
     it('should throw when reentering tick', () => {
-      @Component({template: '{{reenter()}}'})
+      @Component({template: '{{reenter()}}', standalone: false})
       class ReenteringComponent {
         reenterCount = 1;
         reenterErr: any;
@@ -558,6 +560,7 @@ describe('bootstrap', () => {
       @Component({
         selector: 'with-templates-app',
         templateUrl: '/test-template.html',
+        standalone: false,
       })
       class WithTemplateUrlComponent {}
 
@@ -576,6 +579,7 @@ describe('bootstrap', () => {
       @Component({
         selector: 'i18n-app',
         templateUrl: '',
+        standalone: false,
       })
       class I18nComponent {}
 
@@ -669,17 +673,17 @@ describe('bootstrap', () => {
   });
 
   describe('attachView / detachView', () => {
-    @Component({template: '{{name}}'})
+    @Component({template: '{{name}}', standalone: false})
     class MyComp {
       name = 'Initial';
     }
 
-    @Component({template: '<ng-container #vc></ng-container>'})
+    @Component({template: '<ng-container #vc></ng-container>', standalone: false})
     class ContainerComp {
       @ViewChild('vc', {read: ViewContainerRef}) vc!: ViewContainerRef;
     }
 
-    @Component({template: '<ng-template #t>Dynamic content</ng-template>'})
+    @Component({template: '<ng-template #t>Dynamic content</ng-template>', standalone: false})
     class EmbeddedViewComp {
       @ViewChild(TemplateRef, {static: true}) tplRef!: TemplateRef<Object>;
     }
@@ -791,12 +795,16 @@ describe('bootstrap', () => {
 });
 
 describe('AppRef', () => {
-  @Component({selector: 'sync-comp', template: `<span>{{text}}</span>`})
+  @Component({selector: 'sync-comp', template: `<span>{{text}}</span>`, standalone: false})
   class SyncComp {
     text: string = '1';
   }
 
-  @Component({selector: 'click-comp', template: `<span (click)="onClick()">{{text}}</span>`})
+  @Component({
+    selector: 'click-comp',
+    template: `<span (click)="onClick()">{{text}}</span>`,
+    standalone: false,
+  })
   class ClickComp {
     text: string = '1';
 
@@ -805,7 +813,7 @@ describe('AppRef', () => {
     }
   }
 
-  @Component({selector: 'micro-task-comp', template: `<span>{{text}}</span>`})
+  @Component({selector: 'micro-task-comp', template: `<span>{{text}}</span>`, standalone: false})
   class MicroTaskComp {
     text: string = '1';
 
@@ -816,7 +824,7 @@ describe('AppRef', () => {
     }
   }
 
-  @Component({selector: 'macro-task-comp', template: `<span>{{text}}</span>`})
+  @Component({selector: 'macro-task-comp', template: `<span>{{text}}</span>`, standalone: false})
   class MacroTaskComp {
     text: string = '1';
 
@@ -827,7 +835,11 @@ describe('AppRef', () => {
     }
   }
 
-  @Component({selector: 'micro-macro-task-comp', template: `<span>{{text}}</span>`})
+  @Component({
+    selector: 'micro-macro-task-comp',
+    template: `<span>{{text}}</span>`,
+    standalone: false,
+  })
   class MicroMacroTaskComp {
     text: string = '1';
 
@@ -841,7 +853,11 @@ describe('AppRef', () => {
     }
   }
 
-  @Component({selector: 'macro-micro-task-comp', template: `<span>{{text}}</span>`})
+  @Component({
+    selector: 'macro-micro-task-comp',
+    template: `<span>{{text}}</span>`,
+    standalone: false,
+  })
   class MacroMicroTaskComp {
     text: string = '1';
 
@@ -961,7 +977,7 @@ describe('AppRef', () => {
 
 describe('injector', () => {
   it('should expose an EnvironmentInjector', () => {
-    @Component({})
+    @Component({standalone: false})
     class TestCmp {
       constructor(readonly envInjector: EnvironmentInjector) {}
     }

@@ -14,6 +14,7 @@ import {TriggerComponent} from './trigger';
 @Component({
   selector: 'dep',
   template: 'dep',
+  standalone: false,
 })
 export class DepComponent {}
 

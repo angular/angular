@@ -116,6 +116,7 @@ describe('ComponentFactory', () => {
           'class': 'HOST_COMPONENT',
         },
         encapsulation: ViewEncapsulation.None,
+        standalone: false,
       })
       class TestComponent {}
 
@@ -317,7 +318,7 @@ describe('ComponentFactory', () => {
     it('should allow setting inputs on the ComponentRef', () => {
       const inputChangesLog: string[] = [];
 
-      @Component({template: `{{in}}`})
+      @Component({template: `{{in}}`, standalone: false})
       class DynamicCmp implements OnChanges {
         ngOnChanges(changes: SimpleChanges): void {
           const inChange = changes['in'];
@@ -347,7 +348,7 @@ describe('ComponentFactory', () => {
     });
 
     it('should allow setting mapped inputs on the ComponentRef', () => {
-      @Component({template: `{{in}}`})
+      @Component({template: `{{in}}`, standalone: false})
       class DynamicCmp {
         @Input('publicName') in: string | undefined;
       }
@@ -368,7 +369,7 @@ describe('ComponentFactory', () => {
     });
 
     it('should log or throw error on unknown inputs', () => {
-      @Component({template: ``})
+      @Component({template: ``, standalone: false})
       class NoInputsCmp {}
 
       const fixture = TestBed.createComponent(NoInputsCmp);
@@ -386,6 +387,7 @@ describe('ComponentFactory', () => {
       @Component({
         template: `{{in}}`,
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class DynamicCmp {
         @Input() in: string | undefined;

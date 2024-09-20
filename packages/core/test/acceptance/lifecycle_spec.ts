@@ -31,7 +31,7 @@ describe('onChanges', () => {
   it('should correctly support updating one Input among many', () => {
     let log: string[] = [];
 
-    @Component({selector: 'child-comp', template: 'child'})
+    @Component({selector: 'child-comp', template: 'child', standalone: false})
     class ChildComp implements OnChanges {
       @Input() a: number = 0;
       @Input() b: number = 0;
@@ -48,6 +48,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'app-comp',
       template: '<child-comp [a]="a" [b]="b" [c]="c"></child-comp>',
+      standalone: false,
     })
     class AppComp {
       a = 0;
@@ -83,6 +84,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() val1 = 'a';
@@ -94,7 +96,7 @@ describe('onChanges', () => {
       }
     }
 
-    @Component({template: `<comp [val1]="val1" [publicVal2]="val2"></comp>`})
+    @Component({template: `<comp [val1]="val1" [publicVal2]="val2"></comp>`, standalone: false})
     class App {
       val1 = 'a2';
 
@@ -139,6 +141,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'parent',
       template: `<child [val]="val"></child>`,
+      standalone: false,
     })
     class Parent {
       @Input() val = '';
@@ -151,6 +154,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Child {
       @Input() val = '';
@@ -160,7 +164,7 @@ describe('onChanges', () => {
       }
     }
 
-    @Component({template: `<parent [val]="val"></parent>`})
+    @Component({template: `<parent [val]="val"></parent>`, standalone: false})
     class App {
       val = 'foo';
     }
@@ -212,6 +216,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name" [val]="val"></child>`,
+      standalone: false,
     })
     class Parent {
       @Input() val = '';
@@ -226,6 +231,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Child {
       @Input() val = '';
@@ -242,6 +248,7 @@ describe('onChanges', () => {
         <parent name="1" [val]="val"></parent>
         <parent name="2" [val]="val"></parent>
       `,
+      standalone: false,
     })
     class App {
       val = 'foo';
@@ -322,6 +329,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<p>{{val}}</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() val = '';
@@ -331,7 +339,7 @@ describe('onChanges', () => {
       }
     }
 
-    @Component({template: `<comp *ngIf="show" [val]="val"></comp>`})
+    @Component({template: `<comp *ngIf="show" [val]="val"></comp>`, standalone: false})
     class App {
       show = true;
 
@@ -379,6 +387,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'projected',
       template: `<p>{{val}}</p>`,
+      standalone: false,
     })
     class Projected {
       @Input() val = '';
@@ -391,6 +400,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
+      standalone: false,
     })
     class Comp {
       @Input() val = '';
@@ -402,6 +412,7 @@ describe('onChanges', () => {
 
     @Component({
       template: `<comp [val]="val"><projected [val]="val"></projected></comp>`,
+      standalone: false,
     })
     class App {
       val = 'a';
@@ -453,6 +464,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'projected',
       template: `<p>{{val}}</p>`,
+      standalone: false,
     })
     class Projected {
       @Input() val = '';
@@ -467,6 +479,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
+      standalone: false,
     })
     class Comp {
       @Input() val = '';
@@ -487,6 +500,7 @@ describe('onChanges', () => {
           <projected name="2" [val]="val"></projected>
         </comp>
       `,
+      standalone: false,
     })
     class App {
       val = 'a';
@@ -566,6 +580,7 @@ describe('onChanges', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -578,6 +593,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<p>{{val}}</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() val = '';
@@ -589,6 +605,7 @@ describe('onChanges', () => {
 
     @Component({
       template: `<comp [dir]="val" [val]="val"></comp>`,
+      standalone: false,
     })
     class App {
       val = 'a';
@@ -640,6 +657,7 @@ describe('onChanges', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -652,6 +670,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<p>{{val}}</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() val = '';
@@ -665,6 +684,7 @@ describe('onChanges', () => {
 
     @Component({
       template: `<comp [dir]="val" [val]="val"></comp>`,
+      standalone: false,
     })
     class App {
       val = 'a';
@@ -716,6 +736,7 @@ describe('onChanges', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -727,6 +748,7 @@ describe('onChanges', () => {
 
     @Directive({
       selector: '[injectionDir]',
+      standalone: false,
     })
     class InjectionDir {
       @Input() injectionDir = '';
@@ -740,6 +762,7 @@ describe('onChanges', () => {
 
     @Component({
       template: `<div [injectionDir]="val" [dir]="val"></div>`,
+      standalone: false,
     })
     class App {
       val = 'a';
@@ -772,6 +795,7 @@ describe('onChanges', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -783,7 +807,7 @@ describe('onChanges', () => {
       }
     }
 
-    @Component({template: `<div [dir]="val1" [dir-val]="val2"></div>`})
+    @Component({template: `<div [dir]="val1" [dir-val]="val2"></div>`, standalone: false})
     class App {
       val1 = 'a';
       val2 = 'b';
@@ -826,6 +850,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<p>{{val}}</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() val = '';
@@ -843,6 +868,7 @@ describe('onChanges', () => {
       <comp *ngFor="let number of numbers" [name]="number" [val]="val"></comp>
       <comp name="1" [val]="val"></comp>
       `,
+      standalone: false,
     })
     class App {
       val = 'a';
@@ -939,6 +965,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'child',
       template: `<p>{{val}}</p>`,
+      standalone: false,
     })
     class Child {
       @Input() val = '';
@@ -953,6 +980,7 @@ describe('onChanges', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name" [val]="val"></child>`,
+      standalone: false,
     })
     class Parent {
       @Input() val = '';
@@ -970,6 +998,7 @@ describe('onChanges', () => {
         <parent *ngFor="let number of numbers" [name]="number" [val]="val"></parent>
         <parent name="1" [val]="val"></parent>
       `,
+      standalone: false,
     })
     class App {
       val = 'a';
@@ -1127,7 +1156,7 @@ describe('onChanges', () => {
   it('should not call onChanges if props are set directly', () => {
     const events: any[] = [];
 
-    @Component({template: `<p>{{value}}</p>`})
+    @Component({template: `<p>{{value}}</p>`, standalone: false})
     class App {
       value = 'a';
       ngOnChanges(changes: SimpleChanges) {
@@ -1154,10 +1183,10 @@ describe('meta-programming', () => {
   it('should allow adding lifecycle hook methods any time before first instance creation', () => {
     const events: any[] = [];
 
-    @Component({template: `<child name="value"></child>`})
+    @Component({template: `<child name="value"></child>`, standalone: false})
     class App {}
 
-    @Component({selector: 'child', template: `empty`})
+    @Component({selector: 'child', template: `empty`, standalone: false})
     class Child {
       @Input() name: string = '';
     }
@@ -1199,12 +1228,12 @@ describe('meta-programming', () => {
   it('should allow adding lifecycle hook methods with inheritance any time before first instance creation', () => {
     const events: any[] = [];
 
-    @Component({template: `<child name="value"></child>`})
+    @Component({template: `<child name="value"></child>`, standalone: false})
     class App {}
 
     class BaseChild {}
 
-    @Component({selector: 'child', template: `empty`})
+    @Component({selector: 'child', template: `empty`, standalone: false})
     class Child extends BaseChild {
       @Input() name: string = '';
     }
@@ -1286,22 +1315,26 @@ it('should call all hooks in correct order when several directives on same node'
     }
   }
 
-  @Directive({selector: 'div'})
+  @Directive({selector: 'div', standalone: false})
   class DirA extends AllHooks {
     @Input('a') override id: number = 0;
   }
 
-  @Directive({selector: 'div'})
+  @Directive({selector: 'div', standalone: false})
   class DirB extends AllHooks {
     @Input('b') override id: number = 0;
   }
 
-  @Directive({selector: 'div'})
+  @Directive({selector: 'div', standalone: false})
   class DirC extends AllHooks {
     @Input('c') override id: number = 0;
   }
 
-  @Component({selector: 'app-comp', template: '<div [a]="1" [b]="2" [c]="3"></div>'})
+  @Component({
+    selector: 'app-comp',
+    template: '<div [a]="1" [b]="2" [c]="3"></div>',
+    standalone: false,
+  })
   class AppComp {}
 
   TestBed.configureTestingModule({declarations: [AppComp, DirA, DirB, DirC]});
@@ -1336,7 +1369,7 @@ it('should call all hooks in correct order when several directives on same node'
 it('should call hooks after setting directives inputs', () => {
   let log: string[] = [];
 
-  @Directive({selector: 'div'})
+  @Directive({selector: 'div', standalone: false})
   class DirA {
     @Input() a: number = 0;
     ngOnInit() {
@@ -1344,7 +1377,7 @@ it('should call hooks after setting directives inputs', () => {
     }
   }
 
-  @Directive({selector: 'div'})
+  @Directive({selector: 'div', standalone: false})
   class DirB {
     @Input() b: number = 0;
     ngOnInit() {
@@ -1355,7 +1388,7 @@ it('should call hooks after setting directives inputs', () => {
     }
   }
 
-  @Directive({selector: 'div'})
+  @Directive({selector: 'div', standalone: false})
   class DirC {
     @Input() c: number = 0;
     ngOnInit() {
@@ -1369,6 +1402,7 @@ it('should call hooks after setting directives inputs', () => {
   @Component({
     selector: 'app-comp',
     template: '<div [a]="id" [b]="id" [c]="id"></div><div [a]="id" [b]="id" [c]="id"></div>',
+    standalone: false,
   })
   class AppComp {
     id = 0;
@@ -1405,6 +1439,7 @@ describe('onInit', () => {
     @Component({
       selector: 'my-comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class MyComponent {
       @Input() input1 = '';
@@ -1421,6 +1456,7 @@ describe('onInit', () => {
       template: `
         <my-comp [input1]="value1" [input2]="value2"></my-comp>
       `,
+      standalone: false,
     })
     class App {
       value1 = 'a';
@@ -1448,7 +1484,7 @@ describe('onInit', () => {
   it('should be called on root component', () => {
     let onInitCalled = 0;
 
-    @Component({template: ``})
+    @Component({template: ``, standalone: false})
     class App {
       ngOnInit() {
         onInitCalled++;
@@ -1470,6 +1506,7 @@ describe('onInit', () => {
     @Component({
       selector: `child-comp`,
       template: `<p>child</p>`,
+      standalone: false,
     })
     class ChildComp {
       ngOnInit() {
@@ -1479,6 +1516,7 @@ describe('onInit', () => {
 
     @Component({
       template: `<child-comp></child-comp>`,
+      standalone: false,
     })
     class ParentComp {
       ngOnInit() {
@@ -1501,6 +1539,7 @@ describe('onInit', () => {
     @Component({
       selector: `child-comp`,
       template: `<p>child</p>`,
+      standalone: false,
     })
     class ChildComp {
       @Input() name = '';
@@ -1513,6 +1552,7 @@ describe('onInit', () => {
     @Component({
       selector: 'parent-comp',
       template: `<child-comp [name]="name"></child-comp>`,
+      standalone: false,
     })
     class ParentComp {
       @Input() name = '';
@@ -1527,6 +1567,7 @@ describe('onInit', () => {
         <parent-comp name="1"></parent-comp>
         <parent-comp name="2"></parent-comp>
       `,
+      standalone: false,
     })
     class App {}
 
@@ -1542,7 +1583,7 @@ describe('onInit', () => {
   it('should call onInit every time a new view is created (if block)', () => {
     let onInitCalls = 0;
 
-    @Component({selector: 'my-comp', template: '<p>test</p>'})
+    @Component({selector: 'my-comp', template: '<p>test</p>', standalone: false})
     class MyComp {
       ngOnInit() {
         onInitCalls++;
@@ -1553,6 +1594,7 @@ describe('onInit', () => {
       template: `
         <div *ngIf="show"><my-comp></my-comp></div>
       `,
+      standalone: false,
     })
     class App {
       show = true;
@@ -1577,7 +1619,7 @@ describe('onInit', () => {
   });
 
   it('should call onInit for children of dynamically created components', () => {
-    @Component({selector: 'my-comp', template: '<p>test</p>'})
+    @Component({selector: 'my-comp', template: '<p>test</p>', standalone: false})
     class MyComp {
       onInitCalled = false;
 
@@ -1591,6 +1633,7 @@ describe('onInit', () => {
       template: `
         <my-comp></my-comp>
       `,
+      standalone: false,
     })
     class DynamicComp {}
 
@@ -1598,6 +1641,7 @@ describe('onInit', () => {
       template: `
         <div #container></div>
       `,
+      standalone: false,
     })
     class App {
       @ViewChild('container', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
@@ -1625,6 +1669,7 @@ describe('onInit', () => {
     @Component({
       selector: 'projected',
       template: '',
+      standalone: false,
     })
     class Projected {
       ngOnInit() {
@@ -1635,6 +1680,7 @@ describe('onInit', () => {
     @Component({
       selector: 'comp',
       template: `<ng-content></ng-content>`,
+      standalone: false,
     })
     class Comp {
       ngOnInit() {
@@ -1648,6 +1694,7 @@ describe('onInit', () => {
           <projected></projected>
         </comp>
       `,
+      standalone: false,
     })
     class App {
       ngOnInit() {
@@ -1670,6 +1717,7 @@ describe('onInit', () => {
     @Component({
       selector: 'projected',
       template: '',
+      standalone: false,
     })
     class Projected {
       @Input() name = '';
@@ -1682,6 +1730,7 @@ describe('onInit', () => {
     @Component({
       selector: 'comp',
       template: `<ng-content></ng-content>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -1700,6 +1749,7 @@ describe('onInit', () => {
           <projected name="2"></projected>
         </comp>
       `,
+      standalone: false,
     })
     class App {
       ngOnInit() {
@@ -1721,6 +1771,7 @@ describe('onInit', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir-name') name = '';
@@ -1733,6 +1784,7 @@ describe('onInit', () => {
     @Component({
       selector: 'comp',
       template: `<p></p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -1747,6 +1799,7 @@ describe('onInit', () => {
         <comp name="1" dir dir-name="1"></comp>
         <comp name="2" dir dir-name="2"></comp>
       `,
+      standalone: false,
     })
     class App {
       ngOnInit() {
@@ -1768,6 +1821,7 @@ describe('onInit', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -1779,6 +1833,7 @@ describe('onInit', () => {
 
     @Directive({
       selector: '[injectionDir]',
+      standalone: false,
     })
     class InjectionDir {
       @Input() injectionDir = '';
@@ -1792,6 +1847,7 @@ describe('onInit', () => {
 
     @Component({
       template: `<div [injectionDir]="val" [dir]="val"></div>`,
+      standalone: false,
     })
     class App {
       val = 'a';
@@ -1815,6 +1871,7 @@ describe('onInit', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir-name') name = '';
@@ -1827,6 +1884,7 @@ describe('onInit', () => {
     @Component({
       selector: 'comp',
       template: `<p></p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -1843,6 +1901,7 @@ describe('onInit', () => {
         <comp name="1" dir dir-name="1"></comp>
         <comp name="2" dir dir-name="2"></comp>
       `,
+      standalone: false,
     })
     class App {
       ngOnInit() {
@@ -1864,6 +1923,7 @@ describe('onInit', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir-name') name = '';
@@ -1878,6 +1938,7 @@ describe('onInit', () => {
         <p name="1" dir dir-name="1"></p>
         <p name="2" dir dir-name="2"></p>
       `,
+      standalone: false,
     })
     class App {
       ngOnInit() {
@@ -1900,6 +1961,7 @@ describe('onInit', () => {
     @Component({
       selector: 'comp',
       template: `<p></p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -1915,6 +1977,7 @@ describe('onInit', () => {
         <comp *ngFor="let number of numbers" [name]="number"></comp>
         <comp name="1"></comp>
       `,
+      standalone: false,
     })
     class App {
       numbers = [2, 3, 4, 5, 6];
@@ -1944,6 +2007,7 @@ describe('onInit', () => {
     @Component({
       selector: 'child',
       template: `<p></p>`,
+      standalone: false,
     })
     class Child {
       @Input() name = '';
@@ -1953,7 +2017,7 @@ describe('onInit', () => {
       }
     }
 
-    @Component({selector: 'parent', template: '<child [name]="name"></child>'})
+    @Component({selector: 'parent', template: '<child [name]="name"></child>', standalone: false})
     class Parent {
       @Input() name = '';
 
@@ -1968,6 +2032,7 @@ describe('onInit', () => {
         <parent *ngFor="let number of numbers" [name]="number"></parent>
         <parent name="1"></parent>
       `,
+      standalone: false,
     })
     class App {
       numbers = [2, 3, 4, 5, 6];
@@ -2008,7 +2073,7 @@ describe('doCheck', () => {
   it('should call doCheck on every refresh', () => {
     let doCheckCalled = 0;
 
-    @Component({template: ``})
+    @Component({template: ``, standalone: false})
     class App {
       ngDoCheck() {
         doCheckCalled++;
@@ -2034,6 +2099,7 @@ describe('doCheck', () => {
     @Component({
       selector: 'parent',
       template: `<child></child>`,
+      standalone: false,
     })
     class Parent {
       ngDoCheck() {
@@ -2044,6 +2110,7 @@ describe('doCheck', () => {
     @Component({
       selector: 'child',
       template: ``,
+      standalone: false,
     })
     class Child {
       ngDoCheck() {
@@ -2051,7 +2118,7 @@ describe('doCheck', () => {
       }
     }
 
-    @Component({template: `<parent></parent>`})
+    @Component({template: `<parent></parent>`, standalone: false})
     class App {
       ngDoCheck() {
         doChecks.push('app');
@@ -2069,7 +2136,7 @@ describe('doCheck', () => {
 
   it('should call ngOnInit before ngDoCheck if creation mode', () => {
     const events: string[] = [];
-    @Component({template: ``})
+    @Component({template: ``, standalone: false})
     class App {
       ngOnInit() {
         events.push('onInit');
@@ -2093,6 +2160,7 @@ describe('doCheck', () => {
     const doChecks: string[] = [];
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -2105,6 +2173,7 @@ describe('doCheck', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -2119,6 +2188,7 @@ describe('doCheck', () => {
       <comp name="1" dir="1"></comp>
       <comp name="2" dir="2"></comp>
     `,
+      standalone: false,
     })
     class App {
       ngDoCheck() {
@@ -2139,6 +2209,7 @@ describe('doCheck', () => {
     const doChecks: string[] = [];
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -2151,6 +2222,7 @@ describe('doCheck', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -2167,6 +2239,7 @@ describe('doCheck', () => {
       <comp name="1" dir="1"></comp>
       <comp name="2" dir="2"></comp>
     `,
+      standalone: false,
     })
     class App {
       ngDoCheck() {
@@ -2188,6 +2261,7 @@ describe('doCheck', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -2199,6 +2273,7 @@ describe('doCheck', () => {
 
     @Directive({
       selector: '[injectionDir]',
+      standalone: false,
     })
     class InjectionDir {
       @Input() injectionDir = '';
@@ -2212,6 +2287,7 @@ describe('doCheck', () => {
 
     @Component({
       template: `<div [injectionDir]="val" [dir]="val"></div>`,
+      standalone: false,
     })
     class App {
       val = 'a';
@@ -2235,6 +2311,7 @@ describe('doCheck', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -2249,6 +2326,7 @@ describe('doCheck', () => {
         <p dir="1"></p>
         <p dir="2"></p>
       `,
+      standalone: false,
     })
     class App {
       ngDoCheck() {
@@ -2273,13 +2351,14 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       ngAfterContentInit() {
         afterContentInitCalls++;
       }
     }
-    @Component({template: `<comp></comp>`})
+    @Component({template: `<comp></comp>`, standalone: false})
     class App {}
 
     TestBed.configureTestingModule({
@@ -2298,7 +2377,7 @@ describe('afterContentinit', () => {
   it('should be called on root component in creation mode', () => {
     let afterContentInitCalls = 0;
 
-    @Component({template: `<p>test</p>`})
+    @Component({template: `<p>test</p>`, standalone: false})
     class App {
       ngAfterContentInit() {
         afterContentInitCalls++;
@@ -2324,6 +2403,7 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       ngAfterContentInit() {
@@ -2331,7 +2411,7 @@ describe('afterContentinit', () => {
       }
     }
 
-    @Component({template: `<comp *ngIf="show"></comp>`})
+    @Component({template: `<comp *ngIf="show"></comp>`, standalone: false})
     class App {
       show = true;
 
@@ -2370,6 +2450,7 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
+      standalone: false,
     })
     class Parent {
       @Input() name = '';
@@ -2382,6 +2463,7 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Child {
       @Input() name = '';
@@ -2396,6 +2478,7 @@ describe('afterContentinit', () => {
       <parent name="1"></parent>
       <parent name="2"></parent>
       `,
+      standalone: false,
     })
     class App {
       ngAfterContentInit() {
@@ -2424,6 +2507,7 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'projected-child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class ProjectedChild {
       @Input() name = '';
@@ -2436,6 +2520,7 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -2448,6 +2533,7 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'projected',
       template: `<projected-child [name]=name></projected-child>`,
+      standalone: false,
     })
     class Projected {
       @Input() name = '';
@@ -2468,6 +2554,7 @@ describe('afterContentinit', () => {
           <projected name="4"></projected>
         </comp>
       `,
+      standalone: false,
     })
     class App {
       ngAfterContentInit() {
@@ -2508,6 +2595,7 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -2523,6 +2611,7 @@ describe('afterContentinit', () => {
         <comp *ngFor="let number of numbers" [name]="number"></comp>
         <comp name="5"></comp>
       `,
+      standalone: false,
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -2548,6 +2637,7 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]=name></child>`,
+      standalone: false,
     })
     class Parent {
       @Input() name = '';
@@ -2560,6 +2650,7 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Child {
       @Input() name = '';
@@ -2575,6 +2666,7 @@ describe('afterContentinit', () => {
         <parent *ngFor="let number of numbers" [name]="number"></parent>
         <parent name="5"></parent>
       `,
+      standalone: false,
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -2614,6 +2706,7 @@ describe('afterContentinit', () => {
     const events: string[] = [];
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -2626,6 +2719,7 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -2640,6 +2734,7 @@ describe('afterContentinit', () => {
         <comp name="1" dir="1"></comp>
         <comp name="2" dir="2"></comp>
       `,
+      standalone: false,
     })
     class App {
       ngAfterContentInit() {
@@ -2664,6 +2759,7 @@ describe('afterContentChecked', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       ngAfterContentInit() {
@@ -2675,7 +2771,7 @@ describe('afterContentChecked', () => {
       }
     }
 
-    @Component({template: `<comp></comp>`})
+    @Component({template: `<comp></comp>`, standalone: false})
     class App {
       ngAfterContentInit() {
         events.push('app afterContentInit');
@@ -2708,6 +2804,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       ngAfterViewInit() {
@@ -2715,7 +2812,7 @@ describe('afterViewInit', () => {
       }
     }
 
-    @Component({template: `<comp></comp>`})
+    @Component({template: `<comp></comp>`, standalone: false})
     class App {}
 
     TestBed.configureTestingModule({
@@ -2734,7 +2831,7 @@ describe('afterViewInit', () => {
   it('should be called on root component in creation mode', () => {
     let afterViewInitCalls = 0;
 
-    @Component({template: `<p>test</p>`})
+    @Component({template: `<p>test</p>`, standalone: false})
     class App {
       ngAfterViewInit() {
         afterViewInitCalls++;
@@ -2760,6 +2857,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       ngAfterViewInit() {
@@ -2769,6 +2867,7 @@ describe('afterViewInit', () => {
 
     @Component({
       template: `<comp *ngIf="show"></comp>`,
+      standalone: false,
     })
     class App {
       show = true;
@@ -2803,6 +2902,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]=name></child>`,
+      standalone: false,
     })
     class Parent {
       @Input() name = '';
@@ -2815,6 +2915,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Child {
       @Input() name = '';
@@ -2829,6 +2930,7 @@ describe('afterViewInit', () => {
         <parent name="1"></parent>
         <parent name="2"></parent>
       `,
+      standalone: false,
     })
     class App {
       ngAfterViewInit() {
@@ -2857,6 +2959,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'projected',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Projected {
       @Input() name = '';
@@ -2869,6 +2972,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<ng-content></ng-content>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -2883,6 +2987,7 @@ describe('afterViewInit', () => {
         <comp name="1"><projected name="1"></projected></comp>
         <comp name="2"><projected name="2"></projected></comp>
       `,
+      standalone: false,
     })
     class App {
       ngAfterViewInit() {
@@ -2905,6 +3010,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'projected-child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class ProjectedChild {
       @Input() name = '';
@@ -2917,6 +3023,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'projected',
       template: `<projected-child [name]="name"></projected-child>`,
+      standalone: false,
     })
     class Projected {
       @Input() name = '';
@@ -2929,6 +3036,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -2943,6 +3051,7 @@ describe('afterViewInit', () => {
         <comp name="1"><projected name="1"></projected></comp>
         <comp name="2"><projected name="2"></projected></comp>
       `,
+      standalone: false,
     })
     class App {
       ngAfterViewInit() {
@@ -2973,6 +3082,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -2988,6 +3098,7 @@ describe('afterViewInit', () => {
         <comp *ngFor="let number of numbers" [name]="number"></comp>
         <comp name="5"></comp>
       `,
+      standalone: false,
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -3013,6 +3124,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Child {
       @Input() name = '';
@@ -3024,6 +3136,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
+      standalone: false,
     })
     class Parent {
       @Input() name = '';
@@ -3039,6 +3152,7 @@ describe('afterViewInit', () => {
         <parent *ngFor="let number of numbers" [name]="number"></parent>
         <parent name="5"></parent>
       `,
+      standalone: false,
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -3077,6 +3191,7 @@ describe('afterViewInit', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -3089,6 +3204,7 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -3103,6 +3219,7 @@ describe('afterViewInit', () => {
         <comp name="1" dir="1"></comp>
         <comp name="2" dir="2"></comp>
       `,
+      standalone: false,
     })
     class App {
       ngAfterViewInit() {
@@ -3124,6 +3241,7 @@ describe('afterViewInit', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -3138,6 +3256,7 @@ describe('afterViewInit', () => {
         <div dir="1"></div>
         <div dir="2"></div>
       `,
+      standalone: false,
     })
     class App {
       ngAfterViewInit() {
@@ -3162,6 +3281,7 @@ describe('afterViewChecked', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       ngAfterViewChecked() {
@@ -3169,7 +3289,7 @@ describe('afterViewChecked', () => {
       }
     }
 
-    @Component({template: `<comp></comp>`})
+    @Component({template: `<comp></comp>`, standalone: false})
     class App {}
 
     TestBed.configureTestingModule({
@@ -3190,7 +3310,7 @@ describe('afterViewChecked', () => {
   it('should be called on root component', () => {
     let afterViewCheckedCalls = 0;
 
-    @Component({template: `<p>test</p>`})
+    @Component({template: `<p>test</p>`, standalone: false})
     class App {
       ngAfterViewChecked() {
         afterViewCheckedCalls++;
@@ -3218,6 +3338,7 @@ describe('afterViewChecked', () => {
     @Component({
       selector: 'comp',
       template: `<p>{{value}}</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() value = '';
@@ -3226,7 +3347,7 @@ describe('afterViewChecked', () => {
       }
     }
 
-    @Component({template: `<comp [value]="value"></comp>`})
+    @Component({template: `<comp [value]="value"></comp>`, standalone: false})
     class App {
       value = 1;
     }
@@ -3249,6 +3370,7 @@ describe('afterViewChecked', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Child {
       @Input() name = '';
@@ -3261,6 +3383,7 @@ describe('afterViewChecked', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
+      standalone: false,
     })
     class Parent {
       @Input() name = '';
@@ -3276,6 +3399,7 @@ describe('afterViewChecked', () => {
       <parent *ngFor="let number of numbers" [name]="number"></parent>
       <parent name="5"></parent>
       `,
+      standalone: false,
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -3313,6 +3437,7 @@ describe('afterViewChecked', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -3325,6 +3450,7 @@ describe('afterViewChecked', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -3339,6 +3465,7 @@ describe('afterViewChecked', () => {
       <comp name="1" dir="1"></comp>
       <comp name="2" dir="2"></comp>
     `,
+      standalone: false,
     })
     class App {
       ngAfterViewChecked() {
@@ -3360,6 +3487,7 @@ describe('afterViewChecked', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -3374,6 +3502,7 @@ describe('afterViewChecked', () => {
       <div dir="1"></div>
       <div dir="2"></div>
     `,
+      standalone: false,
     })
     class App {
       ngAfterViewChecked() {
@@ -3398,6 +3527,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       ngOnDestroy() {
@@ -3407,6 +3537,7 @@ describe('onDestroy', () => {
 
     @Component({
       template: `<comp *ngIf="show"></comp>`,
+      standalone: false,
     })
     class App {
       show = true;
@@ -3443,6 +3574,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -3459,6 +3591,7 @@ describe('onDestroy', () => {
           <comp name="2"></comp>
         </div>
       `,
+      standalone: false,
     })
     class App {
       show = true;
@@ -3485,6 +3618,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Child {
       @Input() name = '';
@@ -3497,6 +3631,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
+      standalone: false,
     })
     class Parent {
       @Input() name = '';
@@ -3512,6 +3647,7 @@ describe('onDestroy', () => {
           <parent name="2"></parent>
         </div>
       `,
+      standalone: false,
     })
     class App {
       show = true;
@@ -3538,6 +3674,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Child {
       @Input() name = '';
@@ -3550,6 +3687,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
+      standalone: false,
     })
     class Parent {
       @Input() name = '';
@@ -3561,6 +3699,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'grandparent',
       template: `<parent [name]="name"></parent>`,
+      standalone: false,
     })
     class Grandparent {
       @Input() name = '';
@@ -3576,6 +3715,7 @@ describe('onDestroy', () => {
           <grandparent name="2"></grandparent>
         </div>
       `,
+      standalone: false,
     })
     class App {
       show = true;
@@ -3609,6 +3749,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'projected',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Projected {
       @Input() name = '';
@@ -3621,6 +3762,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -3641,6 +3783,7 @@ describe('onDestroy', () => {
           </comp>
         </div>
       `,
+      standalone: false,
     })
     class App {
       show = true;
@@ -3666,6 +3809,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -3683,6 +3827,7 @@ describe('onDestroy', () => {
         <comp name="3"></comp>
       </div>
       `,
+      standalone: false,
     })
     class App {
       showAll = true;
@@ -3722,6 +3867,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -3737,6 +3883,7 @@ describe('onDestroy', () => {
           <comp *ngFor="let number of numbers" [name]="number"></comp>
         </div>
       `,
+      standalone: false,
     })
     class App {
       show = true;
@@ -3785,6 +3932,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       ngOnDestroy() {
@@ -3799,6 +3947,7 @@ describe('onDestroy', () => {
           <button (click)="handleClick2()">test 2</button>
         </div>
       `,
+      standalone: false,
     })
     class App {
       show = true;
@@ -3840,10 +3989,10 @@ describe('onDestroy', () => {
   });
 
   it('should not produce errors if change detection is triggered during ngOnDestroy', () => {
-    @Component({selector: 'child', template: `<ng-content></ng-content>`})
+    @Component({selector: 'child', template: `<ng-content></ng-content>`, standalone: false})
     class Child {}
 
-    @Component({selector: 'parent', template: `<ng-content></ng-content>`})
+    @Component({selector: 'parent', template: `<ng-content></ng-content>`, standalone: false})
     class Parent {
       @ContentChildren(Child, {descendants: true}) child!: QueryList<Child>;
     }
@@ -3858,6 +4007,7 @@ describe('onDestroy', () => {
         </ng-template>
         <div #container dir></div>
       `,
+      standalone: false,
     })
     class App {
       @ViewChild('container', {read: ViewContainerRef, static: true}) container!: ViewContainerRef;
@@ -3869,7 +4019,7 @@ describe('onDestroy', () => {
       }
     }
 
-    @Directive({selector: '[dir]'})
+    @Directive({selector: '[dir]', standalone: false})
     class Dir {
       constructor(public cdr: ChangeDetectorRef) {}
 
@@ -3896,6 +4046,7 @@ describe('onDestroy', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -3908,6 +4059,7 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
+      standalone: false,
     })
     class Comp {
       @Input() name = '';
@@ -3924,6 +4076,7 @@ describe('onDestroy', () => {
           <comp name="2" dir="2"></comp>
         </div>
       `,
+      standalone: false,
     })
     class App {
       show = true;
@@ -3949,6 +4102,7 @@ describe('onDestroy', () => {
 
     @Directive({
       selector: '[dir]',
+      standalone: false,
     })
     class Dir {
       ngOnDestroy() {
@@ -3956,7 +4110,7 @@ describe('onDestroy', () => {
       }
     }
 
-    @Component({template: `<p *ngIf="show" dir></p>`})
+    @Component({template: `<p *ngIf="show" dir></p>`, standalone: false})
     class App {
       show = true;
     }
@@ -3985,6 +4139,7 @@ describe('hook order', () => {
   @Component({
     selector: 'comp',
     template: `{{value}}<div><ng-content></ng-content></div>`,
+    standalone: false,
   })
   class Comp {
     @Input() value = '';
@@ -4027,11 +4182,15 @@ describe('hook order', () => {
   @Component({
     selector: 'parent',
     template: `<comp [name]="'child of ' + this.name" [value]="value"><ng-content></ng-content></comp>`,
+    standalone: false,
   })
   class Parent extends Comp {}
 
   it('should call all hooks in correct order', () => {
-    @Component({template: `<comp *ngIf="show" name="comp" [value]="value"></comp>`})
+    @Component({
+      template: `<comp *ngIf="show" name="comp" [value]="value"></comp>`,
+      standalone: false,
+    })
     class App {
       value = 'a';
 
@@ -4083,6 +4242,7 @@ describe('hook order', () => {
           <parent name="parent2" [value]="value"></parent>
         </div>
       `,
+      standalone: false,
     })
     class App {
       value = 'a';
@@ -4176,6 +4336,7 @@ describe('hook order', () => {
           </parent>
         </div>
       `,
+      standalone: false,
     })
     class App {
       value = 'a';
@@ -4286,6 +4447,7 @@ describe('non-regression', () => {
 
     @Directive({
       selector: '[onDestroyDir]',
+      standalone: false,
     })
     class OnDestroyDir {
       ngOnDestroy() {
@@ -4297,6 +4459,7 @@ describe('non-regression', () => {
       template: `<ng-template [ngIf]="show">
         <ng-template onDestroyDir>content</ng-template>
       </ng-template>`,
+      standalone: false,
     })
     class App {
       show = true;
@@ -4319,7 +4482,7 @@ describe('non-regression', () => {
   it('should not throw when calling detectChanges from a setter in the presence of a data binding, ngOnChanges and ngAfterViewInit', () => {
     const hooks: string[] = [];
 
-    @Directive({selector: '[testDir]'})
+    @Directive({selector: '[testDir]', standalone: false})
     class TestDirective implements OnChanges, AfterViewInit {
       constructor(private _changeDetectorRef: ChangeDetectorRef) {}
 
@@ -4335,7 +4498,7 @@ describe('non-regression', () => {
       }
     }
 
-    @Component({template: `<div [testDir]="value">{{value}}</div>`})
+    @Component({template: `<div [testDir]="value">{{value}}</div>`, standalone: false})
     class App {
       value = 1;
     }
@@ -4350,7 +4513,7 @@ describe('non-regression', () => {
   it('should call hooks in the correct order when calling detectChanges in a setter', () => {
     const hooks: string[] = [];
 
-    @Directive({selector: '[testDir]'})
+    @Directive({selector: '[testDir]', standalone: false})
     class TestDirective implements OnChanges, DoCheck, AfterViewInit {
       constructor(private _changeDetectorRef: ChangeDetectorRef) {}
 
@@ -4369,7 +4532,7 @@ describe('non-regression', () => {
       }
     }
 
-    @Component({template: `<div [testDir]="value">{{value}}</div>`})
+    @Component({template: `<div [testDir]="value">{{value}}</div>`, standalone: false})
     class App {
       value = 1;
     }

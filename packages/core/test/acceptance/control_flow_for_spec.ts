@@ -25,6 +25,7 @@ describe('control flow - for', () => {
   it('should create, remove and move views corresponding to items in a collection', () => {
     @Component({
       template: '@for ((item of items); track item; let idx = $index) {{{item}}({{idx}})|}',
+      standalone: false,
     })
     class TestComponent {
       items = [1, 2, 3];
@@ -51,6 +52,7 @@ describe('control flow - for', () => {
   it('should loop over iterators that can be iterated over only once', () => {
     @Component({
       template: '@for ((item of items.keys()); track $index) {{{item}}|}',
+      standalone: false,
     })
     class TestComponent {
       items = new Map([
@@ -68,6 +70,7 @@ describe('control flow - for', () => {
   it('should work correctly with trackBy index', () => {
     @Component({
       template: '@for ((item of items); track idx; let idx = $index) {{{item}}({{idx}})|}',
+      standalone: false,
     })
     class TestComponent {
       items = [1, 2, 3];
@@ -94,6 +97,7 @@ describe('control flow - for', () => {
   it('should support empty blocks', () => {
     @Component({
       template: '@for ((item of items); track idx; let idx = $index) {|} @empty {Empty}',
+      standalone: false,
     })
     class TestComponent {
       items: number[] | null | undefined = [1, 2, 3];
@@ -185,6 +189,7 @@ describe('control flow - for', () => {
     @Component({
       template:
         '@for ((item of items); track item; let idx = $index) {{{item}}({{$index}}/{{idx}})|}',
+      standalone: false,
     })
     class TestComponent {
       items = [1, 2, 3];
@@ -203,7 +208,10 @@ describe('control flow - for', () => {
     it('should have access to the host context in the track function', () => {
       let offsetReads = 0;
 
-      @Component({template: '@for ((item of items); track $index + offset) {{{item}}}'})
+      @Component({
+        template: '@for ((item of items); track $index + offset) {{{item}}}',
+        standalone: false,
+      })
       class TestComponent {
         items = ['a', 'b', 'c'];
 
@@ -233,6 +241,7 @@ describe('control flow - for', () => {
 
       @Component({
         template: `@for ((item of items); track trackingFn(item, compProp)) {{{item}}}`,
+        standalone: false,
       })
       class TestComponent {
         items = ['a', 'b'];
@@ -262,6 +271,7 @@ describe('control flow - for', () => {
               }
             }
           `,
+        standalone: false,
       })
       class TestComponent {
         items = ['a', 'b'];
@@ -283,6 +293,7 @@ describe('control flow - for', () => {
 
       @Component({
         template: `@for (item of items; track trackingFn($index, item)) {{{item}}}`,
+        standalone: false,
       })
       class TestComponent {
         items = ['a', 'b'];
@@ -301,6 +312,7 @@ describe('control flow - for', () => {
     it('should warn about duplicated keys when using arrays', () => {
       @Component({
         template: `@for (item of items; track item) {{{item}}}`,
+        standalone: false,
       })
       class TestComponent {
         items = ['a', 'b', 'a', 'c', 'a'];
@@ -333,6 +345,7 @@ describe('control flow - for', () => {
     it('should warn about duplicated keys when using iterables', () => {
       @Component({
         template: `@for (item of items.values(); track item) {{{item}}}`,
+        standalone: false,
       })
       class TestComponent {
         items = new Map([
@@ -373,6 +386,7 @@ describe('control flow - for', () => {
 
       @Component({
         template: `@for (item of items.values(); track item) {}`,
+        standalone: false,
       })
       class TestComponent {
         items = new Map([
@@ -393,6 +407,7 @@ describe('control flow - for', () => {
     it('should not warn about duplicate keys iterating over the new collection only', () => {
       @Component({
         template: `@for (item of items; track item) {}`,
+        standalone: false,
       })
       class TestComponent {
         items = [1, 2, 3];
@@ -412,6 +427,7 @@ describe('control flow - for', () => {
     it('should warn about collection re-creation due to identity tracking', () => {
       @Component({
         template: `@for (item of items; track item) {(<span>{{item.value}}</span>)}`,
+        standalone: false,
       })
       class TestComponent {
         items = [{value: 0}, {value: 1}];
@@ -435,6 +451,7 @@ describe('control flow - for', () => {
     it('should NOT warn about collection re-creation when a view is not considered expensive', () => {
       @Component({
         template: `@for (item of items; track item) {({{item.value}})}`,
+        standalone: false,
       })
       class TestComponent {
         items = [{value: 0}, {value: 1}];
@@ -458,6 +475,7 @@ describe('control flow - for', () => {
     it('should NOT warn about collection re-creation when a trackBy function is not identity', () => {
       @Component({
         template: `@for (item of items; track item.value) {({{item.value}})}`,
+        standalone: false,
       })
       class TestComponent {
         items = [{value: 0}, {value: 1}];
@@ -483,6 +501,7 @@ describe('control flow - for', () => {
     it('should delete views in the middle', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
+        standalone: false,
       })
       class TestComponent {
         items = [1, 2, 3];
@@ -501,6 +520,7 @@ describe('control flow - for', () => {
     it('should insert views in the middle', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
+        standalone: false,
       })
       class TestComponent {
         items = [1, 3];
@@ -519,6 +539,7 @@ describe('control flow - for', () => {
     it('should replace different items', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
+        standalone: false,
       })
       class TestComponent {
         items = [1, 2, 3];
@@ -537,6 +558,7 @@ describe('control flow - for', () => {
     it('should move and delete items', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
+        standalone: false,
       })
       class TestComponent {
         items = [1, 2, 3, 4, 5, 6];

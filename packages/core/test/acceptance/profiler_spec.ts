@@ -57,7 +57,11 @@ describe('profiler', () => {
 
   describe('change detection hooks', () => {
     it('should call the profiler for creation and change detection', () => {
-      @Component({selector: 'my-comp', template: '<button (click)="onClick()"></button>'})
+      @Component({
+        selector: 'my-comp',
+        template: '<button (click)="onClick()"></button>',
+        standalone: false,
+      })
       class MyComponent {
         onClick() {}
       }
@@ -95,7 +99,7 @@ describe('profiler', () => {
     });
 
     it('should invoke the profiler when the template throws', () => {
-      @Component({selector: 'my-comp', template: '{{ throw() }}'})
+      @Component({selector: 'my-comp', template: '{{ throw() }}', standalone: false})
       class MyComponent {
         throw() {
           throw new Error();
@@ -127,7 +131,11 @@ describe('profiler', () => {
 
   describe('outputs and events', () => {
     it('should invoke the profiler on event handler', () => {
-      @Component({selector: 'my-comp', template: '<button (click)="onClick()"></button>'})
+      @Component({
+        selector: 'my-comp',
+        template: '<button (click)="onClick()"></button>',
+        standalone: false,
+      })
       class MyComponent {
         onClick() {}
       }
@@ -151,7 +159,11 @@ describe('profiler', () => {
     });
 
     it('should invoke the profiler on event handler even when it throws', () => {
-      @Component({selector: 'my-comp', template: '<button (click)="onClick()"></button>'})
+      @Component({
+        selector: 'my-comp',
+        template: '<button (click)="onClick()"></button>',
+        standalone: false,
+      })
       class MyComponent {
         onClick() {
           throw new Error();
@@ -182,12 +194,16 @@ describe('profiler', () => {
     });
 
     it('should invoke the profiler on output handler execution', async () => {
-      @Component({selector: 'child', template: ''})
+      @Component({selector: 'child', template: '', standalone: false})
       class Child {
         @Output() childEvent = new EventEmitter();
       }
 
-      @Component({selector: 'my-comp', template: '<child (childEvent)="onEvent()"></child>'})
+      @Component({
+        selector: 'my-comp',
+        template: '<child (childEvent)="onEvent()"></child>',
+        standalone: false,
+      })
       class MyComponent {
         @ViewChild(Child) child!: Child;
         onEvent() {}
@@ -214,7 +230,12 @@ describe('profiler', () => {
       class Service implements OnDestroy {
         ngOnDestroy() {}
       }
-      @Component({selector: 'my-comp', template: '{{prop}}', providers: [Service]})
+      @Component({
+        selector: 'my-comp',
+        template: '{{prop}}',
+        providers: [Service],
+        standalone: false,
+      })
       class MyComponent
         implements
           OnInit,
@@ -240,7 +261,11 @@ describe('profiler', () => {
         ngAfterContentChecked() {}
       }
 
-      @Component({selector: 'my-parent', template: '<my-comp [prop]="prop"></my-comp>'})
+      @Component({
+        selector: 'my-parent',
+        template: '<my-comp [prop]="prop"></my-comp>',
+        standalone: false,
+      })
       class MyParent {
         prop = 1;
         @ViewChild(MyComponent) child!: MyComponent;
@@ -378,7 +403,7 @@ describe('profiler', () => {
   });
 
   it('should call the profiler on lifecycle execution even after error', () => {
-    @Component({selector: 'my-comp', template: ''})
+    @Component({selector: 'my-comp', template: '', standalone: false})
     class MyComponent implements OnInit {
       ngOnInit() {
         throw new Error();

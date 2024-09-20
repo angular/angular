@@ -4230,6 +4230,7 @@ describe('@defer', () => {
       @Component({
         selector: 'chart',
         template: 'Service:{{ svc.id }}|TokenA:{{ tokenA }}',
+        standalone: false,
       })
       class Chart {
         svc = inject(Service);

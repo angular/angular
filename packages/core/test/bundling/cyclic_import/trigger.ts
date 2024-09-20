@@ -11,5 +11,6 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'trigger',
   template: '<dep></dep>',
+  standalone: false,
 })
 export class TriggerComponent {}
