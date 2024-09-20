@@ -22,7 +22,7 @@ main().catch((e) => {
 
 async function main() {
   const [mode, ...args] = process.argv.slice(2);
-  const migration = new SignalInputMigration();
+  const migration = new SignalInputMigration({insertTodosForSkippedFields: true});
 
   if (mode === 'extract') {
     const analyzeResult = await executeAnalyzePhase(migration, path.resolve(args[0]));

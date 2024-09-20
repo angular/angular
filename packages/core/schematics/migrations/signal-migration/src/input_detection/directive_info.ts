@@ -53,6 +53,13 @@ export class DirectiveInfo {
    * then the member is as well.
    */
   isInputMemberIncompatible(input: InputDescriptor): boolean {
-    return this.incompatible !== null || this.memberIncompatibility.has(input.key);
+    return this.getInputMemberIncompatibility(input) !== null;
+  }
+
+  /** Get incompatibility of the given member, if it's incompatible for migration. */
+  getInputMemberIncompatibility(
+    input: InputDescriptor,
+  ): ClassIncompatibilityReason | InputMemberIncompatibility | null {
+    return this.incompatible ?? this.memberIncompatibility.get(input.key) ?? null;
   }
 }

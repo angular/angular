@@ -20,6 +20,11 @@
       "description": "Whether to eagerly migrate as much as possible, ignoring problematic patterns that would otherwise prevent migration.",
       "x-prompt": "Do you want to migrate as much as possible, even if it may break your build?",
       "default": false
+    },
+    "insertTodos": {
+      "type": "boolean",
+      "description": "Whether the migration should add TODOs for inputs that could not be migrated",
+      "default": false
     }
   }
 }

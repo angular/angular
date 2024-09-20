@@ -101,7 +101,7 @@ export function getMessageForClassIncompatibility(reason: ClassIncompatibilityRe
     case ClassIncompatibilityReason.ClassManuallyInstantiated:
       return {
         short:
-          'Class of this input is manually instantiated (`new Cmp()`). ' +
+          'Class of this input is manually instantiated. ' +
           'This is discouraged and prevents migration',
         extra:
           'Signal inputs require a DI injection context. Manually instantiating ' +

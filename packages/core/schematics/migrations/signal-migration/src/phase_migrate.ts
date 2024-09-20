@@ -54,7 +54,7 @@ export function executeMigrationPhase(
 
   // Migrate passes.
   pass5__migrateTypeScriptReferences(referenceMigrationHost, result.references, typeChecker, info);
-  pass6__migrateInputDeclarations(typeChecker, result, knownInputs, importManager, info);
+  pass6__migrateInputDeclarations(host, typeChecker, result, knownInputs, importManager, info);
   pass7__migrateTemplateReferences(referenceMigrationHost, result.references);
   pass8__migrateHostBindings(referenceMigrationHost, result.references, info);
   pass9__migrateTypeScriptTypeReferences(

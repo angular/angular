@@ -36,6 +36,9 @@ class BaseNonAngular {
 @Directive()
 class Sub implements BaseNonAngular {
   // should not be migrated because of the interface.
+  // TODO: Skipped for migration because:
+  //  This input overrides a field from a superclass, while the superclass field
+  //  is not migrated.
   @Input() disabled = '';
 }
 
@@ -55,6 +58,9 @@ interface BaseNonAngularInterface {
 @Directive()
 class Sub3 implements BaseNonAngularInterface {
   // should not be migrated because of the interface.
+  // TODO: Skipped for migration because:
+  //  This input overrides a field from a superclass, while the superclass field
+  //  is not migrated.
   @Input() disabled = '';
 }
 @@@@@@ both_input_imports.ts @@@@@@
@@ -64,6 +70,8 @@ class Sub3 implements BaseNonAngularInterface {
 import {input, Input} from '@angular/core';
 
 class BothInputImported {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input() decoratorInput = true;
   signalInput = input<boolean>();
 
@@ -127,6 +135,8 @@ import {Input, Directive} from '@angular/core';
 
 @Directive()
 export class MyComp {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input() firstName: string;
 
   constructor() {
@@ -170,6 +180,8 @@ import {Input, Directive} from '@angular/core';
 
 @Directive()
 class Base {
+  // TODO: Skipped for migration because:
+  //  The input cannot be migrated because the field is overridden by a subclass.
   @Input() bla = true;
 }
 
@@ -180,12 +192,16 @@ class Derived extends Base {
 // overridden in separate file
 @Directive()
 export class Base2 {
+  // TODO: Skipped for migration because:
+  //  The input cannot be migrated because the field is overridden by a subclass.
   @Input() bla = true;
 }
 
 // overridden in separate file
 @Directive()
 export class Base3 {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input() bla = true;
 
   click() {
@@ -201,6 +217,8 @@ import {Input, Directive} from '@angular/core';
 @Directive()
 class Base {
   // should not be migrated.
+  // TODO: Skipped for migration because:
+  //  The input cannot be migrated because the field is overridden by a subclass.
   @Input() bla = true;
 }
 
@@ -219,6 +237,8 @@ class Derived extends DerivedExternalWithInput {
   // this should be incompatible, because the final superclass
   // within its own batch unit, detected a write that should
   // propagate to this input.
+  // TODO: Skipped for migration because:
+  //  This input is inherited from a superclass, but the parent cannot be migrated.
   @Input() override bla = false;
 }
 @@@@@@ derived_class_separate_file.ts @@@@@@
@@ -233,6 +253,8 @@ class DerivedExternal extends Base2 {
 }
 
 export class DerivedExternalWithInput extends Base3 {
+  // TODO: Skipped for migration because:
+  //  This input is inherited from a superclass, but the parent cannot be migrated.
   @Input() override bla = true;
 }
 @@@@@@ different_instantiations_of_reference.ts @@@@@@
@@ -318,6 +340,8 @@ import {Directive, Input} from '@angular/core';
 
 @Directive({})
 export class WithGetters {
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get disabled() {
     return this._disabled;
@@ -471,9 +495,13 @@ export class AppComponent {
   readonly bla = input.required<boolean, string | boolean>({ transform: disabledTransform });
   readonly narrowableMultipleTimes = input<Vehicle | null>(null);
   readonly withUndefinedInput = input<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input() incompatible: string | null = null;
 
   private _bla: any;
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   set ngSwitch(newValue: any) {
     this._bla = newValue;
@@ -733,6 +761,9 @@ import {Component, Input} from '@angular/core';
 
 @Component({})
 export class ManualInstantiation {
+  // TODO: Skipped for migration because:
+  //  Class of this input is manually instantiated. This is discouraged and prevents
+  //  migration
   @Input() bla: string = '';
 }
 @@@@@@ modifier_tests.ts @@@@@@
@@ -924,6 +955,8 @@ import {Component, Directive, QueryList, Input} from '@angular/core';
   `,
 })
 class Group {
+  // TODO: Skipped for migration because:
+  //  Class of this input is referenced in the signature of another class.
   @Input() label!: string;
 }
 
@@ -1077,6 +1110,9 @@ export class ScopeMismatchTest {
 import {Input} from '@angular/core';
 
 class MyComp {
+  // TODO: Skipped for migration because:
+  //  Class of this input is manually instantiated. This is discouraged and prevents
+  //  migration
   @Input() myInput = () => {};
 }
 
@@ -1130,8 +1166,17 @@ import {Component, Input, input} from '@angular/core';
   `,
 })
 export class MyComp {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input() first = true;
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input() second = false;
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input() third = true;
   readonly fourth = input(true);
   readonly fifth = input(true);
@@ -1171,8 +1216,14 @@ import {Component, Input, input} from '@angular/core';
   },
 })
 class TwoWayBinding {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input() inputA = '';
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input() inputB = true;
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input() inputC = false;
   readonly inputD = input(false);
 }
@@ -1196,6 +1247,9 @@ export class TransformFunctions {
   // This will be a synthetic type because we add `undefined` to `boolean`.
   readonly synthetic1 = input.required<boolean | undefined, string | undefined>({ transform: x });
   // Synthetic as we infer a full type from the initial value. Cannot be checked.
+  // TODO: Skipped for migration because:
+  //  Input is required, but the migration cannot determine a good type for the
+  //  input.
   @Input({required: true, transform: (v: string | undefined) => ''}) synthetic2 = {
     infer: COMPLEX_VAR,
   };
@@ -1220,6 +1274,8 @@ class TransformIncompatibleTypes {
 import {Input, input} from '@angular/core';
 
 export class WithSettersAndGetters {
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   set onlySetter(newValue: any) {
     this._bla = newValue;
@@ -1229,6 +1285,8 @@ export class WithSettersAndGetters {
   }
   private _bla: any;
 
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get accessor(): string {
     return '';

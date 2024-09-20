@@ -90,7 +90,5 @@ export function mergeCompilationUnitData(
     }
   }
 
-  console.error(result);
-
   return result;
 }
