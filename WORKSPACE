@@ -77,7 +77,7 @@ yarn_install(
         "//tools:postinstall-patches.js",
         "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-d30a56c19bafaac67cf44e605ed8c2c0e45b0a51.patch",
         "//tools/esm-interop:patches/npm/@bazel+concatjs+5.8.1.patch",
-        "//tools/esm-interop:patches/npm/@bazel+esbuild+5.7.1.patch",
+        "//tools/esm-interop:patches/npm/@bazel+esbuild+5.8.1.patch",
         "//tools/esm-interop:patches/npm/@bazel+protractor+5.7.1.patch",
         "//tools/esm-interop:patches/npm/rxjs+6.6.7.patch",
     ],
