@@ -18,6 +18,7 @@ export class ViewContext {
 
   /**
    * @internal
+   * @nocollapse
    */
   static __NG_ELEMENT_ID__ = injectViewContext;
 }
