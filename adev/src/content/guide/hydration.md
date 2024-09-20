@@ -75,7 +75,6 @@ bootstrapApplication(App, {
 });
 ```
 
-IMPORTANT: the Event Replay feature is currently in [Developer Preview](/reference/releases#developer-preview).
 
 ## Constraints
 
