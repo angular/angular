@@ -19,6 +19,7 @@ ts_library(
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
         "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
         "@npm//@angular-devkit/schematics",
         "@npm//@types/node",
         "@npm//typescript",
