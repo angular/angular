@@ -1,0 +1,13 @@
+diff --git a/node_modules/patch-package/dist/makePatch.js b/node_modules/patch-package/dist/makePatch.js
+index d8d0925..1a6082f 100644
+--- a/node_modules/patch-package/dist/makePatch.js
++++ b/node_modules/patch-package/dist/makePatch.js
+@@ -203,7 +203,7 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+         // stage all files
+         git("add", "-f", packageDetails.path);
+         // get diff of changes
+-        const diffResult = git("diff", "--cached", "--no-color", "--ignore-space-at-eol", "--no-ext-diff", "--src-prefix=a/", "--dst-prefix=b/");
++        const diffResult = git("diff", "--cached", "--no-color", "--ignore-space-at-eol", "--no-rename", "--no-ext-diff", "--src-prefix=a/", "--dst-prefix=b/");
+         if (diffResult.stdout.length === 0) {
+             console_1.default.log(`⁉️  Not creating patch file for package '${packagePathSpecifier}'`);
+             console_1.default.log(`⁉️  There don't appear to be any changes.`);
