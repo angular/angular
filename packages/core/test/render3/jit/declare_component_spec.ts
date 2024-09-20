@@ -32,6 +32,7 @@ import {functionContaining} from './matcher';
 describe('component declaration jit compilation', () => {
   it('should compile a minimal component declaration', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: `<div></div>`,
     }) as ComponentDef<TestClass>;
@@ -43,6 +44,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile a selector', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       selector: '[dir], test',
@@ -55,6 +57,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile inputs and outputs', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       inputs: {
@@ -84,6 +87,7 @@ describe('component declaration jit compilation', () => {
   it('should compile input with a transform function', () => {
     const transformFn = () => 1;
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       inputs: {
@@ -107,6 +111,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile exportAs', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       exportAs: ['a', 'b'],
@@ -119,6 +124,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile providers', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       providers: [{provide: 'token', useValue: 123}],
@@ -132,6 +138,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile view providers', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       viewProviders: [{provide: 'token', useValue: 123}],
@@ -145,6 +152,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile content queries', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       queries: [
@@ -182,6 +190,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile view queries', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       viewQueries: [
@@ -219,6 +228,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile host bindings', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       host: {
@@ -259,6 +269,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile components with inheritance', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       usesInheritance: true,
@@ -271,6 +282,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile components with onChanges lifecycle hook', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       usesOnChanges: true,
@@ -283,6 +295,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile components with OnPush change detection strategy', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       changeDetection: ChangeDetectionStrategy.OnPush,
@@ -295,6 +308,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile components with styles', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       styles: ['div {}'],
@@ -308,6 +322,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile components with view encapsulation', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       styles: ['div {}'],
@@ -322,6 +337,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile components with animations', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
       animations: [{type: 'trigger'}],
@@ -337,11 +353,13 @@ describe('component declaration jit compilation', () => {
   it('should honor preserveWhitespaces', () => {
     const template = '<div>    Foo    </div>';
     const whenTrue = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template,
       preserveWhitespaces: true,
     }) as ComponentDef<TestClass>;
     const whenOmitted = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template,
     }) as ComponentDef<TestClass>;
@@ -359,6 +377,7 @@ describe('component declaration jit compilation', () => {
 
   it('should honor custom interpolation config', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '{% foo %}',
       interpolation: ['{%', '%}'],
@@ -371,6 +390,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile used components', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<cmp></cmp>',
       components: [
@@ -388,6 +408,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile used directives', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div dir></div>',
       directives: [
@@ -405,6 +426,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile used directives together with used components', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<cmp dir></cmp>',
       components: [
@@ -428,6 +450,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile forward declared directives', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div forward></div>',
       directives: [
@@ -453,6 +476,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile mixed forward and direct declared directives', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '<div dir forward></div>',
       directives: [
@@ -482,6 +506,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile used pipes', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '{{ expr | test }}',
       pipes: {
@@ -496,6 +521,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile forward declared pipes', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '{{ expr | forward }}',
       pipes: {
@@ -518,6 +544,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile mixed forward and direct declared pipes', () => {
     const def = ɵɵngDeclareComponent({
+      version: '18.0.0',
       type: TestClass,
       template: '{{ expr | forward | test }}',
       pipes: {
