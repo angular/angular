@@ -111,7 +111,6 @@ export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSup
  *   providers: [provideClientHydration(withEventReplay())]
  * });
  * ```
- * @developerPreview
  * @publicApi
  * @see {@link provideClientHydration}
  */
