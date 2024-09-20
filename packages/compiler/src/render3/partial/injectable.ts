@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {createInjectableType, R3InjectableMetadata} from '../../injectable_compiler_2';
 import * as o from '../../output/output_ast';

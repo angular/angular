@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnosticChain} from '../../../diagnostics';
@@ -28,7 +28,9 @@ export function validateAccessOfInitializerApiMember(
       ErrorCode.INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY,
       call,
       makeDiagnosticChain(
-        `Cannot use "${api.functionName}" on a class member that is declared as ${classMemberAccessLevelToString(
+        `Cannot use "${
+          api.functionName
+        }" on a class member that is declared as ${classMemberAccessLevelToString(
           member.accessLevel,
         )}.`,
         [

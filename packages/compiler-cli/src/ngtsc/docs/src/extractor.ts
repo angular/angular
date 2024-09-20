@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -85,7 +85,9 @@ export class DocsExtractor {
           if (symbols.has(symbolName) && symbols.get(symbolName) !== moduleName) {
             // If this ever throws, we need to improve the symbol extraction strategy
             throw new Error(
-              `Ambigous symbol \`${symbolName}\` exported by both ${symbols.get(symbolName)} & ${moduleName}`,
+              `Ambigous symbol \`${symbolName}\` exported by both ${symbols.get(
+                symbolName,
+              )} & ${moduleName}`,
             );
           }
 

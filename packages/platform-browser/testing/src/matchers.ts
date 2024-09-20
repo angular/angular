@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
@@ -131,7 +131,9 @@ beforeEach(function () {
             get message() {
               const expectedValueStr = typeof styles === 'string' ? styles : JSON.stringify(styles);
               return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
-                      CSS ${typeof styles === 'string' ? 'property' : 'styles'} "${expectedValueStr}"`;
+                      CSS ${
+                        typeof styles === 'string' ? 'property' : 'styles'
+                      } "${expectedValueStr}"`;
             },
           };
         },

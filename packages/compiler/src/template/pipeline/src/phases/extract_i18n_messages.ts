@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as o from '../../../../output/output_ast';
@@ -233,9 +233,10 @@ function formatValue(value: ir.I18nParamValue): string {
     value.flags & ir.I18nParamValueFlags.OpenTag &&
     value.flags & ir.I18nParamValueFlags.CloseTag
   ) {
-    return `${formatValue({...value, flags: value.flags & ~ir.I18nParamValueFlags.CloseTag})}${formatValue(
-      {...value, flags: value.flags & ~ir.I18nParamValueFlags.OpenTag},
-    )}`;
+    return `${formatValue({
+      ...value,
+      flags: value.flags & ~ir.I18nParamValueFlags.CloseTag,
+    })}${formatValue({...value, flags: value.flags & ~ir.I18nParamValueFlags.OpenTag})}`;
   }
 
   // If there are no special flags, just return the raw value.

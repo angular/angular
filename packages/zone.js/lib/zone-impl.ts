@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -1473,7 +1473,9 @@ export function initZone(): ZoneType {
         }
       } else {
         throw new Error(
-          `${this.type} '${this.source}': can not transition to '${toState}', expecting state '${fromState1}'${
+          `${this.type} '${
+            this.source
+          }': can not transition to '${toState}', expecting state '${fromState1}'${
             fromState2 ? " or '" + fromState2 + "'" : ''
           }, was '${this._state}'.`,
         );

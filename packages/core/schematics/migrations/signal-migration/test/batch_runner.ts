@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -68,7 +68,9 @@ async function main() {
 
       // migrate in parallel.
       await promiseExec(
-        `migration migrate ${path.resolve(tmpTsconfigName)} ${mergeMetadataFile} ${path.resolve(filePath)}`,
+        `migration migrate ${path.resolve(tmpTsconfigName)} ${mergeMetadataFile} ${path.resolve(
+          filePath,
+        )}`,
         {env: {...process.env, 'LIMIT_TO_ROOT_NAMES_ONLY': '1'}},
       );
     });

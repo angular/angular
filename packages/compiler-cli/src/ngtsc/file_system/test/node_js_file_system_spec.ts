@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 // Note: We do not use a namespace import here because this will result in the
 // named exports being modified if we apply jasmine spies on `realFs`. Using
