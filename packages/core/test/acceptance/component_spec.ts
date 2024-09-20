@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {DOCUMENT, NgIf} from '@angular/common';
@@ -193,10 +193,9 @@ describe('component', () => {
       expect(match).toBeDefined();
       expect(match.length).toEqual(2);
       expect(html).toMatch(
-        `<leaf ${match[0].replace('_nghost', '_ngcontent')}="" ${match[1]}=""><span ${match[1].replace(
-          '_nghost',
-          '_ngcontent',
-        )}="">bar</span></leaf></div>`,
+        `<leaf ${match[0].replace('_nghost', '_ngcontent')}="" ${
+          match[1]
+        }=""><span ${match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></div>`,
       );
     });
   });

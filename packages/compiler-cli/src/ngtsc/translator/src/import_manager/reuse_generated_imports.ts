@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -76,5 +76,7 @@ export function captureGeneratedImport(
 
 /** Generates a unique hash for the given import request. */
 function hashImportRequest(req: ImportRequest<ts.SourceFile>): ImportRequestHash {
-  return `${req.requestedFile.fileName}:${req.exportModuleSpecifier}:${req.exportSymbolName}${req.unsafeAliasOverride ? ':' + req.unsafeAliasOverride : ''}` as ImportRequestHash;
+  return `${req.requestedFile.fileName}:${req.exportModuleSpecifier}:${req.exportSymbolName}${
+    req.unsafeAliasOverride ? ':' + req.unsafeAliasOverride : ''
+  }` as ImportRequestHash;
 }

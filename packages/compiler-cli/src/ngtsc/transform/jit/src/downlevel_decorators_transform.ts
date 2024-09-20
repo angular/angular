@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -81,7 +81,9 @@ function extractMetadataFromSingleDecorator(
         file: decorator.getSourceFile(),
         start: decorator.getStart(),
         length: decorator.getEnd() - decorator.getStart(),
-        messageText: `${ts.SyntaxKind[decorator.kind]} not implemented in gathering decorator metadata.`,
+        messageText: `${
+          ts.SyntaxKind[decorator.kind]
+        } not implemented in gathering decorator metadata.`,
         category: ts.DiagnosticCategory.Error,
         code: 0,
       });

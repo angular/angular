@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 /**
@@ -324,7 +324,9 @@ export class ShadowCss {
     unscopedKeyframesSet: ReadonlySet<string>,
   ): string {
     return keyframe.replace(/^(\s*)(['"]?)(.+?)\2(\s*)$/, (_, spaces1, quote, name, spaces2) => {
-      name = `${unscopedKeyframesSet.has(unescapeQuotes(name, quote)) ? scopeSelector + '_' : ''}${name}`;
+      name = `${
+        unscopedKeyframesSet.has(unescapeQuotes(name, quote)) ? scopeSelector + '_' : ''
+      }${name}`;
       return `${spaces1}${quote}${name}${quote}${spaces2}`;
     });
   }

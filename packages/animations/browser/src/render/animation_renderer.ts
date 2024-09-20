@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {AnimationTriggerMetadata} from '@angular/animations';
 import type {NgZone, Renderer2, RendererFactory2, RendererType2} from '@angular/core';

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 // Make the `$localize()` global function available to the compiled templates, and the direct calls
 // below. This would normally be done inside the application `polyfills.ts` file.
@@ -1144,8 +1144,9 @@ describe('runtime i18n', () => {
         other {({{name}})}
       }</span></div>`,
       );
-      expect(fixture.nativeElement.innerHTML)
-        .toEqual(`<div><span>(Angular)<!--ICU ${HEADER_OFFSET + 0}:0--></span><!--bindings={
+      expect(fixture.nativeElement.innerHTML).toEqual(`<div><span>(Angular)<!--ICU ${
+        HEADER_OFFSET + 0
+      }:0--></span><!--bindings={
   "ng-reflect-ng-if": "true"
 }--></div>`);
 

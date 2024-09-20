@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -164,9 +164,9 @@ describe('NgModule', () => {
         `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(
           Module1,
         )} and ${stringify(Module2)}! ` +
-          `Please consider moving ${stringify(SomeDirective)} to a higher module that imports ${stringify(
-            Module1,
-          )} and ${stringify(Module2)}. ` +
+          `Please consider moving ${stringify(
+            SomeDirective,
+          )} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
           `You can also create a new NgModule that exports and includes ${stringify(
             SomeDirective,
           )} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`,
@@ -206,9 +206,9 @@ describe('NgModule', () => {
         `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(
           Module1,
         )} and ${stringify(Module2)}! ` +
-          `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(
-            Module1,
-          )} and ${stringify(Module2)}. ` +
+          `Please consider moving ${stringify(
+            SomePipe,
+          )} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
           `You can also create a new NgModule that exports and includes ${stringify(
             SomePipe,
           )} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`,
@@ -226,9 +226,9 @@ describe('NgModule', () => {
         `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(
           Module1,
         )} and ${stringify(Module2)}! ` +
-          `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(
-            Module1,
-          )} and ${stringify(Module2)}. ` +
+          `Please consider moving ${stringify(
+            SomePipe,
+          )} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
           `You can also create a new NgModule that exports and includes ${stringify(
             SomePipe,
           )} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`,

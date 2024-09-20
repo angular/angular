@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -149,7 +149,9 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
           `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
       } else if (element.name.indexOf('-') > -1) {
         errorMsg +=
-          `\n1. If '${element.name}' is an Angular component and it has '${name}' input, then verify that it is ${
+          `\n1. If '${
+            element.name
+          }' is an Angular component and it has '${name}' input, then verify that it is ${
             hostIsStandalone
               ? "included in the '@Component.imports' of this component"
               : 'part of this module'
