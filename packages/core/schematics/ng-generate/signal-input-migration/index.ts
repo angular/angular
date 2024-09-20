@@ -8,18 +8,18 @@
 
 import {Rule, SchematicsException} from '@angular-devkit/schematics';
 
-import assert from 'assert';
 import {SignalInputMigration} from '../../migrations/signal-migration/src';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {DevkitMigrationFilesystem} from '../../utils/tsurge/helpers/angular_devkit/devkit_filesystem';
 import {groupReplacementsByFile} from '../../utils/tsurge/helpers/group_replacements';
 import {setFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {CompilationUnitData} from '../../migrations/signal-migration/src/batch/unit_data';
-import {ProjectRootRelativePath, Replacement, TextUpdate} from '../../utils/tsurge';
+import {ProjectRootRelativePath, TextUpdate} from '../../utils/tsurge';
 
 interface Options {
   path: string;
   bestEffortMode?: boolean;
+  insertTodos?: boolean;
   analysisDir: string;
 }
 
@@ -38,6 +38,7 @@ export function migrate(options: Options): Rule {
 
     const migration = new SignalInputMigration({
       bestEffortMode: options.bestEffortMode,
+      insertTodosForSkippedFields: options.insertTodos,
       shouldMigrateInput: (input) => {
         return (
           input.file.rootRelativePath.startsWith(fs.normalize(options.path)) &&

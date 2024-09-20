@@ -16,6 +16,12 @@ export interface MigrationConfig {
   bestEffortMode?: boolean;
 
   /**
+   * Whether to insert TODOs for skipped fields, and reasons on why they
+   * were skipped.
+   */
+  insertTodosForSkippedFields?: boolean;
+
+  /**
    * Whether the given input should be migrated. With batch execution, this
    * callback fires for foreign inputs from other compilation units too.
    *
