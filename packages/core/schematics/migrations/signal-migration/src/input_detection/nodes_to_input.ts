@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -31,7 +31,7 @@ export function attemptRetrieveInputFromSymbol(
     // If the member itself is an input that is being migrated, we
     // do not need to check, as overriding would be fine then— like before.
     const memberInputDescr = isInputContainerNode(member) ? getInputDescriptor(host, member) : null;
-    return memberInputDescr !== null ? knownInputs.get(memberInputDescr) ?? null : null;
+    return memberInputDescr !== null ? (knownInputs.get(memberInputDescr) ?? null) : null;
   }
   return null;
 }

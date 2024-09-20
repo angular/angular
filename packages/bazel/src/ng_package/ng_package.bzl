@@ -1,7 +1,7 @@
 # Copyright Google LLC All Rights Reserved.
 #
 # Use of this source code is governed by an MIT-style license that can be
-# found in the LICENSE file at https://angular.io/license
+# found in the LICENSE file at https://angular.dev/license
 """Package Angular libraries for npm distribution
 
 If all users of an Angular library use Bazel (e.g. internal usage in your company)

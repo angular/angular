@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {
   AbsoluteSourceSpan,
@@ -228,7 +228,7 @@ function toAttributeCssSelector(
 }
 
 function getNodeName(node: TmplAstTemplate | TmplAstElement): string {
-  return node instanceof TmplAstTemplate ? node.tagName ?? 'ng-template' : node.name;
+  return node instanceof TmplAstTemplate ? (node.tagName ?? 'ng-template') : node.name;
 }
 
 /**

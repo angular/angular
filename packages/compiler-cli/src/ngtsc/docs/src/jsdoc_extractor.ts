@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import ts from 'typescript';
@@ -45,7 +45,7 @@ export function extractJsDocDescription(node: ts.HasJSDoc): string {
 
   const comment = commentOrTag?.comment ?? '';
   const description =
-    typeof comment === 'string' ? comment : ts.getTextOfJSDocComment(comment) ?? '';
+    typeof comment === 'string' ? comment : (ts.getTextOfJSDocComment(comment) ?? '');
 
   return unescapeAngularDecorators(description);
 }
