@@ -41,6 +41,7 @@ import {
   Pipe,
   PipeTransform,
   PLATFORM_ID,
+  provideExperimentalZonelessChangeDetection,
   Provider,
   QueryList,
   TemplateRef,
@@ -7947,6 +7948,47 @@ describe('platform-server hydration integration', () => {
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('foo');
+      });
+    });
+
+    describe('zoneless', () => {
+      it('should not produce "unsupported configuration" warnings for zoneless mode', async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            <header>Header</header>
+            <footer>Footer</footer>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await renderAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [
+            withDebugConsole(),
+            provideExperimentalZonelessChangeDetection() as unknown as Provider[],
+          ],
+        });
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        // Make sure there are no extra logs in case zoneless mode is enabled.
+        verifyHasNoLog(
+          appRef,
+          'NG05000: Angular detected that hydration was enabled for an application ' +
+            'that uses a custom or a noop Zone.js implementation.',
+        );
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
     });
 
