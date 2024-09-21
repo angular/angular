@@ -22,7 +22,7 @@ import {joinWithSlash, normalizeQueryParams} from './util';
  * interact with application route state.
  *
  * For instance, `HashLocationStrategy` produces URLs like
- * <code class="no-auto-link">http://example.com#/foo</code>,
+ * <code class="no-auto-link">http://example.com/#/foo</code>,
  * and `PathLocationStrategy` produces
  * <code class="no-auto-link">http://example.com/foo</code> as an equivalent URL.
  *
