@@ -14,7 +14,7 @@ import chalk from 'chalk';
  * colored diff string.
  */
 export function diffText(expected: string, actual: string): string {
-  const goldenDiff = diff.diffChars(expected, actual);
+  const goldenDiff = diff.diffChars(actual, expected);
   let result = '';
 
   for (const part of goldenDiff) {
