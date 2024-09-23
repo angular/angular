@@ -75,7 +75,7 @@ export interface AnimationPlayer {
   reset(): void;
   /**
    * Sets the position of the animation.
-   * @param position A 0-based offset into the duration, in milliseconds.
+   * @param position A 0-1 fractional value representing progress through the animation.
    */
   setPosition(position: number): void;
   /**
