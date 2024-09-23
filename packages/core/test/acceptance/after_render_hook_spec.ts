@@ -715,6 +715,53 @@ describe('after render hooks', () => {
           );
         });
       });
+
+      it('should not destroy automatically if manualCleanup is set', () => {
+        let afterRenderRef: AfterRenderRef | null = null;
+        let count = 0;
+
+        @Component({selector: 'comp', template: ''})
+        class Comp {
+          constructor() {
+            afterRenderRef = afterRender(() => count++, {manualCleanup: true});
+          }
+        }
+
+        @Component({
+          imports: [Comp],
+          template: `
+            @if (shouldShow) {
+              <comp/>
+            }
+          `,
+        })
+        class App {
+          shouldShow = true;
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [App, Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const component = createAndAttachComponent(App);
+        const appRef = TestBed.inject(ApplicationRef);
+        expect(count).toBe(0);
+
+        appRef.tick();
+        expect(count).toBe(1);
+
+        component.instance.shouldShow = false;
+        component.changeDetectorRef.detectChanges();
+        appRef.tick();
+        expect(count).toBe(2);
+        appRef.tick();
+        expect(count).toBe(3);
+
+        // Ensure that manual destruction still works.
+        afterRenderRef!.destroy();
+        appRef.tick();
+        expect(count).toBe(3);
+      });
     });
 
     describe('afterNextRender', () => {
