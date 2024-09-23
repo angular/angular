@@ -95,6 +95,7 @@ export class PipeDecoratorHandler
     private includeClassMetadata: boolean,
     private readonly compilationMode: CompilationMode,
     private readonly generateExtraImportsInLocalMode: boolean,
+    private readonly strictStandalone: boolean,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -183,6 +184,14 @@ export class PipeDecoratorHandler
         throw createValueHasWrongTypeError(expr, resolved, `standalone flag must be a boolean`);
       }
       isStandalone = resolved;
+
+      if (!isStandalone && this.strictStandalone) {
+        throw new FatalDiagnosticError(
+          ErrorCode.NON_STANDALONE_NOT_ALLOWED,
+          expr,
+          `Only standalone pipes are allowed when 'strictStandalone' is enabled.`,
+        );
+      }
     }
 
     return {

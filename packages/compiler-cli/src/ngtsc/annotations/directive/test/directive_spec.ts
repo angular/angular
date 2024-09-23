@@ -214,6 +214,7 @@ runInEachFileSystem(() => {
       /*includeClassMetadata*/ true,
       /*compilationMode */ CompilationMode.FULL,
       jitDeclarationRegistry,
+      /* strictStandalone */ false,
     );
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);

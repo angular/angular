@@ -1208,4 +1208,79 @@ runInEachFileSystem(() => {
       });
     });
   });
+
+  describe('strictStandalone flag', () => {
+    let env!: NgtscTestEnvironment;
+
+    beforeEach(() => {
+      env = NgtscTestEnvironment.setup(testFiles);
+      env.tsconfig({strictTemplates: true, strictStandalone: true});
+    });
+
+    it('should not allow a non-standalone component', () => {
+      env.write(
+        'app.ts',
+        `
+        import {Component} from '@angular/core';
+        
+        @Component({standalone: false, template: ''})
+        export class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED));
+      expect(diags[0].messageText).toContain('component');
+    });
+
+    it('should not allow a non-standalone directive', () => {
+      env.write(
+        'app.ts',
+        `
+        import {Directive} from '@angular/core';
+        
+        @Directive({standalone: false})
+        export class TestDir {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED));
+      expect(diags[0].messageText).toContain('directive');
+    });
+
+    it('should allow a no-arg directive', () => {
+      env.write(
+        'app.ts',
+        `
+        import {Directive} from '@angular/core';
+        
+        @Directive()
+        export class TestDir {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should not allow a non-standalone pipe', () => {
+      env.write(
+        'app.ts',
+        `
+        import {Pipe} from '@angular/core';
+        
+        @Pipe({name: 'test', standalone: false})
+        export class TestPipe {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED));
+      expect(diags[0].messageText).toContain('pipe');
+    });
+  });
 });

@@ -28,6 +28,7 @@ export interface DiagnosticOptions {
             [Name in ExtendedTemplateDiagnosticName]?: DiagnosticCategoryLabel;
         };
     };
+    strictStandalone?: boolean;
 }
 
 // @public
