@@ -28,6 +28,7 @@ export interface ConvertInputPreparation {
   resolvedMetadata: ExtractedInput;
   originalInputDecorator: Decorator;
   initialValue: ts.Expression | undefined;
+  leadingTodoText: string | null;
 }
 
 /**
@@ -101,6 +102,8 @@ export function prepareAndCheckForConversion(
     ]);
   }
 
+  let leadingTodoText: string | null = null;
+
   // If the input does not have an initial value, and strict property initialization
   // is disabled, while strict null checks are enabled; then we know that `undefined`
   // cannot be used as initial value, nor do we want to expand the input's type magically.
@@ -115,6 +118,9 @@ export function prepareAndCheckForConversion(
     metadata.required === false &&
     !checker.isTypeAssignableTo(checker.getUndefinedType(), checker.getTypeFromTypeNode(node.type))
   ) {
+    leadingTodoText =
+      'Input is initialized to `undefined` but type does not allow this value. ' +
+      'This worked with `@Input` because your project uses `--strictPropertyInitialization=false`.';
     isUndefinedInitialValue = false;
     initialValue = ts.factory.createNonNullExpression(ts.factory.createIdentifier('undefined'));
   }
@@ -158,5 +164,6 @@ export function prepareAndCheckForConversion(
     preferShorthandIfPossible,
     originalInputDecorator: metadata.inputDecorator,
     initialValue: isUndefinedInitialValue ? undefined : initialValue,
+    leadingTodoText,
   };
 }
