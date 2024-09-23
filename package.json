@@ -70,7 +70,7 @@
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "@microsoft/api-extractor": "^7.24.2",
     "@rollup/plugin-babel": "^6.0.0",
-    "@rollup/plugin-commonjs": "^26.0.0",
+    "@rollup/plugin-commonjs": "^27.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@schematics/angular": "19.0.0-next.6",
     "@stackblitz/sdk": "^1.11.0",
