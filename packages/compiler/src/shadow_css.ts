@@ -338,7 +338,7 @@ export class ShadowCss {
    *    captures how many (if any) leading whitespaces are present or a comma
    *  - (?:(?:(['"])((?:\\\\|\\\2|(?!\2).)+)\2)|(-?[A-Za-z][\w\-]*))
    *    captures two different possible keyframes, ones which are quoted or ones which are valid css
-   * idents (custom properties excluded)
+   * indents (custom properties excluded)
    *  - (?=[,\s;]|$)
    *    simply matches the end of the possible keyframe, valid endings are: a comma, a space, a
    * semicolon or the end of the string
@@ -459,7 +459,7 @@ export class ShadowCss {
    */
   private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
     const unscopedRules = this._extractUnscopedRulesFromCssText(cssText);
-    // replace :host and :host-context -shadowcsshost and -shadowcsshost respectively
+    // replace :host and :host-context with -shadowcsshost and -shadowcsshostcontext respectively
     cssText = this._insertPolyfillHostInCssText(cssText);
     cssText = this._convertColonHost(cssText);
     cssText = this._convertColonHostContext(cssText);
@@ -616,7 +616,12 @@ export class ShadowCss {
       let selector = rule.selector;
       let content = rule.content;
       if (rule.selector[0] !== '@') {
-        selector = this._scopeSelector({selector, scopeSelector, hostSelector});
+        selector = this._scopeSelector({
+          selector,
+          scopeSelector,
+          hostSelector,
+          isParentSelector: true,
+        });
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
@@ -656,20 +661,30 @@ export class ShadowCss {
     });
   }
 
+  private _safeSelector: SafeSelector | undefined;
+  private _shouldScopeIndicator: boolean | undefined;
+
+  // `isParentSelector` is used to distinguish the selectors which are coming from
+  // the initial selector string and any nested selectors, parsed recursively,
+  // for example `selector = 'a:where(.one)'` could be the parent, while recursive call
+  // would have `selector = '.one'`.
   private _scopeSelector({
     selector,
     scopeSelector,
     hostSelector,
-    shouldScope,
+    isParentSelector = false,
   }: {
     selector: string;
     scopeSelector: string;
     hostSelector: string;
-    shouldScope?: boolean;
+    isParentSelector?: boolean;
   }): string {
     // Split the selector into independent parts by `,` (comma) unless
     // comma is within parenthesis, for example `:is(.one, two)`.
-    const selectorSplitRe = / ?,(?![^\(]*\)) ?/;
+    // Negative lookup after comma allows not splitting inside nested parenthesis,
+    // up to three levels (((,))).
+    const selectorSplitRe =
+      / ?,(?!(?:[^)(]*(?:\([^)(]*(?:\([^)(]*(?:\([^)(]*\)[^)(]*)*\)[^)(]*)*\)[^)(]*)*\))) ?/;
 
     return selector
       .split(selectorSplitRe)
@@ -682,7 +697,7 @@ export class ShadowCss {
               selector: shallowPart,
               scopeSelector,
               hostSelector,
-              shouldScope,
+              isParentSelector,
             });
           } else {
             return shallowPart;
@@ -716,9 +731,9 @@ export class ShadowCss {
     if (_polyfillHostRe.test(selector)) {
       const replaceBy = `[${hostSelector}]`;
       return selector
-        .replace(_polyfillHostNoCombinatorRe, (hnc, selector) => {
+        .replace(_polyfillHostNoCombinatorReGlobal, (_hnc, selector) => {
           return selector.replace(
-            /([^:]*)(:*)(.*)/,
+            /([^:\)]*)(:*)(.*)/,
             (_: string, before: string, colon: string, after: string) => {
               return before + replaceBy + colon + after;
             },
@@ -736,12 +751,12 @@ export class ShadowCss {
     selector,
     scopeSelector,
     hostSelector,
-    shouldScope,
+    isParentSelector,
   }: {
     selector: string;
     scopeSelector: string;
     hostSelector: string;
-    shouldScope?: boolean;
+    isParentSelector?: boolean;
   }): string {
     const isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = scopeSelector.replace(isRe, (_: string, ...parts: string[]) => parts[0]);
@@ -757,6 +772,10 @@ export class ShadowCss {
 
       if (p.includes(_polyfillHostNoCombinator)) {
         scopedP = this._applySimpleSelectorScope(p, scopeSelector, hostSelector);
+        if (_polyfillHostNoCombinatorWithinPseudoFunction.test(p)) {
+          const [_, before, colon, after] = scopedP.match(/([^:]*)(:*)(.*)/)!;
+          scopedP = before + attrName + colon + after;
+        }
       } else {
         // remove :host since it should be unnecessary
         const t = p.replace(_polyfillHostRe, '');
@@ -773,44 +792,66 @@ export class ShadowCss {
 
     // Wraps `_scopeSelectorPart()` to not use it directly on selectors with
     // pseudo selector functions like `:where()`. Selectors within pseudo selector
-    // functions are recursively sent to `_scopeSelector()` with the `shouldScope`
-    // argument, so the selectors get scoped correctly.
+    // functions are recursively sent to `_scopeSelector()`.
     const _pseudoFunctionAwareScopeSelectorPart = (selectorPart: string) => {
       let scopedPart = '';
 
-      const cssPseudoSelectorFunctionMatch = selectorPart.match(_cssPseudoSelectorFunctionPrefix);
-      if (cssPseudoSelectorFunctionMatch) {
-        const [cssPseudoSelectorFunction] = cssPseudoSelectorFunctionMatch;
+      const cssPrefixWithPseudoSelectorFunctionMatch = selectorPart.match(
+        _cssPrefixWithPseudoSelectorFunction,
+      );
+      if (cssPrefixWithPseudoSelectorFunctionMatch) {
+        const [cssPseudoSelectorFunction, mainSelector, pseudoSelector] =
+          cssPrefixWithPseudoSelectorFunctionMatch;
+        const hasOuterHostNoCombinator = mainSelector.includes(_polyfillHostNoCombinator);
+        const scopedMainSelector = mainSelector.replace(
+          _polyfillHostNoCombinatorReGlobal,
+          `[${hostSelector}]`,
+        );
+
         // Unwrap the pseudo selector, to scope its contents.
-        // For example, `:where(selectorToScope)` -> `selectorToScope`.
+        // For example,
+        // - `:where(selectorToScope)` -> `selectorToScope`;
+        // - `div:is(.foo, .bar)` -> `.foo, .bar`.
         const selectorToScope = selectorPart.slice(cssPseudoSelectorFunction.length, -1);
+
+        if (selectorToScope.includes(_polyfillHostNoCombinator)) {
+          this._shouldScopeIndicator = true;
+        }
 
         const scopedInnerPart = this._scopeSelector({
           selector: selectorToScope,
           scopeSelector,
           hostSelector,
-          shouldScope: shouldScopeIndicator,
         });
+
         // Put the result back into the pseudo selector function.
-        scopedPart = `${cssPseudoSelectorFunction}${scopedInnerPart})`;
+        scopedPart = `${scopedMainSelector}:${pseudoSelector}(${scopedInnerPart})`;
+
+        this._shouldScopeIndicator = this._shouldScopeIndicator || hasOuterHostNoCombinator;
       } else {
-        shouldScopeIndicator =
-          shouldScopeIndicator || selectorPart.includes(_polyfillHostNoCombinator);
-        scopedPart = shouldScopeIndicator ? _scopeSelectorPart(selectorPart) : selectorPart;
+        this._shouldScopeIndicator =
+          this._shouldScopeIndicator || selectorPart.includes(_polyfillHostNoCombinator);
+        scopedPart = this._shouldScopeIndicator ? _scopeSelectorPart(selectorPart) : selectorPart;
       }
 
       return scopedPart;
     };
 
-    const safeContent = new SafeSelector(selector);
-    selector = safeContent.content();
+    if (isParentSelector) {
+      this._safeSelector = new SafeSelector(selector);
+      selector = this._safeSelector.content();
+    }
 
     let scopedSelector = '';
     let startIndex = 0;
     let res: RegExpExecArray | null;
     // Combinators aren't used as a delimiter if they are within parenthesis,
     // for example `:where(.one .two)` stays intact.
-    const sep = /( |>|\+|~(?!=))(?![^\(]*\))\s*/g;
+    // Similarly to selector separation by comma initially, negative lookahead
+    // is used here to not break selectors within nested parenthesis up to three
+    // nested layers.
+    const sep =
+      /( |>|\+|~(?!=))(?!([^)(]*(?:\([^)(]*(?:\([^)(]*(?:\([^)(]*\)[^)(]*)*\)[^)(]*)*\)[^)(]*)*\)))\s*/g;
 
     // If a selector appears before :host it should not be shimmed as it
     // matches on ancestor elements and not on elements in the host's shadow
@@ -824,8 +865,13 @@ export class ShadowCss {
     // - `tag :host` -> `tag [h]` (`tag` is not scoped because it's considered part of a
     //   `:host-context(tag)`)
     const hasHost = selector.includes(_polyfillHostNoCombinator);
-    // Only scope parts after the first `-shadowcsshost-no-combinator` when it is present
-    let shouldScopeIndicator = shouldScope ?? !hasHost;
+    // Only scope parts after or on the same level as the first `-shadowcsshost-no-combinator`
+    // when it is present. The selector has the same level when it is a part of a pseudo
+    // selector, like `:where()`, for example `:where(:host, .foo)` would result in `.foo`
+    // being scoped.
+    if (isParentSelector || this._shouldScopeIndicator) {
+      this._shouldScopeIndicator = !hasHost;
+    }
 
     while ((res = sep.exec(selector)) !== null) {
       const separator = res[1];
@@ -853,7 +899,8 @@ export class ShadowCss {
     scopedSelector += _pseudoFunctionAwareScopeSelectorPart(part);
 
     // replace the placeholders with their original values
-    return safeContent.restore(scopedSelector);
+    // using values stored inside the `safeSelector` instance.
+    return this._safeSelector!.restore(scopedSelector);
   }
 
   private _insertPolyfillHostInCssText(selector: string): string {
@@ -918,7 +965,7 @@ class SafeSelector {
   }
 }
 
-const _cssPseudoSelectorFunctionPrefix = /^:(where|is)\(/gi;
+const _cssPrefixWithPseudoSelectorFunction = /^([^:]*):(where|is)\(/i;
 const _cssContentNextSelectorRe =
   /polyfill-next-selector[^}]*content:[\s]*?(['"])(.*?)\1[;\s]*}([^{]*?){/gim;
 const _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
@@ -932,7 +979,11 @@ const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix, 'gim');
 const _cssColonHostContextReGlobal = new RegExp(_polyfillHostContext + _parenSuffix, 'gim');
 const _cssColonHostContextRe = new RegExp(_polyfillHostContext + _parenSuffix, 'im');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
+const _polyfillHostNoCombinatorWithinPseudoFunction = new RegExp(
+  `:.*(.*${_polyfillHostNoCombinator}.*)`,
+);
 const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s]*)/;
+const _polyfillHostNoCombinatorReGlobal = new RegExp(_polyfillHostNoCombinatorRe, 'g');
 const _shadowDOMSelectorsRe = [
   /::shadow/g,
   /::content/g,
