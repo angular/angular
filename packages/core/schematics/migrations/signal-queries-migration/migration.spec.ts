@@ -545,6 +545,111 @@ describe('signal queries migration', () => {
       expect(actual).toContain(`@ViewChild`);
     });
   });
+
+  it('should remove QueryList imports', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: ''
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, viewChildren} from '@angular/core';
+
+      @Component({
+        template: ''
+      })
+      class MyComp {
+        readonly labels = viewChildren<ElementRef>('label');
+      }
+    `);
+  });
+
+  it('should not remove QueryList import when used elsewhere', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: ''
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+            bla: QueryList<ElementRef> = null!;
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {QueryList, ElementRef, Component, viewChildren} from '@angular/core';
+
+      @Component({
+        template: ''
+      })
+      class MyComp {
+        readonly labels = viewChildren<ElementRef>('label');
+
+        bla: QueryList<ElementRef> = null!;
+      }
+    `);
+  });
+
+  it('should not remove QueryList import when part of skipped query', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: ''
+          })
+          class MyComp {
+            @ViewChildren('label') labels: QueryList|null = new QueryList<ElementRef>();
+
+            click() {
+              this.labels = null;
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+      @Component({
+        template: ''
+      })
+      class MyComp {
+        @ViewChildren('label') labels: QueryList|null = new QueryList<ElementRef>();
+
+        click() {
+          this.labels = null;
+        }
+      }
+    `);
+  });
 });
 
 function populateDeclarationTestCaseComponent(declaration: string): string {

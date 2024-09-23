@@ -158,6 +158,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
     const filesWithMigratedQueries = new Map<ts.SourceFile, Set<QueryFunctionName>>();
     const filesWithIncompleteMigration = new Map<ts.SourceFile, Set<QueryFunctionName>>();
+    const filesWithUnrelatedQueryListImports = new WeakSet<ts.SourceFile>();
 
     const knownQueries = new KnownQueries(info, globalMetadata);
     const referenceResult: ReferenceResult<ClassFieldDescriptor> = {references: []};
@@ -184,6 +185,16 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
           knownQueries.registerQueryField(node, classFieldID);
           return;
         }
+      }
+
+      // Detect potential usages of `QueryList` outside of queries or imports.
+      // Those prevent us from removing the import later.
+      if (
+        ts.isIdentifier(node) &&
+        node.text === 'QueryList' &&
+        ts.findAncestor(node, ts.isImportDeclaration) === undefined
+      ) {
+        filesWithUnrelatedQueryListImports.add(node.getSourceFile());
       }
 
       ts.forEachChild(node, queryWholeProgramVisitor);
@@ -269,10 +280,21 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
     // Remove imports if possible.
     for (const [file, types] of filesWithMigratedQueries) {
+      let seenIncompatibleMultiQuery = false;
+
       for (const type of types) {
-        if (!filesWithIncompleteMigration.get(file)?.has(type)) {
+        const incompatibleQueryTypesForFile = filesWithIncompleteMigration.get(file);
+
+        // Query type is fully migrated. No incompatible queries in file.
+        if (!incompatibleQueryTypesForFile?.has(type)) {
           importManager.removeImport(file, queryFunctionNameToDecorator(type), '@angular/core');
+        } else if (type === 'viewChildren' || type === 'contentChildren') {
+          seenIncompatibleMultiQuery = true;
         }
+      }
+
+      if (!seenIncompatibleMultiQuery && !filesWithUnrelatedQueryListImports.has(file)) {
+        importManager.removeImport(file, 'QueryList', '@angular/core');
       }
     }
 
