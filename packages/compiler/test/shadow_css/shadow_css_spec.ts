@@ -66,6 +66,8 @@ describe('ShadowCss', () => {
     expect(shim('one[attr="va lue"] {}', 'contenta')).toEqualCss('one[attr="va lue"][contenta] {}');
     expect(shim('one[attr] {}', 'contenta')).toEqualCss('one[attr][contenta] {}');
     expect(shim('[is="one"] {}', 'contenta')).toEqualCss('[is="one"][contenta] {}');
+    expect(shim('[attr] {}', 'contenta')).toEqualCss('[attr][contenta] {}');
+    expect(shim(':host [attr] {}', 'contenta', 'hosta')).toEqualCss('[hosta] [attr][contenta] {}');
   });
 
   it('should handle escaped sequences in selectors', () => {
@@ -89,6 +91,9 @@ describe('ShadowCss', () => {
       ':where(.one[contenta]) .two[contenta] {}',
     );
     expect(shim(':where(:host) {}', 'contenta', 'hosta')).toEqualCss(':where([hosta]) {}');
+    expect(shim(':where(:host) .one {}', 'contenta', 'hosta')).toEqualCss(
+      ':where([hosta]) .one[contenta] {}',
+    );
     expect(shim(':where(.one) :where(:host) {}', 'contenta', 'hosta')).toEqualCss(
       ':where(.one) :where([hosta]) {}',
     );
@@ -113,10 +118,14 @@ describe('ShadowCss', () => {
     expect(shim(':where(:not(.one) ~ .two) {}', 'contenta', 'hosta')).toEqualCss(
       ':where([contenta]:not(.one) ~ .two[contenta]) {}',
     );
+    expect(shim(':where([foo]) {}', 'contenta', 'hosta')).toEqualCss(':where([foo][contenta]) {}');
 
     // :is()
-    expect(shim('div:is(.foo) {}', 'contenta', 'a-host')).toEqualCss('div[contenta]:is(.foo) {}');
+    expect(shim('div:is(.foo) {}', 'contenta', 'a-host')).toEqualCss('div:is(.foo[contenta]) {}');
     expect(shim(':is(.dark :host) {}', 'contenta', 'a-host')).toEqualCss(':is(.dark [a-host]) {}');
+    expect(shim(':is(.dark) :is(:host) {}', 'contenta', 'a-host')).toEqualCss(
+      ':is(.dark) :is([a-host]) {}',
+    );
     expect(shim(':host:is(.foo) {}', 'contenta', 'a-host')).toEqualCss('[a-host]:is(.foo) {}');
     expect(shim(':is(.foo) {}', 'contenta', 'a-host')).toEqualCss(':is(.foo[contenta]) {}');
     expect(shim(':is(.foo, .bar, .baz) {}', 'contenta', 'a-host')).toEqualCss(
@@ -136,19 +145,40 @@ describe('ShadowCss', () => {
     ).toEqualCss(
       ':is(.foo, .bar) :is(.baz) :where(.one, .two) [a-host] :where(.three[contenta]:first-child) {}',
     );
+    expect(shim(':where(:is(a)) {}', 'contenta', 'hosta')).toEqualCss(
+      ':where(:is(a[contenta])) {}',
+    );
+    expect(shim(':where(:is(a, b)) {}', 'contenta', 'hosta')).toEqualCss(
+      ':where(:is(a[contenta], b[contenta])) {}',
+    );
+    expect(shim(':where(:host:is(.one, .two)) {}', 'contenta', 'hosta')).toEqualCss(
+      ':where([hosta]:is(.one, .two)) {}',
+    );
+    expect(shim(':where(:host :is(.one, .two)) {}', 'contenta', 'hosta')).toEqualCss(
+      ':where([hosta] :is(.one[contenta], .two[contenta])) {}',
+    );
+    expect(shim(':where(:is(a, b) :is(.one, .two)) {}', 'contenta', 'hosta')).toEqualCss(
+      ':where(:is(a[contenta], b[contenta]) :is(.one[contenta], .two[contenta])) {}',
+    );
+    expect(
+      shim(
+        ':where(:where(a:has(.foo), b) :is(.one, .two:where(.foo > .bar))) {}',
+        'contenta',
+        'hosta',
+      ),
+    ).toEqualCss(
+      ':where(:where(a[contenta]:has(.foo), b[contenta]) :is(.one[contenta], .two:where(.foo[contenta] > .bar[contenta]))) {}',
+    );
 
     // complex selectors
     expect(shim(':host:is([foo],[foo-2])>div.example-2 {}', 'contenta', 'a-host')).toEqualCss(
-      '[a-host]:is([foo],[foo-2]) > div.example-2[contenta] {}',
+      '[a-host]:is([foo], [foo-2]) > div.example-2[contenta] {}',
     );
     expect(shim(':host:is([foo], [foo-2]) > div.example-2 {}', 'contenta', 'a-host')).toEqualCss(
       '[a-host]:is([foo], [foo-2]) > div.example-2[contenta] {}',
     );
     expect(shim(':host:has([foo],[foo-2])>div.example-2 {}', 'contenta', 'a-host')).toEqualCss(
       '[a-host]:has([foo],[foo-2]) > div.example-2[contenta] {}',
-    );
-    expect(shim(':host:is([foo], [foo-2]) > div.example-2 {}', 'contenta', 'a-host')).toEqualCss(
-      '[a-host]:is([foo], [foo-2]) > div.example-2[contenta] {}',
     );
 
     // :has()
@@ -167,6 +197,31 @@ describe('ShadowCss', () => {
     // encapsulated scope.
     expect(shim(':has(a) :has(b) {}', 'contenta', 'hosta')).toEqualCss(
       '[contenta]:has(a) [contenta]:has(b) {}',
+    );
+  });
+
+  it('should handle :host inclusions inside pseudo-selectors selectors', () => {
+    expect(shim('.header:not(.admin) {}', 'contenta', 'hosta')).toEqualCss(
+      '.header[contenta]:not(.admin) {}',
+    );
+    expect(shim('.header:is(:host > .toolbar, :host ~ .panel) {}', 'contenta', 'hosta')).toEqualCss(
+      '.header:is([hosta] > .toolbar[contenta], [hosta] ~ .panel[contenta]) {}',
+    );
+    expect(
+      shim('.header:where(:host > .toolbar, :host ~ .panel) {}', 'contenta', 'hosta'),
+    ).toEqualCss('.header:where([hosta] > .toolbar[contenta], [hosta] ~ .panel[contenta]) {}');
+    expect(shim('.header:not(.admin, :host.super .header) {}', 'contenta', 'hosta')).toEqualCss(
+      '.header[contenta]:not(.admin, .super[hosta] .header) {}',
+    );
+    expect(
+      shim('.header:not(.admin, :host.super .header, :host.mega .header) {}', 'contenta', 'hosta'),
+    ).toEqualCss('.header[contenta]:not(.admin, .super[hosta] .header, .mega[hosta] .header) {}');
+
+    expect(shim('.one :where(.two, :host) {}', 'contenta', 'hosta')).toEqualCss(
+      '.one :where(.two[contenta], [hosta]) {}',
+    );
+    expect(shim('.one :where(:host, .two) {}', 'contenta', 'hosta')).toEqualCss(
+      '.one :where([hosta], .two[contenta]) {}',
     );
   });
 
