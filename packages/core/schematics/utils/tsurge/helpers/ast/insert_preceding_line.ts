@@ -13,21 +13,19 @@ import {ProgramInfo} from '../../program_info';
 import {projectFile} from '../../project_paths';
 
 /**
- * Inserts a leading single-line TODO for the given node,
- * returning a replacement.
+ * Inserts a leading string for the given node, respecting
+ * indentation of the given anchor node.
+ *
+ * Useful for inserting TODOs.
  */
-export function insertPrecedingLine(
-  node: ts.Node,
-  info: ProgramInfo,
-  todoText: string,
-): Replacement {
+export function insertPrecedingLine(node: ts.Node, info: ProgramInfo, text: string): Replacement {
   const leadingSpace = getLeadingLineWhitespaceOfNode(node);
   return new Replacement(
     projectFile(node.getSourceFile(), info),
     new TextUpdate({
       position: node.getStart(),
       end: node.getStart(),
-      toInsert: `${todoText}\n${leadingSpace}`,
+      toInsert: `${text}\n${leadingSpace}`,
     }),
   );
 }

@@ -51,14 +51,7 @@ export function pass6__migrateInputDeclarations(
 
     filesWithMigratedInputs.add(sf);
     result.replacements.push(
-      new Replacement(
-        projectFile(sf, info),
-        new TextUpdate({
-          position: input.node.getStart(),
-          end: input.node.getEnd(),
-          toInsert: convertToSignalInput(input.node, metadata, checker, importManager, result),
-        }),
-      ),
+      ...convertToSignalInput(input.node, metadata, info, checker, importManager, result),
     );
   }
 

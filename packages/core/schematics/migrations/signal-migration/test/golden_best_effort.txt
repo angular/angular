@@ -1193,6 +1193,9 @@ function x(v: string | undefined): string | undefined {
 
 export class TransformFunctions {
   // We can check this, and expect `as any` due to transform incompatibility.
+  // TODO: Notes from signal input migration:
+  //  Input type is incompatible with transform. The migration added an `any`
+  //  cast. This worked previously because Angular was unable to check transforms.
   readonly withExplicitTypeWorks = input.required<{
     ok: true;
 }, string | undefined>({ transform: ((v: string | undefined) => '') as any });
@@ -1218,6 +1221,9 @@ import {Directive, input} from '@angular/core';
 @Directive()
 class TransformIncompatibleTypes {
   // @ts-ignore Simulate `--strictPropertyInitialization=false`.
+  // TODO: Notes from signal input migration:
+  //  Input type is incompatible with transform. The migration added an `any`
+  //  cast. This worked previously because Angular was unable to check transforms.
   readonly disabled = input<boolean, unknown>(undefined, { transform: ((v: unknown) => (v === null ? undefined : !!v)) as any });
 }
 @@@@@@ with_getters.ts @@@@@@

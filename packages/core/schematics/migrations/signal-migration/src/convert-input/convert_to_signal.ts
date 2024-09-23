@@ -14,15 +14,17 @@ import {DecoratorInputTransform} from '@angular/compiler-cli/src/ngtsc/metadata'
 import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
 import {removeFromUnionIfPossible} from '../utils/remove_from_union';
 import {MigrationResult} from '../result';
+import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../utils/tsurge';
+import {insertPrecedingLine} from '../../../../utils/tsurge/helpers/ast/insert_preceding_line';
+import {cutStringToLineLimit} from '../../../../utils/tsurge/helpers/string_manipulation/cut_string_line_length';
 
 // TODO: Consider initializations inside the constructor. Those are not migrated right now
 // though, as they are writes.
 
 /**
- *
  * Converts an `@Input()` property declaration to a signal input.
  *
- * @returns The transformed property declaration, printed as a string.
+ * @returns Replacements for converting the input.
  */
 export function convertToSignalInput(
   node: ts.PropertyDeclaration,
@@ -32,11 +34,13 @@ export function convertToSignalInput(
     preferShorthandIfPossible,
     originalInputDecorator,
     initialValue,
+    leadingTodoText,
   }: ConvertInputPreparation,
+  info: ProgramInfo,
   checker: ts.TypeChecker,
   importManager: ImportManager,
   result: MigrationResult,
-): string {
+): Replacement[] {
   let optionsLiteral: ts.ObjectLiteralExpression | null = null;
 
   // We need an options array for the input because:
@@ -53,7 +57,14 @@ export function convertToSignalInput(
       );
     }
     if (metadata.transform !== null) {
-      properties.push(extractTransformOfInput(metadata.transform, resolvedType, checker));
+      const transformRes = extractTransformOfInput(metadata.transform, resolvedType, checker);
+      properties.push(transformRes.node);
+
+      // Propagate TODO if one was requested from the transform extraction/validation.
+      if (transformRes.leadingTodoText !== null) {
+        leadingTodoText =
+          (leadingTodoText ? `${leadingTodoText} ` : '') + transformRes.leadingTodoText;
+      }
     }
 
     optionsLiteral = ts.factory.createObjectLiteralExpression(properties);
@@ -134,7 +145,35 @@ export function convertToSignalInput(
     inputInitializer,
   );
 
-  return result.printer.printNode(ts.EmitHint.Unspecified, newNode, node.getSourceFile());
+  const newPropertyText = result.printer.printNode(
+    ts.EmitHint.Unspecified,
+    newNode,
+    node.getSourceFile(),
+  );
+
+  const replacements: Replacement[] = [];
+
+  if (leadingTodoText !== null) {
+    replacements.push(
+      insertPrecedingLine(node, info, '// TODO: Notes from signal input migration:'),
+      ...cutStringToLineLimit(leadingTodoText, 70).map((line) =>
+        insertPrecedingLine(node, info, `//  ${line}`),
+      ),
+    );
+  }
+
+  replacements.push(
+    new Replacement(
+      projectFile(node.getSourceFile(), info),
+      new TextUpdate({
+        position: node.getStart(),
+        end: node.getEnd(),
+        toInsert: newPropertyText,
+      }),
+    ),
+  );
+
+  return replacements;
 }
 
 /**
@@ -145,14 +184,15 @@ function extractTransformOfInput(
   transform: DecoratorInputTransform,
   resolvedType: ts.TypeNode | undefined,
   checker: ts.TypeChecker,
-): ts.PropertyAssignment {
+): {node: ts.PropertyAssignment; leadingTodoText: string | null} {
   assert(ts.isExpression(transform.node), `Expected transform to be an expression.`);
   let transformFn: ts.Expression = transform.node;
+  let leadingTodoText: string | null = null;
 
   // If there is an explicit type, check if the transform return type actually works.
   // In some cases, the transform function is not compatible because with decorator inputs,
   // those were not checked. We cast the transform to `any` and add a TODO.
-  // TODO: Insert a TODO and capture this in the design doc.
+  // TODO: Capture this in the design doc.
   if (resolvedType !== undefined && !ts.isSyntheticExpression(resolvedType)) {
     // Note: If the type is synthetic, we cannot check, and we accept that in the worst case
     // we will create code that is not necessarily compiling. This is unlikely, but notably
@@ -167,6 +207,9 @@ function extractTransformOfInput(
         checker.getTypeFromTypeNode(resolvedType),
       )
     ) {
+      leadingTodoText =
+        'Input type is incompatible with transform. The migration added an `any` cast. ' +
+        'This worked previously because Angular was unable to check transforms.';
       transformFn = ts.factory.createAsExpression(
         ts.factory.createParenthesizedExpression(transformFn),
         ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
@@ -174,5 +217,8 @@ function extractTransformOfInput(
     }
   }
 
-  return ts.factory.createPropertyAssignment('transform', transformFn);
+  return {
+    node: ts.factory.createPropertyAssignment('transform', transformFn),
+    leadingTodoText,
+  };
 }

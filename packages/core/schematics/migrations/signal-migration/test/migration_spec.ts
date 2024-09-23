@@ -10,9 +10,11 @@ import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {runTsurgeMigration} from '../../../utils/tsurge/testing';
 import {SignalInputMigration} from '../src/migration';
+import {setupTsurgeJasmineHelpers} from '../../../utils/tsurge/testing/jasmine';
 
 describe('signal input migration', () => {
   beforeEach(() => {
+    setupTsurgeJasmineHelpers();
     initMockFileSystem('Native');
   });
 
@@ -46,10 +48,21 @@ describe('signal input migration', () => {
         },
       );
 
-      expect(fs.readFile(absoluteFrom('/app.component.ts'))).toContain(
-        'readonly name = input<string>(undefined!);',
-      );
-      expect(fs.readFile(absoluteFrom('/app.component.ts'))).toContain('this.name().charAt(0);');
+      expect(fs.readFile(absoluteFrom('/app.component.ts'))).toMatchWithDiff(`
+        import {Component, input} from '@angular/core';
+
+        @Component({template: ''})
+        class AppComponent {
+          // TODO: Notes from signal input migration:
+          //  Input is initialized to \`undefined\` but type does not allow this value.
+          //  This worked with \`@Input\` because your project uses \`--strictPropertyInitialization=false\`.
+          readonly name = input<string>(undefined!);
+
+          doSmth() {
+            this.name().charAt(0);
+          }
+        }
+        `);
     },
   );
 
