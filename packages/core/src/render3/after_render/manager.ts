@@ -149,15 +149,15 @@ export class AfterRenderSequence implements AfterRenderRef {
    */
   pipelinedValue: unknown = undefined;
 
-  private unregisterOnDestroy: () => void;
+  private unregisterOnDestroy: (() => void) | undefined;
 
   constructor(
     readonly impl: AfterRenderImpl,
     readonly hooks: AfterRenderHooks,
     public once: boolean,
-    destroyRef: DestroyRef,
+    destroyRef: DestroyRef | null,
   ) {
-    this.unregisterOnDestroy = destroyRef.onDestroy(() => this.destroy());
+    this.unregisterOnDestroy = destroyRef?.onDestroy(() => this.destroy());
   }
 
   afterRun(): void {
@@ -167,6 +167,6 @@ export class AfterRenderSequence implements AfterRenderRef {
 
   destroy(): void {
     this.impl.unregister(this);
-    this.unregisterOnDestroy();
+    this.unregisterOnDestroy?.();
   }
 }

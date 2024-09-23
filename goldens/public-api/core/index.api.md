@@ -63,6 +63,7 @@ export function afterRenderEffect<E = never, W = never, M = never>(spec: {
 // @public
 export interface AfterRenderOptions {
     injector?: Injector;
+    manualCleanup?: boolean;
     // @deprecated
     phase?: AfterRenderPhase;
 }
