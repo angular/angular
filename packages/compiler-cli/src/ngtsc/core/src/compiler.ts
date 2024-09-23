@@ -1460,6 +1460,7 @@ export class NgCompiler {
         localCompilationExtraImportsTracker,
         jitDeclarationRegistry,
         this.options.i18nPreserveWhitespaceForLegacyExtraction ?? true,
+        !!this.options.strictStandalone,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
@@ -1482,6 +1483,7 @@ export class NgCompiler {
         supportTestBed,
         compilationMode,
         jitDeclarationRegistry,
+        !!this.options.strictStandalone,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
@@ -1496,6 +1498,7 @@ export class NgCompiler {
         supportTestBed,
         compilationMode,
         !!this.options.generateExtraImportsInLocalMode,
+        !!this.options.strictStandalone,
       ),
       new InjectableDecoratorHandler(
         reflector,

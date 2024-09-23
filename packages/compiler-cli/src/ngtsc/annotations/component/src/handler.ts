@@ -252,6 +252,7 @@ export class ComponentDecoratorHandler
     private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker | null,
     private readonly jitDeclarationRegistry: JitDeclarationRegistry,
     private readonly i18nPreserveSignificantWhitespace: boolean,
+    private readonly strictStandalone: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -431,6 +432,7 @@ export class ComponentDecoratorHandler
       this.annotateForClosureCompiler,
       this.compilationMode,
       this.elementSchemaRegistry.getDefaultComponentElementName(),
+      this.strictStandalone,
     );
     // `extractDirectiveMetadata` returns `jitForced = true` when the `@Component` has
     // set `jit: true`. In this case, compilation of the decorator is skipped. Returning

@@ -155,6 +155,11 @@ export enum ErrorCode {
    */
   COMPONENT_UNKNOWN_DEFERRED_IMPORT = 2022,
 
+  /**
+   * Raised when a `standalone: false` component is declared but `strictStandalone` is set.
+   */
+  NON_STANDALONE_NOT_ALLOWED = 2023,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be

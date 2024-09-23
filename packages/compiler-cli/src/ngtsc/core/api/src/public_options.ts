@@ -261,6 +261,11 @@ export interface DiagnosticOptions {
      */
     checks?: {[Name in ExtendedTemplateDiagnosticName]?: DiagnosticCategoryLabel};
   };
+
+  /**
+   * If enabled, non-standalone declarations are prohibited and result in build errors.
+   */
+  strictStandalone?: boolean;
 }
 
 /**

@@ -115,6 +115,7 @@ export function extractDirectiveMetadata(
   annotateForClosureCompiler: boolean,
   compilationMode: CompilationMode,
   defaultSelector: string | null,
+  strictStandalone: boolean,
 ):
   | {
       jitForced: false;
@@ -342,6 +343,14 @@ export function extractDirectiveMetadata(
       throw createValueHasWrongTypeError(expr, resolved, `standalone flag must be a boolean`);
     }
     isStandalone = resolved;
+
+    if (!isStandalone && strictStandalone) {
+      throw new FatalDiagnosticError(
+        ErrorCode.NON_STANDALONE_NOT_ALLOWED,
+        expr,
+        `Only standalone components/directives are allowed when 'strictStandalone' is enabled.`,
+      );
+    }
   }
   let isSignal = false;
   if (directive.has('signals')) {
