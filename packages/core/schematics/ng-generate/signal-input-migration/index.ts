@@ -49,6 +49,8 @@ export function migrate(options: Options): Rule {
     const analysisPath = fs.resolve(options.analysisDir);
     const unitResults: CompilationUnitData[] = [];
     const programInfos = [...buildPaths, ...testPaths].map((tsconfigPath) => {
+      context.logger.info(`Preparing analysis for: ${tsconfigPath}..`);
+
       const baseInfo = migration.createProgram(tsconfigPath, fs);
       const info = migration.prepareProgram(baseInfo);
 
@@ -66,7 +68,7 @@ export function migrate(options: Options): Rule {
     // Analyze phase. Treat all projects as compilation units as
     // this allows us to support references between those.
     for (const {info, tsconfigPath} of programInfos) {
-      context.logger.info(`Analyzing: ${tsconfigPath}..`);
+      context.logger.info(`Scanning for inputs: ${tsconfigPath}..`);
 
       unitResults.push(await migration.analyze(info));
     }
