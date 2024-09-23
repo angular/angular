@@ -37,6 +37,7 @@ copy_to_directory(
         "//adev/src/content/tools/cli",
         "//adev/src/content/tools/libraries",
         "//adev/src/content/tutorials",
+        "//adev/src/content/tutorials/deferrable-views:deferrable-views-guides",
         "//adev/src/content/tutorials/first-app:first-app-guides",
         "//adev/src/content/tutorials/learn-angular:learn-angular-guides",
         "//packages/animations:animations_docs",
@@ -84,6 +85,7 @@ copy_to_directory(
 copy_to_directory(
     name = "tutorials",
     srcs = [
+        "//adev/src/content/tutorials/deferrable-views",
         "//adev/src/content/tutorials/first-app",
         "//adev/src/content/tutorials/homepage",
         "//adev/src/content/tutorials/learn-angular",
