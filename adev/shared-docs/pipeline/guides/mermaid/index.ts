@@ -24,7 +24,7 @@ function getMermaidScriptTagData() {
   }
 
   return (mermaidScriptTagData = {
-    path: runfiles.resolveWorkspaceRelative('node_modules/mermaid/dist/mermaid.js'),
+    path: runfiles.resolve('npm/node_modules/mermaid/dist/mermaid.js'),
   });
 }
 
