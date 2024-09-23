@@ -45,6 +45,14 @@ export interface AfterRenderOptions {
   injector?: Injector;
 
   /**
+   * Whether the hook should require manual cleanup.
+   *
+   * If this is `false` (the default) the hook will automatically register itself to be cleaned up
+   * with the current `DestroyRef`.
+   */
+  manualCleanup?: boolean;
+
+  /**
    * The phase the callback should be invoked in.
    *
    * <div class="alert is-critical">
@@ -448,11 +456,12 @@ function afterRenderImpl(
   manager.impl ??= injector.get(AfterRenderImpl);
 
   const hooks = options?.phase ?? AfterRenderPhase.MixedReadWrite;
+  const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
   const sequence = new AfterRenderSequence(
     manager.impl,
     getHooks(callbackOrSpec, hooks),
     once,
-    injector.get(DestroyRef),
+    destroyRef,
   );
   manager.impl.register(sequence);
   return sequence;

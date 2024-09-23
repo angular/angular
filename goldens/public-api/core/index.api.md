@@ -52,6 +52,7 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
 // @public
 export interface AfterRenderOptions {
     injector?: Injector;
+    manualCleanup?: boolean;
     // @deprecated
     phase?: AfterRenderPhase;
 }
