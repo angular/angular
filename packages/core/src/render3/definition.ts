@@ -357,6 +357,7 @@ export function ɵɵdefineComponent<T>(
       pipeDefs: null!, // assigned in noSideEffects
       dependencies: (baseDef.standalone && componentDefinition.dependencies) || null,
       getStandaloneInjector: null,
+      getExternalStyles: null,
       signals: componentDefinition.signals ?? false,
       data: componentDefinition.data || {},
       encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,

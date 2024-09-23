@@ -39,6 +39,12 @@ export interface RendererType2 {
    * This is useful for renderers that delegate to other renderers.
    */
   data: {[kind: string]: any};
+
+  /**
+   * A function added by the {@link ɵɵExternalStylesFeature} and used by the framework to create
+   * the list of external runtime style URLs.
+   */
+  getExternalStyles?: ((encapsulationId?: string) => string[]) | null;
 }
 
 /**

@@ -600,6 +600,9 @@
     "name": "createLView"
   },
   {
+    "name": "createLinkElement"
+  },
+  {
     "name": "createNodeInjector"
   },
   {
