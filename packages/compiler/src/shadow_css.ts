@@ -806,7 +806,7 @@ export class ShadowCss {
           cssPrefixWithPseudoSelectorFunctionMatch;
         const hasOuterHostNoCombinator = mainSelector.includes(_polyfillHostNoCombinator);
         const scopedMainSelector = mainSelector.replace(
-          _polyfillHostNoCombinatorReGlobal,
+          _polyfillExactHostNoCombinatorReGlobal,
           `[${hostSelector}]`,
         );
 
@@ -984,6 +984,7 @@ const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 const _polyfillHostNoCombinatorWithinPseudoFunction = new RegExp(
   `:.*(.*${_polyfillHostNoCombinator}.*)`,
 );
+const _polyfillExactHostNoCombinatorReGlobal = /-shadowcsshost-no-combinator/g;
 const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s]*)/;
 const _polyfillHostNoCombinatorReGlobal = new RegExp(_polyfillHostNoCombinatorRe, 'g');
 const _shadowDOMSelectorsRe = [

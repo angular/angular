@@ -67,7 +67,17 @@ describe('ShadowCss', () => {
     expect(shim('one[attr] {}', 'contenta')).toEqualCss('one[attr][contenta] {}');
     expect(shim('[is="one"] {}', 'contenta')).toEqualCss('[is="one"][contenta] {}');
     expect(shim('[attr] {}', 'contenta')).toEqualCss('[attr][contenta] {}');
+  });
+
+  it('should transform :host with attributes and pseudo selectors', () => {
     expect(shim(':host [attr] {}', 'contenta', 'hosta')).toEqualCss('[hosta] [attr][contenta] {}');
+    expect(shim(':host(create-first-project) {}', 'contenta', 'hosta')).toEqualCss(
+      'create-first-project[hosta] {}',
+    );
+    expect(shim(':host[attr] {}', 'contenta', 'hosta')).toEqualCss('[attr][hosta] {}');
+    expect(shim(':host[attr]:where(:not(.cm-button)) {}', 'contenta', 'hosta')).toEqualCss(
+      '[hosta][attr]:where(:not(.cm-button)) {}',
+    );
   });
 
   it('should handle escaped sequences in selectors', () => {
