@@ -1083,6 +1083,9 @@
     "name": "createLView"
   },
   {
+    "name": "createLinkElement"
+  },
+  {
     "name": "createNewSegmentChildren"
   },
   {

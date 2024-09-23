@@ -14,6 +14,7 @@ import {ɵɵInputTransformsFeature} from './features/input_transforms_feature';
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
 import {ɵɵStandaloneFeature} from './features/standalone_feature';
+import {ɵɵExternalStylesFeature} from './features/external_styles_feature';
 import {
   ComponentDef,
   ComponentTemplate,
@@ -255,4 +256,5 @@ export {
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
   ɵɵStandaloneFeature,
+  ɵɵExternalStylesFeature,
 };

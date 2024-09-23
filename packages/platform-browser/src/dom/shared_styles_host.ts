@@ -78,13 +78,33 @@ function addServerStyles(
   }
 }
 
+/**
+ * Creates a `link` element for the provided external style URL.
+ * @param url A string of the URL for the stylesheet.
+ * @param doc A DOM Document to use to create the element.
+ * @returns An HTMLLinkElement instance.
+ */
+function createLinkElement(url: string, doc: Document): HTMLLinkElement {
+  const linkElement = doc.createElement('link');
+  linkElement.setAttribute('rel', 'stylesheet');
+  linkElement.setAttribute('href', url);
+
+  return linkElement;
+}
+
 @Injectable()
 export class SharedStylesHost implements OnDestroy {
   /**
-   * Provides usage information for active embedded style content and associated HTML <style> elements.
+   * Provides usage information for active inline style content and associated HTML <style> elements.
    * Embedded styles typically originate from the `styles` metadata of a rendered component.
    */
-  private readonly styles = new Map<string /** content */, UsageRecord<HTMLStyleElement>>();
+  private readonly inline = new Map<string /** content */, UsageRecord<HTMLStyleElement>>();
+
+  /**
+   * Provides usage information for active external style URLs and the associated HTML <link> elements.
+   * External styles typically originate from the `ɵɵExternalStylesFeature` of a rendered component.
+   */
+  private readonly external = new Map<string /** URL */, UsageRecord<HTMLLinkElement>>();
 
   /**
    * Set of host DOM nodes that will have styles attached.
@@ -103,7 +123,7 @@ export class SharedStylesHost implements OnDestroy {
     @Inject(PLATFORM_ID) platformId: object = {},
   ) {
     this.isServer = isPlatformServer(platformId);
-    addServerStyles(doc, appId, this.styles);
+    addServerStyles(doc, appId, this.inline);
     this.hosts.add(doc.head);
   }
 
@@ -111,20 +131,24 @@ export class SharedStylesHost implements OnDestroy {
    * Adds embedded styles to the DOM via HTML `style` elements.
    * @param styles An array of style content strings.
    */
-  addStyles(styles: string[]): void {
+  addStyles(styles: string[], urls?: string[]): void {
     for (const value of styles) {
-      this.addUsage(value, this.styles, createStyleElement);
+      this.addUsage(value, this.inline, createStyleElement);
     }
+
+    urls?.forEach((value) => this.addUsage(value, this.external, createLinkElement));
   }
 
   /**
    * Removes embedded styles from the DOM that were added as HTML `style` elements.
    * @param styles An array of style content strings.
    */
-  removeStyles(styles: string[]): void {
+  removeStyles(styles: string[], urls?: string[]): void {
     for (const value of styles) {
-      this.removeUsage(value, this.styles);
+      this.removeUsage(value, this.inline);
     }
+
+    urls?.forEach((value) => this.removeUsage(value, this.external));
   }
 
   protected addUsage<T extends HTMLElement>(
@@ -171,7 +195,7 @@ export class SharedStylesHost implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    for (const [, {elements}] of this.styles) {
+    for (const [, {elements}] of [...this.inline, ...this.external]) {
       removeElements(elements);
     }
     this.hosts.clear();
@@ -187,8 +211,11 @@ export class SharedStylesHost implements OnDestroy {
     this.hosts.add(hostNode);
 
     // Add existing styles to new host
-    for (const [style, {elements}] of this.styles) {
+    for (const [style, {elements}] of this.inline) {
       elements.push(this.addElement(hostNode, createStyleElement(style, this.doc)));
+    }
+    for (const [url, {elements}] of this.external) {
+      elements.push(this.addElement(hostNode, createLinkElement(url, this.doc)));
     }
   }
 

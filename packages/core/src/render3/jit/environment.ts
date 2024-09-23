@@ -51,6 +51,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵInheritDefinitionFeature': r3.ɵɵInheritDefinitionFeature,
   'ɵɵInputTransformsFeature': r3.ɵɵInputTransformsFeature,
   'ɵɵStandaloneFeature': r3.ɵɵStandaloneFeature,
+  'ɵɵExternalStylesFeature': r3.ɵɵExternalStylesFeature,
   'ɵɵnextContext': r3.ɵɵnextContext,
   'ɵɵnamespaceHTML': r3.ɵɵnamespaceHTML,
   'ɵɵnamespaceMathML': r3.ɵɵnamespaceMathML,

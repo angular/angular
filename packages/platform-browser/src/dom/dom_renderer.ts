@@ -460,6 +460,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
 class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
   private readonly styles: string[];
+  private readonly styleUrls?: string[];
 
   constructor(
     eventManager: EventManager,
@@ -473,10 +474,11 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
   ) {
     super(eventManager, doc, ngZone, platformIsServer);
     this.styles = compId ? shimStylesContent(compId, component.styles) : component.styles;
+    this.styleUrls = component.getExternalStyles?.(compId);
   }
 
   applyStyles(): void {
-    this.sharedStylesHost.addStyles(this.styles);
+    this.sharedStylesHost.addStyles(this.styles, this.styleUrls);
   }
 
   override destroy(): void {
@@ -484,7 +486,7 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
       return;
     }
 
-    this.sharedStylesHost.removeStyles(this.styles);
+    this.sharedStylesHost.removeStyles(this.styles, this.styleUrls);
   }
 }
 

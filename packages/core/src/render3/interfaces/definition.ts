@@ -401,6 +401,12 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
     | null;
 
   /**
+   * A function added by the {@link ɵɵExternalStylesFeature} and used by the framework to create
+   * the list of external runtime style URLs.
+   */
+  getExternalStyles: ((encapsulationId?: string) => string[]) | null;
+
+  /**
    * Used to store the result of `noSideEffects` function so that it is not removed by closure
    * compiler. The property should never be read.
    */

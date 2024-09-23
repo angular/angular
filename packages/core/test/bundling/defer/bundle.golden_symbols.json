@@ -750,6 +750,9 @@
     "name": "createLView"
   },
   {
+    "name": "createLinkElement"
+  },
+  {
     "name": "createNodeInjector"
   },
   {
@@ -1480,6 +1483,9 @@
   },
   {
     "name": "init_exhaustive_check_no_changes"
+  },
+  {
+    "name": "init_external_styles_feature"
   },
   {
     "name": "init_fields"

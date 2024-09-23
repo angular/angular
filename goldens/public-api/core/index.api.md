@@ -1524,6 +1524,7 @@ export interface RendererType2 {
         [kind: string]: any;
     };
     encapsulation: ViewEncapsulation;
+    getExternalStyles?: ((encapsulationId?: string) => string[]) | null;
     id: string;
     styles: string[];
 }
