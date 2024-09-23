@@ -37,7 +37,7 @@ function viewChildRequiredFn<LocatorT, ReadT>(
  * It is a special function that also provides access to required query results via the `.required`
  * property.
  *
- * @developerPreview
+ * @publicAPI
  * @docsPrivate Ignored because `viewChild` is the canonical API entry.
  */
 export interface ViewChildFunction {
@@ -45,7 +45,7 @@ export interface ViewChildFunction {
    * Initializes a view child query. Consider using `viewChild.required` for queries that should
    * always match.
    *
-   * @developerPreview
+   * @publicAPI
    */
   <LocatorT>(locator: ProviderToken<LocatorT> | string): Signal<LocatorT | undefined>;
   <LocatorT, ReadT>(
@@ -56,7 +56,7 @@ export interface ViewChildFunction {
   /**
    * Initializes a view child query that is expected to always match an element.
    *
-   * @developerPreview
+   * @publicAPI
    */
   required: {
     <LocatorT>(locator: ProviderToken<LocatorT> | string): Signal<LocatorT>;
@@ -87,7 +87,7 @@ export interface ViewChildFunction {
  * }
  * ```
  *
- * @developerPreview
+ * @publicAPI
  * @initializerApiFunction
  */
 export const viewChild: ViewChildFunction = (() => {
@@ -124,7 +124,7 @@ export function viewChildren<LocatorT, ReadT>(
  * ```
  *
  * @initializerApiFunction
- * @developerPreview
+ * @publicAPI
  */
 export function viewChildren<LocatorT, ReadT>(
   locator: ProviderToken<LocatorT> | string,
@@ -156,7 +156,7 @@ function contentChildRequiredFn<LocatorT, ReadT>(
  * The contentChild function creates a singular content query. It is a special function that also
  * provides access to required query results via the `.required` property.
  *
- * @developerPreview
+ * @publicAPI
  * @docsPrivate Ignored because `contentChild` is the canonical API entry.
  */
 export interface ContentChildFunction {
@@ -164,7 +164,7 @@ export interface ContentChildFunction {
    * Initializes a content child query.
    *
    * Consider using `contentChild.required` for queries that should always match.
-   * @developerPreview
+   * @publicAPI
    */
   <LocatorT>(
     locator: ProviderToken<LocatorT> | string,
@@ -220,7 +220,7 @@ export interface ContentChildFunction {
  * ```
  *
  * @initializerApiFunction
- * @developerPreview
+ * @publicAPI
  */
 export const contentChild: ContentChildFunction = (() => {
   // Note: This may be considered a side-effect, but nothing will depend on
@@ -257,7 +257,7 @@ export function contentChildren<LocatorT, ReadT>(
  * ```
  *
  * @initializerApiFunction
- * @developerPreview
+ * @publicAPI
  */
 export function contentChildren<LocatorT, ReadT>(
   locator: ProviderToken<LocatorT> | string,

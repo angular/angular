@@ -8,8 +8,6 @@ There are two categories of query: view queries and content queries.
 
 Signal queries supply query results as a reactive signal primitive. You can use query results in `computed` and `effect`, composing these results with other signals.
 
-IMPORTANT: Signal queries are in [developer preview](reference/releases#developer-preview). APIs may change based on feedback without going through Angular's deprecation cycle.
-
 If you're already familiar with Angular queries, you can jump straight to [Comparing signal-based queries to decorator-based queries](#comparing-signal-based-queries-to-decorator-based-queries)
 
 ## View queries
