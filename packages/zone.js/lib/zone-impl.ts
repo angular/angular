@@ -1128,7 +1128,7 @@ export function initZone(): ZoneType {
     }
     private _zone: ZoneImpl;
 
-    private _taskCounts: {microTask: number; macroTask: number; eventTask: number} = {
+    private _taskCounts: {[key in TaskType]: number} = {
       'microTask': 0,
       'macroTask': 0,
       'eventTask': 0,
