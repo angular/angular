@@ -78,6 +78,7 @@ export function identifyTemplateReferences<D extends ClassFieldDescriptor>(
         kind: ReferenceKind.InTemplate,
         from: {
           read: res.read,
+          readAstPath: res.readAstPath,
           node: res.context,
           isObjectShorthandExpression: res.isObjectShorthandExpression,
           originatingTsFile: projectFile(node.getSourceFile(), programInfo),
