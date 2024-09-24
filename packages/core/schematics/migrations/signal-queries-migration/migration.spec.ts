@@ -650,6 +650,207 @@ describe('signal queries migration', () => {
       }
     `);
   });
+
+  it('should remove `toArray` function calls for multi queries', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: ''
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+            click() {
+              this.labels.toArray().some(bla);
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, viewChildren} from '@angular/core';
+
+      @Component({
+        template: ''
+      })
+      class MyComp {
+        readonly labels = viewChildren<ElementRef>('label');
+
+        click() {
+          this.labels().some(bla);
+        }
+      }
+    `);
+  });
+
+  it('should remove `toArray` function calls for multi queries, with control flow', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: ''
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+            click() {
+              if (this.labels) {
+                this.labels.toArray().some(bla);
+              }
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, viewChildren} from '@angular/core';
+
+      @Component({
+        template: ''
+      })
+      class MyComp {
+        readonly labels = viewChildren<ElementRef>('label');
+
+        click() {
+          const labels = this.labels();
+          if (labels) {
+            labels.some(bla);
+          }
+        }
+      }
+    `);
+  });
+
+  it('should remove `toArray` function calls in templates and host bindings', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '{{ labels.toArray().some(bla) }}',
+            host: {
+              '[id]': 'labels.toArray().find(bla)',
+            }
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, viewChildren} from '@angular/core';
+
+      @Component({
+        template: '{{ labels().some(bla) }}',
+        host: {
+          '[id]': 'labels().find(bla)',
+        }
+      })
+      class MyComp {
+        readonly labels = viewChildren<ElementRef>('label');
+      }
+    `);
+  });
+
+  it('should replace `get` function calls for multi queries', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: ''
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+            click() {
+              if (this.labels) {
+                this.labels.get(1)?.nativeElement;
+              }
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, viewChildren} from '@angular/core';
+
+      @Component({
+        template: ''
+      })
+      class MyComp {
+        readonly labels = viewChildren<ElementRef>('label');
+
+        click() {
+          const labels = this.labels();
+          if (labels) {
+            labels.at(1)?.nativeElement;
+          }
+        }
+      }
+    `);
+  });
+
+  it('should replace `get` function calls in templates and host bindings', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ContentChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '{{ labels.get(0).nativeElement.textContent }}',
+            host: {
+              '[id]': 'labels.get(0).nativeElement.textContent',
+            }
+          })
+          class MyComp {
+            @ContentChildren('label') labels = new QueryList<ElementRef>();
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, contentChildren} from '@angular/core';
+
+      @Component({
+        template: '{{ labels().at(0).nativeElement.textContent }}',
+        host: {
+          '[id]': 'labels().at(0).nativeElement.textContent',
+        }
+      })
+      class MyComp {
+        readonly labels = contentChildren<ElementRef>('label');
+      }
+    `);
+  });
 });
 
 function populateDeclarationTestCaseComponent(declaration: string): string {

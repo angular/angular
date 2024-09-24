@@ -20,34 +20,36 @@ import {
 } from '../../utils/tsurge';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
 import {ClassFieldDescriptor} from '../signal-migration/src';
-import {GroupedTsAstVisitor} from '../signal-migration/src/utils/grouped_ts_ast_visitor';
-import {computeReplacementsToMigrateQuery} from './convert_query_property';
-import {ExtractedQuery, extractSourceQueryDefinition} from './identify_queries';
-import {queryFunctionNameToDecorator} from './query_api_names';
-import {ClassFieldUniqueKey} from '../signal-migration/src/passes/reference_resolution/known_fields';
-import {KnownQueries} from './known_queries';
+import {checkInheritanceOfKnownFields} from '../signal-migration/src/passes/problematic_patterns/check_inheritance';
+import {checkIncompatiblePatterns} from '../signal-migration/src/passes/problematic_patterns/common_incompatible_patterns';
+import {migrateHostBindings} from '../signal-migration/src/passes/reference_migration/migrate_host_bindings';
+import {migrateTemplateReferences} from '../signal-migration/src/passes/reference_migration/migrate_template_references';
+import {migrateTypeScriptReferences} from '../signal-migration/src/passes/reference_migration/migrate_ts_references';
+import {migrateTypeScriptTypeReferences} from '../signal-migration/src/passes/reference_migration/migrate_ts_type_references';
+import {ReferenceMigrationHost} from '../signal-migration/src/passes/reference_migration/reference_migration_host';
 import {createFindAllSourceFileReferencesVisitor} from '../signal-migration/src/passes/reference_resolution';
+import {ClassFieldUniqueKey} from '../signal-migration/src/passes/reference_resolution/known_fields';
 import {
   isHostBindingReference,
   isTemplateReference,
   isTsReference,
 } from '../signal-migration/src/passes/reference_resolution/reference_kinds';
-import {ReferenceMigrationHost} from '../signal-migration/src/passes/reference_migration/reference_migration_host';
-import {migrateTypeScriptReferences} from '../signal-migration/src/passes/reference_migration/migrate_ts_references';
-import {migrateTemplateReferences} from '../signal-migration/src/passes/reference_migration/migrate_template_references';
-import {migrateHostBindings} from '../signal-migration/src/passes/reference_migration/migrate_host_bindings';
-import {migrateTypeScriptTypeReferences} from '../signal-migration/src/passes/reference_migration/migrate_ts_type_references';
 import {ReferenceResult} from '../signal-migration/src/passes/reference_resolution/reference_result';
-import {getClassFieldDescriptorForSymbol, getUniqueIDForClassProperty} from './field_tracking';
-import {checkIncompatiblePatterns} from '../signal-migration/src/passes/problematic_patterns/common_incompatible_patterns';
+import {GroupedTsAstVisitor} from '../signal-migration/src/utils/grouped_ts_ast_visitor';
 import {InheritanceGraph} from '../signal-migration/src/utils/inheritance_graph';
-import {checkInheritanceOfKnownFields} from '../signal-migration/src/passes/problematic_patterns/check_inheritance';
+import {computeReplacementsToMigrateQuery} from './convert_query_property';
+import {getClassFieldDescriptorForSymbol, getUniqueIDForClassProperty} from './field_tracking';
+import {ExtractedQuery, extractSourceQueryDefinition} from './identify_queries';
+import {KnownQueries} from './known_queries';
+import {queryFunctionNameToDecorator} from './query_api_names';
+import {removeQueryListToArrayCall} from './fn_to_array_removal';
+import {replaceQueryListGetCall} from './fn_get_replacement';
 
 // TODO: Consider re-using inheritance logic from input migration
 // TODO: Consider re-using problematic pattern recognition logic from input migration
 
 export interface CompilationUnitData {
-  knownQueryFields: Record<ClassFieldUniqueKey, {fieldName: string}>;
+  knownQueryFields: Record<ClassFieldUniqueKey, {fieldName: string; isMulti: boolean}>;
   problematicQueries: Record<ClassFieldUniqueKey, true>;
 }
 
@@ -76,6 +78,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       if (extractedQuery !== null) {
         res.knownQueryFields[extractedQuery.id] = {
           fieldName: extractedQuery.queryInfo.propertyName,
+          isMulti: extractedQuery.queryInfo.first === false,
         };
       }
     };
@@ -277,6 +280,12 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       importManager,
       info,
     );
+
+    // Fix problematic calls, like `QueryList#toArray`, or `QueryList#get`.
+    for (const ref of referenceResult.references) {
+      removeQueryListToArrayCall(ref, info, globalMetadata, replacements);
+      replaceQueryListGetCall(ref, info, globalMetadata, replacements);
+    }
 
     // Remove imports if possible.
     for (const [file, types] of filesWithMigratedQueries) {
