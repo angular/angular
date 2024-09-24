@@ -980,7 +980,7 @@ const _cssColonHostContextReGlobal = new RegExp(_polyfillHostContext + _parenSuf
 const _cssColonHostContextRe = new RegExp(_polyfillHostContext + _parenSuffix, 'im');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 const _polyfillHostNoCombinatorWithinPseudoFunction = new RegExp(
-  `:.*(.*${_polyfillHostNoCombinator}.*)`,
+  `:.*\\(.*${_polyfillHostNoCombinator}.*\\)`,
 );
 const _polyfillExactHostNoCombinatorReGlobal = /-shadowcsshost-no-combinator/g;
 const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s]*)/;
