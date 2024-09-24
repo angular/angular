@@ -52,6 +52,8 @@ export const enum NotificationSource {
   PendingTaskRemoved,
   // An `effect()` outside of the view tree became dirty and might need to run.
   RootEffect,
+  // An `effect()` within the view tree became dirty.
+  ViewEffect,
 }
 
 /**
