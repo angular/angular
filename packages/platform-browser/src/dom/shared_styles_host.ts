@@ -33,35 +33,49 @@ interface UsageRecord<T> {
  * Removes all provided elements from the document.
  * @param elements An array of HTML Elements.
  */
-function removeAll(elements: Iterable<HTMLElement>): void {
+function removeElements(elements: Iterable<HTMLElement>): void {
   for (const element of elements) {
     element.remove();
   }
 }
 
 /**
+ * Creates a `style` element with the provided inline style content.
+ * @param style A string of the inline style content.
+ * @param doc A DOM Document to use to create the element.
+ * @returns An HTMLStyleElement instance.
+ */
+function createStyleElement(style: string, doc: Document): HTMLStyleElement {
+  const styleElement = doc.createElement('style');
+  styleElement.textContent = style;
+
+  return styleElement;
+}
+
+/**
  * Searches a DOM document's head element for style elements with a matching application
- * identifier attribute (`ng-app-id`) to the provide identifier.
+ * identifier attribute (`ng-app-id`) to the provide identifier and adds usage records for each.
  * @param doc An HTML DOM document instance.
  * @param appId A string containing an Angular application identifer.
- * @returns A map of style strings to style elements if found; Otherwise, `null`.
+ * @param usages A Map object for tracking style usage.
  */
-function findServerStyles(doc: Document, appId: string): Map<string, HTMLStyleElement> | null {
+function addServerStyles(
+  doc: Document,
+  appId: string,
+  usages: Map<string, UsageRecord<HTMLStyleElement>>,
+): void {
   const styleElements = doc.head?.querySelectorAll<HTMLStyleElement>(
     `style[${APP_ID_ATTRIBUTE_NAME}="${appId}"]`,
   );
 
-  let styles: null | Map<string, HTMLStyleElement> = null;
   if (styleElements) {
     for (const styleElement of styleElements) {
       if (styleElement.textContent) {
-        styles ??= new Map();
-        styles.set(styleElement.textContent, styleElement);
+        styleElement.removeAttribute(APP_ID_ATTRIBUTE_NAME);
+        usages.set(styleElement.textContent, {usage: 0, elements: [styleElement]});
       }
     }
   }
-
-  return styles;
 }
 
 @Injectable()
@@ -70,18 +84,12 @@ export class SharedStylesHost implements OnDestroy {
    * Provides usage information for active embedded style content and associated HTML <style> elements.
    * Embedded styles typically originate from the `styles` metadata of a rendered component.
    */
-  private readonly embeddedStyles = new Map<string /** content */, UsageRecord<HTMLStyleElement>>();
+  private readonly styles = new Map<string /** content */, UsageRecord<HTMLStyleElement>>();
 
   /**
    * Set of host DOM nodes that will have styles attached.
    */
   private readonly hosts = new Set<Node>();
-
-  /**
-   * A lookup for server rendered styles if any are present in the DOM on initialization.
-   * `null` if no server rendered styles are present in the DOM.
-   */
-  private readonly serverStyles: Map<string, HTMLStyleElement> | null;
 
   /**
    * Whether the application code is currently executing on a server.
@@ -95,7 +103,7 @@ export class SharedStylesHost implements OnDestroy {
     @Inject(PLATFORM_ID) platformId: object = {},
   ) {
     this.isServer = isPlatformServer(platformId);
-    this.serverStyles = findServerStyles(doc, appId);
+    addServerStyles(doc, appId, this.styles);
     this.hosts.add(doc.head);
   }
 
@@ -104,9 +112,8 @@ export class SharedStylesHost implements OnDestroy {
    * @param styles An array of style content strings.
    */
   addStyles(styles: string[]): void {
-    const creator = this.getStyleElement.bind(this);
     for (const value of styles) {
-      this.add(value, this.embeddedStyles, creator);
+      this.addUsage(value, this.styles, createStyleElement);
     }
   }
 
@@ -116,28 +123,36 @@ export class SharedStylesHost implements OnDestroy {
    */
   removeStyles(styles: string[]): void {
     for (const value of styles) {
-      this.remove(value, this.embeddedStyles);
+      this.removeUsage(value, this.styles);
     }
   }
 
-  protected add<T extends HTMLElement>(
+  protected addUsage<T extends HTMLElement>(
     value: string,
     usages: Map<string, UsageRecord<T>>,
-    creator: (host: Node, value: string) => T,
+    creator: (value: string, doc: Document) => T,
   ): void {
     // Attempt to get any current usage of the value
     const record = usages.get(value);
 
     // If existing, just increment the usage count
     if (record) {
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && record.usage === 0) {
+        // A usage count of zero indicates a preexisting server generated style.
+        // This attribute is solely used for debugging purposes of SSR style reuse.
+        record.elements.forEach((element) => element.setAttribute('ng-style-reused', ''));
+      }
       record.usage++;
     } else {
       // Otherwise, create an entry to track the elements and add element for each host
-      usages.set(value, {usage: 1, elements: [...this.hosts].map((host) => creator(host, value))});
+      usages.set(value, {
+        usage: 1,
+        elements: [...this.hosts].map((host) => this.addElement(host, creator(value, this.doc))),
+      });
     }
   }
 
-  protected remove<T extends HTMLElement>(
+  protected removeUsage<T extends HTMLElement>(
     value: string,
     usages: Map<string, UsageRecord<T>>,
   ): void {
@@ -149,21 +164,15 @@ export class SharedStylesHost implements OnDestroy {
     if (record) {
       record.usage--;
       if (record.usage <= 0) {
-        removeAll(record.elements);
+        removeElements(record.elements);
         usages.delete(value);
       }
     }
   }
 
   ngOnDestroy(): void {
-    const serverStyles = this.serverStyles;
-    if (serverStyles) {
-      removeAll(serverStyles.values());
-      serverStyles.clear();
-    }
-
-    for (const [, {elements}] of this.embeddedStyles) {
-      removeAll(elements);
+    for (const [, {elements}] of this.styles) {
+      removeElements(elements);
     }
     this.hosts.clear();
   }
@@ -177,8 +186,9 @@ export class SharedStylesHost implements OnDestroy {
   addHost(hostNode: Node): void {
     this.hosts.add(hostNode);
 
-    for (const [style, {elements}] of this.embeddedStyles) {
-      elements.push(this.getStyleElement(hostNode, style));
+    // Add existing styles to new host
+    for (const [style, {elements}] of this.styles) {
+      elements.push(this.addElement(hostNode, createStyleElement(style, this.doc)));
     }
   }
 
@@ -199,27 +209,5 @@ export class SharedStylesHost implements OnDestroy {
 
     // Insert the element into the DOM with the host node as parent
     return host.appendChild(element);
-  }
-
-  private getStyleElement(host: Node, style: string): HTMLStyleElement {
-    const styleNodesInDOM = this.serverStyles;
-    let styleEl = styleNodesInDOM?.get(style);
-    if (styleEl?.parentNode === host) {
-      // `styleNodesInDOM` cannot be undefined due to the above `styleNodesInDOM?.get`.
-      styleNodesInDOM!.delete(style);
-
-      styleEl.removeAttribute(APP_ID_ATTRIBUTE_NAME);
-
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        // This attribute is solely used for debugging purposes.
-        styleEl.setAttribute('ng-style-reused', '');
-      }
-    } else {
-      styleEl = this.doc.createElement('style');
-      styleEl.textContent = style;
-      this.addElement(host, styleEl);
-    }
-
-    return styleEl;
   }
 }
