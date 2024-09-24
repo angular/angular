@@ -795,6 +795,9 @@
     "name": "createPlatformFactory"
   },
   {
+    "name": "createStyleElement"
+  },
+  {
     "name": "createTView"
   },
   {
@@ -1368,7 +1371,7 @@
     "name": "remove"
   },
   {
-    "name": "removeAll"
+    "name": "removeElements"
   },
   {
     "name": "removeFromArray"

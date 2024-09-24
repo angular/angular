@@ -738,6 +738,9 @@
     "name": "createOperatorSubscriber"
   },
   {
+    "name": "createStyleElement"
+  },
+  {
     "name": "createTView"
   },
   {
@@ -1260,13 +1263,13 @@
     "name": "remove"
   },
   {
-    "name": "removeAll"
-  },
-  {
     "name": "removeDehydratedView"
   },
   {
     "name": "removeDehydratedViews"
+  },
+  {
+    "name": "removeElements"
   },
   {
     "name": "removeFromArray"
