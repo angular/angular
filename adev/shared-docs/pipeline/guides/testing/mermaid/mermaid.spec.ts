@@ -9,6 +9,9 @@ describe('markdown to html', () => {
   let markdownDocument: DocumentFragment;
 
   beforeAll(async () => {
+    // Extend the timeout interval tyo 15 seconds because we were seeing issues with not being able to run marked
+    // within the default timeframe.
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
     const markdownContent = await readFile(runfiles.resolvePackageRelative('./mermaid.md'), {
       encoding: 'utf-8',
     });
@@ -24,5 +27,9 @@ describe('markdown to html', () => {
   it('should create an svg for each mermaid code block', () => {
     const svgs = markdownDocument.querySelectorAll('svg');
     expect(svgs.length).toBe(2);
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
   });
 });
