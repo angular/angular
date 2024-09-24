@@ -69,7 +69,7 @@ describe('ShadowCss', () => {
     expect(shim('[attr] {}', 'contenta')).toEqualCss('[attr][contenta] {}');
   });
 
-  it('should transform :host with attributes and pseudo selectors', () => {
+  it('should transform :host and :host-context with attributes and pseudo selectors', () => {
     expect(shim(':host [attr] {}', 'contenta', 'hosta')).toEqualCss('[hosta] [attr][contenta] {}');
     expect(shim(':host(create-first-project) {}', 'contenta', 'hosta')).toEqualCss(
       'create-first-project[hosta] {}',
@@ -77,6 +77,11 @@ describe('ShadowCss', () => {
     expect(shim(':host[attr] {}', 'contenta', 'hosta')).toEqualCss('[attr][hosta] {}');
     expect(shim(':host[attr]:where(:not(.cm-button)) {}', 'contenta', 'hosta')).toEqualCss(
       '[hosta][attr]:where(:not(.cm-button)) {}',
+    );
+    expect(
+      shim(':host-context(backdrop:not(.borderless)) .backdrop {}', 'contenta', 'hosta'),
+    ).toEqualCss(
+      'backdrop:not(.borderless)[hosta] .backdrop[contenta], backdrop:not(.borderless) [hosta] .backdrop[contenta] {}',
     );
   });
 
