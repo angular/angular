@@ -141,9 +141,9 @@ If you have a function that returns an observable and you want to pass an input 
 3) Convert the final observable back into a signal.
 
 ```ts
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { interval, switchMap } from 'rxjs';
+import { switchMap } from 'rxjs';
 // This is a fake import.
 import { functionReturningObservable} from 'somewhere';
 
@@ -151,7 +151,7 @@ import { functionReturningObservable} from 'somewhere';
   // ...
 })
 export class MyComponent {
-  readonly inputSignal = signal(1); // The input signal
+  readonly inputSignal = input.required<number>(1); // The input signal
 
   readonly convertedSignal = toSignal(
     toObservable(this.inputSignal).pipe(
