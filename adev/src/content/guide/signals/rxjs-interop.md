@@ -129,3 +129,34 @@ outputToObservable(myComp.instance.onNameChange)
 ```
 
 See more details in the [output() API guide](/guide/components/output-fn).
+
+## Examples
+
+### Passing an input to a function returning an observable
+
+If you have a function that returns an observable and you want to pass an input (which is a signal) to it, you need to:
+
+1) Convert the input to an observable.
+2) Map that observable to the new observable.
+3) Convert the final observable back into a signal.
+
+```ts
+import { Component, computed, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { interval, switchMap } from 'rxjs';
+// This is a fake import.
+import { functionReturningObservable} from 'somewhere';
+
+@Component({
+  // ...
+})
+export class MyComponent {
+  readonly inputSignal = signal(1); // The input signal
+
+  readonly convertedSignal = toSignal(
+    toObservable(this.inputSignal).pipe(
+      switchMap((value) => functionReturningObservable(value))
+    );
+  );
+}
+```
