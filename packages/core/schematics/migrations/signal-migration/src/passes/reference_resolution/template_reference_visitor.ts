@@ -45,6 +45,7 @@ export interface TmplInputExpressionReference<ExprContext, D extends ClassFieldD
   targetNode: ts.Node;
   targetField: D;
   read: PropertyRead;
+  readAstPath: AST[];
   context: ExprContext;
   isObjectShorthandExpression: boolean;
   isLikelyNarrowed: boolean;
@@ -236,7 +237,6 @@ export class TemplateExpressionReferenceVisitor<
 > extends RecursiveAstVisitor {
   private activeTmplAstNode: ExprContext | null = null;
   private detectedInputReferences: TmplInputExpressionReference<ExprContext, D>[] = [];
-
   private isInsideObjectShorthandExpression = false;
 
   constructor(
@@ -256,8 +256,12 @@ export class TemplateExpressionReferenceVisitor<
     this.detectedInputReferences = [];
     this.activeTmplAstNode = activeNode;
 
-    expressionNode.visit(this);
+    expressionNode.visit(this, []);
     return this.detectedInputReferences;
+  }
+
+  override visit(ast: AST, context: AST[]) {
+    super.visit(ast, [...context, ast]);
   }
 
   // Keep track when we are inside an object shorthand expression. This is
@@ -269,35 +273,34 @@ export class TemplateExpressionReferenceVisitor<
       (ast.values[idx] as AST).visit(this, context);
       this.isInsideObjectShorthandExpression = false;
     }
-    super.visitLiteralMap(ast, context);
   }
 
-  override visitPropertyRead(ast: PropertyRead) {
-    this._inspectPropertyAccess(ast);
-    super.visitPropertyRead(ast, null);
+  override visitPropertyRead(ast: PropertyRead, context: AST[]) {
+    this._inspectPropertyAccess(ast, context);
+    super.visitPropertyRead(ast, context);
   }
-  override visitSafePropertyRead(ast: SafePropertyRead) {
-    this._inspectPropertyAccess(ast);
-    super.visitPropertyRead(ast, null);
+  override visitSafePropertyRead(ast: SafePropertyRead, context: AST[]) {
+    this._inspectPropertyAccess(ast, context);
+    super.visitPropertyRead(ast, context);
   }
 
-  override visitPropertyWrite(ast: PropertyWrite) {
-    this._inspectPropertyAccess(ast);
-    super.visitPropertyWrite(ast, null);
+  override visitPropertyWrite(ast: PropertyWrite, context: AST[]) {
+    this._inspectPropertyAccess(ast, context);
+    super.visitPropertyWrite(ast, context);
   }
 
   /**
    * Inspects the property access and attempts to resolve whether they access
    * a known field. If so, the result is captured.
    */
-  private _inspectPropertyAccess(ast: PropertyRead | PropertyWrite) {
+  private _inspectPropertyAccess(ast: PropertyRead | PropertyWrite, astPath: AST[]) {
     const isWrite = !!(
       ast instanceof PropertyWrite ||
       (this.activeTmplAstNode && isTwoWayBindingNode(this.activeTmplAstNode))
     );
 
-    this._checkAccessViaTemplateTypeCheckBlock(ast, isWrite) ||
-      this._checkAccessViaOwningComponentClassType(ast, isWrite);
+    this._checkAccessViaTemplateTypeCheckBlock(ast, isWrite, astPath) ||
+      this._checkAccessViaOwningComponentClassType(ast, isWrite, astPath);
   }
 
   /**
@@ -307,6 +310,7 @@ export class TemplateExpressionReferenceVisitor<
   private _checkAccessViaTemplateTypeCheckBlock(
     ast: PropertyRead | PropertyWrite,
     isWrite: boolean,
+    astPath: AST[],
   ): boolean {
     // There might be no template type checker. E.g. if we check host bindings.
     if (this.templateTypeChecker === null) {
@@ -331,6 +335,7 @@ export class TemplateExpressionReferenceVisitor<
       targetNode: targetInput.node,
       targetField: targetInput,
       read: ast,
+      readAstPath: astPath,
       context: this.activeTmplAstNode!,
       isLikelyNarrowed: false,
       isObjectShorthandExpression: this.isInsideObjectShorthandExpression,
@@ -350,6 +355,7 @@ export class TemplateExpressionReferenceVisitor<
   private _checkAccessViaOwningComponentClassType(
     ast: PropertyRead | PropertyWrite,
     isWrite: boolean,
+    astPath: AST[],
   ): void {
     // We might check host bindings, which can never point to template variables or local refs.
     const expressionTemplateTarget =
@@ -382,6 +388,7 @@ export class TemplateExpressionReferenceVisitor<
       targetNode: matchingTarget.node,
       targetField: matchingTarget,
       read: ast,
+      readAstPath: astPath,
       context: this.activeTmplAstNode!,
       isLikelyNarrowed: false,
       isObjectShorthandExpression: this.isInsideObjectShorthandExpression,

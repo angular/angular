@@ -15,7 +15,7 @@
  */
 
 import ts from 'typescript';
-import {PropertyRead, TmplAstNode} from '@angular/compiler';
+import {AST, PropertyRead, TmplAstNode} from '@angular/compiler';
 import {ProjectFile} from '../../../../../utils/tsurge';
 import {ClassFieldDescriptor} from './known_fields';
 
@@ -40,6 +40,11 @@ export interface TemplateReference<D extends ClassFieldDescriptor> {
     node: TmplAstNode;
     /** Expression AST node that represents the reference. */
     read: PropertyRead;
+    /**
+     * Expression AST sequentially visited to reach the given read.
+     * This follows top-down down ordering. The last element is the actual read.
+     */
+    readAstPath: AST[];
     /** Whether the reference is part of an object shorthand expression. */
     isObjectShorthandExpression: boolean;
     /** Whether this reference is part of a likely-narrowing expression. */
@@ -62,6 +67,11 @@ export interface HostBindingReference<D extends ClassFieldDescriptor> {
     hostPropertyNode: ts.Node;
     /** Expression AST node that represents the reference. */
     read: PropertyRead;
+    /**
+     * Expression AST sequentially visited to reach the given read.
+     * This follows top-down down ordering. The last element is the actual read.
+     */
+    readAstPath: AST[];
     /** Whether the reference is part of an object shorthand expression. */
     isObjectShorthandExpression: boolean;
     /** Whether the reference is a write. E.g. an event assignment. */

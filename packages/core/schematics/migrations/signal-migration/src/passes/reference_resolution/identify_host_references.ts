@@ -162,6 +162,7 @@ export function identifyHostBindingReferences<D extends ClassFieldDescriptor>(
       kind: ReferenceKind.InHostBinding,
       from: {
         read: ref.read,
+        readAstPath: ref.readAstPath,
         isObjectShorthandExpression: ref.isObjectShorthandExpression,
         isWrite: ref.isWrite,
         file: projectFile(ref.context.getSourceFile(), programInfo),
