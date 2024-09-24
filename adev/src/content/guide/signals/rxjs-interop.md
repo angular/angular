@@ -142,7 +142,7 @@ If you have a function that returns an observable and you want to pass an input 
 
 ```ts
 import { Component, computed, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { interval, switchMap } from 'rxjs';
 // This is a fake import.
 import { functionReturningObservable} from 'somewhere';
