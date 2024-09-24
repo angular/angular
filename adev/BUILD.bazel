@@ -1,6 +1,5 @@
 load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", "http_server")
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
 load("@bazel_skylib//lib:collections.bzl", "collections")
@@ -114,36 +113,12 @@ copy_to_bin(
     srcs = APPLICATION_FILES,
 )
 
-bool_flag(
-    name = "prerender_adev",
-    build_setting_default = False,
-)
-
-config_setting(
-    name = "no_prerender",
-    flag_values = {
-        ":prerender_adev": "false",
-    },
-)
-
-config_setting(
-    name = "prerender",
-    flag_values = {
-        ":prerender_adev": "true",
-    },
-)
-
-config_based_architect_flags = select({
-    ":no_prerender": ["--no-prerender"],
-    ":prerender": ["--prerender"],
-})
-
 architect(
     name = "build",
     args = [
         "angular-dev:build",
         "--output-path=build",
-    ] + config_based_architect_flags,
+    ],
     chdir = "$(RULEDIR)",
     data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
         ":application_files_bin",
