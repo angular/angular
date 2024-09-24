@@ -22,14 +22,29 @@ import {type SchedulableEffect, ZoneAwareEffectScheduler} from './root_effect_sc
 import {performanceMarkFeature} from '../../util/performance';
 import {assertNotInReactiveContext} from './asserts';
 import {assertInInjectionContext} from '../../di';
+import {PendingTasksInternal} from '../../pending_tasks';
 
 export class MicrotaskEffectScheduler extends ZoneAwareEffectScheduler {
+  private readonly pendingTasks = inject(PendingTasksInternal);
+  private taskId: number | null = null;
+
   override schedule(effect: SchedulableEffect): void {
     // Check whether there are any pending effects _before_ queueing in the base class.
-    const needsScheduling = this.taskId === null;
     super.schedule(effect);
-    if (needsScheduling) {
+    if (this.taskId === null) {
+      this.taskId = this.pendingTasks.add();
       queueMicrotask(() => this.flush());
+    }
+  }
+
+  override flush(): void {
+    try {
+      super.flush();
+    } finally {
+      if (this.taskId !== null) {
+        this.pendingTasks.remove(this.taskId);
+        this.taskId = null;
+      }
     }
   }
 
