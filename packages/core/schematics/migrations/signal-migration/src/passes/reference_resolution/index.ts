@@ -85,7 +85,7 @@ export function createFindAllSourceFileReferencesVisitor<D extends ClassFieldDes
 
       identifyHostBindingReferences(node, programInfo, checker, reflector, result, knownFields);
 
-      perfCounters.hostBindings += (performance.now() - lastTime) / 1000;
+      perfCounters.hostBindings += (currentTimeInMs() - lastTime) / 1000;
       lastTime = currentTimeInMs();
     }
 
@@ -109,7 +109,7 @@ export function createFindAllSourceFileReferencesVisitor<D extends ClassFieldDes
       );
     }
 
-    perfCounters.tsReferences += (performance.now() - lastTime) / 1000;
+    perfCounters.tsReferences += (currentTimeInMs() - lastTime) / 1000;
     lastTime = currentTimeInMs();
     // Detect `Partial<T>` references.
     // Those are relevant to be tracked as they may be updated in Catalyst to
@@ -129,7 +129,7 @@ export function createFindAllSourceFileReferencesVisitor<D extends ClassFieldDes
       });
     }
 
-    perfCounters.tsTypes += (performance.now() - lastTime) / 1000;
+    perfCounters.tsTypes += (currentTimeInMs() - lastTime) / 1000;
   };
 
   return {
