@@ -24,14 +24,14 @@ export function populateKnownInputsFromGlobalData(
     }
 
     const inputMetadata = knownInputs.get({key})!;
-    if (info.memberIncompatibility) {
+    if (info.memberIncompatibility !== null) {
       knownInputs.markFieldIncompatible(inputMetadata.descriptor, {
         context: null, // No context serializable.
         reason: info.memberIncompatibility,
       });
     }
 
-    if (info.owningClassIncompatibility) {
+    if (info.owningClassIncompatibility !== null) {
       knownInputs.markClassIncompatible(
         inputMetadata.container.clazz,
         info.owningClassIncompatibility,
