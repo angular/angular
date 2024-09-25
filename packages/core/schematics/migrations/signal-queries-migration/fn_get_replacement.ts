@@ -30,7 +30,7 @@ export function replaceQueryListGetCall(
     return;
   }
 
-  if (!globalMetadata.knownQueryFields[ref.target.key].isMulti) {
+  if (!globalMetadata.knownQueryFields[ref.target.key]?.isMulti) {
     return;
   }
 
