@@ -12,12 +12,6 @@ import {
 } from '../input_detection/incompatibility';
 import {ClassFieldUniqueKey} from '../passes/reference_resolution/known_fields';
 
-/** Type of incompatibility. */
-export enum IncompatibilityType {
-  VIA_CLASS,
-  VIA_INPUT,
-}
-
 /**
  * Type describing a serializable compilation unit data.
  *
@@ -29,10 +23,8 @@ export interface CompilationUnitData {
   knownInputs: {
     // Use `string` here so that it's a usable index key.
     [inputIdKey: string]: {
-      isIncompatible:
-        | {kind: IncompatibilityType.VIA_CLASS; reason: ClassIncompatibilityReason}
-        | {kind: IncompatibilityType.VIA_INPUT; reason: InputIncompatibilityReason}
-        | null;
+      owningClassIncompatibility: ClassIncompatibilityReason | null;
+      memberIncompatibility: InputIncompatibilityReason | null;
       seenAsSourceInput: boolean;
       extendsFrom: ClassFieldUniqueKey | null;
     };

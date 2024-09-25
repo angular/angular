@@ -1111,8 +1111,7 @@ import {Input} from '@angular/core';
 
 class MyComp {
   // TODO: Skipped for migration because:
-  //  Class of this input is manually instantiated. This is discouraged and prevents
-  //  migration
+  //  A jasmine `spyOn` call spies on this input. This breaks with signal inputs.
   @Input() myInput = () => {};
 }
 

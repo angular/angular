@@ -60,6 +60,6 @@ export class DirectiveInfo {
   getInputMemberIncompatibility(
     input: InputDescriptor,
   ): ClassIncompatibilityReason | InputMemberIncompatibility | null {
-    return this.incompatible ?? this.memberIncompatibility.get(input.key) ?? null;
+    return this.memberIncompatibility.get(input.key) ?? this.incompatible ?? null;
   }
 }
