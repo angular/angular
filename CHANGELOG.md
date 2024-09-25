@@ -1,3 +1,10 @@
+<a name="18.2.6"></a>
+# 18.2.6 (2024-09-25)
+
+This release contains various API docs improvements.
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.5"></a>
 # 18.2.5 (2024-09-18)
 ### compiler-cli
