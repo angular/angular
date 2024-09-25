@@ -1,3 +1,51 @@
+<a name="19.0.0-next.7"></a>
+# 19.0.0-next.7 (2024-09-25)
+## Breaking Changes
+### core
+- Changes to effect timing which generally has two implications:
+  
+  * effects which are triggered outside of change detection run as part of
+    the change detection process instead of as a microtask. Depending on the
+    specifics of application/test setup, this can result in them executing
+    earlier or later (or requiring additional test steps to trigger; see below
+    examples).
+  
+  * effects which are triggered during change detection (e.g. by input
+    signals) run _earlier_, before the component's template.
+  
+  We've seen a few common failure cases:
+  
+  * Tests which used to rely on the `Promise` timing of effects now need to
+    `await whenStable()` or call `.detectChanges()` in order for effects to
+    run.
+  
+  * Tests which use faked clocks may need to fast-forward/flush the clock to
+    cause effects to run.
+  
+  * `effect()`s triggered during CD could rely on the application being fully
+    rendered (for example, they could easily read computed styles, etc). With
+    the change, they run before the component's updates and can get incorrect
+    answers. The recent `afterRenderEffect()` API is a natural replacement for
+    this style of effect.
+  
+  * `effect()`s which synchronize with the forms system are particularly
+    timing-sensitive and might need to adjust their initialization timing.
+- `ExperimentalPendingTasks` has been renamed to
+  `PendingTasks`.
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fc59e2a7b7](https://github.com/angular/angular/commit/fc59e2a7b7afa491a5ea740284a742574805eb36) | feat | change effect() execution timing & no-op `allowSignalWrites` ([#57874](https://github.com/angular/angular/pull/57874)) |
+| [a7eff3ffaa](https://github.com/angular/angular/commit/a7eff3ffaaecbcb3034130d475ff7b4e41a1e1cc) | feat | mark signal-based query APIs as stable ([#57921](https://github.com/angular/angular/pull/57921)) |
+| [a1f229850a](https://github.com/angular/angular/commit/a1f229850ad36da009f772faa831da173a60268c) | feat | migrate ExperimentalPendingTasks to PendingTasks ([#57533](https://github.com/angular/angular/pull/57533)) |
+| [950a5540f1](https://github.com/angular/angular/commit/950a5540f15118e7360506ad82ec9dab5a11f789) | fix | Ensure the `ViewContext` is retained after closure minification ([#57903](https://github.com/angular/angular/pull/57903)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7ecfd89592](https://github.com/angular/angular/commit/7ecfd8959219b6e2ec19e1244a6694711daf1782) | fix | The suppress diagnostics option should work for external templates ([#57873](https://github.com/angular/angular/pull/57873)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.2.6"></a>
 # 18.2.6 (2024-09-25)
 
