@@ -8,7 +8,10 @@
 
 import {KnownInputInfo} from '../input_detection/known_inputs';
 import {ProgramInfo, Replacement} from '../../../../utils/tsurge';
-import {isInputMemberIncompatibility} from '../input_detection/incompatibility';
+import {
+  InputIncompatibilityReason,
+  isInputMemberIncompatibility,
+} from '../input_detection/incompatibility';
 import {
   getMessageForClassIncompatibility,
   getMessageForInputIncompatibility,
@@ -28,6 +31,16 @@ export function insertTodoForIncompatibility(
 ): Replacement[] {
   const incompatibility = input.container.getInputMemberIncompatibility(input.descriptor);
   if (incompatibility === null) {
+    return [];
+  }
+
+  // If an input is skipped via config filter or outside migration scope, do not
+  // insert TODOs, as this could results in lots of unnecessary comments.
+  if (
+    isInputMemberIncompatibility(incompatibility) &&
+    (incompatibility.reason === InputIncompatibilityReason.SkippedViaConfigFilter ||
+      incompatibility.reason === InputIncompatibilityReason.OutsideOfMigrationScope)
+  ) {
     return [];
   }
 
