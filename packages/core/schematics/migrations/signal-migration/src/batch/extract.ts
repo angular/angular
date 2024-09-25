@@ -8,29 +8,24 @@
 
 import {KnownInputs} from '../input_detection/known_inputs';
 import {ClassFieldUniqueKey} from '../passes/reference_resolution/known_fields';
-import {CompilationUnitData, IncompatibilityType} from './unit_data';
+import {CompilationUnitData} from './unit_data';
 
 export function getCompilationUnitMetadata(knownInputs: KnownInputs) {
   const struct: CompilationUnitData = {
     knownInputs: Array.from(knownInputs.knownInputIds.entries()).reduce(
       (res, [inputClassFieldIdStr, info]) => {
         const classIncompatibility =
-          info.container.incompatible !== null
-            ? ({kind: IncompatibilityType.VIA_CLASS, reason: info.container.incompatible!} as const)
-            : null;
+          info.container.incompatible !== null ? info.container.incompatible : null;
         const memberIncompatibility = info.container.memberIncompatibility.has(inputClassFieldIdStr)
-          ? ({
-              kind: IncompatibilityType.VIA_INPUT,
-              reason: info.container.memberIncompatibility.get(inputClassFieldIdStr)!.reason,
-            } as const)
+          ? info.container.memberIncompatibility.get(inputClassFieldIdStr)!.reason
           : null;
-        const incompatibility = classIncompatibility ?? memberIncompatibility ?? null;
 
         // Note: Trim off the `context` as it cannot be serialized with e.g. TS nodes.
         return {
           ...res,
           [inputClassFieldIdStr as string & ClassFieldUniqueKey]: {
-            isIncompatible: incompatibility,
+            owningClassIncompatibility: classIncompatibility,
+            memberIncompatibility,
             seenAsSourceInput: info.metadata.inSourceFile,
             extendsFrom: info.extendsFrom?.key ?? null,
           },

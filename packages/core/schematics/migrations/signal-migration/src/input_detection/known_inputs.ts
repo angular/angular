@@ -15,6 +15,8 @@ import {
   ClassIncompatibilityReason,
   InputIncompatibilityReason,
   InputMemberIncompatibility,
+  isInputMemberIncompatibility,
+  pickInputIncompatibility,
 } from './incompatibility';
 import {ClassFieldUniqueKey, KnownFields} from '../passes/reference_resolution/known_fields';
 import {attemptRetrieveInputFromSymbol} from './nodes_to_input';
@@ -124,6 +126,15 @@ export class KnownInputs
     if (!this.knownInputIds.has(input.key)) {
       throw new Error(`Input cannot be marked as incompatible because it's not registered.`);
     }
+
+    const inputInfo = this.knownInputIds.get(input.key)!;
+    const existingIncompatibility = inputInfo.container.getInputMemberIncompatibility(input);
+
+    // Ensure an existing more significant incompatibility is not overridden.
+    if (existingIncompatibility !== null && isInputMemberIncompatibility(existingIncompatibility)) {
+      incompatibility = pickInputIncompatibility(existingIncompatibility, incompatibility);
+    }
+
     this.knownInputIds
       .get(input.key)!
       .container.memberIncompatibility.set(input.key, incompatibility);

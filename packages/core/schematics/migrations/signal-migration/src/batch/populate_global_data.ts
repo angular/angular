@@ -8,7 +8,7 @@
 
 import {KnownInputs} from '../input_detection/known_inputs';
 import {ClassFieldUniqueKey} from '../passes/reference_resolution/known_fields';
-import {CompilationUnitData, IncompatibilityType} from './unit_data';
+import {CompilationUnitData} from './unit_data';
 
 export function populateKnownInputsFromGlobalData(
   knownInputs: KnownInputs,
@@ -24,18 +24,18 @@ export function populateKnownInputsFromGlobalData(
     }
 
     const inputMetadata = knownInputs.get({key})!;
-    if (!inputMetadata.isIncompatible() && info.isIncompatible) {
-      if (info.isIncompatible.kind === IncompatibilityType.VIA_CLASS) {
-        knownInputs.markClassIncompatible(
-          inputMetadata.container.clazz,
-          info.isIncompatible.reason,
-        );
-      } else {
-        knownInputs.markFieldIncompatible(inputMetadata.descriptor, {
-          context: null, // No context serializable.
-          reason: info.isIncompatible.reason,
-        });
-      }
+    if (info.memberIncompatibility) {
+      knownInputs.markFieldIncompatible(inputMetadata.descriptor, {
+        context: null, // No context serializable.
+        reason: info.memberIncompatibility,
+      });
+    }
+
+    if (info.owningClassIncompatibility) {
+      knownInputs.markClassIncompatible(
+        inputMetadata.container.clazz,
+        info.owningClassIncompatibility,
+      );
     }
   }
 }
