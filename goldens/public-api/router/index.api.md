@@ -202,6 +202,9 @@ export class ChildrenOutletContexts {
 }
 
 // @public
+export type ComponentInputBindingFeature = RouterFeature<RouterFeatureKind.ComponentInputBindingFeature>;
+
+// @public
 export function convertToParamMap(params: Params): ParamMap;
 
 // @public
