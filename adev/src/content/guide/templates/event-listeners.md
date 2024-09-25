@@ -1,6 +1,6 @@
 # Adding event listeners
 
-Angular supports defining event listeners on an element in your template by specifying the event name inside parentheses along with a statement that runs even time the event occurs.
+Angular supports defining event listeners on an element in your template by specifying the event name inside parentheses along with a statement that runs every time the event occurs.
 
 ## Listening to native events
 
