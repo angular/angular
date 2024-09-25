@@ -105,18 +105,24 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
     usedDirectives: Set<ts.ClassDeclaration>,
     usedPipes: Set<string>,
   ) {
-    if (metadata.imports === null || metadata.rawImports === null) {
+    const {imports, rawImports} = metadata;
+
+    if (imports === null || rawImports === null) {
       return null;
     }
 
     let unused: [ref: Reference, type: string, name: string][] | null = null;
 
-    for (const current of metadata.imports) {
+    for (const current of imports) {
       const currentNode = current.node as ts.ClassDeclaration;
       const dirMeta = this.templateTypeChecker.getDirectiveMetadata(currentNode);
 
       if (dirMeta !== null) {
-        if (dirMeta.isStandalone && (usedDirectives === null || !usedDirectives.has(currentNode))) {
+        if (
+          dirMeta.isStandalone &&
+          !usedDirectives.has(currentNode) &&
+          !this.isPotentialSharedReference(current, rawImports)
+        ) {
           unused ??= [];
           unused.push([current, dirMeta.isComponent ? 'Component' : 'Directive', dirMeta.name]);
         }
@@ -128,7 +134,8 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
       if (
         pipeMeta !== null &&
         pipeMeta.isStandalone &&
-        (usedPipes === null || !usedPipes.has(pipeMeta.name))
+        !usedPipes.has(pipeMeta.name) &&
+        !this.isPotentialSharedReference(current, rawImports)
       ) {
         unused ??= [];
         unused.push([current, 'Pipe', pipeMeta.ref.node.name.text]);
@@ -136,5 +143,36 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
     }
 
     return unused;
+  }
+
+  /**
+   * Determines if an import reference *might* be coming from a shared imports array.
+   * @param reference Reference to be checked.
+   * @param rawImports AST node that defines the `imports` array.
+   */
+  private isPotentialSharedReference(reference: Reference, rawImports: ts.Expression): boolean {
+    // If the reference is defined directly in the `imports` array, it cannot be shared.
+    if (reference.getIdentityInExpression(rawImports) !== null) {
+      return false;
+    }
+
+    // The reference might be shared if it comes from an exported array. If the variable is local
+    /// to the file, then it likely isn't shared. Note that this has the potential for false
+    // positives if a non-exported array of imports is shared between components in the same
+    // file. This scenario is unlikely and even if we report the diagnostic for it, it would be
+    // okay since the user only has to refactor components within the same file, rather than the
+    // entire application.
+    let current: ts.Node | null = reference.getIdentityIn(rawImports.getSourceFile());
+
+    while (current !== null) {
+      if (ts.isVariableStatement(current)) {
+        return !!current.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
+      }
+      current = current.parent;
+    }
+
+    // Otherwise the reference likely comes from an imported
+    // symbol like an array of shared common components.
+    return true;
   }
 }
