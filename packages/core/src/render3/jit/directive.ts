@@ -211,6 +211,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
       }
       return ngComponentDef;
     },
+    set: (def: ComponentDef<unknown> | null) => {
+      ngComponentDef = def;
+    },
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
   });

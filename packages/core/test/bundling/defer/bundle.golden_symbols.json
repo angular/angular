@@ -603,7 +603,7 @@
     "name": "addPropertyBinding"
   },
   {
-    "name": "addToViewTree"
+    "name": "addToEndOfViewTree"
   },
   {
     "name": "allocExpando"
@@ -910,6 +910,9 @@
   },
   {
     "name": "getFirstNativeNode"
+  },
+  {
+    "name": "getInitialLViewFlagsFromDef"
   },
   {
     "name": "getInjectImplementation"
@@ -1501,6 +1504,9 @@
   },
   {
     "name": "init_graph"
+  },
+  {
+    "name": "init_hmr"
   },
   {
     "name": "init_hooks"
