@@ -19,6 +19,7 @@ import ts from 'typescript';
 
 import {
   ApplyRefactoringProgressFn,
+  ApplyRefactoringResult,
   GetComponentLocationsForTemplateResponse,
   GetTcbResponse,
   GetTemplateLocationForComponentResponse,
@@ -587,7 +588,7 @@ export class LanguageService {
     positionOrRange: number | ts.TextRange,
     refactorName: string,
     reportProgress: ApplyRefactoringProgressFn,
-  ): Promise<ts.RefactorEditInfo | undefined> {
+  ): Promise<ApplyRefactoringResult | undefined> {
     const matchingRefactoring = allRefactorings.find((r) => r.id === refactorName);
     if (matchingRefactoring === undefined) {
       return undefined;
