@@ -107,6 +107,42 @@ describe('ShadowCss, :host and :host-context', () => {
   });
 
   describe(':host-context', () => {
+    it('should transform :host-context with pseudo selectors', () => {
+      expect(
+        shim(':host-context(backdrop:not(.borderless)) .backdrop {}', 'contenta', 'hosta'),
+      ).toEqualCss(
+        'backdrop:not(.borderless)[hosta] .backdrop[contenta], backdrop:not(.borderless) [hosta] .backdrop[contenta] {}',
+      );
+      expect(shim(':where(:host-context(backdrop)) {}', 'contenta', 'hosta')).toEqualCss(
+        ':where(backdrop[hosta]), :where(backdrop [hosta]) {}',
+      );
+      expect(shim(':where(:host-context(outer1)) :host(bar) {}', 'contenta', 'hosta')).toEqualCss(
+        ':where(outer1) bar[hosta] {}',
+      );
+      expect(
+        shim(':where(:host-context(.one)) :where(:host-context(.two)) {}', 'contenta', 'a-host'),
+      ).toEqualCss(
+        ':where(.one.two[a-host]), ' + // `one` and `two` both on the host
+          ':where(.one.two [a-host]), ' + // `one` and `two` are both on the same ancestor
+          ':where(.one .two[a-host]), ' + // `one` is an ancestor and `two` is on the host
+          ':where(.one .two [a-host]), ' + // `one` and `two` are both ancestors (in that order)
+          ':where(.two .one[a-host]), ' + // `two` is an ancestor and `one` is on the host
+          ':where(.two .one [a-host])' + // `two` and `one` are both ancestors (in that order)
+          ' {}',
+      );
+      expect(
+        shim(':where(:host-context(backdrop)) .foo ~ .bar {}', 'contenta', 'hosta'),
+      ).toEqualCss(
+        ':where(backdrop[hosta]) .foo[contenta] ~ .bar[contenta], :where(backdrop [hosta]) .foo[contenta] ~ .bar[contenta] {}',
+      );
+      expect(shim(':where(:host-context(backdrop)) :host {}', 'contenta', 'hosta')).toEqualCss(
+        ':where(backdrop) [hosta] {}',
+      );
+      expect(shim('div:where(:host-context(backdrop)) :host {}', 'contenta', 'hosta')).toEqualCss(
+        'div:where(backdrop) [hosta] {}',
+      );
+    });
+
     it('should handle tag selector', () => {
       expect(shim(':host-context(div) {}', 'contenta', 'a-host')).toEqualCss(
         'div[a-host], div [a-host] {}',

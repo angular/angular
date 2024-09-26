@@ -539,7 +539,7 @@ export class ShadowCss {
    * .foo<scopeName> .bar { ... }
    */
   private _convertColonHostContext(cssText: string): string {
-    return cssText.replace(_cssColonHostContextReGlobal, (selectorText) => {
+    return cssText.replace(_cssColonHostContextReGlobal, (selectorText, pseudoPrefix) => {
       // We have captured a selector that contains a `:host-context` rule.
 
       // For backward compatibility `:host-context` may contain a comma separated list of selectors.
@@ -594,10 +594,12 @@ export class ShadowCss {
       }
 
       // The context selectors now must be combined with each other to capture all the possible
-      // selectors that `:host-context` can match. See `combineHostContextSelectors()` for more
+      // selectors that `:host-context` can match. See `_combineHostContextSelectors()` for more
       // info about how this is done.
       return contextSelectorGroups
-        .map((contextSelectors) => combineHostContextSelectors(contextSelectors, selectorText))
+        .map((contextSelectors) =>
+          _combineHostContextSelectors(contextSelectors, selectorText, pseudoPrefix),
+        )
         .join(', ');
     });
   }
@@ -800,18 +802,12 @@ export class ShadowCss {
         _cssPrefixWithPseudoSelectorFunction,
       );
       if (cssPrefixWithPseudoSelectorFunctionMatch) {
-        const [cssPseudoSelectorFunction, mainSelector, pseudoSelector] =
-          cssPrefixWithPseudoSelectorFunctionMatch;
-        const hasOuterHostNoCombinator = mainSelector.includes(_polyfillHostNoCombinator);
-        const scopedMainSelector = mainSelector.replace(
-          _polyfillExactHostNoCombinatorReGlobal,
-          `[${hostSelector}]`,
-        );
+        const [cssPseudoSelectorFunction] = cssPrefixWithPseudoSelectorFunctionMatch;
 
-        // Unwrap the pseudo selector, to scope its contents.
+        // Unwrap the pseudo selector to scope its contents.
         // For example,
         // - `:where(selectorToScope)` -> `selectorToScope`;
-        // - `div:is(.foo, .bar)` -> `.foo, .bar`.
+        // - `:is(.foo, .bar)` -> `.foo, .bar`.
         const selectorToScope = selectorPart.slice(cssPseudoSelectorFunction.length, -1);
 
         if (selectorToScope.includes(_polyfillHostNoCombinator)) {
@@ -825,9 +821,7 @@ export class ShadowCss {
         });
 
         // Put the result back into the pseudo selector function.
-        scopedPart = `${scopedMainSelector}:${pseudoSelector}(${scopedInnerPart})`;
-
-        this._shouldScopeIndicator = this._shouldScopeIndicator || hasOuterHostNoCombinator;
+        scopedPart = `${cssPseudoSelectorFunction}${scopedInnerPart})`;
       } else {
         this._shouldScopeIndicator =
           this._shouldScopeIndicator || selectorPart.includes(_polyfillHostNoCombinator);
@@ -965,7 +959,8 @@ class SafeSelector {
   }
 }
 
-const _cssPrefixWithPseudoSelectorFunction = /^([^:]*):(where|is)\(/i;
+const _cssScopedPseudoFunctionPrefix = '(:(where|is)\\()?';
+const _cssPrefixWithPseudoSelectorFunction = /^:(where|is)\(/i;
 const _cssContentNextSelectorRe =
   /polyfill-next-selector[^}]*content:[\s]*?(['"])(.*?)\1[;\s]*}([^{]*?){/gim;
 const _cssContentRuleRe = /(polyfill-rule)[^}]*(content:[\s]*(['"])(.*?)\3)[;\s]*[^}]*}/gim;
@@ -976,13 +971,15 @@ const _polyfillHost = '-shadowcsshost';
 const _polyfillHostContext = '-shadowcsscontext';
 const _parenSuffix = '(?:\\((' + '(?:\\([^)(]*\\)|[^)(]*)+?' + ')\\))?([^,{]*)';
 const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix, 'gim');
-const _cssColonHostContextReGlobal = new RegExp(_polyfillHostContext + _parenSuffix, 'gim');
+const _cssColonHostContextReGlobal = new RegExp(
+  _cssScopedPseudoFunctionPrefix + '(' + _polyfillHostContext + _parenSuffix + ')',
+  'gim',
+);
 const _cssColonHostContextRe = new RegExp(_polyfillHostContext + _parenSuffix, 'im');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 const _polyfillHostNoCombinatorWithinPseudoFunction = new RegExp(
   `:.*\\(.*${_polyfillHostNoCombinator}.*\\)`,
 );
-const _polyfillExactHostNoCombinatorReGlobal = /-shadowcsshost-no-combinator/g;
 const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s]*)/;
 const _polyfillHostNoCombinatorReGlobal = new RegExp(_polyfillHostNoCombinatorRe, 'g');
 const _shadowDOMSelectorsRe = [
@@ -1235,7 +1232,11 @@ function unescapeQuotes(str: string, isQuoted: boolean): string {
  * @param contextSelectors an array of context selectors that will be combined.
  * @param otherSelectors the rest of the selectors that are not context selectors.
  */
-function combineHostContextSelectors(contextSelectors: string[], otherSelectors: string): string {
+function _combineHostContextSelectors(
+  contextSelectors: string[],
+  otherSelectors: string,
+  pseudoPrefix = '',
+): string {
   const hostMarker = _polyfillHostNoCombinator;
   _polyfillHostRe.lastIndex = 0; // reset the regex to ensure we get an accurate test
   const otherSelectorsHasHost = _polyfillHostRe.test(otherSelectors);
@@ -1264,8 +1265,8 @@ function combineHostContextSelectors(contextSelectors: string[], otherSelectors:
   return combined
     .map((s) =>
       otherSelectorsHasHost
-        ? `${s}${otherSelectors}`
-        : `${s}${hostMarker}${otherSelectors}, ${s} ${hostMarker}${otherSelectors}`,
+        ? `${pseudoPrefix}${s}${otherSelectors}`
+        : `${pseudoPrefix}${s}${hostMarker}${otherSelectors}, ${pseudoPrefix}${s} ${hostMarker}${otherSelectors}`,
     )
     .join(',');
 }
