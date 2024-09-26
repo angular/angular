@@ -140,6 +140,28 @@ export class ImagePerformanceWarning implements OnDestroy {
     if (!this.window) {
       return false;
     }
+
+    // The `isOversized` check may not be applicable or may require adjustments
+    // for several types of image formats or scenarios. Currently, we specify only
+    // `svg`, but this may also include `gif` since their quality isn’t tied to
+    // dimensions in the same way as raster images.
+    const nonOversizedImageExtentions = [
+      // SVG images are vector-based, which means they can scale
+      // to any size without losing quality.
+      '.svg',
+    ];
+
+    // Convert it to lowercase because this may have uppercase
+    // extensions, such as `IMAGE.SVG`.
+    // We fallback to an empty string because `src` may be `undefined`
+    // if it is explicitly set to `null` by some third-party code
+    // (e.g., `image.src = null`).
+    const imageSource = (image.src || '').toLowerCase();
+
+    if (nonOversizedImageExtentions.some((extension) => imageSource.endsWith(extension))) {
+      return false;
+    }
+
     const computedStyle = this.window.getComputedStyle(image);
     let renderedWidth = parseFloat(computedStyle.getPropertyValue('width'));
     let renderedHeight = parseFloat(computedStyle.getPropertyValue('height'));
@@ -153,6 +175,8 @@ export class ImagePerformanceWarning implements OnDestroy {
     }
 
     if (boxSizing === 'border-box') {
+      // If the image `box-sizing` is set to `border-box`, we adjust the rendered
+      // dimensions by subtracting padding values.
       const paddingTop = computedStyle.getPropertyValue('padding-top');
       const paddingRight = computedStyle.getPropertyValue('padding-right');
       const paddingBottom = computedStyle.getPropertyValue('padding-bottom');
