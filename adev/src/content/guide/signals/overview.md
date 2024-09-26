@@ -119,8 +119,6 @@ Effects are rarely needed in most application code, but may be useful in specifi
 <docs-callout critical title="When not to use effects">
 Avoid using effects for propagation of state changes. This can result in `ExpressionChangedAfterItHasBeenChecked` errors, infinite circular updates, or unnecessary change detection cycles.
 
-Because of these risks, Angular by default prevents you from setting signals in effects. It can be enabled if absolutely necessary by setting the `allowSignalWrites` flag when you create an effect.
-
 Instead, use `computed` signals to model state that depends on other state.
 </docs-callout>
 
