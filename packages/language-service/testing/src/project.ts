@@ -22,7 +22,7 @@ import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/
 import ts from 'typescript';
 
 import {LanguageService} from '../../src/language_service';
-import {ApplyRefactoringProgressFn} from '../../api';
+import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../api';
 
 import {OpenBuffer} from './buffer';
 import {patchLanguageServiceProjectsWithTestHost} from './language_service_test_cache';
@@ -196,7 +196,7 @@ export class Project {
     positionOrRange: number | ts.TextRange,
     refactorName: string,
     reportProgress: ApplyRefactoringProgressFn,
-  ): Promise<ts.RefactorEditInfo | undefined> {
+  ): Promise<ApplyRefactoringResult | undefined> {
     const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
     return this.ngLS.applyRefactoring(fileName, positionOrRange, refactorName, reportProgress);
   }

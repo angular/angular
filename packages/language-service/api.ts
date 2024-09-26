@@ -78,6 +78,12 @@ export type GetTemplateLocationForComponentResponse = ts.DocumentSpan | undefine
  */
 export type ApplyRefactoringProgressFn = (percentage: number, updateMessage: string) => void;
 
+/** Interface describing the result for computing edits of a refactoring. */
+export interface ApplyRefactoringResult extends Omit<ts.RefactorEditInfo, 'notApplicableReason'> {
+  errorMessage?: string;
+  warningMessage?: string;
+}
+
 /**
  * `NgLanguageService` describes an instance of an Angular language service,
  * whose API surface is a strict superset of TypeScript's language service.
@@ -96,7 +102,7 @@ export interface NgLanguageService extends ts.LanguageService {
     positionOrRange: number | ts.TextRange,
     refactorName: string,
     reportProgress: ApplyRefactoringProgressFn,
-  ): Promise<ts.RefactorEditInfo | undefined>;
+  ): Promise<ApplyRefactoringResult | undefined>;
 
   hasCodeFixesForErrorCode(errorCode: number): boolean;
 }
