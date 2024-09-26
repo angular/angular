@@ -71,9 +71,7 @@ export function publishSignalConfiguration(): void {
   setThrowInvalidWriteToSignalError(() => {
     throw new RuntimeError(
       RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT,
-      ngDevMode &&
-        'Writing to signals is not allowed in a `computed` or an `effect` by default. ' +
-          'Use `allowSignalWrites` in the `CreateEffectOptions` to enable this inside effects.',
+      ngDevMode && 'Writing to signals is not allowed in a `computed`.',
     );
   });
 }
