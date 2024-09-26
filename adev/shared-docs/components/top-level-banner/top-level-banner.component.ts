@@ -27,15 +27,21 @@ export class TopLevelBannerComponent implements OnInit {
   link = input<string>();
   // Text content to be displayed in the banner.
   text = input.required<string>();
-
-  // Whether the user has closed the banner.
+  // Optional expiry date. Setting the default expiry as a future date so we
+  // don't have to deal with undefined signal values.
+  expiry = input(new Date('3000-01-01'), {transform: parseDate});
+  // Whether the user has closed the banner or the survey has expired.
   hasClosed = signal<boolean>(false);
 
   ngOnInit(): void {
+    const expired = Date.now() > this.expiry().getTime();
+
     // Needs to be in a try/catch, because some browsers will
     // throw when using `localStorage` in private mode.
     try {
-      this.hasClosed.set(this.localStorage?.getItem(this.getBannerStorageKey()) === 'true');
+      this.hasClosed.set(
+        this.localStorage?.getItem(this.getBannerStorageKey()) === 'true' || expired,
+      );
     } catch {
       this.hasClosed.set(false);
     }
@@ -50,3 +56,14 @@ export class TopLevelBannerComponent implements OnInit {
     return `${STORAGE_KEY_PREFIX}${this.id()}`;
   }
 }
+
+const parseDate = (inputDate: string | Date): Date => {
+  if (inputDate instanceof Date) {
+    return inputDate;
+  }
+  const outputDate = new Date(inputDate);
+  if (isNaN(outputDate.getTime())) {
+    throw new Error(`Invalid date string: ${inputDate}`);
+  }
+  return outputDate;
+};
