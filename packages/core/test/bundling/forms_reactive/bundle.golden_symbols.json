@@ -762,7 +762,7 @@
     "name": "addToArray"
   },
   {
-    "name": "addToViewTree"
+    "name": "addToEndOfViewTree"
   },
   {
     "name": "addValidators"
@@ -1159,6 +1159,9 @@
   },
   {
     "name": "getFirstNativeNode"
+  },
+  {
+    "name": "getInitialLViewFlagsFromDef"
   },
   {
     "name": "getInjectImplementation"

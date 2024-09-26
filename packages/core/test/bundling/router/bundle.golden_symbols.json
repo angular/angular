@@ -891,7 +891,7 @@
     "name": "addToArray"
   },
   {
-    "name": "addToViewTree"
+    "name": "addToEndOfViewTree"
   },
   {
     "name": "advanceActivatedRoute"
@@ -1372,6 +1372,9 @@
   },
   {
     "name": "getInherited"
+  },
+  {
+    "name": "getInitialLViewFlagsFromDef"
   },
   {
     "name": "getInjectImplementation"
