@@ -148,7 +148,6 @@ groups:
         - atscott
         - crisbeto
         - devversion
-        - dylhunn
         - JoostK
 
   # =========================================================
@@ -163,7 +162,6 @@ groups:
         - alxhub
         - crisbeto
         - devversion
-        - dylhunn
         - thePunderWoman
         - AndrewKushnir
 
@@ -189,7 +187,6 @@ groups:
         - atscott
         - crisbeto
         - devversion
-        - dylhunn
         - thePunderWoman
         - pkozlowski-opensource
 
@@ -209,7 +206,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - dylhunn
         - thePunderWoman
         - pkozlowski-opensource
 
@@ -229,7 +225,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - dylhunn
         - thePunderWoman
         - pkozlowski-opensource
 
@@ -249,7 +244,6 @@ groups:
         - AndrewKushnir
         - andrewseguin
         - atscott
-        - dylhunn
         - thePunderWoman
         - pkozlowski-opensource
 
@@ -267,7 +261,7 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
-        - dylhunn
+        - alxhub
 
   # =========================================================
   #  Framework: i18n
@@ -313,7 +307,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - dylhunn
         - thePunderWoman
         - pkozlowski-opensource
 
@@ -380,7 +373,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - dylhunn
         - thePunderWoman
         - pkozlowski-opensource
 
@@ -399,7 +391,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - dylhunn
         - thePunderWoman
         - pkozlowski-opensource
 
@@ -418,7 +409,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - dylhunn
         - thePunderWoman
         - pkozlowski-opensource
 
@@ -478,7 +468,7 @@ groups:
       users:
         - alxhub
         - atscott
-        - dylhunn
+        - clydin
 
   # =========================================================
   #  zone.js
@@ -509,7 +499,6 @@ groups:
         - AndrewKushnir
         - atscott
         - crisbeto
-        - dylhunn
         - thePunderWoman
         - pkozlowski-opensource
 
@@ -544,7 +533,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - dylhunn
         - thePunderWoman
         - josephperrott
 
@@ -606,7 +594,6 @@ groups:
         - jelbourn
         - bencodezen
         - thePunderWoman
-        - dylhunn
         - AndrewKushnir
         - alxhub
         - crisbeto
@@ -716,7 +703,6 @@ groups:
         - AndrewKushnir
         - alxhub
         - atscott
-        - dylhunn
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
@@ -745,7 +731,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - dylhunn
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
@@ -771,7 +756,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - dylhunn
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
@@ -817,7 +801,6 @@ groups:
         - pkozlowski-opensource # Pawel Kozlowski
         - alxhub # Alex Rickabaugh
         - thePunderWoman # Jessica Janiuk
-        - dylhunn # Dylan Hunn
         - AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
     labels:
