@@ -42,31 +42,27 @@ async function getAnswerFiles(
   files: FileAndContentRecord,
 ): Promise<FileAndContentRecord> {
   const answerFiles: FileAndContentRecord = {};
-  const answerPrefix = 'answer/';
+  const answerPrefix = /answer[\\/]/;
 
   if (config.answerSrc) {
     const answersDir = join(path, config.answerSrc);
     const answerFilePaths = await glob('**/*', {
       cwd: answersDir,
       onlyFiles: true,
-      absolute: true,
+      absolute: false,
     });
-    answerFilePaths.forEach((absolutePath) => {
+
+    for (const answerFile of answerFilePaths) {
       // We use the absolute file in order to read the content, but the key
       // needs to be a relative path within the project.
-      const parentDir = dirname(answersDir) + '/';
-      const pathStart = absolutePath.indexOf(parentDir);
-      if (pathStart === -1) {
-        throw new Error('Invalid state: could not find start of answers path');
-      }
-      answerFiles[absolutePath.slice(pathStart + parentDir.length)] = getFileContents(absolutePath);
-    });
+      answerFiles[answerFile] = getFileContents(join(answersDir, answerFile));
+    }
   } else {
-    Object.keys(files).forEach((file) => {
-      if (file.includes(answerPrefix)) {
+    for (const file of Object.keys(files)) {
+      if (answerPrefix.test(file)) {
         answerFiles[file.replace(answerPrefix, '')] = files[file];
       }
-    });
+    }
   }
 
   return answerFiles;
