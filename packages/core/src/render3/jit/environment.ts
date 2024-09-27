@@ -217,5 +217,5 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵtwoWayBindingSet': r3.ɵɵtwoWayBindingSet,
   'ɵɵtwoWayListener': r3.ɵɵtwoWayListener,
 
-  'ɵɵreplaceMedata': r3.ɵɵreplaceMedata,
+  'ɵɵreplaceMetadata': r3.ɵɵreplaceMetadata,
 }))();

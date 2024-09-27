@@ -47,7 +47,7 @@ import {destroyLView, removeViewFromDOM} from './node_manipulation';
  * @param applyMetadata Callback that will apply a new set of metadata on the `type` when invoked.
  * @codeGenApi
  */
-export function ɵɵreplaceMedata(type: Type<unknown>, applyMetadata: () => void) {
+export function ɵɵreplaceMetadata(type: Type<unknown>, applyMetadata: () => void) {
   ngDevMode && assertComponentDef(type);
   const oldDef = getComponentDef(type)!;
 
