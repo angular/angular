@@ -16,22 +16,16 @@ import {
 import {ClassFieldDescriptor} from '../signal-migration/src';
 import {AST, Call, PropertyRead} from '@angular/compiler';
 
-export interface FnCallExpression extends ts.CallExpression {
-  expression: ts.PropertyAccessExpression & {
-    name: ts.Identifier;
-  };
-}
-
 /**
- * Gets whether the given identifier is accessed to call the
- * specified function on it.
+ * Gets whether the given field is accessed via the
+ * given reference.
  *
- * E.g. whether `<my-read>.toArray()` is detected.
+ * E.g. whether `<my-read>.toArray` is detected.
  */
-export function checkTsReferenceIsPartOfCallExpression(
+export function checkTsReferenceAccessesField(
   ref: TsReference<ClassFieldDescriptor>,
-  fnName: string,
-): FnCallExpression | null {
+  fieldName: string,
+): (ts.PropertyAccessExpression & {name: ts.Identifier}) | null {
   const accessNode = traverseAccess(ref.from.node);
 
   // Check if the reference is part of a property access.
@@ -42,41 +36,87 @@ export function checkTsReferenceIsPartOfCallExpression(
     return null;
   }
 
-  // Check if the reference is part of a call expression.
-  if (
-    accessNode.parent.name.text !== fnName ||
-    !ts.isCallExpression(accessNode.parent.parent) ||
-    accessNode.parent.parent.expression !== accessNode.parent
-  ) {
+  // Check if the reference is refers to the given field name.
+  if (accessNode.parent.name.text !== fieldName) {
     return null;
   }
 
-  return accessNode.parent.parent as FnCallExpression;
+  return accessNode.parent as ReturnType<typeof checkTsReferenceAccessesField>;
 }
 
 /**
- * Gets whether the given read is used to call the specified
- * function on it.
+ * Gets whether the given read is used to access
+ * the specified field.
  *
- * E.g. whether `<my-read>.toArray()` is detected.
+ * E.g. whether `<my-read>.toArray` is detected.
  */
-export function checkNonTsReferenceIsPartOfCallExpression(
+export function checkNonTsReferenceAccessesField(
   ref: HostBindingReference<ClassFieldDescriptor> | TemplateReference<ClassFieldDescriptor>,
-  fnName: string,
-): (Call & {receiver: PropertyRead}) | null {
+  fieldName: string,
+): PropertyRead | null {
   const readFromPath = ref.from.readAstPath.at(-1) as PropertyRead | AST | undefined;
   const parentRead = ref.from.readAstPath.at(-2) as PropertyRead | AST | undefined;
-  const call = ref.from.readAstPath.at(-3) as Call | AST | undefined;
 
   if (ref.from.read !== readFromPath) {
     return null;
   }
-  if (!(parentRead instanceof PropertyRead) || parentRead.name !== fnName) {
-    return null;
-  }
-  if (!(call instanceof Call) || call.receiver !== parentRead) {
+  if (!(parentRead instanceof PropertyRead) || parentRead.name !== fieldName) {
     return null;
   }
 
-  return call as Call & {receiver: PropertyRead};
+  return parentRead;
+}
+
+export interface FnCallExpression extends ts.CallExpression {
+  expression: ts.PropertyAccessExpression & {
+    name: ts.Identifier;
+  };
+}
+
+/**
+ * Gets whether the given reference is accessed to call the
+ * specified function on it.
+ *
+ * E.g. whether `<my-read>.toArray()` is detected.
+ */
+export function checkTsReferenceCallsField(
+  ref: TsReference<ClassFieldDescriptor>,
+  fieldName: string,
+): FnCallExpression | null {
+  const propertyAccess = checkTsReferenceAccessesField(ref, fieldName);
+  if (propertyAccess === null) {
+    return null;
+  }
+  if (
+    ts.isCallExpression(propertyAccess.parent) &&
+    propertyAccess.parent.expression === propertyAccess
+  ) {
+    return propertyAccess.parent as FnCallExpression;
+  }
+  return null;
+}
+
+/**
+ * Gets whether the given reference is accessed to call the
+ * specified function on it.
+ *
+ * E.g. whether `<my-read>.toArray()` is detected.
+ */
+export function checkNonTsReferenceCallsField(
+  ref: TemplateReference<ClassFieldDescriptor> | HostBindingReference<ClassFieldDescriptor>,
+  fieldName: string,
+): (Call & {receiver: PropertyRead}) | null {
+  const propertyAccess = checkNonTsReferenceAccessesField(ref, fieldName);
+  if (propertyAccess === null) {
+    return null;
+  }
+  const accessIdx = ref.from.readAstPath.indexOf(propertyAccess);
+  if (accessIdx === -1) {
+    return null;
+  }
+  const potentialCall = ref.from.readAstPath[accessIdx - 1];
+  if (potentialCall === undefined || !(potentialCall instanceof Call)) {
+    return null;
+  }
+  return potentialCall as Call & {receiver: PropertyRead};
 }

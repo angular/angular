@@ -851,6 +851,275 @@ describe('signal queries migration', () => {
       }
     `);
   });
+
+  it('should not migrate a query relying on QueryList#changes', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ContentChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '',
+          })
+          class MyComp {
+            @ContentChildren('label') labels = new QueryList<ElementRef>();
+
+            ngOnInit() {
+              this.labels.changes.subscribe(() => {});
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ContentChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+      @Component({
+        template: '',
+      })
+      class MyComp {
+        @ContentChildren('label') labels = new QueryList<ElementRef>();
+
+        ngOnInit() {
+          this.labels.changes.subscribe(() => {});
+        }
+      }
+    `);
+  });
+
+  it('should not migrate a query relying on QueryList#reset', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ContentChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '',
+          })
+          class MyComp {
+            @ContentChildren('label') labels = new QueryList<ElementRef>();
+
+            ngOnInit() {
+              this.labels.reset();
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ContentChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+      @Component({
+        template: '',
+      })
+      class MyComp {
+        @ContentChildren('label') labels = new QueryList<ElementRef>();
+
+        ngOnInit() {
+          this.labels.reset();
+        }
+      }
+    `);
+  });
+
+  it('should not migrate a query relying on QueryList#dirty', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ContentChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '',
+          })
+          class MyComp {
+            @ContentChildren('label') labels = new QueryList<ElementRef>();
+
+            ngOnInit() {
+              const isDirty = this.labels.dirty;
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ContentChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+      @Component({
+        template: '',
+      })
+      class MyComp {
+        @ContentChildren('label') labels = new QueryList<ElementRef>();
+
+        ngOnInit() {
+          const isDirty = this.labels.dirty;
+        }
+      }
+    `);
+  });
+
+  it('should not migrate a query relying on QueryList#setDirty', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '',
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+            ngOnInit() {
+              this.labels.setDirty();
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+      @Component({
+        template: '',
+      })
+      class MyComp {
+        @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+        ngOnInit() {
+          this.labels.setDirty();
+        }
+      }
+    `);
+  });
+
+  it('should not migrate a query relying on QueryList#notifyOnChanges', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '',
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+            ngOnInit() {
+              this.labels.notifyOnChanges();
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+      @Component({
+        template: '',
+      })
+      class MyComp {
+        @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+        ngOnInit() {
+          this.labels.notifyOnChanges();
+        }
+      }
+    `);
+  });
+
+  it('should not migrate a query relying on QueryList#destroy', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '<button (click)="labels.destroy()"></button>',
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+      @Component({
+        template: '<button (click)="labels.destroy()"></button>',
+      })
+      class MyComp {
+        @ViewChildren('label') labels = new QueryList<ElementRef>();
+      }
+    `);
+  });
+
+  it(
+    'should migrate a single-result query that accesses a `.changes` field, ' +
+      'unrelated to QueryList',
+    async () => {
+      const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+        {
+          name: absoluteFrom('/app.component.ts'),
+          isProgramRootFile: true,
+          contents: dedent`
+            import {ViewChild, ElementRef, Component} from '@angular/core';
+
+            @Component({
+              template: '',
+            })
+            class MyComp {
+              @ViewChild('label') label!: ElementRef;
+
+              ngOnInit() {
+                this.label.changes;
+              }
+            }
+          `,
+        },
+      ]);
+
+      const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+      expect(actual).toMatchWithDiff(`
+        import {ElementRef, Component, viewChild} from '@angular/core';
+
+        @Component({
+          template: '',
+        })
+        class MyComp {
+          readonly label = viewChild.required<ElementRef>('label');
+
+          ngOnInit() {
+            this.label().changes;
+          }
+        }
+      `);
+    },
+  );
 });
 
 function populateDeclarationTestCaseComponent(declaration: string): string {
