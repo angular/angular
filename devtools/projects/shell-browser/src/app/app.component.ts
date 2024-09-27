@@ -27,18 +27,14 @@ export class AppComponent implements OnInit {
     chrome.devtools.network.onNavigated.addListener(() => {
       window.location.reload();
     });
-    // At the moment the chrome.devtools.performance namespace does not
-    // have an entry in DefinitelyTyped, so this is a temporary
-    // workaround to prevent TypeScript failures while the corresponding
-    // type is added upstream.
-    const chromeDevToolsPerformance = (chrome.devtools as any).performance;
+    const chromeDevToolsPerformance = chrome.devtools.performance;
     chromeDevToolsPerformance?.onProfilingStarted?.addListener?.(this.onProfilingStartedListener);
     chromeDevToolsPerformance?.onProfilingStopped?.addListener?.(this.onProfilingStoppedListener);
 
     this._cd.detectChanges();
   }
   ngOnDestroy(): void {
-    const chromeDevToolsPerformance = (chrome.devtools as any).performance;
+    const chromeDevToolsPerformance = chrome.devtools.performance;
     chromeDevToolsPerformance?.onProfilingStarted?.removeListener?.(
       this.onProfilingStartedListener,
     );
