@@ -53,7 +53,7 @@ abstract class BaseConvertFullClassToSignalInputsRefactoring implements ActiveRe
     if (classDecl === undefined) {
       return false;
     }
-    const {reflector} = compiler.ɵɵprivateEnsureAnalyzeSyncForMigrations();
+    const {reflector} = compiler['ensureAnalyzed']();
     if (!isDirectiveOrComponentWithInputs(classDecl, reflector)) {
       return false;
     }

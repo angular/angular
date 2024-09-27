@@ -58,7 +58,7 @@ abstract class BaseConvertFieldToSignalInputRefactoring implements ActiveRefacto
       return false;
     }
 
-    const {reflector} = compiler.ɵɵprivateEnsureAnalyzeSyncForMigrations();
+    const {reflector} = compiler['ensureAnalyzed']();
     if (!isDirectiveOrComponent(classDecl, reflector)) {
       return false;
     }
