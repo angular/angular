@@ -248,7 +248,7 @@ export {
   ɵɵdeclareLet,
   ɵɵstoreLet,
   ɵɵreadContextLet,
-  ɵɵreplaceMedata,
+  ɵɵreplaceMetadata,
 } from './render3/index';
 export {CONTAINER_HEADER_OFFSET as ɵCONTAINER_HEADER_OFFSET} from './render3/interfaces/container';
 export {LContext as ɵLContext} from './render3/interfaces/context';
