@@ -1120,6 +1120,92 @@ describe('signal queries migration', () => {
       `);
     },
   );
+
+  it('should migrate `QueryList#first`', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '',
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+            ngOnInit() {
+              if (this.labels.first.nativeElement.textContent) {
+                // do smth.
+              };
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, viewChildren} from '@angular/core';
+
+      @Component({
+        template: '',
+      })
+      class MyComp {
+        readonly labels = viewChildren<ElementRef>('label');
+
+        ngOnInit() {
+          if (this.labels().at(0)!.nativeElement.textContent) {
+            // do smth.
+          };
+        }
+      }
+    `);
+  });
+
+  it('should migrate `QueryList#last`', async () => {
+    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: dedent`
+          import {ViewChildren, QueryList, ElementRef, Component} from '@angular/core';
+
+          @Component({
+            template: '',
+          })
+          class MyComp {
+            @ViewChildren('label') labels = new QueryList<ElementRef>();
+
+            ngOnInit() {
+              if (this.labels.last.nativeElement.textContent) {
+                // do smth.
+              };
+            }
+          }
+        `,
+      },
+    ]);
+
+    const actual = fs.readFile(absoluteFrom('/app.component.ts'));
+    expect(actual).toMatchWithDiff(`
+      import {ElementRef, Component, viewChildren} from '@angular/core';
+
+      @Component({
+        template: '',
+      })
+      class MyComp {
+        readonly labels = viewChildren<ElementRef>('label');
+
+        ngOnInit() {
+          if (this.labels().at(-1)!.nativeElement.textContent) {
+            // do smth.
+          };
+        }
+      }
+    `);
+  });
 });
 
 function populateDeclarationTestCaseComponent(declaration: string): string {

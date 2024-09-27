@@ -45,6 +45,7 @@ import {queryFunctionNameToDecorator} from './query_api_names';
 import {removeQueryListToArrayCall} from './fn_to_array_removal';
 import {replaceQueryListGetCall} from './fn_get_replacement';
 import {checkForIncompatibleQueryListAccesses} from './incompatible_query_list_fns';
+import {replaceQueryListFirstAndLastReferences} from './fn_first_last_replacement';
 
 // TODO: Consider re-using inheritance logic from input migration
 // TODO: Consider re-using problematic pattern recognition logic from input migration
@@ -316,6 +317,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     for (const ref of referenceResult.references) {
       removeQueryListToArrayCall(ref, info, globalMetadata, replacements);
       replaceQueryListGetCall(ref, info, globalMetadata, replacements);
+      replaceQueryListFirstAndLastReferences(ref, info, globalMetadata, replacements);
     }
 
     // Remove imports if possible.
