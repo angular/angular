@@ -1221,7 +1221,7 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG0507',
       },
       {
-        label: 'NG0602: HTML content was altered after server-side rendering',
+        label: 'NG0602: Disallowed function call inside reactive context',
         path: 'errors/NG0602',
         contentPath: 'reference/errors/NG0602',
       },
