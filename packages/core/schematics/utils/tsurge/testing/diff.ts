@@ -54,7 +54,7 @@ export function diffText(expected: string, actual: string, diffLineContextRange 
   let previous = -1;
 
   // Compute full diff text. Add markers if lines were skipped.
-  for (const lineIndex of Array.from(linesToRender).sort()) {
+  for (const lineIndex of Array.from(linesToRender).sort((a, b) => a - b)) {
     if (lineIndex - 1 !== previous) {
       result += `${chalk.grey('... (lines above) ...')}\n`;
     }

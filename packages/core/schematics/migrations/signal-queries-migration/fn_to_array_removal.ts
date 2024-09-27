@@ -14,16 +14,13 @@ import {
   isTsReference,
   Reference,
 } from '../signal-migration/src/passes/reference_resolution/reference_kinds';
-import type {CompilationUnitData} from './migration';
-import {
-  checkNonTsReferenceIsPartOfCallExpression,
-  checkTsReferenceIsPartOfCallExpression,
-} from './property_accesses';
+import type {GlobalUnitData} from './migration';
+import {checkNonTsReferenceCallsField, checkTsReferenceCallsField} from './property_accesses';
 
 export function removeQueryListToArrayCall(
   ref: Reference<ClassFieldDescriptor>,
   info: ProgramInfo,
-  globalMetadata: CompilationUnitData,
+  globalMetadata: GlobalUnitData,
   replacements: Replacement[],
 ): void {
   if (!isHostBindingReference(ref) && !isTemplateReference(ref) && !isTsReference(ref)) {
@@ -36,7 +33,7 @@ export function removeQueryListToArrayCall(
 
   // TS references.
   if (isTsReference(ref)) {
-    const toArrayCallExpr = checkTsReferenceIsPartOfCallExpression(ref, 'toArray');
+    const toArrayCallExpr = checkTsReferenceCallsField(ref, 'toArray');
     if (toArrayCallExpr === null) {
       return;
     }
@@ -57,7 +54,7 @@ export function removeQueryListToArrayCall(
   }
 
   // Template and host binding references.
-  const callExpr = checkNonTsReferenceIsPartOfCallExpression(ref, 'toArray');
+  const callExpr = checkNonTsReferenceCallsField(ref, 'toArray');
   if (callExpr === null) {
     return;
   }

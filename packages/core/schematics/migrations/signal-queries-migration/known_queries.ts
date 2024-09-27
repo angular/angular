@@ -15,7 +15,7 @@ import {
   KnownFields,
 } from '../signal-migration/src/passes/reference_resolution/known_fields';
 import {getClassFieldDescriptorForSymbol} from './field_tracking';
-import type {CompilationUnitData} from './migration';
+import type {GlobalUnitData} from './migration';
 import {InheritanceTracker} from '../signal-migration/src/passes/problematic_patterns/check_inheritance';
 
 export class KnownQueries
@@ -29,7 +29,7 @@ export class KnownQueries
 
   constructor(
     private readonly info: ProgramInfo,
-    private globalMetadata: CompilationUnitData,
+    private globalMetadata: GlobalUnitData,
   ) {}
 
   isFieldIncompatible(descriptor: ClassFieldDescriptor): boolean {
