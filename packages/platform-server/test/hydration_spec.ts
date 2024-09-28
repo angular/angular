@@ -72,7 +72,14 @@ import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {provideServerRendering} from '../public_api';
 import {renderApplication} from '../src/utils';
 
-import {getAppContents, renderAndHydrate, resetTViewsFor, stripUtilAttributes} from './dom_utils';
+import {
+  clearDocument,
+  getAppContents,
+  renderAndHydrate,
+  resetTViewsFor,
+  stripUtilAttributes,
+} from './dom_utils';
+import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
 
 /**
  * The name of the attribute that contains a slot index
@@ -214,6 +221,17 @@ function verifyHasNoLog(appRef: ApplicationRef, message: string) {
     .toBe(false);
 }
 
+/**
+ * Verifies that there are no messages in a console.
+ */
+function verifyEmptyConsole(appRef: ApplicationRef) {
+  const console = appRef.injector.get(Console) as DebugConsole;
+  const logs = console.logs.filter(
+    (msg) => !msg.startsWith('Angular is running in development mode'),
+  );
+  expect(logs).toEqual([]);
+}
+
 function getHydrationInfoFromTransferState(input: string): string | undefined {
   return input.match(/<script[^>]+>(.*?)<\/script>/)?.[1];
 }
@@ -271,9 +289,7 @@ describe('platform-server hydration integration', () => {
       doc = TestBed.inject(DOCUMENT);
     });
 
-    afterEach(() => {
-      doc.body.textContent = '';
-    });
+    afterEach(() => clearDocument(doc));
 
     /**
      * This renders the application with server side rendering logic.
@@ -7079,7 +7095,7 @@ describe('platform-server hydration integration', () => {
         }
       });
 
-      it('should log an warning when there was no hydration info in the TransferState', async () => {
+      it('should log a warning when there was no hydration info in the TransferState', async () => {
         @Component({
           standalone: true,
           selector: 'app',
@@ -7117,6 +7133,34 @@ describe('platform-server hydration integration', () => {
         verifyNoNodesWereClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
+
+      it(
+        'should not log a warning when there was no hydration info in the TransferState, ' +
+          'but a client mode marker is present',
+        async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `Hi!`,
+          })
+          class SimpleComponent {}
+
+          const html = `<html><head></head><body ${CLIENT_RENDER_MODE_FLAG}><app></app></body></html>`;
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await renderAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [withDebugConsole()],
+          });
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          verifyEmptyConsole(appRef);
+
+          const clientRootNode = compRef.location.nativeElement;
+          expect(clientRootNode.textContent).toContain('Hi!');
+        },
+      );
     });
 
     describe('@if', () => {
