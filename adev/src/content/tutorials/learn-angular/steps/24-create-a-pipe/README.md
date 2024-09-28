@@ -51,13 +51,7 @@ Now the `ReversePipe` class is a pipe. Update the `transform` function to add th
 <docs-code language="ts" highlight="[3,4,5,6,7,8,9]">
 export class ReversePipe implements PipeTransform {
     transform(value: string): string {
-        let reverse = '';
-
-        for (let i = value.length - 1; i >= 0; i--) {
-            reverse += value[i];
-        }
-
-        return reverse;
+        return value.split('').reverse().join('');
     }
 
 }
