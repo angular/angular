@@ -384,7 +384,8 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'modules/benchmarks/**/{*,.*}'
+          'modules/benchmarks/**/{*,.*}',
+          'modules/ssr-benchmarks/**/{*,.*}'
           ])
     reviewers:
       users:

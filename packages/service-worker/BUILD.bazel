@@ -50,6 +50,7 @@ ng_package(
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
         "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
     ],
     deps = [
         ":service-worker",

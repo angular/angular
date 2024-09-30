@@ -34,6 +34,7 @@ ng_package(
         "//adev:__pkg__",
         "//adev/shared-docs:__subpackages__",
         "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
         "//packages/compiler-cli/test/transformers:__pkg__",

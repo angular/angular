@@ -138,3 +138,10 @@ export {stringify as ɵstringify, truncateMiddle as ɵtruncateMiddle} from './ut
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider_flags';
 
 export {type InputSignalNode as ɵInputSignalNode} from './authoring/input/input_signal_node';
+export {
+  startMeasuring as ɵstartMeasuring,
+  stopMeasuring as ɵstopMeasuring,
+  PERFORMANCE_MARK_PREFIX as ɵPERFORMANCE_MARK_PREFIX,
+  enableProfiling as ɵenableProfiling,
+  disableProfiling as ɵdisableProfiling,
+} from './profiler';

@@ -20,13 +20,14 @@ import {
   ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵwhenStable as whenStable,
+  ɵstartMeasuring as startMeasuring,
+  ɵstopMeasuring as stopMeasuring,
 } from '@angular/core';
 
 import {PlatformState} from './platform_state';
 import {platformServer} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 import {createScript} from './transfer_state';
-import {runAndMeasurePerf} from './profiler';
 
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
@@ -50,10 +51,14 @@ interface PlatformOptions {
  */
 function createServerPlatform(options: PlatformOptions): PlatformRef {
   const extraProviders = options.platformProviders ?? [];
-  return platformServer([
+  const measuringLabel = 'createServerPlatform';
+  startMeasuring(measuringLabel);
+  const platform = platformServer([
     {provide: INITIAL_CONFIG, useValue: {document: options.document, url: options.url}},
     extraProviders,
   ]);
+  stopMeasuring(measuringLabel);
+  return platform;
 }
 
 /**
@@ -76,6 +81,8 @@ function removeEventDispatchScript(doc: Document) {
  * Annotate nodes for hydration and remove event dispatch script when not needed.
  */
 function prepareForHydration(platformState: PlatformState, applicationRef: ApplicationRef): void {
+  const measuringLabel = 'prepareForHydration';
+  startMeasuring(measuringLabel);
   const environmentInjector = applicationRef.injector;
   const doc = platformState.getDocument();
 
@@ -102,6 +109,7 @@ function prepareForHydration(platformState: PlatformState, applicationRef: Appli
     // (which was injected by the build process) from the HTML.
     removeEventDispatchScript(doc);
   }
+  stopMeasuring(measuringLabel);
 }
 
 /**
@@ -140,8 +148,12 @@ function insertEventRecordScript(
   eventTypesToReplay: {regular: Set<string>; capture: Set<string>},
   nonce: string | null,
 ): void {
+  const measuringLabel = 'insertEventRecordScript';
+  startMeasuring(measuringLabel);
   const {regular, capture} = eventTypesToReplay;
   const eventDispatchScript = findEventDispatchScript(doc);
+
+  // Note: this is only true when build with the CLI tooling, which inserts the script in the HTML
   if (eventDispatchScript) {
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
     const replayScriptContents =
@@ -158,11 +170,15 @@ function insertEventRecordScript(
     // relies on `__jsaction_bootstrap` to be defined in the global scope.
     eventDispatchScript.after(replayScript);
   }
+  stopMeasuring(measuringLabel);
 }
 
 async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {
+  const measuringLabel = 'whenStable';
+  startMeasuring(measuringLabel);
   // Block until application is stable.
   await whenStable(applicationRef);
+  stopMeasuring(measuringLabel);
 
   const platformState = platformRef.injector.get(PlatformState);
   prepareForHydration(platformState, applicationRef);
@@ -277,10 +293,21 @@ export async function renderApplication<T>(
   bootstrap: () => Promise<ApplicationRef>,
   options: {document?: string | Document; url?: string; platformProviders?: Provider[]},
 ): Promise<string> {
-  return runAndMeasurePerf('renderApplication', async () => {
-    const platformRef = createServerPlatform(options);
+  const renderAppLabel = 'renderApplication';
+  const bootstrapLabel = 'bootstrap';
+  const _renderLabel = '_render';
 
-    const applicationRef = await bootstrap();
-    return _render(platformRef, applicationRef);
-  });
+  startMeasuring(renderAppLabel);
+  const platformRef = createServerPlatform(options);
+
+  startMeasuring(bootstrapLabel);
+  const applicationRef = await bootstrap();
+  stopMeasuring(bootstrapLabel);
+
+  startMeasuring(_renderLabel);
+  const rendered = await _render(platformRef, applicationRef);
+  stopMeasuring(_renderLabel);
+
+  stopMeasuring(renderAppLabel);
+  return rendered;
 }
