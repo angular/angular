@@ -30,13 +30,17 @@ import {
   ɵsetDocument,
   ɵTESTABILITY as TESTABILITY,
 } from '@angular/core';
-import {BrowserModule, EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
+import {
+  BrowserModule,
+  EVENT_MANAGER_PLUGINS,
+  ɵBrowserDomAdapter as BrowserDomAdapter,
+} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 import {DominoAdapter, parseDocument} from './domino_adapter';
 import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
-import {PlatformState} from './platform_state';
+import {enableDomEmulation, PlatformState} from './platform_state';
 import {ServerEventManagerPlugin} from './server_events';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 import {TRANSFER_STATE_SERIALIZATION_PROVIDERS} from './transfer_state';
@@ -44,7 +48,7 @@ import {TRANSFER_STATE_SERIALIZATION_PROVIDERS} from './transfer_state';
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
   {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
-  {provide: PLATFORM_INITIALIZER, useFactory: initDominoAdapter, multi: true},
+  {provide: PLATFORM_INITIALIZER, useFactory: initDominoAdapter, multi: true, deps: [Injector]},
   {
     provide: PlatformLocation,
     useClass: ServerPlatformLocation,
@@ -55,9 +59,14 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: ALLOW_MULTIPLE_PLATFORMS, useValue: true},
 ];
 
-function initDominoAdapter() {
+function initDominoAdapter(injector: Injector) {
+  const _enableDomEmulation = enableDomEmulation(injector);
   return () => {
-    DominoAdapter.makeCurrent();
+    if (_enableDomEmulation) {
+      DominoAdapter.makeCurrent();
+    } else {
+      BrowserDomAdapter.makeCurrent();
+    }
   };
 }
 
@@ -88,11 +97,14 @@ export class ServerModule {}
 
 function _document(injector: Injector) {
   const config: PlatformConfig | null = injector.get(INITIAL_CONFIG, null);
+  const _enableDomEmulation = enableDomEmulation(injector);
   let document: Document;
   if (config && config.document) {
     document =
       typeof config.document === 'string'
-        ? parseDocument(config.document, config.url)
+        ? _enableDomEmulation
+          ? parseDocument(config.document, config.url)
+          : window.document
         : config.document;
   } else {
     document = getDOM().createHtmlDocument();

@@ -12,7 +12,7 @@
     "paths": {
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
-      "@angular/*": ["../dist/all/@angular/*"]
+      "@angular/*": ["../dist/packages-dist/@angular/*"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,
@@ -20,7 +20,7 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "target": "es5",
-    "types": ["angular"]
+    "types": ["angular"],
   },
   "exclude": [
     "payload_tests",

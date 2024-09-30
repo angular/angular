@@ -7,7 +7,13 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {APP_ID, Provider, TransferState} from '@angular/core';
+import {
+  APP_ID,
+  Provider,
+  TransferState,
+  ɵstartMeasuring as startMeasuring,
+  ɵstopMeasuring as stopMeasuring,
+} from '@angular/core';
 
 import {BEFORE_APP_SERIALIZED} from './tokens';
 
@@ -37,6 +43,8 @@ export function createScript(
 
 function serializeTransferStateFactory(doc: Document, appId: string, transferStore: TransferState) {
   return () => {
+    const measuringLabel = 'serializeTransferStateFactory';
+    startMeasuring(measuringLabel);
     // The `.toJSON` here causes the `onSerialize` callbacks to be called.
     // These callbacks can be used to provide the value for a given key.
     const content = transferStore.toJson();
@@ -63,5 +71,6 @@ function serializeTransferStateFactory(doc: Document, appId: string, transferSto
     // bundles are always `type="module"`. These are deferred by default and cause the transfer
     // transfer data to be queried only after the browser has finished parsing the DOM.
     doc.body.appendChild(script);
+    stopMeasuring(measuringLabel);
   };
 }
