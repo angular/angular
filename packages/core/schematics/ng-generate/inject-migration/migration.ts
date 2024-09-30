@@ -215,10 +215,7 @@ function migrateClass(
     }
   }
 
-  if (
-    !options.backwardsCompatibleConstructors &&
-    (!constructor.body || constructor.body.statements.length - removedStatementCount === 0)
-  ) {
+  if (canRemoveConstructor(options, constructor, removedStatementCount, superCall)) {
     // Drop the constructor if it was empty.
     removedMembers.add(constructor);
     tracker.replaceText(sourceFile, constructor.getFullStart(), constructor.getFullWidth(), '');
@@ -660,4 +657,31 @@ function cloneName(node: ts.PropertyName): ts.PropertyName {
     default:
       return node;
   }
+}
+
+/**
+ * Determines whether it's safe to delete a class constructor.
+ * @param options Options used to configure the migration.
+ * @param constructor Node representing the constructor.
+ * @param removedStatementCount Number of statements that were removed by the migration.
+ * @param superCall Node representing the `super()` call within the constructor.
+ */
+function canRemoveConstructor(
+  options: MigrationOptions,
+  constructor: ts.ConstructorDeclaration,
+  removedStatementCount: number,
+  superCall: ts.CallExpression | null,
+): boolean {
+  if (options.backwardsCompatibleConstructors) {
+    return false;
+  }
+
+  const statementCount = constructor.body
+    ? constructor.body.statements.length - removedStatementCount
+    : 0;
+
+  return (
+    statementCount === 0 ||
+    (statementCount === 1 && superCall !== null && superCall.arguments.length === 0)
+  );
 }
