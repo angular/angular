@@ -7,7 +7,7 @@
     "module": "es2015",
     "moduleResolution": "node",
     "strictNullChecks": true,
-    "target": "es2015",
+    "target": "es2022",
     "sourceMap": false,
     "experimentalDecorators": true,
     "outDir": "built",
