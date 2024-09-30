@@ -105,12 +105,10 @@ export class ImagePerformanceWarning implements OnDestroy {
       lcpElementLoadedCorrectly = false;
     images.forEach((image) => {
       if (!this.options?.disableImageSizeWarning) {
-        for (const image of images) {
-          // Image elements using the NgOptimizedImage directive are excluded,
-          // as that directive has its own version of this check.
-          if (!image.getAttribute('ng-img') && this.isOversized(image)) {
-            logOversizedImageWarning(image.src);
-          }
+        // Image elements using the NgOptimizedImage directive are excluded,
+        // as that directive has its own version of this check.
+        if (!image.getAttribute('ng-img') && this.isOversized(image)) {
+          logOversizedImageWarning(image.src);
         }
       }
       if (!this.options?.disableImageLazyLoadWarning && this.lcpImageUrl) {
