@@ -901,6 +901,37 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should remove the constructor if it only has a super() call after the migration', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Parent } from './parent';`,
+        `import { SomeService } from './service';`,
+        ``,
+        `@Directive()`,
+        `class MyDir extends Parent {`,
+        `  constructor(private service: SomeService) {`,
+        `    super();`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Parent } from './parent';`,
+      `import { SomeService } from './service';`,
+      ``,
+      `@Directive()`,
+      `class MyDir extends Parent {`,
+      `  private service = inject(SomeService);`,
+      `}`,
+    ]);
+  });
+
   it('should be able to opt into generating backwards-compatible constructors for a class with existing members', async () => {
     writeFile(
       '/dir.ts',
@@ -982,6 +1013,44 @@ describe('inject migration', () => {
       ``,
       `  log() {`,
       `    console.log(this.foo, this.hello, this.goodbye);`,
+      `  }`,
+      `}`,
+    ]);
+  });
+
+  it('should not remove the constructor, even if it only has a super call, if backwards compatible constructors are enabled', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Parent } from './parent';`,
+        `import { SomeService } from './service';`,
+        ``,
+        `@Directive()`,
+        `class MyDir extends Parent {`,
+        `  constructor(private service: SomeService) {`,
+        `    super();`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration({backwardsCompatibleConstructors: true});
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Parent } from './parent';`,
+      `import { SomeService } from './service';`,
+      ``,
+      `@Directive()`,
+      `class MyDir extends Parent {`,
+      `  private service = inject(SomeService);`,
+      ``,
+      `  /** Inserted by Angular inject() migration for backwards compatibility */`,
+      `  constructor(...args: unknown[]);`,
+      ``,
+      `  constructor() {`,
+      `    super();`,
       `  }`,
       `}`,
     ]);
