@@ -13,6 +13,7 @@ import assert from 'assert';
 import ts from 'typescript';
 import {
   confirmAsSerializable,
+  MigrationStats,
   ProgramInfo,
   Replacement,
   Serializable,
@@ -343,6 +344,11 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     applyImportManagerChanges(importManager, replacements, sourceFiles, info);
 
     return replacements;
+  }
+
+  override async stats(globalMetadata: GlobalUnitData): Promise<MigrationStats> {
+    // TODO: Add statistics.
+    return {counters: {}};
   }
 }
 

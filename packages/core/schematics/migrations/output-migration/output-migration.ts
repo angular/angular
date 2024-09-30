@@ -9,6 +9,7 @@
 import ts from 'typescript';
 import {
   confirmAsSerializable,
+  MigrationStats,
   ProgramInfo,
   projectFile,
   ProjectFile,
@@ -206,6 +207,11 @@ export class OutputMigration extends TsurgeFunnelMigration<
       importReplacements,
       problematicUsages,
     });
+  }
+
+  override async stats(globalMetadata: CompilationUnitData): Promise<MigrationStats> {
+    // TODO: Add statistics.
+    return {counters: {}};
   }
 
   override async migrate(globalData: CompilationUnitData): Promise<Replacement[]> {

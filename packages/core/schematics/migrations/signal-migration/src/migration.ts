@@ -21,15 +21,18 @@ import {getCompilationUnitMetadata} from './batch/extract';
 import {mergeCompilationUnitData} from './batch/merge_unit_data';
 import {Replacement} from '../../../utils/tsurge/replacement';
 import {populateKnownInputsFromGlobalData} from './batch/populate_global_data';
-import {InheritanceGraph} from './utils/inheritance_graph';
 import {executeMigrationPhase} from './phase_migrate';
 import {filterIncompatibilitiesForBestEffortMode} from './best_effort_mode';
-import {createNgtscProgram} from '../../../utils/tsurge/helpers/ngtsc_program';
 import assert from 'assert';
-import {InputIncompatibilityReason} from './input_detection/incompatibility';
+import {
+  ClassIncompatibilityReason,
+  InputIncompatibilityReason,
+} from './input_detection/incompatibility';
 import {isInputDescriptor} from './utils/input_id';
 import {MigrationConfig} from './migration_config';
 import {ClassFieldUniqueKey} from './passes/reference_resolution/known_fields';
+import {MigrationStats} from '../../../utils/tsurge';
+import {createNgtscProgram} from '../../../utils/tsurge/helpers/ngtsc_program';
 
 /**
  * Tsurge migration for migrating Angular `@Input()` declarations to
@@ -175,6 +178,50 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     executeMigrationPhase(host, knownInputs, result, analysisDeps);
 
     return result.replacements;
+  }
+
+  override async stats(globalMetadata: CompilationUnitData): Promise<MigrationStats> {
+    let fullCompilationInputs = 0;
+    let sourceInputs = 0;
+    let incompatibleInputs = 0;
+    const fieldIncompatibleCounts: Partial<
+      Record<`input-field-incompatibility-${string}`, number>
+    > = {};
+    const classIncompatibleCounts: Partial<
+      Record<`input-owning-class-incompatibility-${string}`, number>
+    > = {};
+
+    for (const [id, input] of Object.entries(globalMetadata.knownInputs)) {
+      fullCompilationInputs++;
+      if (input.seenAsSourceInput) {
+        sourceInputs++;
+      }
+      if (input.memberIncompatibility !== null || input.owningClassIncompatibility !== null) {
+        incompatibleInputs++;
+      }
+      if (input.memberIncompatibility !== null) {
+        const reasonName = InputIncompatibilityReason[input.memberIncompatibility];
+        const key = `input-field-incompatibility-${reasonName}` as const;
+        fieldIncompatibleCounts[key] ??= 0;
+        fieldIncompatibleCounts[key]++;
+      }
+      if (input.owningClassIncompatibility !== null) {
+        const reasonName = ClassIncompatibilityReason[input.owningClassIncompatibility];
+        const key = `input-owning-class-incompatibility-${reasonName}` as const;
+        classIncompatibleCounts[key] ??= 0;
+        classIncompatibleCounts[key]++;
+      }
+    }
+
+    return {
+      counters: {
+        fullCompilationInputs,
+        sourceInputs,
+        incompatibleInputs,
+        ...fieldIncompatibleCounts,
+        ...classIncompatibleCounts,
+      },
+    };
   }
 }
 
