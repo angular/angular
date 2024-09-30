@@ -46,6 +46,7 @@ http_server(
         "e2e/a.png",
         "e2e/b.png",
         "e2e/logo-1500w.jpg",
+        "e2e/logo-1500w.svg",
         "e2e/logo-500w.jpg",
         "e2e/white-607x3.png",
         "index.html",
