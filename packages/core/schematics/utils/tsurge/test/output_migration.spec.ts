@@ -18,7 +18,7 @@ describe('output migration', () => {
 
   it('should work', async () => {
     const migration = new OutputMigration();
-    const fs = await runTsurgeMigration(migration, [
+    const {fs} = await runTsurgeMigration(migration, [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -40,7 +40,7 @@ describe('output migration', () => {
 
   it('should not migrate if there is a problematic usage', async () => {
     const migration = new OutputMigration();
-    const fs = await runTsurgeMigration(migration, [
+    const {fs} = await runTsurgeMigration(migration, [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,

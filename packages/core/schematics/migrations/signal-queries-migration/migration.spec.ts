@@ -187,7 +187,7 @@ describe('signal queries migration', () => {
   describe('declaration test cases', () => {
     for (const c of declarationTestCases) {
       (c.focus ? fit : it)(c.id, async () => {
-        const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+        const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
           {
             name: absoluteFrom('/app.component.ts'),
             isProgramRootFile: true,
@@ -211,7 +211,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not migrate if there is a write to a query', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -236,7 +236,7 @@ describe('signal queries migration', () => {
   });
 
   it('should update imports when migrating', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -257,7 +257,7 @@ describe('signal queries migration', () => {
   });
 
   it('should update TS references when migrating', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -303,7 +303,7 @@ describe('signal queries migration', () => {
   });
 
   it('should update template references when migrating', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -337,7 +337,7 @@ describe('signal queries migration', () => {
     'should update references part of control flow expressions that cannot narrow ' +
       '(due to no second usage inside the template)',
     async () => {
-      const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
         {
           name: absoluteFrom('/app.component.ts'),
           isProgramRootFile: true,
@@ -369,7 +369,7 @@ describe('signal queries migration', () => {
   );
 
   it('should not update references part of narrowing template expressions', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -406,7 +406,7 @@ describe('signal queries migration', () => {
   });
 
   it('should update references in host bindings', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -443,7 +443,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not remove imports when partially migrating', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -472,7 +472,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not migrate if query class is manually instantiated', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -496,7 +496,7 @@ describe('signal queries migration', () => {
 
   describe('inheritance', () => {
     it('should not migrate if member is inherited from interface', async () => {
-      const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
         {
           name: absoluteFrom('/app.component.ts'),
           isProgramRootFile: true,
@@ -521,7 +521,7 @@ describe('signal queries migration', () => {
     });
 
     it('should not migrate if member is overridden via derived class', async () => {
-      const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
         {
           name: absoluteFrom('/app.component.ts'),
           isProgramRootFile: true,
@@ -547,7 +547,7 @@ describe('signal queries migration', () => {
   });
 
   it('should remove QueryList imports', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -578,7 +578,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not remove QueryList import when used elsewhere', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -613,7 +613,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not remove QueryList import when part of skipped query', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -652,7 +652,7 @@ describe('signal queries migration', () => {
   });
 
   it('should remove `toArray` function calls for multi queries', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -691,7 +691,7 @@ describe('signal queries migration', () => {
   });
 
   it('should remove `toArray` function calls for multi queries, with control flow', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -735,7 +735,7 @@ describe('signal queries migration', () => {
   });
 
   it('should remove `toArray` function calls in templates and host bindings', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -772,7 +772,7 @@ describe('signal queries migration', () => {
   });
 
   it('should replace `get` function calls for multi queries', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -816,7 +816,7 @@ describe('signal queries migration', () => {
   });
 
   it('should replace `get` function calls in templates and host bindings', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -853,7 +853,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not migrate a query relying on QueryList#changes', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -892,7 +892,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not migrate a query relying on QueryList#reset', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -931,7 +931,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not migrate a query relying on QueryList#dirty', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -970,7 +970,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not migrate a query relying on QueryList#setDirty', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -1009,7 +1009,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not migrate a query relying on QueryList#notifyOnChanges', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -1048,7 +1048,7 @@ describe('signal queries migration', () => {
   });
 
   it('should not migrate a query relying on QueryList#destroy', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -1082,7 +1082,7 @@ describe('signal queries migration', () => {
     'should migrate a single-result query that accesses a `.changes` field, ' +
       'unrelated to QueryList',
     async () => {
-      const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+      const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
         {
           name: absoluteFrom('/app.component.ts'),
           isProgramRootFile: true,
@@ -1122,7 +1122,7 @@ describe('signal queries migration', () => {
   );
 
   it('should migrate `QueryList#first`', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
@@ -1165,7 +1165,7 @@ describe('signal queries migration', () => {
   });
 
   it('should migrate `QueryList#last`', async () => {
-    const fs = await runTsurgeMigration(new SignalQueriesMigration(), [
+    const {fs} = await runTsurgeMigration(new SignalQueriesMigration(), [
       {
         name: absoluteFrom('/app.component.ts'),
         isProgramRootFile: true,
