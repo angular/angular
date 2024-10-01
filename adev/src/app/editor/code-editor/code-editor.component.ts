@@ -33,6 +33,7 @@ import {StackBlitzOpener} from '../stackblitz-opener.service';
 import {ClickOutside, IconComponent} from '@angular/docs';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {IDXLauncher} from '../idx-launcher.service';
+import {MatTooltip} from '@angular/material/tooltip';
 
 export const REQUIRED_FILES = new Set([
   'src/main.ts',
@@ -48,7 +49,15 @@ const ANGULAR_DEV = 'https://angular.dev';
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTabsModule, IconComponent, ClickOutside, CdkMenu, CdkMenuItem, CdkMenuTrigger],
+  imports: [
+    MatTabsModule,
+    MatTooltip,
+    IconComponent,
+    ClickOutside,
+    CdkMenu,
+    CdkMenuItem,
+    CdkMenuTrigger,
+  ],
 })
 export class CodeEditor implements AfterViewInit, OnDestroy {
   @ViewChild('codeEditorWrapper') private codeEditorWrapperRef!: ElementRef<HTMLDivElement>;
