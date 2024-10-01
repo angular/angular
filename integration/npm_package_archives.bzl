@@ -6,6 +6,7 @@ NPM_PACKAGE_ARCHIVES = [
     "@rollup/plugin-node-resolve",
     "@rollup/plugin-commonjs",
     "check-side-effects",
+    "dexnode",
     "jasmine",
     "http-server",
     "typescript",

@@ -198,6 +198,7 @@
     "cldr": "7.5.0",
     "cldrjs": "0.5.5",
     "conventional-changelog": "^6.0.0",
+    "dexnode": "^1.2.2",
     "emoji-regex": "^10.3.0",
     "fast-glob": "3.3.2",
     "fflate": "^0.8.2",

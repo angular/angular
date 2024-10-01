@@ -32,6 +32,14 @@ Note: Due to the CLI adding some polyfills, @angular/build is patched to disable
 To run create a usable flame chart, prepare a narrowed run (like `benchmarkRun(10000, 20);`). 
 Then in the performance tab of the devtools, trigger "Record & Reload" to generate a profile.
 
+### Deopt Explorer 
+
+A target is dedicated to generate a v8 log that can be fed to the [Deopt Explorer extension](https://github.com/microsoft/deoptexplorer-vscode).
+
+1. Run `yarn bazel run //modules/ssr-benchmarks:dexnode`, 
+2. open the project generated at the path after `Successfully ran all commands in test directory:`,
+3. open the logfile in the extension
+
 ## Result example 
 
 === table with 10000 rows, with 1000 renders ===

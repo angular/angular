@@ -27,16 +27,21 @@ const levels = new Map<string, number>([
   ['renderToString', 2],
 ]);
 
-main();
+const narrowRun = typeof process !== 'undefined' && process.argv.length > 0;
 
-async function main() {
+main(narrowRun);
+
+async function main(narrowRun: boolean) {
   console.log('Benchmarking started...');
   console.log(`DOM emulation is ${DISABLE_DOM_EMULATION ? 'disabled' : 'enabled'}`);
 
-  await benchmarkRun(10, 1000);
-  await benchmarkRun(100, 1000);
-  await benchmarkRun(1000, 1000);
-  await benchmarkRun(10000, 1000);
+  if (narrowRun) {
+    await benchmarkRun(10000, 20);
+  } else {
+    await benchmarkRun(10, 1000);
+    await benchmarkRun(100, 1000);
+    await benchmarkRun(1000, 1000);
+  }
 }
 
 /**
