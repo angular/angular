@@ -29,7 +29,6 @@ export const SCROLL_FINISH_DELAY = SCROLL_EVENT_DELAY * 2;
 // The service is responsible for listening for scrolling and resizing,
 // thanks to which it sets the active item in the Table of contents
 export class TableOfContentsScrollSpy {
-  private readonly destroyRef = inject(DestroyRef);
   private readonly tableOfContentsLoader = inject(TableOfContentsLoader);
   private readonly document = inject(DOCUMENT);
   private readonly window = inject(WINDOW);
@@ -41,12 +40,25 @@ export class TableOfContentsScrollSpy {
   activeItemId = signal<string | null>(null);
   scrollbarThumbOnTop = signal<boolean>(true);
 
-  startListeningToScroll(contentSourceElement: HTMLElement | null): void {
+  startListeningToScroll(
+    contentSourceElement: HTMLElement | null,
+    // `destroyRef` is required because the caller may invoke `startListeningToScroll`
+    // multiple times. Without it, previous event listeners would not be disposed of,
+    // leading to the accumulation of new event listeners.
+    destroyRef: DestroyRef,
+  ) {
     this.contentSourceElement = contentSourceElement;
     this.lastContentWidth = this.getContentWidth();
 
-    this.setScrollEventHandlers();
-    this.setResizeEventHandlers();
+    this.setScrollEventHandlers(destroyRef);
+    this.setResizeEventHandlers(destroyRef);
+
+    destroyRef.onDestroy(() => {
+      // We also need to clean up the source element once the view that calls
+      // `startListeningToScroll` is destroyed, as this will keep a reference
+      // to an element that has been removed from the DOM.
+      this.contentSourceElement = null;
+    });
   }
 
   scrollToTop(): void {
@@ -72,9 +84,9 @@ export class TableOfContentsScrollSpy {
   }
 
   // After window resize, we should update top value of each table content item
-  private setResizeEventHandlers() {
+  private setResizeEventHandlers(destroyRef: DestroyRef) {
     fromEvent(this.window, 'resize')
-      .pipe(debounceTime(RESIZE_EVENT_DELAY), takeUntilDestroyed(this.destroyRef), startWith())
+      .pipe(debounceTime(RESIZE_EVENT_DELAY), takeUntilDestroyed(destroyRef), startWith())
       .subscribe(() => {
         this.updateHeadingsTopAfterResize();
       });
@@ -83,14 +95,16 @@ export class TableOfContentsScrollSpy {
     // assets (fonts, images) are loaded. They can (and will) change the y-position of the headings.
     const docsViewer = this.document.querySelector('docs-viewer');
     if (docsViewer) {
-      afterNextRender(
+      const ref = afterNextRender(
         () => {
           const resizeObserver = new ResizeObserver(() => this.updateHeadingsTopAfterResize());
           resizeObserver.observe(docsViewer);
-          this.destroyRef.onDestroy(() => resizeObserver.disconnect());
+          destroyRef.onDestroy(() => resizeObserver.disconnect());
         },
-        {injector: this.injector},
+        {injector: this.injector, manualCleanup: true},
       );
+
+      destroyRef.onDestroy(() => ref.destroy());
     }
   }
 
@@ -104,10 +118,10 @@ export class TableOfContentsScrollSpy {
     }
   }
 
-  private setScrollEventHandlers(): void {
+  private setScrollEventHandlers(destroyRef: DestroyRef): void {
     const scroll$ = fromEvent(this.document, 'scroll').pipe(
       auditTime(SCROLL_EVENT_DELAY),
-      takeUntilDestroyed(this.destroyRef),
+      takeUntilDestroyed(destroyRef),
     );
 
     scroll$.subscribe(() => this.setActiveItemId());
