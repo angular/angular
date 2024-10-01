@@ -10,7 +10,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  EnvironmentInjector,
+  Injector,
   afterNextRender,
   computed,
   effect,
@@ -43,7 +43,7 @@ export default class ApiReferenceList {
   private readonly apiReferenceManager = inject(ApiReferenceManager);
   private readonly router = inject(Router);
   filterInput = viewChild.required(TextField, {read: ElementRef});
-  private readonly injector = inject(EnvironmentInjector);
+  private readonly injector = inject(Injector);
 
   private readonly allGroups = this.apiReferenceManager.apiGroups;
 
