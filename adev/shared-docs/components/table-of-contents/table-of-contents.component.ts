@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, Input, computed, inject} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  Input,
+  computed,
+  inject,
+} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {TableOfContentsLevel} from '../../interfaces/index';
 import {TableOfContentsLoader} from '../../services/table-of-contents-loader.service';
@@ -27,6 +34,8 @@ export class TableOfContents {
 
   private readonly scrollSpy = inject(TableOfContentsScrollSpy);
   private readonly tableOfContentsLoader = inject(TableOfContentsLoader);
+  private readonly destroyRef = inject(DestroyRef);
+
   tableOfContentItems = this.tableOfContentsLoader.tableOfContentItems;
 
   activeItemId = this.scrollSpy.activeItemId;
@@ -35,7 +44,7 @@ export class TableOfContents {
 
   ngAfterViewInit() {
     this.tableOfContentsLoader.buildTableOfContent(this.contentSourceElement);
-    this.scrollSpy.startListeningToScroll(this.contentSourceElement);
+    this.scrollSpy.startListeningToScroll(this.contentSourceElement, this.destroyRef);
   }
 
   scrollToTop(): void {

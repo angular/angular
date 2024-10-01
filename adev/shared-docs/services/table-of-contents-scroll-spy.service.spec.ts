@@ -6,17 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DestroyRef} from '@angular/core';
+import {DOCUMENT, ViewportScroller} from '@angular/common';
 import {TestBed, discardPeriodicTasks, fakeAsync, tick} from '@angular/core/testing';
 
 import {WINDOW} from '../providers';
 
 import {TableOfContentsLoader} from './table-of-contents-loader.service';
 import {SCROLL_EVENT_DELAY, TableOfContentsScrollSpy} from './table-of-contents-scroll-spy.service';
-import {DOCUMENT, ViewportScroller} from '@angular/common';
 import {TableOfContentsLevel} from '../interfaces';
 
 describe('TableOfContentsScrollSpy', () => {
   let service: TableOfContentsScrollSpy;
+  let destroyRef: DestroyRef;
   const fakeWindow = {
     addEventListener: () => {},
     removeEventListener: () => {},
@@ -68,6 +70,7 @@ describe('TableOfContentsScrollSpy', () => {
     const tableOfContentsLoaderSpy = TestBed.inject(TableOfContentsLoader);
     tableOfContentsLoaderSpy.tableOfContentItems.set(fakeToCItems);
     service = TestBed.inject(TableOfContentsScrollSpy);
+    destroyRef = TestBed.inject(DestroyRef);
   });
 
   it('should be created', () => {
@@ -94,7 +97,7 @@ describe('TableOfContentsScrollSpy', () => {
     const scrollableContainer = doc;
     const setActiveItemIdSpy = spyOn(service as any, 'setActiveItemId');
 
-    service.startListeningToScroll(doc.querySelector('fake-selector'));
+    service.startListeningToScroll(doc.querySelector('fake-selector'), destroyRef);
 
     scrollableContainer.dispatchEvent(new Event('scroll'));
     tick(SCROLL_EVENT_DELAY - 2);
@@ -118,7 +121,7 @@ describe('TableOfContentsScrollSpy', () => {
     const doc = TestBed.inject(DOCUMENT);
     const scrollableContainer = doc;
 
-    service.startListeningToScroll(doc.querySelector('fake-selector'));
+    service.startListeningToScroll(doc.querySelector('fake-selector'), destroyRef);
 
     fakeWindow.scrollY = 1238;
     scrollableContainer.dispatchEvent(new Event('scroll'));
@@ -133,7 +136,7 @@ describe('TableOfContentsScrollSpy', () => {
     const doc = TestBed.inject(DOCUMENT);
     const scrollableContainer = doc;
 
-    service.startListeningToScroll(doc.querySelector('fake-selector'));
+    service.startListeningToScroll(doc.querySelector('fake-selector'), destroyRef);
 
     fakeWindow.scrollY = 99;
     scrollableContainer.dispatchEvent(new Event('scroll'));
