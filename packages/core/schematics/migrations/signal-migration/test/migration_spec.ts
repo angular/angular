@@ -22,7 +22,7 @@ describe('signal input migration', () => {
     'should properly handle declarations with loose property initialization ' +
       'and strict null checks enabled',
     async () => {
-      const fs = await runTsurgeMigration(
+      const {fs} = await runTsurgeMigration(
         new SignalInputMigration(),
         [
           {
@@ -70,7 +70,7 @@ describe('signal input migration', () => {
     'should properly handle declarations with loose property initialization ' +
       'and strict null checks disabled',
     async () => {
-      const fs = await runTsurgeMigration(
+      const {fs} = await runTsurgeMigration(
         new SignalInputMigration(),
         [
           {
