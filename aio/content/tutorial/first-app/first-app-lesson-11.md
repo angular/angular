@@ -16,7 +16,7 @@ Each housing location has specific details that should be displayed when a user 
 
 Route parameters enable you to include dynamic information as a part of your route URL. To identify which housing location a user has clicked on you will use the `id` property of the `HousingLocation` type.
 
-## Step 1 - Create a new service for your app
+## Step 1 - Fetching the dynamic value from the route
 In lesson 10, you added a second route to `src/app/routes.ts` which includes a special segment that identifies the route parameter, `id`:
 
     <code-example format="javascript" language="javascript">
