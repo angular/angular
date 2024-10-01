@@ -53,6 +53,13 @@ export function getMessageForInputIncompatibility(reason: InputIncompatibilityRe
         short: `Input is required, but the migration cannot determine a good type for the input.`,
         extra: 'Consider adding an explicit type to make the migration possible.',
       };
+    case InputIncompatibilityReason.InputWithQuestionMarkButNoGoodExplicitTypeExtractable:
+      return {
+        short: `Input is marked with a question mark. Migration could not determine a good type for the input.`,
+        extra:
+          'The migration needs to be able to resolve a type, so that it can include `undefined` in your type. ' +
+          'Consider adding an explicit type to make the migration possible.',
+      };
     case InputIncompatibilityReason.SkippedViaConfigFilter:
       return {
         short: `This input is not part of the current migration scope.`,

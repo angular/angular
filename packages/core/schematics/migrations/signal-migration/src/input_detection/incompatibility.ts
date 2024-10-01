@@ -22,10 +22,11 @@ export enum InputIncompatibilityReason {
   SpyOnThatOverwritesField = 5,
   PotentiallyNarrowedInTemplateButNoSupportYet = 6,
   RequiredInputButNoGoodExplicitTypeExtractable = 7,
-  WriteAssignment = 8,
-  Accessor = 9,
-  OutsideOfMigrationScope = 10,
-  SkippedViaConfigFilter = 11,
+  InputWithQuestionMarkButNoGoodExplicitTypeExtractable = 8,
+  WriteAssignment = 9,
+  Accessor = 10,
+  OutsideOfMigrationScope = 11,
+  SkippedViaConfigFilter = 12,
 }
 
 /** Reasons why a whole class and its inputs cannot be migrated. */
