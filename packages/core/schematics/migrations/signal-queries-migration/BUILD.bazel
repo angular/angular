@@ -6,6 +6,7 @@ ts_library(
         ["**/*.ts"],
         exclude = ["*.spec.ts"],
     ),
+    visibility = ["//packages/core/schematics/ng-generate/signal-queries-migration:__pkg__"],
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli",
