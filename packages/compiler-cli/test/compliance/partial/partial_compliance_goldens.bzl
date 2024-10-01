@@ -12,7 +12,7 @@ def partial_compliance_golden(filePath):
         "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
         "//packages/core:npm_package",
         filePath,
-    ] + native.glob(["%s/*.ts" % path, "%s/**/*.html" % path])
+    ] + native.glob(["%s/*.ts" % path, "%s/**/*.html" % path, "%s/**/*.css" % path])
 
     nodejs_binary(
         name = generate_partial_name,
