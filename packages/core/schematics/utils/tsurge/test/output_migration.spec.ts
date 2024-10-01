@@ -67,4 +67,40 @@ describe('output migration', () => {
 
     expect(fs.readFile(absoluteFrom('/app.component.ts'))).not.toContain('TODO');
   });
+
+  it('should compute statistics', async () => {
+    const migration = new OutputMigration();
+    const {getStatistics} = await runTsurgeMigration(migration, [
+      {
+        name: absoluteFrom('/app.component.ts'),
+        isProgramRootFile: true,
+        contents: `
+          import {Output, Component, EventEmitter} from '@angular/core';
+
+          @Component()
+          export class AppComponent {
+            @Output() clicked = new EventEmitter<void>();
+            @Output() canBeMigrated = new EventEmitter<void>();
+          }
+        `,
+      },
+      {
+        name: absoluteFrom('/other.component.ts'),
+        isProgramRootFile: true,
+        contents: `
+          import {AppComponent} from './app.component';
+
+          const cmp: AppComponent = null!;
+          cmp.clicked.pipe().subscribe();
+        `,
+      },
+    ]);
+
+    expect(await getStatistics()).toEqual({
+      counters: {
+        allOutputs: 2,
+        migratedOutputs: 1,
+      },
+    });
+  });
 });
