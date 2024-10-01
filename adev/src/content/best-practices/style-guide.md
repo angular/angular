@@ -752,26 +752,6 @@ An element may have more than one attribute directive applied.
 
 <docs-code header="app/app.component.html" path="adev/src/content/examples/styleguide/src/06-01/app/app.component.html"/>
 
-### `HostListener`/`HostBinding` decorators versus `host` metadata
-
-#### Style 06-03
-
-**Consider** preferring the `@HostListener` and `@HostBinding` to the `host` property of the `@Directive` and `@Component` decorators.
-
-**Do** be consistent in your choice.
-
-**Why**? <br />
-The property associated with `@HostBinding` or the method associated with `@HostListener` can be modified only in a single place —in the directive's class.
-If you use the `host` metadata property, you must modify both the property/method declaration in the directive's class and the metadata in the decorator associated with the directive.
-
-<docs-code header="app/shared/validator.directive.ts" path="adev/src/content/examples/styleguide/src/06-03/app/shared/validator.directive.ts"/>
-
-Compare with the less preferred `host` metadata alternative.
-
-**Why**? <br />
-The `host` metadata is only one term to remember and doesn't require extra ES imports.
-
-<docs-code header="app/shared/validator2.directive.ts" path="adev/src/content/examples/styleguide/src/06-03/app/shared/validator2.directive.ts"/>
 ## Services
 
 ### Services are singletons
