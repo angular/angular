@@ -478,6 +478,13 @@ def _ng_package_impl(ctx):
         # placeholder
         packager_args.add("")
 
+    if ctx.file.license:
+        packager_inputs.append(ctx.file.license)
+        packager_args.add(ctx.file.license.path)
+    else:
+        #placeholder
+        packager_args.add("")
+
     packager_args.add(_serialize_files_for_arg(fesm2022))
     packager_args.add(_serialize_files_for_arg(esm2022))
     packager_args.add(_serialize_files_for_arg(static_files))
@@ -536,6 +543,10 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
         The contents of the file will be copied to the top of the resulting bundles.
         Configured substitutions are applied like with other files in the package.""",
         allow_single_file = [".txt"],
+    ),
+    "license": attr.label(
+        doc = """A textfile that will be copied to the root of the npm package.""",
+        allow_single_file = True,
     ),
     "deps": attr.label_list(
         doc = """ Targets that produce production JavaScript outputs, such as `ts_library`.""",
