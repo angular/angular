@@ -942,6 +942,7 @@ import {Directive, input} from '@angular/core';
 @Directive()
 class OptionalInput {
   readonly bla = input<string>();
+  readonly isLegacyHttpOnly = input<boolean | undefined>(false);
 }
 @@@@@@ problematic_type_reference.ts @@@@@@
 
