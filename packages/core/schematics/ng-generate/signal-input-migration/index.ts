@@ -104,8 +104,18 @@ export function migrate(options: Options): Rule {
       tree.commitUpdate(recorder);
     }
 
+    const {counters} = await migration.stats(merged);
+    const migratedInputs = counters.sourceInputs - counters.incompatibleInputs;
+
     context.logger.info('');
     context.logger.info(`Successfully migrated to signal inputs 🎉`);
+    context.logger.info(`  -> Migrated ${migratedInputs}/${counters.sourceInputs} inputs.`);
+
+    if (counters.incompatibleInputs > 0 && !options.insertTodos) {
+      context.logger.warn(`To see why ${counters.incompatibleInputs} inputs couldn't be migrated`);
+      context.logger.warn(`consider re-running with "--insert-todos" or "--best-effort-mode".`);
+    }
+
     if (options.bestEffortMode) {
       context.logger.warn(
         `You ran with best effort mode. Manually verify all code ` +

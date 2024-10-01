@@ -180,7 +180,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     return result.replacements;
   }
 
-  override async stats(globalMetadata: CompilationUnitData): Promise<MigrationStats> {
+  override async stats(globalMetadata: CompilationUnitData) {
     let fullCompilationInputs = 0;
     let sourceInputs = 0;
     let incompatibleInputs = 0;
