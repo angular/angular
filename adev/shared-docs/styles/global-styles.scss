@@ -64,6 +64,7 @@ $theme: mat.m2-define-light-theme(
 @include mat.core();
 @include mat.tabs-theme($theme);
 @include mat.button-toggle-theme($theme);
+@include mat.tooltip-theme($theme);
 
 // Include custom docs styles
 @include alert.docs-alert();
@@ -116,7 +117,7 @@ $theme: mat.m2-define-light-theme(
   &.cli {
     padding-inline-start: 1rem;
   }
-  
+
   a {
     color: inherit;
     &:hover {

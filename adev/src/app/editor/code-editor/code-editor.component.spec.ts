@@ -21,6 +21,8 @@ import {CodeEditor, REQUIRED_FILES} from './code-editor.component';
 import {CodeMirrorEditor} from './code-mirror-editor.service';
 import {FakeChangeDetectorRef} from '@angular/docs';
 import {TutorialType} from '@angular/docs';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatTooltipHarness} from '@angular/material/tooltip/testing';
 
 const files = [
   {filename: 'a', content: '', language: {} as any},
@@ -51,7 +53,7 @@ describe('CodeEditor', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CodeEditor, NoopAnimationsModule],
+      imports: [CodeEditor, NoopAnimationsModule, MatTooltip],
       providers: [
         {
           provide: CodeMirrorEditor,
@@ -199,5 +201,29 @@ describe('CodeEditor', () => {
 
       expect(fixture.debugElement.query(By.css('[aria-label="Delete file"]'))).toBeNull();
     }
+  });
+
+  it('should be able to display the tooltip on the download button', async () => {
+    const tooltip = await loader.getHarness(
+      MatTooltipHarness.with({selector: '.adev-editor-download-button'}),
+    );
+    expect(await tooltip.isOpen()).toBeFalse();
+    await tooltip.show();
+    expect(await tooltip.isOpen()).toBeTrue();
+  });
+
+  it('should be able to get the tooltip message on the download button', async () => {
+    const tooltip = await loader.getHarness(
+      MatTooltipHarness.with({selector: '.adev-editor-download-button'}),
+    );
+    await tooltip.show();
+    expect(await tooltip.getTooltipText()).toBe('Download current source code');
+  });
+
+  it('should not be able to get the tooltip message on the download button when the tooltip is not shown', async () => {
+    const tooltip = await loader.getHarness(
+      MatTooltipHarness.with({selector: '.adev-editor-download-button'}),
+    );
+    expect(await tooltip.getTooltipText()).toBe('');
   });
 });
