@@ -22,6 +22,7 @@ import {
   Type,
   ViewChild,
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
   DocContent,
@@ -110,6 +111,7 @@ export default class Tutorial implements AfterViewInit {
         filter(() =>
           Boolean(this.route?.routeConfig?.path?.startsWith(`${PagePrefix.TUTORIALS}/`)),
         ),
+        takeUntilDestroyed(),
       )
       .subscribe((data) => {
         const docContent = (data['docContent'] as DocContent | undefined)?.contents ?? null;
