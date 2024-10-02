@@ -155,7 +155,7 @@ When using static CSS classes, directly binding `class`, and binding specific cl
 
 ```angular-ts
 @Component({
-  template: `<ul class="list" [class]="listType " [class.expanded]="isExpanded"> ...`,
+  template: `<ul class="list" [class]="listType" [class.expanded]="isExpanded"> ...`,
   ...
 })
 export class Listbox {
