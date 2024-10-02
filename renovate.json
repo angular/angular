@@ -45,7 +45,9 @@
     "unist-util-visit",
     "unist-util-visit-parents",
     "rules_pkg",
-    "aspect_bazel_lib"
+    "aspect_bazel_lib",
+    "@bazel/runfiles",
+    "build_bazel_rules_nodejs"
   ],
   "packageRules": [
     {
