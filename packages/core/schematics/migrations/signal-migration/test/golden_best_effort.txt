@@ -119,6 +119,26 @@ it('should work', () => {
   } as Partial<UnwrapSignalInputs<MyComp>>;
   bootstrapTemplate('<my-comp [hello]="hello">', inputs);
 });
+@@@@@@ catalyst_test_partial.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+// @ts-ignore
+import {UnwrapSignalInputs} from 'google3/javascript/angular2/testing/catalyst/fake_async';
+
+function renderComponent(inputs: Partial<UnwrapSignalInputs<TestableSecondaryRangePicker>> = {}) {}
+
+@Component({
+  standalone: false,
+  jit: true,
+  template: '<bla [(ngModel)]="incompatible()">',
+})
+class TestableSecondaryRangePicker {
+  readonly bla = input(true);
+  readonly incompatible = input(true);
+}
 @@@@@@ constructor_initializations.ts @@@@@@
 
 // tslint:disable
