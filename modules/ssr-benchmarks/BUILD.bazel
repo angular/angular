@@ -40,22 +40,22 @@ ng_integration_test(
     ],
 )
 
-# This is a target to investigate with dexnode (https://github.com/microsoft/deoptexplorer-vscode)
+# This is a target to investigate with deopt explorer (https://github.com/microsoft/deoptexplorer-vscode)
 # The v8 log file will be generated in the test directory
 ng_integration_test(
-    name = "dexnode",
+    name = "run_deopt",
     commands = [
         "yarn install --cache-folder ./.yarn_local_cache",
         "NG_BUILD_MANGLE=0 yarn ng build",
-        "yarn dexnode  --prof \
-  --log-deopt \
-  --log-ic \
-  --log-maps \
-  --log-maps-details \
-  --log-internal-timer-events \
-  --log-code \
-  --log-source-code \
-  --detailed-line-info \
-  ./dist/ssr-benchmarks/server/server.mjs narrowRun",
+        "yarn node  --prof \
+            --log-deopt \
+            --log-ic \
+            --log-maps \
+            --log-maps-details \
+            --log-internal-timer-events \
+            --log-code \
+            --log-source-code \
+            --detailed-line-info \
+            ./dist/ssr-benchmarks/server/server.mjs narrowRun",
     ],
 )

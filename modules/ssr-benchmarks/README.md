@@ -36,7 +36,7 @@ Then in the performance tab of the devtools, trigger "Record & Reload" to genera
 
 A target is dedicated to generate a v8 log that can be fed to the [Deopt Explorer extension](https://github.com/microsoft/deoptexplorer-vscode).
 
-1. Run `yarn bazel run //modules/ssr-benchmarks:dexnode`, 
+1. Run `yarn bazel run //modules/ssr-benchmarks:run_deopt`, 
 2. open the project generated at the path after `Successfully ran all commands in test directory:`,
 3. open the logfile in the extension
 
