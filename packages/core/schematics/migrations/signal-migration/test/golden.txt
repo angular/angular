@@ -1355,3 +1355,25 @@ class WithJsdoc {
 
   readonly withCommentInside = input</* intended */ boolean>();
 }
+@@@@@@ writing_to_inputs.ts @@@@@@
+
+// tslint:disable
+
+import {Input, input} from '@angular/core';
+
+export class TestCmp {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
+  @Input() testParenthesisInput = false;
+  readonly notMutated = input(true);
+
+  testParenthesis() {
+    // prettier-ignore
+    ((this.testParenthesisInput)) = true;
+  }
+
+  testNotMutated() {
+    let fixture: boolean;
+    fixture = this.notMutated();
+  }
+}
