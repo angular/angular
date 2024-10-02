@@ -49,7 +49,7 @@ export function executeMigrationPhase(
       knownInputs.has(inputDescr) && knownInputs.get(inputDescr)!.isIncompatible() === false,
     shouldMigrateReferencesToClass: (clazz) =>
       knownInputs.getDirectiveInfoForClass(clazz) !== undefined &&
-      knownInputs.getDirectiveInfoForClass(clazz)!.hasIncompatibleMembers() === false,
+      knownInputs.getDirectiveInfoForClass(clazz)!.hasMigratedFields(),
   };
 
   // Migrate passes.
