@@ -5,6 +5,8 @@ It doesn't cover application-level security, such as authentication and authoriz
 
 For more information about the attacks and mitigations described below, see the [Open Web Application Security Project (OWASP) Guide](https://www.owasp.org/index.php/Category:OWASP_Guide_Project).
 
+<a id="report-issues"></a>
+
 <docs-callout title="Reporting vulnerabilities">
 
 Angular is part of Google [Open Source Software Vulnerability Reward Program](https://bughunters.google.com/about/rules/6521337925468160/google-open-source-software-vulnerability-reward-program-rules). [For vulnerabilities in Angular, please submit your report at https://bughunters.google.com](https://bughunters.google.com/report).
