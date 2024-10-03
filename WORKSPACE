@@ -50,16 +50,15 @@ load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 nodejs_register_toolchains(
     name = "nodejs",
     node_repositories = {
-        "18.20.0-darwin_arm64": ("node-v18.20.0-darwin-arm64.tar.gz", "node-v18.20.0-darwin-arm64", "10066ad4dd9e03ea5c4c45ef8775420ff37b860de09bbdf87b97e0c07b1ea036"),
-        "18.20.0-darwin_amd64": ("node-v18.20.0-darwin-x64.tar.gz", "node-v18.20.0-darwin-x64", "062ba71618e88e06321de5caa038843c350aababa2d315f3ca7b8551f8e66c1c"),
-        "18.20.0-linux_arm64": ("node-v18.20.0-linux-arm64.tar.xz", "node-v18.20.0-linux-arm64", "afe51da9ffb38ac1e3a20d9a06efd403ced4bf8831ab554a02a088dd8392fd79"),
-        "18.20.0-linux_ppc64le": ("node-v18.20.0-linux-ppc64le.tar.xz", "node-v18.20.0-linux-ppc64le", "9e652bbf53a3e37285b11dfb9d6a9bb8b02010c3b50e5c8229d4cc10e72681da"),
-        "18.20.0-linux_s390x": ("node-v18.20.0-linux-s390x.tar.xz", "node-v18.20.0-linux-s390x", "a6c2a5796b9d9e9bf21da62ec89ff30b41a8108880b9eaa3c912f1ce795a7743"),
-        "18.20.0-linux_amd64": ("node-v18.20.0-linux-x64.tar.xz", "node-v18.20.0-linux-x64", "03eea148e56785babb27930b05ed6bf311aaa3bc573c0399dd63cad2fe5713c7"),
-        "18.20.0-windows_amd64": ("node-v18.20.0-win-x64.zip", "node-v18.20.0-win-x64", "1c0aab05cc6836a8f5148cca345b92ebc948a4a2013f18d117b7ade6ff05aca6"),
+        "20.17.0-darwin_arm64": ("node-v20.17.0-darwin-arm64.tar.gz", "node-v20.17.0-darwin-arm64", "476324108c4361935465631eec47df1c943ba2c87bc050853385b1d1c71f0b1f"),
+        "20.17.0-darwin_amd64": ("node-v20.17.0-darwin-x64.tar.gz", "node-v20.17.0-darwin-x64", "eefe9447dbb0b5b233d42730989c6c364487de4043145db2f63da94e9623c380"),
+        "20.17.0-linux_arm64": ("node-v20.17.0-linux-arm64.tar.xz", "node-v20.17.0-linux-arm64", "7ebbb636c23f89dbf66648e227fbd0998ce33db4c588520256425102d97dd1a4"),
+        "20.17.0-linux_ppc64le": ("node-v20.17.0-linux-ppc64le.tar.xz", "node-v20.17.0-linux-ppc64le", "5de1314b090bb95d63a246920baa84c10ed6d60740f28127ce57cda7f13eddc2"),
+        "20.17.0-linux_s390x": ("node-v20.17.0-linux-s390x.tar.xz", "node-v20.17.0-linux-s390x", "0b2bd20c0047b48da55b87b041971b44f7e31a3d6af6b4b435e4c9203c4c2176"),
+        "20.17.0-linux_amd64": ("node-v20.17.0-linux-x64.tar.xz", "node-v20.17.0-linux-x64", "a24db3dcd151a52e75965dba04cf1b3cd579ff30d6e0af9da1aede4d0f17486b"),
+        "20.17.0-windows_amd64": ("node-v20.17.0-win-x64.zip", "node-v20.17.0-win-x64", "e323fff0aba197090faabd29c4c23f334557ff24454324f0c83faa7e399dbb74"),
     },
-    # We need at least Node 18.17 due to some transitive dependencies.
-    node_version = "18.20.0",
+    node_version = "20.17.0",
 )
 
 # Download npm dependencies.
