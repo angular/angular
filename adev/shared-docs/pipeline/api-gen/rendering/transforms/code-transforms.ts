@@ -134,11 +134,11 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
 
   if (isClassEntry(entry)) {
     const members = filterLifecycleMethods(mergeGettersAndSetters(entry.members));
-    return getCodeTocData(members, true, isDeprecated);
+    return getCodeTocData(members, isDeprecated);
   }
 
   if (isDecoratorEntry(entry)) {
-    return getCodeTocData(entry.members, true, isDeprecated);
+    return getCodeTocData(entry.members, isDeprecated);
   }
 
   if (isConstantEntry(entry)) {
@@ -150,11 +150,11 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   }
 
   if (isEnumEntry(entry)) {
-    return getCodeTocData(entry.members, true, isDeprecated);
+    return getCodeTocData(entry.members, isDeprecated);
   }
 
   if (isInterfaceEntry(entry)) {
-    return getCodeTocData(mergeGettersAndSetters(entry.members), true, isDeprecated);
+    return getCodeTocData(mergeGettersAndSetters(entry.members), isDeprecated);
   }
 
   if (isFunctionEntry(entry)) {
@@ -267,20 +267,15 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
 }
 
 /** Generate code ToC data for list of members. */
-function getCodeTocData(
-  members: MemberEntry[],
-  hasPrefixLine: boolean,
-  isDeprecated: boolean,
-): CodeTableOfContentsData {
+function getCodeTocData(members: MemberEntry[], isDeprecated: boolean): CodeTableOfContentsData {
   const initialMetadata: CodeTableOfContentsData = {
     contents: '',
     codeLineNumbersWithIdentifiers: new Map<number, string>(),
     deprecatedLineNumbers: isDeprecated ? [0] : [],
   };
-  // In case when hasPrefixLine is true we should take it into account when we're generating
-  // `codeLineNumbersWithIdentifiers` below.
-  const skip = !!hasPrefixLine ? 1 : 0;
-  let lineNumber = skip;
+
+  // We start at 1, because 0 is the main definition (class, function etc.)
+  let lineNumber = 1;
 
   return members.reduce((acc: CodeTableOfContentsData, curr: MemberEntry, index: number) => {
     const setTocData = (entry: DocEntry | MemberEntry, content: string) => {
@@ -454,7 +449,7 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
     const implementsStr =
       entry.implements?.length > 0 ? ` implements ${entry.implements.join(' ,')}` : '';
 
-    const signature = `${entry.name}${generics}${extendsStr}${implementsStr}`;
+    const signature = `${entry.name}${generics}${extendsStr}${implementsStr}`.replaceAll('\n', '');
     if (isClassEntry(entry)) {
       const abstractPrefix = entry.isAbstract ? 'abstract ' : '';
       appendFirstAndLastLines(codeTocData, `${abstractPrefix}class ${signature} {`, `}`);
