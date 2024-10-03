@@ -1307,3 +1307,23 @@ class WithJsdoc {
 
   readonly withCommentInside = input</* intended */ boolean>();
 }
+@@@@@@ writing_to_inputs.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+export class TestCmp {
+  readonly testParenthesisInput = input(false);
+  readonly notMutated = input(true);
+
+  testParenthesis() {
+    // prettier-ignore
+    ((this.testParenthesisInput)) = true;
+  }
+
+  testNotMutated() {
+    let fixture: boolean;
+    fixture = this.notMutated();
+  }
+}
