@@ -11,7 +11,6 @@ import {TestComponent} from './test.component';
 import {NgIf} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   template: `
     <h1>{{title}}</h1>

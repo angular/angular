@@ -16,6 +16,7 @@ import {LazyModule} from './root_lazy';
 @Component({
   selector: 'root-app',
   template: '<router-outlet></router-outlet>',
+  standalone: false,
 })
 export class AppComponent {}
 

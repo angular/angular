@@ -36,6 +36,7 @@ export interface RowData {
       </tbody>
     </table>
   `,
+  standalone: false,
 })
 export class JsWebFrameworksComponent {
   data: Array<RowData> = [];

@@ -10,5 +10,6 @@ import {Component} from '@angular/core';
 
 @Component({
   template: 'Hello',
+  standalone: false,
 })
 export class TestComponent {}

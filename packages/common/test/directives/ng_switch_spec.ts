@@ -150,7 +150,6 @@ describe('NgSwitch', () => {
         '<li *ngSwitchCase="\'a\'">when a</li>' +
         '<li *ngSwitchDefault>when default</li>' +
         '</ul>',
-      standalone: true,
     })
     class TestComponent {
       switchValue = 'a';
@@ -173,7 +172,10 @@ describe('NgSwitch', () => {
     it('should not create the default case if another case matches', () => {
       const log: string[] = [];
 
-      @Directive({selector: '[test]'})
+      @Directive({
+        selector: '[test]',
+        standalone: false,
+      })
       class TestDirective {
         constructor(@Attribute('test') test: string) {
           log.push(test);
@@ -259,7 +261,11 @@ describe('NgSwitch', () => {
   });
 });
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {
   switchValue: any = null;
   when1: any = null;
@@ -291,6 +297,7 @@ class TestComponent {
       <span>Bar</span>
     </ng-template>
   `,
+  standalone: false,
 })
 class ComplexComponent {
   @ViewChild('foo', {static: true}) foo!: TemplateRef<any>;

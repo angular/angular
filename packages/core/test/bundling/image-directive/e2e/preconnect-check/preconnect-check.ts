@@ -11,7 +11,6 @@ import {Component, Inject} from '@angular/core';
 
 @Component({
   selector: 'preconnect-check',
-  standalone: true,
   imports: [NgOptimizedImage],
   template: `
     <img ngSrc="/e2e/a.png" width="50" height="50" priority>

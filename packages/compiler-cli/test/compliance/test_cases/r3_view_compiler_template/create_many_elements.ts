@@ -1,8 +1,8 @@
 import { Component, NgModule } from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
     <div></div>
     <div></div>
     <div></div>
@@ -264,6 +264,7 @@ import { Component, NgModule } from '@angular/core';
     <div></div>
     <div></div>
   `,
+    standalone: false
 })
 export class MyComponent {
 }

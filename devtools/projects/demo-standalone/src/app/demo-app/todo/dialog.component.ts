@@ -18,7 +18,6 @@ export interface DialogData {
 
 @Component({
   selector: 'app-dialog',
-  standalone: true,
   imports: [MatDialogModule, MatFormField, MatLabel, FormsModule],
   template: `
     <h1 mat-dialog-title>Hi {{ data.name }}</h1>

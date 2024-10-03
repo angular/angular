@@ -1,9 +1,8 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'my-comp',
-  standalone: true,
-  template: `
+    selector: 'my-comp',
+    template: `
   <div i18n>
     <span title="{{foo}}-{{foo}}"></span>
     <span>{foo, select, other {<span title="{{foo}}-{{foo}}">foo</span>}}</span>

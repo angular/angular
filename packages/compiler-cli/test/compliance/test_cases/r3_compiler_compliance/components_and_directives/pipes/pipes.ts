@@ -1,6 +1,9 @@
 import {Component, NgModule, OnDestroy, Pipe, PipeTransform} from '@angular/core';
 
-@Pipe({name: 'myPipe', pure: false})
+@Pipe({
+    name: 'myPipe', pure: false,
+    standalone: false
+})
 export class MyPipe implements PipeTransform, OnDestroy {
   transform(value: any, ...args: any[]) {
     return value;
@@ -9,8 +12,9 @@ export class MyPipe implements PipeTransform, OnDestroy {
 }
 
 @Pipe({
-  name: 'myPurePipe',
-  pure: true,
+    name: 'myPurePipe',
+    pure: true,
+    standalone: false
 })
 export class MyPurePipe implements PipeTransform {
   transform(value: any, ...args: any[]) {
@@ -19,9 +23,9 @@ export class MyPurePipe implements PipeTransform {
 }
 
 @Component({
-  selector: 'my-app',
-  template:
-      '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }} {{ name ? 1 : 2 | myPipe }}</p>'
+    selector: 'my-app',
+    template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }} {{ name ? 1 : 2 | myPipe }}</p>',
+    standalone: false
 })
 export class MyApp {
   name = 'World';

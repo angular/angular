@@ -3,7 +3,6 @@ import {Directive, ElementRef, HostListener, Input} from '@angular/core';
 // #enddocregion imports
 
 @Directive({
-  standalone: true,
   selector: '[appHighlight]',
 })
 export class HighlightDirective {

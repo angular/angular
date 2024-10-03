@@ -52,7 +52,10 @@ describe('directive lifecycle integration spec', () => {
   });
 });
 
-@Directive({selector: '[lifecycle-dir]'})
+@Directive({
+  selector: '[lifecycle-dir]',
+  standalone: false,
+})
 class LifecycleDir implements DoCheck {
   constructor(private _log: Log) {}
   ngDoCheck() {
@@ -64,6 +67,7 @@ class LifecycleDir implements DoCheck {
   selector: '[lifecycle]',
   inputs: ['field'],
   template: `<div lifecycle-dir></div>`,
+  standalone: false,
 })
 class LifecycleCmp
   implements
@@ -107,5 +111,8 @@ class LifecycleCmp
   }
 }
 
-@Component({selector: 'my-comp'})
+@Component({
+  selector: 'my-comp',
+  standalone: false,
+})
 class MyComp5 {}

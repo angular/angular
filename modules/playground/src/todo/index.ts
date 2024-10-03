@@ -12,7 +12,12 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {Store, Todo, TodoFactory} from './app/TodoStore';
 
-@Component({selector: 'todo-app', viewProviders: [Store, TodoFactory], templateUrl: 'todo.html'})
+@Component({
+  selector: 'todo-app',
+  viewProviders: [Store, TodoFactory],
+  templateUrl: 'todo.html',
+  standalone: false,
+})
 export class TodoApp {
   todoEdit: Todo = null;
 

@@ -4,6 +4,7 @@ import {Component} from '@angular/core';
   selector: 'app-actor-form-template',
   templateUrl: './actor-form-template.component.html',
   styleUrls: ['./actor-form-template.component.css'],
+  standalone: false,
 })
 export class ActorFormTemplateComponent {
   skills = ['Method Acting', 'Singing', 'Dancing', 'Swordfighting'];

@@ -98,6 +98,7 @@ runInEachFileSystem(() => {
 
         @Component({
           template: '<div external></div>',
+          standalone: false,
         })
         export class MyComponent {}
       `,

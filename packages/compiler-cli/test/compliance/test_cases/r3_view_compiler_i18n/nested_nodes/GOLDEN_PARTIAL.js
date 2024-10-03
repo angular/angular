@@ -23,7 +23,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div i18n>
 
   </div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -67,7 +68,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n>Some <!-- comments --> text</div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -111,7 +113,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n>Some text 'with single quotes', "with double quotes", \`with backticks\` and without quotes.</div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -155,6 +158,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     template: '<div i18n>`{{ count }}`</div>',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -208,6 +212,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div>My non-i18n block #2</div>
   <div i18n>My i18n block #3</div>
   `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -262,6 +267,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     Named interpolation with spaces: {{ valueB // i18n(ph="PH B") }}
   </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -312,6 +318,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div i18n>{% valueA %}</div>
   `,
                     interpolation: ['{%', '%}'],
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -351,7 +358,10 @@ AsyncPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.
 AsyncPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AsyncPipe, name: "async" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AsyncPipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'async' }]
+            args: [{
+                    name: 'async',
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
 }
@@ -373,7 +383,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {{ valueA?.a?.b }}
     {{ valueA.getRawValue()?.getTitle() }}
   </div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -418,7 +429,10 @@ UppercasePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 UppercasePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, name: "uppercase" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'uppercase' }]
+            args: [{
+                    name: 'uppercase',
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
     constructor() {
@@ -443,7 +457,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div i18n>My i18n block #{{ one }}</div>
   <div i18n>My i18n block #{{ two | uppercase }}</div>
   <div i18n>My i18n block #{{ three + four + five }}</div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -492,7 +507,10 @@ UppercasePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 UppercasePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, name: "uppercase" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'uppercase' }]
+            args: [{
+                    name: 'uppercase',
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
     constructor() {
@@ -538,6 +556,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     </div>
   </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -584,7 +603,10 @@ UppercasePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 UppercasePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, name: "uppercase" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'uppercase' }]
+            args: [{
+                    name: 'uppercase',
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
 }
@@ -621,6 +643,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   </span>
 </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -695,6 +718,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     </div>
   </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -743,6 +767,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <img src="logo.png" i18n *ngIf="visible" />
   <img src="logo.png" i18n *ngIf="visible" i18n-title title="App logo #{{ id }}" />
   `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -827,6 +852,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     </div>
   </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -870,7 +896,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n *ngIf="visible">Some other content <span>{{ valueA }}</span></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -915,7 +942,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n (click)="onClick()">Hello</div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -961,13 +989,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
   <div i18n>
     <ng-content select="special"></ng-content>
     <ng-content></ng-content>
   </div>
-`,
+`
                 }]
         }] });
 
@@ -998,13 +1025,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-cmp',
-                    standalone: true,
                     template: `
 		<span i18n>
   			<input [disabled]="someBoolean">
 			{{ someField }}
 		</span>
-	`,
+	`
                 }]
         }] });
 
@@ -1036,7 +1062,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
   <div i18n>{{ text }}<h1 i18n-title title="{{ attr }}"></h1></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {

@@ -52,6 +52,7 @@ ng1module.directive('ng1User', function () {
     <div class="content"><ng-content></ng-content></div>
   </div>`,
   styles: styles,
+  standalone: false,
 })
 export class Pane {
   @Input() title: string;
@@ -70,6 +71,7 @@ export class Pane {
     </pane>
   </div>`,
   styles: styles,
+  standalone: false,
 })
 export class UpgradeApp {
   @Input() user: string;

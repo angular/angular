@@ -55,6 +55,7 @@ const KEY_CODE_TAB = 9;
     </div>
   </div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ExpandingRowSummary implements OnDestroy {
   /**

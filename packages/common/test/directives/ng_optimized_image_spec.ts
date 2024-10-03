@@ -682,6 +682,7 @@ describe('Image directive', () => {
             [disableOptimizedSrcset]="disableOptimizedSrcset"
             [loaderParams]="loaderParams"
           />`,
+          standalone: false,
         })
         class TestComponent {
           width = 100;
@@ -722,6 +723,7 @@ describe('Image directive', () => {
           [loading]="loading"
           [sizes]="sizes"
         />`,
+        standalone: false,
       })
       class TestComponent {
         width = 100;
@@ -745,6 +747,7 @@ describe('Image directive', () => {
       @Component({
         selector: 'test-cmp',
         template: `<img [ngSrc]="bypassImage" width="400" height="600" />`,
+        standalone: false,
       })
       class TestComponent {
         rawImage = `javascript:alert("Hi there")`;
@@ -1737,6 +1740,7 @@ describe('Image directive', () => {
       @Component({
         selector: 'test-cmp',
         template: `<img [ngSrc]="ngSrc" width="300" height="300" />`,
+        standalone: false,
       })
       class TestComponent {
         ngSrc = `img.png`;
@@ -1759,6 +1763,7 @@ describe('Image directive', () => {
       @Component({
         selector: 'test-cmp',
         template: `<img [ngSrc]="ngSrc" width="300" height="300" sizes="100vw" />`,
+        standalone: false,
       })
       class TestComponent {
         ngSrc = `img.png`;
@@ -1823,6 +1828,7 @@ describe('Image directive', () => {
           [height]="height"
           [loaderParams]="params"
         />`,
+        standalone: false,
       })
       class TestComponent {
         ngSrc = `${IMG_BASE_URL}/img.png`;
@@ -1894,6 +1900,7 @@ describe('Image directive', () => {
           selector: 'test-cmp',
           template: '<img ngSrc="a.png" width="100" height="50" priority>',
           providers: [loaderWithPath('https://component.io')],
+          standalone: false,
         })
         class TestComponent {}
 
@@ -2333,7 +2340,11 @@ const IMG_BASE_URL = {
 const ANGULAR_LOGO_BASE64 =
   'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==';
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {
   width = 100;
   height = 50;

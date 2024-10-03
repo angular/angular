@@ -1,24 +1,25 @@
 import {Component, Input, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: '...',
-  host: {
-    '[@expansionHeight]': `{
+    selector: 'my-component',
+    template: '...',
+    host: {
+        '[@expansionHeight]': `{
         value: getExpandedState(),
         params: {
           collapsedHeight: collapsedHeight,
           expandedHeight: expandedHeight
         }
     }`,
-    '[@expansionWidth]': `{
+        '[@expansionWidth]': `{
       value: getExpandedState(),
       params: {
         collapsedWidth: collapsedWidth,
         expandedWidth: expandedWidth
       }
     }`
-  }
+    },
+    standalone: false
 })
 export class MyComponent {
   @Input() expandedHeight!: string;

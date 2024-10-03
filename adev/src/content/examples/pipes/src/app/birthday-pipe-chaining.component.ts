@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {DatePipe, UpperCasePipe} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-birthday-pipe-chaining',
   templateUrl: './birthday-pipe-chaining.component.html',
   imports: [DatePipe, UpperCasePipe],

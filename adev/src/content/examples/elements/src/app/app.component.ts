@@ -4,7 +4,6 @@ import {PopupComponent} from './popup.component';
 import {PopupService} from './popup.service';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   template: `
     <input #input value="Message" />

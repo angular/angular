@@ -4,7 +4,6 @@ import {Directive} from '@angular/core';
 /* avoid */
 
 @Directive({
-  standalone: true,
   selector: '[validate]',
 })
 export class ValidateDirective {}

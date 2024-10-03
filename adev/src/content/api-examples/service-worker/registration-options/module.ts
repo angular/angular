@@ -18,6 +18,7 @@ import {SwUpdate} from '@angular/service-worker';
 @Component({
   selector: 'example-app',
   template: 'SW enabled: {{ swu.isEnabled }}',
+  standalone: false,
 })
 export class AppComponent {
   constructor(readonly swu: SwUpdate) {}

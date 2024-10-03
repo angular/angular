@@ -40,7 +40,10 @@ withEachNg1Version(() => {
     it('should verify UpgradeAdapter example', waitForAsync(() => {
       // This is wrapping (upgrading) an AngularJS component to be used in an Angular
       // component
-      @Directive({selector: 'ng1'})
+      @Directive({
+        selector: 'ng1',
+        standalone: false,
+      })
       class Ng1Component extends UpgradeComponent {
         @Input() title: string = '';
 
@@ -53,6 +56,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2',
         template: 'ng2[<ng1 [title]="nameProp">transclude</ng1>](<ng-content></ng-content>)',
+        standalone: false,
       })
       class Ng2Component {
         @Input('name') nameProp: string = '';

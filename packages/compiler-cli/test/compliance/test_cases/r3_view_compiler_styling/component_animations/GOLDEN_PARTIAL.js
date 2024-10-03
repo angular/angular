@@ -9,7 +9,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '', isInline: true, animations: [{ name: 'foo123' }, { name: 'trigger123' }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', animations: [{ name: 'foo123' }, { name: 'trigger123' }], template: '' }]
+            args: [{
+                    selector: 'my-component', animations: [{ name: 'foo123' }, { name: 'trigger123' }], template: '',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -46,7 +49,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '', isInline: true, animations: [] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', animations: [], template: '' }]
+            args: [{
+                    selector: 'my-component', animations: [], template: '',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -95,6 +101,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div [@foo]='exp'></div>
     <div @bar></div>
     <div [@baz]></div>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -161,6 +168,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                             transition('* => state', [style({ 'opacity': '0' }), animate(500, style({ 'opacity': '1' }))]),
                         ]),
                     ],
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -201,7 +209,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[my-anim-dir]',
-                    host: { '[@myAnim]': 'myAnimState', '(@myAnim.start)': 'onStart()', '(@myAnim.done)': 'onDone()' }
+                    host: { '[@myAnim]': 'myAnimState', '(@myAnim.start)': 'onStart()', '(@myAnim.done)': 'onDone()' },
+                    standalone: false
                 }]
         }] });
 class MyComponent {
@@ -216,7 +225,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-cmp',
                     template: `
     <div my-anim-dir></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {

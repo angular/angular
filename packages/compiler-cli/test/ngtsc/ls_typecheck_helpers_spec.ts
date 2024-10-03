@@ -117,6 +117,7 @@ runInEachFileSystem(() => {
 			  @Component({
 				  selector: 'app-cmp',
 				  template: '<div></div>',
+          standalone: false,
 			  })
 			  export class AppCmp {}
 			`,
@@ -338,6 +339,7 @@ runInEachFileSystem(() => {
 			 @Component({
 				 selector: 'two-cmp',
 				 template: '<div></div>',
+         standalone: false,
 			 })
 			 export class TwoCmp {}
 			 `,

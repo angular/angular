@@ -22,7 +22,6 @@ import {DecimalPipe} from '@angular/common';
   selector: 'ng-timeline-controls',
   templateUrl: './timeline-controls.component.html',
   styleUrls: ['./timeline-controls.component.scss'],
-  standalone: true,
   imports: [
     MatFormField,
     MatLabel,

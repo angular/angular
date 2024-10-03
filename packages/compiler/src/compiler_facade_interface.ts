@@ -227,6 +227,7 @@ export type LegacyInputPartialMapping =
 export interface R3DeclareDirectiveFacade {
   selector?: string;
   type: Type;
+  version: string;
   inputs?: {
     [fieldName: string]:
       | {
@@ -390,6 +391,7 @@ export interface R3DeclareNgModuleFacade {
 
 export interface R3DeclarePipeFacade {
   type: Type;
+  version: string;
   name: string;
   pure?: boolean;
   isStandalone?: boolean;

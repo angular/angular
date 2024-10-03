@@ -6,5 +6,6 @@ import {HeroService} from './heroes';
   selector: 'sg-app',
   template: '<toh-hero-list></toh-hero-list>',
   providers: [HeroService],
+  standalone: false,
 })
 export class AppComponent {}

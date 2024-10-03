@@ -1,12 +1,13 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-app',
-  host: {
-    '[attr.first-name]': `'Hello, ' + (firstName ?? 'Frodo') + '!'`,
-    '(click)': `logLastName(lastName ?? lastNameFallback ?? 'unknown')`
-  },
-  template: ``
+    selector: 'my-app',
+    host: {
+        '[attr.first-name]': `'Hello, ' + (firstName ?? 'Frodo') + '!'`,
+        '(click)': `logLastName(lastName ?? lastNameFallback ?? 'unknown')`
+    },
+    template: ``,
+    standalone: false
 })
 export class MyApp {
   firstName: string|null = null;

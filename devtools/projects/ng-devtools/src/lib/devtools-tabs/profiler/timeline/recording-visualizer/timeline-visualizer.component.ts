@@ -51,7 +51,6 @@ interface SelectedNode {
   selector: 'ng-timeline-visualizer',
   templateUrl: './timeline-visualizer.component.html',
   styleUrls: ['./timeline-visualizer.component.scss'],
-  standalone: true,
   imports: [
     SplitComponent,
     SplitAreaDirective,

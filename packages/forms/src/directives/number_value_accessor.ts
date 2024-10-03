@@ -49,6 +49,7 @@ const NUMBER_VALUE_ACCESSOR: Provider = {
     'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]',
   host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [NUMBER_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class NumberValueAccessor
   extends BuiltInControlValueAccessor

@@ -21,7 +21,11 @@ function createTreeComponent(level: number, isLeaf: boolean) {
     template += `<${nextTreeEl} [data]='data.right'></${nextTreeEl}><${nextTreeEl} [data]='data.left'></${nextTreeEl}>`;
   }
 
-  @Component({selector: `tree${level}`, template: template})
+  @Component({
+    selector: `tree${level}`,
+    template: template,
+    standalone: false,
+  })
   class TreeComponent {
     @Input() data: TreeNode;
     get bgColor() {
@@ -35,6 +39,7 @@ function createTreeComponent(level: number, isLeaf: boolean) {
 @Component({
   selector: 'tree',
   template: `<tree0 *ngIf="data.left != null" [data]="data"></tree0>`,
+  standalone: false,
 })
 export class RootTreeComponent {
   @Input() data: TreeNode = emptyTree;

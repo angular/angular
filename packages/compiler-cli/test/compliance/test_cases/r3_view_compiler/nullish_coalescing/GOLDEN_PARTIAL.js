@@ -22,7 +22,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>Hello, {{ firstName ?? 'Frodo' }}!</div>
     <span>Your last name is {{ lastName ?? lastNameFallback ?? 'unknown' }}</span>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -76,7 +77,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div [title]="'Hello, ' + (firstName ?? 'Frodo') + '!'"></div>
     <span [title]="'Your last name is ' + (lastName ?? lastNameFallback ?? 'unknown')"></span>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -131,7 +133,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                         '[attr.first-name]': `'Hello, ' + (firstName ?? 'Frodo') + '!'`,
                         '(click)': `logLastName(lastName ?? lastNameFallback ?? 'unknown')`
                     },
-                    template: ``
+                    template: ``,
+                    standalone: false
                 }]
         }] });
 export class MyModule {

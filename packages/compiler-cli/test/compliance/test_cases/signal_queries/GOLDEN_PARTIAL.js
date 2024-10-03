@@ -23,9 +23,7 @@ TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.2.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, queries: [{ propertyName: "query3", first: true, predicate: ["locatorC"], descendants: true, isSignal: true }, { propertyName: "query4", predicate: ["locatorD"], isSignal: true }, { propertyName: "query8", predicate: ["locatorF, locatorG"], descendants: true, isSignal: true }, { propertyName: "query9", predicate: nonAnalyzableRefersToString, descendants: true, isSignal: true }], viewQueries: [{ propertyName: "query1", first: true, predicate: ["locatorA"], descendants: true, isSignal: true }, { propertyName: "query2", predicate: ["locatorB"], descendants: true, isSignal: true }, { propertyName: "query5", first: true, predicate: i0.forwardRef(() => SomeToken), descendants: true, isSignal: true }, { propertyName: "query6", predicate: SomeToken, descendants: true, isSignal: true }, { propertyName: "query7", first: true, predicate: ["locatorE"], descendants: true, read: SomeToken, isSignal: true }], ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
-            args: [{
-                    standalone: true,
-                }]
+            args: [{}]
         }] });
 
 /****************************************************************************************************
@@ -66,8 +64,7 @@ TestComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.2.0", version: "0.0
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, decorators: [{
             type: Component,
             args: [{
-                    standalone: true,
-                    template: 'Works',
+                    template: 'Works'
                 }]
         }] });
 
@@ -99,9 +96,7 @@ TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-
 TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.2.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, queries: [{ propertyName: "signalContentChild", first: true, predicate: ["locator2"], descendants: true, isSignal: true }, { propertyName: "decoratorContentChild", first: true, predicate: ["locator2"], descendants: true }], viewQueries: [{ propertyName: "signalViewChild", first: true, predicate: ["locator1"], descendants: true, isSignal: true }, { propertyName: "decoratorViewChild", first: true, predicate: ["locator1"], descendants: true }], ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
-            args: [{
-                    standalone: true,
-                }]
+            args: [{}]
         }], propDecorators: { decoratorViewChild: [{
                 type: ViewChild,
                 args: ['locator1']

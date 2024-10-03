@@ -15,6 +15,7 @@ import {SampleService} from './sample.service';
   selector: 'app-sample-properties',
   template: '',
   styles: [''],
+  standalone: false,
 })
 export class SamplePropertiesComponent {
   @ViewChild('elementReference') elementRef!: ElementRef;

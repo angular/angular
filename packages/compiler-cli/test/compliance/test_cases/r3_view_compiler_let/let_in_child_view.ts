@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     @if (true) {
       @if (true) {
         @let three = two + 1;
@@ -11,7 +11,6 @@ import {Component} from '@angular/core';
     }
 
     @let one = 1;
-  `,
-  standalone: true,
+  `
 })
 export class MyApp {}

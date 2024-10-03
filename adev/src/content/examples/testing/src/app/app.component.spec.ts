@@ -9,13 +9,22 @@ import {appConfig} from './app.config';
 import {UserService} from './model';
 
 // #docregion component-stubs
-@Component({standalone: true, selector: 'app-banner', template: ''})
+@Component({
+  selector: 'app-banner',
+  template: '',
+})
 class BannerStubComponent {}
 
-@Component({standalone: true, selector: 'router-outlet', template: ''})
+@Component({
+  selector: 'router-outlet',
+  template: '',
+})
 class RouterOutletStubComponent {}
 
-@Component({standalone: true, selector: 'app-welcome', template: ''})
+@Component({
+  selector: 'app-welcome',
+  template: '',
+})
 class WelcomeStubComponent {}
 // #enddocregion component-stubs
 

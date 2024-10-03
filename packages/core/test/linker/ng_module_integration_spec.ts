@@ -76,22 +76,36 @@ class NoAnnotations {
   constructor(secretDependency: any) {}
 }
 
-@Component({selector: 'comp', template: ''})
+@Component({
+  selector: 'comp',
+  template: '',
+  standalone: false,
+})
 class SomeComp {}
 
-@Directive({selector: '[someDir]'})
+@Directive({
+  selector: '[someDir]',
+  standalone: false,
+})
 class SomeDirective {
   @HostBinding('title') @Input() someDir: string | undefined;
 }
 
-@Pipe({name: 'somePipe'})
+@Pipe({
+  name: 'somePipe',
+  standalone: false,
+})
 class SomePipe {
   transform(value: string): any {
     return `transformed ${value}`;
   }
 }
 
-@Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
+@Component({
+  selector: 'comp',
+  template: `<div  [someDir]="'someValue' | somePipe"></div>`,
+  standalone: false,
+})
 class CompUsingModuleDirectiveAndPipe {}
 
 describe('NgModule', () => {
@@ -238,7 +252,10 @@ describe('NgModule', () => {
 
   describe('schemas', () => {
     it('should error on unknown bound properties on custom elements by default', () => {
-      @Component({template: '<div [someUnknownProp]="true"></div>'})
+      @Component({
+        template: '<div [someUnknownProp]="true"></div>',
+        standalone: false,
+      })
       class ComponentUsingInvalidProperty {}
 
       @NgModule({declarations: [ComponentUsingInvalidProperty]})
@@ -251,7 +268,10 @@ describe('NgModule', () => {
     });
 
     it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA', () => {
-      @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+      @Component({
+        template: '<some-element [someUnknownProp]="true"></some-element>',
+        standalone: false,
+      })
       class ComponentUsingInvalidProperty {}
 
       @NgModule({
@@ -376,6 +396,7 @@ describe('NgModule', () => {
         @Component({
           selector: 'parent',
           template: '<comp></comp>',
+          standalone: false,
         })
         class ParentCompUsingModuleDirectiveAndPipe {}
 

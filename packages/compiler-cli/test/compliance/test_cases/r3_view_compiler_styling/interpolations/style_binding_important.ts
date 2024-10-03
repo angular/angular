@@ -1,9 +1,10 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <div style.width!important="a{{one}}b{{two}}c"></div>
-  `
+  `,
+    standalone: false
 })
 export class MyComponent {
   one = '';

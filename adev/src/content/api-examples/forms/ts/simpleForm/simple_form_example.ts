@@ -25,6 +25,7 @@ import {NgForm} from '@angular/forms';
     <p>Form value: {{ f.value | json }}</p>
     <p>Form valid: {{ f.valid }}</p>
   `,
+  standalone: false,
 })
 export class SimpleFormComp {
   onSubmit(f: NgForm) {

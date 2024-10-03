@@ -15,7 +15,6 @@ import {MatToolbar} from '@angular/material/toolbar';
   selector: 'ng-property-view-header',
   templateUrl: './property-view-header.component.html',
   styleUrls: ['./property-view-header.component.scss'],
-  standalone: true,
   imports: [MatToolbar, MatTooltip, MatIcon],
 })
 export class PropertyViewHeaderComponent {

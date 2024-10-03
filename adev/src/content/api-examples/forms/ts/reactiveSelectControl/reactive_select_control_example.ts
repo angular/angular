@@ -24,6 +24,7 @@ import {FormControl, FormGroup} from '@angular/forms';
     <p>Form value: {{ form.value | json }}</p>
     <!-- {state: {name: 'New York', abbrev: 'NY'} } -->
   `,
+  standalone: false,
 })
 export class ReactiveSelectComp {
   states = [

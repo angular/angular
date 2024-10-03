@@ -11,7 +11,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'fill-mode-passing',
-  standalone: true,
   imports: [NgOptimizedImage],
   template: `
     <!-- Make sure an image in the fill mode has the size of a container -->
@@ -23,7 +22,6 @@ import {Component} from '@angular/core';
 export class FillModePassingComponent {}
 @Component({
   selector: 'fill-mode-failing',
-  standalone: true,
   imports: [NgOptimizedImage],
   template: `
     <div style="position: relative; width: 100%;">

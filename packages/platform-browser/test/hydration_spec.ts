@@ -24,7 +24,11 @@ import {provideClientHydration, withNoHttpTransferCache} from '../public_api';
 import {withHttpTransferCacheOptions} from '../src/hydration';
 
 describe('provideClientHydration', () => {
-  @Component({selector: 'test-hydrate-app', template: ''})
+  @Component({
+    selector: 'test-hydrate-app',
+    template: '',
+    standalone: false,
+  })
   class SomeComponent {}
 
   function makeRequestAndExpectOne(

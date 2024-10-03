@@ -12,5 +12,6 @@ import {Component} from '@angular/core';
   selector: 'my-cmp',
   templateUrl: './tpl.html',
   styleUrls: ['./style.css'],
+  standalone: false,
 })
 export class MyCmp {}

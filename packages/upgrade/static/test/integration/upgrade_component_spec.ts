@@ -46,7 +46,10 @@ withEachNg1Version(() => {
         const ng1Component: angular.IComponent = {template: 'Hello, Angular!'};
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -54,7 +57,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -85,7 +92,10 @@ withEachNg1Version(() => {
         const ng1Component: angular.IComponent = {template: () => 'Hello, Angular!'};
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -93,7 +103,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -131,7 +145,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -139,7 +156,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -170,7 +191,10 @@ withEachNg1Version(() => {
         const ng1Component: angular.IComponent = {templateUrl: 'ng1.component.html'};
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -178,7 +202,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -212,7 +240,10 @@ withEachNg1Version(() => {
         const ng1Component: angular.IComponent = {templateUrl: () => 'ng1.component.html'};
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -220,7 +251,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -261,7 +296,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -269,7 +307,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -304,7 +346,10 @@ withEachNg1Version(() => {
         const ng1Component: angular.IComponent = {templateUrl: 'ng1.component.html'};
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -312,7 +357,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -351,7 +400,10 @@ withEachNg1Version(() => {
         const ng1Component: angular.IComponent = {templateUrl: () => 'ng1.component.html'};
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -359,7 +411,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -400,25 +456,37 @@ withEachNg1Version(() => {
         const ng1ComponentD: angular.IComponent = {templateUrl: () => 'ng1.component.html'};
 
         // Define `Ng1ComponentFacade`s
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(e: ElementRef, i: Injector) {
             super('ng1A', e, i);
           }
         }
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           constructor(e: ElementRef, i: Injector) {
             super('ng1B', e, i);
           }
         }
-        @Directive({selector: 'ng1C'})
+        @Directive({
+          selector: 'ng1C',
+          standalone: false,
+        })
         class Ng1ComponentCFacade extends UpgradeComponent {
           constructor(e: ElementRef, i: Injector) {
             super('ng1C', e, i);
           }
         }
-        @Directive({selector: 'ng1D'})
+        @Directive({
+          selector: 'ng1D',
+          standalone: false,
+        })
         class Ng1ComponentDFacade extends UpgradeComponent {
           constructor(e: ElementRef, i: Injector) {
             super('ng1D', e, i);
@@ -434,6 +502,7 @@ withEachNg1Version(() => {
             <ng1C>Ignore this</ng1C>
             <ng1D>Ignore this</ng1D>
           `,
+          standalone: false,
         })
         class Ng2Component {}
 
@@ -485,7 +554,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           @Input('inputAttrA') inputA: string = '';
           @Input() inputB: string = '';
@@ -502,6 +574,7 @@ withEachNg1Version(() => {
             <ng1 inputAttrA="{{ dataA }}" inputB="{{ dataB }}"></ng1>
             | Outside: {{ dataA }}, {{ dataB }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           dataA = 'foo';
@@ -561,7 +634,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           @Input('inputAttrA') inputA: string = '';
           @Input() inputB: string = '';
@@ -578,6 +654,7 @@ withEachNg1Version(() => {
             <ng1 [inputAttrA]="dataA" [inputB]="dataB"></ng1>
             | Outside: {{ dataA.value }}, {{ dataB.value }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           dataA = {value: 'foo'};
@@ -637,7 +714,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           @Input('inputAttrA') inputA: string = '';
           @Output('inputAttrAChange') inputAChange = new EventEmitter();
@@ -656,6 +736,7 @@ withEachNg1Version(() => {
             <ng1 [(inputAttrA)]="dataA" [(inputB)]="dataB"></ng1>
             | Outside: {{ dataA.value }}, {{ dataB.value }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           dataA = {value: 'foo'};
@@ -713,7 +794,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           @Output('outputAttrA') outputA = new EventEmitter();
           @Output() outputB = new EventEmitter();
@@ -730,6 +814,7 @@ withEachNg1Version(() => {
             <ng1 (outputAttrA)="dataA = $event" (outputB)="dataB = $event"></ng1>
             | Outside: {{ dataA }}, {{ dataB }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           dataA = 'foo';
@@ -795,7 +880,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           @Input() fullName: string = '';
           @Input('dataA') modelA: any;
@@ -825,6 +913,7 @@ withEachNg1Version(() => {
             | <ng1 fullName="{{ 'TEST' }}" dataA="First" dataB="Last" modelC="City"></ng1> |
             {{ event }} - {{ last }}, {{ first }}, {{ city }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           first = 'Victor';
@@ -877,7 +966,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           @Input('inputAttrA') inputA: string = '';
           @Output('inputAttrAChange') inputAChange = new EventEmitter();
@@ -900,6 +992,7 @@ withEachNg1Version(() => {
             <ng1 (outputB)="updateDataB($event)"></ng1> | <ng1></ng1> | Outside: {{ dataA.value }},
             {{ dataB.value }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           dataA = {value: 'foo'};
@@ -972,7 +1065,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: '[ng1]'})
+        @Directive({
+          selector: '[ng1]',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           @Input() inputA: string = '';
           @Output() inputAChange = new EventEmitter();
@@ -990,6 +1086,7 @@ withEachNg1Version(() => {
             <div ng1 [(inputA)]="dataA" (outputA)="dataA.push($event)"></div>
             | {{ someText }} - Data: {{ dataA }} - Length: {{ dataA.length }}
           `,
+          standalone: false,
         })
         class Ng2Component {
           someText = 'ng2';
@@ -1055,7 +1152,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentAFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
@@ -1063,7 +1163,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2ComponentX`
-        @Component({selector: 'ng2-x', template: 'ng2X(<ng1A></ng1A>)'})
+        @Component({
+          selector: 'ng2-x',
+          template: 'ng2X(<ng1A></ng1A>)',
+          standalone: false,
+        })
         class Ng2ComponentX {}
 
         // Define `ng1Module`
@@ -1107,7 +1211,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -1115,7 +1222,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -1153,7 +1264,10 @@ withEachNg1Version(() => {
         const ng1DirectiveB: angular.IDirective = {link: () => log.push('ng1B-post')};
 
         // Define `Ng1ComponentAFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
@@ -1161,7 +1275,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1A></ng1A>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1A></ng1A>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -1200,7 +1318,10 @@ withEachNg1Version(() => {
         const ng1DirectiveB: angular.IDirective = {link: () => log.push('ng1B-post')};
 
         // Define `Ng1ComponentAFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
@@ -1208,7 +1329,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1A></ng1A>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1A></ng1A>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -1247,7 +1372,10 @@ withEachNg1Version(() => {
         const ng1DirectiveB: angular.IDirective = {link: () => log.push('ng1B-post')};
 
         // Define `Ng1ComponentAFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
@@ -1255,7 +1383,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1A></ng1A>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1A></ng1A>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -1297,7 +1429,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -1305,7 +1440,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -1365,7 +1504,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -1373,7 +1515,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -1418,7 +1564,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           @Input() title: string = '';
 
@@ -1427,7 +1576,10 @@ withEachNg1Version(() => {
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           @Input() title: string = '';
 
@@ -1443,6 +1595,7 @@ withEachNg1Version(() => {
             <ng1A title="WORKS"></ng1A> |
             <ng1B title="WORKS"></ng1B>
           `,
+          standalone: false,
         })
         class Ng2Component {}
 
@@ -1484,7 +1637,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           @Input() title: string = '';
 
@@ -1494,7 +1650,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1 title="WORKS"></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1 title="WORKS"></ng1>',
+          standalone: false,
+        })
         class Ng2Component {
           dataA = 'foo';
           dataB = 'bar';
@@ -1533,7 +1693,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           @Input() title: string = '';
 
@@ -1543,7 +1706,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1 title="WORKS"></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1 title="WORKS"></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -1593,7 +1760,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -1601,7 +1771,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -1650,7 +1824,10 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng1ComponentFacade`
-          @Directive({selector: 'ng1'})
+          @Directive({
+            selector: 'ng1',
+            standalone: false,
+          })
           class Ng1ComponentFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1', elementRef, injector);
@@ -1658,7 +1835,11 @@ withEachNg1Version(() => {
           }
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1></ng1>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1></ng1>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -1703,7 +1884,10 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng1ComponentFacade`
-          @Directive({selector: 'ng1A'})
+          @Directive({
+            selector: 'ng1A',
+            standalone: false,
+          })
           class Ng1ComponentAFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1A', elementRef, injector);
@@ -1711,7 +1895,11 @@ withEachNg1Version(() => {
           }
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1A></ng1A>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1A></ng1A>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -1745,21 +1933,30 @@ withEachNg1Version(() => {
           const ng1ComponentC: angular.IComponent = {require: {foo: '^^iDoNotExist'}};
 
           // Define `Ng1ComponentFacade`
-          @Directive({selector: 'ng1A'})
+          @Directive({
+            selector: 'ng1A',
+            standalone: false,
+          })
           class Ng1ComponentAFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1A', elementRef, injector);
             }
           }
 
-          @Directive({selector: 'ng1B'})
+          @Directive({
+            selector: 'ng1B',
+            standalone: false,
+          })
           class Ng1ComponentBFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1B', elementRef, injector);
             }
           }
 
-          @Directive({selector: 'ng1C'})
+          @Directive({
+            selector: 'ng1C',
+            standalone: false,
+          })
           class Ng1ComponentCFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1C', elementRef, injector);
@@ -1767,13 +1964,25 @@ withEachNg1Version(() => {
           }
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2-a', template: '<ng1A></ng1A>'})
+          @Component({
+            selector: 'ng2-a',
+            template: '<ng1A></ng1A>',
+            standalone: false,
+          })
           class Ng2ComponentA {}
 
-          @Component({selector: 'ng2-b', template: '<ng1B></ng1B>'})
+          @Component({
+            selector: 'ng2-b',
+            template: '<ng1B></ng1B>',
+            standalone: false,
+          })
           class Ng2ComponentB {}
 
-          @Component({selector: 'ng2-c', template: '<ng1C></ng1C>'})
+          @Component({
+            selector: 'ng2-c',
+            template: '<ng1C></ng1C>',
+            standalone: false,
+          })
           class Ng2ComponentC {}
 
           // Define `ng1Module`
@@ -1839,7 +2048,10 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng1ComponentFacade`
-          @Directive({selector: 'ng1'})
+          @Directive({
+            selector: 'ng1',
+            standalone: false,
+          })
           class Ng1ComponentFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1', elementRef, injector);
@@ -1847,7 +2059,11 @@ withEachNg1Version(() => {
           }
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1></ng1>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1></ng1>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -1907,14 +2123,20 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng1ComponentFacade`
-          @Directive({selector: 'ng1B'})
+          @Directive({
+            selector: 'ng1B',
+            standalone: false,
+          })
           class Ng1ComponentBFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1B', elementRef, injector);
             }
           }
 
-          @Directive({selector: 'ng1C'})
+          @Directive({
+            selector: 'ng1C',
+            standalone: false,
+          })
           class Ng1ComponentCFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1C', elementRef, injector);
@@ -1922,7 +2144,11 @@ withEachNg1Version(() => {
           }
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: 'ng2(<div><ng1B></ng1B> | <ng1C></ng1C></div>)'})
+          @Component({
+            selector: 'ng2',
+            template: 'ng2(<div><ng1B></ng1B> | <ng1C></ng1C></div>)',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -1982,7 +2208,10 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng1ComponentFacade`
-          @Directive({selector: 'ng1B'})
+          @Directive({
+            selector: 'ng1B',
+            standalone: false,
+          })
           class Ng1ComponentBFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1B', elementRef, injector);
@@ -1990,7 +2219,11 @@ withEachNg1Version(() => {
           }
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: 'ng2(<div><ng1B></ng1B></div>)'})
+          @Component({
+            selector: 'ng2',
+            template: 'ng2(<div><ng1B></ng1B></div>)',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -2040,7 +2273,10 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng1ComponentFacade`
-          @Directive({selector: 'ng1B'})
+          @Directive({
+            selector: 'ng1B',
+            standalone: false,
+          })
           class Ng1ComponentBFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1B', elementRef, injector);
@@ -2048,7 +2284,11 @@ withEachNg1Version(() => {
           }
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1B></ng1B>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1B></ng1B>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -2105,7 +2345,10 @@ withEachNg1Version(() => {
           };
 
           // Define `Ng1ComponentFacade`
-          @Directive({selector: 'ng1C'})
+          @Directive({
+            selector: 'ng1C',
+            standalone: false,
+          })
           class Ng1ComponentCFacade extends UpgradeComponent {
             constructor(elementRef: ElementRef, injector: Injector) {
               super('ng1C', elementRef, injector);
@@ -2113,7 +2356,11 @@ withEachNg1Version(() => {
           }
 
           // Define `Ng2Component`
-          @Component({selector: 'ng2', template: '<ng1C></ng1C>'})
+          @Component({
+            selector: 'ng2',
+            template: '<ng1C></ng1C>',
+            standalone: false,
+          })
           class Ng2Component {}
 
           // Define `ng1Module`
@@ -2155,7 +2402,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -2166,6 +2416,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2A',
           template: 'ng2A(<ng1>{{ value }} | <ng2B *ngIf="showB"></ng2B></ng1>)',
+          standalone: false,
         })
         class Ng2ComponentA {
           value = 'foo';
@@ -2175,7 +2426,11 @@ withEachNg1Version(() => {
           }
         }
 
-        @Component({selector: 'ng2B', template: 'ng2B({{ value }})'})
+        @Component({
+          selector: 'ng2B',
+          template: 'ng2B({{ value }})',
+          standalone: false,
+        })
         class Ng2ComponentB {
           value = 'bar';
           constructor() {
@@ -2234,7 +2489,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -2242,7 +2500,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: 'ng2(<ng1>{{ value }}</ng1> | <ng1></ng1>)'})
+        @Component({
+          selector: 'ng2',
+          template: 'ng2(<ng1>{{ value }}</ng1> | <ng1></ng1>)',
+          standalone: false,
+        })
         class Ng2Component {
           value = 'from-ng2';
           constructor() {
@@ -2290,7 +2552,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -2308,6 +2573,7 @@ withEachNg1Version(() => {
               <content-y>{{ y }}2</content-y>
             </ng1>
             )`,
+          standalone: false,
         })
         class Ng2Component {
           x = 'foo';
@@ -2364,7 +2630,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -2389,6 +2658,7 @@ withEachNg1Version(() => {
                  -->
             <ng1><content-x>ignored x</content-x><content-y>ignored y</content-y></ng1>
             )`,
+          standalone: false,
         })
         class Ng2Component {
           x = 'foo';
@@ -2455,7 +2725,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -2474,6 +2747,7 @@ withEachNg1Version(() => {
               ><content-y>{{ y }}</content-y></ng1
             >
             )`,
+          standalone: false,
         })
         class Ng2Component {
           x = 'ng2X';
@@ -2531,7 +2805,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -2539,7 +2816,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -2577,7 +2858,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -2599,6 +2883,7 @@ withEachNg1Version(() => {
               <div *ngIf="show">{{ y }}2</div>
             </ng1>
             )`,
+          standalone: false,
         })
         class Ng2Component {
           x = 'foo';
@@ -2679,7 +2964,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           @Input() inputA: any;
 
@@ -2688,7 +2976,10 @@ withEachNg1Version(() => {
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           @Input() inputB: any;
 
@@ -2701,6 +2992,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: '<ng1A [inputA]="data"></ng1A> | <ng1B [inputB]="data"></ng1B>',
+          standalone: false,
         })
         class Ng2Component {
           data = {foo: 'bar'};
@@ -2834,7 +3126,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           @Input() inputA: any;
 
@@ -2843,7 +3138,10 @@ withEachNg1Version(() => {
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           @Input() inputB: any;
 
@@ -2856,6 +3154,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: '<ng1A [inputA]="data"></ng1A> | <ng1B [inputB]="data"></ng1B>',
+          standalone: false,
         })
         class Ng2Component {
           data = {foo: 'bar'};
@@ -2980,14 +3279,20 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1B', elementRef, injector);
@@ -2995,7 +3300,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1A></ng1A> | <ng1B></ng1B>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1A></ng1A> | <ng1B></ng1B>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -3049,14 +3358,20 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1B', elementRef, injector);
@@ -3064,7 +3379,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1A></ng1A> | <ng1B></ng1B>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1A></ng1A> | <ng1B></ng1B>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -3119,14 +3438,20 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1B', elementRef, injector);
@@ -3134,7 +3459,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1A></ng1A> | <ng1B></ng1B>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1A></ng1A> | <ng1B></ng1B>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -3188,14 +3517,20 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1B', elementRef, injector);
@@ -3203,7 +3538,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1A></ng1A> | <ng1B></ng1B>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1A></ng1A> | <ng1B></ng1B>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -3256,14 +3595,20 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1B', elementRef, injector);
@@ -3271,7 +3616,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1A></ng1A> | <ng1B></ng1B>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1A></ng1A> | <ng1B></ng1B>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -3341,14 +3690,20 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1B', elementRef, injector);
@@ -3356,7 +3711,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1A></ng1A> | <ng1B></ng1B>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1A></ng1A> | <ng1B></ng1B>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -3422,14 +3781,20 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1B', elementRef, injector);
@@ -3440,6 +3805,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>',
+          standalone: false,
         })
         class Ng2Component {
           @Input() show: boolean = false;
@@ -3524,14 +3890,20 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1A'})
+        @Directive({
+          selector: 'ng1A',
+          standalone: false,
+        })
         class Ng1ComponentAFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1A', elementRef, injector);
           }
         }
 
-        @Directive({selector: 'ng1B'})
+        @Directive({
+          selector: 'ng1B',
+          standalone: false,
+        })
         class Ng1ComponentBFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1B', elementRef, injector);
@@ -3542,6 +3914,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'ng2',
           template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>',
+          standalone: false,
         })
         class Ng2Component {
           @Input() show: boolean = false;
@@ -3618,7 +3991,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           @Input() value: any;
 
@@ -3628,7 +4004,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1 value="foo"></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1 value="foo"></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`
@@ -3672,7 +4052,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -3680,7 +4063,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+        @Component({
+          selector: 'ng2A',
+          template: '<ng2B *ngIf="!destroyIt"></ng2B>',
+          standalone: false,
+        })
         class Ng2ComponentA {
           destroyIt = false;
 
@@ -3689,7 +4076,11 @@ withEachNg1Version(() => {
           }
         }
 
-        @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2B',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2ComponentB {}
 
         // Define `ng1Module`
@@ -3737,7 +4128,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -3745,7 +4139,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+        @Component({
+          selector: 'ng2A',
+          template: '<ng2B *ngIf="!destroyIt"></ng2B>',
+          standalone: false,
+        })
         class Ng2ComponentA {
           destroyIt = false;
 
@@ -3754,7 +4152,11 @@ withEachNg1Version(() => {
           }
         }
 
-        @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2B',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2ComponentB {}
 
         // Define `ng1Module`
@@ -3805,7 +4207,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -3813,7 +4218,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+        @Component({
+          selector: 'ng2A',
+          template: '<ng2B *ngIf="!destroyIt"></ng2B>',
+          standalone: false,
+        })
         class Ng2ComponentA {
           destroyIt = false;
 
@@ -3822,7 +4231,11 @@ withEachNg1Version(() => {
           }
         }
 
-        @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2B',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2ComponentB {}
 
         // Define `ng1Module`
@@ -3875,7 +4288,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -3883,7 +4299,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+        @Component({
+          selector: 'ng2A',
+          template: '<ng2B *ngIf="!destroyIt"></ng2B>',
+          standalone: false,
+        })
         class Ng2ComponentA {
           destroyIt = false;
 
@@ -3892,7 +4312,11 @@ withEachNg1Version(() => {
           }
         }
 
-        @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2B',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2ComponentB {}
 
         // Define `ng1Module`
@@ -3939,7 +4363,10 @@ withEachNg1Version(() => {
         };
 
         // Define `Ng1ComponentFacade`
-        @Directive({selector: 'ng1'})
+        @Directive({
+          selector: 'ng1',
+          standalone: false,
+        })
         class Ng1ComponentFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -3947,7 +4374,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1 *ngIf="doShow"></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1 *ngIf="doShow"></ng1>',
+          standalone: false,
+        })
         class Ng2Component {
           doShow: boolean = false;
           constructor(@Inject($SCOPE) public $scope: angular.IScope) {
@@ -4003,7 +4434,10 @@ withEachNg1Version(() => {
       const ng1Component: angular.IComponent = {template: 'ng1X(<ng2-b></ng2-b>)'};
 
       // Define `Ng1ComponentFacade`
-      @Directive({selector: 'ng1X'})
+      @Directive({
+        selector: 'ng1X',
+        standalone: false,
+      })
       class Ng1ComponentFacade extends UpgradeComponent {
         constructor(elementRef: ElementRef, injector: Injector) {
           super('ng1X', elementRef, injector);
@@ -4011,10 +4445,18 @@ withEachNg1Version(() => {
       }
 
       // Define `Ng2Component`
-      @Component({selector: 'ng2-a', template: 'ng2A(<ng1X></ng1X>)'})
+      @Component({
+        selector: 'ng2-a',
+        template: 'ng2A(<ng1X></ng1X>)',
+        standalone: false,
+      })
       class Ng2ComponentA {}
 
-      @Component({selector: 'ng2-b', template: 'ng2B'})
+      @Component({
+        selector: 'ng2-b',
+        template: 'ng2B',
+        standalone: false,
+      })
       class Ng2ComponentB {}
 
       // Define `ng1Module`
@@ -4077,7 +4519,10 @@ withEachNg1Version(() => {
       };
 
       // Define `Ng1ComponentFacade`
-      @Directive({selector: 'ng1X'})
+      @Directive({
+        selector: 'ng1X',
+        standalone: false,
+      })
       class Ng1ComponentXFacade extends UpgradeComponent {
         @Input() ng1XInputA: string = '';
         @Input() ng1XInputB: any;
@@ -4105,6 +4550,7 @@ withEachNg1Version(() => {
           >
           </ng1X>
         `,
+        standalone: false,
       })
       class Ng2ComponentA {
         ng2ADataA = {value: 'foo'};
@@ -4116,7 +4562,11 @@ withEachNg1Version(() => {
         }
       }
 
-      @Component({selector: 'ng2-b', template: 'ng2B({{ ng2BInputA }}, {{ ng2BInputC }})'})
+      @Component({
+        selector: 'ng2-b',
+        template: 'ng2B({{ ng2BInputA }}, {{ ng2BInputC }})',
+        standalone: false,
+      })
       class Ng2ComponentB {
         @Input('ng2BInput1') ng2BInputA: any;
         @Input() ng2BInputC: any;
@@ -4262,14 +4712,20 @@ withEachNg1Version(() => {
       };
 
       // Define `Ng1ComponentFacade`
-      @Directive({selector: 'ng1A'})
+      @Directive({
+        selector: 'ng1A',
+        standalone: false,
+      })
       class Ng1ComponentAFacade extends UpgradeComponent {
         constructor(elementRef: ElementRef, injector: Injector) {
           super('ng1A', elementRef, injector);
         }
       }
 
-      @Directive({selector: 'ng1B'})
+      @Directive({
+        selector: 'ng1B',
+        standalone: false,
+      })
       class Ng1ComponentBFacade extends UpgradeComponent {
         constructor(elementRef: ElementRef, injector: Injector) {
           super('ng1B', elementRef, injector);
@@ -4277,10 +4733,18 @@ withEachNg1Version(() => {
       }
 
       // Define `Ng2Component`
-      @Component({selector: 'ng2-a', template: 'ng2A(<ng1A></ng1A>)'})
+      @Component({
+        selector: 'ng2-a',
+        template: 'ng2A(<ng1A></ng1A>)',
+        standalone: false,
+      })
       class Ng2ComponentA {}
 
-      @Component({selector: 'ng2-b', template: 'ng2B(<ng1B></ng1B>)'})
+      @Component({
+        selector: 'ng2-b',
+        template: 'ng2B(<ng1B></ng1B>)',
+        standalone: false,
+      })
       class Ng2ComponentB {}
 
       // Define `ng1Module`
@@ -4316,7 +4780,9 @@ withEachNg1Version(() => {
         const ng1Component: angular.IComponent = {template: `I'm from AngularJS!`};
 
         // Define `Ng1ComponentFacade` (standalone)
-        @Directive({selector: 'ng1', standalone: true})
+        @Directive({
+          selector: 'ng1',
+        })
         class Ng1ComponentStandaloneFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);
@@ -4324,7 +4790,11 @@ withEachNg1Version(() => {
         }
 
         // Define `Ng2Component`
-        @Component({selector: 'ng2', template: '<ng1></ng1>'})
+        @Component({
+          selector: 'ng2',
+          template: '<ng1></ng1>',
+          standalone: false,
+        })
         class Ng2Component {}
 
         // Define `ng1Module`

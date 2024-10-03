@@ -1,9 +1,8 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'my-cmp',
-  standalone: true,
-  template: `
+    selector: 'my-cmp',
+    template: `
     <button
       *ngIf="true"
       [@anim]="field"

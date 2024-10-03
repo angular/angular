@@ -54,7 +54,11 @@ describe('change detection', () => {
     }).not.toThrow();
   });
   describe('embedded views', () => {
-    @Directive({selector: '[viewManipulation]', exportAs: 'vm'})
+    @Directive({
+      selector: '[viewManipulation]',
+      exportAs: 'vm',
+      standalone: false,
+    })
     class ViewManipulation {
       constructor(
         private _tplRef: TemplateRef<{}>,
@@ -78,6 +82,7 @@ describe('change detection', () => {
       template: `
         <ng-template #vm="vm" viewManipulation>{{'change-detected'}}</ng-template>
       `,
+      standalone: false,
     })
     class TestCmpt {}
 
@@ -110,7 +115,6 @@ describe('change detection', () => {
       @Component({
         selector: 'onpush',
         template: '',
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class OnPushComponent {
@@ -121,7 +125,9 @@ describe('change detection', () => {
         }
       }
 
-      @Component({template: '<ng-template #template></ng-template>', standalone: true})
+      @Component({
+        template: '<ng-template #template></ng-template>',
+      })
       class Container {
         @ViewChild('template', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
       }
@@ -147,6 +153,7 @@ describe('change detection', () => {
           <div>{{increment('componentView')}}</div>
           <ng-template #vm="vm" viewManipulation>{{increment('embeddedView')}}</ng-template>
         `,
+        standalone: false,
       })
       class App {
         increment(counter: 'componentView' | 'embeddedView') {
@@ -176,6 +183,7 @@ describe('change detection', () => {
       @Component({
         template: `<ng-template #vm="vm" viewManipulation></ng-template>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class App {}
 
@@ -185,6 +193,7 @@ describe('change detection', () => {
           <div>{{increment()}}</div>
         `,
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class DynamicComp {
         increment() {
@@ -227,7 +236,6 @@ describe('change detection', () => {
         selector: `test-cmpt`,
         template: `{{counter}}|<ng-template #vc></ng-template>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
-        standalone: true,
       })
       class TestCmpt {
         counter = 0;
@@ -241,7 +249,6 @@ describe('change detection', () => {
       @Component({
         selector: 'dynamic-cmpt',
         template: `dynamic|{{binding}}`,
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class DynamicCmpt {
@@ -291,6 +298,7 @@ describe('change detection', () => {
         host: {
           '[class.x]': 'x',
         },
+        standalone: false,
       })
       class HasHostBinding {
         x = true;
@@ -300,6 +308,7 @@ describe('change detection', () => {
         selector: 'child',
         template: '<has-host-binding></has-host-binding>',
         inputs: ['input'],
+        standalone: false,
       })
       class Child {
         /**
@@ -322,6 +331,7 @@ describe('change detection', () => {
       @Component({
         selector: 'root',
         template: '<child [input]="3"></child>',
+        standalone: false,
       })
       class Root {}
 
@@ -338,6 +348,7 @@ describe('change detection', () => {
       selector: 'my-comp',
       changeDetection: ChangeDetectionStrategy.OnPush,
       template: `{{ doCheckCount }} - {{ name }} <button (click)="onClick()"></button>`,
+      standalone: false,
     })
     class MyComponent implements DoCheck {
       @Input() name = 'Nancy';
@@ -350,7 +361,11 @@ describe('change detection', () => {
       onClick() {}
     }
 
-    @Component({selector: 'my-app', template: '<my-comp [name]="name"></my-comp>'})
+    @Component({
+      selector: 'my-app',
+      template: '<my-comp [name]="name"></my-comp>',
+      standalone: false,
+    })
     class MyApp {
       @ViewChild(MyComponent) comp!: MyComponent;
       name: string = 'Nancy';
@@ -442,6 +457,7 @@ describe('change detection', () => {
       @Component({
         selector: 'button-parent',
         template: '<my-comp></my-comp><button id="parent" (click)="noop()"></button>',
+        standalone: false,
       })
       class ButtonParent {
         @ViewChild(MyComponent) comp!: MyComponent;
@@ -468,6 +484,7 @@ describe('change detection', () => {
         selector: 'button-parent',
         template: '{{ doCheckCount }} - <my-comp></my-comp>',
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class ButtonParent implements DoCheck {
         @ViewChild(MyComponent) comp!: MyComponent;
@@ -479,7 +496,11 @@ describe('change detection', () => {
         }
       }
 
-      @Component({selector: 'my-button-app', template: '<button-parent></button-parent>'})
+      @Component({
+        selector: 'my-button-app',
+        template: '<button-parent></button-parent>',
+        standalone: false,
+      })
       class MyButtonApp {
         @ViewChild(ButtonParent) parent!: ButtonParent;
       }
@@ -517,6 +538,7 @@ describe('change detection', () => {
     it('should check parent OnPush components when child directive on a template emits event', fakeAsync(() => {
       @Directive({
         selector: '[emitter]',
+        standalone: false,
       })
       class Emitter {
         @Output() event = new EventEmitter<string>();
@@ -532,6 +554,7 @@ describe('change detection', () => {
         selector: 'my-app',
         template: '{{message}} <ng-template emitter (event)="message = $event"></ng-template>',
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class MyApp {
         message = 'initial message';
@@ -555,6 +578,7 @@ describe('change detection', () => {
         selector: 'my-comp',
         template: '{{ name }}',
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class MyComp implements DoCheck {
         doCheckCount = 0;
@@ -567,7 +591,11 @@ describe('change detection', () => {
         }
       }
 
-      @Component({selector: 'parent-comp', template: `{{ doCheckCount}} - <my-comp></my-comp>`})
+      @Component({
+        selector: 'parent-comp',
+        template: `{{ doCheckCount}} - <my-comp></my-comp>`,
+        standalone: false,
+      })
       class ParentComp implements DoCheck {
         @ViewChild(MyComp) myComp!: MyComp;
 
@@ -580,7 +608,10 @@ describe('change detection', () => {
         }
       }
 
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class Dir {
         constructor(public cdr: ChangeDetectorRef) {}
       }
@@ -651,7 +682,10 @@ describe('change detection', () => {
       });
 
       it('should check component view when called by directive on component node', () => {
-        @Component({template: '<my-comp dir></my-comp>'})
+        @Component({
+          template: '<my-comp dir></my-comp>',
+          standalone: false,
+        })
         class MyApp {
           @ViewChild(MyComp) myComp!: MyComp;
           @ViewChild(Dir) dir!: Dir;
@@ -669,7 +703,10 @@ describe('change detection', () => {
       });
 
       it('should check host component when called by directive on element node', () => {
-        @Component({template: '{{ value }}<div dir></div>'})
+        @Component({
+          template: '{{ value }}<div dir></div>',
+          standalone: false,
+        })
         class MyApp {
           @ViewChild(MyComp) myComp!: MyComp;
           @ViewChild(Dir) dir!: Dir;
@@ -690,7 +727,10 @@ describe('change detection', () => {
       });
 
       it('should check the host component when called from EmbeddedViewRef', () => {
-        @Component({template: '{{ name }}<div *ngIf="showing" dir></div>'})
+        @Component({
+          template: '{{ name }}<div *ngIf="showing" dir></div>',
+          standalone: false,
+        })
         class MyApp {
           @ViewChild(Dir) dir!: Dir;
           showing = true;
@@ -709,7 +749,10 @@ describe('change detection', () => {
       });
 
       it('should support call in ngOnInit', () => {
-        @Component({template: '{{ value }}'})
+        @Component({
+          template: '{{ value }}',
+          standalone: false,
+        })
         class DetectChangesComp implements OnInit {
           value = 0;
 
@@ -730,7 +773,10 @@ describe('change detection', () => {
 
       ['OnInit', 'AfterContentInit', 'AfterViewInit', 'OnChanges'].forEach((hook) => {
         it(`should not go infinite loop when recursively called from children's ng${hook}`, () => {
-          @Component({template: '<child-comp [inp]="true"></child-comp>'})
+          @Component({
+            template: '<child-comp [inp]="true"></child-comp>',
+            standalone: false,
+          })
           class ParentComp {
             constructor(public cdr: ChangeDetectorRef) {}
             triggerChangeDetection() {
@@ -738,7 +784,11 @@ describe('change detection', () => {
             }
           }
 
-          @Component({template: '{{inp}}', selector: 'child-comp'})
+          @Component({
+            template: '{{inp}}',
+            selector: 'child-comp',
+            standalone: false,
+          })
           class ChildComp {
             @Input() inp: any = '';
 
@@ -777,7 +827,10 @@ describe('change detection', () => {
       });
 
       it('should support call in ngDoCheck', () => {
-        @Component({template: '{{doCheckCount}}'})
+        @Component({
+          template: '{{doCheckCount}}',
+          standalone: false,
+        })
         class DetectChangesComp {
           doCheckCount = 0;
 
@@ -802,6 +855,7 @@ describe('change detection', () => {
           template: `
             <div *ngIf="visible" #ref>Visible text</div>
           `,
+          standalone: false,
         })
         class App {
           @ViewChildren('ref') ref!: QueryList<any>;
@@ -834,7 +888,11 @@ describe('change detection', () => {
       });
 
       describe('dynamic views', () => {
-        @Component({selector: 'structural-comp', template: '{{ value }}'})
+        @Component({
+          selector: 'structural-comp',
+          template: '{{ value }}',
+          standalone: false,
+        })
         class StructuralComp {
           @Input() tmp!: TemplateRef<any>;
           value = 'one';
@@ -850,6 +908,7 @@ describe('change detection', () => {
           @Component({
             template:
               '<ng-template #foo let-ctx="ctx">{{ ctx.value }}</ng-template><structural-comp [tmp]="foo"></structural-comp>',
+            standalone: false,
           })
           class App {
             @ViewChild(StructuralComp) structuralComp!: StructuralComp;
@@ -879,6 +938,7 @@ describe('change detection', () => {
         it('should support ViewRef.detectChanges() directly after creation', () => {
           @Component({
             template: '<ng-template #foo>Template text</ng-template><structural-comp [tmp]="foo">',
+            standalone: false,
           })
           class App {
             @ViewChild(StructuralComp) structuralComp!: StructuralComp;
@@ -898,7 +958,11 @@ describe('change detection', () => {
     });
 
     describe('attach/detach', () => {
-      @Component({selector: 'detached-comp', template: '{{ value }}'})
+      @Component({
+        selector: 'detached-comp',
+        template: '{{ value }}',
+        standalone: false,
+      })
       class DetachedComp implements DoCheck {
         value = 'one';
         doCheckCount = 0;
@@ -910,7 +974,10 @@ describe('change detection', () => {
         }
       }
 
-      @Component({template: '<detached-comp></detached-comp>'})
+      @Component({
+        template: '<detached-comp></detached-comp>',
+        standalone: false,
+      })
       class MyApp {
         @ViewChild(DetachedComp) comp!: DetachedComp;
 
@@ -1012,6 +1079,7 @@ describe('change detection', () => {
           selector: 'on-push-comp',
           template: '{{ value }}',
           changeDetection: ChangeDetectionStrategy.OnPush,
+          standalone: false,
         })
         class OnPushComp {
           @Input() value!: string;
@@ -1019,7 +1087,10 @@ describe('change detection', () => {
           constructor(public cdr: ChangeDetectorRef) {}
         }
 
-        @Component({template: '<on-push-comp [value]="value"></on-push-comp>'})
+        @Component({
+          template: '<on-push-comp [value]="value"></on-push-comp>',
+          standalone: false,
+        })
         class OnPushApp {
           @ViewChild(OnPushComp) onPushComp!: OnPushComp;
           value = '';
@@ -1051,6 +1122,7 @@ describe('change detection', () => {
         selector: 'on-push-comp',
         template: '{{ value }}',
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class OnPushComp implements DoCheck {
         value = 'one';
@@ -1067,6 +1139,7 @@ describe('change detection', () => {
       @Component({
         template: '{{ value }} - <on-push-comp></on-push-comp>',
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class OnPushParent {
         @ViewChild(OnPushComp) comp!: OnPushComp;
@@ -1128,6 +1201,7 @@ describe('change detection', () => {
         @Component({
           template: '{{ value }} - <on-push-comp *ngIf="showing"></on-push-comp>',
           changeDetection: ChangeDetectionStrategy.OnPush,
+          standalone: false,
         })
         class EmbeddedViewParent {
           @ViewChild(OnPushComp) comp!: OnPushComp;
@@ -1169,6 +1243,7 @@ describe('change detection', () => {
           selector: 'insertion',
           changeDetection: ChangeDetectionStrategy.OnPush,
           template: ` <ng-container [ngTemplateOutlet]="template"> </ng-container> `,
+          standalone: false,
         })
         class Insertion {
           @Input() template!: TemplateRef<{}>;
@@ -1184,6 +1259,7 @@ describe('change detection', () => {
             <span>{{value | async}}</span>
           </ng-template>
           `,
+          standalone: false,
         })
         class Declaration {
           value = new BehaviorSubject('initial value');
@@ -1205,7 +1281,11 @@ describe('change detection', () => {
     describe('checkNoChanges', () => {
       let comp: NoChangesComp;
 
-      @Component({selector: 'no-changes-comp', template: '{{ value }}'})
+      @Component({
+        selector: 'no-changes-comp',
+        template: '{{ value }}',
+        standalone: false,
+      })
       class NoChangesComp {
         value = 1;
         doCheckCount = 0;
@@ -1229,7 +1309,10 @@ describe('change detection', () => {
         }
       }
 
-      @Component({template: '{{ value }} - <no-changes-comp></no-changes-comp>'})
+      @Component({
+        template: '{{ value }} - <no-changes-comp></no-changes-comp>',
+        standalone: false,
+      })
       class AppComp {
         value = 1;
 
@@ -1271,7 +1354,10 @@ describe('change detection', () => {
       });
 
       it('should throw if bindings in embedded view have changed', () => {
-        @Component({template: '<span *ngIf="showing">{{ showing }}</span>'})
+        @Component({
+          template: '<span *ngIf="showing">{{ showing }}</span>',
+          standalone: false,
+        })
         class EmbeddedViewApp {
           showing = true;
           constructor(public cdr: ChangeDetectorRef) {}
@@ -1323,7 +1409,6 @@ describe('change detection', () => {
 
         @Component({
           changeDetection: ChangeDetectionStrategy.OnPush,
-          standalone: true,
           template: '{{state}}{{resolveReadPromise()}}',
         })
         class MyApp {
@@ -1552,6 +1637,7 @@ describe('change detection', () => {
               selector: 'on-push-comp',
               changeDetection: ChangeDetectionStrategy.OnPush,
               template: `<p>{{text}}</p>`,
+              standalone: false,
             })
             class OnPushComp {
               text = 'initial';
@@ -1563,7 +1649,10 @@ describe('change detection', () => {
               }
             }
 
-            @Component({template: `<on-push-comp></on-push-comp>`})
+            @Component({
+              template: `<on-push-comp></on-push-comp>`,
+              standalone: false,
+            })
             class TestApp {
               @ViewChild(OnPushComp) onPushComp!: OnPushComp;
             }
@@ -1598,6 +1687,7 @@ describe('change detection', () => {
             selector: 'on-push-comp',
             changeDetection: ChangeDetectionStrategy.OnPush,
             template: `<p>{{text}}</p>`,
+            standalone: false,
           })
           class OnPushComp {
             text = 'initial';
@@ -1609,7 +1699,10 @@ describe('change detection', () => {
             }
           }
 
-          @Component({template: `<on-push-comp></on-push-comp>`})
+          @Component({
+            template: `<on-push-comp></on-push-comp>`,
+            standalone: false,
+          })
           class TestApp {
             @ViewChild(OnPushComp) onPushComp!: OnPushComp;
           }
@@ -1635,7 +1728,10 @@ describe('change detection', () => {
   });
 
   describe('ExpressionChangedAfterItHasBeenCheckedError', () => {
-    @Component({template: '...'})
+    @Component({
+      template: '...',
+      standalone: false,
+    })
     class MyApp {
       a: string = 'a';
       b: string = 'b';

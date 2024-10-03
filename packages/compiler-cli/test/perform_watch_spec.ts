@@ -233,7 +233,7 @@ function createModuleAndCompSource(prefix: string, template: string = prefix + '
   return `
     import {Component, NgModule} from '@angular/core';
 
-    @Component({selector: '${prefix}', ${templateEntry}})
+    @Component({selector: '${prefix}', ${templateEntry}, standalone: false})
     export class ${prefix}Comp {}
 
     @NgModule({declarations: [${prefix}Comp]})

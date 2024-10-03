@@ -146,7 +146,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
     ngOnInit(): void;
     get path(): string[];
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractFormGroupDirective, never, never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractFormGroupDirective, never, never, {}, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<AbstractFormGroupDirective, never>;
 }

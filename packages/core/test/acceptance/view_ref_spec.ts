@@ -25,12 +25,19 @@ import {TestBed} from '@angular/core/testing';
 
 describe('ViewRef', () => {
   it('should remove nodes from DOM when the view is detached from app ref', () => {
-    @Component({selector: 'dynamic-cpt', template: '<div></div>'})
+    @Component({
+      selector: 'dynamic-cpt',
+      template: '<div></div>',
+      standalone: false,
+    })
     class DynamicComponent {
       constructor(public elRef: ElementRef) {}
     }
 
-    @Component({template: `<span></span>`})
+    @Component({
+      template: `<span></span>`,
+      standalone: false,
+    })
     class App {
       componentRef!: ComponentRef<DynamicComponent>;
       constructor(
@@ -66,7 +73,10 @@ describe('ViewRef', () => {
   it('should invoke the onDestroy callback of a view ref', () => {
     let called = false;
 
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class App {
       constructor(changeDetectorRef: ChangeDetectorRef) {
         (changeDetectorRef as InternalViewRef<unknown>).onDestroy(() => (called = true));
@@ -82,12 +92,18 @@ describe('ViewRef', () => {
   });
 
   it('should remove view ref from view container when destroyed', () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class DynamicComponent {
       constructor(public viewContainerRef: ViewContainerRef) {}
     }
 
-    @Component({template: `<ng-template>Hello</ng-template>`})
+    @Component({
+      template: `<ng-template>Hello</ng-template>`,
+      standalone: false,
+    })
     class App {
       @ViewChild(TemplateRef) templateRef!: TemplateRef<any>;
       componentRef!: ComponentRef<DynamicComponent>;
@@ -113,12 +129,18 @@ describe('ViewRef', () => {
   });
 
   it('should mark a ViewRef as destroyed when the host view is destroyed', () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class DynamicComponent {
       constructor(public viewContainerRef: ViewContainerRef) {}
     }
 
-    @Component({template: `<ng-template>Hello</ng-template>`})
+    @Component({
+      template: `<ng-template>Hello</ng-template>`,
+      standalone: false,
+    })
     class App {
       @ViewChild(TemplateRef) templateRef!: TemplateRef<any>;
       componentRef!: ComponentRef<DynamicComponent>;

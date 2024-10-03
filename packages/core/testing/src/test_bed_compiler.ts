@@ -102,7 +102,8 @@ function assertNoStandaloneComponents(
   types.forEach((type) => {
     if (!getAsyncClassMetadataFn(type)) {
       const component = resolver.resolve(type);
-      if (component && component.standalone) {
+      // TODO: That's probably not what we want.
+      if (component && (component.standalone === undefined || component.standalone === true)) {
         throw new Error(ɵgenerateStandaloneInDeclarationsError(type, location));
       }
     }

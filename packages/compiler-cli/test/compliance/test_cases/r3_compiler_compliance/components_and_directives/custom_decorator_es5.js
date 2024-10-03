@@ -3,5 +3,6 @@
   args: [{
     template: '',
     providers: [{provide: token, useExisting: Comp}],
+    standalone: false
   }]
 }], null, null); })();

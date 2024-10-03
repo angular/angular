@@ -10,13 +10,21 @@ import {Attribute, Component, Directive, Pipe} from '@angular/core';
 
 class CustomDirective {}
 
-@Component({selector: 'greet', template: 'Hello {{name}}!'})
+@Component({
+  selector: 'greet',
+  template: 'Hello {{name}}!',
+  standalone: false,
+})
 class Greet {
   name: string = 'World';
 }
 
 // #docregion attributeFactory
-@Component({selector: 'page', template: 'Title: {{title}}'})
+@Component({
+  selector: 'page',
+  template: 'Title: {{title}}',
+  standalone: false,
+})
 class Page {
   title: string;
   constructor(@Attribute('title') title: string) {
@@ -26,7 +34,10 @@ class Page {
 // #enddocregion
 
 // #docregion attributeMetadata
-@Directive({selector: 'input'})
+@Directive({
+  selector: 'input',
+  standalone: false,
+})
 class InputAttrDirective {
   constructor(@Attribute('type') type: string) {
     // type would be 'text' in this example
@@ -34,14 +45,20 @@ class InputAttrDirective {
 }
 // #enddocregion
 
-@Directive({selector: 'input'})
+@Directive({
+  selector: 'input',
+  standalone: false,
+})
 class InputDirective {
   constructor() {
     // Add some logic.
   }
 }
 
-@Pipe({name: 'lowercase'})
+@Pipe({
+  name: 'lowercase',
+  standalone: false,
+})
 class Lowercase {
   transform(v: string, args: any[]) {
     return v.toLowerCase();

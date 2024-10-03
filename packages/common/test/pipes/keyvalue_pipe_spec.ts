@@ -199,7 +199,6 @@ describe('KeyValuePipe', () => {
       selector: 'test-component',
       imports: [KeyValuePipe, JsonPipe],
       template: '{{ value | keyvalue | json }}',
-      standalone: true,
     })
     class TestComponent {
       value = {'b': 1, 'a': 2};

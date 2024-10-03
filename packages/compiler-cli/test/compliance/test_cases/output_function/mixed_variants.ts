@@ -1,9 +1,7 @@
 import {Directive, EventEmitter, Output, output} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 
-@Directive({
-  standalone: true,
-})
+@Directive({})
 export class TestDir {
   click1 = output();
   click2 = output<boolean>();

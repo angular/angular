@@ -13,7 +13,10 @@ import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 describe('property bindings', () => {
   it('should support bindings to properties', () => {
-    @Component({template: `<span [id]="id"></span>`})
+    @Component({
+      template: `<span [id]="id"></span>`,
+      standalone: false,
+    })
     class Comp {
       id: string | undefined;
     }
@@ -33,6 +36,7 @@ describe('property bindings', () => {
   it('should update bindings when value changes', () => {
     @Component({
       template: `<a [title]="title"></a>`,
+      standalone: false,
     })
     class Comp {
       title = 'Hello';
@@ -52,6 +56,7 @@ describe('property bindings', () => {
   it('should not update bindings when value does not change', () => {
     @Component({
       template: `<a [title]="title"></a>`,
+      standalone: false,
     })
     class Comp {
       title = 'Hello';
@@ -68,7 +73,10 @@ describe('property bindings', () => {
   });
 
   it('should bind to properties whose names do not correspond to their attribute names', () => {
-    @Component({template: '<label [for]="forValue"></label>'})
+    @Component({
+      template: '<label [for]="forValue"></label>',
+      standalone: false,
+    })
     class MyComp {
       forValue?: string;
     }
@@ -92,12 +100,19 @@ describe('property bindings', () => {
     'should not map properties whose names do not correspond to their attribute names, ' +
       'if they correspond to inputs',
     () => {
-      @Component({template: '', selector: 'my-comp'})
+      @Component({
+        template: '',
+        selector: 'my-comp',
+        standalone: false,
+      })
       class MyComp {
         @Input() for!: string;
       }
 
-      @Component({template: '<my-comp [for]="forValue"></my-comp>'})
+      @Component({
+        template: '<my-comp [for]="forValue"></my-comp>',
+        standalone: false,
+      })
       class App {
         forValue?: string;
       }
@@ -122,6 +137,7 @@ describe('property bindings', () => {
       template: `
         <a [href]="url">
       `,
+      standalone: false,
     })
     class App {
       url: string | SafeUrl = 'javascript:alert("haha, I am taking over your computer!!!");';
@@ -146,6 +162,7 @@ describe('property bindings', () => {
   it('should not stringify non-string values', () => {
     @Component({
       template: `<input [required]="isRequired"/>`,
+      standalone: false,
     })
     class Comp {
       isRequired = false;
@@ -159,7 +176,10 @@ describe('property bindings', () => {
   });
 
   it('should support interpolation for properties', () => {
-    @Component({template: `<span id="{{'_' + id + '_'}}"></span>`})
+    @Component({
+      template: `<span id="{{'_' + id + '_'}}"></span>`,
+      standalone: false,
+    })
     class Comp {
       id: string | undefined;
     }
@@ -180,6 +200,7 @@ describe('property bindings', () => {
   describe('input properties', () => {
     @Directive({
       selector: '[myButton]',
+      standalone: false,
     })
     class MyButton {
       @Input() disabled: boolean | undefined;
@@ -187,6 +208,7 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[otherDir]',
+      standalone: false,
     })
     class OtherDir {
       @Input() id: number | undefined;
@@ -195,6 +217,7 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[otherDisabledDir]',
+      standalone: false,
     })
     class OtherDisabledDir {
       @Input() disabled: boolean | undefined;
@@ -202,6 +225,7 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[idDir]',
+      standalone: false,
     })
     class IdDir {
       @Input('id') idNumber: string | undefined;
@@ -210,6 +234,7 @@ describe('property bindings', () => {
     it('should check input properties before setting (directives)', () => {
       @Component({
         template: `<button myButton otherDir [id]="id" [disabled]="isDisabled">Click me</button>`,
+        standalone: false,
       })
       class App {
         id = 0;
@@ -243,7 +268,10 @@ describe('property bindings', () => {
     });
 
     it('should support mixed element properties and input properties', () => {
-      @Component({template: `<button myButton [id]="id" [disabled]="isDisabled">Click me</button>`})
+      @Component({
+        template: `<button myButton [id]="id" [disabled]="isDisabled">Click me</button>`,
+        standalone: false,
+      })
       class App {
         isDisabled = true;
         id = 0;
@@ -272,12 +300,16 @@ describe('property bindings', () => {
       @Component({
         selector: 'comp',
         template: '',
+        standalone: false,
       })
       class Comp {
         @Input() id: number | undefined;
       }
 
-      @Component({template: `<comp [id]="id"></comp>`})
+      @Component({
+        template: `<comp [id]="id"></comp>`,
+        standalone: false,
+      })
       class App {
         id = 1;
       }
@@ -300,6 +332,7 @@ describe('property bindings', () => {
     it('should support two input properties with the same name', () => {
       @Component({
         template: `<button myButton otherDisabledDir [disabled]="isDisabled">Click me</button>`,
+        standalone: false,
       })
       class App {
         isDisabled = true;
@@ -329,6 +362,7 @@ describe('property bindings', () => {
     it('should set input property if there is an output first', () => {
       @Component({
         template: `<button otherDir [id]="id" (click)="onClick()">Click me</button>`,
+        standalone: false,
       })
       class App {
         id = 1;
@@ -360,6 +394,7 @@ describe('property bindings', () => {
           <button *ngIf="condition" [id]="id2">Click me too (2)</button>
           <button *ngIf="!condition" otherDir [id]="id3">Click me too (3)</button>
         `,
+        standalone: false,
       })
       class App {
         condition = true;
@@ -399,20 +434,30 @@ describe('property bindings', () => {
   });
 
   describe('attributes and input properties', () => {
-    @Directive({selector: '[myDir]', exportAs: 'myDir'})
+    @Directive({
+      selector: '[myDir]',
+      exportAs: 'myDir',
+      standalone: false,
+    })
     class MyDir {
       @Input() role: string | undefined;
       @Input('dir') direction: string | undefined;
       @Output('change') changeStream = new EventEmitter<void>();
     }
 
-    @Directive({selector: '[myDirB]'})
+    @Directive({
+      selector: '[myDirB]',
+      standalone: false,
+    })
     class MyDirB {
       @Input('role') roleB: string | undefined;
     }
 
     it('should set input property based on attribute if existing', () => {
-      @Component({template: `<div role="button" myDir></div>`})
+      @Component({
+        template: `<div role="button" myDir></div>`,
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, MyDir]});
@@ -427,7 +472,10 @@ describe('property bindings', () => {
     });
 
     it('should set input property and attribute if both defined', () => {
-      @Component({template: `<div role="button" [role]="role" myDir></div>`})
+      @Component({
+        template: `<div role="button" [role]="role" myDir></div>`,
+        standalone: false,
+      })
       class App {
         role = 'listbox';
       }
@@ -447,7 +495,10 @@ describe('property bindings', () => {
     });
 
     it('should set two directive input properties based on same attribute', () => {
-      @Component({template: `<div role="button" myDir myDirB></div>`})
+      @Component({
+        template: `<div role="button" myDir myDirB></div>`,
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
@@ -465,6 +516,7 @@ describe('property bindings', () => {
     it('should process two attributes on same directive', () => {
       @Component({
         template: `<div role="button" dir="rtl" myDir></div>`,
+        standalone: false,
       })
       class App {}
 
@@ -481,7 +533,10 @@ describe('property bindings', () => {
     });
 
     it('should process attributes and outputs properly together', () => {
-      @Component({template: `<div role="button" (change)="onChange()" myDir></div>`})
+      @Component({
+        template: `<div role="button" (change)="onChange()" myDir></div>`,
+        standalone: false,
+      })
       class App {
         counter = 0;
         onChange = () => this.counter++;
@@ -506,6 +561,7 @@ describe('property bindings', () => {
           <div role="button" dir="rtl" myDir></div>
           <div role="listbox" myDirB></div>
         `,
+        standalone: false,
       })
       class App {}
 
@@ -537,6 +593,7 @@ describe('property bindings', () => {
           <div role="button" myDirB *ngIf="condition"></div>
           <div role="menu" *ngIf="!condition"></div>
         `,
+        standalone: false,
       })
       class App {
         condition = true;
@@ -571,6 +628,7 @@ describe('property bindings', () => {
       @Component({
         selector: 'comp',
         template: `<div role="button" myDir #dir="myDir"></div>role: {{dir.role}}`,
+        standalone: false,
       })
       class Comp {}
 
@@ -578,6 +636,7 @@ describe('property bindings', () => {
         template: `
           <comp *ngFor="let i of [0, 1]"></comp>
         `,
+        standalone: false,
       })
       class App {}
 
@@ -612,15 +671,22 @@ describe('property bindings', () => {
       template: '',
       animations: [trigger('trigger', [state('void', style({opacity: 0}))])],
       host: {'[@trigger]': '"void"'},
+      standalone: false,
     })
     class MyComp {}
 
-    @Directive({selector: '[my-dir]'})
+    @Directive({
+      selector: '[my-dir]',
+      standalone: false,
+    })
     class MyDir {
       constructor(public viewContainerRef: ViewContainerRef) {}
     }
 
-    @Component({template: '<my-comp my-dir></my-comp>'})
+    @Component({
+      template: '<my-comp my-dir></my-comp>',
+      standalone: false,
+    })
     class App {}
 
     TestBed.configureTestingModule({declarations: [App, MyDir, MyComp]});
@@ -632,7 +698,10 @@ describe('property bindings', () => {
   });
 
   it('should allow quoted binding syntax inside property binding', () => {
-    @Component({template: `<span [id]="'{{ id }}'"></span>`})
+    @Component({
+      template: `<span [id]="'{{ id }}'"></span>`,
+      standalone: false,
+    })
     class Comp {}
 
     TestBed.configureTestingModule({declarations: [Comp]});
@@ -642,7 +711,10 @@ describe('property bindings', () => {
   });
 
   it('should allow quoted binding syntax with escaped quotes inside property binding', () => {
-    @Component({template: `<span [id]="'{{ \\' }}'"></span>`})
+    @Component({
+      template: `<span [id]="'{{ \\' }}'"></span>`,
+      standalone: false,
+    })
     class Comp {}
 
     TestBed.configureTestingModule({declarations: [Comp]});

@@ -11,6 +11,7 @@ import {Component} from '@angular/core';
 /** Test component which contains an invalid banana in box warning. Should build successfully. */
 @Component({
   template: ` <div ([foo])="(bar)"></div> `,
+  standalone: false,
 })
 export class TestCmp {
   bar: string = 'test';

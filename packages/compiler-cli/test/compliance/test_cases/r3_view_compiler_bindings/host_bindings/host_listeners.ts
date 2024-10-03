@@ -1,12 +1,11 @@
 import {Component, HostListener} from '@angular/core';
 
 @Component({
-  selector: 'my-cmp',
-  standalone: true,
-  host: {
-    '(document:dragover)': 'foo($event)',
-  },
-  template: `
+    selector: 'my-cmp',
+    host: {
+        '(document:dragover)': 'foo($event)',
+    },
+    template: `
   `
 })
 export class MyComponent {

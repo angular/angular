@@ -20,6 +20,7 @@ import {Observable, Observer} from 'rxjs';
       <span>Wait for it... {{ greeting | async }}</span>
     </div>
   `,
+  standalone: false,
 })
 export class AsyncPromisePipeComponent {
   greeting: Promise<string> | null = null;
@@ -53,6 +54,7 @@ export class AsyncPromisePipeComponent {
 @Component({
   selector: 'async-observable-pipe',
   template: '<div><code>observable|async</code>: Time: {{ time | async }}</div>',
+  standalone: false,
 })
 export class AsyncObservablePipeComponent {
   time = new Observable<string>((observer: Observer<string>) => {

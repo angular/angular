@@ -15,7 +15,6 @@ import {Component} from '@angular/core';
       <button type="submit">Submit</button>
     </form>
   `,
-  standalone: true,
   imports: [],
 })
 export class AppComponent {}

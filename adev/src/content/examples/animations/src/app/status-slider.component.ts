@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {trigger, transition, state, animate, style, keyframes} from '@angular/animations';
 
 @Component({
-  standalone: true,
   selector: 'app-status-slider',
   templateUrl: 'status-slider.component.html',
   styleUrls: ['status-slider.component.css'],
@@ -10,7 +9,6 @@ import {trigger, transition, state, animate, style, keyframes} from '@angular/an
     trigger('slideStatus', [
       state('inactive', style({backgroundColor: 'blue'})),
       state('active', style({backgroundColor: '#754600'})),
-
       // #docregion keyframesWithOffsets
       transition('* => active', [
         animate(
@@ -33,7 +31,6 @@ import {trigger, transition, state, animate, style, keyframes} from '@angular/an
         ),
       ]),
       // #enddocregion keyframesWithOffsets
-
       // #docregion keyframes
       transition('* => active', [
         animate(

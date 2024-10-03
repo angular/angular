@@ -30,7 +30,6 @@ type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
   selector: 'ng-devtools-tabs',
   templateUrl: './devtools-tabs.component.html',
   styleUrls: ['./devtools-tabs.component.scss'],
-  standalone: true,
   imports: [
     MatTabNav,
     MatTabNavPanel,

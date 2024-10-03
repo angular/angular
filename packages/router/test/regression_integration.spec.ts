@@ -47,6 +47,7 @@ describe('Integration', () => {
             <a [routerLink]="[secondLink]">{{secondLink}}</a>
           </div>
            `,
+        standalone: false,
       })
       class LinkComponent {
         firstLink = 'link-a';
@@ -59,7 +60,10 @@ describe('Integration', () => {
         }
       }
 
-      @Component({template: 'simple'})
+      @Component({
+        template: 'simple',
+        standalone: false,
+      })
       class SimpleCmp {}
 
       TestBed.configureTestingModule({
@@ -91,7 +95,11 @@ describe('Integration', () => {
     }));
 
     it('should not cause infinite loops in the change detection - #15825', fakeAsync(() => {
-      @Component({selector: 'simple', template: 'simple'})
+      @Component({
+        selector: 'simple',
+        template: 'simple',
+        standalone: false,
+      })
       class SimpleCmp {}
 
       @Component({
@@ -104,6 +112,7 @@ describe('Integration', () => {
         <ng-template #tpl>
           <a routerLink="/simple" routerLinkActive="active"></a>
         </ng-template>`,
+        standalone: false,
       })
       class MyCmp {
         show: boolean = false;
@@ -142,6 +151,7 @@ describe('Integration', () => {
             <ng-container #container></ng-container>
           </div>
         `,
+        standalone: false,
       })
       class ComponentWithRouterLink {
         @ViewChild(TemplateRef, {static: true}) templateRef?: TemplateRef<unknown>;
@@ -159,7 +169,10 @@ describe('Integration', () => {
         }
       }
 
-      @Component({template: 'simple'})
+      @Component({
+        template: 'simple',
+        standalone: false,
+      })
       class SimpleCmp {}
 
       TestBed.configureTestingModule({
@@ -190,10 +203,14 @@ describe('Integration', () => {
              </div>
            `,
         changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: false,
       })
       class OnPushComponent {}
 
-      @Component({template: 'simple'})
+      @Component({
+        template: 'simple',
+        standalone: false,
+      })
       class SimpleCmp {}
 
       TestBed.configureTestingModule({
@@ -211,10 +228,16 @@ describe('Integration', () => {
   });
 
   it('should not reactivate a deactivated outlet when destroyed and recreated - #41379', fakeAsync(() => {
-    @Component({template: 'simple'})
+    @Component({
+      template: 'simple',
+      standalone: false,
+    })
     class SimpleComponent {}
 
-    @Component({template: ` <router-outlet *ngIf="outletVisible" name="aux"></router-outlet> `})
+    @Component({
+      template: ` <router-outlet *ngIf="outletVisible" name="aux"></router-outlet> `,
+      standalone: false,
+    })
     class AppComponent {
       outletVisible = true;
     }
@@ -249,12 +272,22 @@ describe('Integration', () => {
 
   describe('useHash', () => {
     it('should restore hash to match current route - #28561', fakeAsync(() => {
-      @Component({selector: 'root-cmp', template: `<router-outlet></router-outlet>`})
+      @Component({
+        selector: 'root-cmp',
+        template: `<router-outlet></router-outlet>`,
+        standalone: false,
+      })
       class RootCmp {}
 
-      @Component({template: 'simple'})
+      @Component({
+        template: 'simple',
+        standalone: false,
+      })
       class SimpleCmp {}
-      @Component({template: 'one'})
+      @Component({
+        template: 'one',
+        standalone: false,
+      })
       class OneCmp {}
 
       TestBed.configureTestingModule({
@@ -304,12 +337,22 @@ describe('Integration', () => {
           return of('').pipe(delay(1000), mapTo(true));
         }
       }
-      @Component({selector: 'root-cmp', template: `<router-outlet></router-outlet>`})
+      @Component({
+        selector: 'root-cmp',
+        template: `<router-outlet></router-outlet>`,
+        standalone: false,
+      })
       class RootCmp {}
 
-      @Component({template: 'simple'})
+      @Component({
+        template: 'simple',
+        standalone: false,
+      })
       class SimpleCmp {}
-      @Component({template: 'one'})
+      @Component({
+        template: 'one',
+        standalone: false,
+      })
       class OneCmp {}
       TestBed.configureTestingModule({
         declarations: [SimpleCmp, RootCmp, OneCmp],
@@ -362,13 +405,17 @@ describe('Integration', () => {
       <router-outlet *ngIf="outlet1"></router-outlet>
       <router-outlet *ngIf="outlet2"></router-outlet>
       `,
+      standalone: false,
     })
     class TestCmp {
       outlet1 = true;
       outlet2 = false;
     }
 
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class EmptyCmp {}
 
     TestBed.configureTestingModule({

@@ -33,7 +33,6 @@ type PreviewUrlEmittedValue = {
 };
 
 @Component({
-  standalone: true,
   selector: 'docs-tutorial-preview',
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss'],

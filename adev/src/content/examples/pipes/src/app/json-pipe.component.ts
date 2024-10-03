@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {JsonPipe} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-json-pipe',
   template: `{{ data | json }}`,
   imports: [JsonPipe],

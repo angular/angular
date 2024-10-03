@@ -1,10 +1,16 @@
 import {Component, NgModule} from '@angular/core';
 
-@Component({selector: 'a1', template: 'A1'})
+@Component({
+    selector: 'a1', template: 'A1',
+    standalone: false
+})
 export class A1Component {
 }
 
-@Component({selector: 'a2', template: 'A2'})
+@Component({
+    selector: 'a2', template: 'A2',
+    standalone: false
+})
 export class A2Component {
 }
 
@@ -12,11 +18,17 @@ export class A2Component {
 export class AModule {
 }
 
-@Component({selector: 'b1', template: 'B1'})
+@Component({
+    selector: 'b1', template: 'B1',
+    standalone: false
+})
 export class B1Component {
 }
 
-@Component({selector: 'b2', template: 'B2'})
+@Component({
+    selector: 'b2', template: 'B2',
+    standalone: false
+})
 export class B2Component {
 }
 

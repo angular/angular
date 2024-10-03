@@ -13,6 +13,7 @@ import {ServerModule} from '@angular/platform-server';
 @Component({
   selector: 'string-app',
   template: '{{data}}',
+  standalone: false,
 })
 export class AppComponent {
   data: string;

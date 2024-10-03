@@ -54,6 +54,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'a-dep',
             template: 'a-dep',
+            standalone: false,
           })
           export class ADep {
             @Input()
@@ -72,6 +73,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'a-cmp',
             template: '<a-dep></a-dep>',
+            standalone: false,
           })
           export class ACmp {}
         `,
@@ -98,6 +100,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'b-cmp',
             template: '<a-dep></a-dep>',
+            standalone: false,
           })
           export class BCmp {}
         `,
@@ -129,6 +132,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'a-dep',
             template: 'a-dep',
+            standalone: false,
           })
           export class ADep {
             @Input()
@@ -167,6 +171,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[a-dep]',
+            standalone: false,
           })
           export class ADep {
             @Input()
@@ -185,6 +190,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'a-cmp',
             template: 'Does not use a-dep.',
+            standalone: false,
           })
           export class ACmp {}
         `,
@@ -211,6 +217,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'b-cmp',
             template: 'Does not use a-dep.',
+            standalone: false,
           })
           export class BCmp {}
         `,
@@ -241,6 +248,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[a-dep]',
+            standalone: false,
           })
           export class ADep {
             @Input()
@@ -277,6 +285,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[does-not-match]',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -289,6 +298,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -317,6 +327,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]', // selector changed to now match inside Cmp's template
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -349,6 +360,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -361,6 +373,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -389,6 +402,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[does-not-match]', // selector changed to no longer match Cmp's template
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -420,6 +434,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -432,6 +447,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -460,6 +476,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             @Input() input!: string; // adding this changes Dep's public API
@@ -494,6 +511,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             @Input() input!: string;
@@ -508,6 +526,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -536,6 +555,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             @Input('renamed') input!: string; // renaming this changes Dep's public API
@@ -570,6 +590,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             @Input() input!: string;
@@ -584,6 +605,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -612,6 +634,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             // Dep's input has been removed, which changes its public API
@@ -645,6 +668,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -657,6 +681,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -685,6 +710,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             @Output()
@@ -720,6 +746,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             @Output() output = new EventEmitter<string>();
@@ -734,6 +761,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -762,6 +790,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             @Output('renamed') output = new EventEmitter<string>(); // public API changed
@@ -796,6 +825,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             @Output() output = new EventEmitter<string>();
@@ -810,6 +840,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -838,6 +869,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             // Dep's output has been removed, which changes its public API
@@ -873,6 +905,7 @@ runInEachFileSystem(() => {
           @Directive({
             selector: '[dep]',
             exportAs: 'depExport1',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -885,6 +918,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -914,6 +948,7 @@ runInEachFileSystem(() => {
           @Directive({
             selector: '[dep]',
             exportAs: 'depExport2', // changing this changes Dep's public API
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -947,6 +982,7 @@ runInEachFileSystem(() => {
 
           @Pipe({
             name: 'pipeA',
+            standalone: false,
           })
           export class PipeA {
             transform(value: any): any { return value; }
@@ -954,6 +990,7 @@ runInEachFileSystem(() => {
 
           @Pipe({
             name: 'pipeB',
+            standalone: false,
           })
           export class PipeB {
             transform(value: any): any { return value; }
@@ -968,6 +1005,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '{{ value | pipeA }} {{ value | pipeB }}',
+            standalone: false,
           })
           export class Cmp {
             value!: string;
@@ -998,6 +1036,7 @@ runInEachFileSystem(() => {
 
           @Pipe({
             name: 'pipeB', // swapped with PipeB's selector
+            standalone: false,
           })
           export class PipeA {
             transform(value: any): any { return value; }
@@ -1005,6 +1044,7 @@ runInEachFileSystem(() => {
 
           @Pipe({
             name: 'pipeA', // swapped with PipeA's selector
+            standalone: false,
           })
           export class PipeB {
             transform(value: any): any { return value; }
@@ -1040,6 +1080,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             @Input() input!: string;
@@ -1054,6 +1095,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<div dep input="hello"></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -1082,6 +1124,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {
             @Input({required: true}) input!: string; // making this required changes the public API
@@ -1134,6 +1177,7 @@ runInEachFileSystem(() => {
 
              @Component({
                template: '<div external></div>',
+               standalone: false,
              })
              export class MyCmpA {}
            `,
@@ -1145,6 +1189,7 @@ runInEachFileSystem(() => {
 
              @Component({
                template: '<div external></div>',
+               standalone: false,
              })
              export class MyCmpB {}
            `,
@@ -1209,6 +1254,7 @@ runInEachFileSystem(() => {
 
           @Component({
             template: '<div external></div>',
+            standalone: false,
           })
           export class MyCmpA {}
         `,
@@ -1220,6 +1266,7 @@ runInEachFileSystem(() => {
 
           @Component({
             template: '<div external></div>',
+            standalone: false,
           })
           export class MyCmpB {}
         `,
@@ -1278,6 +1325,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<dep></dep>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -1290,6 +1338,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'dep',
             template: 'Dep',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -1318,6 +1367,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'dep',
             template: 'Dep',
+            standalone: false,
           })
           export class ChangedDep {} // Dep renamed to ChangedDep.
         `,
@@ -1363,12 +1413,14 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'dep',
             template: 'Dep',
+            standalone: false,
           })
           export class Dep {}
 
           @Component({
             selector: 'cmp',
             template: '<dep></dep>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -1412,6 +1464,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: '<dep></dep>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -1424,6 +1477,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'dep',
             template: 'Dep',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -1452,6 +1506,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'dep',
             template: 'Dep',
+            standalone: false,
           })
           class Dep {}
           export {Dep as ChangedDep}; // the export name of Dep is changed.
@@ -1500,6 +1555,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp-user',
             template: '<cmp-dep></cmp-dep>',
+            standalone: false,
           })
           export class CmpUser {}
         `,
@@ -1514,6 +1570,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp-dep',
             template: 'Dep',
+            standalone: false,
           })
           class CmpDep {}
         `,
@@ -1549,6 +1606,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp-dep',
             template: 'Dep',
+            standalone: false,
           })
           class CmpDep {}
         `,
@@ -1595,6 +1653,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp-user',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class CmpUser {}
         `,
@@ -1606,6 +1665,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -1633,6 +1693,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: '[dep]',
             template: 'Dep',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -1668,6 +1729,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp-user',
             template: '<dep>{{1 | dep}}</dep>',
+            standalone: false,
           })
           export class CmpUser {}
         `,
@@ -1679,11 +1741,13 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: 'dep',
+            standalone: false,
           })
           export class DepA {}
 
           @Pipe({
             name: 'dep',
+            standalone: false,
           })
           export class DepB {
             transform() {}
@@ -1716,6 +1780,7 @@ runInEachFileSystem(() => {
 
           @Pipe({
             name: 'dep',
+            standalone: false,
           })
           export class DepA {
             transform() {}
@@ -1723,6 +1788,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: 'dep',
+            standalone: false,
           })
           export class DepB {}
         `,
@@ -1757,6 +1823,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp-user',
             template: '<div dep></div>',
+            standalone: false,
           })
           export class CmpUser {}
         `,
@@ -1769,6 +1836,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: '[dep]',
             template: 'Dep',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -1796,6 +1864,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
+            standalone: false,
           })
           export class Dep {}
         `,
@@ -1836,6 +1905,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'cmp-a',
                templateUrl: './cmp-a-template.html',
+               standalone: false,
              })
              export class MyCmpA {}
            `,
@@ -1849,6 +1919,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'cmp-b',
                templateUrl: './cmp-b-template.html',
+               standalone: false,
              })
              export class MyCmpB {}
            `,
@@ -1897,6 +1968,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'cmp-a',
                templateUrl: './cmp-a-template.html',
+               standalone: false,
              })
              export class MyCmpA {}
            `,
@@ -1910,6 +1982,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'cmp-b',
                templateUrl: './cmp-b-template.html',
+               standalone: false,
              })
              export class MyCmpB {}
            `,
@@ -1968,6 +2041,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'cmp-a',
                templateUrl: './cmp-a-template.html',
+               standalone: false,
              })
              export class MyCmpA {}
            `,
@@ -1981,6 +2055,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'cmp-b',
                templateUrl: './cmp-b-template.html',
+               standalone: false,
              })
              export class MyCmpB {}
            `,
@@ -2038,6 +2113,7 @@ runInEachFileSystem(() => {
 
                @Directive({
                  selector: '[dir]',
+                 standalone: false,
                })
                export class Dir {}
            `,
@@ -2051,6 +2127,7 @@ runInEachFileSystem(() => {
                @Component({
                  selector: 'cmp-a',
                  templateUrl: './cmp-a-template.html',
+                 standalone: false,
                })
                export class MyCmpA {}
              `,
@@ -2064,6 +2141,7 @@ runInEachFileSystem(() => {
                @Component({
                  selector: 'cmp-b',
                  templateUrl: './cmp-b-template.html',
+                 standalone: false,
                })
                export class MyCmpB {}
              `,
@@ -2126,6 +2204,7 @@ runInEachFileSystem(() => {
            @Component({
              selector: 'cmp-a',
              templateUrl: './cmp-a-template.html',
+             standalone: false,
            })
            export class MyCmpA {}
          `,
@@ -2139,6 +2218,7 @@ runInEachFileSystem(() => {
            @Component({
              selector: 'cmp-b',
              templateUrl: './cmp-b-template.html',
+             standalone: false,
            })
            export class MyCmpB {}
          `,
@@ -2153,6 +2233,7 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'cmp-c',
           templateUrl: './cmp-c-template.html',
+          standalone: false,
         })
         export class MyCmpC {}
       `,
@@ -2219,6 +2300,7 @@ runInEachFileSystem(() => {
 
              @Directive({
                selector: '[dir]',
+               standalone: false,
              })
              export class Dir {}
            `,
@@ -2232,6 +2314,7 @@ runInEachFileSystem(() => {
              @Component({
                selector: 'test-cmp',
                template: '<div dir></div>',
+               standalone: false,
              })
              export class Cmp {}
            `,
@@ -2290,6 +2373,7 @@ runInEachFileSystem(() => {
 
             @Directive({
               selector: '[dir]',
+              standalone: false,
             })
             export class Dir {}
           `,
@@ -2303,6 +2387,7 @@ runInEachFileSystem(() => {
             @Component({
               selector: 'test-cmp',
               template: '<div dir></div>',
+              standalone: false,
             })
             export class Cmp {}
           `,
@@ -2363,6 +2448,7 @@ runInEachFileSystem(() => {
 
             @Directive({
               selector: '[dir]',
+              standalone: false,
             })
             export class Dir {}
           `,
@@ -2376,6 +2462,7 @@ runInEachFileSystem(() => {
             @Component({
               selector: 'test-cmp',
               template: '<div dir></div>',
+              standalone: false,
             })
             export class Cmp {}
           `,
@@ -2453,6 +2540,7 @@ runInEachFileSystem(() => {
 
             @Directive({
               selector: '[dir]',
+              standalone: false,
             })
             export class Dir {}
           `,
@@ -2466,6 +2554,7 @@ runInEachFileSystem(() => {
             @Component({
               selector: 'test-cmp',
               template: '<div dir></div>',
+              standalone: false,
             })
             export class Cmp {}
           `,
@@ -2544,6 +2633,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {}
         `,
@@ -2557,6 +2647,7 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'test-cmp',
             template: '<div></div>',
+            standalone: false,
           })
           export class Cmp {}
         `,
@@ -2624,6 +2715,7 @@ runInEachFileSystem(() => {
             @Component({
               selector: 'test-cmp',
               template: '<div dir></div>',
+              standalone: false,
             })
             export class Cmp {}
           `,
@@ -2668,6 +2760,7 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir]',
+            standalone: false,
           })
           export class Dir {}
         `,
@@ -2715,6 +2808,7 @@ runInEachFileSystem(() => {
 
         @Directive({
           selector: '[dir]',
+          standalone: false,
         })
         export class Dir {
           @Input()
@@ -2731,6 +2825,7 @@ runInEachFileSystem(() => {
         @Component({
           selector: 'test-cmp',
           template: '<div dir></div>',
+          standalone: false,
         })
         export class Cmp {}
       `,
@@ -2760,6 +2855,7 @@ runInEachFileSystem(() => {
 
       @Directive({
         selector: '[dir]',
+        standalone: false,
       })
       export class Dir {
         @Input()

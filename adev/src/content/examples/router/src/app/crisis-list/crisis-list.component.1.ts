@@ -6,5 +6,6 @@ import {Component} from '@angular/core';
   selector: 'app-crisis-list',
   templateUrl: './crisis-list.component.1.html',
   styleUrls: ['./crisis-list.component.1.css'],
+  standalone: false,
 })
 export class CrisisListComponent {}

@@ -13,7 +13,6 @@ import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'docs-breadcrumb',
-  standalone: true,
   imports: [RouterLink],
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],

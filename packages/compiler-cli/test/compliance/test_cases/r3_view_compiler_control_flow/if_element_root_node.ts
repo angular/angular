@@ -1,12 +1,14 @@
 import {Component, Directive, Input} from '@angular/core';
 
-@Directive({standalone: true, selector: '[binding]'})
+@Directive({
+    selector: '[binding]'
+})
 export class Binding {
   @Input() binding = 0;
 }
 
 @Component({
-  template: `
+    template: `
     @if (expr === 0) {
       <div foo="1" bar="2" [binding]="3">{{expr}}</div>
     } @else if (expr === 1) {
@@ -15,8 +17,7 @@ export class Binding {
       <div foo="7" bar="8" [binding]="9">{{expr}}</div>
     }
   `,
-  standalone: true,
-  imports: [Binding],
+    imports: [Binding]
 })
 export class MyApp {
   expr = 0;

@@ -6,7 +6,6 @@ import {CommonModule} from '@angular/common';
 import {QuestionBase} from './question-base';
 
 @Component({
-  standalone: true,
   selector: 'app-question',
   templateUrl: './dynamic-form-question.component.html',
   imports: [CommonModule, ReactiveFormsModule],

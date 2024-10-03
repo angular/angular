@@ -1,8 +1,7 @@
 import {Component, contentChild, contentChildren, viewChild, viewChildren} from '@angular/core';
 
 @Component({
-  standalone: true,
-  template: 'Works',
+    template: 'Works'
 })
 export class TestComp {
   query1 = viewChild('locatorA');

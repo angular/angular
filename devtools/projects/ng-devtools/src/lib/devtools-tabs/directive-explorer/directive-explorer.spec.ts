@@ -27,7 +27,6 @@ import {PropertyTabComponent} from './property-tab/property-tab.component';
 @Component({
   selector: 'ng-directive-forest',
   template: '',
-  standalone: true,
 })
 class MockDirectiveForestComponent {
   readonly forest = input<IndexedNode[]>([]);
@@ -44,7 +43,6 @@ class MockDirectiveForestComponent {
 @Component({
   selector: 'ng-breadcrumbs',
   template: '',
-  standalone: true,
 })
 class MockBreadcrumbsComponent {
   readonly parents = input<IndexedNode[]>([]);
@@ -56,7 +54,6 @@ class MockBreadcrumbsComponent {
 @Component({
   selector: 'ng-property-tab',
   template: '',
-  standalone: true,
 })
 class MockPropertyTabComponent {
   readonly currentSelectedElement = input<IndexedNode | null>(null);

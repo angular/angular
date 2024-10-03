@@ -5,5 +5,6 @@ import {Component} from '@angular/core';
   selector: 'app-manage-heroes',
   templateUrl: './manage-heroes.component.html',
   styleUrls: ['./manage-heroes.component.css'],
+  standalone: false,
 })
 export class ManageHeroesComponent {}

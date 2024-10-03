@@ -6,7 +6,6 @@ import {BannerComponent} from './banner/banner.component';
 import {WelcomeComponent} from './welcome/welcome.component';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   imports: [BannerComponent, WelcomeComponent, RouterOutlet, RouterLink],

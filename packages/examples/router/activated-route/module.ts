@@ -21,7 +21,7 @@ import {map} from 'rxjs/operators';
   // #enddocregion activated-route
   selector: 'example-app',
   template: '...',
-  // #docregion activated-route
+  standalone: false,
 })
 export class ActivatedRouteComponent {
   constructor(route: ActivatedRoute) {

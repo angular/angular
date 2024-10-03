@@ -6,7 +6,6 @@ import {AsyncPipe, NgFor, NgIf, UpperCasePipe} from '@angular/common';
 
 // #docregion example
 @Component({
-  standalone: true,
   selector: 'toh-heroes',
   templateUrl: './heroes.component.html',
   styleUrls: ['./heroes.component.css'],

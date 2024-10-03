@@ -87,6 +87,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
             trigger('c', [transition('* => 1', [animate(1000, style({opacity: 0}))])]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp0: any;
@@ -142,6 +143,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
             trigger('c', [transition('* => 1', [animate(1000, style({opacity: 0}))])]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp0: any;
@@ -214,6 +216,7 @@ import {HostListener} from '../../src/metadata/directives';
               transition('* => bar', [query('@bar', [animate(1000, style({color: 'blue'}))])]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp0: any;
@@ -280,6 +283,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -333,6 +337,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
             trigger('child', [transition('* => *', [])]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp0: any;
@@ -413,6 +418,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -527,6 +533,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -594,6 +601,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -643,6 +651,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -717,6 +726,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -760,6 +770,7 @@ import {HostListener} from '../../src/metadata/directives';
               transition('* => *', animate(500)),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -813,6 +824,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public items: any[] = [0, 1, 2];
@@ -869,6 +881,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           @ViewChild('container') public container: any;
@@ -917,6 +930,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -978,6 +992,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -1034,6 +1049,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public items: any[] | undefined;
@@ -1124,6 +1140,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -1194,6 +1211,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any = '';
@@ -1257,6 +1275,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any = '';
@@ -1327,6 +1346,7 @@ import {HostListener} from '../../src/metadata/directives';
               transition('* => off', []),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -1379,6 +1399,7 @@ import {HostListener} from '../../src/metadata/directives';
               transition('* => off', []),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -1439,6 +1460,7 @@ import {HostListener} from '../../src/metadata/directives';
               transition('* => off', []),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -1512,6 +1534,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -1567,6 +1590,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -1626,6 +1650,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class ParentCmp {
           public exp: any;
@@ -1640,6 +1665,7 @@ import {HostListener} from '../../src/metadata/directives';
               {{ item }}
             </div>
           `,
+          standalone: false,
         })
         class ChildCmp {
           public items: any[] = [];
@@ -1675,6 +1701,7 @@ import {HostListener} from '../../src/metadata/directives';
               transition('* => on', [query(':leave', [animate(1000, style({opacity: 0}))])]),
             ]),
           ],
+          standalone: false,
         })
         class ParentCmp {
           public exp: any;
@@ -1689,6 +1716,7 @@ import {HostListener} from '../../src/metadata/directives';
               {{ item }}
             </div>
           `,
+          standalone: false,
         })
         class ChildCmp {
           public items: any[] = [];
@@ -1733,6 +1761,7 @@ import {HostListener} from '../../src/metadata/directives';
                 ]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             public exp: any;
@@ -1773,6 +1802,7 @@ import {HostListener} from '../../src/metadata/directives';
                 ]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             public exp: any;
@@ -1821,6 +1851,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -1910,6 +1941,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -1990,6 +2022,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: any;
@@ -2043,6 +2076,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -2105,6 +2139,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -2169,6 +2204,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -2229,6 +2265,7 @@ import {HostListener} from '../../src/metadata/directives';
               transition('* => go', [style({opacity: 0}), animate(1800, style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -2280,6 +2317,7 @@ import {HostListener} from '../../src/metadata/directives';
             trigger('leave', [transition(':leave', [animate(1000, style({color: 'gold'}))])]),
             trigger('parent', [transition(':leave', [query(':leave', animateChild())])]),
           ],
+          standalone: false,
         })
         class ParentCmp {
           public exp: boolean = true;
@@ -2300,6 +2338,7 @@ import {HostListener} from '../../src/metadata/directives';
           animations: [
             trigger('child', [transition(':leave', [animate(1000, style({color: 'gold'}))])]),
           ],
+          standalone: false,
         })
         class ChildCmp {
           public childEvent: any;
@@ -2343,6 +2382,7 @@ import {HostListener} from '../../src/metadata/directives';
           animations: [
             trigger('myAnimation', [transition(':leave', [query('@*', animateChild())])]),
           ],
+          standalone: false,
         })
         class ParentCmp {
           public exp: boolean = true;
@@ -2360,6 +2400,7 @@ import {HostListener} from '../../src/metadata/directives';
               transition(':leave', [style({opacity: 0}), animate('1s', style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class ChildCmp {}
 
@@ -2408,6 +2449,7 @@ import {HostListener} from '../../src/metadata/directives';
           animations: [
             trigger('myAnimation', [transition(':leave', [query('@*', animateChild())])]),
           ],
+          standalone: false,
         })
         class ParentCmp {
           public exp: boolean = true;
@@ -2418,6 +2460,7 @@ import {HostListener} from '../../src/metadata/directives';
           template: `
                <nested-child-cmp></nested-child-cmp>
              `,
+          standalone: false,
         })
         class ChildCmp {}
 
@@ -2433,6 +2476,7 @@ import {HostListener} from '../../src/metadata/directives';
               transition(':leave', [style({opacity: 0}), animate('1s', style({opacity: 1}))]),
             ]),
           ],
+          standalone: false,
         })
         class NestedChildCmp {}
 
@@ -2489,6 +2533,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp: boolean = true;
@@ -2539,6 +2584,7 @@ import {HostListener} from '../../src/metadata/directives';
               </div>
             </section>
           `,
+          standalone: false,
         })
         class Cmp {
           public exp: boolean | undefined;
@@ -2606,6 +2652,7 @@ import {HostListener} from '../../src/metadata/directives';
               </section>
             </div>
           `,
+          standalone: false,
         })
         class Cmp {
           get title() {
@@ -2708,6 +2755,7 @@ import {HostListener} from '../../src/metadata/directives';
               <div data-name="c3" @childWithAnimation (@childWithAnimation.start)="callback($event)" (@childWithAnimation.done)="callback($event)"></div>
             </div>
           `,
+          standalone: false,
         })
         class Cmp {
           public exp: boolean | undefined;
@@ -2750,6 +2798,7 @@ import {HostListener} from '../../src/metadata/directives';
             trigger('parent', [transition('* => *', [animate(1000, style({opacity: 0}))])]),
           ],
           template: '<div [@parent]="exp"><child-cmp #child></child-cmp></div>',
+          standalone: false,
         })
         class ParentCmp {
           public exp: any;
@@ -2763,6 +2812,7 @@ import {HostListener} from '../../src/metadata/directives';
             trigger('child', [transition('* => *', [animate(1000, style({color: 'red'}))])]),
           ],
           template: '<div [@child]="exp"></div>',
+          standalone: false,
         })
         class ChildCmp {
           public exp: any;
@@ -2812,6 +2862,7 @@ import {HostListener} from '../../src/metadata/directives';
                  <child-cmp #child></child-cmp>
             </div>
           `,
+          standalone: false,
         })
         class ParentCmp {
           @ViewChild('child') public childCmp: any;
@@ -2840,6 +2891,7 @@ import {HostListener} from '../../src/metadata/directives';
                  (@child.start)="track($event)"
                  (@child.done)="track($event)"></div>
           `,
+          standalone: false,
         })
         class ChildCmp {
           public exp: any;
@@ -2924,6 +2976,7 @@ import {HostListener} from '../../src/metadata/directives';
                       [@child2]="child2Exp" (@child2.start)="track($event)"></div>
                </div>
           `,
+          standalone: false,
         })
         class Cmp {
           public parent1Exp = '';
@@ -2974,6 +3027,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           template: '<div [@parent]="exp"><child-cmp #child></child-cmp></div>',
+          standalone: false,
         })
         class ParentCmp {
           public exp: any;
@@ -2989,6 +3043,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           template: '<div [@child]="exp" class="child"></div>',
+          standalone: false,
         })
         class ChildCmp {
           public exp: any;
@@ -3045,6 +3100,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           template: '<div [@parentAnimation]="exp"><child-cmp #child></child-cmp></div>',
+          standalone: false,
         })
         class ParentCmp {
           public exp: any;
@@ -3055,6 +3111,7 @@ import {HostListener} from '../../src/metadata/directives';
         @Component({
           selector: 'child-cmp',
           template: '<grandchild-cmp #grandchild></grandchild-cmp>',
+          standalone: false,
         })
         class ChildCmp {
           @ViewChild('grandchild') public innerCmp: any;
@@ -3071,6 +3128,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           template: '<div [@grandChildAnimation]="exp"></div>',
+          standalone: false,
         })
         class GrandChildCmp {
           public exp: any;
@@ -3155,6 +3213,7 @@ import {HostListener} from '../../src/metadata/directives';
                  </div>
                </div>
              `,
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -3217,6 +3276,7 @@ import {HostListener} from '../../src/metadata/directives';
                  </div>
                </div>
              `,
+          standalone: false,
         })
         class Cmp {
           public exp1: any;
@@ -3271,6 +3331,7 @@ import {HostListener} from '../../src/metadata/directives';
               ),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public childPresent = true;
@@ -3319,6 +3380,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp = true;
@@ -3378,6 +3440,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           public exp = false;
@@ -3436,6 +3499,7 @@ import {HostListener} from '../../src/metadata/directives';
                 ]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             exp: any = '';
@@ -3483,6 +3547,7 @@ import {HostListener} from '../../src/metadata/directives';
                 transition('* => go', [animate(500, style({opacity: 0}))]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             exp: any = '';
@@ -3534,6 +3599,7 @@ import {HostListener} from '../../src/metadata/directives';
                 transition('* => go', [animate(500, style({opacity: 0}))]),
               ]),
             ],
+            standalone: false,
           })
           class Cmp {
             exp: any = '';

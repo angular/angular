@@ -24,7 +24,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <i>Hello {{ name }}!</i>
     </b>
     {{ myRef.id }}
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -76,7 +77,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div ngNonBindable>
     <input value="one" #myInput> {{ myInput.value }}
     </div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -128,7 +130,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div ngNonBindable>
       <div [id]="my-id" (click)="onclick"></div>
     </div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -176,7 +179,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-app',
                     template: `
     <div ngNonBindable></div>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {

@@ -13,7 +13,9 @@ import {Router, provideRouter} from '@angular/router';
 import {Title} from '@angular/platform-browser';
 import {Component} from '@angular/core';
 
-@Component({})
+@Component({
+  standalone: false,
+})
 class FakeComponent {}
 
 describe('ADevTitleStrategy', () => {

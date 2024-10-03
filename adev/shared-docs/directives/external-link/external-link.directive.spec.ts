@@ -72,6 +72,5 @@ describe('ExternalLink', () => {
     ></a>
   `,
   imports: [ExternalLink, RouterLink],
-  standalone: true,
 })
 class ExampleComponentWithLinks {}

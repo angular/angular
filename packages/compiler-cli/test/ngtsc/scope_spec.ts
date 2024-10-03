@@ -85,7 +85,10 @@ runInEachFileSystem(() => {
             `
             import {Directive, NgModule} from '@angular/core';
 
-            @Directive({selector: '[test]'})
+            @Directive({
+              selector: '[test]',
+              standalone: false,
+            })
             export class TestDir {}
 
             @NgModule({
@@ -121,7 +124,10 @@ runInEachFileSystem(() => {
             `
             import {Directive, NgModule} from '@angular/core';
 
-            @Directive({selector: '[test]'})
+            @Directive({
+              selector: '[test]',
+              standalone: false,
+            })
             export class TestDir {}
 
 
@@ -142,7 +148,10 @@ runInEachFileSystem(() => {
             `
               import {Directive, NgModule} from '@angular/core';
 
-              @Directive({selector: '[test]'})
+              @Directive({
+                selector: '[test]',
+                standalone: false,
+              })
               export class TestDir {}
 
               @NgModule({

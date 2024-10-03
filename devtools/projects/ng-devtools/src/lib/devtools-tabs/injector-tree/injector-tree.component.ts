@@ -48,7 +48,6 @@ import {
 } from './injector-tree-fns';
 
 @Component({
-  standalone: true,
   selector: 'ng-injector-tree',
   imports: [
     MatButton,

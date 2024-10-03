@@ -27,7 +27,6 @@ export interface DialogData {
 @Component({
   selector: 'app-dialog',
   templateUrl: 'dialog.component.html',
-  standalone: true,
   imports: [
     MatDialogTitle,
     MatDialogContent,

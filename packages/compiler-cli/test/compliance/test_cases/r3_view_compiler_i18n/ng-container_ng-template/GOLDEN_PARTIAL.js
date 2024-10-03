@@ -10,7 +10,10 @@ UppercasePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 UppercasePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, name: "uppercase" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'uppercase' }]
+            args: [{
+                    name: 'uppercase',
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
     constructor() {
@@ -28,6 +31,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <ng-container i18n>Some content: {{ valueA | uppercase }}</ng-container>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -78,6 +82,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <ng-template i18n>Some content: {{ valueA | uppercase }}</ng-template>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -116,7 +121,10 @@ UppercasePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 UppercasePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, name: "uppercase" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'uppercase' }]
+            args: [{
+                    name: 'uppercase',
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
     constructor() {
@@ -141,6 +149,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <ng-container>Container content: {{ valueB | uppercase }}</ng-container>
   </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -197,6 +206,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <ng-template>{gender, select, male {male} female {female} other {other}}</ng-template>
   <ng-container>{age, select, 10 {ten} 20 {twenty} other {other}}</ng-container>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -262,6 +272,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     </ng-template>
   </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -311,6 +322,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <ng-container i18n>{gender, select, male {male} female {female} other {other}}</ng-container>
   <ng-template i18n>{age, select, 10 {ten} 20 {twenty} other {other}}</ng-template>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -366,6 +378,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <img src="logo.png" title="Logo" /> is my logo #2
   </ng-template>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -412,6 +425,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div i18n>Test</div>
   <div i18n>Test</div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -460,6 +474,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     Hello <ng-container>there</ng-container>
   </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -508,6 +523,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     Hello <ng-container>there <strong>!</strong></ng-container>
   </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -554,6 +570,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <ng-template *ngIf="someFlag" i18n>Content A</ng-template>
   <ng-container *ngIf="someFlag" i18n>Content B</ng-container>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -614,6 +631,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <img *ngIf="someOtherFlag" />
   </div>
 `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -660,7 +678,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    standalone: true,
                     template: `
   <div i18n>
     <ng-template>Content A</ng-template>
@@ -668,7 +685,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
   <div i18n>
     <ng-template>Content B</ng-template>
   </div>
-`,
+`
                 }]
         }] });
 

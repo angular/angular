@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     {{message}}
     @defer (on interaction(button); prefetch on interaction(button)) {
       Main
@@ -13,6 +13,7 @@ import {Component} from '@angular/core';
       </div>
     }
   `,
+    standalone: false
 })
 export class MyApp {
   message = 'hello';

@@ -9,7 +9,6 @@ import {catchError, startWith} from 'rxjs/operators';
 import {TwainService} from './twain.service';
 
 @Component({
-  standalone: true,
   selector: 'twain-quote',
   // #docregion template
   template: ` <p class="twain">

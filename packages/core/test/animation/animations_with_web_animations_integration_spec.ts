@@ -50,6 +50,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
             transition('* => *', animate(1000)),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         public exp: boolean = false;
@@ -120,6 +121,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
             transition(':enter', [style({height: '!'}), animate(1000, style({height: '120px'}))]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         public exp: boolean = false;
@@ -167,6 +169,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
             transition('* => *', [style({height: '!'}), animate(1000, style({height: '*'}))]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         public exp!: number;
@@ -253,6 +256,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
             transition('* => *', animate('500ms')),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         exp = false;
@@ -338,6 +342,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
             ]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         items: any[] = [];
@@ -430,6 +435,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
             transition('* => b', [animate('1s', style({opacity: 0}))]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         public exp: string | undefined;
@@ -484,6 +490,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
             transition('* => empty', [query('.target', [animate('1s', style({opacity: 0}))])]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         public exp: string | undefined;
@@ -548,6 +555,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
             ]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         @ViewChild('elm', {static: true}) public element: any;
@@ -591,6 +599,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
             transition('* => go', [animate('1s')]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         @ViewChild('elm', {static: true}) public element: any;
@@ -656,6 +665,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
             ]),
           ]),
         ],
+        standalone: false,
       })
       class Cmp {
         public status: 'active' | 'inactive' = 'inactive';

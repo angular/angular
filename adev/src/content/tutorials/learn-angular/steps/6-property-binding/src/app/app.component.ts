@@ -6,6 +6,5 @@ import {Component} from '@angular/core';
   template: `
     <div contentEditable="false"></div>
   `,
-  standalone: true,
 })
 export class AppComponent {}

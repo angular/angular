@@ -136,8 +136,7 @@ class TodoStore {
     </footer>
   </section>
   `,
-  // TODO(misko): switch over to OnPush
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  standalone: false,
 })
 class ToDoAppComponent {
   newTodoText = '';

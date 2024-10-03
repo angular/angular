@@ -42,6 +42,7 @@ import {BrowserModule} from '@angular/platform-browser';
       ></ng-template>
     </div>
   `,
+  standalone: false,
 })
 export class StylingComponent {
   data: number[] = [];

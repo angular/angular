@@ -1,9 +1,8 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  standalone: true,
-  template: '<ng-template let-a [ngIf]="true">{{this.a}}</ng-template>',
+    selector: 'my-component',
+    template: '<ng-template let-a [ngIf]="true">{{this.a}}</ng-template>'
 })
 export class MyComponent {
   p1!: any;

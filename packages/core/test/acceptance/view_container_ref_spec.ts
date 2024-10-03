@@ -103,6 +103,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'view-insertion-test-cmpt',
         template: `<div>before<ng-template constructorDir><span>|middle|</span></ng-template>after</div>`,
+        standalone: false,
       })
       class ViewInsertionTestCmpt {}
 
@@ -113,13 +114,17 @@ describe('ViewContainerRef', () => {
     });
 
     it('should use comment node of host ng-container as insertion marker', () => {
-      @Component({template: 'hello'})
+      @Component({
+        template: 'hello',
+        standalone: false,
+      })
       class HelloComp {}
 
       @Component({
         template: `
           <ng-container vcref></ng-container>
         `,
+        standalone: false,
       })
       class TestComp {
         @ViewChild(VCRefDirective, {static: true}) vcRefDir!: VCRefDirective;
@@ -156,13 +161,18 @@ describe('ViewContainerRef', () => {
     });
 
     it('should support attribute selectors in dynamically created components', () => {
-      @Component({selector: '[hello]', template: 'Hello'})
+      @Component({
+        selector: '[hello]',
+        template: 'Hello',
+        standalone: false,
+      })
       class HelloComp {}
 
       @Component({
         template: `
           <ng-container #container></ng-container>
         `,
+        standalone: false,
       })
       class TestComp {
         @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
@@ -187,6 +197,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'dynamic-cmpt-with-view-queries',
         template: `<div #foo></div>`,
+        standalone: false,
       })
       class DynamicCompWithViewQueries {
         @ViewChildren('foo') fooList!: QueryList<ElementRef>;
@@ -195,6 +206,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'test-cmp',
         template: ``,
+        standalone: false,
       })
       class TestCmp {
         constructor(readonly vcRf: ViewContainerRef) {}
@@ -214,12 +226,14 @@ describe('ViewContainerRef', () => {
           @Component({
             selector: svgSelector,
             template: '<svg><g></g></svg>',
+            standalone: false,
           })
           class SvgComp {}
 
           @Component({
             selector: mathMLSelector,
             template: '<math><matrix></matrix></math>',
+            standalone: false,
           })
           class MathMLComp {}
 
@@ -228,6 +242,7 @@ describe('ViewContainerRef', () => {
               <ng-container #svg></ng-container>
               <ng-container #mathml></ng-container>
             `,
+            standalone: false,
           })
           class TestComp {
             @ViewChild('svg', {read: ViewContainerRef}) svgVCRef!: ViewContainerRef;
@@ -276,6 +291,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: '[attr-a=a].class-a:not(.class-b):not([attr-b=b]).class-c[attr-c]',
         template: 'Hello',
+        standalone: false,
       })
       class HelloComp {}
 
@@ -286,6 +302,7 @@ describe('ViewContainerRef', () => {
             <ng-container #container></ng-container>
           </div>
         `,
+        standalone: false,
       })
       class TestComp {
         @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
@@ -405,6 +422,7 @@ describe('ViewContainerRef', () => {
           <ng-template #t>content</ng-template>
           before|<ng-template #c1></ng-template>|middle|<ng-template #c2></ng-template>|after
         `,
+        standalone: false,
       })
       class TestComponent {
         @ViewChild('t', {static: true}) t!: TemplateRef<{}>;
@@ -436,6 +454,7 @@ describe('ViewContainerRef', () => {
     it('should add embedded views at the right position in the DOM tree (ng-template next to other ng-template)', () => {
       @Component({
         template: `before|<ng-template #a>A</ng-template><ng-template #b>B</ng-template>|after`,
+        standalone: false,
       })
       class TestCmp {
         @ViewChild('a', {static: true}) ta!: TemplateRef<{}>;
@@ -780,6 +799,7 @@ describe('ViewContainerRef', () => {
           <ng-template vcref let-name>{{name}}</ng-template>
           <footer></footer>
         `,
+        standalone: false,
       })
       class TestComponent {
         @ViewChild(VCRefDirective, {static: true}) vcRefDir!: VCRefDirective;
@@ -809,6 +829,7 @@ describe('ViewContainerRef', () => {
           <header vcref></header>
           <footer></footer>
         `,
+        standalone: false,
       })
       class TestComponent {
         @ViewChild(VCRefDirective, {static: true}) vcRefDir!: VCRefDirective;
@@ -824,7 +845,11 @@ describe('ViewContainerRef', () => {
     });
 
     it('should work on components', () => {
-      @Component({selector: 'header-cmp', template: ``})
+      @Component({
+        selector: 'header-cmp',
+        template: ``,
+        standalone: false,
+      })
       class HeaderCmp {}
 
       @Component({
@@ -832,6 +857,7 @@ describe('ViewContainerRef', () => {
           <header-cmp vcref></header-cmp>
           <footer></footer>
         `,
+        standalone: false,
       })
       class TestComponent {
         @ViewChild(VCRefDirective, {static: true}) vcRefDir!: VCRefDirective;
@@ -911,10 +937,16 @@ describe('ViewContainerRef', () => {
     });
 
     it('should not throw when destroying a detached component view', () => {
-      @Component({selector: 'dynamic-cmp'})
+      @Component({
+        selector: 'dynamic-cmp',
+        standalone: false,
+      })
       class DynamicCmp {}
 
-      @Component({selector: 'test-cmp'})
+      @Component({
+        selector: 'test-cmp',
+        standalone: false,
+      })
       class TestCmp {
         constructor(public vcRef: ViewContainerRef) {}
       }
@@ -1037,6 +1069,7 @@ describe('ViewContainerRef', () => {
               I am child template
           </ng-template>
         `,
+        standalone: false,
       })
       class AppComponent {
         visible = true;
@@ -1052,7 +1085,10 @@ describe('ViewContainerRef', () => {
         }
       }
 
-      @Directive({selector: '[template]'})
+      @Directive({
+        selector: '[template]',
+        standalone: false,
+      })
       class TemplateDirective<C> implements OnInit, OnDestroy {
         @Input() template!: TemplateRef<C>;
         ref!: EmbeddedViewRef<C>;
@@ -1089,6 +1125,7 @@ describe('ViewContainerRef', () => {
         <header vcref [tplRef]="tplRef"></header>
         <footer></footer>
       `,
+        standalone: false,
       })
       class TestComponent {}
 
@@ -1128,7 +1165,11 @@ describe('ViewContainerRef', () => {
     });
 
     it('should work on components', () => {
-      @Component({selector: 'header-cmp', template: ``})
+      @Component({
+        selector: 'header-cmp',
+        template: ``,
+        standalone: false,
+      })
       class HeaderComponent {}
 
       @Component({
@@ -1137,6 +1178,7 @@ describe('ViewContainerRef', () => {
           <header-cmp vcref [tplRef]="tplRef"></header-cmp>
           <footer></footer>
           `,
+        standalone: false,
       })
       class TestComponent {}
 
@@ -1183,6 +1225,7 @@ describe('ViewContainerRef', () => {
           <div vcref [tplRef]="tplRef"></div>
           <div vcref [tplRef]="tplRef"></div>
         `,
+        standalone: false,
       })
       class TestComponent {}
 
@@ -1211,6 +1254,7 @@ describe('ViewContainerRef', () => {
           <ng-template vcref #tplRef [tplRef]="tplRef" let-name>{{name}}</ng-template>
           <footer></footer>
         `,
+        standalone: false,
       })
       class TestComponent {
         @ViewChild(VCRefDirective, {static: true}) vcRef!: VCRefDirective;
@@ -1240,12 +1284,19 @@ describe('ViewContainerRef', () => {
     });
 
     it('should apply directives and pipes of the host view to the TemplateRef', () => {
-      @Component({selector: 'child', template: `{{name}}`})
+      @Component({
+        selector: 'child',
+        template: `{{name}}`,
+        standalone: false,
+      })
       class Child {
         @Input() name: string | undefined;
       }
 
-      @Pipe({name: 'starPipe'})
+      @Pipe({
+        name: 'starPipe',
+        standalone: false,
+      })
       class StarPipe implements PipeTransform {
         transform(value: any) {
           return `**${value}**`;
@@ -1260,6 +1311,7 @@ describe('ViewContainerRef', () => {
             <child vcref [tplRef]="foo" [name]="'A' | starPipe"></child>
             <child [name]="'B' | starPipe"></child>
           `,
+        standalone: false,
       })
       class SomeComponent {}
 
@@ -1288,7 +1340,11 @@ describe('ViewContainerRef', () => {
     beforeEach(() => (templateExecutionCounter = 0));
 
     it('should work without Injector and NgModuleRef', () => {
-      @Component({selector: 'embedded-cmp', template: `foo`})
+      @Component({
+        selector: 'embedded-cmp',
+        template: `foo`,
+        standalone: false,
+      })
       class EmbeddedComponent implements DoCheck, OnInit {
         ngOnInit() {
           templateExecutionCounter++;
@@ -1335,6 +1391,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'embedded-cmp',
         template: `foo`,
+        standalone: false,
       })
       class EmbeddedComponent implements DoCheck, OnInit {
         constructor(public s: String) {}
@@ -1441,6 +1498,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'reprojector',
         template: `<embedded-cmp-with-ngcontent><ng-content></ng-content></embedded-cmp-with-ngcontent>`,
+        standalone: false,
       })
       class Reprojector {}
 
@@ -1501,7 +1559,10 @@ describe('ViewContainerRef', () => {
     });
 
     it('should not throw when calling destroy() multiple times for a ComponentRef', () => {
-      @Component({template: ''})
+      @Component({
+        template: '',
+        standalone: false,
+      })
       class App {}
 
       TestBed.configureTestingModule({declarations: [App]});
@@ -1519,12 +1580,17 @@ describe('ViewContainerRef', () => {
           <!-- Note that it's important for the test that the <svg> element is last. -->
           <svg></svg>
         `,
+        standalone: false,
       })
       class TestComp {
         constructor(public viewContainerRef: ViewContainerRef) {}
       }
 
-      @Component({selector: 'dynamic-comp', template: ''})
+      @Component({
+        selector: 'dynamic-comp',
+        template: '',
+        standalone: false,
+      })
       class DynamicComponent {}
 
       TestBed.configureTestingModule({declarations: [DynamicComponent]});
@@ -1545,12 +1611,14 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'child',
         template: `Child Component`,
+        standalone: false,
       })
       class Child {}
 
       @Component({
         selector: 'comp',
         template: '<ng-template #ref></ng-template>',
+        standalone: false,
       })
       class Comp {
         @ViewChild('ref', {read: ViewContainerRef, static: true})
@@ -1573,7 +1641,11 @@ describe('ViewContainerRef', () => {
     });
 
     it('should return ComponentRef with ChangeDetectorRef attached to root view', () => {
-      @Component({selector: 'dynamic-cmp', template: ``})
+      @Component({
+        selector: 'dynamic-cmp',
+        template: ``,
+        standalone: false,
+      })
       class DynamicCmp {
         doCheckCount = 0;
 
@@ -1582,7 +1654,10 @@ describe('ViewContainerRef', () => {
         }
       }
 
-      @Component({template: ``})
+      @Component({
+        template: ``,
+        standalone: false,
+      })
       class TestCmp {
         constructor(public viewContainerRef: ViewContainerRef) {}
       }
@@ -1616,6 +1691,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'child-a',
         template: `[Child Component A]`,
+        standalone: false,
       })
       class ChildA {}
 
@@ -1627,6 +1703,7 @@ describe('ViewContainerRef', () => {
           {{ tokenA }}
           {{ tokenB }}
         `,
+        standalone: false,
       })
       class ChildB {
         constructor(
@@ -1645,6 +1722,7 @@ describe('ViewContainerRef', () => {
         selector: 'app',
         template: '',
         providers: [{provide: TOKEN_B, useValue: '[TokenB - Value]'}],
+        standalone: false,
       })
       class App {
         constructor(
@@ -1750,7 +1828,10 @@ describe('ViewContainerRef', () => {
   });
 
   describe('insertion points and declaration points', () => {
-    @Directive({selector: '[tplDir]'})
+    @Directive({
+      selector: '[tplDir]',
+      standalone: false,
+    })
     class InsertionDir {
       @Input()
       set tplDir(tpl: TemplateRef<any> | null) {
@@ -1762,7 +1843,11 @@ describe('ViewContainerRef', () => {
 
     // see running stackblitz example: https://stackblitz.com/edit/angular-w3myy6
     it('should work with a template declared in a different component view from insertion', () => {
-      @Component({selector: 'child', template: `<div [tplDir]="tpl">{{name}}</div>`})
+      @Component({
+        selector: 'child',
+        template: `<div [tplDir]="tpl">{{name}}</div>`,
+        standalone: false,
+      })
       class Child {
         @Input() tpl: TemplateRef<any> | null = null;
         name = 'Child';
@@ -1776,6 +1861,7 @@ describe('ViewContainerRef', () => {
 
           <child [tpl]="foo"></child>
         `,
+        standalone: false,
       })
       class Parent {
         name = 'Parent';
@@ -1805,6 +1891,7 @@ describe('ViewContainerRef', () => {
           <ng-template ngFor [ngForOf]="rows" [ngForTemplate]="tpl">
           </ng-template>
         `,
+        standalone: false,
       })
       class LoopComp {
         @Input() tpl!: TemplateRef<any>;
@@ -1824,6 +1911,7 @@ describe('ViewContainerRef', () => {
 
           <loop-comp [tpl]="rowTemplate" [rows]="rows"></loop-comp>
         `,
+        standalone: false,
       })
       class Parent {
         name = 'Parent';
@@ -1864,6 +1952,7 @@ describe('ViewContainerRef', () => {
         template: `
           <ng-container *ngFor="let item of items">|{{ item }}|</ng-container>
         `,
+        standalone: false,
       })
       class App {
         items = ['one', 'two', 'three'];
@@ -1900,6 +1989,7 @@ describe('ViewContainerRef', () => {
                 <ng-container *ngFor="let item of items">|{{ item }}|</ng-container>
               </ng-container>
             `,
+        standalone: false,
       })
       class App {
         items = ['one', 'two', 'three'];
@@ -1934,6 +2024,7 @@ describe('ViewContainerRef', () => {
         template: `
             <ng-container *ngFor="let item of items"><ng-container>|{{ item }}|</ng-container></ng-container>
           `,
+        standalone: false,
       })
       class App {
         items = ['one', 'two', 'three'];
@@ -1970,6 +2061,7 @@ describe('ViewContainerRef', () => {
               <ng-container *ngFor="let item of items"><ng-container>|{{ item }}|</ng-container></ng-container>
             </ng-container>
           `,
+        standalone: false,
       })
       class App {
         items = ['one', 'two', 'three'];
@@ -2004,6 +2096,7 @@ describe('ViewContainerRef', () => {
         template: `
           <ng-container *ngFor="let item of items">{count, select, other {|{{ item }}|}}</ng-container>
         `,
+        standalone: false,
       })
       class App {
         items = ['one', 'two', 'three'];
@@ -2038,7 +2131,11 @@ describe('ViewContainerRef', () => {
     // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
     const log: string[] = [];
 
-    @Component({selector: 'hooks', template: `{{name}}`})
+    @Component({
+      selector: 'hooks',
+      template: `{{name}}`,
+      standalone: false,
+    })
     class ComponentWithHooks {
       @Input() name: string | undefined;
 
@@ -2084,6 +2181,7 @@ describe('ViewContainerRef', () => {
           <hooks vcref [tplRef]="foo" [name]="'A'"></hooks>
           <hooks [name]="'B'"></hooks>
         `,
+        standalone: false,
       })
       class SomeComponent {}
 
@@ -2215,6 +2313,7 @@ describe('ViewContainerRef', () => {
           <hooks vcref [name]="'A'"></hooks>
           <hooks [name]="'B'"></hooks>
         `,
+        standalone: false,
       })
       class SomeComponent {}
 
@@ -2347,12 +2446,16 @@ describe('ViewContainerRef', () => {
         selector: 'host-bindings',
         host: {'id': 'attribute', '[title]': 'title'},
         template: ``,
+        standalone: false,
       })
       class HostBindingCmpt {
         title = 'initial';
       }
 
-      @Component({template: `<ng-template vcref></ng-template>`})
+      @Component({
+        template: `<ng-template vcref></ng-template>`,
+        standalone: false,
+      })
       class TestComponent {
         @ViewChild(VCRefDirective, {static: true}) vcRefDir!: VCRefDirective;
       }
@@ -2384,7 +2487,11 @@ describe('ViewContainerRef', () => {
 
   describe('projection', () => {
     it('should project the ViewContainerRef content along its host, in an element', () => {
-      @Component({selector: 'child', template: '<div><ng-content></ng-content></div>'})
+      @Component({
+        selector: 'child',
+        template: '<div><ng-content></ng-content></div>',
+        standalone: false,
+      })
       class Child {}
 
       @Component({
@@ -2397,6 +2504,7 @@ describe('ViewContainerRef', () => {
           <child>
             <header vcref [tplRef]="foo" [name]="name">blah</header>
           </child>`,
+        standalone: false,
       })
       class Parent {
         name: string = 'bar';
@@ -2424,6 +2532,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'child-with-view',
         template: `Before (inside)-<ng-content *ngIf="show"></ng-content>-After (inside)`,
+        standalone: false,
       })
       class ChildWithView {
         show: boolean = true;
@@ -2440,6 +2549,7 @@ describe('ViewContainerRef', () => {
             <header vcref [tplRef]="foo" [name]="name">blah</header>
             After projected
           </child-with-view>`,
+        standalone: false,
       })
       class Parent {
         name: string = 'bar';
@@ -2468,6 +2578,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'root-comp',
         template: `<ng-template [ngIf]="show"><ng-content></ng-content></ng-template>`,
+        standalone: false,
       })
       class RootComp {
         @Input() show: boolean = true;
@@ -2476,6 +2587,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'my-app',
         template: `<root-comp [show]="show"><ng-content></ng-content><div></div></root-comp>`,
+        standalone: false,
       })
       class MyApp {
         show = true;
@@ -2497,6 +2609,7 @@ describe('ViewContainerRef', () => {
         template: `
           <p class="a"><ng-content select="header"></ng-content></p>
           <p class="b"><ng-content></ng-content></p>`,
+        standalone: false,
       })
       class ChildWithSelector {}
 
@@ -2511,6 +2624,7 @@ describe('ViewContainerRef', () => {
               <header vcref [tplRef]="foo" [name]="name">blah</header>
             </child-with-selector>
           `,
+          standalone: false,
         })
         class Parent {
           name: string = 'bar';
@@ -2539,6 +2653,7 @@ describe('ViewContainerRef', () => {
         @Component({
           selector: 'content-comp',
           template: '<ng-content></ng-content>',
+          standalone: false,
         })
         class ContentComp {}
 
@@ -2551,6 +2666,7 @@ describe('ViewContainerRef', () => {
 
           <ng-template #source>My Content</ng-template>
         `,
+          standalone: false,
         })
         class MyComp {
           @ViewChild('source', {static: true}) source!: TemplateRef<{}>;
@@ -2579,6 +2695,7 @@ describe('ViewContainerRef', () => {
               <footer vcref [tplRef]="foo" [name]="name">blah</footer>
             </child-with-selector>
           `,
+          standalone: false,
         })
         class Parent {
           name: string = 'bar';
@@ -2641,6 +2758,7 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'dynamic-cmpt-with-bindings',
         template: `check count: {{checkCount}}`,
+        standalone: false,
       })
       class DynamicCompWithBindings implements DoCheck {
         checkCount = 0;
@@ -2650,7 +2768,10 @@ describe('ViewContainerRef', () => {
         }
       }
 
-      @Component({template: ``})
+      @Component({
+        template: ``,
+        standalone: false,
+      })
       class TestComp {
         constructor(public vcRef: ViewContainerRef) {}
       }
@@ -2681,17 +2802,28 @@ describe('ViewContainerRef', () => {
     });
 
     it('should create deep DOM tree immediately for dynamically created components', () => {
-      @Component({template: ``})
+      @Component({
+        template: ``,
+        standalone: false,
+      })
       class TestComp {
         constructor(public vcRef: ViewContainerRef) {}
       }
 
-      @Component({selector: 'child', template: `<div>{{name}}</div>`})
+      @Component({
+        selector: 'child',
+        template: `<div>{{name}}</div>`,
+        standalone: false,
+      })
       class Child {
         name = 'text';
       }
 
-      @Component({selector: 'dynamic-cmpt-with-children', template: `<child></child>`})
+      @Component({
+        selector: 'dynamic-cmpt-with-children',
+        template: `<child></child>`,
+        standalone: false,
+      })
       class DynamicCompWithChildren {}
 
       TestBed.configureTestingModule({
@@ -2730,11 +2862,13 @@ describe('ViewContainerRef', () => {
     <ng-template #tplRef let-name>{{name}}</ng-template>
     <p vcref [tplRef]="tplRef"></p>
   `,
+  standalone: false,
 })
 class EmbeddedViewInsertionComp {}
 
 @Directive({
   selector: '[vcref]',
+  standalone: false,
 })
 class VCRefDirective {
   @Input() tplRef: TemplateRef<any> | undefined;
@@ -2759,6 +2893,7 @@ class VCRefDirective {
 @Component({
   selector: `embedded-cmp-with-ngcontent`,
   template: `<ng-content></ng-content><hr><ng-content></ng-content>`,
+  standalone: false,
 })
 class EmbeddedComponentWithNgContent {}
 
@@ -2769,6 +2904,7 @@ class EmbeddedComponentWithNgContent {}
     <ng-template #ref1>1</ng-template>
     <ng-template #ref2>2</ng-template>
   `,
+  standalone: false,
 })
 class ViewContainerRefComp {
   @ViewChildren(TemplateRef) templates!: QueryList<TemplateRef<any>>;
@@ -2781,12 +2917,16 @@ class ViewContainerRefComp {
   template: `
     <view-container-ref-comp></view-container-ref-comp>
   `,
+  standalone: false,
 })
 class ViewContainerRefApp {
   @ViewChild(ViewContainerRefComp) vcrComp!: ViewContainerRefComp;
 }
 
-@Directive({selector: '[structDir]'})
+@Directive({
+  selector: '[structDir]',
+  standalone: false,
+})
 export class StructDir {
   constructor(
     private vcref: ViewContainerRef,
@@ -2802,12 +2942,19 @@ export class StructDir {
   }
 }
 
-@Component({selector: 'destroy-cases', template: `  `})
+@Component({
+  selector: 'destroy-cases',
+  template: `  `,
+  standalone: false,
+})
 class DestroyCasesComp {
   @ViewChildren(StructDir) structDirs!: QueryList<StructDir>;
 }
 
-@Directive({selector: '[constructorDir]'})
+@Directive({
+  selector: '[constructorDir]',
+  standalone: false,
+})
 class ConstructorDir {
   constructor(vcref: ViewContainerRef, tplRef: TemplateRef<any>) {
     vcref.createEmbeddedView(tplRef);
@@ -2821,6 +2968,7 @@ class ConstructorDir {
       <span *constructorDir #foo></span>
     </div>
   `,
+  standalone: false,
 })
 class ConstructorApp {
   @ViewChild('foo', {static: true}) foo!: ElementRef;
@@ -2833,6 +2981,7 @@ class ConstructorApp {
       <div #foo></div>
     </ng-template>
   `,
+  standalone: false,
 })
 class ConstructorAppWithQueries {
   @ViewChild('foo', {static: true}) foo!: TemplateRef<any>;

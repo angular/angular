@@ -48,6 +48,7 @@ const CHECKBOX_VALUE_ACCESSOR: Provider = {
     'input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]',
   host: {'(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()'},
   providers: [CHECKBOX_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class CheckboxControlValueAccessor
   extends BuiltInControlValueAccessor

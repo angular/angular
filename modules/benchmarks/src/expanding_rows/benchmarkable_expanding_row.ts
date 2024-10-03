@@ -38,6 +38,7 @@ export interface MlbTeam {
       </cfc-expanding-row-details-content>
     </cfc-expanding-row>
   </cfc-expanding-row-host>`,
+  standalone: false,
 })
 export class BenchmarkableExpandingRow {
   // TODO(b/109816955): remove '!', see go/strict-prop-init-fix.

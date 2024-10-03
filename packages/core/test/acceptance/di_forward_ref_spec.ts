@@ -15,17 +15,26 @@ import {TestBed} from '@angular/core/testing';
 describe('di with forwardRef', () => {
   describe('directive injection', () => {
     it('should throw if directives try to inject each other', () => {
-      @Directive({selector: '[dirB]'})
+      @Directive({
+        selector: '[dirB]',
+        standalone: false,
+      })
       class DirectiveB {
         constructor(@Inject(forwardRef(() => DirectiveA)) siblingDir: DirectiveA) {}
       }
 
-      @Directive({selector: '[dirA]'})
+      @Directive({
+        selector: '[dirA]',
+        standalone: false,
+      })
       class DirectiveA {
         constructor(siblingDir: DirectiveB) {}
       }
 
-      @Component({template: '<div dirA dirB></div>'})
+      @Component({
+        template: '<div dirA dirB></div>',
+        standalone: false,
+      })
       class MyComp {}
 
       TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
@@ -37,17 +46,28 @@ describe('di with forwardRef', () => {
     describe('flags', () => {
       describe('@Host', () => {
         it('should find host component on the host itself', () => {
-          @Directive({selector: '[dirComp]'})
+          @Directive({
+            selector: '[dirComp]',
+            standalone: false,
+          })
           class DirectiveComp {
             constructor(@Inject(forwardRef(() => MyComp)) @Host() public comp: MyComp) {}
           }
 
-          @Component({selector: 'my-comp', template: '<div dirComp></div>'})
+          @Component({
+            selector: 'my-comp',
+            template: '<div dirComp></div>',
+            standalone: false,
+          })
           class MyComp {
             @ViewChild(DirectiveComp) dirComp!: DirectiveComp;
           }
 
-          @Component({template: '<my-comp></my-comp>', jit: true})
+          @Component({
+            template: '<my-comp></my-comp>',
+            jit: true,
+            standalone: false,
+          })
           class MyApp {
             @ViewChild(MyComp) myComp!: MyComp;
           }

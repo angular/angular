@@ -4,6 +4,7 @@ import {Component, OnInit} from '@angular/core';
 @Component({
   selector: 'toh-toast',
   template: `...`,
+  standalone: false,
 })
 // #docregion example
 export class ToastComponent implements OnInit {

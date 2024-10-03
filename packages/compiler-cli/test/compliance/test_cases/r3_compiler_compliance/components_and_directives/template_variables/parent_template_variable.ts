@@ -2,8 +2,8 @@ import {Component, NgModule} from '@angular/core';
 import {ForOfDirective} from './for_of';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
   <ul>
     <li *for="let item of items">
       <div>{{item.name}}</div>
@@ -13,7 +13,8 @@ import {ForOfDirective} from './for_of';
         </li>
       </ul>
     </li>
-  </ul>`
+  </ul>`,
+    standalone: false
 })
 export class MyComponent {
   items = [

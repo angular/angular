@@ -18,6 +18,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
   animations: [
     trigger('myAnimation', [transition('* => on', [animate(1000, style({opacity: 1}))])]),
   ],
+  standalone: false,
 })
 class AnimationsComponent {
   exp: any = false;
@@ -28,6 +29,7 @@ class AnimationsComponent {
   template: `
      <app-animations></app-animations>
    `,
+  standalone: false,
 })
 class RootComponent {}
 

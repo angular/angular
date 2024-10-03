@@ -28,14 +28,12 @@ import {TutorialConfig, TutorialType} from '@angular/docs';
 @Component({
   selector: EMBEDDED_EDITOR_SELECTOR,
   template: '<div>FakeEmbeddedEditor</div>',
-  standalone: true,
 })
 class FakeEmbeddedEditor {}
 
 @Component({
   selector: DOCS_VIEWER_SELECTOR,
   template: '<div>FakeDocsViewer</div>',
-  standalone: true,
 })
 class FakeDocViewer {
   @Input('documentFilePath') documentFilePath: string | undefined;

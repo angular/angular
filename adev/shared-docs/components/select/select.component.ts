@@ -19,7 +19,6 @@ export interface SelectOption {
 
 @Component({
   selector: 'docs-select',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   templateUrl: './select.component.html',

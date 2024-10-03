@@ -261,7 +261,6 @@ describe('ngIf directive', () => {
           <div *ngIf="true">Hello</div>
           <div *ngIf="false">World</div>
         `,
-        standalone: true,
       })
       class TestComponent {}
 
@@ -300,7 +299,11 @@ describe('ngIf directive', () => {
   });
 });
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {
   booleanCondition: boolean = true;
   nestedBooleanCondition: boolean = true;

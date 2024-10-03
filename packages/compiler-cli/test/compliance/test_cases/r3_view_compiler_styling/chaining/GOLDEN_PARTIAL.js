@@ -21,7 +21,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `<div
    [class.apple]="yesToApple"
    [class.orange]="yesToOrange"
-   [class.tomato]="yesToTomato"></div>`
+   [class.tomato]="yesToTomato"></div>`,
+                    standalone: false
                 }]
         }] });
 
@@ -60,7 +61,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `<div
     [style.color]="color"
     [style.border]="border"
-    [style.transition]="transition"></div>`
+    [style.transition]="transition"></div>`,
+                    standalone: false
                 }]
         }] });
 
@@ -108,7 +110,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     [class.orange]="yesToOrange"
     [style.border]="border"
     [class.tomato]="yesToTomato"
-    [style.transition]="transition"></div>`
+    [style.transition]="transition"></div>`,
+                    standalone: false
                 }]
         }] });
 
@@ -148,7 +151,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `<div
    style.color="a{{one}}b"
    style.border="a{{one}}b"
-   style.transition="a{{one}}b"></div>`
+   style.transition="a{{one}}b"></div>`,
+                    standalone: false
                 }]
         }] });
 
@@ -191,7 +195,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     style.transition="a{{one}}b{{two}}c"
     style.width="a{{one}}b{{two}}c"
     style.height="a{{one}}b{{two}}c{{three}}d"
-    style.top="a{{one}}b{{two}}c{{three}}d"></div>`
+    style.top="a{{one}}b{{two}}c{{three}}d"></div>`,
+                    standalone: false
                 }]
         }] });
 
@@ -242,7 +247,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     [class.orange]="yesToOrange"
                     [style.width]="width"
                     style.height="a{{one}}b"
-                    style.top="a{{one}}b"></div>`
+                    style.top="a{{one}}b"></div>`,
+                    standalone: false
                 }]
         }] });
 
@@ -291,7 +297,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     style.transition="a{{one}}b{{two}}c"
     style.width="a{{one}}b{{two}}c{{three}}d"
     style.height="a{{one}}b"
-    style.top="a{{one}}b"></div>`
+    style.top="a{{one}}b"></div>`,
+                    standalone: false
                 }]
         }] });
 
@@ -335,7 +342,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                         '[style.color]': 'color',
                         '[class.tomato]': 'yesToTomato',
                         '[style.transition]': 'transition'
-                    }
+                    },
+                    standalone: false
                 }]
         }], propDecorators: { border: [{
                 type: HostBinding,

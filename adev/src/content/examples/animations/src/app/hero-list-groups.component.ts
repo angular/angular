@@ -5,7 +5,6 @@ import {Hero} from './hero';
 import {NgFor} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-hero-list-groups',
   template: `
     <ul class="heroes">
@@ -69,7 +68,6 @@ import {NgFor} from '@angular/common';
       ]),
     ]),
   ],
-  // #enddocregion animationdef
 })
 export class HeroListGroupsComponent {
   @Input() heroes: Hero[] = [];

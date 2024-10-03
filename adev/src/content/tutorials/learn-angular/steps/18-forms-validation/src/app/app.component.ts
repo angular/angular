@@ -11,7 +11,6 @@ import {ReactiveFormsModule} from '@angular/forms';
       <button type="submit">Submit</button>
     </form>
   `,
-  standalone: true,
   imports: [ReactiveFormsModule],
 })
 export class AppComponent {

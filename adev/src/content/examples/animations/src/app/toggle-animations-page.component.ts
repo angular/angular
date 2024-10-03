@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {OpenCloseChildComponent} from './open-close.component.4';
 
 @Component({
-  standalone: true,
   selector: 'app-toggle-animations-child-page',
   template: `
     <section>

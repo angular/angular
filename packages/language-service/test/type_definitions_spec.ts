@@ -26,7 +26,10 @@ describe('type definitions', () => {
         import {Component, NgModule} from '@angular/core';
         import {CommonModule} from '@angular/common';
 
-        @Component({templateUrl: 'app.html'})
+        @Component({
+          templateUrl: 'app.html',
+          standalone: false,
+        })
         export class AppCmp {}
 
         @NgModule({declarations: [AppCmp], imports: [CommonModule]})

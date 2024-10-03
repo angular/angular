@@ -337,7 +337,6 @@ describe('NgTemplateOutlet', () => {
         <ng-template #tpl>Hello World</ng-template>
         <ng-container *ngTemplateOutlet="tpl"></ng-container>
       `,
-      standalone: true,
     })
     class TestComponent {}
 
@@ -354,7 +353,6 @@ describe('NgTemplateOutlet', () => {
         <ng-template #tpl let-name>Name:{{ name }}</ng-template>
         <ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="ctx"></ng-template>
       `,
-      standalone: true,
     })
     class TestComponent {
       ctx: {$implicit: string} | undefined = undefined;
@@ -379,7 +377,11 @@ class DestroyedSpyService {
   destroyed = false;
 }
 
-@Component({selector: 'destroyable-cmpt', template: 'Content to destroy'})
+@Component({
+  selector: 'destroyable-cmpt',
+  template: 'Content to destroy',
+  standalone: false,
+})
 class DestroyableCmpt implements OnDestroy {
   constructor(private _spyService: DestroyedSpyService) {}
 
@@ -388,12 +390,20 @@ class DestroyableCmpt implements OnDestroy {
   }
 }
 
-@Directive({selector: 'tpl-refs', exportAs: 'tplRefs'})
+@Directive({
+  selector: 'tpl-refs',
+  exportAs: 'tplRefs',
+  standalone: false,
+})
 class CaptureTplRefs {
   @ContentChildren(TemplateRef) tplRefs?: QueryList<TemplateRef<any>>;
 }
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {
   currentTplRef?: TemplateRef<any>;
   context: any = {foo: 'bar'};
@@ -404,6 +414,7 @@ class TestComponent {
 @Component({
   selector: 'inject-value',
   template: 'Hello {{tokenValue}}',
+  standalone: false,
 })
 class InjectValueComponent {
   constructor(@Inject(templateToken) public tokenValue: string) {}
@@ -416,6 +427,7 @@ class InjectValueComponent {
     |
     <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context2"></ng-template>
   `,
+  standalone: false,
 })
 class MultiContextComponent {
   context1: {name: string} | undefined;

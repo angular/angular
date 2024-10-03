@@ -64,6 +64,7 @@ import {BrowserModule} from '@angular/platform-browser';
     <input type="text" [(ngModel)]="values[48]" name="value48" />
     <input type="text" [(ngModel)]="values[49]" name="value49" />
   </form>`,
+  standalone: false,
 })
 export class AppComponent {
   copies: number[] = [];

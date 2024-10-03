@@ -1,8 +1,8 @@
 import {Component, Input, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-comp',
-  template: `
+    selector: 'my-comp',
+    template: `
     {{ names[0] }}
     {{ names[1] }}
     {{ names[3] }}
@@ -14,18 +14,20 @@ import {Component, Input, NgModule} from '@angular/core';
     {{ names[9] }}
     {{ names[10] }}
     {{ names[11] }}
-  `
+  `,
+    standalone: false
 })
 export class MyComp {
   @Input() names!: string[];
 }
 
 @Component({
-  selector: 'my-app',
-  template: `
+    selector: 'my-app',
+    template: `
   <my-comp [names]="['start-', n0, n1, n2, n3, n4, '-middle-', n5, n6, n7, n8, '-end']">
   </my-comp>
-`
+`,
+    standalone: false
 })
 export class MyApp {
   n0 = 'a';

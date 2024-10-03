@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     {{value}}
     @let one = value + 1;
     @let two = one + 1;
@@ -9,8 +9,7 @@ import {Component} from '@angular/core';
     @let four = three + 1;
     {{value}}
     <button (click)="callback(three)"></button>
-  `,
-  standalone: true,
+  `
 })
 export class MyApp {
   value = 0;

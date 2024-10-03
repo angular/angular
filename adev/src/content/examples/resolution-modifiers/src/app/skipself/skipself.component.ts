@@ -3,7 +3,6 @@ import {LeafService} from '../leaf.service';
 
 // #docregion skipself-component
 @Component({
-  standalone: true,
   selector: 'app-skipself',
   templateUrl: './skipself.component.html',
   styleUrls: ['./skipself.component.css'],

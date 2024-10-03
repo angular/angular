@@ -8,6 +8,7 @@ import {forbiddenNameValidator} from '../shared/forbidden-name.directive';
   selector: 'app-actor-form-reactive',
   templateUrl: './actor-form-reactive.component.html',
   styleUrls: ['./actor-form-reactive.component.css'],
+  standalone: false,
 })
 export class HeroFormReactiveComponent implements OnInit {
   skills = ['Method Acting', 'Singing', 'Dancing', 'Swordfighting'];

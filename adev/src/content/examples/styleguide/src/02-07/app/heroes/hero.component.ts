@@ -7,7 +7,6 @@ import {Component} from '@angular/core';
   // #enddocregion example
   template: '<div>hero component</div>',
   // #docregion example
-  standalone: true,
   selector: 'toh-hero',
 })
 export class HeroComponent {}

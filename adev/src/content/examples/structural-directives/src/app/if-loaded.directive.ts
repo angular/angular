@@ -3,7 +3,6 @@ import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 import {Loaded, LoadingState} from './loading-state';
 
 @Directive({
-  standalone: true,
   selector: '[appIfLoaded]',
 })
 export class IfLoadedDirective<T> {

@@ -10,5 +10,6 @@ import {HeroService} from './heroes';
     `,
   styleUrls: ['./app.component.css'],
   providers: [HeroService],
+  standalone: false,
 })
 export class AppComponent {}

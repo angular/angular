@@ -18,6 +18,7 @@ export class NormalService {
 @Component({
   selector: 'self-app',
   template: '{{found}}',
+  standalone: false,
 })
 export class AppComponent {
   found: boolean;

@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {OpenCloseComponent} from './open-close.component';
 
 @Component({
-  standalone: true,
   selector: 'app-open-close-page',
   template: `
     <section>

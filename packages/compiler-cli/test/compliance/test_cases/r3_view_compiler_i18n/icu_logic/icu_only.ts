@@ -1,10 +1,11 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
   {age, select, 10 {ten} 20 {twenty} other {other}}
 `,
+    standalone: false
 })
 export class MyComponent {
   age = 20;

@@ -71,6 +71,7 @@ function createValidatorClass(selector: string) {
         multi: true,
       },
     ],
+    standalone: false,
   })
   class CustomValidator implements Validator {
     validate(control: AbstractControl) {
@@ -91,6 +92,7 @@ function createAsyncValidatorClass(selector: string) {
         multi: true,
       },
     ],
+    standalone: false,
   })
   class CustomValidator implements AsyncValidator {
     validate(control: AbstractControl) {
@@ -111,6 +113,7 @@ function createControlValueAccessor(selector: string) {
         multi: true,
       },
     ],
+    standalone: false,
   })
   class CustomValueAccessor implements ControlValueAccessor {
     writeValue(value: any) {}
@@ -373,6 +376,7 @@ describe('reactive forms integration tests', () => {
               <input formControlName="input">
             </form>
           `,
+        standalone: false,
       })
       class App {
         form: FormGroup;
@@ -786,6 +790,7 @@ describe('reactive forms integration tests', () => {
                 </ng-container>
               </form>
             `,
+          standalone: false,
         })
         class App {
           showAsGroup = false;
@@ -845,6 +850,7 @@ describe('reactive forms integration tests', () => {
                 </ng-container>
               </form>
             `,
+          standalone: false,
         })
         class App {
           showAsArray = false;
@@ -906,6 +912,7 @@ describe('reactive forms integration tests', () => {
                 </ng-container>
               </form>
             `,
+          standalone: false,
         })
         class App {
           showAsArray = false;
@@ -1440,6 +1447,7 @@ describe('reactive forms integration tests', () => {
         template: `
             <form></form>
           `,
+        standalone: false,
       })
       class FormComp {}
 
@@ -1460,6 +1468,7 @@ describe('reactive forms integration tests', () => {
               <input type="text" [formControl]="control">
             </form>
           `,
+        standalone: false,
       })
       class FormComp {
         control = new FormControl('abc');
@@ -1967,6 +1976,7 @@ describe('reactive forms integration tests', () => {
                 <input formControlName="surname">
               </form>
             `,
+          standalone: false,
         })
         class App implements OnDestroy {
           private _subscription: Subscription;
@@ -3346,6 +3356,7 @@ describe('reactive forms integration tests', () => {
                 <form [formGroup]="form">
                   <input [formControl]="control" name="control" [minlength]="minlen" [maxlength]="maxlen">
                 </form> `,
+          standalone: false,
         })
         class MinMaxLengthComponent {
           control: FormControl = new FormControl();
@@ -3435,6 +3446,7 @@ describe('reactive forms integration tests', () => {
                 <form [formGroup]="form">
                   <input type="number" [formControl]="control" name="minmaxinput" [min]="minlen" [max]="maxlen">
                 </form> `,
+          standalone: false,
         })
         class MinMaxComponent {
           control: FormControl = new FormControl();
@@ -3836,6 +3848,7 @@ describe('reactive forms integration tests', () => {
           providers: [
             {provide: NG_VALIDATORS, useExisting: forwardRef(() => NoOpValidator), multi: true},
           ],
+          standalone: false,
         })
         class NoOpValidator implements Validator {
           @Input() validatorInput = '';
@@ -3858,6 +3871,7 @@ describe('reactive forms integration tests', () => {
               multi: true,
             },
           ],
+          standalone: false,
         })
         class NoOpAsyncValidator implements AsyncValidator {
           @Input() validatorInput = '';
@@ -3878,6 +3892,7 @@ describe('reactive forms integration tests', () => {
                 <input type="text" formControlName="fooInput">
             </form>
            `,
+          standalone: false,
         })
         class NgModelNoOpValidation {
           validatorInput = 'bar';
@@ -4612,6 +4627,7 @@ describe('reactive forms integration tests', () => {
         template: `
             <input *ngIf="visible" type="text" [formControl]="control" cva-a validators-a>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -4689,6 +4705,7 @@ describe('reactive forms integration tests', () => {
             <input type="text" [formControl]="control" cva-a validators-a *ngIf="visible">
             <input type="text" [formControl]="control" cva-b>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -4764,6 +4781,7 @@ describe('reactive forms integration tests', () => {
               <input type="text" formControlName="control" cva-b>
             </div>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -4844,6 +4862,7 @@ describe('reactive forms integration tests', () => {
               </div>
             </ng-container>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -4944,6 +4963,7 @@ describe('reactive forms integration tests', () => {
               <input *ngIf="visible" type="text" [formControl]="control" cva-a validators-a>
             </div>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -5025,6 +5045,7 @@ describe('reactive forms integration tests', () => {
               </ng-container>
             </div>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -5136,6 +5157,7 @@ describe('reactive forms integration tests', () => {
               </ng-container>
             </div>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -5233,6 +5255,7 @@ describe('reactive forms integration tests', () => {
               </ng-container>
             </div>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -5355,6 +5378,7 @@ describe('reactive forms integration tests', () => {
               </ng-container>
             </div>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -5485,6 +5509,7 @@ describe('reactive forms integration tests', () => {
               </ng-container>
             </div>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -5627,6 +5652,7 @@ describe('reactive forms integration tests', () => {
               </ng-container>
             </div>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -5722,6 +5748,7 @@ describe('reactive forms integration tests', () => {
               </ng-container>
             </div>
           `,
+        standalone: false,
       })
       class App {
         visible = true;
@@ -5794,6 +5821,7 @@ describe('reactive forms integration tests', () => {
               <div formControlName="control"></div>
             </form>
           `,
+        standalone: false,
       })
       class NoCVAComponent {
         form = new FormGroup({control: new FormControl()});
@@ -5861,6 +5889,7 @@ function loginIsEmptyGroupValidator(c: FormGroup) {
 @Directive({
   selector: '[login-is-empty-validator]',
   providers: [{provide: NG_VALIDATORS, useValue: loginIsEmptyGroupValidator, multi: true}],
+  standalone: false,
 })
 class LoginIsEmptyValidator {}
 
@@ -5869,6 +5898,7 @@ class LoginIsEmptyValidator {}
   providers: [
     {provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => UniqLoginValidator), multi: true},
   ],
+  standalone: false,
 })
 class UniqLoginValidator implements AsyncValidator {
   @Input('uniq-login-validator') expected: any;
@@ -5878,7 +5908,11 @@ class UniqLoginValidator implements AsyncValidator {
   }
 }
 
-@Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
+@Component({
+  selector: 'form-control-comp',
+  template: `<input type="text" [formControl]="control">`,
+  standalone: false,
+})
 class FormControlComp {
   control!: FormControl;
 }
@@ -5889,6 +5923,7 @@ class FormControlComp {
     <form [formGroup]="form" (ngSubmit)="event=$event">
       <input type="text" formControlName="login">
     </form>`,
+  standalone: false,
 })
 class FormGroupComp {
   control!: FormControl;
@@ -5906,6 +5941,7 @@ class FormGroupComp {
       </div>
       <input *ngIf="form.contains('email')" formControlName="email">
     </form>`,
+  standalone: false,
 })
 class NestedFormGroupNameComp {
   form!: FormGroup;
@@ -5921,6 +5957,7 @@ class NestedFormGroupNameComp {
         </div>
       </div>
      </form>`,
+  standalone: false,
 })
 class FormArrayComp {
   form!: FormGroup;
@@ -5936,6 +5973,7 @@ class FormArrayComp {
       </div>
     </form>
   `,
+  standalone: false,
 })
 class NestedFormArrayNameComp {
   form!: FormGroup;
@@ -5952,6 +5990,7 @@ class NestedFormArrayNameComp {
         </div>
       </div>
      </div>`,
+  standalone: false,
 })
 class FormArrayNestedGroup {
   form!: FormGroup;
@@ -5965,6 +6004,7 @@ class FormArrayNestedGroup {
     <input type="text" formControlName="login" [(ngModel)]="login">
     <input type="text" formControlName="password" [(ngModel)]="password">
    </form>`,
+  standalone: false,
 })
 class FormGroupNgModel {
   form!: FormGroup;
@@ -5978,6 +6018,7 @@ class FormGroupNgModel {
     <input type="text" [formControl]="control" [(ngModel)]="login">
     <input type="text" [formControl]="passwordControl" [(ngModel)]="password">
   `,
+  standalone: false,
 })
 class FormControlNgModel {
   control!: FormControl;
@@ -5995,6 +6036,7 @@ class FormControlNgModel {
       <input type="text" formControlName="max" maxlength="3">
       <input type="text" formControlName="pattern" pattern=".{3,}">
    </div>`,
+  standalone: false,
 })
 class LoginIsEmptyWrapper {
   form!: FormGroup;
@@ -6009,6 +6051,7 @@ class LoginIsEmptyWrapper {
       <input name="maxlength" type="text" formControlName="max" [maxlength]="maxLen">
       <input name="pattern" type="text" formControlName="pattern" [pattern]="pattern">
    </div>`,
+  standalone: false,
 })
 class ValidationBindingsForm {
   form!: FormGroup;
@@ -6021,6 +6064,7 @@ class ValidationBindingsForm {
 @Component({
   selector: 'form-control-checkbox-validator',
   template: `<input type="checkbox" [formControl]="control">`,
+  standalone: false,
 })
 class FormControlCheckboxRequiredValidator {
   control!: FormControl;
@@ -6032,6 +6076,7 @@ class FormControlCheckboxRequiredValidator {
   <div [formGroup]="form">
     <input type="text" formControlName="login" uniq-login-validator="expected">
   </div>`,
+  standalone: false,
 })
 class UniqLoginWrapper {
   form!: FormGroup;
@@ -6044,6 +6089,7 @@ class UniqLoginWrapper {
       <input type="text" formControlName="login">
     </div>
   `,
+  standalone: false,
 })
 class FormGroupWithValidators {
   form = new FormGroup({login: new FormControl('INITIAL')});
@@ -6056,6 +6102,7 @@ class FormGroupWithValidators {
       <input type="text" formControlName="login">
     </div>
   `,
+  standalone: false,
 })
 class FormControlWithAsyncValidatorFn {
   control = new FormControl('INITIAL');
@@ -6075,6 +6122,7 @@ class FormControlWithAsyncValidatorFn {
       <input type="text" formControlName="login" validators-a>
     </div>
   `,
+  standalone: false,
 })
 class FormControlWithValidators {
   form: FormGroup = new FormGroup({login: new FormControl('INITIAL')});
@@ -6090,6 +6138,7 @@ class FormControlWithValidators {
       <input type="text" formControlName="login" validators-a id="login">
     </div>
   `,
+  standalone: false,
 })
 class MultipleFormControls {
   control = new FormControl('a');
@@ -6106,6 +6155,7 @@ class MultipleFormControls {
       </ng-container>
     </div>
   `,
+  standalone: false,
 })
 class NgForFormControlWithValidators {
   form: FormGroup = new FormGroup({login: new FormControl('a')});
@@ -6118,6 +6168,7 @@ class NgForFormControlWithValidators {
     <div [formGroup]="form">
       <input type="number" formControlName="pin" [max]="max" [min]="min">
    </div>`,
+  standalone: false,
 })
 class MinMaxFormControlNameComp {
   control!: FormControl;
@@ -6132,6 +6183,7 @@ class MinMaxFormControlNameComp {
     <div [formGroup]="form">
       <input type="number" [formControl]="control" [max]="max" [min]="min">
    </div>`,
+  standalone: false,
 })
 class MinMaxFormControlComp {
   control!: FormControl;
@@ -6148,6 +6200,7 @@ class MinMaxFormControlComp {
       </form>
     </dialog>
   `,
+  standalone: false,
 })
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;
@@ -6162,6 +6215,7 @@ class NativeDialogForm {
     <input type="radio" formControlName="choice" value="two"> Two
   </form>
   `,
+  standalone: false,
 })
 export class RadioForm {
   form = new FormGroup({

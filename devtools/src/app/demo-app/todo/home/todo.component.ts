@@ -16,7 +16,6 @@ import {TooltipDirective} from './tooltip.directive';
   selector: 'app-todo',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./todo.component.scss'],
-  standalone: true,
   imports: [TooltipDirective],
 })
 export class TodoComponent {

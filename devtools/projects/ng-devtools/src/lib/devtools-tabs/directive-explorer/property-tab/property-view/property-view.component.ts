@@ -17,7 +17,6 @@ import {PropertyViewHeaderComponent} from './property-view-header.component';
   selector: 'ng-property-view',
   templateUrl: './property-view.component.html',
   styleUrls: ['./property-view.component.scss'],
-  standalone: true,
   imports: [PropertyViewHeaderComponent, PropertyViewBodyComponent],
 })
 export class PropertyViewComponent {

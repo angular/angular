@@ -296,6 +296,7 @@ async function styleCount(
   template: `<div class="emulated"></div>`,
   styles: [`.emulated { color: blue; }`],
   encapsulation: ViewEncapsulation.Emulated,
+  standalone: false,
 })
 class CmpEncapsulationEmulated {}
 
@@ -304,6 +305,7 @@ class CmpEncapsulationEmulated {}
   template: `<div class="none"></div>`,
   styles: [`.none { color: lime; }`],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 class CmpEncapsulationNone {}
 
@@ -312,6 +314,7 @@ class CmpEncapsulationNone {}
   template: `<div class="shadow"></div><cmp-emulated></cmp-emulated><cmp-none></cmp-none>`,
   styles: [`.shadow { color: red; }`],
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 class CmpEncapsulationShadow {}
 
@@ -322,10 +325,15 @@ class CmpEncapsulationShadow {}
     <cmp-emulated></cmp-emulated>
     <cmp-none></cmp-none>
   `,
+  standalone: false,
 })
 export class SomeApp {}
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestCmp {
   constructor(public renderer: Renderer2) {}
 }
@@ -339,6 +347,7 @@ class TestCmp {
     <cmp-none *ngIf="!componentOneInstanceHidden && !showEmulatedComponents"></cmp-none>
     <cmp-none *ngIf="!componentTwoInstanceHidden && !showEmulatedComponents"></cmp-none>
   `,
+  standalone: false,
 })
 export class SomeAppForCleanUp {
   componentOneInstanceHidden = false;

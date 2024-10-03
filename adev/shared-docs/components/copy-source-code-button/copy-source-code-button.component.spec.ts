@@ -120,7 +120,6 @@ describe('CopySourceCodeButton', () => {
   `,
   imports: [CopySourceCodeButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
 })
 class CodeSnippetWrapper {
   code = signal('');

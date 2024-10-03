@@ -26,7 +26,6 @@ import {MatExpansionModule} from '@angular/material/expansion';
   selector: 'ng-property-view-body',
   templateUrl: './property-view-body.component.html',
   styleUrls: ['./property-view-body.component.scss'],
-  standalone: true,
   imports: [
     MatExpansionModule,
     CdkDropList,
@@ -166,7 +165,6 @@ export class PropertyViewBodyComponent {
       }
     `,
   ],
-  standalone: true,
   imports: [MatExpansionModule, MatChipsModule, MatTooltip, ResolutionPathComponent],
 })
 export class DependencyViewerComponent {
@@ -186,7 +184,6 @@ export class DependencyViewerComponent {
       }
     `,
   ],
-  standalone: true,
   imports: [DependencyViewerComponent],
 })
 export class InjectedServicesComponent {

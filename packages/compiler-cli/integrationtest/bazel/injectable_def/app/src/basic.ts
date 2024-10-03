@@ -14,6 +14,7 @@ import {Lib2Module} from 'lib2_built/module';
 @Component({
   selector: 'id-app',
   template: '<lib2-cmp></lib2-cmp>',
+  standalone: false,
 })
 export class AppComponent {}
 

@@ -6,6 +6,7 @@ import {FormControl} from '@angular/forms';
   template: `
     Favorite Color: <input type="text" [formControl]="favoriteColorControl">
   `,
+  standalone: false,
 })
 export class FavoriteColorComponent {
   favoriteColorControl = new FormControl('');

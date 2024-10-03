@@ -144,7 +144,6 @@ import {Component} from '@angular/core';
 
 // #docregion test-host
 @Component({
-  standalone: true,
   imports: [DashboardHeroComponent],
   template: ` <dashboard-hero [hero]="hero" (selected)="onSelected($event)"> </dashboard-hero>`,
 })

@@ -29,6 +29,7 @@ import {NgForm} from '@angular/forms';
 
     <button (click)="setValue()">Set value</button>
   `,
+  standalone: false,
 })
 export class NgModelGroupComp {
   name = {first: 'Nancy', middle: 'J', last: 'Drew'};

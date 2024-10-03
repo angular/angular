@@ -141,7 +141,10 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
         class OtherService {}
         class HostService {}
 
-        @Directive({selector: 'child-directive'})
+        @Directive({
+          selector: 'child-directive',
+          standalone: false,
+        })
         class ChildDirective {
           logs: string[] = [];
 
@@ -157,6 +160,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           selector: 'parent-cmp',
           viewProviders: [HostService],
           template: '<child-directive></child-directive>',
+          standalone: false,
         })
         class ParentCmp {}
 
@@ -164,6 +168,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
           selector: 'app',
           viewProviders: [OtherService],
           template: '<parent-cmp></parent-cmp>',
+          standalone: false,
         })
         class App {}
         // #enddocregion

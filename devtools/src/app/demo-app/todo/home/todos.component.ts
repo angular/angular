@@ -25,7 +25,6 @@ const fib = (n: number): number => {
 @Component({
   templateUrl: 'todos.component.html',
   selector: 'app-todos',
-  standalone: true,
   imports: [RouterLink, TodoComponent, TooltipDirective, SamplePipe, TodosFilter],
 })
 export class TodosComponent implements OnInit, OnDestroy {

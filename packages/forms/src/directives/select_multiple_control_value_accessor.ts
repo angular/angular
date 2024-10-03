@@ -97,6 +97,7 @@ abstract class HTMLCollection {
     'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]',
   host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class SelectMultipleControlValueAccessor
   extends BuiltInControlValueAccessor
@@ -220,7 +221,10 @@ export class SelectMultipleControlValueAccessor
  * @ngModule FormsModule
  * @publicApi
  */
-@Directive({selector: 'option'})
+@Directive({
+  selector: 'option',
+  standalone: false,
+})
 export class ɵNgSelectMultipleOption implements OnDestroy {
   // TODO(issue/24571): remove '!'.
   id!: string;

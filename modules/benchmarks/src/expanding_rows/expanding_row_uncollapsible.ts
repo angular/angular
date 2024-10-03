@@ -14,5 +14,6 @@ import {Directive} from '@angular/core';
  */
 @Directive({
   selector: '[cfcUncollapsible]',
+  standalone: false,
 })
 export class ExpandingRowUncollapsible {}

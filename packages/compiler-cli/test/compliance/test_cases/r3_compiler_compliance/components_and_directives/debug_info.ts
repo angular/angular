@@ -1,14 +1,14 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: 'Hello Angular!',
+    template: 'Hello Angular!',
+    standalone: false
 })
 export class Main {
 }
 
 @Component({
-  standalone: true,
-  template: 'Hello Angular!',
+    template: 'Hello Angular!'
 })
 export class MainStandalone {
 }

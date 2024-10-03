@@ -8,7 +8,10 @@ function dynamicAttrName() {
   return 'the-attr';
 }
 
-@Component({selector: 'my-component', template: ``})
+@Component({
+    selector: 'my-component', template: ``,
+    standalone: false
+})
 export class MyComponent {
   constructor(
       @Attribute('name') name: string,

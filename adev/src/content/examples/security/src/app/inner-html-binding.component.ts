@@ -2,7 +2,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'app-inner-html-binding',
   templateUrl: './inner-html-binding.component.html',
 })

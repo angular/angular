@@ -15,7 +15,6 @@ import {ReactiveFormsModule} from '@angular/forms';
     <p>Name: {{ profileForm.value.name }}</p>
     <p>Email: {{ profileForm.value.email }}</p>
   `,
-  standalone: true,
   imports: [ReactiveFormsModule],
 })
 export class AppComponent {

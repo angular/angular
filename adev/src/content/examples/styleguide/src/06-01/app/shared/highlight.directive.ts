@@ -3,7 +3,6 @@ import {Directive, HostListener} from '@angular/core';
 
 // #docregion example
 @Directive({
-  standalone: true,
   selector: '[tohHighlight]',
 })
 export class HighlightDirective {

@@ -6,7 +6,6 @@ import {ReversePipe} from './reverse.pipe';
   template: `
     Reverse Machine: {{ word }}
   `,
-  standalone: true,
   imports: [],
 })
 export class AppComponent {

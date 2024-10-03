@@ -2,7 +2,10 @@ import {Component, Input, NgModule} from '@angular/core';
 
 let events: string[] = [];
 
-@Component({selector: 'lifecycle-comp', template: ''})
+@Component({
+    selector: 'lifecycle-comp', template: '',
+    standalone: false
+})
 export class LifecycleComp {
   @Input('name') nameMin!: string;
 
@@ -37,11 +40,12 @@ export class LifecycleComp {
 }
 
 @Component({
-  selector: 'simple-layout',
-  template: `
+    selector: 'simple-layout',
+    template: `
     <lifecycle-comp [name]="name1"></lifecycle-comp>
     <lifecycle-comp [name]="name2"></lifecycle-comp>
-  `
+  `,
+    standalone: false
 })
 export class SimpleLayout {
   name1 = '1';

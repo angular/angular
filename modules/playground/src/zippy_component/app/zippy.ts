@@ -8,7 +8,11 @@
 
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 
-@Component({selector: 'zippy', templateUrl: './zippy.html'})
+@Component({
+  selector: 'zippy',
+  templateUrl: './zippy.html',
+  standalone: false,
+})
 export class Zippy {
   visible: boolean = true;
   @Input() title: string = '';

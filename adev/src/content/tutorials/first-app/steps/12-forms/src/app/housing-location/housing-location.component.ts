@@ -5,7 +5,6 @@ import {RouterModule} from '@angular/router';
 
 @Component({
   selector: 'app-housing-location',
-  standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
     <section class="listing">

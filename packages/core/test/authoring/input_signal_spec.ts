@@ -19,7 +19,10 @@ describe('input signal', () => {
   afterEach(() => setUseMicrotaskEffectsByDefault(prev));
 
   it('should properly notify live consumers (effect)', () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class TestCmp {
       input = input(0);
       effectCalled = 0;

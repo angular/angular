@@ -6,9 +6,7 @@ const toBoolean = (v: string|boolean) => v === true || v !== '';
 // Note: `@Input` non-signal inputs did not support transform function "builders" and generics.
 const complexTransform = <T>(defaultVal: T) => (v: string) => v || defaultVal;
 
-@Directive({
-  standalone: true,
-})
+@Directive({})
 export class TestDir {
   name = input.required<boolean, string|boolean>({
     transform: (v) => v === true || v !== '',

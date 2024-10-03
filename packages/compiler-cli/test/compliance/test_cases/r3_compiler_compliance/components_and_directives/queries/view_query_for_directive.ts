@@ -3,10 +3,11 @@ import {Component, NgModule, QueryList, ViewChild, ViewChildren} from '@angular/
 import {SomeDirective} from './some.directive';
 
 @Component({
-  selector: 'view-query-component',
-  template: `
+    selector: 'view-query-component',
+    template: `
     <div someDir></div>
-  `
+  `,
+    standalone: false
 })
 export class ViewQueryComponent {
   @ViewChild(SomeDirective) someDir!: SomeDirective;

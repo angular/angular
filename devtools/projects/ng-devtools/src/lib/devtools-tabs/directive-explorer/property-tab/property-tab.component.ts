@@ -17,7 +17,6 @@ import {PropertyTabHeaderComponent} from './property-tab-header.component';
 @Component({
   templateUrl: './property-tab.component.html',
   selector: 'ng-property-tab',
-  standalone: true,
   imports: [PropertyTabHeaderComponent, PropertyTabBodyComponent],
 })
 export class PropertyTabComponent {

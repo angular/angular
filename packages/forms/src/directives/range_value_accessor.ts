@@ -53,6 +53,7 @@ const RANGE_VALUE_ACCESSOR: Provider = {
     '(blur)': 'onTouched()',
   },
   providers: [RANGE_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class RangeValueAccessor
   extends BuiltInControlValueAccessor

@@ -11,6 +11,7 @@ import {DialogService} from '../../dialog.service';
   selector: 'app-crisis-detail',
   templateUrl: './crisis-detail.component.html',
   styleUrls: ['./crisis-detail.component.css'],
+  standalone: false,
 })
 export class CrisisDetailComponent implements OnInit {
   crisis!: Crisis;

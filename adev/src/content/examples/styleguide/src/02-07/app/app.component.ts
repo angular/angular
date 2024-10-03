@@ -6,5 +6,6 @@ import {Component} from '@angular/core';
     <toh-hero></toh-hero>
     <admin-users></admin-users>
   `,
+  standalone: false,
 })
 export class AppComponent {}

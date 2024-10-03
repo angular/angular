@@ -35,7 +35,6 @@ import {ZippyComponent} from './zippy.component';
   templateUrl: './demo-app.component.html',
   styleUrls: ['./demo-app.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  standalone: true,
   imports: [HeavyComponent, RouterOutlet, JsonPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

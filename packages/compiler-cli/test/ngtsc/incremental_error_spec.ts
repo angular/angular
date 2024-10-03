@@ -54,7 +54,11 @@ runInEachFileSystem(() => {
         `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'test-cmp', template: '...'})
+        @Component({
+          selector: 'test-cmp', 
+          template: '...',
+          standalone: false,
+        })
         export class TestCmp {}
       `,
       );
@@ -100,7 +104,11 @@ runInEachFileSystem(() => {
         `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'test-cmp', template: '...'})
+        @Component({
+          selector: 'test-cmp', 
+          template: '...',
+          standalone: false,
+        })
         export class TestCmp {}
       `,
       );
@@ -294,7 +302,11 @@ runInEachFileSystem(() => {
         `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'test-cmp', template: '...'})
+        @Component({
+          selector: 'test-cmp', 
+          template: '...',
+          standalone: false,
+        })
         export class TestCmp {}
       `,
       );
@@ -303,7 +315,11 @@ runInEachFileSystem(() => {
         `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'target-cmp', template: '<test-cmp></test-cmp>'})
+        @Component({
+          selector: 'target-cmp', 
+          template: '<test-cmp></test-cmp>',
+          standalone: false,
+        })
         export class TargetCmp {}
       `,
       );
@@ -332,7 +348,11 @@ runInEachFileSystem(() => {
         `
         import {Component} from '@angular/core';
 
-        @Component({selector: ..., template: '...'}) // ... is not valid syntax
+        @Component({
+          selector: ..., 
+          template: '...', 
+          standalone: false,
+        }) // ... is not valid syntax
         export class TestCmp {}
       `,
       );
@@ -346,7 +366,11 @@ runInEachFileSystem(() => {
         `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'test-cmp-fixed', template: '...'})
+        @Component({
+          selector: 'test-cmp-fixed', 
+          template: '...',
+          standalone: false,
+        })
         export class TestCmp {}
       `,
       );
@@ -389,6 +413,7 @@ runInEachFileSystem(() => {
         @Component({
           templateUrl: './cmp.html',
           selector: 'some-cmp',
+          standalone: false,
         })
         export class Cmp {
           error = 'false';
@@ -416,7 +441,11 @@ runInEachFileSystem(() => {
         `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'test-cmp', template: '<div dir></div>'})
+        @Component({
+          selector: 'test-cmp', 
+          template: '<div dir></div>',
+          standalone: false,
+        })
         export class CmpA {}
       `,
       );
@@ -425,7 +454,11 @@ runInEachFileSystem(() => {
         `
         import {Component} from '@angular/core';
 
-        @Component({selector: 'target-cmp', template: '...'})
+        @Component({
+          selector: 'target-cmp', 
+          template: '...',
+          standalone: false,
+        })
         export class CmpB {}
       `,
       );
@@ -457,6 +490,7 @@ runInEachFileSystem(() => {
 
         @Directive({
           selector: '[dir]',
+          standalone: false,
         })
         export class LibDir {}
 
@@ -480,11 +514,13 @@ runInEachFileSystem(() => {
 
       @Directive({
         selector: '[dir]',
+        standalone: false,
       })
       export class LibDir {}
 
       @Directive({
         selector: '[dir]',
+        standalone: false,
       })
       export class NewDir {}
 
@@ -515,6 +551,7 @@ runInEachFileSystem(() => {
       @Component({
         selector: 'lib-cmp',
         template: '...',
+        standalone: false,
       })
       export class LibCmp {}
 
@@ -562,7 +599,11 @@ runInEachFileSystem(() => {
           `
           import {Component} from '@angular/core';
 
-          @Component({selector: 'a-cmp', template: 'new template'})
+          @Component({
+            selector: 'a-cmp', 
+            template: 'new template',
+            standalone: false,
+          })
           export class ACmp {}
        `,
         );
@@ -657,7 +698,11 @@ export function writeTwoComponentSystem(env: NgtscTestEnvironment): void {
     `
     import {Component} from '@angular/core';
 
-    @Component({selector: 'a-cmp', templateUrl: './a.html'})
+    @Component({
+      selector: 'a-cmp', 
+      templateUrl: './a.html',
+      standalone: false,
+    })
     export class ACmp {}
   `,
   );
@@ -666,7 +711,11 @@ export function writeTwoComponentSystem(env: NgtscTestEnvironment): void {
     `
     import {Component} from '@angular/core';
 
-    @Component({selector: 'b-cmp', template: '<a-cmp></a-cmp>'})
+    @Component({
+      selector: 'b-cmp', 
+      template: '<a-cmp></a-cmp>',
+      standalone: false,
+    })
     export class BCmp {}
   `,
   );

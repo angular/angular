@@ -14,7 +14,6 @@ import {MatCard} from '@angular/material/card';
   selector: 'ng-filter',
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.scss'],
-  standalone: true,
   imports: [MatCard, MatIcon],
 })
 export class FilterComponent {

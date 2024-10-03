@@ -1,13 +1,16 @@
 import {Component, NgModule, Pipe} from '@angular/core';
 
-@Pipe({name: 'uppercase'})
+@Pipe({
+    name: 'uppercase',
+    standalone: false
+})
 export class UppercasePipe {
   transform(v: any) {}
 }
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
   <div i18n>
     My i18n block #{{ one }}
     <span>Plain text in nested element</span>
@@ -23,6 +26,7 @@ export class UppercasePipe {
     </div>
   </div>
 `,
+    standalone: false
 })
 export class MyComponent {
   one = 1;

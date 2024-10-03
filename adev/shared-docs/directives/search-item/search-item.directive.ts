@@ -12,7 +12,6 @@ import {SearchResult} from '../../interfaces/search-results';
 
 @Directive({
   selector: '[docsSearchItem]',
-  standalone: true,
   host: {
     '[class.active]': 'isActive',
   },

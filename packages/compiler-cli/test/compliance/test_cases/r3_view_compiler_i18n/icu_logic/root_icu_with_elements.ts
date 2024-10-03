@@ -1,9 +1,8 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  standalone: true,
-  template: `
+    selector: 'my-component',
+    template: `
     <span i18n="someText1">{
       someField,
       select,
@@ -21,7 +20,7 @@ import {Component} from '@angular/core';
       }
     }
     </span>
-`,
+`
 })
 export class MyComponent {
   someField!: any;

@@ -1,6 +1,8 @@
 import {Component, Pipe} from '@angular/core';
 
-@Pipe({standalone: true, name: 'testPipe'})
+@Pipe({
+    name: 'testPipe'
+})
 export class TestPipe {
   transform() {
     return true;
@@ -8,14 +10,13 @@ export class TestPipe {
 }
 
 @Component({
-  template: `
+    template: `
     {{message}}
     @defer (when isVisible() && (isReady | testPipe)) {
       Hello
     }
   `,
-  standalone: true,
-  imports: [TestPipe],
+    imports: [TestPipe]
 })
 export class MyApp {
   message = 'hello';

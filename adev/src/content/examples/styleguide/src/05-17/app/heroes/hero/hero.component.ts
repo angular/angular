@@ -3,7 +3,6 @@ import {Component, Input} from '@angular/core';
 import {Hero} from '../shared/hero.model';
 
 @Component({
-  standalone: true,
   selector: 'toh-hero',
   template: `...`,
 })

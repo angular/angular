@@ -29,6 +29,7 @@ import {expanding_row_css} from './expanding_row_css';
     <ng-content></ng-content>
   </div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ExpandingRowDetailsContent implements OnDestroy {
   /** Used for unsubscribing to changes in isExpanded parent property. */

@@ -130,6 +130,7 @@ describe('projection', () => {
     @Component({
       selector: 'multiple-content-tags',
       template: '(<ng-content SELECT="h1"></ng-content>, <ng-content></ng-content>)',
+      standalone: false,
     })
     class MultipleContentTagsComponent {}
 
@@ -273,6 +274,7 @@ describe('projection', () => {
     @Component({
       selector: 'child',
       template: `<ng-content></ng-content>(<ng-template [ngIf]="showing"><ng-content select="div"></ng-content></ng-template>)`,
+      standalone: false,
     })
     class Child {
       @Input() showing!: boolean;
@@ -286,6 +288,7 @@ describe('projection', () => {
         <div>A</div>
         <span>B</span>
       </child>`,
+      standalone: false,
     })
     class App {
       showing = false;
@@ -335,7 +338,10 @@ describe('projection', () => {
   it('should support moving non projected light dom around', () => {
     let sourceDirective: ManualViewportDirective = undefined!;
 
-    @Directive({selector: '[manual]'})
+    @Directive({
+      selector: '[manual]',
+      standalone: false,
+    })
     class ManualViewportDirective {
       constructor(public templateRef: TemplateRef<Object>) {
         sourceDirective = this;
@@ -581,6 +587,7 @@ describe('projection', () => {
     @Component({
       selector: 'content-in-template',
       template: `(<ng-template manual><ng-content select="[id=left]"></ng-content></ng-template>)`,
+      standalone: false,
     })
     class ContentInATemplateComponent {}
 
@@ -605,6 +612,7 @@ describe('projection', () => {
     @Component({
       selector: 'content-in-main-and-template',
       template: `<ng-content></ng-content>(<ng-template manual><ng-content select="[id=left]"></ng-content></ng-template>)`,
+      standalone: false,
     })
     class ContentInMainAndTemplateComponent {}
 
@@ -700,20 +708,35 @@ describe('projection', () => {
   });
 
   describe('projectable nodes', () => {
-    @Component({selector: 'test', template: ''})
+    @Component({
+      selector: 'test',
+      template: '',
+      standalone: false,
+    })
     class TestComponent {
       constructor(public vcr: ViewContainerRef) {}
     }
 
-    @Component({selector: 'with-content', template: ''})
+    @Component({
+      selector: 'with-content',
+      template: '',
+      standalone: false,
+    })
     class WithContentCmpt {
       @ViewChild('ref', {static: true}) directiveRef: any;
     }
 
-    @Component({selector: 're-project', template: '<ng-content></ng-content>'})
+    @Component({
+      selector: 're-project',
+      template: '<ng-content></ng-content>',
+      standalone: false,
+    })
     class ReProjectCmpt {}
 
-    @Directive({selector: '[insert]'})
+    @Directive({
+      selector: '[insert]',
+      standalone: false,
+    })
     class InsertTplRef implements OnInit {
       constructor(
         private _vcRef: ViewContainerRef,
@@ -725,7 +748,11 @@ describe('projection', () => {
       }
     }
 
-    @Directive({selector: '[delayedInsert]', exportAs: 'delayedInsert'})
+    @Directive({
+      selector: '[delayedInsert]',
+      exportAs: 'delayedInsert',
+      standalone: false,
+    })
     class DelayedInsertTplRef {
       constructor(
         public vc: ViewContainerRef,
@@ -838,12 +865,20 @@ describe('projection', () => {
   });
 });
 
-@Component({selector: 'main', template: ''})
+@Component({
+  selector: 'main',
+  template: '',
+  standalone: false,
+})
 class MainComp {
   text: string = '';
 }
 
-@Component({selector: 'other', template: ''})
+@Component({
+  selector: 'other',
+  template: '',
+  standalone: false,
+})
 class OtherComp {
   text: string = '';
 }
@@ -852,6 +887,7 @@ class OtherComp {
   selector: 'simple',
   inputs: ['stringProp'],
   template: 'SIMPLE(<ng-content></ng-content>)',
+  standalone: false,
 })
 class Simple {
   stringProp: string = '';
@@ -862,6 +898,7 @@ class Simple {
   template: 'SIMPLE1(<slot></slot>)',
   encapsulation: ViewEncapsulation.ShadowDom,
   styles: ['div {color: red}'],
+  standalone: false,
 })
 class SimpleShadowDom1 {}
 
@@ -870,25 +907,35 @@ class SimpleShadowDom1 {}
   template: 'SIMPLE2(<slot></slot>)',
   encapsulation: ViewEncapsulation.ShadowDom,
   styles: ['div {color: blue}'],
+  standalone: false,
 })
 class SimpleShadowDom2 {}
 
-@Component({selector: 'empty', template: ''})
+@Component({
+  selector: 'empty',
+  template: '',
+  standalone: false,
+})
 class Empty {}
 
 @Component({
   selector: 'multiple-content-tags',
   template: '(<ng-content SELECT=".left"></ng-content>, <ng-content></ng-content>)',
+  standalone: false,
 })
 class MultipleContentTagsComponent {}
 
 @Component({
   selector: 'single-content-tag',
   template: '<ng-content SELECT=".target"></ng-content>',
+  standalone: false,
 })
 class SingleContentTagComponent {}
 
-@Directive({selector: '[manual]'})
+@Directive({
+  selector: '[manual]',
+  standalone: false,
+})
 class ManualViewportDirective {
   constructor(
     public vc: ViewContainerRef,
@@ -902,7 +949,10 @@ class ManualViewportDirective {
   }
 }
 
-@Directive({selector: '[project]'})
+@Directive({
+  selector: '[project]',
+  standalone: false,
+})
 class ProjectDirective {
   constructor(public vc: ViewContainerRef) {}
   show(templateRef: TemplateRef<Object>) {
@@ -916,6 +966,7 @@ class ProjectDirective {
 @Component({
   selector: 'outer-with-indirect-nested',
   template: 'OUTER(<simple><div><ng-content></ng-content></div></simple>)',
+  standalone: false,
 })
 class OuterWithIndirectNestedComponent {}
 
@@ -923,6 +974,7 @@ class OuterWithIndirectNestedComponent {}
   selector: 'outer',
   template:
     'OUTER(<inner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></inner>)',
+  standalone: false,
 })
 class OuterComponent {}
 
@@ -930,12 +982,14 @@ class OuterComponent {}
   selector: 'inner',
   template:
     'INNER(<innerinner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></innerinner>)',
+  standalone: false,
 })
 class InnerComponent {}
 
 @Component({
   selector: 'innerinner',
   template: 'INNERINNER(<ng-content select=".left"></ng-content>,<ng-content></ng-content>)',
+  standalone: false,
 })
 class InnerInnerComponent {}
 
@@ -943,6 +997,7 @@ class InnerInnerComponent {}
   selector: 'conditional-content',
   template:
     '<div>(<div *manual><ng-content select=".left"></ng-content></div>, <ng-content></ng-content>)</div>',
+  standalone: false,
 })
 class ConditionalContentComponent {}
 
@@ -950,12 +1005,14 @@ class ConditionalContentComponent {}
   selector: 'conditional-text',
   template:
     'MAIN(<ng-template manual>FIRST(<ng-template manual>SECOND(<ng-content></ng-content>)</ng-template>)</ng-template>)',
+  standalone: false,
 })
 class ConditionalTextComponent {}
 
 @Component({
   selector: 'tab',
   template: '<div><div *manual>TAB(<ng-content></ng-content>)</div></div>',
+  standalone: false,
 })
 class Tab {}
 
@@ -963,6 +1020,7 @@ class Tab {}
   selector: 'tree2',
   inputs: ['depth'],
   template: 'TREE2({{depth}}:<tree *manual [depth]="depth+1"></tree>)',
+  standalone: false,
 })
 class Tree2 {
   depth = 0;
@@ -972,12 +1030,17 @@ class Tree2 {
   selector: 'tree',
   inputs: ['depth'],
   template: 'TREE({{depth}}:<tree *manual [depth]="depth+1"></tree>)',
+  standalone: false,
 })
 class Tree {
   depth = 0;
 }
 
-@Component({selector: 'cmp-d', template: `<i>{{tagName}}</i>`})
+@Component({
+  selector: 'cmp-d',
+  template: `<i>{{tagName}}</i>`,
+  standalone: false,
+})
 class CmpD {
   tagName: string;
   constructor(elementRef: ElementRef) {
@@ -985,7 +1048,11 @@ class CmpD {
   }
 }
 
-@Component({selector: 'cmp-c', template: `<b>{{tagName}}</b>`})
+@Component({
+  selector: 'cmp-c',
+  template: `<b>{{tagName}}</b>`,
+  standalone: false,
+})
 class CmpC {
   tagName: string;
   constructor(elementRef: ElementRef) {
@@ -993,32 +1060,58 @@ class CmpC {
   }
 }
 
-@Component({selector: 'cmp-b', template: `<ng-content></ng-content><cmp-d></cmp-d>`})
+@Component({
+  selector: 'cmp-b',
+  template: `<ng-content></ng-content><cmp-d></cmp-d>`,
+  standalone: false,
+})
 class CmpB {}
 
-@Component({selector: 'cmp-a', template: `<ng-content></ng-content><cmp-c></cmp-c>`})
+@Component({
+  selector: 'cmp-a',
+  template: `<ng-content></ng-content><cmp-c></cmp-c>`,
+  standalone: false,
+})
 class CmpA {}
 
-@Component({selector: 'cmp-b11', template: `{{'b11'}}`})
+@Component({
+  selector: 'cmp-b11',
+  template: `{{'b11'}}`,
+  standalone: false,
+})
 class CmpB11 {}
 
-@Component({selector: 'cmp-b12', template: `{{'b12'}}`})
+@Component({
+  selector: 'cmp-b12',
+  template: `{{'b12'}}`,
+  standalone: false,
+})
 class CmpB12 {}
 
-@Component({selector: 'cmp-b21', template: `{{'b21'}}`})
+@Component({
+  selector: 'cmp-b21',
+  template: `{{'b21'}}`,
+  standalone: false,
+})
 class CmpB21 {}
 
-@Component({selector: 'cmp-b22', template: `{{'b22'}}`})
+@Component({
+  selector: 'cmp-b22',
+  template: `{{'b22'}}`,
+  standalone: false,
+})
 class CmpB22 {}
 
 @Component({
   selector: 'cmp-a1',
   template: `{{'a1'}}<cmp-b11></cmp-b11><cmp-b12></cmp-b12>`,
+  standalone: false,
 })
 class CmpA1 {}
 
 @Component({
   selector: 'cmp-a2',
   template: `{{'a2'}}<cmp-b21></cmp-b21><cmp-b22></cmp-b22>`,
+  standalone: false,
 })
 class CmpA2 {}

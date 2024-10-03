@@ -1,8 +1,9 @@
 import {Component, EventEmitter, NgModule, Output} from '@angular/core';
 
 @Component({
-  selector: 'some-comp',
-  template: '',
+    selector: 'some-comp',
+    template: '',
+    standalone: false
 })
 export class SomeComp {
   @Output() update = new EventEmitter<any>();
@@ -10,11 +11,12 @@ export class SomeComp {
 }
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
       <div (click)="click()" (change)="change()"></div>
       <some-comp (update)="update()" (delete)="delete()"></some-comp>
-    `
+    `,
+    standalone: false
 })
 export class MyComponent {
   click() {}

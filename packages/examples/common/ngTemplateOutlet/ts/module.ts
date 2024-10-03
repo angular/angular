@@ -28,6 +28,7 @@ import {BrowserModule} from '@angular/platform-browser';
       ><span>Ahoj {{ person }}!</span></ng-template
     >
   `,
+  standalone: false,
 })
 export class NgTemplateOutletExample {
   myContext = {$implicit: 'World', localSk: 'Svet'};
@@ -37,6 +38,7 @@ export class NgTemplateOutletExample {
 @Component({
   selector: 'example-app',
   template: `<ng-template-outlet-example></ng-template-outlet-example>`,
+  standalone: false,
 })
 export class AppComponent {}
 

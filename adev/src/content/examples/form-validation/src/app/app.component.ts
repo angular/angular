@@ -7,5 +7,6 @@ import {Component} from '@angular/core';
              <app-actor-form-template/>
              <hr>
              <app-actor-form-reactive/>`,
+  standalone: false,
 })
 export class AppComponent {}

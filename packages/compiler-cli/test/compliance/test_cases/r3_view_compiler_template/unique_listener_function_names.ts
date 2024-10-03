@@ -1,8 +1,8 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  template: `
+    selector: 'my-component',
+    template: `
     <div *ngFor="let item of items">
       <p (click)="$event">{{ item }}</p>
       <p (click)="$event">{{ item }}</p>
@@ -11,6 +11,7 @@ import {Component, NgModule} from '@angular/core';
       <p (click)="$event">{{ item }}</p>
     </div>
   `,
+    standalone: false
 })
 export class MyComponent {
   items = [4, 2];

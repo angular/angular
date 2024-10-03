@@ -45,7 +45,11 @@ export const creditCardValidatorBinding = {
   multi: true,
 };
 
-@Directive({selector: '[credit-card]', providers: [creditCardValidatorBinding]})
+@Directive({
+  selector: '[credit-card]',
+  providers: [creditCardValidatorBinding],
+  standalone: false,
+})
 export class CreditCardValidator {}
 
 /**
@@ -67,6 +71,7 @@ export class CreditCardValidator {}
   selector: 'show-error',
   inputs: ['controlPath: control', 'errorTypes: errors'],
   template: ` <span *ngIf="errorMessage !== null">{{ errorMessage }}</span> `,
+  standalone: false,
 })
 export class ShowError {
   formDir: NgForm;
@@ -162,6 +167,7 @@ export class ShowError {
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
   `,
+  standalone: false,
 })
 export class TemplateDrivenForms {
   model = new CheckoutModel();

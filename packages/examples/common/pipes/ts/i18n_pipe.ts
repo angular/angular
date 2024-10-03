@@ -12,6 +12,7 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'i18n-plural-pipe',
   template: `<div>{{ messages.length | i18nPlural: messageMapping }}</div>`,
+  standalone: false,
 })
 export class I18nPluralPipeComponent {
   messages: any[] = ['Message 1'];
@@ -27,6 +28,7 @@ export class I18nPluralPipeComponent {
 @Component({
   selector: 'i18n-select-pipe',
   template: `<div>{{ gender | i18nSelect: inviteMap }}</div>`,
+  standalone: false,
 })
 export class I18nSelectPipeComponent {
   gender: string = 'male';

@@ -17,7 +17,6 @@ import {MatExpansionModule} from '@angular/material/expansion';
   selector: 'ng-property-tab-header',
   styleUrls: ['./property-tab-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [MatExpansionModule, ComponentMetadataComponent],
 })
 export class PropertyTabHeaderComponent {

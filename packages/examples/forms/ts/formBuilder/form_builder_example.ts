@@ -26,6 +26,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
     <p>Value: {{ form.value | json }}</p>
     <p>Validation status: {{ form.status }}</p>
   `,
+  standalone: false,
 })
 export class FormBuilderComp {
   form: FormGroup;
@@ -48,6 +49,7 @@ export class FormBuilderComp {
 @Component({
   selector: 'app-disabled-form-control',
   template: ` <input [formControl]="control" placeholder="First" /> `,
+  standalone: false,
 })
 export class DisabledFormControlComponent {
   control: FormControl;

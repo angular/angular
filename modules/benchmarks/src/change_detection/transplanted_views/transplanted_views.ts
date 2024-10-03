@@ -26,6 +26,7 @@ import {newArray} from '../util';
     <ng-container *ngFor="let n of views; template: template; trackBy: trackByIndex"></ng-container>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class InsertionComponent {
   @Input() template!: TemplateRef<NgForOfContext<any, any[]>>;
@@ -49,6 +50,7 @@ export class InsertionComponent {
     <ng-template #template>{{ trackTemplateRefresh() }}</ng-template>
     <insertion-component [template]="template" [viewCount]="viewCount"></insertion-component>
   `,
+  standalone: false,
 })
 export class DeclarationComponent {
   @Input() viewCount = 1;

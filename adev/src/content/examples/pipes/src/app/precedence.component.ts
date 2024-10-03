@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {UpperCasePipe} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-pipe-precedence',
   templateUrl: './precedence.component.html',
   imports: [UpperCasePipe],

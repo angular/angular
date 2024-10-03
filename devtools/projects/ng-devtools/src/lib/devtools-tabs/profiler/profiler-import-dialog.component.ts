@@ -28,7 +28,6 @@ interface DialogData {
   selector: 'ng-profiler-import-dialog',
   templateUrl: './profiler-import-dialog.component.html',
   styleUrls: ['./profiler-import-dialog.component.scss'],
-  standalone: true,
   imports: [MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle, MatButton],
 })
 export class ProfilerImportDialogComponent {

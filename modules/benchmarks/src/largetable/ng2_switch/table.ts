@@ -25,6 +25,7 @@ import {emptyTable, TableCell} from '../util';
       </tr>
     </tbody>
   </table>`,
+  standalone: false,
 })
 export class TableComponent {
   @Input() data: TableCell[][] = emptyTable;

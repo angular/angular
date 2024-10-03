@@ -3,7 +3,6 @@ import {Component, computed, signal} from '@angular/core';
 import {$localize} from '@angular/localize/init';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
 })

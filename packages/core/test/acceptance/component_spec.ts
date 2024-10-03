@@ -52,6 +52,7 @@ describe('component', () => {
         selector: 'comp-with-on-destroy',
         template: '',
         providers: [{provide: testToken, useExisting: ParentWithOnDestroy}],
+        standalone: false,
       })
       class ParentWithOnDestroy {
         ngOnDestroy() {
@@ -59,7 +60,11 @@ describe('component', () => {
         }
       }
 
-      @Component({selector: 'child', template: ''})
+      @Component({
+        selector: 'child',
+        template: '',
+        standalone: false,
+      })
       class ChildComponent {
         // We need to inject the parent so the provider is instantiated.
         constructor(_parent: ParentWithOnDestroy) {}
@@ -71,6 +76,7 @@ describe('component', () => {
             <child></child>
           </comp-with-on-destroy>
         `,
+        standalone: false,
       })
       class App {}
 
@@ -84,10 +90,17 @@ describe('component', () => {
   });
 
   it('should be able to dynamically insert a component into a view container at the root of a component', () => {
-    @Component({template: 'hello'})
+    @Component({
+      template: 'hello',
+      standalone: false,
+    })
     class HelloComponent {}
 
-    @Component({selector: 'wrapper', template: '<ng-content></ng-content>'})
+    @Component({
+      selector: 'wrapper',
+      template: '<ng-content></ng-content>',
+      standalone: false,
+    })
     class Wrapper {}
 
     @Component({
@@ -96,6 +109,7 @@ describe('component', () => {
               <div #insertionPoint></div>
             </wrapper>
           `,
+      standalone: false,
     })
     class App {
       @ViewChild('insertionPoint', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
@@ -112,10 +126,16 @@ describe('component', () => {
   });
 
   it('should not throw when calling `detectChanges` on the ChangeDetectorRef of a destroyed view', () => {
-    @Component({template: 'hello'})
+    @Component({
+      template: 'hello',
+      standalone: false,
+    })
     class HelloComponent {}
 
-    @Component({template: `<div #insertionPoint></div>`})
+    @Component({
+      template: `<div #insertionPoint></div>`,
+      standalone: false,
+    })
     class App {
       @ViewChild('insertionPoint', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
     }
@@ -139,6 +159,7 @@ describe('component', () => {
       selector: 'wrapper',
       encapsulation: ViewEncapsulation.None,
       template: `<encapsulated></encapsulated>`,
+      standalone: false,
     })
     class WrapperComponent {}
 
@@ -148,6 +169,7 @@ describe('component', () => {
       // styles array must contain a value (even empty) to trigger `ViewEncapsulation.Emulated`
       styles: [``],
       template: `foo<leaf></leaf>`,
+      standalone: false,
     })
     class EncapsulatedComponent {}
 
@@ -155,6 +177,7 @@ describe('component', () => {
       selector: 'leaf',
       encapsulation: ViewEncapsulation.None,
       template: `<span>bar</span>`,
+      standalone: false,
     })
     class LeafComponent {}
 
@@ -204,7 +227,11 @@ describe('component', () => {
     it('should invoke onDestroy when directly destroying a root view', () => {
       let wasOnDestroyCalled = false;
 
-      @Component({selector: 'comp-with-destroy', template: ``})
+      @Component({
+        selector: 'comp-with-destroy',
+        template: ``,
+        standalone: false,
+      })
       class ComponentWithOnDestroy implements OnDestroy {
         ngOnDestroy() {
           wasOnDestroyCalled = true;
@@ -215,7 +242,11 @@ describe('component', () => {
       // tree is used during view destruction. If the child view is not correctly attached as a
       // child of the root view, then the onDestroy hook on the child view will never be called
       // when the view tree is torn down following the destruction of that root view.
-      @Component({selector: `test-app`, template: `<comp-with-destroy></comp-with-destroy>`})
+      @Component({
+        selector: `test-app`,
+        template: `<comp-with-destroy></comp-with-destroy>`,
+        standalone: false,
+      })
       class TestApp {}
 
       TestBed.configureTestingModule({declarations: [ComponentWithOnDestroy, TestApp]});
@@ -234,6 +265,7 @@ describe('component', () => {
     @Component({
       selector: '[comp]',
       template: 'comp content',
+      standalone: false,
     })
     class DynamicComponent {
       ngOnDestroy() {
@@ -248,6 +280,7 @@ describe('component', () => {
            <div id="app-root"></div>
            <div class="wrapper"></div>
          `,
+      standalone: false,
     })
     class App {
       componentRef!: ComponentRef<DynamicComponent>;
@@ -315,12 +348,14 @@ describe('component', () => {
           @Component({
             selector: '[comp]',
             template: 'comp content',
+            standalone: false,
           })
           class DynamicComponent {}
 
           @Component({
             selector: 'button',
             template: '<div id="app-root" #anchor></div>',
+            standalone: false,
           })
           class App {
             @ViewChild('anchor', {read: ViewContainerRef}) anchor!: ViewContainerRef;
@@ -365,12 +400,14 @@ describe('component', () => {
       @Component({
         selector: 'ng-container',
         template: '...',
+        standalone: false,
       })
       class Comp {}
 
       @Component({
         selector: 'root',
         template: '<ng-container></ng-container>',
+        standalone: false,
       })
       class App {}
 
@@ -384,12 +421,14 @@ describe('component', () => {
       @Component({
         selector: 'ng-template',
         template: '...',
+        standalone: false,
       })
       class Comp {}
 
       @Component({
         selector: 'root',
         template: '<ng-template></ng-template>',
+        standalone: false,
       })
       class App {}
 
@@ -403,17 +442,20 @@ describe('component', () => {
       @Component({
         selector: 'comp',
         template: '...',
+        standalone: false,
       })
       class CompA {}
 
       @Component({
         selector: 'comp',
         template: '...',
+        standalone: false,
       })
       class CompB {}
 
       @Component({
         template: '<comp></comp>',
+        standalone: false,
       })
       class App {}
 
@@ -427,7 +469,6 @@ describe('component', () => {
       @Component({
         selector: 'comp',
         template: '<comp *ngIf="recurse"/>hello',
-        standalone: true,
         imports: [Comp, NgIf],
       })
       class Comp {
@@ -436,7 +477,6 @@ describe('component', () => {
 
       @Component({
         template: '<comp [recurse]="true"/>',
-        standalone: true,
         imports: [Comp],
       })
       class App {}
@@ -457,7 +497,6 @@ describe('component', () => {
       @Component({
         selector: 'comp',
         template: '<comp *ngIf="recurse"/>hello',
-        standalone: true,
         imports: [forwardRef(() => Comp), NgIf],
       })
       class Comp {
@@ -466,7 +505,6 @@ describe('component', () => {
 
       @Component({
         template: '<comp [recurse]="true"/>',
-        standalone: true,
         imports: [Comp],
       })
       class App {}
@@ -490,6 +528,7 @@ describe('component', () => {
       template: '<parent-comp></parent-comp>',
       styles: [':host { color: red; }'], // `styles` must exist for encapsulation to apply.
       encapsulation: ViewEncapsulation.Emulated,
+      standalone: false,
     })
     class AppRoot {}
 
@@ -498,6 +537,7 @@ describe('component', () => {
       template: '',
       styles: [':host { color: orange; }'], // `styles` must exist for encapsulation to apply.
       encapsulation: ViewEncapsulation.Emulated,
+      standalone: false,
     })
     class ParentComponent {
       constructor(elementRef: ElementRef, renderer: Renderer2) {
@@ -534,6 +574,7 @@ describe('component', () => {
       template: '',
       styles: [':host { color: red; }'],
       encapsulation: ViewEncapsulation.Emulated,
+      standalone: false,
     })
     class Child {
       constructor(public renderer: Renderer2) {}
@@ -543,6 +584,7 @@ describe('component', () => {
       template: '<child></child>',
       styles: [':host { color: orange; }'],
       encapsulation: ViewEncapsulation.Emulated,
+      standalone: false,
     })
     class Parent {
       @ViewChild(Child) childInstance!: Child;
@@ -566,6 +608,7 @@ describe('component', () => {
     @Component({
       selector: 'comp-a',
       template: '<div>{{ a }}</div>',
+      standalone: false,
     })
     class CompA {
       @Input() a: string = '';
@@ -577,6 +620,7 @@ describe('component', () => {
     @Component({
       selector: 'comp-b',
       template: '<div>{{ b }}</div>',
+      standalone: false,
     })
     class CompB {
       @Input() b: string = '';
@@ -585,7 +629,10 @@ describe('component', () => {
       }
     }
 
-    @Component({template: `<span></span>`})
+    @Component({
+      template: `<span></span>`,
+      standalone: false,
+    })
     class MyCompA {
       constructor(private _injector: EnvironmentInjector) {}
 
@@ -597,7 +644,10 @@ describe('component', () => {
       }
     }
 
-    @Component({template: `<span></span>`})
+    @Component({
+      template: `<span></span>`,
+      standalone: false,
+    })
     class MyCompB {
       constructor(private envInjector: EnvironmentInjector) {}
 
@@ -639,7 +689,11 @@ describe('component', () => {
   });
 
   it('should preserve simple component selector in a component factory', () => {
-    @Component({selector: '[foo]', template: ''})
+    @Component({
+      selector: '[foo]',
+      template: '',
+      standalone: false,
+    })
     class AttSelectorCmp {}
 
     const selector = reflectComponentType(AttSelectorCmp)?.selector;
@@ -648,7 +702,11 @@ describe('component', () => {
   });
 
   it('should preserve complex component selector in a component factory', () => {
-    @Component({selector: '[foo],div:not(.bar)', template: ''})
+    @Component({
+      selector: '[foo],div:not(.bar)',
+      template: '',
+      standalone: false,
+    })
     class ComplexSelectorCmp {}
 
     const selector = reflectComponentType(ComplexSelectorCmp)?.selector;
@@ -660,6 +718,7 @@ describe('component', () => {
     @Component({
       selector: 'dynamic-comp',
       template: 'DynamicComponent Content',
+      standalone: false,
     })
     class DynamicComponent {}
 
@@ -675,6 +734,7 @@ describe('component', () => {
           </p>
         </div>
       `,
+      standalone: false,
     })
     class App {
       constructor(public injector: EnvironmentInjector) {}
@@ -719,7 +779,6 @@ describe('component', () => {
   describe('createComponent', () => {
     it('should create an instance of a standalone component', () => {
       @Component({
-        standalone: true,
         template: 'Hello {{ name }}!',
       })
       class StandaloneComponent {
@@ -743,6 +802,7 @@ describe('component', () => {
     it('should create an instance of an NgModule-based component', () => {
       @Component({
         template: 'Hello {{ name }}!',
+        standalone: false,
       })
       class NgModuleBasedComponent {
         name = 'Angular';
@@ -771,7 +831,6 @@ describe('component', () => {
 
     it('should render projected content', () => {
       @Component({
-        standalone: true,
         template: `
           <ng-content></ng-content>|
           <ng-content></ng-content>|
@@ -803,7 +862,6 @@ describe('component', () => {
     it('should be able to inject tokens from EnvironmentInjector', () => {
       const A = new InjectionToken('A');
       @Component({
-        standalone: true,
         template: 'Token: {{ a }}',
       })
       class StandaloneComponent {
@@ -825,7 +883,6 @@ describe('component', () => {
       const A = new InjectionToken('A');
       const B = new InjectionToken('B');
       @Component({
-        standalone: true,
         template: '{{ a }} and {{ b }}',
       })
       class ChildStandaloneComponent {
@@ -834,7 +891,6 @@ describe('component', () => {
       }
 
       @Component({
-        standalone: true,
         template: 'Tokens: <div #target></div>',
         providers: [{provide: A, useValue: 'ElementInjector(A)'}],
       })
@@ -874,7 +930,6 @@ describe('component', () => {
       const selector = 'standalone-comp';
       @Component({
         selector,
-        standalone: true,
         template: 'Hello {{ name }}!',
       })
       class StandaloneComponent {
@@ -901,7 +956,6 @@ describe('component', () => {
       () => {
         @Component({
           selector: '.some-class',
-          standalone: true,
           template: 'Hello {{ name }}!',
         })
         class StandaloneComponent {
@@ -961,7 +1015,6 @@ describe('component', () => {
 
       @Component({
         selector: 'standalone-component',
-        standalone: true,
         template: `
           <ng-content></ng-content>
           <ng-content select="content-selector-a"></ng-content>
@@ -1017,6 +1070,7 @@ describe('component', () => {
         `,
         inputs: ['input-a', 'input-b:input-alias-b'],
         outputs: ['output-a', 'output-b:output-alias-b'],
+        standalone: false,
       })
       class NonStandaloneComponent {
         @Input({alias: 'input-alias-c', transform: transformFn}) inputC: unknown;

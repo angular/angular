@@ -4,7 +4,6 @@ import {NgFor, NgIf} from '@angular/common';
 import {MessageService} from '../message.service';
 
 @Component({
-  standalone: true,
   selector: 'app-messages',
   templateUrl: './messages.component.html',
   imports: [NgFor, NgIf],

@@ -153,7 +153,6 @@ it('should be available as a standalone directive', () => {
       '<ng-template ngPluralCase="=0"><li>no messages</li></ng-template>' +
       '<ng-template ngPluralCase="=1"><li>one message</li></ng-template>' +
       '</ul>',
-    standalone: true,
   })
   class TestComponent {
     switchValue = 1;
@@ -180,7 +179,11 @@ class TestLocalization extends NgLocalization {
   }
 }
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {
   switchValue: number | null = null;
 }

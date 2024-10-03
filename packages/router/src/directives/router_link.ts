@@ -134,7 +134,6 @@ import {RuntimeErrorCode} from '../errors';
  */
 @Directive({
   selector: '[routerLink]',
-  standalone: true,
 })
 export class RouterLink implements OnChanges, OnDestroy {
   /**

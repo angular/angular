@@ -9,7 +9,7 @@ import {NgFor} from '@angular/common';
 // #docregion filter-animations
 @Component({
   // #enddocregion filter-animations
-  standalone: true,
+
   imports: [NgFor],
   selector: 'app-hero-list-page',
   templateUrl: 'hero-list-page.component.html',

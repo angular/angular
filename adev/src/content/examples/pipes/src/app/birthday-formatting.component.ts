@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {DatePipe} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-birthday-formatting',
   templateUrl: './birthday-formatting.component.html',
   imports: [DatePipe],

@@ -5,7 +5,6 @@ import {Hero} from './hero';
 import {NgFor} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-hero-list-enter-leave',
   template: `
     <ul class="heroes">
@@ -29,7 +28,6 @@ import {NgFor} from '@angular/common';
       transition('* => void', [animate(100, style({transform: 'translateX(100%)'}))]),
     ]),
   ],
-  // #enddocregion animationdef
 })
 export class HeroListEnterLeaveComponent {
   @Input() heroes: Hero[] = [];

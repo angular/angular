@@ -15,7 +15,6 @@ import {IconComponent} from '../icon/icon.component';
 
 @Component({
   selector: 'docs-table-of-contents',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './table-of-contents.component.html',
   styleUrls: ['./table-of-contents.component.scss'],

@@ -233,28 +233,48 @@ function initWithTemplate(compType: Type<any>, template: string) {
   return TestBed.createComponent(compType);
 }
 
-@Component({selector: 'comp-to-ref', template: ''})
+@Component({
+  selector: 'comp-to-ref',
+  template: '',
+  standalone: false,
+})
 class ComponentToReference {
   name = 'Nancy';
 }
 
-@Component({selector: 'app-comp', template: ``})
+@Component({
+  selector: 'app-comp',
+  template: ``,
+  standalone: false,
+})
 class AppComp {
   outer = false;
   inner = false;
 }
 
-@Directive({selector: '[dir]', exportAs: 'dir'})
+@Directive({
+  selector: '[dir]',
+  exportAs: 'dir',
+  standalone: false,
+})
 class DirToReference {
   name = 'Drew';
 }
 
-@Directive({selector: '[dirWithInput]'})
+@Directive({
+  selector: '[dirWithInput]',
+  standalone: false,
+})
 class DirWithCompInput {
   @Input('dirWithInput') comp: ComponentToReference | null = null;
 }
 
-@Directive({selector: '[dir-on-change]', exportAs: 'dirOnChange', host: {'[title]': 'name'}})
+@Directive({
+  selector: '[dir-on-change]',
+  exportAs: 'dirOnChange',
+  host: {'[title]': 'name'},
+  standalone: false,
+})
 class DirToReferenceWithPreOrderHooks implements OnInit, OnChanges, DoCheck {
   @Input() in: any = null;
   name = 'Drew';

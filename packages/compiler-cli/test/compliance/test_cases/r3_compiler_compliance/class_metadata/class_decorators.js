@@ -39,6 +39,7 @@ ComponentWithExternalResource.ɵcmp = …;
     type: Component,
     args: [{
       selector: 'test-cmp',
+      standalone: false,
       template: "<span>Test template</span>\n"
     }]
   }], null, null);

@@ -4,7 +4,6 @@ import {CarService} from './car.service';
 @Component({
   selector: 'app-root',
   template: ``,
-  standalone: true,
 })
 export class AppComponent {
   display = '';

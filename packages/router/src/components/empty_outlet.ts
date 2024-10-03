@@ -25,7 +25,6 @@ export {ɵEmptyOutletComponent as EmptyOutletComponent};
 @Component({
   template: `<router-outlet></router-outlet>`,
   imports: [RouterOutlet],
-  standalone: true,
 })
 export class ɵEmptyOutletComponent {}
 

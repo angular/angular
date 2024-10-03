@@ -1,13 +1,12 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     @let one = value + 1;
     @let two = one + 1;
     @let result = two + 1;
     The result is {{result}}
-  `,
-  standalone: true,
+  `
 })
 export class MyApp {
   value = 1;

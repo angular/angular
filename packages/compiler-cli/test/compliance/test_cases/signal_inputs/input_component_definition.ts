@@ -1,8 +1,7 @@
 import {Component, input} from '@angular/core';
 
 @Component({
-  standalone: true,
-  template: 'Works',
+    template: 'Works'
 })
 export class TestComp {
   counter = input(0);

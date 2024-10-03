@@ -3,12 +3,13 @@ import {Component, ContentChild, ContentChildren, ElementRef, NgModule, QueryLis
 import {SomeDirective} from './some.directive';
 
 @Component({
-  selector: 'content-query-component',
-  template: `
+    selector: 'content-query-component',
+    template: `
     <div someDir></div>
     <div #myRef></div>
     <div #myRef1></div>
-  `
+  `,
+    standalone: false
 })
 export class ContentQueryComponent {
   @ContentChild('myRef', {read: TemplateRef}) myRef!: TemplateRef<unknown>;

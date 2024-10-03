@@ -24,6 +24,7 @@ import {Component} from '@angular/core';
     <p>Form value: {{ f.value | json }}</p>
     <!-- example value: {state: {name: 'New York', abbrev: 'NY'} } -->
   `,
+  standalone: false,
 })
 export class SelectControlComp {
   states = [

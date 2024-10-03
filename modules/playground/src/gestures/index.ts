@@ -10,7 +10,11 @@ import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-@Component({selector: 'gestures-app', templateUrl: 'template.html'})
+@Component({
+  selector: 'gestures-app',
+  templateUrl: 'template.html',
+  standalone: false,
+})
 class GesturesCmp {
   swipeDirection: string = '-';
   pinchScale: number = 1;

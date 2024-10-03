@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     @for (item of items; track trackFn(item, message)) {
       {{item.name}}
     }
@@ -10,6 +10,7 @@ import {Component} from '@angular/core';
       {{otherItem.name}}
     }
   `,
+    standalone: false
 })
 export class MyApp {
   message = 'hello';

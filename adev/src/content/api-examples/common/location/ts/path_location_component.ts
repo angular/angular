@@ -24,6 +24,7 @@ import {Component} from '@angular/core';
     <code>{{ location.normalize('foo/bar') }}</code>
     <br />
   `,
+  standalone: false,
 })
 export class PathLocationComponent {
   location: Location;

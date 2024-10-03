@@ -6,6 +6,7 @@ import {Lib2Module} from 'lib2_built';
 @Component({
   selector: 'test-app',
   template: '<test-cmp></test-cmp>',
+  standalone: false,
 })
 export class TestApp {}
 

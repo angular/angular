@@ -12,9 +12,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     // @ts-ignore
                     signals: true,
-                    standalone: true,
                     selector: 'other-cmp',
-                    template: '',
+                    template: ''
                 }]
         }] });
 export class SignalCmp {
@@ -26,9 +25,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     // @ts-ignore
                     signals: true,
-                    standalone: true,
                     template: '<other-cmp></other-cmp>',
-                    imports: [OtherCmp],
+                    imports: [OtherCmp]
                 }]
         }] });
 
@@ -59,6 +57,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     // @ts-ignore
                     signals: true,
+                    standalone: false
                 }]
         }] });
 

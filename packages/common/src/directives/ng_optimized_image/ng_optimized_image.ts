@@ -273,7 +273,6 @@ export interface ImagePlaceholderConfig {
  * @publicApi
  */
 @Directive({
-  standalone: true,
   selector: 'img[ngSrc]',
   host: {
     '[style.position]': 'fill ? "absolute" : null',

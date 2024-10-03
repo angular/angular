@@ -1,10 +1,11 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <div [dir]="{foo: null}"></div>
     <div [dir]="{foo: getFoo()}"></div>
-  `
+  `,
+    standalone: false
 })
 export class MyApp {
   getFoo() {

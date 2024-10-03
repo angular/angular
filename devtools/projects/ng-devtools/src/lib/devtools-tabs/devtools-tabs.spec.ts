@@ -24,7 +24,6 @@ import {FrameManager} from '../frame_manager';
 @Component({
   selector: 'ng-directive-explorer',
   template: '',
-  standalone: true,
   imports: [MatTooltip, MatMenuModule],
 })
 export class MockDirectiveExplorerComponent {}

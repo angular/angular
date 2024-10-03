@@ -22,6 +22,7 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
   selector: '[make-color-grey]',
   exportAs: 'makeColorGrey',
   host: {'style': 'font-family: Times New Roman;'},
+  standalone: false,
 })
 class MakeColorGreyDirective {
   @HostBinding('style.background-color') private _backgroundColor: string | null = null;
@@ -42,7 +43,11 @@ class MakeColorGreyDirective {
   }
 }
 
-@Component({selector: 'box-with-overridden-styles', template: '...'})
+@Component({
+  selector: 'box-with-overridden-styles',
+  template: '...',
+  standalone: false,
+})
 class BoxWithOverriddenStylesComponent {
   public active = false;
 
@@ -100,6 +105,7 @@ class BoxWithOverriddenStylesComponent {
       [style]="{'border-radius':'50px', 'border': '50px solid teal'}" [ngStyle]="{transform:'rotate(50deg)'}">
     </box-with-overridden-styles>
   `,
+  standalone: false,
 })
 class AnimationWorldComponent {
   @HostBinding('class') classVal = 'border';

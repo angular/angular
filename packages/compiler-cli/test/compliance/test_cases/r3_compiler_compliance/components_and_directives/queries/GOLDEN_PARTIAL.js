@@ -11,6 +11,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[someDir]',
+                    standalone: false
                 }]
         }] });
 
@@ -41,7 +42,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'view-query-component',
                     template: `
     <div someDir></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { someDir: [{
                 type: ViewChild,
@@ -96,7 +98,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'view-query-component',
                     template: `
     <div someDir></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { someDir: [{
                 type: ViewChild,
@@ -117,7 +120,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-app',
                     template: `
     <view-query-component></view-query-component>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class SomeDirective {
@@ -128,6 +132,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[someDir]',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -184,7 +189,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div #myRef></div>
     <div #myRef1></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { myRef: [{
                 type: ViewChild,
@@ -233,6 +239,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[someDir]',
+                    standalone: false
                 }]
         }] });
 
@@ -263,7 +270,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'view-query-component',
                     template: `
     <div someDir></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { someDir: [{
                 type: ViewChild,
@@ -314,6 +322,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[someDir]',
+                    standalone: false
                 }]
         }] });
 
@@ -348,7 +357,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div someDir></div>
     <div #myRef></div>
     <div #myRef1></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { myRef: [{
                 type: ViewChild,
@@ -405,6 +415,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[someDir]',
+                    standalone: false
                 }]
         }] });
 
@@ -435,7 +446,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'content-query-component',
                     template: `
     <div><ng-content></ng-content></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { someDir: [{
                 type: ContentChild,
@@ -460,7 +472,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -513,7 +526,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'content-query-component',
                     template: `
     <div><ng-content></ng-content></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { someDir: [{
                 type: ContentChild,
@@ -538,7 +552,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class SomeDirective {
@@ -549,6 +564,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[someDir]',
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -605,7 +621,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div #myRef></div>
     <div #myRef1></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { myRef: [{
                 type: ContentChild,
@@ -654,6 +671,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[someDir]',
+                    standalone: false
                 }]
         }] });
 
@@ -684,7 +702,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'content-query-component',
                     template: `
     <div><ng-content></ng-content></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { someDir: [{
                 type: ContentChild,
@@ -709,7 +728,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -758,6 +778,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[someDir]',
+                    standalone: false
                 }]
         }] });
 
@@ -792,7 +813,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div someDir></div>
     <div #myRef></div>
     <div #myRef1></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { myRef: [{
                 type: ContentChild,
@@ -849,6 +871,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[someDir]',
+                    standalone: false
                 }]
         }] });
 
@@ -881,7 +904,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div someDir></div>
     <div #myRef></div>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { myRefs: [{
                 type: ContentChildren,

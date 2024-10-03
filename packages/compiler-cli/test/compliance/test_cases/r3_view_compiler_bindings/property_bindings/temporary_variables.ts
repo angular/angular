@@ -1,6 +1,9 @@
 import {Component, NgModule, Pipe} from '@angular/core';
 
-@Pipe({name: 'async'})
+@Pipe({
+    name: 'async',
+    standalone: false
+})
 export class AsyncPipe {
   transform(v: any): null|any {}
 }
@@ -12,8 +15,8 @@ export class AsyncPipe {
 // is important for when the LHS contains a pipe, as pipe evaluation depends on the current
 // binding index.
 @Component({
-  template:
-      '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>'
+    template: '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>',
+    standalone: false
 })
 export class MyComponent {
   myTitle = 'hello';

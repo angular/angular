@@ -157,6 +157,7 @@ withEachNg1Version(() => {
         @Component({
           selector: 'comp',
           template: '',
+          standalone: false,
         })
         class NewComponent {}
 

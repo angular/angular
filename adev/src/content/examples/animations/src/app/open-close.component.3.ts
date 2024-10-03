@@ -5,7 +5,6 @@ import {transition, trigger, useAnimation, AnimationEvent} from '@angular/animat
 import {transitionAnimation} from './animations';
 
 @Component({
-  standalone: true,
   selector: 'app-open-close-reusable',
   animations: [
     trigger('openClose', [

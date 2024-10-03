@@ -16,6 +16,7 @@ import {PathLocationComponent} from './path_location_component';
 @Component({
   selector: 'example-app',
   template: `<hash-location></hash-location><path-location></path-location>`,
+  standalone: false,
 })
 export class AppComponent {}
 

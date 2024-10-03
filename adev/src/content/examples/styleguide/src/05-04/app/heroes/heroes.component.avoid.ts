@@ -8,7 +8,6 @@ import {AsyncPipe, NgFor, NgIf, UpperCasePipe} from '@angular/common';
 /* avoid */
 
 @Component({
-  standalone: true,
   selector: 'toh-heroes',
   template: `
     <div>

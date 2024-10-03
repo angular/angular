@@ -11,7 +11,6 @@ import {ReactiveFormsModule, Validators} from '@angular/forms';
       <button type="submit" [disabled]="!profileForm.valid">Submit</button>
     </form>
   `,
-  standalone: true,
   imports: [ReactiveFormsModule],
 })
 export class AppComponent {

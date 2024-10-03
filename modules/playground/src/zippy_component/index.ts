@@ -22,6 +22,7 @@ import {Zippy} from './app/zippy';
       <li *ngFor="let log of logs">{{ log }}</li>
     </ul>
   `,
+  standalone: false,
 })
 export class ZippyApp {
   logs: string[] = [];

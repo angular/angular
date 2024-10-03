@@ -62,6 +62,7 @@ import {TitleCasePipeComponent} from './titlecase_pipe';
     <h2><code>keyvalue</code></h2>
     <keyvalue-pipe></keyvalue-pipe>
   `,
+  standalone: false,
 })
 export class AppComponent {}
 

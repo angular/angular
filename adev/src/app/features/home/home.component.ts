@@ -32,7 +32,6 @@ import type {HomeAnimation} from './services/home-animation.service';
 export const TUTORIALS_HOMEPAGE_DIRECTORY = 'homepage';
 
 @Component({
-  standalone: true,
   selector: 'adev-home',
   imports: [RouterLink, CodeEditorComponent],
   templateUrl: './home.component.html',

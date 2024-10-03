@@ -68,7 +68,6 @@ describe('ClickOutside', () => {
     </div>
   `,
   imports: [ClickOutside],
-  standalone: true,
 })
 class ExampleComponent {
   docsClickOutsideIgnore = ['ignoreThisButton'];

@@ -267,6 +267,7 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any;
@@ -306,6 +307,7 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
               ]),
             ]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp: any;
@@ -344,6 +346,7 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
             trigger('animation1', [transition('a => b', [])]),
             trigger('animation2', [transition(':leave', [])]),
           ],
+          standalone: false,
         })
         class Cmp {
           exp1: any = true;

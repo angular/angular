@@ -10,7 +10,11 @@ import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-@Component({selector: '[svg-group]', template: `<svg:text x="20" y="20">Hello</svg:text>`})
+@Component({
+  selector: '[svg-group]',
+  template: `<svg:text x="20" y="20">Hello</svg:text>`,
+  standalone: false,
+})
 export class SvgGroup {}
 
 @Component({
@@ -18,6 +22,7 @@ export class SvgGroup {}
   template: `<svg>
     <g svg-group></g>
   </svg>`,
+  standalone: false,
 })
 export class SvgApp {}
 

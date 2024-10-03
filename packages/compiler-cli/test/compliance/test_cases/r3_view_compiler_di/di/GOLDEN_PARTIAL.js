@@ -20,7 +20,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: ``, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: `` }]
+            args: [{
+                    selector: 'my-component', template: ``,
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: undefined, decorators: [{
                     type: Attribute,
                     args: ['name']
@@ -353,7 +356,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Injectable
         }, {
             type: Pipe,
-            args: [{ name: 'myPipe' }]
+            args: [{
+                    name: 'myPipe',
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: Service }] });
 export class MyOtherPipe {
     constructor(service) { }
@@ -366,7 +372,10 @@ MyOtherPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.
 MyOtherPipe.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOtherPipe });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOtherPipe, decorators: [{
             type: Pipe,
-            args: [{ name: 'myOtherPipe' }]
+            args: [{
+                    name: 'myOtherPipe',
+                    standalone: false
+                }]
         }, {
             type: Injectable
         }], ctorParameters: () => [{ type: Service }] });
@@ -376,7 +385,10 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: '{{0 | myPipe | myOtherPipe}}', isInline: true, dependencies: [{ kind: "pipe", type: MyPipe, name: "myPipe" }, { kind: "pipe", type: MyOtherPipe, name: "myOtherPipe" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
-            args: [{ selector: 'my-app', template: '{{0 | myPipe | myOtherPipe}}' }]
+            args: [{
+                    selector: 'my-app', template: '{{0 | myPipe | myOtherPipe}}',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }

@@ -9,7 +9,10 @@ ChildComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 ChildComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: ChildComponent, selector: "child", ngImport: i0, template: 'child-view', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ChildComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'child', template: 'child-view' }]
+            args: [{
+                    selector: 'child', template: 'child-view',
+                    standalone: false
+                }]
         }] });
 export class SomeDirective {
 }
@@ -17,7 +20,10 @@ SomeDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "[some-directive]", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[some-directive]' }]
+            args: [{
+                    selector: '[some-directive]',
+                    standalone: false
+                }]
         }] });
 export class MyComponent {
 }
@@ -25,7 +31,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<child some-directive></child>!', isInline: true, dependencies: [{ kind: "component", type: ChildComponent, selector: "child" }, { kind: "directive", type: SomeDirective, selector: "[some-directive]" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: '<child some-directive></child>!' }]
+            args: [{
+                    selector: 'my-component', template: '<child some-directive></child>!',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -70,7 +79,10 @@ SomeDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SomeDirective, selector: "div.foo[some-directive]:not([title]):not(.baz)", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeDirective, decorators: [{
             type: Directive,
-            args: [{ selector: 'div.foo[some-directive]:not([title]):not(.baz)' }]
+            args: [{
+                    selector: 'div.foo[some-directive]:not([title]):not(.baz)',
+                    standalone: false
+                }]
         }] });
 export class OtherDirective {
 }
@@ -78,7 +90,10 @@ OtherDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 OtherDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: OtherDirective, selector: ":not(span[title]):not(.baz)", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: OtherDirective, decorators: [{
             type: Directive,
-            args: [{ selector: ':not(span[title]):not(.baz)' }]
+            args: [{
+                    selector: ':not(span[title]):not(.baz)',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -119,7 +134,10 @@ SomeComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "
 SomeComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SomeComponent, selector: "#my-app", ngImport: i0, template: '', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeComponent, decorators: [{
             type: Component,
-            args: [{ selector: '#my-app', template: '' }]
+            args: [{
+                    selector: '#my-app', template: '',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -156,7 +174,10 @@ RouterOutlet.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0
 RouterOutlet.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: RouterOutlet, selector: "router-outlet", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: RouterOutlet, decorators: [{
             type: Directive,
-            args: [{ selector: 'router-outlet' }]
+            args: [{
+                    selector: 'router-outlet',
+                    standalone: false
+                }]
         }] });
 export class EmptyOutletComponent {
 }
@@ -164,7 +185,10 @@ EmptyOutletComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", ver
 EmptyOutletComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: EmptyOutletComponent, selector: "ng-component", ngImport: i0, template: '<router-outlet></router-outlet>', isInline: true, dependencies: [{ kind: "directive", type: RouterOutlet, selector: "router-outlet" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EmptyOutletComponent, decorators: [{
             type: Component,
-            args: [{ template: '<router-outlet></router-outlet>' }]
+            args: [{
+                    template: '<router-outlet></router-outlet>',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -210,7 +234,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: '' }]
+            args: [{
+                    selector: 'my-component', template: '',
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: i0.ElementRef }, { type: i0.ViewContainerRef }, { type: i0.ChangeDetectorRef }] });
 export class MyModule {
 }
@@ -253,7 +280,10 @@ IfDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 IfDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: IfDirective, selector: "[if]", ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IfDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[if]' }]
+            args: [{
+                    selector: '[if]',
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: i0.TemplateRef }] });
 export class MyComponent {
     constructor() {
@@ -264,7 +294,10 @@ MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>', isInline: true, dependencies: [{ kind: "directive", type: IfDirective, selector: "[if]" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'my-component', template: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>' }]
+            args: [{
+                    selector: 'my-component', template: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>',
+                    standalone: false
+                }]
         }] });
 export class MyModule {
 }
@@ -316,7 +349,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <p>{{ names[0] }}</p>
     <p>{{ names[1] }}</p>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { names: [{
                 type: Input
@@ -336,7 +370,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-app',
                     template: `
   <my-comp [names]="['Nancy', customName]"></my-comp>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -406,7 +441,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {{ names[9] }}
     {{ names[10] }}
     {{ names[11] }}
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { names: [{
                 type: Input
@@ -436,7 +472,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <my-comp [names]="['start-', n0, n1, n2, n3, n4, '-middle-', n5, n6, n7, n8, '-end']">
   </my-comp>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -496,7 +533,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <p> {{ config['duration'] }} </p>
     <p> {{ config.animation }} </p>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { config: [{
                 type: Input
@@ -516,7 +554,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-app',
                     template: `
   <object-comp [config]="{'duration': 500, animation: name}"></object-comp>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -572,7 +611,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <p> {{ config.animation }} </p>
     <p> {{config.actions[0].opacity }} </p>
     <p> {{config.actions[1].duration }} </p>
-  `
+  `,
+                    standalone: false
                 }]
         }], propDecorators: { config: [{
                 type: Input
@@ -595,7 +635,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
   <nested-comp [config]="{animation: name, actions: [{ opacity: 0, duration: 0}, {opacity: 1, duration: duration }]}">
   </nested-comp>
-`
+`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -653,7 +694,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     <div>Total: \${{ 1_000_000 * multiplier }}</div>
     <span>Remaining: \${{ 123_456.78_9 / 2 }}</span>
-  `
+  `,
+                    standalone: false
                 }]
         }] });
 export class MyModule {

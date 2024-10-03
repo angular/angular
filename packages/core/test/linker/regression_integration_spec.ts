@@ -89,12 +89,18 @@ describe('regressions', () => {
     });
 
     it('should only update the bound property when using asyncPipe - #15205', fakeAsync(() => {
-      @Component({template: '<div myDir [a]="p | async" [b]="2"></div>'})
+      @Component({
+        template: '<div myDir [a]="p | async" [b]="2"></div>',
+        standalone: false,
+      })
       class MyComp {
         p = Promise.resolve(1);
       }
 
-      @Directive({selector: '[myDir]'})
+      @Directive({
+        selector: '[myDir]',
+        standalone: false,
+      })
       class MyDir {
         setterCalls: {[key: string]: any} = {};
         changes: SimpleChanges | undefined;
@@ -144,7 +150,11 @@ describe('regressions', () => {
     });
 
     it('should evaluate a conditional in a statement binding', () => {
-      @Component({selector: 'some-comp', template: '<p (click)="nullValue?.click()"></p>'})
+      @Component({
+        selector: 'some-comp',
+        template: '<p (click)="nullValue?.click()"></p>',
+        standalone: false,
+      })
       class SomeComponent {
         nullValue: SomeReferencedClass | undefined;
       }
@@ -245,7 +255,11 @@ describe('regressions', () => {
 
   it('should generate the correct output when constructors have the same name', () => {
     function ComponentFactory(selector: string, template: string) {
-      @Component({selector, template})
+      @Component({
+        selector,
+        template,
+        standalone: false,
+      })
       class MyComponent {}
       return MyComponent;
     }
@@ -264,7 +278,10 @@ describe('regressions', () => {
   });
 
   it('should allow to use the renderer outside of views', () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class MyComp {
       constructor(public renderer: Renderer2) {}
     }
@@ -277,10 +294,16 @@ describe('regressions', () => {
   });
 
   it('should not recreate TemplateRef references during dirty checking', () => {
-    @Component({template: '<div [someDir]="someRef"></div><ng-template #someRef></ng-template>'})
+    @Component({
+      template: '<div [someDir]="someRef"></div><ng-template #someRef></ng-template>',
+      standalone: false,
+    })
     class MyComp {}
 
-    @Directive({selector: '[someDir]'})
+    @Directive({
+      selector: '[someDir]',
+      standalone: false,
+    })
     class MyDir {
       @Input('someDir') template: TemplateRef<any> | undefined;
     }
@@ -301,7 +324,10 @@ describe('regressions', () => {
   });
 
   it('should not recreate ViewContainerRefs in queries', () => {
-    @Component({template: '<div #vc></div><div *ngIf="show" #vc></div>'})
+    @Component({
+      template: '<div #vc></div><div *ngIf="show" #vc></div>',
+      standalone: false,
+    })
     class MyComp {
       @ViewChildren('vc', {read: ViewContainerRef}) viewContainers!: QueryList<ViewContainerRef>;
 
@@ -330,7 +356,10 @@ describe('regressions', () => {
 
   describe('empty templates - #15143', () => {
     it('should allow empty components', () => {
-      @Component({template: ''})
+      @Component({
+        template: '',
+        standalone: false,
+      })
       class MyComp {}
 
       const fixture = TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(
@@ -343,12 +372,19 @@ describe('regressions', () => {
   });
 
   it('should throw if @ContentChild and @Input are on the same property', () => {
-    @Directive({selector: 'test'})
+    @Directive({
+      selector: 'test',
+      standalone: false,
+    })
     class Test {
       @Input() @ContentChild(TemplateRef, {static: true}) tpl: TemplateRef<any> | undefined;
     }
 
-    @Component({selector: 'my-app', template: `<test></test>`})
+    @Component({
+      selector: 'my-app',
+      template: `<test></test>`,
+      standalone: false,
+    })
     class App {}
 
     expect(() => {
@@ -357,7 +393,10 @@ describe('regressions', () => {
   });
 
   it('should not add ng-version for dynamically created components', () => {
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class App {}
 
     const compRef = createComponent(App, {
@@ -404,6 +443,7 @@ describe('regressions using bootstrap', () => {
         selector: COMP_SELECTOR,
         template:
           '<button (click)="next()"></button><button (click)="nextAndThrow()"></button><button (dirClick)="nextAndThrow()"></button><span>Value:{{value}}</span><span>{{throwIfNeeded()}}</span>',
+        standalone: false,
       })
       class ErrorComp {
         value = 0;
@@ -424,7 +464,10 @@ describe('regressions using bootstrap', () => {
         }
       }
 
-      @Directive({selector: '[dirClick]'})
+      @Directive({
+        selector: '[dirClick]',
+        standalone: false,
+      })
       class EventDir {
         @Output() dirClick = new EventEmitter();
 
@@ -494,29 +537,49 @@ describe('regressions using bootstrap', () => {
   }
 });
 
-@Component({selector: 'my-comp', template: ''})
+@Component({
+  selector: 'my-comp',
+  template: '',
+  standalone: false,
+})
 class MyComp1 {
   constructor(public injector: Injector) {}
 }
 
-@Pipe({name: 'somePipe', pure: true})
+@Pipe({
+  name: 'somePipe',
+  pure: true,
+  standalone: false,
+})
 class PlatformPipe implements PipeTransform {
   transform(value: any): any {
     return 'somePlatformPipe';
   }
 }
 
-@Pipe({name: 'somePipe', pure: true})
+@Pipe({
+  name: 'somePipe',
+  pure: true,
+  standalone: false,
+})
 class CustomPipe implements PipeTransform {
   transform(value: any): any {
     return 'someCustomPipe';
   }
 }
 
-@Component({selector: 'cmp-content', template: `<ng-content></ng-content>`})
+@Component({
+  selector: 'cmp-content',
+  template: `<ng-content></ng-content>`,
+  standalone: false,
+})
 class CmpWithNgContent {}
 
-@Component({selector: 'counting-cmp', template: ''})
+@Component({
+  selector: 'counting-cmp',
+  template: '',
+  standalone: false,
+})
 class MyCountingComp {
   method(): {value: string} | undefined {
     MyCountingComp.calls++;
@@ -529,7 +592,10 @@ class MyCountingComp {
   static calls = 0;
 }
 
-@Pipe({name: 'countingPipe'})
+@Pipe({
+  name: 'countingPipe',
+  standalone: false,
+})
 class CountingPipe implements PipeTransform {
   transform(value: any): any {
     CountingPipe.calls++;
@@ -544,17 +610,20 @@ class CountingPipe implements PipeTransform {
 @Component({
   selector: 'left',
   template: `L<right *ngIf="false"></right>`,
+  standalone: false,
 })
 class LeftComp {}
 
 @Component({
   selector: 'right',
   template: `R<left *ngIf="false"></left>`,
+  standalone: false,
 })
 class RightComp {}
 
 @Component({
   selector: 'fakeRecursiveComp',
   template: `[<left *ngIf="false"></left><right *ngIf="false"></right>]`,
+  standalone: false,
 })
 export class FakeRecursiveComp {}

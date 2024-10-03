@@ -28,6 +28,7 @@ import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angul
       <button (click)="addCity()">Add City</button>
     </div>
   </form>`,
+  standalone: false,
 })
 export class TemplateFormsComponent {
   name = {first: 'Nancy', last: 'Drew', subscribed: true};
@@ -68,6 +69,7 @@ export class TemplateFormsComponent {
     </div>
     <button (click)="addCity()">Add City</button>
   </form>`,
+  standalone: false,
 })
 export class ReactiveFormsComponent {
   profileForm!: FormGroup;
@@ -109,5 +111,6 @@ export class ReactiveFormsComponent {
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
+  standalone: false,
 })
 export class AppComponent {}

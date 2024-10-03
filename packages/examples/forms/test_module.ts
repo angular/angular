@@ -22,7 +22,11 @@ import * as simpleFormControlExample from './ts/simpleFormControl/module';
 import * as simpleFormGroupExample from './ts/simpleFormGroup/module';
 import * as simpleNgModelExample from './ts/simpleNgModel/module';
 
-@Component({selector: 'example-app', template: '<router-outlet></router-outlet>'})
+@Component({
+  selector: 'example-app',
+  template: '<router-outlet></router-outlet>',
+  standalone: false,
+})
 export class TestsAppComponent {}
 
 @NgModule({

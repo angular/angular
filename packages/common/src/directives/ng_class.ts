@@ -68,7 +68,6 @@ interface CssClassState {
  */
 @Directive({
   selector: '[ngClass]',
-  standalone: true,
 })
 export class NgClass implements DoCheck {
   private initialClasses = EMPTY_ARRAY;

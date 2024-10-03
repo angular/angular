@@ -124,6 +124,7 @@ export class RadioControlRegistry {
     'input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]',
   host: {'(change)': 'onChange()', '(blur)': 'onTouched()'},
   providers: [RADIO_VALUE_ACCESSOR],
+  standalone: false,
 })
 export class RadioControlValueAccessor
   extends BuiltInControlValueAccessor

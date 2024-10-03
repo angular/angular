@@ -25,7 +25,8 @@ describe('getSemanticDiagnostics', () => {
       import {Component, NgModule} from '@angular/core';
 
       @Component({
-        template: ''
+        template: '',
+        standalone: false,
       })
       export class AppComponent {}
     `,
@@ -42,7 +43,8 @@ describe('getSemanticDiagnostics', () => {
       import {Component, NgModule} from '@angular/core';
 
       @Component({
-        template: '{{nope}}'
+        template: '{{nope}}',
+        standalone: false,
       })
       export class AppComponent {}
     `,
@@ -63,7 +65,8 @@ describe('getSemanticDiagnostics', () => {
       import {Component, NgModule} from '@angular/core';
 
       @Component({
-        templateUrl: './app.html'
+        templateUrl: './app.html',
+        standalone: false,
       })
       export class AppComponent {}
     `,
@@ -81,7 +84,8 @@ describe('getSemanticDiagnostics', () => {
         import {Component, NgModule} from '@angular/core';
 
         @Component({
-          templateUrl: './app.html'
+          templateUrl: './app.html',
+          standalone: false,
         })
         export class AppComponent {}
       `,
@@ -100,6 +104,7 @@ describe('getSemanticDiagnostics', () => {
 
         @Component({
           template: '{{nope}}',
+          standalone: false,
         })
         export class AppComponent {}
       `,
@@ -119,7 +124,8 @@ describe('getSemanticDiagnostics', () => {
       import {Component, NgModule} from '@angular/core';
 
       @Component({
-        templateUrl: './app.html'
+        templateUrl: './app.html',
+        standalone: false,
       })
       export class AppComponent {}
     `,
@@ -141,7 +147,8 @@ describe('getSemanticDiagnostics', () => {
       import {Component, NgModule} from '@angular/core';
 
       @Component({
-        templateUrl: './app.html'
+        templateUrl: './app.html',
+        standalone: false,
       })
       export class AppComponent {
         nope = false;
@@ -168,7 +175,8 @@ describe('getSemanticDiagnostics', () => {
       import {Component, NgModule} from '@angular/core';
 
       @Component({
-        templateUrl: './app.html'
+        templateUrl: './app.html',
+        standalone: false,
       })
       export class AppComponent {
         nope = false;
@@ -195,10 +203,16 @@ describe('getSemanticDiagnostics', () => {
       'app.ts': `
       import {Component, NgModule} from '@angular/core';
 
-      @Component({ templateUrl: './app1.html' })
+      @Component({ 
+        templateUrl: './app1.html',
+        standalone: false,
+      })
       export class AppComponent1 { nope = false; }
 
-      @Component({ templateUrl: './app2.html' })
+      @Component({ 
+        templateUrl: './app2.html',
+        standalone: false,
+      })
       export class AppComponent2 { nope = false; }
     `,
       'app1.html': '{{nope = false}}',
@@ -234,7 +248,9 @@ describe('getSemanticDiagnostics', () => {
     const files = {
       'app.ts': `
       import {Component} from '@angular/core';
-      @Component({})
+      @Component({
+        standalone: false,
+      })
       export class MyComponent {}
     `,
     };
@@ -252,6 +268,7 @@ describe('getSemanticDiagnostics', () => {
 
         @Component({
           template: '<div *ngFor="let user of users">{{user}}</div>',
+          standalone: false,
         })
         export class MyComponent {
           users = ['Alpha', 'Beta'];
@@ -283,6 +300,7 @@ describe('getSemanticDiagnostics', () => {
 
         @Component({
           template: 'Simple template',
+          standalone: false,
         })
         export class MyComponent<T extends PrivateInterface> {}
       `,
@@ -319,6 +337,7 @@ describe('getSemanticDiagnostics', () => {
 
         @Component({
           template: 'Simple template that does not use "myPipe"',
+          standalone: false,
         })
         export class MyComponent {}
 
@@ -339,7 +358,10 @@ describe('getSemanticDiagnostics', () => {
     const files = {
       'app.ts': `
         import {Component} from '@angular/core';
-        @Component({ template: '' })
+        @Component({ 
+          template: '',
+          standalone: false,
+        })
         export class MyComponent {}
       `,
     };
@@ -365,6 +387,7 @@ describe('getSemanticDiagnostics', () => {
         @Component({
           template: '',
           styleUrls: ['./one.css', './two/two.css', './three.css', '../test/four.css'],
+          standalone: false,
         })
         export class MyComponent {}
       `,
@@ -387,6 +410,7 @@ describe('getSemanticDiagnostics', () => {
         @Component({
           template: '',
           styleUrls: ['./missing.css'],
+          standalone: false,
         })
         export class MyComponent {}
       `,
@@ -408,6 +432,7 @@ describe('getSemanticDiagnostics', () => {
         @Component({
           selector: 'test',
           template: '<div ([notARealThing])="bar"></div>',
+          standalone: false,
         })
         export class TestCmp {
           bar: string = "text";
@@ -431,6 +456,7 @@ describe('getSemanticDiagnostics', () => {
         @Component({
           selector: 'test',
           template: '<div ([notARealThing])="bar"></div>',
+          standalone: false,
         })
         export class TestCmp {
           bar: string = "text";
@@ -452,6 +478,7 @@ describe('getSemanticDiagnostics', () => {
         @Component({
           selector: 'test',
           templateUrl: './app.html',
+          standalone: false,
         })
         export class TestCmp {
           bar: string = "text";
@@ -476,6 +503,7 @@ describe('getSemanticDiagnostics', () => {
         @Component({
           selector: 'test',
           templateUrl: './app.html',
+          standalone: false,
         })
         export class TestCmp {
           bar: string = "text";

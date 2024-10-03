@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   template: '<h2>Example template</h2>',
   styles: [

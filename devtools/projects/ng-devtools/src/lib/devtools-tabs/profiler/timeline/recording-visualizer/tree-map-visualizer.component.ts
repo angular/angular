@@ -30,7 +30,6 @@ import {TreeMapFormatter, TreeMapNode} from '../record-formatter/tree-map-format
   selector: 'ng-tree-map-visualizer',
   templateUrl: './tree-map-visualizer.component.html',
   styleUrls: ['./tree-map-visualizer.component.scss'],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreeMapVisualizerComponent implements OnDestroy {

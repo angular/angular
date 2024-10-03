@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {ExponentialStrengthPipe} from './exponential-strength.pipe';
 
 @Component({
-  standalone: true,
   selector: 'app-power-booster',
   template: `
     <h2>Power Booster</h2>

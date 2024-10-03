@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {DatePipe} from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-birthday',
   templateUrl: './birthday.component.html',
   imports: [DatePipe],

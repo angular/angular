@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <div style.color="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i{{nine}}j"></div>
     <div style.color="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h{{eight}}i"></div>
     <div style.color="a{{one}}b{{two}}c{{three}}d{{four}}e{{five}}f{{six}}g{{seven}}h"></div>
@@ -12,7 +12,8 @@ import {Component} from '@angular/core';
     <div style.color="a{{one}}b{{two}}c"></div>
     <div style.color="a{{one}}b"></div>
     <div style.color="{{one}}"></div>
-  `
+  `,
+    standalone: false
 })
 export class MyComponent {
   one = '';

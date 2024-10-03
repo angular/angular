@@ -58,6 +58,7 @@ type UpOrDown = 'up' | 'down';
     <div #lastFocusable (focus)="focusOnLastFocusedRow()" tabindex="0"></div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: EXPANDING_ROW_HOST_INJECTION_TOKEN, useExisting: ExpandingRowHost}],
+  standalone: false,
 })
 export class ExpandingRowHost implements AfterViewInit, OnDestroy, ExpandingRowHostBase {
   /**

@@ -43,6 +43,7 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
       <button (click)="addCity()">Add City</button>
     </form>
   `,
+  standalone: false,
 })
 class ReactiveFormsComponent {
   profileForm!: FormGroup;
@@ -86,6 +87,7 @@ class ReactiveFormsComponent {
   template: `
     <app-reactive-forms></app-reactive-forms>
   `,
+  standalone: false,
 })
 class RootComponent {}
 

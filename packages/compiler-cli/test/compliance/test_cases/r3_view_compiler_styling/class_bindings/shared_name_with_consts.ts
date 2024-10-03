@@ -1,9 +1,8 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'my-component',
-  standalone: true,
-  template: `
+    selector: 'my-component',
+    template: `
   <div attr class="attr"></div>
   <div ngProjectAs="selector" class="selector"></div>
   <div style="width:0px" class="width"></div>

@@ -1,10 +1,11 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `<div
+    template: `<div
    [class.apple]="yesToApple"
    [class.orange]="yesToOrange"
-   [class.tomato]="yesToTomato"></div>`
+   [class.tomato]="yesToTomato"></div>`,
+    standalone: false
 })
 export class MyComponent {
   yesToApple = true;

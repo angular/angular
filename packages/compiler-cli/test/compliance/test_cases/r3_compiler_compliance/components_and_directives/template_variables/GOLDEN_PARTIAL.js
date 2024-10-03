@@ -14,7 +14,10 @@ ForOfDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ForOfDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[forOf]' }]
+            args: [{
+                    selector: '[forOf]',
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }], propDecorators: { forOf: [{
                 type: Input
             }] } });
@@ -58,7 +61,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: `<svg><g *for="let item of items"><circle></circle></g></svg>`
+                    template: `<svg><g *for="let item of items"><circle></circle></g></svg>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -105,7 +109,10 @@ ForOfDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ForOfDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[forOf]' }]
+            args: [{
+                    selector: '[forOf]',
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }], propDecorators: { forOf: [{
                 type: Input
             }] } });
@@ -149,7 +156,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Component,
             args: [{
                     selector: 'my-component',
-                    template: `<ul><li *for="let item of items">{{item.name}}</li></ul>`
+                    template: `<ul><li *for="let item of items">{{item.name}}</li></ul>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -196,7 +204,10 @@ ForOfDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ForOfDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[forOf]' }]
+            args: [{
+                    selector: '[forOf]',
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }], propDecorators: { forOf: [{
                 type: Input
             }] } });
@@ -263,7 +274,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         </li>
       </ul>
     </li>
-  </ul>`
+  </ul>`,
+                    standalone: false
                 }]
         }] });
 export class MyModule {
@@ -313,7 +325,10 @@ ForOfDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: 
 ForOfDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: ForOfDirective, selector: "[forOf]", inputs: { forOf: "forOf" }, usesOnChanges: true, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ForOfDirective, decorators: [{
             type: Directive,
-            args: [{ selector: '[forOf]' }]
+            args: [{
+                    selector: '[forOf]',
+                    standalone: false
+                }]
         }], ctorParameters: () => [{ type: i0.ViewContainerRef }, { type: i0.TemplateRef }], propDecorators: { forOf: [{
                 type: Input
             }] } });

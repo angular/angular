@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     @for (outer of items; track outer; let outerOdd = $odd, outerEven = $even, outerFirst = $first, outerLast = $last) {
       <button (click)="outerCb(outerOdd, outerEven, outerFirst, outerLast)"></button>
 
@@ -17,6 +17,7 @@ import {Component} from '@angular/core';
       }
     }
   `,
+    standalone: false
 })
 export class MyApp {
   items = [];

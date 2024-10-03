@@ -9,7 +9,10 @@
 // #docregion Component
 import {Component, Directive, Input, ViewChild} from '@angular/core';
 
-@Directive({selector: 'pane'})
+@Directive({
+  selector: 'pane',
+  standalone: false,
+})
 export class Pane {
   @Input() id!: string;
 }
@@ -24,6 +27,7 @@ export class Pane {
 
     <div>Selected: {{ selectedPane }}</div>
   `,
+  standalone: false,
 })
 export class ViewChildComp {
   @ViewChild(Pane)

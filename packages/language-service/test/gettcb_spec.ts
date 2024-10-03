@@ -22,6 +22,7 @@ describe('get typecheck block', () => {
 
       @Component({
         template: '<div>{{ myProp }}</div>',
+        standalone: false,
       })
       export class AppCmp {
         myProp!: string;
@@ -51,6 +52,7 @@ describe('get typecheck block', () => {
 
             @Component({
               templateUrl: './app.html',
+              standalone: false,
             })
             export class AppCmp {
               myProp!: string;
@@ -81,6 +83,7 @@ describe('get typecheck block', () => {
 
       @Component({
         template: '<div>{{ myProp }}</div>',
+        standalone: false,
       })
       export class AppCmp {
         myProp!: string;

@@ -12,7 +12,6 @@ import {Router, RouterLink, RouterLinkActive, provideRouter} from '@angular/rout
 describe('RouterLinkActive', () => {
   it('removes initial active class even if never active', async () => {
     @Component({
-      standalone: true,
       imports: [RouterLinkActive, RouterLink],
       template: '<a class="active" routerLinkActive="active" routerLink="/abc123"></a>',
     })

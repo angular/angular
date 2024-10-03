@@ -13,7 +13,6 @@ import {RecordingDialogComponent} from './recording-dialog.component';
   selector: 'ng-recording-modal',
   templateUrl: './recording-modal.component.html',
   styleUrls: ['./recording-modal.component.scss'],
-  standalone: true,
   imports: [RecordingDialogComponent],
 })
 export class RecordingModalComponent {}

@@ -5,9 +5,10 @@ import {Component, NgModule} from '@angular/core';
 import {LibModule} from 'external_library';
 
 @Component({
-  template: `
+    template: `
     <lib-dir></lib-dir>
   `,
+    standalone: false
 })
 export class TestComponent {
 }

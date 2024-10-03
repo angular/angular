@@ -1,10 +1,11 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `<div
+    template: `<div
     [style.color]="color"
     [style.border]="border"
-    [style.transition]="transition"></div>`
+    [style.transition]="transition"></div>`,
+    standalone: false
 })
 export class MyComponent {
   color = 'red';

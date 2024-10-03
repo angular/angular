@@ -4,7 +4,6 @@ import {BypassSecurityComponent} from './bypass-security.component';
 import {InnerHtmlBindingComponent} from './inner-html-binding.component';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   template: `
     <h1>Security</h1>

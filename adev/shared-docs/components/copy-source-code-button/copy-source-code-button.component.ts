@@ -24,7 +24,6 @@ export const CONFIRMATION_DISPLAY_TIME_MS = 2000;
 
 @Component({
   selector: 'button[docs-copy-source-code]',
-  standalone: true,
   imports: [CommonModule, IconComponent],
   templateUrl: './copy-source-code-button.component.html',
   host: {

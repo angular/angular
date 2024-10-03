@@ -1,27 +1,26 @@
 import {Component, Directive} from '@angular/core';
 
-@Directive({standalone: true})
+@Directive({})
 export class DirectiveA {
 }
 
 @Directive({
-  standalone: true,
-  hostDirectives: [DirectiveA],
+    hostDirectives: [DirectiveA]
 })
 export class DirectiveB {
 }
 
 @Directive({
-  standalone: true,
-  hostDirectives: [DirectiveB],
+    hostDirectives: [DirectiveB]
 })
 export class DirectiveC {
 }
 
 @Component({
-  selector: 'my-component',
-  template: '',
-  hostDirectives: [DirectiveC],
+    selector: 'my-component',
+    template: '',
+    hostDirectives: [DirectiveC],
+    standalone: false
 })
 export class MyComponent {
 }

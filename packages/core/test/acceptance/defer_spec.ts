@@ -137,7 +137,6 @@ async function verifyTimeline(
 function createFixture(template: string) {
   @Component({
     selector: 'nested-cmp',
-    standalone: true,
     template: '{{ block }}',
   })
   class NestedCmp {
@@ -145,7 +144,6 @@ function createFixture(template: string) {
   }
 
   @Component({
-    standalone: true,
     selector: 'simple-app',
     imports: [NestedCmp],
     template,
@@ -203,13 +201,11 @@ describe('@defer', () => {
   it('should transition between placeholder, loading and loaded states', async () => {
     @Component({
       selector: 'my-lazy-cmp',
-      standalone: true,
       template: 'Hi!',
     })
     class MyLazyCmp {}
 
     @Component({
-      standalone: true,
       selector: 'simple-app',
       imports: [MyLazyCmp],
       template: `
@@ -248,13 +244,11 @@ describe('@defer', () => {
   it('should work when only main block is present', async () => {
     @Component({
       selector: 'my-lazy-cmp',
-      standalone: true,
       template: 'Hi!',
     })
     class MyLazyCmp {}
 
     @Component({
-      standalone: true,
       selector: 'simple-app',
       imports: [MyLazyCmp],
       template: `
@@ -284,7 +278,9 @@ describe('@defer', () => {
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in defer blocks', async () => {
-    @Pipe({name: 'test', standalone: true})
+    @Pipe({
+      name: 'test',
+    })
     class TestPipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -294,7 +290,6 @@ describe('@defer', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [TestPipe],
       template: `@defer (when isVisible | test; prefetch when isVisible | test) {Hello}`,
     })
@@ -323,7 +318,6 @@ describe('@defer', () => {
     // code is wrapped using the `@defer` block.
     const logs: string[] = [];
     @Directive({
-      standalone: true,
       selector: '[dirA]',
     })
     class DirA {
@@ -333,7 +327,6 @@ describe('@defer', () => {
     }
 
     @Directive({
-      standalone: true,
       selector: '[dirB]',
     })
     class DirB {
@@ -343,7 +336,6 @@ describe('@defer', () => {
     }
 
     @Directive({
-      standalone: true,
       selector: '[dirC]',
     })
     class DirC {
@@ -353,7 +345,6 @@ describe('@defer', () => {
     }
 
     @Component({
-      standalone: true,
       // Directive order is intentional here (different from the order
       // in which they are defined on the host element).
       imports: [DirC, DirB, DirA],
@@ -387,7 +378,6 @@ describe('@defer', () => {
     it('should render when @defer is used inside of an OnPush component', async () => {
       @Component({
         selector: 'my-lazy-cmp',
-        standalone: true,
         template: '{{ foo }}',
       })
       class MyLazyCmp {
@@ -395,7 +385,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'simple-app',
         imports: [MyLazyCmp],
         changeDetection: ChangeDetectionStrategy.OnPush,
@@ -420,7 +409,6 @@ describe('@defer', () => {
     it('should render when @defer-loaded component uses OnPush', async () => {
       @Component({
         selector: 'my-lazy-cmp',
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
         template: '{{ foo }}',
       })
@@ -429,7 +417,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'simple-app',
         imports: [MyLazyCmp],
         template: `
@@ -453,7 +440,6 @@ describe('@defer', () => {
     it('should render when both @defer-loaded and host component use OnPush', async () => {
       @Component({
         selector: 'my-lazy-cmp',
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
         template: '{{ foo }}',
       })
@@ -462,7 +448,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'simple-app',
         imports: [MyLazyCmp],
         changeDetection: ChangeDetectionStrategy.OnPush,
@@ -487,7 +472,6 @@ describe('@defer', () => {
     it('should render when both OnPush components used in other blocks (e.g. @placeholder)', async () => {
       @Component({
         selector: 'my-lazy-cmp',
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
         template: '{{ foo }}',
       })
@@ -497,7 +481,6 @@ describe('@defer', () => {
 
       @Component({
         selector: 'another-lazy-cmp',
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
         template: '{{ foo }}',
       })
@@ -506,7 +489,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'simple-app',
         imports: [MyLazyCmp, AnotherLazyCmp],
         changeDetection: ChangeDetectionStrategy.OnPush,
@@ -550,7 +532,6 @@ describe('@defer', () => {
     it('should support `on immediate` condition', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -558,7 +539,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -623,7 +603,6 @@ describe('@defer', () => {
     it('should support directive matching in all blocks', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -631,7 +610,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'simple-app',
         imports: [NestedCmp],
         template: `
@@ -822,7 +800,6 @@ describe('@defer', () => {
     it('should render an error block when loading fails', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -830,7 +807,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'simple-app',
         imports: [NestedCmp],
         template: `
@@ -889,13 +865,11 @@ describe('@defer', () => {
     it('should report an error to the ErrorHandler if no `@error` block is defined', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'NestedCmp',
       })
       class NestedCmp {}
 
       @Component({
-        standalone: true,
         selector: 'simple-app',
         imports: [NestedCmp],
         template: `
@@ -959,7 +933,6 @@ describe('@defer', () => {
     it('should not render `@error` block if loaded component has errors', async () => {
       @Component({
         selector: 'cmp-with-error',
-        standalone: true,
         template: 'CmpWithError',
       })
       class CmpWithError {
@@ -969,7 +942,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'simple-app',
         imports: [CmpWithError],
         template: `
@@ -1045,7 +1017,6 @@ describe('@defer', () => {
         it(`should log an error in the handler when there is no error block with devMode:${devMode}`, async () => {
           @Component({
             selector: 'nested-cmp',
-            standalone: true,
             template: 'Rendering {{ block }} block.',
           })
           class NestedCmp {
@@ -1053,7 +1024,6 @@ describe('@defer', () => {
           }
 
           @Component({
-            standalone: true,
             selector: 'simple-app',
             imports: [NestedCmp],
             template: `
@@ -1126,7 +1096,6 @@ describe('@defer', () => {
     it('should query for components within each block', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -1134,7 +1103,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'simple-app',
         imports: [NestedCmp],
         template: `
@@ -1192,21 +1160,18 @@ describe('@defer', () => {
     it('should be able to project content into each block', async () => {
       @Component({
         selector: 'cmp-a',
-        standalone: true,
         template: 'CmpA',
       })
       class CmpA {}
 
       @Component({
         selector: 'cmp-b',
-        standalone: true,
         template: 'CmpB',
       })
       class CmpB {}
 
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -1214,7 +1179,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'my-app',
         imports: [NestedCmp],
         template: `
@@ -1238,7 +1202,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [MyCmp, CmpA, CmpB],
         template: `
@@ -1303,14 +1266,12 @@ describe('@defer', () => {
     it('should be able to have nested blocks', async () => {
       @Component({
         selector: 'cmp-a',
-        standalone: true,
         template: 'CmpA',
       })
       class CmpA {}
 
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -1318,7 +1279,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp, CmpA],
         template: `
@@ -1377,13 +1337,11 @@ describe('@defer', () => {
     it('should handle nested blocks that defer load the same dep', async () => {
       @Component({
         selector: 'cmp-a',
-        standalone: true,
         template: 'CmpA',
       })
       class CmpA {}
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [CmpA],
         template: `
@@ -1495,7 +1453,6 @@ describe('@defer', () => {
     it('should be able to prefetch resources', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -1503,7 +1460,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -1576,7 +1532,6 @@ describe('@defer', () => {
     it('should handle a case when prefetching fails', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -1584,7 +1539,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -1656,7 +1610,6 @@ describe('@defer', () => {
     it('should work when loading and prefetching were kicked off at the same time', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -1664,7 +1617,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -1724,7 +1676,6 @@ describe('@defer', () => {
     it('should support `prefetch on idle` condition', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -1732,7 +1683,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -1801,7 +1751,6 @@ describe('@defer', () => {
     it('should trigger prefetching based on `on idle` only once', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -1809,7 +1758,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -1882,7 +1830,6 @@ describe('@defer', () => {
     it('should trigger fetching based on `on idle` only once', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -1890,7 +1837,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -1952,7 +1898,6 @@ describe('@defer', () => {
     it('should support `prefetch on immediate` condition', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -1960,7 +1905,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -2031,7 +1975,6 @@ describe('@defer', () => {
     it('should delay nested defer blocks with `on idle` triggers', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Primary block content.',
       })
       class NestedCmp {
@@ -2040,13 +1983,11 @@ describe('@defer', () => {
 
       @Component({
         selector: 'another-nested-cmp',
-        standalone: true,
         template: 'Nested block component.',
       })
       class AnotherNestedCmp {}
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp, AnotherNestedCmp],
         template: `
@@ -2129,7 +2070,6 @@ describe('@defer', () => {
     it('should not request idle callback for each block in a for loop', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -2137,7 +2077,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -2200,7 +2139,6 @@ describe('@defer', () => {
     it('should delay nested defer blocks with `on idle` triggers', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Primary block content.',
       })
       class NestedCmp {
@@ -2209,13 +2147,11 @@ describe('@defer', () => {
 
       @Component({
         selector: 'another-nested-cmp',
-        standalone: true,
         template: 'Nested block component.',
       })
       class AnotherNestedCmp {}
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp, AnotherNestedCmp],
         template: `
@@ -2296,7 +2232,6 @@ describe('@defer', () => {
 
     it('should clear idle handlers when defer block is triggered', async () => {
       @Component({
-        standalone: true,
         selector: 'root-app',
         template: `
           @defer (when isVisible; on idle; prefetch on idle) {
@@ -2339,7 +2274,6 @@ describe('@defer', () => {
   describe('trigger resolution', () => {
     it('should resolve a trigger is outside the defer block', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
             @defer (on interaction(trigger)) {
               Main content
@@ -2369,11 +2303,13 @@ describe('@defer', () => {
     }));
 
     it('should resolve a trigger on a component outside the defer block', fakeAsync(() => {
-      @Component({selector: 'some-comp', template: '<button></button>', standalone: true})
+      @Component({
+        selector: 'some-comp',
+        template: '<button></button>',
+      })
       class SomeComp {}
 
       @Component({
-        standalone: true,
         imports: [SomeComp],
         template: `
             @defer (on interaction(trigger)) {
@@ -2405,7 +2341,6 @@ describe('@defer', () => {
 
     it('should resolve a trigger that is on a parent element', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
             <button #trigger>
               <div>
@@ -2434,7 +2369,6 @@ describe('@defer', () => {
 
     it('should resolve a trigger that is inside a parent embedded view', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
             @if (cond) {
               <button #trigger></button>
@@ -2466,11 +2400,13 @@ describe('@defer', () => {
     }));
 
     it('should resolve a trigger that is on a component in a parent embedded view', fakeAsync(() => {
-      @Component({selector: 'some-comp', template: '<button></button>', standalone: true})
+      @Component({
+        selector: 'some-comp',
+        template: '<button></button>',
+      })
       class SomeComp {}
 
       @Component({
-        standalone: true,
         imports: [SomeComp],
         template: `
               @if (cond) {
@@ -2504,7 +2440,6 @@ describe('@defer', () => {
 
     it('should resolve a trigger that is inside the placeholder', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
               @defer (on interaction(trigger)) {
                 Main content
@@ -2526,11 +2461,13 @@ describe('@defer', () => {
     }));
 
     it('should resolve a trigger that is a component inside the placeholder', fakeAsync(() => {
-      @Component({selector: 'some-comp', template: '<button></button>', standalone: true})
+      @Component({
+        selector: 'some-comp',
+        template: '<button></button>',
+      })
       class SomeComp {}
 
       @Component({
-        standalone: true,
         imports: [SomeComp],
         template: `
               @defer (on interaction(trigger)) {
@@ -2556,7 +2493,6 @@ describe('@defer', () => {
   describe('interaction triggers', () => {
     it('should load the deferred content when the trigger is clicked', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
               @defer (on interaction(trigger)) {
                 Main content
@@ -2586,7 +2522,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
               @defer (on interaction(trigger)) {
                 Main content
@@ -2612,7 +2547,6 @@ describe('@defer', () => {
 
     it('should load the deferred content when an implicit trigger is clicked', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
              @defer (on interaction) {
                Main content
@@ -2636,7 +2570,6 @@ describe('@defer', () => {
 
     it('should load the deferred content if a child of the trigger is clicked', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
               @defer (on interaction(trigger)) {
                 Main content
@@ -2665,7 +2598,6 @@ describe('@defer', () => {
 
     it('should support multiple deferred blocks with the same trigger', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
              @defer (on interaction(trigger)) {
               Main content 1
@@ -2696,7 +2628,6 @@ describe('@defer', () => {
 
     it('should unbind the trigger events when the deferred block is loaded', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
              @defer (on interaction(trigger)) {Main content}
              <button #trigger></button>
@@ -2721,7 +2652,6 @@ describe('@defer', () => {
 
     it('should unbind the trigger events when the trigger is destroyed', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
             @if (renderBlock) {
               @defer (on interaction(trigger)) {Main content}
@@ -2749,7 +2679,6 @@ describe('@defer', () => {
 
     it('should unbind the trigger events when the deferred block is destroyed', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
               @if (renderBlock) {
                 @defer (on interaction(trigger)) {Main content}
@@ -2778,7 +2707,6 @@ describe('@defer', () => {
 
     it('should remove placeholder content on interaction', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
            @defer (on interaction(trigger)) {
              Main content
@@ -2811,7 +2739,6 @@ describe('@defer', () => {
 
     it('should prefetch resources on interaction', fakeAsync(() => {
       @Component({
-        standalone: true,
         selector: 'root-app',
         template: `
               @defer (when isLoaded; prefetch on interaction(trigger)) {Main content}
@@ -2855,7 +2782,6 @@ describe('@defer', () => {
 
     it('should prefetch resources on interaction with an implicit trigger', fakeAsync(() => {
       @Component({
-        standalone: true,
         selector: 'root-app',
         template: `
              @defer (when isLoaded; prefetch on interaction) {
@@ -2909,7 +2835,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
               @defer (on hover(trigger)) {
                 Main content
@@ -2940,7 +2865,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
              @defer (on hover) {
                Main content
@@ -2970,7 +2894,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
               @defer (on hover(trigger)) {
                 Main content 1
@@ -3007,7 +2930,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
              @defer (on hover(trigger)) {
               Main content
@@ -3039,7 +2961,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
             @if (renderBlock) {
               @defer (on hover(trigger)) {
@@ -3074,7 +2995,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
               @if (renderBlock) {
                 @defer (on hover(trigger)) {
@@ -3110,7 +3030,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         template: `
               @defer (when isLoaded; prefetch on hover(trigger)) {
@@ -3162,7 +3081,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         template: `
              @defer (when isLoaded; prefetch on hover) {
@@ -3213,7 +3131,6 @@ describe('@defer', () => {
     it('should trigger based on `on timer` condition', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -3221,7 +3138,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -3289,7 +3205,6 @@ describe('@defer', () => {
 
     it('should trigger nested `on timer` condition', async () => {
       @Component({
-        standalone: true,
         selector: 'root-app',
         template: `
           @defer (on timer(100ms)) {
@@ -3336,7 +3251,6 @@ describe('@defer', () => {
     it('should trigger prefetching based on `on timer` condition', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -3344,7 +3258,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         imports: [NestedCmp],
         template: `
@@ -3425,7 +3338,6 @@ describe('@defer', () => {
       const clearSpy = spyOn(globalThis, 'clearTimeout');
 
       @Component({
-        standalone: true,
         selector: 'root-app',
         template: `
               @defer (when isVisible; on timer(200ms); prefetch on timer(100ms)) {
@@ -3551,7 +3463,6 @@ describe('@defer', () => {
 
     it('should load the deferred content when the trigger is in the viewport', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
               @defer (on viewport(trigger)) {
                 Main content
@@ -3578,7 +3489,6 @@ describe('@defer', () => {
 
     it('should load the deferred content when an implicit trigger is in the viewport', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
              @defer (on viewport) {
                Main content
@@ -3604,7 +3514,6 @@ describe('@defer', () => {
 
     it('should not load the content if the trigger is not in the view yet', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
              @defer (on viewport(trigger)) {
               Main content
@@ -3642,7 +3551,6 @@ describe('@defer', () => {
 
     it('should support multiple deferred blocks with the same trigger', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
             @defer (on viewport(trigger)) {
               Main content 1
@@ -3674,7 +3582,6 @@ describe('@defer', () => {
 
     it('should stop observing the trigger when the deferred block is loaded', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
             @defer (on viewport(trigger)) {
               Main content
@@ -3702,7 +3609,6 @@ describe('@defer', () => {
 
     it('should stop observing the trigger when the trigger is destroyed', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
            @if (renderBlock) {
              @defer (on viewport(trigger)) {
@@ -3733,7 +3639,6 @@ describe('@defer', () => {
 
     it('should stop observing the trigger when the deferred block is destroyed', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
              @if (renderBlock) {
               @defer (on viewport(trigger)) {
@@ -3765,7 +3670,6 @@ describe('@defer', () => {
 
     it('should disconnect the intersection observer once all deferred blocks have been loaded', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
             <button #triggerOne></button>
             @defer (on viewport(triggerOne)) {
@@ -3805,7 +3709,6 @@ describe('@defer', () => {
 
     it('should prefetch resources when the trigger comes into the viewport', fakeAsync(() => {
       @Component({
-        standalone: true,
         selector: 'root-app',
         template: `
              @defer (when isLoaded; prefetch on viewport(trigger)) {
@@ -3852,7 +3755,6 @@ describe('@defer', () => {
 
     it('should prefetch resources when an implicit trigger comes into the viewport', fakeAsync(() => {
       @Component({
-        standalone: true,
         selector: 'root-app',
         template: `
              @defer (when isLoaded; prefetch on viewport) {
@@ -3900,7 +3802,6 @@ describe('@defer', () => {
 
     it('should load deferred content in a loop', fakeAsync(() => {
       @Component({
-        standalone: true,
         template: `
               @for (item of items; track item) {
                 @defer (on viewport) {d{{item}} }
@@ -3941,7 +3842,6 @@ describe('@defer', () => {
   describe('DOM-based events cleanup', () => {
     it('should unbind `interaction` trigger events when the deferred block is loaded', async () => {
       @Component({
-        standalone: true,
         template: `
           @defer (
             when isVisible;
@@ -3991,7 +3891,6 @@ describe('@defer', () => {
 
     it('should unbind `hover` trigger events when the deferred block is loaded', async () => {
       @Component({
-        standalone: true,
         template: `
           @defer (
             when isVisible;
@@ -4054,7 +3953,6 @@ describe('@defer', () => {
       const TokenB = new InjectionToken('B');
 
       @Component({
-        standalone: true,
         selector: 'parent-cmp',
         template: '<ng-content />',
         providers: [{provide: TokenA, useValue: 'TokenA.ParentCmp'}],
@@ -4062,7 +3960,6 @@ describe('@defer', () => {
       class ParentCmp {}
 
       @Component({
-        standalone: true,
         selector: 'child-cmp',
         template: 'Token A: {{ parentTokenA }} | Token B: {{ parentTokenB }}',
       })
@@ -4072,7 +3969,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'app-root',
         template: `
           <parent-cmp>
@@ -4132,7 +4028,6 @@ describe('@defer', () => {
 
         @Component({
           selector: 'lazy',
-          standalone: true,
           imports: [MyModule],
           template: `
           Lazy Component! Token: {{ token }}
@@ -4143,7 +4038,6 @@ describe('@defer', () => {
         }
 
         @Component({
-          standalone: true,
           imports: [Lazy],
           template: `
           @defer (on immediate) {
@@ -4154,7 +4048,6 @@ describe('@defer', () => {
         class Dialog {}
 
         @Component({
-          standalone: true,
           selector: 'app-root',
           providers: [{provide: TokenA, useValue: 'TokenA from RootCmp'}],
           template: `
@@ -4230,6 +4123,7 @@ describe('@defer', () => {
       @Component({
         selector: 'chart',
         template: 'Service:{{ svc.id }}|TokenA:{{ tokenA }}',
+        standalone: false,
       })
       class Chart {
         svc = inject(Service);
@@ -4246,14 +4140,12 @@ describe('@defer', () => {
       @Component({
         selector: 'chart-collection',
         template: '<chart />',
-        standalone: true,
         imports: [ChartsModule],
       })
       class ChartCollectionComponent {}
 
       @Component({
         selector: 'app-root',
-        standalone: true,
         template: `
           @for(item of items; track $index) {
             @defer (when isVisible) {
@@ -4322,14 +4214,12 @@ describe('@defer', () => {
       class MyModuleA {}
 
       @Component({
-        standalone: true,
         imports: [RouterOutlet],
         template: '<router-outlet />',
       })
       class App {}
 
       @Component({
-        standalone: true,
         selector: 'another-child',
         imports: [CommonModule, MyModuleA],
         template: 'another child: {{route.snapshot.url[0]}} | token: {{tokenA}}',
@@ -4343,7 +4233,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [CommonModule, AnotherChild],
         template: `
           child: {{route.snapshot.url[0]}} |

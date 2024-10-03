@@ -39,7 +39,6 @@ interface BarData {
     ]),
     trigger('stagger', [transition(':enter', [query(':enter', stagger('.1s', [animateChild()]))])]),
   ],
-  standalone: true,
   imports: [MatTooltip],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

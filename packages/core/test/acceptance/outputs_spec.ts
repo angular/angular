@@ -19,19 +19,30 @@ import {
 import {TestBed} from '@angular/core/testing';
 
 describe('outputs', () => {
-  @Component({selector: 'button-toggle', template: ''})
+  @Component({
+    selector: 'button-toggle',
+    template: '',
+    standalone: false,
+  })
   class ButtonToggle {
     @Output('change') change = new EventEmitter<void>();
 
     @Output('reset') resetStream = new EventEmitter<void>();
   }
 
-  @Directive({selector: '[otherDir]'})
+  @Directive({
+    selector: '[otherDir]',
+    standalone: false,
+  })
   class OtherDir {
     @Output('change') changeStream = new EventEmitter<void>();
   }
 
-  @Component({selector: 'destroy-comp', template: ''})
+  @Component({
+    selector: 'destroy-comp',
+    template: '',
+    standalone: false,
+  })
   class DestroyComp implements OnDestroy {
     events: string[] = [];
     ngOnDestroy() {
@@ -39,7 +50,10 @@ describe('outputs', () => {
     }
   }
 
-  @Directive({selector: '[myButton]'})
+  @Directive({
+    selector: '[myButton]',
+    standalone: false,
+  })
   class MyButton {
     @Output() click = new EventEmitter<void>();
   }
@@ -47,7 +61,10 @@ describe('outputs', () => {
   it('should call component output function when event is emitted', () => {
     let counter = 0;
 
-    @Component({template: '<button-toggle (change)="onChange()"></button-toggle>'})
+    @Component({
+      template: '<button-toggle (change)="onChange()"></button-toggle>',
+      standalone: false,
+    })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
       onChange() {
@@ -71,6 +88,7 @@ describe('outputs', () => {
 
     @Component({
       template: '<button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle>',
+      standalone: false,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -93,7 +111,10 @@ describe('outputs', () => {
   });
 
   it('should eval component output expression when event is emitted', () => {
-    @Component({template: '<button-toggle (change)="counter = counter + 1"></button-toggle>'})
+    @Component({
+      template: '<button-toggle (change)="counter = counter + 1"></button-toggle>',
+      standalone: false,
+    })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
       counter = 0;
@@ -114,6 +135,7 @@ describe('outputs', () => {
 
     @Component({
       template: '<button-toggle *ngIf="condition" (change)="onChange()"></button-toggle>',
+      standalone: false,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -147,6 +169,7 @@ describe('outputs', () => {
           <button-toggle *ngIf="condition2" (change)="onChange()"></button-toggle>
         </div>
       `,
+      standalone: false,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -184,6 +207,7 @@ describe('outputs', () => {
           <destroy-comp></destroy-comp>
         </div>
       `,
+      standalone: false,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -228,7 +252,10 @@ describe('outputs', () => {
   it('should fire event listeners along with outputs if they match', () => {
     let counter = 0;
 
-    @Component({template: '<button myButton (click)="onClick()">Click me</button>'})
+    @Component({
+      template: '<button myButton (click)="onClick()">Click me</button>',
+      standalone: false,
+    })
     class App {
       @ViewChild(MyButton) buttonDir!: MyButton;
       onClick() {
@@ -252,7 +279,10 @@ describe('outputs', () => {
   it('should work with two outputs of the same name', () => {
     let counter = 0;
 
-    @Component({template: '<button-toggle (change)="onChange()" otherDir></button-toggle>'})
+    @Component({
+      template: '<button-toggle (change)="onChange()" otherDir></button-toggle>',
+      standalone: false,
+    })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
       @ViewChild(OtherDir) otherDir!: OtherDir;
@@ -274,7 +304,10 @@ describe('outputs', () => {
   it('should work with an input and output of the same name', () => {
     let counter = 0;
 
-    @Directive({selector: '[otherChangeDir]'})
+    @Directive({
+      selector: '[otherChangeDir]',
+      standalone: false,
+    })
     class OtherChangeDir {
       @Input() change!: boolean;
     }
@@ -282,6 +315,7 @@ describe('outputs', () => {
     @Component({
       template:
         '<button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle>',
+      standalone: false,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;

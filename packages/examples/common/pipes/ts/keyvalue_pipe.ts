@@ -17,6 +17,7 @@ import {Component} from '@angular/core';
     <p>Map</p>
     <div *ngFor="let item of map | keyvalue">{{ item.key }}:{{ item.value }}</div>
   </span>`,
+  standalone: false,
 })
 export class KeyValuePipeComponent {
   object: {[key: number]: string} = {2: 'foo', 1: 'bar'};

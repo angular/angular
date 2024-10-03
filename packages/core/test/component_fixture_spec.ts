@@ -28,7 +28,11 @@ import {
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-@Component({selector: 'simple-comp', template: `<span>Original {{simpleBinding}}</span>`})
+@Component({
+  selector: 'simple-comp',
+  template: `<span>Original {{simpleBinding}}</span>`,
+  standalone: false,
+})
 @Injectable()
 class SimpleComp {
   simpleBinding: string;
@@ -39,14 +43,12 @@ class SimpleComp {
 
 @Component({
   selector: 'deferred-comp',
-  standalone: true,
   template: `<div>Deferred Component</div>`,
 })
 class DeferredComp {}
 
 @Component({
   selector: 'second-deferred-comp',
-  standalone: true,
   template: `<div>More Deferred Component</div>`,
 })
 class SecondDeferredComp {}
@@ -54,13 +56,18 @@ class SecondDeferredComp {}
 @Component({
   selector: 'my-if-comp',
   template: `MyIf(<span *ngIf="showMore">More</span>)`,
+  standalone: false,
 })
 @Injectable()
 class MyIfComp {
   showMore: boolean = false;
 }
 
-@Component({selector: 'autodetect-comp', template: `<span (click)='click()'>{{text}}</span>`})
+@Component({
+  selector: 'autodetect-comp',
+  template: `<span (click)='click()'>{{text}}</span>`,
+  standalone: false,
+})
 class AutoDetectComp {
   text: string = '1';
 
@@ -69,7 +76,11 @@ class AutoDetectComp {
   }
 }
 
-@Component({selector: 'async-comp', template: `<span (click)='click()'>{{text}}</span>`})
+@Component({
+  selector: 'async-comp',
+  template: `<span (click)='click()'>{{text}}</span>`,
+  standalone: false,
+})
 class AsyncComp {
   text: string = '1';
 
@@ -80,7 +91,11 @@ class AsyncComp {
   }
 }
 
-@Component({selector: 'async-child-comp', template: '<span>{{localText}}</span>'})
+@Component({
+  selector: 'async-child-comp',
+  template: '<span>{{localText}}</span>',
+  standalone: false,
+})
 class AsyncChildComp {
   localText: string = '';
 
@@ -95,6 +110,7 @@ class AsyncChildComp {
 @Component({
   selector: 'async-change-comp',
   template: `<async-child-comp (click)='click()' [text]="text"></async-child-comp>`,
+  standalone: false,
 })
 class AsyncChangeComp {
   text: string = '1';
@@ -104,7 +120,11 @@ class AsyncChangeComp {
   }
 }
 
-@Component({selector: 'async-timeout-comp', template: `<span (click)='click()'>{{text}}</span>`})
+@Component({
+  selector: 'async-timeout-comp',
+  template: `<span (click)='click()'>{{text}}</span>`,
+  standalone: false,
+})
 class AsyncTimeoutComp {
   text: string = '1';
 
@@ -118,6 +138,7 @@ class AsyncTimeoutComp {
 @Component({
   selector: 'nested-async-timeout-comp',
   template: `<span (click)='click()'>{{text}}</span>`,
+  standalone: false,
 })
 class NestedAsyncTimeoutComp {
   text: string = '1';
@@ -340,7 +361,6 @@ describe('ComponentFixture', () => {
   it('throws errors that happen during detectChanges', () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class App {
       ngOnInit() {
@@ -355,7 +375,6 @@ describe('ComponentFixture', () => {
   describe('errors during ApplicationRef.tick', () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class ThrowingThing {
       ngOnInit() {
@@ -364,7 +383,6 @@ describe('ComponentFixture', () => {
     }
     @Component({
       template: '',
-      standalone: true,
     })
     class Blank {}
 
@@ -394,7 +412,6 @@ describe('ComponentFixture', () => {
     it('should return all defer blocks in the component', async () => {
       @Component({
         selector: 'defer-comp',
-        standalone: true,
         imports: [DeferredComp, SecondDeferredComp],
         template: `<div>
             @defer (on immediate) {
@@ -449,7 +466,6 @@ describe('ComponentFixture', () => {
     it('throws errors that happen during detectChanges', () => {
       @Component({
         template: '',
-        standalone: true,
       })
       class App {
         ngOnInit() {
@@ -464,7 +480,10 @@ describe('ComponentFixture', () => {
 
   it('reports errors from autoDetect change detection to error handler', () => {
     let throwError = false;
-    @Component({template: ''})
+    @Component({
+      template: '',
+      standalone: false,
+    })
     class TestComponent {
       ngDoCheck() {
         if (throwError) {
@@ -484,7 +503,10 @@ describe('ComponentFixture', () => {
 
   it('reports errors from checkNoChanges in autoDetect to error handler', () => {
     let throwError = false;
-    @Component({template: '{{thing}}'})
+    @Component({
+      template: '{{thing}}',
+      standalone: false,
+    })
     class TestComponent {
       thing = 'initial';
       ngAfterViewChecked() {
@@ -515,7 +537,9 @@ describe('ComponentFixture with zoneless', () => {
   });
 
   it('will not refresh CheckAlways views when detectChanges is called if not marked dirty', () => {
-    @Component({standalone: true, template: '{{signalThing()}}|{{regularThing}}'})
+    @Component({
+      template: '{{signalThing()}}|{{regularThing}}',
+    })
     class CheckAlwaysCmp {
       regularThing = 'initial';
       signalThing = signal('initial');
@@ -537,7 +561,6 @@ describe('ComponentFixture with zoneless', () => {
   it('throws errors that happen during detectChanges', () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class App {
       ngOnInit() {
@@ -552,7 +575,6 @@ describe('ComponentFixture with zoneless', () => {
   it('rejects whenStable promise when errors happen during detectChanges', async () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class App {
       ngOnInit() {
@@ -567,7 +589,6 @@ describe('ComponentFixture with zoneless', () => {
   it('can disable checkNoChanges', () => {
     @Component({
       template: '{{thing}}',
-      standalone: true,
     })
     class App {
       thing = 1;
@@ -585,7 +606,6 @@ describe('ComponentFixture with zoneless', () => {
   it('runs change detection when autoDetect is false', () => {
     @Component({
       template: '{{thing()}}',
-      standalone: true,
     })
     class App {
       thing = signal(1);

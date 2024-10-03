@@ -21,6 +21,7 @@ import {Component} from '@angular/core';
     <p>myFood value: {{ myFood }}</p>
     <!-- 'lamb' -->
   `,
+  standalone: false,
 })
 export class RadioButtonComp {
   myFood = 'lamb';

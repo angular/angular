@@ -124,6 +124,7 @@ export class DataService {
       </form>
     </div>
   `,
+  standalone: false,
 })
 export class FullNameComponent {
   constructor(private _service: DataService) {}
@@ -213,6 +214,7 @@ export class FullNameComponent {
       </form>
     </div>
   `,
+  standalone: false,
 })
 export class PersonsDetailComponent {
   constructor(private _service: DataService) {}
@@ -235,6 +237,7 @@ export class PersonsDetailComponent {
       <person-detail-cmp></person-detail-cmp>
     </div>
   `,
+  standalone: false,
 })
 export class PersonsComponent {
   persons: Person[];
@@ -258,6 +261,7 @@ export class PersonsComponent {
     <full-name-cmp *ngIf="mode == 'editName'"></full-name-cmp>
     <persons-cmp *ngIf="mode == 'personList'"></persons-cmp>
   `,
+  standalone: false,
 })
 export class PersonManagementApplication {
   mode: string;

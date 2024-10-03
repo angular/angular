@@ -6,5 +6,6 @@ import {Component} from '@angular/core';
   template: `
       Tour of Heroes
     `,
+  standalone: false,
 })
 export class AppComponent {}

@@ -21,6 +21,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 @Component({
   selector: 'i18n-cmp',
   template: '',
+  standalone: false,
 })
 export class I18nComponent {
   count?: number;

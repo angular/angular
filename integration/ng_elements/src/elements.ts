@@ -3,6 +3,7 @@ import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@ang
 @Component({
   selector: 'hello-world-el',
   template: 'Hello {{name}}!',
+  standalone: false,
 })
 export class HelloWorldComponent {
   @Input() name: string = 'World';
@@ -12,6 +13,7 @@ export class HelloWorldComponent {
   selector: 'hello-world-onpush-el',
   template: 'Hello {{name}}!',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class HelloWorldOnpushComponent {
   @Input() name: string = 'World';
@@ -21,6 +23,7 @@ export class HelloWorldOnpushComponent {
   selector: 'hello-world-shadow-el',
   template: 'Hello {{name}}!',
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 export class HelloWorldShadowComponent {
   @Input() name: string = 'World';
@@ -37,5 +40,6 @@ export class HelloWorldShadowComponent {
       <slot name="card-footer"></slot>
     </footer>`,
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
 })
 export class TestCardComponent {}

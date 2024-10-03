@@ -15,7 +15,11 @@ import * as ngIfExample from './ngIf/ts/module';
 import * as ngTemplateOutletExample from './ngTemplateOutlet/ts/module';
 import * as pipesExample from './pipes/ts/module';
 
-@Component({selector: 'example-app:not(y)', template: '<router-outlet></router-outlet>'})
+@Component({
+  selector: 'example-app:not(y)',
+  template: '<router-outlet></router-outlet>',
+  standalone: false,
+})
 export class TestsAppComponent {}
 
 @NgModule({

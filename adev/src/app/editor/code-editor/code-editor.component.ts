@@ -44,7 +44,6 @@ const ANGULAR_DEV = 'https://angular.dev';
 
 @Component({
   selector: 'docs-tutorial-code-editor',
-  standalone: true,
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

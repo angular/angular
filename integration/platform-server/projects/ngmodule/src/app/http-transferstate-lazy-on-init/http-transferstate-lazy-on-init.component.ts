@@ -12,6 +12,7 @@ import {Component, OnInit} from '@angular/core';
 @Component({
   selector: 'transfer-state-http-on-init',
   template: ` <div class="one">{{ responseOne }}</div> `,
+  standalone: false,
 })
 export class TransferStateComponentOnInit implements OnInit {
   responseOne: string = '';

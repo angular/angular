@@ -15,7 +15,10 @@ const fib = (n: number): number => {
   return fib(n - 1) + fib(n - 2);
 };
 
-@Component({selector: 'app-heavy', template: `<h1>{{ calculate() }}</h1>`, standalone: true})
+@Component({
+  selector: 'app-heavy',
+  template: `<h1>{{ calculate() }}</h1>`,
+})
 export class HeavyComponent {
   @Input()
   set foo(_: any) {}

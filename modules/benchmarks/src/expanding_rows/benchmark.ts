@@ -28,6 +28,7 @@ import {BenchmarkableExpandingRowModule} from './benchmarkable_expanding_row_mod
     <benchmark-area>
       <benchmarkable-expanding-row></benchmarkable-expanding-row>
     </benchmark-area>`,
+  standalone: false,
 })
 export class InitializationRoot implements AfterViewInit {
   @ViewChild(BenchmarkableExpandingRow, {static: true}) expandingRow!: BenchmarkableExpandingRow;

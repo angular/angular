@@ -24,6 +24,7 @@ describe('language-service/compiler integration', () => {
           @Component({
             selector: 'test-cmp',
             templateUrl: './test.html',
+            standalone: false,
           })
           export class TestCmp {}
       `,
@@ -46,6 +47,7 @@ describe('language-service/compiler integration', () => {
         @Component({
           selector: 'app-cmp',
           template: 'Some template',
+          standalone: false,
         })
         export class AppCmp {}
       `,
@@ -95,11 +97,13 @@ describe('language-service/compiler integration', () => {
         @Component({
           selector: 'test-cmp',
           template: '<div [dir]="3"></div>',
+          standalone: false,
         })
         export class Cmp {}
 
         @Directive({
           selector: '[dir]',
+          standalone: false,
         })
         export class Dir {
           @Input() dir!: string;
@@ -142,6 +146,7 @@ describe('language-service/compiler integration', () => {
       @Component({
         selector: 'some-cmp',
         template: 'Not important',
+        standalone: false,
       })
       ${isExported ? 'export' : ''} class Cmp {}
     `;
@@ -191,6 +196,7 @@ describe('language-service/compiler integration', () => {
 
         @Component({
           template: '{{ bar }}',
+          standalone: false,
         })
         export class BarCmp {
           readonly bar = 'bar';

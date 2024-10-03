@@ -47,14 +47,21 @@ describe('non-bindable', () => {
   }));
 });
 
-@Directive({selector: '[test-dec]'})
+@Directive({
+  selector: '[test-dec]',
+  standalone: false,
+})
 class TestDirective {
   constructor(el: ElementRef) {
     el.nativeElement.classList.add('compiled');
   }
 }
 
-@Component({selector: 'test-cmp', template: ''})
+@Component({
+  selector: 'test-cmp',
+  template: '',
+  standalone: false,
+})
 class TestComponent {
   text: string;
   constructor() {

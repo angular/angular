@@ -1,6 +1,9 @@
 import {Component, Directive, Input, NgModule, Pipe} from '@angular/core';
 
-@Directive({selector: 'div'})
+@Directive({
+    selector: 'div',
+    standalone: false
+})
 export class DivDir {
   @Input() ternary!: any;
   @Input() pipe!: any;
@@ -8,19 +11,23 @@ export class DivDir {
   @Input() or!: any;
 }
 
-@Pipe({name: 'pipe'})
+@Pipe({
+    name: 'pipe',
+    standalone: false
+})
 export class PipePipe {
   transform(v: any, a: any, a2: any) {}
 }
 
 @Component({
-  selector: 'my-component',
-  template: `<div
+    selector: 'my-component',
+    template: `<div
     [ternary]="cond ? [a] : [0]"
     [pipe]="value | pipe:1:2"
     [and]="cond && [b]"
     [or]="cond || [c]"
-  ></div>`
+  ></div>`,
+    standalone: false
 })
 export class MyComponent {
   id = 'one';

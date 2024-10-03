@@ -20,6 +20,7 @@ import {FormControl, Validators} from '@angular/forms';
 
     <button (click)="setValue()">Set value</button>
   `,
+  standalone: false,
 })
 export class SimpleFormControl {
   control: FormControl = new FormControl('value', Validators.minLength(2));

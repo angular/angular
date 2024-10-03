@@ -27,6 +27,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 
     <button (click)="setPreset()">Set preset</button>
   `,
+  standalone: false,
 })
 export class NestedFormGroupComp {
   form = new FormGroup({

@@ -1,19 +1,26 @@
 import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
 
-@Component({selector: 'simple', template: '<div><ng-content></ng-content></div>'})
+@Component({
+    selector: 'simple', template: '<div><ng-content></ng-content></div>',
+    standalone: false
+})
 export class SimpleComponent {
 }
 
 @Component({
-  selector: 'complex',
-  template: `
+    selector: 'complex',
+    template: `
     <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
-    <div id="second"><ng-content SELECT="span[title=toSecond]"></ng-content></div>`
+    <div id="second"><ng-content SELECT="span[title=toSecond]"></ng-content></div>`,
+    standalone: false
 })
 export class ComplexComponent {
 }
 
-@Component({selector: 'my-app', template: '<simple>content</simple> <complex></complex>'})
+@Component({
+    selector: 'my-app', template: '<simple>content</simple> <complex></complex>',
+    standalone: false
+})
 export class MyApp {
 }
 

@@ -4,7 +4,6 @@ import {Component} from '@angular/core';
 import {DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 
 @Component({
-  standalone: true,
   selector: 'app-bypass-security',
   templateUrl: './bypass-security.component.html',
 })

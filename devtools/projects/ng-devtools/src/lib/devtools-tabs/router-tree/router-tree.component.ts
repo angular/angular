@@ -22,7 +22,6 @@ import {Events, MessageBus, Route} from 'protocol';
   selector: 'ng-router-tree',
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
-  standalone: true,
 })
 export class RouterTreeComponent {
   private svgContainer = viewChild.required<ElementRef>('svgContainer');

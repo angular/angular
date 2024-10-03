@@ -353,6 +353,7 @@ describe('runtime i18n', () => {
     @Component({
       selector: 'app-comp',
       template: `<div i18n (click)="onClick()">Hello {{ name }}</div>`,
+      standalone: false,
     })
     class ListenerComp {
       name = `Angular`;
@@ -562,7 +563,6 @@ describe('runtime i18n', () => {
 
     @Component({
       selector: 'defer-comp',
-      standalone: true,
       template:
         '<div i18n>Content: @defer (when isLoaded) {before<span>middle</span>after} ' +
         '@placeholder {before<div>placeholder</div>after}!</div>',
@@ -773,7 +773,10 @@ describe('runtime i18n', () => {
         [computeMsgId('{$START_LINK}Not logged in{$CLOSE_LINK}')]:
           '{$START_LINK}Not logged in{$CLOSE_LINK}',
       });
-      @Directive({selector: '[myDir]'})
+      @Directive({
+        selector: '[myDir]',
+        standalone: false,
+      })
       class Dir {
         condition = true;
       }
@@ -788,6 +791,7 @@ describe('runtime i18n', () => {
                 <a myDir>Not logged in</a>
               </ng-template>
             `,
+        standalone: false,
       })
       class Cmp {
         isLogged = false;
@@ -1392,7 +1396,11 @@ describe('runtime i18n', () => {
         [computeMsgId('{VAR_PLURAL, plural, =1 {one} other {at least {INTERPOLATION} .}}')]:
           '{VAR_PLURAL, plural, =1 {one} other {at least {INTERPOLATION} .}}',
       });
-      @Component({selector: 'child', template: '<div><ng-content></ng-content></div>'})
+      @Component({
+        selector: 'child',
+        template: '<div><ng-content></ng-content></div>',
+        standalone: false,
+      })
       class Child {}
 
       @Component({
@@ -1404,6 +1412,7 @@ describe('runtime i18n', () => {
          =1 {one}
         other {at least {{value}} .}
       }</child>`,
+        standalone: false,
       })
       class Parent {
         value = 3;
@@ -1434,6 +1443,7 @@ describe('runtime i18n', () => {
       });
       @Directive({
         selector: '[someDir]',
+        standalone: false,
       })
       class Dir {
         constructor(
@@ -1453,6 +1463,7 @@ describe('runtime i18n', () => {
                 <ng-content></ng-content>
               </div>
             `,
+        standalone: false,
       })
       class Cmp {}
 
@@ -1466,6 +1477,7 @@ describe('runtime i18n', () => {
               other {OTHER}
             }</my-cmp>
           `,
+        standalone: false,
       })
       class App {
         count = 1;
@@ -1514,6 +1526,7 @@ describe('runtime i18n', () => {
       let dir: Dir | null = null;
       @Directive({
         selector: '[someDir]',
+        standalone: false,
       })
       class Dir {
         constructor(
@@ -1535,6 +1548,7 @@ describe('runtime i18n', () => {
                 <ng-content></ng-content>
               </div>
             `,
+        standalone: false,
       })
       class Cmp {}
 
@@ -1552,6 +1566,7 @@ describe('runtime i18n', () => {
               }!}
             }</my-cmp>
           `,
+        standalone: false,
       })
       class App {
         count = 1;
@@ -1602,6 +1617,7 @@ describe('runtime i18n', () => {
           </ng-container>
         </ng-container>
       `,
+        standalone: false,
       })
       class Comp {
         type = 'A';
@@ -1645,6 +1661,7 @@ describe('runtime i18n', () => {
               other {other - {{ typeC // i18n(ph="PH WITH SPACES") }}}
           }</ng-container>
         `,
+        standalone: false,
       })
       class Comp {
         type = 'A';
@@ -1691,6 +1708,7 @@ describe('runtime i18n', () => {
             </ng-container>
           </div>
         `,
+        standalone: false,
       })
       class AppComponent {
         types = ['A', 'B', 'C'];
@@ -1713,6 +1731,7 @@ describe('runtime i18n', () => {
         template: `
           <div i18n="@@idA">{count, select, 1 {one} other {more than one}}</div>
         `,
+        standalone: false,
       })
       class AppComponent {
         count = 2;
@@ -1737,6 +1756,7 @@ describe('runtime i18n', () => {
           <div i18n="@@idA">{count, select, 1 {one (select)} 2 {two (select)}}</div> -
           <div i18n="@@idB">{count, plural, =1 {one (plural)} =2 {two (plural)}}</div>
         `,
+        standalone: false,
       })
       class AppComponent {
         count = 1;
@@ -1793,6 +1813,7 @@ describe('runtime i18n', () => {
               other {}
           }</div>
         `,
+        standalone: false,
       })
       class AppComponent {
         type = 'A';
@@ -1842,6 +1863,7 @@ describe('runtime i18n', () => {
         template: `
           <div i18n="@@idA">{count$ | async, select, 1 {{{count$ | async}} item} 2 {two items}}</div>
         `,
+        standalone: false,
       })
       class AppComponent {
         count$ = new BehaviorSubject<number>(1);
@@ -2027,6 +2049,7 @@ describe('runtime i18n', () => {
 
       @Directive({
         selector: '[title]',
+        standalone: false,
       })
       class TitleDir {
         @Input() title = '';
@@ -2038,6 +2061,7 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'comp',
         template: '<ng-template i18n-title title="Hello"></ng-template>',
+        standalone: false,
       })
       class Comp {}
 
@@ -2058,7 +2082,10 @@ describe('runtime i18n', () => {
       const titleDirInstances: TitleDir[] = [];
       loadTranslations({[computeMsgId('Hello')]: 'Bonjour'});
 
-      @Directive({selector: '[title]'})
+      @Directive({
+        selector: '[title]',
+        standalone: false,
+      })
       class TitleDir {
         @Input() title: string = '';
         constructor(public elRef: ElementRef) {
@@ -2071,6 +2098,7 @@ describe('runtime i18n', () => {
         template: `
           <button *ngIf="true" i18n-title title="Hello"></button>
         `,
+        standalone: false,
       })
       class Cmp {}
 
@@ -2095,6 +2123,7 @@ describe('runtime i18n', () => {
         template: `
           <div *ngIf="true" i18n-title title="Hello"></div>
         `,
+        standalone: false,
       })
       class Cmp {}
 
@@ -2112,7 +2141,10 @@ describe('runtime i18n', () => {
       loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
 
       let dirInstance: WithInput;
-      @Directive({selector: '[dir]'})
+      @Directive({
+        selector: '[dir]',
+        standalone: false,
+      })
       class WithInput {
         constructor() {
           dirInstance = this;
@@ -2123,6 +2155,7 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'my-app',
         template: '<ng-template i18n-dir dir="Hello {{ name }}"></ng-template>',
+        standalone: false,
       })
       class TestComp {
         name = 'Angular';
@@ -2142,7 +2175,10 @@ describe('runtime i18n', () => {
         loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
 
         let dirInstance: WithInput;
-        @Directive({selector: '[dir]'})
+        @Directive({
+          selector: '[dir]',
+          standalone: false,
+        })
         class WithInput {
           constructor() {
             dirInstance = this;
@@ -2153,6 +2189,7 @@ describe('runtime i18n', () => {
         @Component({
           selector: 'my-app',
           template: '<ng-template *ngIf="true" i18n-dir dir="Hello {{ name }}"></ng-template>',
+          standalone: false,
         })
         class TestComp {
           name = 'Angular';
@@ -2172,12 +2209,14 @@ describe('runtime i18n', () => {
         selector: '[test]',
         inputs: ['test'],
         exportAs: 'dir',
+        standalone: false,
       })
       class Dir {}
 
       @Component({
         selector: 'other',
         template: `<div i18n #ref="dir" test="Set" i18n-test="This is also a test"></div>`,
+        standalone: false,
       })
       class Other {}
 
@@ -2187,6 +2226,7 @@ describe('runtime i18n', () => {
           <other></other>
           <other></other>
         `,
+        standalone: false,
       })
       class Cmp {}
 
@@ -2226,7 +2266,10 @@ describe('runtime i18n', () => {
     it('should support i18n attributes on <ng-container> elements', () => {
       loadTranslations({[computeMsgId('Hello', 'meaning')]: 'Bonjour'});
 
-      @Directive({selector: '[mydir]'})
+      @Directive({
+        selector: '[mydir]',
+        standalone: false,
+      })
       class Dir {
         @Input() mydir: string = '';
       }
@@ -2236,6 +2279,7 @@ describe('runtime i18n', () => {
         template: `
           <ng-container i18n-mydir="meaning|description" mydir="Hello"></ng-container>
         `,
+        standalone: false,
       })
       class Cmp {}
 
@@ -2295,7 +2339,10 @@ describe('runtime i18n', () => {
   it('should work with directives and host bindings', () => {
     let directiveInstances: ClsDir[] = [];
 
-    @Directive({selector: '[test]'})
+    @Directive({
+      selector: '[test]',
+      standalone: false,
+    })
     class ClsDir {
       @HostBinding('className') klass = 'foo';
 
@@ -2314,6 +2361,7 @@ describe('runtime i18n', () => {
               other {{{exp1}} emails}
          }
       </div><div test inner></div>`,
+      standalone: false,
     })
     class MyApp {
       exp1 = 1;
@@ -2359,7 +2407,11 @@ describe('runtime i18n', () => {
   it('should handle i18n attribute with directive inputs', () => {
     let calledTitle = false;
     let calledValue = false;
-    @Component({selector: 'my-comp', template: ''})
+    @Component({
+      selector: 'my-comp',
+      template: '',
+      standalone: false,
+    })
     class MyComp {
       t!: string;
       @Input()
@@ -2438,7 +2490,11 @@ describe('runtime i18n', () => {
 
   describe('projection', () => {
     it('should project the translations', () => {
-      @Component({selector: 'child', template: '<p><ng-content></ng-content></p>'})
+      @Component({
+        selector: 'child',
+        template: '<p><ng-content></ng-content></p>',
+        standalone: false,
+      })
       class Child {}
 
       @Component({
@@ -2451,6 +2507,7 @@ describe('runtime i18n', () => {
               </child>
               <remove-me-3></remove-me-3>
             </div>`,
+        standalone: false,
       })
       class Parent {
         name: string = 'Parent';
@@ -2475,7 +2532,11 @@ describe('runtime i18n', () => {
     });
 
     it('should project a translated i18n block', () => {
-      @Component({selector: 'child', template: '<p><ng-content></ng-content></p>'})
+      @Component({
+        selector: 'child',
+        template: '<p><ng-content></ng-content></p>',
+        standalone: false,
+      })
       class Child {}
 
       @Component({
@@ -2488,6 +2549,7 @@ describe('runtime i18n', () => {
               <any></any>
             </child>
           </div>`,
+        standalone: false,
       })
       class Parent {
         name: string = 'Parent';
@@ -2520,16 +2582,25 @@ describe('runtime i18n', () => {
     });
 
     it('should re-project translations when multiple projections', () => {
-      @Component({selector: 'grand-child', template: '<div><ng-content></ng-content></div>'})
+      @Component({
+        selector: 'grand-child',
+        template: '<div><ng-content></ng-content></div>',
+        standalone: false,
+      })
       class GrandChild {}
 
       @Component({
         selector: 'child',
         template: '<grand-child><ng-content></ng-content></grand-child>',
+        standalone: false,
       })
       class Child {}
 
-      @Component({selector: 'parent', template: `<child i18n><b>Hello</b> World!</child>`})
+      @Component({
+        selector: 'parent',
+        template: `<child i18n><b>Hello</b> World!</child>`,
+        standalone: false,
+      })
       class Parent {
         name: string = 'Parent';
       }
@@ -2547,16 +2618,25 @@ describe('runtime i18n', () => {
     });
 
     it('should be able to remove projected placeholders', () => {
-      @Component({selector: 'grand-child', template: '<div><ng-content></ng-content></div>'})
+      @Component({
+        selector: 'grand-child',
+        template: '<div><ng-content></ng-content></div>',
+        standalone: false,
+      })
       class GrandChild {}
 
       @Component({
         selector: 'child',
         template: '<grand-child><ng-content></ng-content></grand-child>',
+        standalone: false,
       })
       class Child {}
 
-      @Component({selector: 'parent', template: `<child i18n><b>Hello</b> World!</child>`})
+      @Component({
+        selector: 'parent',
+        template: `<child i18n><b>Hello</b> World!</child>`,
+        standalone: false,
+      })
       class Parent {
         name: string = 'Parent';
       }
@@ -2573,7 +2653,11 @@ describe('runtime i18n', () => {
     });
 
     it('should project translations with selectors', () => {
-      @Component({selector: 'child', template: `<ng-content select='span'></ng-content>`})
+      @Component({
+        selector: 'child',
+        template: `<ng-content select='span'></ng-content>`,
+        standalone: false,
+      })
       class Child {}
 
       @Component({
@@ -2584,6 +2668,7 @@ describe('runtime i18n', () => {
             <span title="deleteMe"></span>
           </child>
         `,
+        standalone: false,
       })
       class Parent {}
 
@@ -2603,10 +2688,15 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<div i18n>Content projected from <ng-content></ng-content></div>`,
+        standalone: false,
       })
       class Child {}
 
-      @Component({selector: 'parent', template: `<child>{{name}}</child>`})
+      @Component({
+        selector: 'parent',
+        template: `<child>{{name}}</child>`,
+        standalone: false,
+      })
       class Parent {
         name: string = 'Parent';
       }
@@ -2633,10 +2723,15 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<div i18n>Content projected from <ng-content></ng-content></div>`,
+        standalone: false,
       })
       class Child {}
 
-      @Component({selector: 'parent', template: `<child><b>{{name}}</b></child>`})
+      @Component({
+        selector: 'parent',
+        template: `<child><b>{{name}}</b></child>`,
+        standalone: false,
+      })
       class Parent {
         name: string = 'Parent';
       }
@@ -2656,10 +2751,15 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<div i18n>Child content <ng-content></ng-content></div>`,
+        standalone: false,
       })
       class Child {}
 
-      @Component({selector: 'parent', template: `<child i18n>and projection from {{name}}</child>`})
+      @Component({
+        selector: 'parent',
+        template: `<child i18n>and projection from {{name}}</child>`,
+        standalone: false,
+      })
       class Parent {
         name: string = 'Parent';
       }
@@ -2682,7 +2782,11 @@ describe('runtime i18n', () => {
         [computeMsgId('{VAR_PLURAL, plural, =1 {one} other {at least {INTERPOLATION} .}}')]:
           '{VAR_PLURAL, plural, =1 {one} other {at least {INTERPOLATION} .}}',
       });
-      @Component({selector: 'child', template: '<div><ng-content></ng-content></div>'})
+      @Component({
+        selector: 'child',
+        template: '<div><ng-content></ng-content></div>',
+        standalone: false,
+      })
       class Child {}
 
       @Component({
@@ -2694,6 +2798,7 @@ describe('runtime i18n', () => {
          =1 {one}
         other {at least {{value}} .}
       }</child>`,
+        standalone: false,
       })
       class Parent {
         value = 3;
@@ -2710,12 +2815,14 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<div i18n>Child content <ng-content></ng-content></div>`,
+        standalone: false,
       })
       class Child {}
 
       @Component({
         selector: 'parent',
         template: `<child i18n>and projection from {name, select, angular {Angular} other {{{name}}}}</child>`,
+        standalone: false,
       })
       class Parent {
         name: string = 'Parent';
@@ -2749,10 +2856,15 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<div i18n>Child content <ng-content></ng-content></div>`,
+        standalone: false,
       })
       class Child {}
 
-      @Component({selector: 'parent', template: `<child i18n>and projection from {{name}}</child>`})
+      @Component({
+        selector: 'parent',
+        template: `<child i18n>and projection from {{name}}</child>`,
+        standalone: false,
+      })
       class Parent {
         name: string = 'Parent';
       }
@@ -2778,6 +2890,7 @@ describe('runtime i18n', () => {
         template: `
             <ng-container>(<ng-content></ng-content>)</ng-container>
         `,
+        standalone: false,
       })
       class MyContentApp {}
 
@@ -2786,6 +2899,7 @@ describe('runtime i18n', () => {
         template: `
           <app i18n *ngIf="condition">{type, select, A {A} B {B} other {other}}</app>
         `,
+        standalone: false,
       })
       class MyApp {
         type = 'A';
@@ -2824,13 +2938,22 @@ describe('runtime i18n', () => {
     }
 
     it('detached nodes should still be part of query', () => {
-      @Directive({selector: '[text]', inputs: ['text'], exportAs: 'textDir'})
+      @Directive({
+        selector: '[text]',
+        inputs: ['text'],
+        exportAs: 'textDir',
+        standalone: false,
+      })
       class TextDirective {
         text: string | undefined;
         constructor() {}
       }
 
-      @Component({selector: 'div-query', template: '<ng-container #vc></ng-container>'})
+      @Component({
+        selector: 'div-query',
+        template: '<ng-container #vc></ng-container>',
+        standalone: false,
+      })
       class DivQuery {
         @ContentChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
 
@@ -2947,7 +3070,10 @@ describe('runtime i18n', () => {
   });
 
   it('should reflect lifecycle hook changes in text interpolations in i18n block', () => {
-    @Directive({selector: 'input'})
+    @Directive({
+      selector: 'input',
+      standalone: false,
+    })
     class InputsDir {
       constructor(private elementRef: ElementRef) {}
       ngOnInit() {
@@ -2960,6 +3086,7 @@ describe('runtime i18n', () => {
         <input #myinput>
         <div i18n>{{myinput.value}}</div>
       `,
+      standalone: false,
     })
     class App {}
 
@@ -2972,7 +3099,10 @@ describe('runtime i18n', () => {
   });
 
   it('should reflect lifecycle hook changes in text interpolations in i18n attributes', () => {
-    @Directive({selector: 'input'})
+    @Directive({
+      selector: 'input',
+      standalone: false,
+    })
     class InputsDir {
       constructor(private elementRef: ElementRef) {}
       ngOnInit() {
@@ -2985,6 +3115,7 @@ describe('runtime i18n', () => {
         <input #myinput>
         <div i18n-title title="{{myinput.value}}"></div>
       `,
+      standalone: false,
     })
     class App {}
 
@@ -3016,6 +3147,7 @@ describe('runtime i18n', () => {
       </div>
       <button [close]="true">Button label</button>
   `,
+      standalone: false,
     })
     class ContentElementDialog {
       data = false;
@@ -3087,6 +3219,7 @@ describe('runtime i18n', () => {
             <ng-content></ng-content> B
           </ng-template>
         `,
+        standalone: false,
       })
       class Projector {}
 
@@ -3095,6 +3228,7 @@ describe('runtime i18n', () => {
         template: `
           <projector>a</projector>
         `,
+        standalone: false,
       })
       class AppComponent {}
 
@@ -3117,10 +3251,14 @@ describe('runtime i18n', () => {
         template: `
             <div i18n>before|<div myDir>inside</div>|after</div>
           `,
+        standalone: false,
       })
       class MyApp {}
 
-      @Directive({selector: '[myDir]'})
+      @Directive({
+        selector: '[myDir]',
+        standalone: false,
+      })
       class MyDir {
         constructor(vcRef: ViewContainerRef) {
           myDir = this;
@@ -3151,6 +3289,7 @@ describe('runtime i18n', () => {
                 }} items)</span>
               }
           }</h1>`,
+      standalone: false,
     })
     class MyApp {
       registerItemCount = 1;
@@ -3165,12 +3304,16 @@ describe('runtime i18n', () => {
   it('should not insertBeforeIndex non-projected content text', () => {
     // This test demonstrates an issue with setting attributes on ICU elements.
     // NOTE: This test is extracted from g3.
-    @Component({template: `<div i18n>before|<child>TextNotProjected</child>|after</div>`})
+    @Component({
+      template: `<div i18n>before|<child>TextNotProjected</child>|after</div>`,
+      standalone: false,
+    })
     class MyApp {}
 
     @Component({
       selector: 'child',
       template: 'CHILD',
+      standalone: false,
     })
     class Child {}
 
@@ -3189,6 +3332,7 @@ describe('runtime i18n', () => {
       template: `
       <div i18n [title]="null | async"><div>A</div></div>
       <div i18n>{{(null | async)||'B'}}<div></div></div>`,
+      standalone: false,
     })
     class MyApp {}
 
@@ -3208,15 +3352,25 @@ describe('runtime i18n', () => {
             <child>Text</child>
           </middle>
         </parent>`,
+      standalone: false,
     })
     class MyApp {}
 
-    @Component({selector: 'parent'})
+    @Component({
+      selector: 'parent',
+      standalone: false,
+    })
     class Parent {}
 
-    @Component({selector: 'middle'})
+    @Component({
+      selector: 'middle',
+      standalone: false,
+    })
     class Middle {}
-    @Component({selector: 'child'})
+    @Component({
+      selector: 'child',
+      standalone: false,
+    })
     class Child {
       constructor(public middle: Middle) {
         child = this;
@@ -3239,6 +3393,7 @@ describe('runtime i18n', () => {
         <ng-template #tmpl i18n><span *ngIf="true">X</span></ng-template>
         <span [ngTemplateOutlet]="tmpl"></span>
       </div>`,
+      standalone: false,
     })
     class MyApp {}
 
@@ -3275,6 +3430,7 @@ describe('runtime i18n', () => {
           {{']'}}
         </ng-container>
       `,
+      standalone: false,
     })
     class MyApp {}
 
@@ -3324,6 +3480,7 @@ describe('runtime i18n', () => {
           }
         |after.
       `,
+      standalone: false,
     })
     class MyApp {
       retention = {
@@ -3351,6 +3508,7 @@ describe('runtime i18n', () => {
               class="parameter-name">{{parameters[0].name}}</span>}
           }</div>
         `,
+      standalone: false,
     })
     class MyApp {
       parameters = [{name: 'void_abt_param'}];
@@ -3374,6 +3532,7 @@ describe('runtime i18n', () => {
           =2 {<i>two</i>}
       },</li>
       </ul>`,
+      standalone: false,
     })
     class MyApp {
       items = [1, 2];
@@ -3392,12 +3551,18 @@ describe('runtime i18n', () => {
   it('should be able to inject a static i18n attribute', () => {
     loadTranslations({[computeMsgId('text')]: 'translatedText'});
 
-    @Directive({selector: '[injectTitle]'})
+    @Directive({
+      selector: '[injectTitle]',
+      standalone: false,
+    })
     class InjectTitleDir {
       constructor(@Attribute('title') public title: string) {}
     }
 
-    @Component({template: `<div i18n-title title="text" injectTitle></div>`})
+    @Component({
+      template: `<div i18n-title title="text" injectTitle></div>`,
+      standalone: false,
+    })
     class App {
       @ViewChild(InjectTitleDir) dir!: InjectTitleDir;
     }
@@ -3413,12 +3578,18 @@ describe('runtime i18n', () => {
   it('should inject `null` for an i18n attribute with an interpolation', () => {
     loadTranslations({[computeMsgId('text {$INTERPOLATION}')]: 'translatedText {$INTERPOLATION}'});
 
-    @Directive({selector: '[injectTitle]'})
+    @Directive({
+      selector: '[injectTitle]',
+      standalone: false,
+    })
     class InjectTitleDir {
       constructor(@Attribute('title') public title: string) {}
     }
 
-    @Component({template: `<div i18n-title title="text {{ value }}" injectTitle></div>`})
+    @Component({
+      template: `<div i18n-title title="text {{ value }}" injectTitle></div>`,
+      standalone: false,
+    })
     class App {
       @ViewChild(InjectTitleDir) dir!: InjectTitleDir;
       value = 'value';
@@ -3442,7 +3613,11 @@ function initWithTemplate(compType: Type<any>, template: string) {
   return fixture;
 }
 
-@Component({selector: 'app-comp', template: ``})
+@Component({
+  selector: 'app-comp',
+  template: ``,
+  standalone: false,
+})
 class AppComp {
   name = `Angular`;
   description = `Web Framework`;
@@ -3455,11 +3630,13 @@ class AppComp {
   selector: 'app-comp-with-whitespaces',
   template: ``,
   preserveWhitespaces: true,
+  standalone: false,
 })
 class AppCompWithWhitespaces {}
 
 @Directive({
   selector: '[tplRef]',
+  standalone: false,
 })
 class DirectiveWithTplRef {
   constructor(
@@ -3471,17 +3648,27 @@ class DirectiveWithTplRef {
   }
 }
 
-@Pipe({name: 'uppercase'})
+@Pipe({
+  name: 'uppercase',
+  standalone: false,
+})
 class UppercasePipe implements PipeTransform {
   transform(value: string) {
     return value.toUpperCase();
   }
 }
 
-@Directive({selector: `[dialog]`})
+@Directive({
+  selector: `[dialog]`,
+  standalone: false,
+})
 export class DialogDir {}
 
-@Directive({selector: `button[close]`, host: {'[title]': 'name'}})
+@Directive({
+  selector: `button[close]`,
+  host: {'[title]': 'name'},
+  standalone: false,
+})
 export class CloseBtn {
   @Input('close') dialogResult: any;
   name: string = 'Close dialog';

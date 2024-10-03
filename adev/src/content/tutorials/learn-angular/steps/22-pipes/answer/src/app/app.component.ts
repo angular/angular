@@ -6,7 +6,6 @@ import {LowerCasePipe} from '@angular/common';
   template: `
     {{ username | lowercase }}
   `,
-  standalone: true,
   imports: [LowerCasePipe],
 })
 export class AppComponent {

@@ -14,7 +14,6 @@ import {SelectedDirective} from './timeline-visualizer.component';
   selector: 'ng-execution-details',
   templateUrl: './execution-details.component.html',
   styleUrls: ['./execution-details.component.scss'],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExecutionDetailsComponent {

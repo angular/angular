@@ -1,8 +1,8 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  selector: 'my-app',
-  template: `<a
+    selector: 'my-app',
+    template: `<a
     target="_blank"
     [title]="1"
     [attr.foo]="'one'"
@@ -10,7 +10,8 @@ import {Component, NgModule} from '@angular/core';
     [attr.bar]="'two'"
     [id]="2"
     aria-label="link"
-    [attr.baz]="three"></a>`
+    [attr.baz]="three"></a>`,
+    standalone: false
 })
 export class MyComponent {
   doThings() {}

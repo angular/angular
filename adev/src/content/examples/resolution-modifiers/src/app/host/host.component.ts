@@ -4,7 +4,6 @@ import {HostChildComponent} from '../host-child/host-child.component';
 
 // #docregion host-component
 @Component({
-  standalone: true,
   selector: 'app-host',
   templateUrl: './host.component.html',
   styleUrls: ['./host.component.css'],

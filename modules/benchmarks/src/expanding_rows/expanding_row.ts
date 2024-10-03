@@ -121,6 +121,7 @@ export interface ExpandingRowHostBase {
     <ng-content></ng-content>
   </div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ExpandingRow {
   /**

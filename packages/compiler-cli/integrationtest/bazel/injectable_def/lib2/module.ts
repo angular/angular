@@ -12,6 +12,7 @@ import {Lib1Module, Service} from 'lib1_built/module';
 @Component({
   selector: 'lib2-cmp',
   template: '{{instance1}}:{{instance2}}',
+  standalone: false,
 })
 export class Lib2Cmp {
   instance1: number = -1;

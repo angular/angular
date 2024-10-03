@@ -17,7 +17,6 @@ import {DialogComponent} from './dialog.component';
 
 @Component({
   selector: 'app-todo-demo',
-  standalone: true,
   imports: [RouterLink, RouterOutlet, MatDialogModule, FormsModule],
   styles: [
     `
