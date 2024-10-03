@@ -10,7 +10,6 @@ import {ChangeDetectionStrategy, Component, computed, inject, input} from '@angu
 import {ComponentType} from 'protocol';
 
 import {ElementPropertyResolver} from '../property-resolver/element-property-resolver';
-import {MatButton} from '@angular/material/button';
 
 @Component({
   selector: 'ng-component-metadata',
@@ -18,7 +17,6 @@ import {MatButton} from '@angular/material/button';
   styleUrls: ['./component-metadata.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [MatButton],
 })
 export class ComponentMetadataComponent {
   readonly currentSelectedComponent = input.required<ComponentType>();
