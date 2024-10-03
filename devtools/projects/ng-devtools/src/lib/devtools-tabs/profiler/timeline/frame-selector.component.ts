@@ -27,7 +27,6 @@ import {TabUpdate} from '../../tab-update/index';
 
 import {GraphNode} from './record-formatter/record-formatter';
 import {MatIcon} from '@angular/material/icon';
-import {MatButton} from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatCard} from '@angular/material/card';
 import {AsyncPipe, NgStyle} from '@angular/common';
@@ -42,7 +41,6 @@ const ITEM_WIDTH = 30;
   imports: [
     MatCard,
     MatTooltip,
-    MatButton,
     MatIcon,
     CdkVirtualScrollViewport,
     CdkFixedSizeVirtualScroll,
