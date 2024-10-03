@@ -129,10 +129,7 @@ export class KeyValueDiffers {
     factory: defaultKeyValueDiffersFactory,
   });
 
-  /**
-   * @deprecated v4.0.0 - Should be private.
-   */
-  factories: KeyValueDifferFactory[];
+  private readonly factories: KeyValueDifferFactory[];
 
   constructor(factories: KeyValueDifferFactory[]) {
     this.factories = factories;

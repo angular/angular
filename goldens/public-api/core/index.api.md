@@ -1107,8 +1107,6 @@ export class KeyValueDiffers {
     // (undocumented)
     static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
     static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
-    // @deprecated (undocumented)
-    factories: KeyValueDifferFactory[];
     // (undocumented)
     find(kv: any): KeyValueDifferFactory;
     // (undocumented)
