@@ -24,6 +24,7 @@ jasmine_node_test(
         "//packages/core/schematics/ng-generate/control-flow-migration:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",
+        "//packages/core/schematics/ng-generate/signal-queries-migration:static_files",
         "//packages/core/schematics/ng-generate/standalone-migration:static_files",
     ],
     deps = [

@@ -39,12 +39,14 @@ export class DirectiveInfo {
   constructor(public clazz: ts.ClassDeclaration) {}
 
   /**
-   * Checks whether there are any incompatible inputs for the
+   * Checks whether there are any migrated inputs for the
    * given class.
+   *
+   * Returns `false` if all inputs are incompatible.
    */
-  hasIncompatibleMembers(): boolean {
-    return Array.from(this.inputFields.values()).some(({descriptor}) =>
-      this.isInputMemberIncompatible(descriptor),
+  hasMigratedFields(): boolean {
+    return Array.from(this.inputFields.values()).some(
+      ({descriptor}) => !this.isInputMemberIncompatible(descriptor),
     );
   }
 

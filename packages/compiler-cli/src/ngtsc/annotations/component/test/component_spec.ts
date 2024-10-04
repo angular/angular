@@ -148,6 +148,7 @@ function setup(
     /* localCompilationExtraImportsTracker */ null,
     jitDeclarationRegistry,
     /* i18nPreserveSignificantWhitespace */ true,
+    /* strictStandalone */ false,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }

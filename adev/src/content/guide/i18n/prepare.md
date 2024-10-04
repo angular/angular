@@ -36,7 +36,7 @@ The following `<div>` tag will display translated text as part of `div` and `ari
 
 <docs-code-multifile>
     <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html"  visibleRegion="i18n-conditional"/>
-    <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/i18n/src/app/app.component.ts" visibleLines="[[14,16],[17,24],[37,39]]"/>
+    <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/i18n/src/app/app.component.ts" visibleLines="[[14,21],[33,37]]"/>
 </docs-code-multifile>
 
 ### Translate inline text without HTML element

@@ -30,7 +30,6 @@ import {Renderer2, RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertGreaterThan, assertIndexInRange} from '../util/assert';
 
-import {AfterRenderManager} from './after_render/manager';
 import {assertComponentType, assertNoDuplicateDirectives} from './assert';
 import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './definition';
@@ -41,10 +40,11 @@ import {reportUnknownPropertyError} from './instructions/element_validation';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {renderView} from './instructions/render';
 import {
-  addToViewTree,
+  addToEndOfViewTree,
   createLView,
   createTView,
   executeContentQueries,
+  getInitialLViewFlagsFromDef,
   getOrCreateComponentTView,
   getOrCreateTNode,
   initializeDirectives,
@@ -534,17 +534,11 @@ function createRootComponentView(
     hydrationInfo = retrieveHydrationInfo(hostRNode, rootView[INJECTOR]!);
   }
   const viewRenderer = environment.rendererFactory.createRenderer(hostRNode, rootComponentDef);
-  let lViewFlags = LViewFlags.CheckAlways;
-  if (rootComponentDef.signals) {
-    lViewFlags = LViewFlags.SignalView;
-  } else if (rootComponentDef.onPush) {
-    lViewFlags = LViewFlags.Dirty;
-  }
   const componentView = createLView(
     rootView,
     getOrCreateComponentTView(rootComponentDef),
     null,
-    lViewFlags,
+    getInitialLViewFlagsFromDef(rootComponentDef),
     rootView[tNode.index],
     tNode,
     environment,
@@ -558,7 +552,7 @@ function createRootComponentView(
     markAsComponentHost(tView, tNode, rootDirectives.length - 1);
   }
 
-  addToViewTree(rootView, componentView);
+  addToEndOfViewTree(rootView, componentView);
 
   // Store component view at node index, with node as the HOST
   return (rootView[tNode.index] = componentView);

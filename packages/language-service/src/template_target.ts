@@ -229,6 +229,7 @@ export function getTargetAtPosition(
   }
 
   const candidate = path[path.length - 1];
+
   // Walk up the result nodes to find the nearest `TmplAstTemplate` which contains the targeted
   // node.
   let context: TmplAstTemplate | null = null;

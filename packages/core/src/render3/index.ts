@@ -14,6 +14,7 @@ import {ɵɵInputTransformsFeature} from './features/input_transforms_feature';
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
 import {ɵɵStandaloneFeature} from './features/standalone_feature';
+import {ɵɵExternalStylesFeature} from './features/external_styles_feature';
 import {
   ComponentDef,
   ComponentTemplate,
@@ -219,6 +220,7 @@ export {ɵɵresolveBody, ɵɵresolveDocument, ɵɵresolveWindow} from './util/mi
 export {ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound';
 export {ɵɵgetComponentDepsFactory} from './local_compilation';
 export {ɵsetClassDebugInfo} from './debug/set_debug_info';
+export {ɵɵreplaceMetadata} from './hmr';
 
 export {
   ComponentDebugMetadata,
@@ -254,4 +256,5 @@ export {
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
   ɵɵStandaloneFeature,
+  ɵɵExternalStylesFeature,
 };

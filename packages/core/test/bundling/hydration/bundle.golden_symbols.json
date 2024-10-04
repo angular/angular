@@ -126,9 +126,6 @@
     "name": "DomAdapter"
   },
   {
-    "name": "DomEventsPlugin"
-  },
-  {
     "name": "DomRendererFactory2"
   },
   {
@@ -174,9 +171,6 @@
     "name": "ErrorHandler"
   },
   {
-    "name": "EventDelegationPlugin"
-  },
-  {
     "name": "EventEmitter"
   },
   {
@@ -184,9 +178,6 @@
   },
   {
     "name": "EventManagerPlugin"
-  },
-  {
-    "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
     "name": "GenericBrowserDomAdapter"
@@ -738,6 +729,9 @@
     "name": "createLView"
   },
   {
+    "name": "createLinkElement"
+  },
+  {
     "name": "createNodeInjector"
   },
   {
@@ -745,6 +739,9 @@
   },
   {
     "name": "createOperatorSubscriber"
+  },
+  {
+    "name": "createStyleElement"
   },
   {
     "name": "createTView"
@@ -1269,13 +1266,13 @@
     "name": "remove"
   },
   {
-    "name": "removeAll"
-  },
-  {
     "name": "removeDehydratedView"
   },
   {
     "name": "removeDehydratedViews"
+  },
+  {
+    "name": "removeElements"
   },
   {
     "name": "removeFromArray"

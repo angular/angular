@@ -180,9 +180,6 @@
     "name": "DomAdapter"
   },
   {
-    "name": "DomEventsPlugin"
-  },
-  {
     "name": "DomRendererFactory2"
   },
   {
@@ -240,9 +237,6 @@
     "name": "ErrorHandler"
   },
   {
-    "name": "EventDelegationPlugin"
-  },
-  {
     "name": "EventEmitter"
   },
   {
@@ -253,9 +247,6 @@
   },
   {
     "name": "FALSE_BOOLEAN_VALUES"
-  },
-  {
-    "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
     "name": "GenericBrowserDomAdapter"
@@ -660,7 +651,7 @@
     "name": "addPropertyBinding"
   },
   {
-    "name": "addToViewTree"
+    "name": "addToEndOfViewTree"
   },
   {
     "name": "allocExpando"
@@ -822,10 +813,16 @@
     "name": "createLView"
   },
   {
+    "name": "createLinkElement"
+  },
+  {
     "name": "createNodeInjector"
   },
   {
     "name": "createNotification"
+  },
+  {
+    "name": "createStyleElement"
   },
   {
     "name": "createTView"
@@ -973,6 +970,9 @@
   },
   {
     "name": "getFirstLContainer"
+  },
+  {
+    "name": "getInitialLViewFlagsFromDef"
   },
   {
     "name": "getInjectImplementation"
@@ -1356,10 +1356,10 @@
     "name": "remove"
   },
   {
-    "name": "removeAll"
+    "name": "removeClass"
   },
   {
-    "name": "removeClass"
+    "name": "removeElements"
   },
   {
     "name": "removeFromArray"

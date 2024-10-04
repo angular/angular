@@ -14,16 +14,13 @@ import {
   isTsReference,
   Reference,
 } from '../signal-migration/src/passes/reference_resolution/reference_kinds';
-import type {CompilationUnitData} from './migration';
-import {
-  checkNonTsReferenceIsPartOfCallExpression,
-  checkTsReferenceIsPartOfCallExpression,
-} from './property_accesses';
+import type {GlobalUnitData} from './migration';
+import {checkNonTsReferenceCallsField, checkTsReferenceCallsField} from './property_accesses';
 
 export function replaceQueryListGetCall(
   ref: Reference<ClassFieldDescriptor>,
   info: ProgramInfo,
-  globalMetadata: CompilationUnitData,
+  globalMetadata: GlobalUnitData,
   replacements: Replacement[],
 ): void {
   if (!isHostBindingReference(ref) && !isTemplateReference(ref) && !isTsReference(ref)) {
@@ -35,7 +32,7 @@ export function replaceQueryListGetCall(
   }
 
   if (isTsReference(ref)) {
-    const getCallExpr = checkTsReferenceIsPartOfCallExpression(ref, 'get');
+    const getCallExpr = checkTsReferenceCallsField(ref, 'get');
     if (getCallExpr === null) {
       return;
     }
@@ -55,7 +52,7 @@ export function replaceQueryListGetCall(
   }
 
   // Template and host binding references.
-  const callExpr = checkNonTsReferenceIsPartOfCallExpression(ref, 'get');
+  const callExpr = checkNonTsReferenceCallsField(ref, 'get');
   if (callExpr === null) {
     return;
   }

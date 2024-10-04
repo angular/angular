@@ -71,6 +71,7 @@ export * from './models_deprecated';
 export {Navigation, NavigationExtras, UrlCreationOptions} from './navigation_transition';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 export {
+  ComponentInputBindingFeature,
   DebugTracingFeature,
   DisabledInitialNavigationFeature,
   withViewTransitions,

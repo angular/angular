@@ -11,6 +11,7 @@ import {NavigationItem} from '@angular/docs';
 // These 2 imports are expected to be red because they are generated a build time
 import FIRST_APP_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/first-app/routes.json';
 import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/learn-angular/routes.json';
+import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/deferrable-views/routes.json';
 
 import {DefaultPage} from './core/enums/pages';
 import {getApiNavigationItems} from './features/references/helpers/manifest.helper';
@@ -872,6 +873,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
 export const TUTORIALS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   FIRST_APP_TUTORIAL_NAV_DATA,
   LEARN_ANGULAR_TUTORIAL_NAV_DATA,
+  DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA,
   {
     path: DefaultPage.TUTORIALS,
     contentPath: 'tutorials/home',
@@ -1219,7 +1221,7 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/errors/NG0507',
       },
       {
-        label: 'NG0602: HTML content was altered after server-side rendering',
+        label: 'NG0602: Disallowed function call inside reactive context',
         path: 'errors/NG0602',
         contentPath: 'reference/errors/NG0602',
       },

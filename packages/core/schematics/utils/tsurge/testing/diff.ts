@@ -13,9 +13,11 @@ import chalk from 'chalk';
  * Diffs the given two strings and creates a human-readable
  * colored diff string.
  */
-export function diffText(expected: string, actual: string): string {
+export function diffText(expected: string, actual: string, diffLineContextRange = 10): string {
+  const redColorCode = chalk.red('ɵɵ').split('ɵɵ')[0];
+  const greenColorCode = chalk.green('ɵɵ').split('ɵɵ')[0];
   const goldenDiff = diff.diffChars(actual, expected);
-  let result = '';
+  let fullResult = '';
 
   for (const part of goldenDiff) {
     // whitespace cannot be highlighted, so we use a tiny indicator character.
@@ -27,8 +29,50 @@ export function diffText(expected: string, actual: string): string {
         ? chalk.red(valueForColor)
         : chalk.reset(part.value);
 
-    result += text;
+    fullResult += text;
+  }
+
+  const lines = fullResult.split(/\n/g);
+  const linesToRender = new Set<number>();
+
+  // Find lines with diff, and include context lines around them.
+  for (const [index, l] of lines.entries()) {
+    if (l.includes(redColorCode) || l.includes(greenColorCode)) {
+      const contextBottom = index - diffLineContextRange;
+      const contextTop = index + diffLineContextRange;
+
+      numbersFromTo(Math.max(0, contextBottom), index).forEach((lineNum) =>
+        linesToRender.add(lineNum),
+      );
+      numbersFromTo(index, Math.min(contextTop, lines.length - 1)).forEach((lineNum) =>
+        linesToRender.add(lineNum),
+      );
+    }
+  }
+
+  let result = '';
+  let previous = -1;
+
+  // Compute full diff text. Add markers if lines were skipped.
+  for (const lineIndex of Array.from(linesToRender).sort((a, b) => a - b)) {
+    if (lineIndex - 1 !== previous) {
+      result += `${chalk.grey('... (lines above) ...')}\n`;
+    }
+    result += `${lines[lineIndex]}\n`;
+    previous = lineIndex;
+  }
+
+  if (previous < lines.length - 1) {
+    result += `${chalk.grey('... (lines below) ...\n')}`;
   }
 
   return result;
+}
+
+function numbersFromTo(start: number, end: number): number[] {
+  const list: number[] = [];
+  for (let i = start; i <= end; i++) {
+    list.push(i);
+  }
+  return list;
 }

@@ -122,9 +122,20 @@
   // adjust height for terminal tabs
   // so that scroll bar & content do not render under tabs
   height: calc(100% - 49px);
+  transition: height 0.3s ease;
 
   &-hidden {
     display: none;
+  }
+
+  // If error box are displayed, move inline-errors-box
+  // to bottom of the editor and adjust height
+  // so that scroll bar & content do not render under tabs
+  &:has(~ .adev-inline-errors-box) ~ .adev-inline-errors-box {
+      bottom: auto;
+  }
+  &:has(~ .adev-inline-errors-box) {
+    height: min(75% - 49px);
   }
 }
 
@@ -137,6 +148,8 @@
   background-color: color-mix(in srgb, var(--bright-blue), var(--page-background) 90%);
   border: 1px solid color-mix(in srgb, var(--bright-blue), var(--page-background) 70%);
   border-radius: 0.25rem;
+  overflow: auto;
+  max-height: 25%;
 
   button {
     position: absolute;
@@ -162,7 +175,6 @@
     margin: 0;
     margin-inline: 1.25rem;
     color: var(--tertiary-contrast);
-    max-height: 200px;
     overflow: auto;
   }
 }

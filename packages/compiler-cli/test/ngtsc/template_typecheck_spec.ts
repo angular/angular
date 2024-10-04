@@ -7765,6 +7765,314 @@ suppress
           'Pipe "PercentPipe" is not used within the template',
         );
       });
+
+      it('should report unused imports coming from a nested array from the same file', () => {
+        env.write(
+          'used.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[used]', standalone: true})
+            export class UsedDir {}
+          `,
+        );
+
+        env.write(
+          'other-used.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[other-used]', standalone: true})
+            export class OtherUsedDir {}
+          `,
+        );
+
+        env.write(
+          'unused.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[unused]', standalone: true})
+            export class UnusedDir {}
+          `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {UsedDir} from './used';
+          import {OtherUsedDir} from './other-used';
+          import {UnusedDir} from './unused';
+
+          const COMMON = [OtherUsedDir, UnusedDir];
+
+          @Component({
+            template: \`
+              <section>
+                <div other-used></div>
+                <span used></span>
+              </section>
+            \`,
+            standalone: true,
+            imports: [UsedDir, COMMON]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe('Imports array contains unused imports');
+        expect(diags[0].relatedInformation?.length).toBe(1);
+        expect(diags[0].relatedInformation![0].messageText).toBe(
+          'Directive "UnusedDir" is not used within the template',
+        );
+      });
+
+      it('should report unused imports coming from an array used as the `imports` initializer', () => {
+        env.write(
+          'used.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[used]', standalone: true})
+            export class UsedDir {}
+          `,
+        );
+
+        env.write(
+          'unused.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[unused]', standalone: true})
+            export class UnusedDir {}
+          `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {UsedDir} from './used';
+          import {UnusedDir} from './unused';
+
+          const IMPORTS = [UsedDir, UnusedDir];
+
+          @Component({
+            template: \`
+              <section>
+                <div></div>
+                <span used></span>
+              </section>
+            \`,
+            standalone: true,
+            imports: IMPORTS
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe('Imports array contains unused imports');
+        expect(diags[0].relatedInformation?.length).toBe(1);
+        expect(diags[0].relatedInformation![0].messageText).toBe(
+          'Directive "UnusedDir" is not used within the template',
+        );
+      });
+
+      it('should not report unused imports coming from an array through a spread expression from a different file', () => {
+        env.write(
+          'used.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[used]', standalone: true})
+            export class UsedDir {}
+          `,
+        );
+
+        env.write(
+          'other-used.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[other-used]', standalone: true})
+            export class OtherUsedDir {}
+          `,
+        );
+
+        env.write(
+          'unused.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[unused]', standalone: true})
+            export class UnusedDir {}
+          `,
+        );
+
+        env.write(
+          'common.ts',
+          `
+            import {OtherUsedDir} from './other-used';
+            import {UnusedDir} from './unused';
+
+            export const COMMON = [OtherUsedDir, UnusedDir];
+          `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {UsedDir} from './used';
+          import {COMMON} from './common';
+
+          @Component({
+            template: \`
+              <section>
+                <div other-used></div>
+                <span used></span>
+              </section>
+            \`,
+            standalone: true,
+            imports: [UsedDir, ...COMMON]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report unused imports coming from a nested array from a different file', () => {
+        env.write(
+          'used.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[used]', standalone: true})
+            export class UsedDir {}
+          `,
+        );
+
+        env.write(
+          'other-used.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[other-used]', standalone: true})
+            export class OtherUsedDir {}
+          `,
+        );
+
+        env.write(
+          'unused.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[unused]', standalone: true})
+            export class UnusedDir {}
+          `,
+        );
+
+        env.write(
+          'common.ts',
+          `
+            import {OtherUsedDir} from './other-used';
+            import {UnusedDir} from './unused';
+
+            export const COMMON = [OtherUsedDir, UnusedDir];
+          `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {UsedDir} from './used';
+          import {COMMON} from './common';
+
+          @Component({
+            template: \`
+              <section>
+                <div other-used></div>
+                <span used></span>
+              </section>
+            \`,
+            standalone: true,
+            imports: [UsedDir, COMMON]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report unused imports coming from an exported array in the same file', () => {
+        env.write(
+          'used.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[used]', standalone: true})
+            export class UsedDir {}
+          `,
+        );
+
+        env.write(
+          'other-used.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[other-used]', standalone: true})
+            export class OtherUsedDir {}
+          `,
+        );
+
+        env.write(
+          'unused.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[unused]', standalone: true})
+            export class UnusedDir {}
+          `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import {UsedDir} from './used';
+          import {OtherUsedDir} from './other-used';
+          import {UnusedDir} from './unused';
+
+          export const COMMON = [OtherUsedDir, UnusedDir];
+
+          @Component({
+            template: \`
+              <section>
+                <div other-used></div>
+                <span used></span>
+              </section>
+            \`,
+            standalone: true,
+            imports: [UsedDir, COMMON]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
   });
 });

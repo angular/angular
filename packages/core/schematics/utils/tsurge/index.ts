@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+export * from './base_migration';
 export * from './migration';
 export * from './program_info';
 export * from './replacement';

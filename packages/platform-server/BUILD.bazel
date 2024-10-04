@@ -67,6 +67,7 @@ ng_package(
     visibility = [
         "//adev:__pkg__",
         "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
     ],
     deps = [

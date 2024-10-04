@@ -67,6 +67,7 @@ ng_package(
         "//adev:__pkg__",
         "//adev/shared-docs:__subpackages__",
         "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/src/ngtsc/metadata/test:__subpackages__",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/test:__subpackages__",

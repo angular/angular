@@ -96,9 +96,11 @@ export function identifyPotentialTypeScriptReference<D extends ClassFieldDescrip
     return;
   }
 
-  const accessParent = unwrapParent(traverseAccess(node).parent);
+  const access = unwrapParent(traverseAccess(node));
+  const accessParent = access.parent;
   const isWriteReference =
     ts.isBinaryExpression(accessParent) &&
+    accessParent.left === access &&
     writeBinaryOperators.includes(accessParent.operatorToken.kind);
 
   // track accesses from source files to known fields.

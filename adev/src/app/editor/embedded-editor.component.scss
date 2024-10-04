@@ -32,7 +32,7 @@ $width-breakpoint: 950px;
     }
   }
 
-  // If files are displayed, shpare the space
+  // If files are displayed, share the space
   &:has(.docs-editor-tabs) {
     .adev-tutorial-code-editor {
       display: block;

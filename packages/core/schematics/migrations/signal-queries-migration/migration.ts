@@ -13,7 +13,9 @@ import assert from 'assert';
 import ts from 'typescript';
 import {
   confirmAsSerializable,
+  MigrationStats,
   ProgramInfo,
+  projectFile,
   Replacement,
   Serializable,
   TsurgeComplexMigration,
@@ -44,32 +46,54 @@ import {KnownQueries} from './known_queries';
 import {queryFunctionNameToDecorator} from './query_api_names';
 import {removeQueryListToArrayCall} from './fn_to_array_removal';
 import {replaceQueryListGetCall} from './fn_get_replacement';
-
-// TODO: Consider re-using inheritance logic from input migration
-// TODO: Consider re-using problematic pattern recognition logic from input migration
+import {checkForIncompatibleQueryListAccesses} from './incompatible_query_list_fns';
+import {replaceQueryListFirstAndLastReferences} from './fn_first_last_replacement';
+import {MigrationConfig} from './migration_config';
 
 export interface CompilationUnitData {
+  knownQueryFields: Record<ClassFieldUniqueKey, {fieldName: string; isMulti: boolean}>;
+
+  // Potential queries problematic. We don't know what fields are queries during
+  // analysis, so this is very eagerly tracking all potential problematic "class fields".
+  potentialProblematicQueries: Record<ClassFieldUniqueKey, true>;
+
+  // Potential multi queries problematic. We don't know what fields are queries, or which
+  // ones are "multi" queries during analysis, so this is very eagerly tracking all
+  // potential problematic "class fields", but noting for later that those only would be
+  // problematic if they end up being multi-result queries.
+  potentialProblematicReferenceForMultiQueries: Record<ClassFieldUniqueKey, true>;
+}
+
+export interface GlobalUnitData {
   knownQueryFields: Record<ClassFieldUniqueKey, {fieldName: string; isMulti: boolean}>;
   problematicQueries: Record<ClassFieldUniqueKey, true>;
 }
 
 export class SignalQueriesMigration extends TsurgeComplexMigration<
   CompilationUnitData,
-  CompilationUnitData
+  GlobalUnitData
 > {
+  constructor(private readonly config: MigrationConfig = {}) {
+    super();
+  }
+
   override async analyze(info: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
     assert(info.ngCompiler !== null, 'Expected queries migration to have an Angular program.');
     // TODO: This stage for this migration doesn't necessarily need a full
     // compilation unit program.
 
     // Pre-Analyze the program and get access to the template type checker.
-    const {templateTypeChecker} = await info.ngCompiler['ensureAnalyzed']();
+    const {templateTypeChecker} = info.ngCompiler['ensureAnalyzed']();
 
     const {sourceFiles, program} = info;
     const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflector, checker, null);
-    const res: CompilationUnitData = {knownQueryFields: {}, problematicQueries: {}};
+    const res: CompilationUnitData = {
+      knownQueryFields: {},
+      potentialProblematicQueries: {},
+      potentialProblematicReferenceForMultiQueries: {},
+    };
     const groupedAstVisitor = new GroupedTsAstVisitor(sourceFiles);
     const referenceResult: ReferenceResult<ClassFieldDescriptor> = {references: []};
 
@@ -97,6 +121,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
         // eagerly detect such and later filter those problematic references that
         // turned out to refer to queries.
         // TODO: Consider skipping this extra work when running in non-batch mode.
+        // TODO: Also consider skipping if we know this query cannot be part.
         {
           shouldTrackClassReference: (_class) => false,
           attemptRetrieveDescriptorFromSymbol: (s) => getClassFieldDescriptorForSymbol(s, info),
@@ -112,23 +137,26 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     // we saw in TS code, templates or host bindings.
     for (const ref of referenceResult.references) {
       if (isTsReference(ref) && ref.from.isWrite) {
-        res.problematicQueries[ref.target.key] = true;
+        res.potentialProblematicQueries[ref.target.key] = true;
       }
       if ((isTemplateReference(ref) || isHostBindingReference(ref)) && ref.from.isWrite) {
-        res.problematicQueries[ref.target.key] = true;
+        res.potentialProblematicQueries[ref.target.key] = true;
       }
       // TODO: Remove this when we support signal narrowing in templates.
       // https://github.com/angular/angular/pull/55456.
       if (isTemplateReference(ref) && ref.from.isLikelyPartOfNarrowing) {
-        res.problematicQueries[ref.target.key] = true;
+        res.potentialProblematicQueries[ref.target.key] = true;
       }
+
+      // Check for other incompatible query list accesses.
+      checkForIncompatibleQueryListAccesses(ref, res);
     }
 
     return confirmAsSerializable(res);
   }
 
-  override async merge(units: CompilationUnitData[]): Promise<Serializable<CompilationUnitData>> {
-    const merged: CompilationUnitData = {
+  override async merge(units: CompilationUnitData[]): Promise<Serializable<GlobalUnitData>> {
+    const merged: GlobalUnitData = {
       knownQueryFields: {},
       problematicQueries: {},
     };
@@ -136,15 +164,24 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       for (const [id, value] of Object.entries(unit.knownQueryFields)) {
         merged.knownQueryFields[id as ClassFieldUniqueKey] = value;
       }
-      for (const id of Object.keys(unit.problematicQueries)) {
+      for (const id of Object.keys(unit.potentialProblematicQueries)) {
         merged.problematicQueries[id as ClassFieldUniqueKey] = true;
       }
     }
+
+    for (const unit of units) {
+      for (const id of Object.keys(unit.potentialProblematicReferenceForMultiQueries)) {
+        if (merged.knownQueryFields[id as ClassFieldUniqueKey]?.isMulti) {
+          merged.problematicQueries[id as ClassFieldUniqueKey] = true;
+        }
+      }
+    }
+
     return confirmAsSerializable(merged);
   }
 
   override async migrate(
-    globalMetadata: CompilationUnitData,
+    globalMetadata: GlobalUnitData,
     info: ProgramInfo,
   ): Promise<Replacement[]> {
     assert(info.ngCompiler !== null, 'Expected queries migration to have an Angular program.');
@@ -167,9 +204,14 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     const referenceResult: ReferenceResult<ClassFieldDescriptor> = {references: []};
     const sourceQueries: ExtractedQuery[] = [];
 
-    const isMigratedQuery = (id: ClassFieldUniqueKey) =>
-      globalMetadata.knownQueryFields[id] !== undefined &&
-      globalMetadata.problematicQueries[id] === undefined;
+    const isMigratedQuery = (descriptor: ClassFieldDescriptor) =>
+      globalMetadata.knownQueryFields[descriptor.key] !== undefined &&
+      globalMetadata.problematicQueries[descriptor.key] === undefined &&
+      (this.config.shouldMigrateQuery === undefined ||
+        this.config.shouldMigrateQuery(
+          descriptor,
+          projectFile(descriptor.node.getSourceFile(), info),
+        ));
 
     // Detect all queries in this unit.
     const queryWholeProgramVisitor = (node: ts.Node) => {
@@ -245,8 +287,9 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     for (const extractedQuery of sourceQueries) {
       const node = extractedQuery.node;
       const sf = node.getSourceFile();
+      const descriptor = {key: extractedQuery.id, node: extractedQuery.node};
 
-      if (!isMigratedQuery(extractedQuery.id)) {
+      if (!isMigratedQuery(descriptor)) {
         updateFileState(filesWithIncompleteMigration, sf, extractedQuery.kind);
         continue;
       }
@@ -267,9 +310,9 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     const referenceMigrationHost: ReferenceMigrationHost<ClassFieldDescriptor> = {
       printer,
       replacements,
-      shouldMigrateReferencesToField: (field) => isMigratedQuery(field.key),
+      shouldMigrateReferencesToField: (field) => isMigratedQuery(field),
       shouldMigrateReferencesToClass: (clazz) =>
-        !!knownQueries.getQueryFieldsOfClass(clazz)?.some((q) => isMigratedQuery(q.key)),
+        !!knownQueries.getQueryFieldsOfClass(clazz)?.some((q) => isMigratedQuery(q)),
     };
     migrateTypeScriptReferences(referenceMigrationHost, referenceResult.references, checker, info);
     migrateTemplateReferences(referenceMigrationHost, referenceResult.references);
@@ -285,6 +328,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     for (const ref of referenceResult.references) {
       removeQueryListToArrayCall(ref, info, globalMetadata, replacements);
       replaceQueryListGetCall(ref, info, globalMetadata, replacements);
+      replaceQueryListFirstAndLastReferences(ref, info, globalMetadata, replacements);
     }
 
     // Remove imports if possible.
@@ -310,6 +354,11 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     applyImportManagerChanges(importManager, replacements, sourceFiles, info);
 
     return replacements;
+  }
+
+  override async stats(globalMetadata: GlobalUnitData): Promise<MigrationStats> {
+    // TODO: Add statistics.
+    return {counters: {}};
   }
 }
 

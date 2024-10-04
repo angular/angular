@@ -29,6 +29,12 @@
       "factory": "./bundles/signal-input-migration#migrate",
       "schema": "./ng-generate/signal-input-migration/schema.json",
       "aliases": ["signal-inputs", "signal-input"]
+    },
+    "signal-queries-migration": {
+      "description": "Updates query declarations to signal queries, while also migrating all relevant references.",
+      "factory": "./bundles/signal-queries-migration#migrate",
+      "schema": "./ng-generate/signal-queries-migration/schema.json",
+      "aliases": ["signal-queries", "signal-query", "signal-query-migration"]
     }
   }
 }

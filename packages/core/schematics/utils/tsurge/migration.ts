@@ -54,14 +54,7 @@ export type TsurgeMigration<UnitAnalysisMetadata, CombinedGlobalMetadata> =
 export abstract class TsurgeFunnelMigration<
   UnitAnalysisMetadata,
   CombinedGlobalMetadata,
-  PreparationInfo = ProgramInfo,
-> extends TsurgeBaseMigration {
-  /** Analyzes the given TypeScript project and returns serializable compilation unit data. */
-  abstract analyze(info: PreparationInfo): Promise<Serializable<UnitAnalysisMetadata>>;
-
-  /** Merges all compilation unit data from previous analysis phases into a global result. */
-  abstract merge(units: UnitAnalysisMetadata[]): Promise<Serializable<CombinedGlobalMetadata>>;
-
+> extends TsurgeBaseMigration<UnitAnalysisMetadata, CombinedGlobalMetadata> {
   /**
    * Finalizes the migration result.
    *
@@ -86,13 +79,7 @@ export abstract class TsurgeFunnelMigration<
 export abstract class TsurgeComplexMigration<
   UnitAnalysisMetadata,
   CombinedGlobalMetadata,
-> extends TsurgeBaseMigration {
-  /** Analyzes the given TypeScript project and returns serializable compilation unit data. */
-  abstract analyze(info: ProgramInfo): Promise<Serializable<UnitAnalysisMetadata>>;
-
-  /** Merges all compilation unit data from previous analysis phases into a global result. */
-  abstract merge(units: UnitAnalysisMetadata[]): Promise<Serializable<CombinedGlobalMetadata>>;
-
+> extends TsurgeBaseMigration<UnitAnalysisMetadata, CombinedGlobalMetadata> {
   /**
    * Migration phase. Workers will be started for every compilation unit again,
    * instantiating a new program for every unit to compute the final migration

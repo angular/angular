@@ -68,6 +68,7 @@ nodejs_binary(
     entry_point = ".yarn/releases/yarn-1.22.19.cjs",
     visibility = [
         "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
     ],
 )
 

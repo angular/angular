@@ -231,9 +231,6 @@
     "name": "ErrorHandler"
   },
   {
-    "name": "EventDelegationPlugin"
-  },
-  {
     "name": "EventEmitter"
   },
   {
@@ -253,9 +250,6 @@
   },
   {
     "name": "FormsModule"
-  },
-  {
-    "name": "GLOBAL_EVENT_DELEGATION"
   },
   {
     "name": "GenericBrowserDomAdapter"
@@ -744,7 +738,7 @@
     "name": "addToArray"
   },
   {
-    "name": "addToViewTree"
+    "name": "addToEndOfViewTree"
   },
   {
     "name": "addValidators"
@@ -927,6 +921,9 @@
     "name": "createLView"
   },
   {
+    "name": "createLinkElement"
+  },
+  {
     "name": "createNodeInjector"
   },
   {
@@ -943,6 +940,9 @@
   },
   {
     "name": "createPlatformFactory"
+  },
+  {
+    "name": "createStyleElement"
   },
   {
     "name": "createTView"
@@ -1117,6 +1117,9 @@
   },
   {
     "name": "getFirstNativeNode"
+  },
+  {
+    "name": "getInitialLViewFlagsFromDef"
   },
   {
     "name": "getInjectImplementation"
@@ -1692,7 +1695,7 @@
     "name": "remove"
   },
   {
-    "name": "removeAll"
+    "name": "removeElements"
   },
   {
     "name": "removeFromArray"

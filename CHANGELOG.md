@@ -1,3 +1,73 @@
+<a name="19.0.0-next.8"></a>
+# 19.0.0-next.8 (2024-10-02)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c3115b882e](https://github.com/angular/angular/commit/c3115b882ebbe4f971e1f06bb1ce2cdf43327bb0) | fix | execute checks and remove placeholder when image is already loaded ([#55444](https://github.com/angular/angular/pull/55444)) |
+| [b7bd429951](https://github.com/angular/angular/commit/b7bd42995130f80ea74ed5b905446f09a98a9480) | fix | prevent warning about oversize image twice ([#58021](https://github.com/angular/angular/pull/58021)) |
+| [e8b2d5fad8](https://github.com/angular/angular/commit/e8b2d5fad8aece3b2e3f4a7ed1356642f68ee275) | fix | skip checking whether SVGs are oversized ([#57966](https://github.com/angular/angular/pull/57966)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d9687f43dd](https://github.com/angular/angular/commit/d9687f43dd2ccfcf7dd3ee4f9066ce727f3224c6) | feat | 'strictStandalone' flag enforces standalone ([#57935](https://github.com/angular/angular/pull/57935)) |
+| [39ccaf4cc4](https://github.com/angular/angular/commit/39ccaf4cc457894a3cf0455349e1c016a858751a) | fix | correctly get the type of nested function call expressions ([#57010](https://github.com/angular/angular/pull/57010)) |
+| [33fe252c58](https://github.com/angular/angular/commit/33fe252c588ee94d6ef99e8070d35c483ec24fda) | fix | do not report unused declarations coming from an imported array ([#57940](https://github.com/angular/angular/pull/57940)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3240598158](https://github.com/angular/angular/commit/32405981582030d7eb5d307f44b9c00fb384c480) | fix | provide flag to opt into manual cleanup for after render hooks ([#57917](https://github.com/angular/angular/pull/57917)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [22dafa658b](https://github.com/angular/angular/commit/22dafa658bdf5536c3002e7f312efe0dfbc7236d) | fix | cleanup JSONP script listeners once loading completed ([#57877](https://github.com/angular/angular/pull/57877)) |
+| [057cf7fb6b](https://github.com/angular/angular/commit/057cf7fb6bd2ac37a7a30d3a143e6737e386247f) | fix | preserve all headers from Headers object ([#57802](https://github.com/angular/angular/pull/57802)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5c4305f024](https://github.com/angular/angular/commit/5c4305f0248ac3cc1adc76aebd3ef8af041039dc) | feat | support migrating full classes to signal inputs in VSCode ([#57975](https://github.com/angular/angular/pull/57975)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b6bc93803c](https://github.com/angular/angular/commit/b6bc93803c246d47aac0d2d8619271d42b249a4a) | feat | add schematic to migrate to signal queries ([#58032](https://github.com/angular/angular/pull/58032)) |
+| [ef577b2d2b](https://github.com/angular/angular/commit/ef577b2d2b62ba0a48a120b9631296812e9049d3) | fix | delete constructor if it only has super call ([#58013](https://github.com/angular/angular/pull/58013)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5f56a65837](https://github.com/angular/angular/commit/5f56a6583753f5aaff8a43e1e5f9a376433d0c0c) | fix | support input signal bindings ([#57020](https://github.com/angular/angular/pull/57020)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="18.2.7"></a>
+# 18.2.7 (2024-10-02)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [249d0260f9](https://github.com/angular/angular/commit/249d0260f97a2fec8e4daef0b1565ba40b27d370) | fix | execute checks and remove placeholder when image is already loaded ([#55444](https://github.com/angular/angular/pull/55444)) |
+| [46a2ad39f5](https://github.com/angular/angular/commit/46a2ad39f53f6e3b224dfe4b25087c08830713b6) | fix | prevent warning about oversize image twice ([#58021](https://github.com/angular/angular/pull/58021)) |
+| [8f2b0ede59](https://github.com/angular/angular/commit/8f2b0ede5962ad30171843cd7af80c8878b35b53) | fix | skip checking whether SVGs are oversized ([#57966](https://github.com/angular/angular/pull/57966)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [901c1e1a7f](https://github.com/angular/angular/commit/901c1e1a7faadee73af4f9e6c37efa778f406ab8) | fix | correctly get the type of nested function call expressions ([#57010](https://github.com/angular/angular/pull/57010)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2f347ef8fc](https://github.com/angular/angular/commit/2f347ef8fcef8645d86047d7a339405c0156aa43) | fix | provide flag to opt into manual cleanup for after render hooks ([#57917](https://github.com/angular/angular/pull/57917)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca637fe6a9](https://github.com/angular/angular/commit/ca637fe6a95bd020221d71cd0581a3394070cf2c) | fix | cleanup JSONP script listeners once loading completed ([#57877](https://github.com/angular/angular/pull/57877)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b9d846dad7](https://github.com/angular/angular/commit/b9d846dad77832dff44b112ac22951e0f31733ba) | fix | delete constructor if it only has super call ([#58013](https://github.com/angular/angular/pull/58013)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e40a4fa3c7](https://github.com/angular/angular/commit/e40a4fa3c71c9ad76c1546b38ca2e9f74eff7dc0) | fix | support input signal bindings ([#57020](https://github.com/angular/angular/pull/57020)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.0.0-next.7"></a>
 # 19.0.0-next.7 (2024-09-25)
 ## Breaking Changes

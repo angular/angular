@@ -15,6 +15,17 @@
       "description": "Override which browsers tests are run against. Set to `false` to not use any browser."
     },
     {
+      "name": "builder-mode",
+      "type": "string",
+      "default": "browser",
+      "enum": [
+        "detect",
+        "browser",
+        "application"
+      ],
+      "description": "Determines how to build the code under test. If set to 'detect', attempts to follow the development builder."
+    },
+    {
       "name": "code-coverage",
       "type": "boolean",
       "default": false,

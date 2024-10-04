@@ -536,20 +536,20 @@ export { NgForOf }
 
 // @public (undocumented)
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
-    // (undocumented)
     $implicit: T;
-    constructor($implicit: T, ngForOf: U, index: number, count: number);
-    // (undocumented)
+    constructor(
+    $implicit: T,
+    ngForOf: U,
+    index: number,
+    count: number);
     count: number;
     // (undocumented)
     get even(): boolean;
     // (undocumented)
     get first(): boolean;
-    // (undocumented)
     index: number;
     // (undocumented)
     get last(): boolean;
-    // (undocumented)
     ngForOf: U;
     // (undocumented)
     get odd(): boolean;

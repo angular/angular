@@ -11,14 +11,27 @@ import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import {createNgtscProgram} from './helpers/ngtsc_program';
 import {BaseProgramInfo, ProgramInfo} from './program_info';
 import {getRootDirs} from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
+import {Serializable} from './helpers/serializable';
 
 /**
+ * Type describing statistics that could be tracked
+ * by migrations.
+ *
+ * Statistics may be tracked depending on the runner.
+ */
+export interface MigrationStats {
+  counters: Record<string, number>;
+}
+
+/**
+ * @private
+ *
  * Base class for the possible Tsurge migration variants.
  *
  * For example, this class exposes methods to conveniently create
  * TypeScript programs, while also allowing migration authors to override.
  */
-export abstract class TsurgeBaseMigration {
+export abstract class TsurgeBaseMigration<UnitAnalysisMetadata, CombinedGlobalMetadata> {
   // By default, ngtsc programs are being created.
   createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo {
     return createNgtscProgram(tsconfigAbsPath, fs);
@@ -56,4 +69,13 @@ export abstract class TsurgeBaseMigration {
       projectRoot: primaryRoot,
     };
   }
+
+  /** Analyzes the given TypeScript project and returns serializable compilation unit data. */
+  abstract analyze(info: ProgramInfo): Promise<Serializable<UnitAnalysisMetadata>>;
+
+  /** Merges all compilation unit data from previous analysis phases into a global result. */
+  abstract merge(units: UnitAnalysisMetadata[]): Promise<Serializable<CombinedGlobalMetadata>>;
+
+  /** Extract statistics based on the global metadata. */
+  abstract stats(globalMetadata: CombinedGlobalMetadata): Promise<MigrationStats>;
 }

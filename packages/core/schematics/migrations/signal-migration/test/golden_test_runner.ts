@@ -13,9 +13,9 @@
 
 import fs from 'fs';
 import glob from 'fast-glob';
-import * as diff from 'diff';
 import chalk from 'chalk';
 import path from 'path';
+import {diffText} from '../../../utils/tsurge/testing/diff';
 
 const [migratedDir, goldenPath] = process.argv.slice(2);
 const files = glob.sync('**/*', {cwd: migratedDir});
@@ -44,18 +44,7 @@ if (diskGolden !== golden) {
     process.exit(0);
   }
 
-  const goldenDiff = diff.diffChars(diskGolden, golden);
-
-  goldenDiff.forEach((part) => {
-    // green for additions, red for deletions
-    let text = part.added
-      ? chalk.green(part.value)
-      : part.removed
-        ? chalk.red(part.value)
-        : part.value;
-
-    process.stderr.write(text);
-  });
+  process.stderr.write(diffText(diskGolden, golden));
 
   console.error();
   console.error();

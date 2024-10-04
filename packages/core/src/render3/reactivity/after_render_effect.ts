@@ -334,6 +334,9 @@ export function afterRenderEffect<E = never, W = never, M = never>(
   options?: Omit<AfterRenderOptions, 'phase'>,
 ): AfterRenderRef;
 
+/**
+ * @experimental
+ */
 export function afterRenderEffect<E = never, W = never, M = never>(
   callbackOrSpec:
     | ((onCleanup: EffectCleanupRegisterFn) => void)

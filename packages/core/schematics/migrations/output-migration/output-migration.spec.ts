@@ -113,22 +113,22 @@ describe('outputs', () => {
         await verify({
           before: `
               import {Directive, Output, EventEmitter} from '@angular/core';
-  
+
               @Directive()
               export class TestDir {
-                /** 
-                 * Whenever there is change, emits an event. 
+                /**
+                 * Whenever there is change, emits an event.
                  */
                 @Output() someChange = new EventEmitter();
               }
             `,
           after: `
               import {Directive, output} from '@angular/core';
-  
+
               @Directive()
               export class TestDir {
-                /** 
-                 * Whenever there is change, emits an event. 
+                /**
+                 * Whenever there is change, emits an event.
                  */
                 readonly someChange = output();
               }
@@ -140,7 +140,7 @@ describe('outputs', () => {
         await verify({
           before: `
               import {Directive, Output, EventEmitter} from '@angular/core';
-  
+
               @Directive()
               export class TestDir {
                 /* Whenever there is change,emits an event. */
@@ -149,7 +149,7 @@ describe('outputs', () => {
             `,
           after: `
               import {Directive, output} from '@angular/core';
-  
+
               @Directive()
               export class TestDir {
                 /* Whenever there is change,emits an event. */
@@ -171,7 +171,7 @@ describe('outputs', () => {
         await verify({
           before: `
               import {Directive, Output, EventEmitter, Subject} from '@angular/core';
-  
+
               @Directive()
               export class TestDir {
                 @Output() someChange1 = new EventEmitter();
@@ -180,7 +180,7 @@ describe('outputs', () => {
             `,
           after: `
               import {Directive, Subject, output} from '@angular/core';
-  
+
               @Directive()
               export class TestDir {
                 readonly someChange1 = output();
@@ -329,7 +329,7 @@ describe('outputs', () => {
                 import {Directive, Output, EventEmitter} from '@angular/core';
                 import {map} from 'rxjs';
                 import 'jasmine';
-    
+
                 @Directive()
                 export class TestDir {
                   @Output() someChange = new EventEmitter<number>();
@@ -342,7 +342,7 @@ describe('outputs', () => {
                 import {Directive, output} from '@angular/core';
                 import {map} from 'rxjs';
                 import 'jasmine';
-    
+
                 @Directive()
                 export class TestDir {
                   readonly someChange = output<number>();
@@ -357,11 +357,11 @@ describe('outputs', () => {
         it('should _not_ migrate outputs that are used with .pipe', () => {
           verifyNoChange(`
               import {Directive, Output, EventEmitter} from '@angular/core';
-  
+
               @Directive()
               export class TestDir {
                 @Output() someChange = new EventEmitter();
-  
+
                 someMethod() {
                   this.someChange.pipe();
                 }
@@ -372,14 +372,14 @@ describe('outputs', () => {
         it('should _not_ migrate outputs that are used with .pipe outside of a component class', () => {
           verifyNoChange(`
               import {Directive, Output, EventEmitter} from '@angular/core';
-  
+
               @Directive()
               export class TestDir {
                 @Output() someChange = new EventEmitter();
               }
-  
+
               let instance: TestDir;
-  
+
               instance.someChange.pipe();
             `);
         });
@@ -409,7 +409,7 @@ async function verifyNoChange(beforeAndAfter: string) {
 }
 
 async function verify(testCase: {before: string; after: string}) {
-  const fs = await runTsurgeMigration(new OutputMigration(), [
+  const {fs} = await runTsurgeMigration(new OutputMigration(), [
     {
       name: absoluteFrom('/app.component.ts'),
       isProgramRootFile: true,

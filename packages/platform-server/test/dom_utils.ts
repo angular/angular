@@ -7,7 +7,8 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {ApplicationRef, Provider, Type, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, PLATFORM_ID, Provider, Type, ɵsetDocument} from '@angular/core';
+import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {
   bootstrapApplication,
@@ -102,6 +103,7 @@ export function hydrate(
   const hydrationFeatures = options?.hydrationFeatures ?? [];
   const providers = [
     ...envProviders,
+    {provide: PLATFORM_ID, useValue: 'browser'},
     {provide: DOCUMENT, useFactory: _document, deps: []},
     provideClientHydration(...hydrationFeatures),
   ];
@@ -112,6 +114,14 @@ export function hydrate(
 export function render(doc: Document, html: string) {
   // Get HTML contents of the `<app>`, create a DOM element and append it into the body.
   const container = convertHtmlToDom(html, doc);
+
+  // If there was a client render mode marker present in HTML - apply it to the <body>
+  // element as well.
+  const hasClientModeMarker = new RegExp(` ${CLIENT_RENDER_MODE_FLAG}`, 'g').test(html);
+  if (hasClientModeMarker) {
+    doc.body.setAttribute(CLIENT_RENDER_MODE_FLAG, '');
+  }
+
   Array.from(container.childNodes).forEach((node) => doc.body.appendChild(node));
 }
 
@@ -135,4 +145,12 @@ export async function renderAndHydrate(
 ): Promise<ApplicationRef> {
   render(doc, html);
   return hydrate(doc, component, options);
+}
+
+/**
+ * Clears document contents to have a clean state for the next test.
+ */
+export function clearDocument(doc: Document) {
+  doc.body.textContent = '';
+  doc.body.removeAttribute(CLIENT_RENDER_MODE_FLAG);
 }

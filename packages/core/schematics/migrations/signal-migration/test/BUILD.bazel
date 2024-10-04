@@ -10,9 +10,8 @@ ts_library(
         "golden_test_runner.ts",
     ],
     deps = [
-        "@npm//@types/diff",
+        "//packages/core/schematics/utils/tsurge",
         "@npm//chalk",
-        "@npm//diff",
         "@npm//fast-glob",
     ],
 )

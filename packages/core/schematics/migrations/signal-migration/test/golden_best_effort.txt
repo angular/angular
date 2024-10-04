@@ -119,6 +119,26 @@ it('should work', () => {
   } as Partial<UnwrapSignalInputs<MyComp>>;
   bootstrapTemplate('<my-comp [hello]="hello">', inputs);
 });
+@@@@@@ catalyst_test_partial.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+// @ts-ignore
+import {UnwrapSignalInputs} from 'google3/javascript/angular2/testing/catalyst/fake_async';
+
+function renderComponent(inputs: Partial<UnwrapSignalInputs<TestableSecondaryRangePicker>> = {}) {}
+
+@Component({
+  standalone: false,
+  jit: true,
+  template: '<bla [(ngModel)]="incompatible()">',
+})
+class TestableSecondaryRangePicker {
+  readonly bla = input(true);
+  readonly incompatible = input(true);
+}
 @@@@@@ constructor_initializations.ts @@@@@@
 
 // tslint:disable
@@ -915,6 +935,7 @@ import {Directive, input} from '@angular/core';
 @Directive()
 class OptionalInput {
   readonly bla = input<string>();
+  readonly isLegacyHttpOnly = input<boolean | undefined>(false);
 }
 @@@@@@ problematic_type_reference.ts @@@@@@
 
@@ -1285,4 +1306,24 @@ class WithJsdoc {
   readonly simpleInput = input.required<string>();
 
   readonly withCommentInside = input</* intended */ boolean>();
+}
+@@@@@@ writing_to_inputs.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+export class TestCmp {
+  readonly testParenthesisInput = input(false);
+  readonly notMutated = input(true);
+
+  testParenthesis() {
+    // prettier-ignore
+    ((this.testParenthesisInput)) = true;
+  }
+
+  testNotMutated() {
+    let fixture: boolean;
+    fixture = this.notMutated();
+  }
 }

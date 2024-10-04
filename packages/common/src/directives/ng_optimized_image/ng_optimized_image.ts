@@ -258,7 +258,7 @@ export interface ImagePlaceholderConfig {
  *   {
  *      provide: IMAGE_LOADER,
  *      useValue: (config: ImageLoaderConfig) => {
- *        return `https://example.com/${config.src}-${config.width}.jpg}`;
+ *        return `https://example.com/${config.src}-${config.width}.jpg`;
  *      }
  *   },
  * ],
@@ -708,6 +708,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
     const removeLoadListenerFn = this.renderer.listen(img, 'load', callback);
     const removeErrorListenerFn = this.renderer.listen(img, 'error', callback);
+
+    callOnLoadIfImageIsLoaded(img, callback);
   }
 
   /** @nodoc */
@@ -1025,7 +1027,7 @@ function assertNoImageDistortion(
   img: HTMLImageElement,
   renderer: Renderer2,
 ) {
-  const removeLoadListenerFn = renderer.listen(img, 'load', () => {
+  const callback = () => {
     removeLoadListenerFn();
     removeErrorListenerFn();
     const computedStyle = window.getComputedStyle(img);
@@ -1118,7 +1120,9 @@ function assertNoImageDistortion(
         );
       }
     }
-  });
+  };
+
+  const removeLoadListenerFn = renderer.listen(img, 'load', callback);
 
   // We only listen to the `error` event to remove the `load` event listener because it will not be
   // fired if the image fails to load. This is done to prevent memory leaks in development mode
@@ -1128,6 +1132,8 @@ function assertNoImageDistortion(
     removeLoadListenerFn();
     removeErrorListenerFn();
   });
+
+  callOnLoadIfImageIsLoaded(img, callback);
 }
 
 /**
@@ -1173,7 +1179,7 @@ function assertNonZeroRenderedHeight(
   img: HTMLImageElement,
   renderer: Renderer2,
 ) {
-  const removeLoadListenerFn = renderer.listen(img, 'load', () => {
+  const callback = () => {
     removeLoadListenerFn();
     removeErrorListenerFn();
     const renderedHeight = img.clientHeight;
@@ -1189,13 +1195,17 @@ function assertNonZeroRenderedHeight(
         ),
       );
     }
-  });
+  };
+
+  const removeLoadListenerFn = renderer.listen(img, 'load', callback);
 
   // See comments in the `assertNoImageDistortion`.
   const removeErrorListenerFn = renderer.listen(img, 'error', () => {
     removeLoadListenerFn();
     removeErrorListenerFn();
   });
+
+  callOnLoadIfImageIsLoaded(img, callback);
 }
 
 /**
@@ -1335,6 +1345,22 @@ function assertPlaceholderDimensions(dir: NgOptimizedImage, imgElement: HTMLImag
           `To fix this, use a smaller image as a placeholder.`,
       ),
     );
+  }
+}
+
+function callOnLoadIfImageIsLoaded(img: HTMLImageElement, callback: VoidFunction): void {
+  // https://html.spec.whatwg.org/multipage/embedded-content.html#dom-img-complete
+  // The spec defines that `complete` is truthy once its request state is fully available.
+  // The image may already be available if it’s loaded from the browser cache.
+  // In that case, the `load` event will not fire at all, meaning that all setup
+  // callbacks listening for the `load` event will not be invoked.
+  // In Safari, there is a known behavior where the `complete` property of an
+  // `HTMLImageElement` may sometimes return `true` even when the image is not fully loaded.
+  // Checking both `img.complete` and `img.naturalWidth` is the most reliable way to
+  // determine if an image has been fully loaded, especially in browsers where the
+  // `complete` property may return `true` prematurely.
+  if (img.complete && img.naturalWidth) {
+    callback();
   }
 }
 

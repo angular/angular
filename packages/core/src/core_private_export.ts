@@ -72,11 +72,7 @@ export {
   withI18nSupport as ɵwithI18nSupport,
 } from './hydration/api';
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
-export {
-  GLOBAL_EVENT_DELEGATION as ɵGLOBAL_EVENT_DELEGATION,
-  JSACTION_EVENT_CONTRACT as ɵJSACTION_EVENT_CONTRACT,
-} from './event_delegation_utils';
-export {provideGlobalEventDelegation as ɵprovideGlobalEventDelegation} from './event_dispatch/event_delegation';
+export {JSACTION_EVENT_CONTRACT as ɵJSACTION_EVENT_CONTRACT} from './event_delegation_utils';
 export {IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED} from './hydration/tokens';
 export {
   HydratedNode as ɵHydratedNode,
@@ -140,3 +136,12 @@ export {isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './ut
 export {performanceMarkFeature as ɵperformanceMarkFeature} from './util/performance';
 export {stringify as ɵstringify, truncateMiddle as ɵtruncateMiddle} from './util/stringify';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider_flags';
+
+export {type InputSignalNode as ɵInputSignalNode} from './authoring/input/input_signal_node';
+export {
+  startMeasuring as ɵstartMeasuring,
+  stopMeasuring as ɵstopMeasuring,
+  PERFORMANCE_MARK_PREFIX as ɵPERFORMANCE_MARK_PREFIX,
+  enableProfiling as ɵenableProfiling,
+  disableProfiling as ɵdisableProfiling,
+} from './profiler';

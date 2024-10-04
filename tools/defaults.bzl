@@ -188,12 +188,14 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         **kwargs
     )
 
-def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwargs):
+def ng_package(name, readme_md = None, license_banner = None, license = None, deps = [], **kwargs):
     """Default values for ng_package"""
     if not readme_md:
         readme_md = "//packages:README.md"
     if not license_banner:
         license_banner = "//packages:license-banner.txt"
+    if not license:
+        license = "//:LICENSE"
     visibility = kwargs.pop("visibility", None)
 
     common_substitutions = dict(kwargs.pop("substitutions", {}), **PKG_GROUP_REPLACEMENTS)
@@ -209,6 +211,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         deps = deps,
         validate = True,
         readme_md = readme_md,
+        license = license,
         license_banner = license_banner,
         substitutions = select({
             "//:stamp": stamped_substitutions,
