@@ -111,6 +111,8 @@ export abstract class ComponentFixture<T> {
    * Set whether the fixture should autodetect changes.
    *
    * Also runs detectChanges once so that any existing change is detected.
+   *
+   * @param autoDetect Whether to autodetect changes. By default, `true`.
    */
   abstract autoDetectChanges(autoDetect?: boolean): void;
 
