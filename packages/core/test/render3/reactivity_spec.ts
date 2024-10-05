@@ -32,6 +32,7 @@ import {
   signal,
   SimpleChanges,
   TemplateRef,
+  untracked,
   ViewChild,
   ViewContainerRef,
 } from '../../src/core';
@@ -190,6 +191,49 @@ describe('reactivity', () => {
       fixture.destroy();
       expect(counterLog).toEqual([0, 5]);
       expect(cleanupCount).toBe(2);
+    });
+
+    it('should run effect cleanup as untracked', async () => {
+      @Component({
+        template: '',
+      })
+      class Cmp {
+        counter = signal(0);
+        effectTrigger = signal(0);
+
+        effectRef = effect((onCleanup) => {
+          this.effectTrigger();
+
+          untracked(() => {
+            if (this.counter() > 1) {
+              // This is an early bailout in case the effect loops infinitely
+              throw new Error('Updated consummers in cleanup for not re-trigger the effect');
+            }
+          });
+
+          onCleanup(() => {
+            this.counter(); // A signal read but not consummed
+            this.counter.update((v) => v + 1);
+          });
+        });
+      }
+
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      // initially an effect runs but the default cleanup function is noop
+      expect(fixture.componentInstance.counter()).toBe(0);
+
+      // Triggers a cleanup
+      fixture.componentInstance.effectTrigger.update((v) => v + 1);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.counter()).toBe(1);
+
+      // Destroy triggers a cleanup
+      fixture.destroy();
+      expect(fixture.componentInstance.counter()).toBe(2);
     });
 
     it('should run effects created in ngAfterViewInit', () => {
