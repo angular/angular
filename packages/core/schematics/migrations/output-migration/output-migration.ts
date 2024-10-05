@@ -214,7 +214,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
     return {counters: {}};
   }
 
-  override async migrate(globalData: CompilationUnitData): Promise<Replacement[]> {
+  override async migrate(globalData: CompilationUnitData) {
     const migratedFiles = new Set<ProjectFileID>();
     const problematicFiles = new Set<ProjectFileID>();
 
@@ -243,7 +243,7 @@ export class OutputMigration extends TsurgeFunnelMigration<
       }
     }
 
-    return replacements;
+    return {replacements};
   }
 }
 

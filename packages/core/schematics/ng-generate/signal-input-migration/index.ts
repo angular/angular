@@ -83,7 +83,7 @@ export function migrate(options: Options): Rule {
     for (const {info, tsconfigPath} of programInfos) {
       context.logger.info(`Migrating: ${tsconfigPath}..`);
 
-      const replacements = await migration.migrate(merged, info);
+      const {replacements} = await migration.migrate(merged, info);
       const changesPerFile = groupReplacementsByFile(replacements);
 
       for (const [file, changes] of changesPerFile) {

@@ -106,7 +106,7 @@ export class OutputMigration extends TsurgeComplexMigration<AnalysisUnit, Global
       );
     }
 
-    return replacements;
+    return {replacements};
   }
 
   override async stats(globalMetadata: GlobalMetadata): Promise<MigrationStats> {

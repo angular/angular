@@ -63,7 +63,7 @@ export async function runTsurgeMigration<UnitData, GlobalData>(
 
   const unitData = await migration.analyze(info);
   const merged = await migration.merge([unitData]);
-  const replacements =
+  const {replacements} =
     migration instanceof TsurgeFunnelMigration
       ? await migration.migrate(merged)
       : await migration.migrate(merged, info);

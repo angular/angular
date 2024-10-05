@@ -29,7 +29,7 @@ export async function executeMigratePhase<UnitData, GlobalData>(
   const info = migration.prepareProgram(baseInfo);
 
   return {
-    replacements: await migration.migrate(globalMetadata, info),
+    ...(await migration.migrate(globalMetadata, info)),
     projectRoot: info.projectRoot,
   };
 }

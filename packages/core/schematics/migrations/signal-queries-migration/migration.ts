@@ -180,10 +180,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     return confirmAsSerializable(merged);
   }
 
-  override async migrate(
-    globalMetadata: GlobalUnitData,
-    info: ProgramInfo,
-  ): Promise<Replacement[]> {
+  override async migrate(globalMetadata: GlobalUnitData, info: ProgramInfo) {
     assert(info.ngCompiler !== null, 'Expected queries migration to have an Angular program.');
 
     // Pre-Analyze the program and get access to the template type checker.
@@ -353,7 +350,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
 
     applyImportManagerChanges(importManager, replacements, sourceFiles, info);
 
-    return replacements;
+    return {replacements, knownQueries};
   }
 
   override async stats(globalMetadata: GlobalUnitData): Promise<MigrationStats> {
