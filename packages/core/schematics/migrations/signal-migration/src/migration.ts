@@ -125,7 +125,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     // Non-batch mode!
     if (this.config.upgradeAnalysisPhaseToAvoidBatch) {
       const merged = await this.merge([unitData]);
-      const replacements = await this.migrate(merged, info, {
+      const {replacements} = await this.migrate(merged, info, {
         knownInputs,
         result,
         host,
@@ -156,7 +156,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
       host: MigrationHost;
       analysisDeps: AnalysisProgramInfo;
     },
-  ): Promise<Replacement[]> {
+  ) {
     const knownInputs = nonBatchData?.knownInputs ?? new KnownInputs(info, this.config);
     const result = nonBatchData?.result ?? new MigrationResult();
     const host = nonBatchData?.host ?? createMigrationHost(info, this.config);
@@ -177,7 +177,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     this.config.reportProgressFn?.(60, 'Collecting migration changes..');
     executeMigrationPhase(host, knownInputs, result, analysisDeps);
 
-    return result.replacements;
+    return {replacements: result.replacements};
   }
 
   override async stats(globalMetadata: CompilationUnitData) {

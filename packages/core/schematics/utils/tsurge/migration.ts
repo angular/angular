@@ -7,9 +7,13 @@
  */
 
 import {TsurgeBaseMigration} from './base_migration';
-import {Serializable} from './helpers/serializable';
 import {ProgramInfo} from './program_info';
 import {Replacement} from './replacement';
+
+/** Type describing the result of a Tsurge `migrate` stage. */
+interface MigrateResult {
+  replacements: Replacement[];
+}
 
 /**
  * A Tsurge migration is split into three stages:
@@ -64,7 +68,7 @@ export abstract class TsurgeFunnelMigration<
    *
    * @returns All replacements for the whole project.
    */
-  abstract migrate(globalData: CombinedGlobalMetadata): Promise<Replacement[]>;
+  abstract migrate(globalData: CombinedGlobalMetadata): Promise<MigrateResult>;
 }
 
 /**
@@ -90,5 +94,5 @@ export abstract class TsurgeComplexMigration<
   abstract migrate(
     globalMetadata: CombinedGlobalMetadata,
     info: ProgramInfo,
-  ): Promise<Replacement[]>;
+  ): Promise<MigrateResult>;
 }
