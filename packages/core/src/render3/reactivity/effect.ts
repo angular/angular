@@ -15,12 +15,12 @@ import {
   consumerDestroy,
   consumerPollProducersForChange,
   isInNotificationPhase,
+  setActiveConsumer,
 } from '../../../primitives/signals';
 import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
 import {markAncestorsForTraversal} from '../util/view_utils';
 import {InjectionToken} from '../../di/injection_token';
 import {inject} from '../../di/injector_compatibility';
-import {performanceMarkFeature} from '../../util/performance';
 import {Injector} from '../../di/injector';
 import {assertNotInReactiveContext} from './asserts';
 import {assertInInjectionContext} from '../../di/contextual';
@@ -267,6 +267,7 @@ export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 
       if (!this.cleanupFns?.length) {
         return;
       }
+      const prevConsumer = setActiveConsumer(null);
       try {
         // Attempt to run the cleanup functions. Regardless of failure or success, we consider
         // cleanup "completed" and clear the list for the next run of the effect. Note that an error
@@ -276,6 +277,7 @@ export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 
         }
       } finally {
         this.cleanupFns = [];
+        setActiveConsumer(prevConsumer);
       }
     },
   }))();
