@@ -8,8 +8,9 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
+import type {ApplicationRef} from '../core';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {EmbeddedViewRef, ViewRefTracker} from '../linker/view_ref';
+import {EmbeddedViewRef} from '../linker/view_ref';
 import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
 
@@ -48,7 +49,7 @@ import {
 interface ChangeDetectorRefInterface extends ChangeDetectorRef {}
 
 export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterface {
-  private _appRef: ViewRefTracker | null = null;
+  private _appRef: ApplicationRef | null = null;
   private _attachedToViewContainer = false;
 
   get rootNodes(): any[] {
@@ -370,7 +371,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
     detachViewFromDOM(this._lView[TVIEW], this._lView);
   }
 
-  attachToAppRef(appRef: ViewRefTracker) {
+  attachToAppRef(appRef: ApplicationRef) {
     if (this._attachedToViewContainer) {
       throw new RuntimeError(
         RuntimeErrorCode.VIEW_ALREADY_ATTACHED,
