@@ -114,6 +114,8 @@ describe('renderer factory lifecycle', () => {
       'create',
       'create',
       'begin',
+      'end',
+      'begin',
       'some_component create',
       'some_component update',
       'end',
@@ -128,7 +130,7 @@ describe('renderer factory lifecycle', () => {
       const fixture = TestBed.createComponent(SomeComponentWhichThrows);
       fixture.componentRef.changeDetectorRef.detectChanges();
     }).toThrow();
-    expect(logs).toEqual(['create', 'create', 'begin', 'end']);
+    expect(logs).toEqual(['create', 'create', 'begin', 'end', 'begin', 'end']);
   });
 
   it('should pass in the component styles directly into the underlying renderer', () => {

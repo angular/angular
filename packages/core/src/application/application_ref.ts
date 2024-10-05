@@ -666,6 +666,7 @@ export class ApplicationRef {
     }
 
     // First check dirty views, if there are any.
+    let ranDetectChanges = false;
     if (this.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeAny) {
       // Change detection on views starts in targeted mode (only check components if they're
       // marked as dirty) unless global checking is specifically requested via APIs like
@@ -680,7 +681,21 @@ export class ApplicationRef {
 
       // Check all potentially dirty views.
       for (let {_lView} of this.allViews) {
-        detectChangesInViewIfRequired(_lView, useGlobalCheck, this.zonelessEnabled);
+        // When re-checking, only check views which actually need it.
+        if (!useGlobalCheck && !requiresRefreshOrTraversal(_lView)) {
+          continue;
+        }
+
+        const mode =
+          useGlobalCheck && !this.zonelessEnabled
+            ? // Global mode includes `CheckAlways` views.
+              // When using zoneless, all root views must be explicitly marked for refresh, even if they are
+              // `CheckAlways`.
+              ChangeDetectionMode.Global
+            : // Only refresh views with the `RefreshView` flag or views is a changed signal
+              ChangeDetectionMode.Targeted;
+        detectChangesInternal(_lView, mode);
+        ranDetectChanges = true;
       }
 
       // If `markForCheck()` was called during view checking, it will have set the `ViewTreeCheck`
@@ -698,7 +713,8 @@ export class ApplicationRef {
         // hooks.
         return;
       }
-    } else {
+    }
+    if (!ranDetectChanges) {
       // If we skipped refreshing views above, there might still be unflushed animations
       // because we never called `detectChangesInternal` on the views.
       this._rendererFactory?.begin?.();
@@ -898,25 +914,4 @@ export const enum ApplicationRefDirtyFlags {
    * Effects at the `ApplicationRef` level.
    */
   RootEffects = 0b00010000,
-}
-
-export function detectChangesInViewIfRequired(
-  lView: LView,
-  isFirstPass: boolean,
-  zonelessEnabled: boolean,
-) {
-  // When re-checking, only check views which actually need it.
-  if (!isFirstPass && !requiresRefreshOrTraversal(lView)) {
-    return;
-  }
-
-  const mode =
-    isFirstPass && !zonelessEnabled
-      ? // The first pass is always in Global mode, which includes `CheckAlways` views.
-        // When using zoneless, all root views must be explicitly marked for refresh, even if they are
-        // `CheckAlways`.
-        ChangeDetectionMode.Global
-      : // Only refresh views with the `RefreshView` flag or views is a changed signal
-        ChangeDetectionMode.Targeted;
-  detectChangesInternal(lView, mode);
 }

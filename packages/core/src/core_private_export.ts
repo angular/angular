@@ -22,7 +22,6 @@ export {
   type NavigationDestination as ɵNavigationDestination,
 } from '../primitives/dom-navigation';
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
-export {detectChangesInViewIfRequired as ɵdetectChangesInViewIfRequired} from './application/application_ref';
 export {INTERNAL_APPLICATION_ERROR_HANDLER as ɵINTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
 export {
   IMAGE_CONFIG as ɵIMAGE_CONFIG,

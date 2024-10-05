@@ -32,7 +32,8 @@ describe('change detection', () => {
       rendererFactory.end = () => log.push('end');
 
       const fixture = TestBed.createComponent(MyComponent);
-      fixture.detectChanges();
+      log.length = 0;
+      fixture.changeDetectorRef.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toEqual('works');
 
@@ -40,7 +41,6 @@ describe('change detection', () => {
         'begin',
         'detect changes', // regular change detection cycle
         'end',
-        'detect changes', // check no changes cycle
       ]);
     }),
   );
