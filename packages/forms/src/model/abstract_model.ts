@@ -92,6 +92,8 @@ export type FormControlStatus = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
 export abstract class ControlEvent<T = any> {
   /**
    * Form control from which this event is originated.
+   *
+   * Note: the type of the control can't be infered from T as the event can be emitted by any of child controls
    */
   public abstract readonly source: AbstractControl<unknown>;
 }
