@@ -676,8 +676,13 @@ export class ApplicationRef {
       this.dirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
 
       // Check all potentially dirty views.
+      let hasCheckedViews = false;
       for (let {_lView} of this.allViews) {
-        detectChangesInViewIfRequired(_lView, useGlobalCheck, this.zonelessEnabled);
+        hasCheckedViews ||= detectChangesInViewIfRequired(
+          _lView,
+          useGlobalCheck,
+          this.zonelessEnabled,
+        );
       }
 
       // If `markForCheck()` was called during view checking, it will have set the `ViewTreeCheck`
@@ -694,6 +699,13 @@ export class ApplicationRef {
         // If any views or effects are still dirty after checking, loop back before running render
         // hooks.
         return;
+      }
+
+      if (!hasCheckedViews) {
+        // If we skipped refreshing views above, there might still be unflushed animations
+        // because we never called `detectChangesInternal` on the views.
+        this._rendererFactory?.begin?.();
+        this._rendererFactory?.end?.();
       }
     } else {
       // If we skipped refreshing views above, there might still be unflushed animations
@@ -901,10 +913,10 @@ export function detectChangesInViewIfRequired(
   lView: LView,
   isFirstPass: boolean,
   zonelessEnabled: boolean,
-) {
+): boolean {
   // When re-checking, only check views which actually need it.
   if (!isFirstPass && !requiresRefreshOrTraversal(lView)) {
-    return;
+    return false;
   }
 
   const mode =
@@ -916,4 +928,6 @@ export function detectChangesInViewIfRequired(
       : // Only refresh views with the `RefreshView` flag or views is a changed signal
         ChangeDetectionMode.Targeted;
   detectChangesInternal(lView, mode);
+
+  return true;
 }
