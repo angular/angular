@@ -13,9 +13,23 @@ export enum CssSelectorParserErrors {
   NotInNot = 'Nesting :not in a selector is not allowed',
   CommaInNot = 'Multiple selectors in :not are not supported',
   PseudoElement = 'Pseudo element are not supported',
-  Combinators = 'CSS combinators (> + ~ "space" ) are not supported',
-  MultipleTagName = 'Multiple tagName are not allowed',
+  Combinators = 'CSS combinators (> + ~ "space") are not supported',
+  MultipleTagName = 'Multiple tag names are not allowed',
 }
+
+const _SELECTOR_REGEXP = (() => {
+  const identifierNameRegexp = '[a-zA-Z0-9_-]+';
+  return new RegExp(
+    [
+      '(:svg:[^:]+)', // svg syntax used internally
+      '(:not\\([^)]+\\))', // :not pseudo selector
+      '([.#]' + identifierNameRegexp + ')', // classes and id ( starting by . or # )
+      '(\\[[^\\]]+(?:=.*)?\\])', // attributes (surrounded by "[" and "]")
+      '((?<![#:[(])' + identifierNameRegexp + ')', // element (not preceded by "#.(:")
+    ].join('|'),
+    'gm',
+  );
+})();
 
 /**
  * A css selector contains an element name,
@@ -81,16 +95,8 @@ export class CssSelector {
 
       const cssSelector = new CssSelector();
 
-      // extract data, separated by types for lisibility, order matters
-      const identifierNameRegexp = '[a-zA-Z0-9_-]+';
-      const regexpsList = [
-        '(:svg:[^:]+)', // svg syntax used internally
-        '(:not\\([^)]+\\))', // not selector
-        '([.#]' + identifierNameRegexp + ')', // classes and id ( starting by . or # )
-        '(\\[[^\\]]+(?:=.*)?\\])', // attributes ( surrounded by "[" and "]" )
-        '((?<![#:[(])' + identifierNameRegexp + ')', // element ( not preceded by #.(: )
-      ];
-      const matches = selector.match(new RegExp(regexpsList.join('|'), 'gm')) || [];
+      _SELECTOR_REGEXP.lastIndex = 0;
+      const matches = selector.match(_SELECTOR_REGEXP) || [];
       for (const match of matches) {
         const matchWithoutFirstChar = match.slice(1);
         switch (match[0]) {
@@ -103,7 +109,7 @@ export class CssSelector {
               .replace(/['"]/g, '') // remove quotes
               .split('='); // split name from value
 
-            const unescapedName = this.unescapeAttribute(name);
+            const unescapedName = cssSelector.unescapeAttribute(name);
             cssSelector.addAttribute(unescapedName, value);
             break;
           case '#': // id
@@ -114,9 +120,7 @@ export class CssSelector {
               cssSelector.element = match.replace(':svg:', '');
               break;
             }
-            const notInSelector = matchWithoutFirstChar
-              .slice(4) // remove "not("
-              .slice(0, -1); // remove last ")"
+            const notInSelector = matchWithoutFirstChar.slice(4, -1); // remove "not(" and last ")"
             // parse selector of :not and get first one selector,
             // because we know here that comma inside ":not" is forbidden by previous checks
             cssSelector.notSelectors.push(CssSelector.parse(notInSelector)[0]);
@@ -156,7 +160,7 @@ export class CssSelector {
    * @param attr the attribute to unescape.
    * @returns the unescaped string.
    */
-  static unescapeAttribute(attr: string): string {
+  unescapeAttribute(attr: string): string {
     let result = '';
     let escaping = false;
     for (let i = 0; i < attr.length; i++) {
