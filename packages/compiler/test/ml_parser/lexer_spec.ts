@@ -2204,6 +2204,16 @@ describe('HtmlLexer', () => {
         [TokenType.ENCODED_ENTITY, 'Unexpected character "EOF"', '0:6'],
       ]);
     });
+
+    it('should not parse js object methods', () => {
+      expect(tokenizeAndHumanizeErrors('&valueOf;')).toEqual([
+        [
+          TokenType.ENCODED_ENTITY,
+          'Unknown entity "valueOf" - use the "&#<decimal>;" or  "&#x<hex>;" syntax',
+          '0:0',
+        ],
+      ]);
+    });
   });
 
   describe('regular text', () => {
