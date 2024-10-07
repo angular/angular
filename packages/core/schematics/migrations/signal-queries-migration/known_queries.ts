@@ -25,7 +25,8 @@ export class KnownQueries
     InheritanceTracker<ClassFieldDescriptor>
 {
   private readonly classToQueryFields = new Map<ts.ClassLikeDeclaration, ClassFieldDescriptor[]>();
-  private readonly knownQueryIDs = new Set<ClassFieldUniqueKey>();
+
+  readonly knownQueryIDs = new Map<ClassFieldUniqueKey, ClassFieldDescriptor>();
 
   constructor(
     private readonly info: ProgramInfo,
@@ -55,7 +56,7 @@ export class KnownQueries
       key: id,
       node: queryField,
     });
-    this.knownQueryIDs.add(id);
+    this.knownQueryIDs.set(id, {key: id, node: queryField});
   }
 
   attemptRetrieveDescriptorFromSymbol(symbol: ts.Symbol): ClassFieldDescriptor | null {

@@ -17,19 +17,19 @@ import ts from 'typescript';
 import {isTypeScriptFile} from '../../utils';
 import {findTightestNode, getParentClassDeclaration} from '../../utils/ts_utils';
 import type {ActiveRefactoring} from '../refactoring';
-import {applySignalInputRefactoring} from './apply_input_refactoring';
-import {isDecoratorInputClassField} from './decorators';
+import {applySignalQueriesRefactoring} from './apply_query_refactoring';
+import {isDecoratorQueryClassField} from './decorators';
 import {isDirectiveOrComponent} from '../../utils/decorators';
 
 /**
  * Base language service refactoring action that can convert a
- * single individual `@Input()` declaration to a signal inputs
+ * single individual decorator query declaration to a signal query
  *
- * The user can click on an `@Input` property declaration in e.g. the VSCode
- * extension and ask for the input to be migrated. All references, imports and
+ * The user can click on an `@ViewChild` property declaration in e.g. the VSCode
+ * extension and ask for the query to be migrated. All references, imports and
  * the declaration are updated automatically.
  */
-abstract class BaseConvertFieldToSignalInputRefactoring implements ActiveRefactoring {
+abstract class BaseConvertFieldToSignalQueryRefactoring implements ActiveRefactoring {
   abstract config: MigrationConfig;
 
   constructor(private project: ts.server.Project) {}
@@ -70,7 +70,7 @@ abstract class BaseConvertFieldToSignalInputRefactoring implements ActiveRefacto
       return false;
     }
 
-    return isDecoratorInputClassField(parentClassElement, reflector);
+    return isDecoratorQueryClassField(parentClassElement, reflector);
   }
 
   async computeEditsForFix(
@@ -93,28 +93,23 @@ abstract class BaseConvertFieldToSignalInputRefactoring implements ActiveRefacto
 
     const containingClassElement = ts.findAncestor(node, ts.isClassElement);
     if (containingClassElement === undefined || !isInputContainerNode(containingClassElement)) {
-      return {edits: [], errorMessage: 'Selected node does not belong to an input.'};
+      return {edits: [], errorMessage: 'Selected node does not belong to a query.'};
     }
 
-    return await applySignalInputRefactoring(
+    return await applySignalQueriesRefactoring(
       compiler,
       compilerOptions,
       this.config,
       this.project,
       reportProgress,
-      (input) => input.descriptor.node === containingClassElement,
+      (query) => query.node === containingClassElement,
       /** allowPartialMigration */ false,
     );
   }
 }
 
-export class ConvertFieldToSignalInputRefactoring extends BaseConvertFieldToSignalInputRefactoring {
-  static id = 'convert-field-to-signal-input-safe-mode';
-  static description = 'Convert this @Input() to a signal input (safe)';
+export class ConvertFieldToSignalQueryRefactoring extends BaseConvertFieldToSignalQueryRefactoring {
+  static id = 'convert-field-to-signal-query-safe-mode';
+  static description = 'Convert this decorator query to a signal query (safe)';
   override config: MigrationConfig = {};
-}
-export class ConvertFieldToSignalInputBestEffortRefactoring extends BaseConvertFieldToSignalInputRefactoring {
-  static id = 'convert-field-to-signal-input-best-effort-mode';
-  static description = 'Convert this @Input() to a signal input (forcibly, ignoring errors)';
-  override config: MigrationConfig = {bestEffortMode: true};
 }

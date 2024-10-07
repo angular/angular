@@ -16,6 +16,10 @@ import {
   MigrationConfig,
   SignalQueriesMigration,
 } from '@angular/core/schematics/migrations/signal-queries-migration';
+import assert from 'assert';
+import {projectFile} from '../../../../core/schematics/utils/tsurge';
+
+// TODO: Can we share this with the input logic??
 
 export async function applySignalQueriesRefactoring(
   compiler: NgCompiler,
@@ -23,96 +27,67 @@ export async function applySignalQueriesRefactoring(
   config: MigrationConfig,
   project: ts.server.Project,
   reportProgress: ApplyRefactoringProgressFn,
-  shouldMigrateQuery: MigrationConfig['shouldMigrateQuery'],
+  shouldMigrateQuery: NonNullable<MigrationConfig['shouldMigrateQuery']>,
   multiMode: boolean,
 ): Promise<ApplyRefactoringResult> {
-  reportProgress(0, 'Starting input migration. Analyzing..');
+  reportProgress(0, 'Starting queries migration. Analyzing..');
 
   const fs = getFileSystem();
   const migration = new SignalQueriesMigration({
     ...config,
-    upgradeAnalysisPhaseToAvoidBatch: true,
+    assumeNonBatch: true,
     reportProgressFn: reportProgress,
     shouldMigrateQuery,
   });
 
-  await migration.analyze(
-    migration.prepareProgram({
-      ngCompiler: compiler,
-      program: compiler.getCurrentProgram(),
-      userOptions: compilerOptions,
-      programAbsoluteRootFileNames: [],
-      host: {
-        getCanonicalFileName: (file) => project.projectService.toCanonicalFileName(file),
-        getCurrentDirectory: () => project.getCurrentDirectory(),
-      },
-    }),
+  const programInfo = migration.prepareProgram({
+    ngCompiler: compiler,
+    program: compiler.getCurrentProgram(),
+    userOptions: compilerOptions,
+    programAbsoluteRootFileNames: [],
+    host: {
+      getCanonicalFileName: (file) => project.projectService.toCanonicalFileName(file),
+      getCurrentDirectory: () => project.getCurrentDirectory(),
+    },
+  });
+
+  const unitData = await migration.analyze(programInfo);
+  const merged = await migration.merge([unitData]);
+  const {replacements, knownQueries} = await migration.migrate(merged, programInfo);
+
+  const targetQueries = Array.from(knownQueries.knownQueryIDs.values()).filter((descriptor) =>
+    shouldMigrateQuery(descriptor, projectFile(descriptor.node.getSourceFile(), programInfo)),
   );
 
-  if (migration.upgradedAnalysisPhaseResults === null) {
+  if (targetQueries.length === 0) {
     return {
       edits: [],
-      errorMessage: 'Unexpected error. No analysis result is available.',
-    };
-  }
-
-  const {knownInputs, replacements, projectRoot} = migration.upgradedAnalysisPhaseResults;
-  const targetInputs = Array.from(knownInputs.knownInputIds.values()).filter(shouldMigrateInput);
-
-  if (targetInputs.length === 0) {
-    return {
-      edits: [],
-      errorMessage: 'Unexpected error. Could not find target inputs in registry.',
+      errorMessage: 'Unexpected error. Could not find target queries in registry.',
     };
   }
 
   const incompatibilityMessages = new Map<string, string>();
-  const incompatibilityReasons = new Set<InputIncompatibilityReason>();
 
-  for (const incompatibleInput of targetInputs.filter((i) => i.isIncompatible())) {
-    const {container, descriptor} = incompatibleInput;
-    const memberIncompatibility = container.memberIncompatibility.get(descriptor.key);
-    const classIncompatibility = container.incompatible;
+  for (const query of targetQueries.filter((i) => knownQueries.isFieldIncompatible(i))) {
+    // TODO: Improve type safety around this.
+    assert(
+      query.node.name !== undefined && ts.isIdentifier(query.node.name),
+      'Expected query to have an analyzable field name.',
+    );
 
-    if (memberIncompatibility !== undefined) {
-      const {short, extra} = getMessageForInputIncompatibility(memberIncompatibility.reason);
-      incompatibilityMessages.set(descriptor.node.name.text, `${short}\n${extra}`);
-      incompatibilityReasons.add(memberIncompatibility.reason);
-      continue;
-    }
-
-    if (classIncompatibility !== null) {
-      const {short, extra} = getMessageForClassIncompatibility(classIncompatibility);
-      incompatibilityMessages.set(descriptor.node.name.text, `${short}\n${extra}`);
-      continue;
-    }
-
-    return {
-      edits: [],
-      errorMessage:
-        'Inputs could not be migrated, but no reasons were found. ' +
-        'Consider reporting a bug to the Angular team.',
-    };
+    // TODO: Deal with incompatibility reasons.
+    incompatibilityMessages.set(query.node.name.text, 'TODO');
   }
 
   let message: string | undefined = undefined;
 
   if (!multiMode && incompatibilityMessages.size === 1) {
-    const [inputName, reason] = incompatibilityMessages.entries().next().value!;
-    message = `Input field "${inputName}" could not be migrated. ${reason}\n`;
+    const [fieldName, reason] = incompatibilityMessages.entries().next().value!;
+    message = `Query field "${fieldName}" could not be migrated. ${reason}\n`;
   } else if (incompatibilityMessages.size > 0) {
-    const inputPlural = incompatibilityMessages.size === 1 ? 'input' : `inputs`;
-    message = `${incompatibilityMessages.size} ${inputPlural} could not be migrated.\n`;
+    const queryPlural = incompatibilityMessages.size === 1 ? 'query' : `queries`;
+    message = `${incompatibilityMessages.size} ${queryPlural} could not be migrated.\n`;
     message += `For more details, click on the skipped inputs and try to migrate individually.\n`;
-  }
-
-  // Only suggest the "force ignoring" option if there are actually
-  // ignorable incompatibilities.
-  const canBeForciblyIgnored = Array.from(incompatibilityReasons).some(
-    (r) => !nonIgnorableInputIncompatibilities.includes(r),
-  );
-  if (!config.bestEffortMode && canBeForciblyIgnored) {
-    message += `Use the "(forcibly, ignoring errors)" action to forcibly convert.\n`;
   }
 
   // In multi mode, partial migration is allowed.
@@ -126,7 +101,7 @@ export async function applySignalQueriesRefactoring(
   const fileUpdates = Array.from(groupReplacementsByFile(replacements).entries());
   const edits: ts.FileTextChanges[] = fileUpdates.map(([relativePath, changes]) => {
     return {
-      fileName: fs.join(projectRoot, relativePath),
+      fileName: fs.join(programInfo.projectRoot, relativePath),
       textChanges: changes.map((c) => ({
         newText: c.data.toInsert,
         span: {
@@ -137,12 +112,12 @@ export async function applySignalQueriesRefactoring(
     };
   });
 
-  const allInputsIncompatible = incompatibilityMessages.size === targetInputs.length;
+  const allQueriesIncompatible = incompatibilityMessages.size === targetQueries.length;
 
-  // Depending on whether all inputs were incompatible, the message is either
+  // Depending on whether all queries were incompatible, the message is either
   // an error, or just a warning (in case of partial migration still succeeding).
-  const errorMessage = allInputsIncompatible ? message : undefined;
-  const warningMessage = allInputsIncompatible ? undefined : message;
+  const errorMessage = allQueriesIncompatible ? message : undefined;
+  const warningMessage = allQueriesIncompatible ? undefined : message;
 
   return {edits, warningMessage, errorMessage};
 }

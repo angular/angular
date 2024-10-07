@@ -7,7 +7,7 @@
  */
 
 import {ProjectFile} from '../../utils/tsurge';
-import {ClassFieldDescriptor} from '../signal-migration/src';
+import {ClassFieldDescriptor} from '../signal-migration/src/passes/reference_resolution/known_fields';
 
 export interface MigrationConfig {
   /**
@@ -22,5 +22,19 @@ export interface MigrationConfig {
    * running assumption for batch mode and LSC mode where the migration
    * assumes all seen queries are migrated.
    */
-  shouldMigrateQuery?: (query: ClassFieldDescriptor, file: ProjectFile) => boolean;
+  shouldMigrateQuery?: (queryID: ClassFieldDescriptor, containingFile: ProjectFile) => boolean;
+
+  /**
+   * Whether to assume non-batch execution for speeding up things.
+   *
+   * This is useful for integration with the language service.
+   */
+  assumeNonBatch?: boolean;
+
+  /**
+   * Optional function to receive updates on progress of the migration. Useful
+   * for integration with the language service to give some kind of indication
+   * what the migration is currently doing.
+   */
+  reportProgressFn?: (percentage: number, updateMessage: string) => void;
 }

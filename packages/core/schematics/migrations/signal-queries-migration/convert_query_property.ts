@@ -121,8 +121,7 @@ export function computeReplacementsToMigrateQuery(
   }
 
   const call = ts.factory.createCallExpression(newQueryFn, type ? [type] : undefined, args);
-  const updated = ts.factory.updatePropertyDeclaration(
-    node,
+  const updated = ts.factory.createPropertyDeclaration(
     [ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
     node.name,
     undefined,

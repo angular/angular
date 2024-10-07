@@ -7,6 +7,7 @@ ts_library(
     srcs = glob(["*.ts"]),
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/core",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/metadata",
