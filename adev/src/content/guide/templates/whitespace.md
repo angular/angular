@@ -44,7 +44,9 @@ In this example, the browser displays only a single space between "Hello" and "w
 See [How whitespace is handled by HTML, CSS, and in the DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace) for more context on how this works.
 
 Angular avoids sending these unnecessary whitespace characters to the browser in the first place by collapsing them to a single character when it compiles the template.
-Preserving whitespace
+
+## Preserving whitespace
+
 You can tell Angular to preserve whitespace in a template by specifying `preserveWhitespaces: true` in the `@Component` decorator for a template.
 
 ```angular-ts
