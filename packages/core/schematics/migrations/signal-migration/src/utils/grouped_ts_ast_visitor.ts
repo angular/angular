@@ -53,5 +53,7 @@ export class GroupedTsAstVisitor {
     for (const doneFn of this.doneFns) {
       doneFn();
     }
+
+    this.visitors = [];
   }
 }
