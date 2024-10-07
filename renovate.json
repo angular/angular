@@ -14,6 +14,10 @@
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {"enabled": true},
   "labels": ["target: patch", "area: build & ci", "action: merge"],
+  "postUpgradeTasks": {
+    "commands": ["yarn install", "yarn update-generated-files"],
+    "executionMode": "update"
+  },
   "ignoreDeps": [
     "@types/node",
     "@types/selenium-webdriver",
