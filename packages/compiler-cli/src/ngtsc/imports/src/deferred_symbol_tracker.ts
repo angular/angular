@@ -171,7 +171,7 @@ export class DeferredSymbolTracker {
     }
 
     const symbolsMap = this.imports.get(importDecl)!;
-    for (const [symbol, refs] of symbolsMap) {
+    for (const refs of symbolsMap.values()) {
       if (refs === AssumeEager || refs.size > 0) {
         // There may be still eager references to this symbol.
         return false;
@@ -201,8 +201,9 @@ export class DeferredSymbolTracker {
   ): Set<ts.Identifier> {
     const results = new Set<ts.Identifier>();
     const visit = (node: ts.Node): void => {
-      if (node === importDecl) {
-        // Don't record references from the declaration itself.
+      // Don't record references from the declaration itself or inside
+      // type nodes which will be stripped from the JS output.
+      if (node === importDecl || ts.isTypeNode(node)) {
         return;
       }
 
