@@ -26,21 +26,24 @@ import {Injector} from '../di';
 import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util/stringify';
 
-export interface ModuleBootstrapConfig<M> {
+export interface BootstrapConfig {
+  platformInjector: Injector;
+}
+
+export interface ModuleBootstrapConfig<M> extends BootstrapConfig {
   moduleRef: InternalNgModuleRef<M>;
   allPlatformModules: NgModuleRef<unknown>[];
 }
 
-export interface ApplicationBootstrapConfig {
+export interface ApplicationBootstrapConfig extends BootstrapConfig {
   r3Injector: R3Injector;
-  platformInjector: Injector;
   rootComponent: Type<unknown> | undefined;
 }
 
 function isApplicationBootstrapConfig(
   config: ApplicationBootstrapConfig | ModuleBootstrapConfig<unknown>,
 ): config is ApplicationBootstrapConfig {
-  return !!(config as ApplicationBootstrapConfig).platformInjector;
+  return !(config as ModuleBootstrapConfig<unknown>).moduleRef;
 }
 
 export function bootstrap<M>(
@@ -91,9 +94,9 @@ export function bootstrap<M>(
       });
     });
 
+    // If the whole platform is destroyed, invoke the `destroy` method
+    // for all bootstrapped applications as well.
     if (isApplicationBootstrapConfig(config)) {
-      // If the whole platform is destroyed, invoke the `destroy` method
-      // for all bootstrapped applications as well.
       const destroyListener = () => envInjector.destroy();
       const onPlatformDestroyListeners = config.platformInjector.get(PLATFORM_DESTROY_LISTENERS);
       onPlatformDestroyListeners.add(destroyListener);
@@ -103,9 +106,14 @@ export function bootstrap<M>(
         onPlatformDestroyListeners.delete(destroyListener);
       });
     } else {
+      const destroyListener = () => config.moduleRef.destroy();
+      const onPlatformDestroyListeners = config.platformInjector.get(PLATFORM_DESTROY_LISTENERS);
+      onPlatformDestroyListeners.add(destroyListener);
+
       config.moduleRef.onDestroy(() => {
         remove(config.allPlatformModules, config.moduleRef);
         onErrorSubscription.unsubscribe();
+        onPlatformDestroyListeners.delete(destroyListener);
       });
     }
 

@@ -79,7 +79,11 @@ export class PlatformRef {
       allAppProviders,
     );
 
-    return bootstrap({moduleRef, allPlatformModules: this._modules});
+    return bootstrap({
+      moduleRef,
+      allPlatformModules: this._modules,
+      platformInjector: this.injector,
+    });
   }
 
   /**
