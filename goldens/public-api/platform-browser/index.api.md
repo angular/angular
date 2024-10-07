@@ -14,7 +14,6 @@ import { HttpTransferCacheOptions } from '@angular/common/http';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
-import { ModuleWithProviders } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { PlatformRef } from '@angular/core';
 import { Predicate } from '@angular/core';
@@ -34,10 +33,6 @@ export function bootstrapApplication(rootComponent: Type<unknown>, options?: App
 // @public
 export class BrowserModule {
     constructor(providersAlreadyPresent: boolean | null);
-    // @deprecated
-    static withServerTransition(params: {
-        appId: string;
-    }): ModuleWithProviders<BrowserModule>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<BrowserModule, [{ optional: true; skipSelf: true; }]>;
     // (undocumented)
