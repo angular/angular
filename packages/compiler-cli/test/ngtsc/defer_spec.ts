@@ -79,12 +79,10 @@ runInEachFileSystem(() => {
       expect(jsContents).not.toContain('import { CmpA }');
     });
 
-    it(
-      'should include timer scheduler function when ' + '`after` or `minimum` parameters are used',
-      () => {
-        env.write(
-          'cmp-a.ts',
-          `
+    it('should include timer scheduler function when `after` or `minimum` parameters are used', () => {
+      env.write(
+        'cmp-a.ts',
+        `
           import { Component } from '@angular/core';
 
           @Component({
@@ -94,38 +92,37 @@ runInEachFileSystem(() => {
           })
           export class CmpA {}
         `,
-        );
+      );
 
-        env.write(
-          '/test.ts',
-          `
-            import { Component } from '@angular/core';
-            import { CmpA } from './cmp-a';
+      env.write(
+        '/test.ts',
+        `
+          import { Component } from '@angular/core';
+          import { CmpA } from './cmp-a';
 
-            @Component({
-              selector: 'test-cmp',
-              standalone: true,
-              imports: [CmpA],
-              template: \`
-                @defer {
-                  <cmp-a />
-                } @loading (after 500ms; minimum 300ms) {
-                  Loading...
-                }
-              \`,
-            })
-            export class TestCmp {}
-          `,
-        );
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            imports: [CmpA],
+            template: \`
+              @defer {
+                <cmp-a />
+              } @loading (after 500ms; minimum 300ms) {
+                Loading...
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+      );
 
-        env.driveMain();
+      env.driveMain();
 
-        const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'ɵɵdefer(2, 0, TestCmp_Defer_2_DepsFn, 1, null, null, 0, null, i0.ɵɵdeferEnableTimerScheduling)',
-        );
-      },
-    );
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain(
+        'ɵɵdefer(2, 0, TestCmp_Defer_2_DepsFn, 1, null, null, 0, null, i0.ɵɵdeferEnableTimerScheduling)',
+      );
+    });
 
     describe('imports', () => {
       it('should retain regular imports when symbol is eagerly referenced', () => {
@@ -651,6 +648,112 @@ runInEachFileSystem(() => {
         // The `CmpA` symbol wasn't referenced elsewhere, so it can be defer-loaded
         // via dynamic imports and an original import can be removed.
         expect(jsContents).not.toContain('import CmpA');
+      });
+
+      it('should defer symbol that is used only in types', () => {
+        env.write(
+          'cmp.ts',
+          `
+          import { Component } from '@angular/core';
+
+          @Component({
+            standalone: true,
+            selector: 'cmp',
+            template: 'Cmp!'
+          })
+          export class Cmp {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component, viewChild } from '@angular/core';
+          import { Cmp } from './cmp';
+
+          const topLevelConst: Cmp = null!;
+
+          @Component({
+            standalone: true,
+            imports: [Cmp],
+            template: \`
+              @defer {
+                <cmp #ref/>
+              }
+            \`,
+          })
+          export class TestCmp {
+            query = viewChild<Cmp>('ref');
+            asType: Cmp;
+            inlineType: {foo: Cmp};
+            unionType: string | Cmp | number;
+            constructor(param: Cmp) {}
+            inMethod(param: Cmp): Cmp {
+              let localVar: Cmp | null = null;
+              return localVar!;
+            }
+          }
+
+          function inFunction(param: Cmp): Cmp {
+            return null!;
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+        expect(jsContents).toContain('() => [import("./cmp").then(m => m.Cmp)]');
+        expect(jsContents).not.toContain('import { Cmp }');
+      });
+
+      it('should retain symbols used in types and eagerly', () => {
+        env.write(
+          'cmp.ts',
+          `
+          import { Component } from '@angular/core';
+
+          @Component({
+            standalone: true,
+            selector: 'cmp',
+            template: 'Cmp!'
+          })
+          export class Cmp {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component, viewChild } from '@angular/core';
+          import { Cmp } from './cmp';
+
+          @Component({
+            standalone: true,
+            imports: [Cmp],
+            template: \`
+              @defer {
+                <cmp #ref/>
+              }
+            \`,
+          })
+          export class TestCmp {
+            // Type-only reference
+            query = viewChild<Cmp>('ref');
+
+            // Directy reference
+            otherQuery = viewChild(Cmp);
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+        expect(jsContents).toContain('() => [Cmp]');
+        expect(jsContents).toContain('import { Cmp }');
       });
     });
 
