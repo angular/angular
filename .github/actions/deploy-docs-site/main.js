@@ -1844,7 +1844,7 @@ var require_summary = __commonJS({
     exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
     var os_1 = __require("os");
     var fs_1 = __require("fs");
-    var { access, appendFile, writeFile: writeFile2 } = fs_1.promises;
+    var { access, appendFile: appendFile2, writeFile: writeFile2 } = fs_1.promises;
     exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
     exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary";
     var Summary = class {
@@ -1880,7 +1880,7 @@ var require_summary = __commonJS({
         return __awaiter(this, void 0, void 0, function* () {
           const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
           const filePath = yield this.filePath();
-          const writeFunc = overwrite ? writeFile2 : appendFile;
+          const writeFunc = overwrite ? writeFile2 : appendFile2;
           yield writeFunc(filePath, this._buffer, { encoding: "utf8" });
           return this.emptyBuffer();
         });
@@ -9551,6 +9551,8 @@ ${stderr}`);
 }
 
 // 
+import { appendFile } from "fs/promises";
+import { stripVTControlCharacters } from "util";
 var LogLevel;
 (function(LogLevel2) {
   LogLevel2[LogLevel2["SILENT"] = 0] = "SILENT";
@@ -9596,7 +9598,7 @@ function runConsoleCommand(loadCommand, logLevel, ...text) {
   if (getLogLevel() >= logLevel) {
     loadCommand()(...text);
   }
-  printToLogFile(logLevel, ...text);
+  appendToLogFile(logLevel, ...text);
 }
 function getLogLevel() {
   const logLevel = Object.keys(LogLevel).indexOf((process.env[`LOG_LEVEL`] || "").toUpperCase());
@@ -9605,12 +9607,22 @@ function getLogLevel() {
   }
   return logLevel;
 }
-var LOGGED_TEXT = "";
 var LOG_LEVEL_COLUMNS = 7;
-function printToLogFile(logLevel, ...text) {
+var logFilePath = void 0;
+function appendToLogFile(logLevel, ...text) {
+  if (logFilePath === void 0) {
+    return;
+  }
+  if (logLevel === void 0) {
+    appendFile(logFilePath, text.join(" "));
+    return;
+  }
   const logLevelText = `${LogLevel[logLevel]}:`.padEnd(LOG_LEVEL_COLUMNS);
-  LOGGED_TEXT += text.join(" ").split("\n").map((l) => `${logLevelText} ${l}
-`).join("");
+  appendFile(
+    logFilePath,
+    stripVTControlCharacters(text.join(" ").split("\n").map((l) => `${logLevelText} ${l}
+`).join(""))
+  );
 }
 
 // 

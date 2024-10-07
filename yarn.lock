@@ -421,9 +421,9 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#1ce0b794062229087cf0ff2b50f56867fff96699":
-  version "0.0.0-954e5f89dad3bc10109f75d091381d9037b529ce"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#1ce0b794062229087cf0ff2b50f56867fff96699"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#d07f5efd254e2e356111afa279c7dd5ba578d953":
+  version "0.0.0-358b27d9f887a9a6834023666647ea19b5b8d323"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#d07f5efd254e2e356111afa279c7dd5ba578d953"
   dependencies:
     "@octokit/rest" "21.0.2"
     "@types/semver" "^7.3.6"
