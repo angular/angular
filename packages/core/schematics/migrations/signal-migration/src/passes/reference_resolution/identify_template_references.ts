@@ -14,7 +14,7 @@ import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {CompilationMode} from '@angular/compiler-cli/src/ngtsc/transform';
-import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 import {ProgramInfo, projectFile} from '../../../../../utils/tsurge';
 import {TemplateReferenceVisitor} from './template_reference_visitor';
@@ -38,9 +38,10 @@ export function identifyTemplateReferences<D extends ClassFieldDescriptor>(
   options: NgCompilerOptions,
   result: ReferenceResult<D>,
   knownFields: KnownFields<D>,
+  fieldNamesToConsiderForReferenceLookup: Set<string> | null,
 ) {
   const template =
-    templateTypeChecker.getTemplate(node) ??
+    templateTypeChecker.getTemplate(node, OptimizeFor.WholeProgram) ??
     // If there is no template registered in the TCB or compiler, the template may
     // be skipped due to an explicit `jit: true` setting. We try to detect this case
     // and parse the template manually.
@@ -54,7 +55,13 @@ export function identifyTemplateReferences<D extends ClassFieldDescriptor>(
     );
 
   if (template !== null) {
-    const visitor = new TemplateReferenceVisitor(checker, templateTypeChecker, node, knownFields);
+    const visitor = new TemplateReferenceVisitor(
+      checker,
+      templateTypeChecker,
+      node,
+      knownFields,
+      fieldNamesToConsiderForReferenceLookup,
+    );
     template.forEach((node) => node.visit(visitor));
 
     for (const res of visitor.result) {
@@ -67,7 +74,7 @@ export function identifyTemplateReferences<D extends ClassFieldDescriptor>(
       if (templateFilePath === '') {
         // TODO: Incorporate a TODO potentially.
         console.error(
-          `Found reference to input ${res.targetField.key} that cannot be ` +
+          `Found reference to field ${res.targetField.key} that cannot be ` +
             `migrated because the template cannot be parsed with source map information ` +
             `(in file: ${node.getSourceFile().fileName}).`,
         );

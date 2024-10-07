@@ -79,11 +79,20 @@ export function createFindAllSourceFileReferencesVisitor<D extends ClassFieldDes
         programInfo.userOptions,
         result,
         knownFields,
+        fieldNamesToConsiderForReferenceLookup,
       );
       perfCounters.template += (currentTimeInMs() - lastTime) / 1000;
       lastTime = currentTimeInMs();
 
-      identifyHostBindingReferences(node, programInfo, checker, reflector, result, knownFields);
+      identifyHostBindingReferences(
+        node,
+        programInfo,
+        checker,
+        reflector,
+        result,
+        knownFields,
+        fieldNamesToConsiderForReferenceLookup,
+      );
 
       perfCounters.hostBindings += (currentTimeInMs() - lastTime) / 1000;
       lastTime = currentTimeInMs();
