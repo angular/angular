@@ -2,7 +2,7 @@ MyComponent_ng_template_0_Template(rf, ctx) {
 	if (rf & 1) {
 		i0.ɵɵtext(0);
 	} if (rf & 2) {
-		const $a_r1$ = i0.ɵɵnextContext();
+		const $a_r1$ = ctx.$implicit;
 		i0.ɵɵtextInterpolate($a_r1$);
 	}
 }

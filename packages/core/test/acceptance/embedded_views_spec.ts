@@ -44,7 +44,7 @@ describe('embedded views', () => {
   });
 
   it('should resolve template input variables through the implicit receiver', () => {
-    @Component({template: `<ng-template let-a [ngIf]="true">{{this.a}}</ng-template>`})
+    @Component({template: `<ng-template let-a [ngIf]="true">{{a}}</ng-template>`})
     class TestCmp {}
 
     TestBed.configureTestingModule({declarations: [TestCmp]});
