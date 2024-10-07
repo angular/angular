@@ -48,7 +48,7 @@ export interface TemplateTypeChecker {
   /**
    * Retrieve the template in use for the given component.
    */
-  getTemplate(component: ts.ClassDeclaration): TmplAstNode[] | null;
+  getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null;
 
   /**
    * Get all `ts.Diagnostic`s currently available for the given `ts.SourceFile`.
