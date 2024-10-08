@@ -7,7 +7,7 @@
  */
 
 import ts from 'typescript';
-import {isIdentifierFreeInScope} from './is_identifier_free_in_scope';
+import {isIdentifierFreeInScope, ReservedMarker} from './is_identifier_free_in_scope';
 
 /**
  * Helper that can generate unique identifier names at a
@@ -27,7 +27,8 @@ export class UniqueNamesGenerator {
       }
 
       // Claim the locals to avoid conflicts with future generations.
-      freeInfo.container.locals?.set(name, null! as ts.Symbol);
+      freeInfo.container.locals ??= new Map();
+      freeInfo.container.locals.set(name, ReservedMarker);
       return true;
     };
 

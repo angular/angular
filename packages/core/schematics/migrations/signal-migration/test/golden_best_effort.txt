@@ -576,12 +576,12 @@ export class AppComponent {
         if (isAudi(car)) {
           console.log(car.__audi);
         }
-        const narrowableMultipleTimes = ctx.narrowableMultipleTimes();
-        if (!isCar(narrowableMultipleTimes!) || !isAudi(narrowableMultipleTimes)) {
+        const narrowableMultipleTimesValue = ctx.narrowableMultipleTimes();
+        if (!isCar(narrowableMultipleTimesValue!) || !isAudi(narrowableMultipleTimesValue)) {
           return;
         }
 
-        narrowableMultipleTimes.__audi;
+        narrowableMultipleTimesValue.__audi;
       }
 
       // iife
@@ -1200,6 +1200,33 @@ class TwoWayBinding {
   readonly inputB = input(true);
   readonly inputC = input(false);
   readonly inputD = input(false);
+}
+@@@@@@ temporary_variables.ts @@@@@@
+
+// tslint:disable
+
+import {Directive, input} from '@angular/core';
+
+export class OtherCmp {
+  readonly name = input(false);
+}
+
+@Directive()
+export class MyComp {
+  readonly name = input('');
+  other: OtherCmp = null!;
+
+  click() {
+    const name = this.name();
+    if (name) {
+      console.error(name);
+    }
+
+    const nameValue = this.other.name();
+    if (nameValue) {
+      console.error(nameValue);
+    }
+  }
 }
 @@@@@@ transform_functions.ts @@@@@@
 
