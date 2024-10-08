@@ -38,10 +38,6 @@ export interface Type<T> extends Function {
   new (...args: any[]): T;
 }
 
-export type Mutable<T extends {[x: string]: any}, K extends string> = {
-  [P in K]: T[P];
-};
-
 /**
  * Returns a writable type version of type.
  *
