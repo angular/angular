@@ -82,6 +82,9 @@ export class AfterRenderImpl {
       sequence.afterRun();
       if (sequence.once) {
         this.sequences.delete(sequence);
+        // Destroy the sequence so its on destroy callbacks can be cleaned up
+        // immediately, instead of waiting until the injector is destroyed.
+        sequence.destroy();
       }
     }
 
