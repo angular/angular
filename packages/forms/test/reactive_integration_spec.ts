@@ -5812,6 +5812,29 @@ describe('reactive forms integration tests', () => {
         fixture.destroy();
       }).not.toThrow();
     });
+
+    describe('Synchronize form controls when they share the same form control reference', () => {
+      it('using the formControlName / formArrayName directive within the same group',
+         fakeAsync(() => {
+           const fixture = initTest(SharedFormControl);
+
+           fixture.detectChanges();
+           tick();
+
+           const inputs = fixture.debugElement.queryAll(By.css('input'));
+           inputs[0].nativeElement.value = 'updatedValue';
+
+           dispatchEvent(inputs[0].nativeElement, 'input');
+           tick();
+
+           const getInputValue = (nth: number) => inputs[nth].nativeElement.value;
+           expect(getInputValue(0)).toEqual('updatedValue');
+           expect(getInputValue(1)).toEqual('updatedValue');
+           expect(getInputValue(2)).toEqual('updatedValue');
+           expect(getInputValue(3)).toEqual('updatedValue');
+           expect(getInputValue(4)).toEqual('potatoe');
+         }));
+    });
   });
 });
 
@@ -6167,4 +6190,25 @@ export class RadioForm {
   form = new FormGroup({
     choice: new FormControl('one'),
   });
+}
+
+@Component({
+  selector: 'form-group-ng-model',
+  template: `
+    <form [formGroup]="form">
+      <input type="text" formControlName="login">
+      <input type="text" formControlName="password">
+      <div formArrayName="tags">
+        <div *ngFor="let tag of tagArray.controls; let i=index">
+          <input [formControlName]="i">
+        </div>
+      </div>
+    </form>`
+})
+class SharedFormControl {
+  sharedFormControl = new FormControl('initialValue');
+  tagArray =
+      new FormArray([this.sharedFormControl, this.sharedFormControl, new FormControl('potatoe')]);
+  form: FormGroup = new FormGroup(
+      {'login': this.sharedFormControl, 'password': this.sharedFormControl, 'tags': this.tagArray});
 }
