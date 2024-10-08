@@ -9,7 +9,7 @@
 import {Component, Injectable, NgModule} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {provideRoutes, Router, RouterModule, ROUTES} from '@angular/router';
+import {NavigationError, provideRoutes, Router, RouterModule, ROUTES} from '@angular/router';
 
 @Component({template: '<div>simple standalone</div>', standalone: true})
 export class SimpleStandaloneComponent {}
@@ -63,8 +63,15 @@ describe('standalone in Router API', () => {
       const root = TestBed.createComponent(RootCmp);
 
       const router = TestBed.inject(Router);
+      let caughtError: NavigationError | undefined;
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationError) {
+          caughtError = e;
+        }
+      });
       router.navigateByUrl('/lazy/notstandalone');
-      expect(() => advance(root)).toThrowError(
+      advance(root);
+      expect(caughtError!.error.message).toMatch(
         /.*lazy\/notstandalone.*component must be standalone/,
       );
     }));
@@ -346,8 +353,15 @@ describe('standalone in Router API', () => {
       });
 
       const root = TestBed.createComponent(RootCmp);
+      let caughtError: NavigationError | undefined;
+      TestBed.inject(Router).events.subscribe((e) => {
+        if (e instanceof NavigationError) {
+          caughtError = e;
+        }
+      });
       TestBed.inject(Router).navigateByUrl('/home');
-      expect(() => advance(root)).toThrowError(/.*home.*component must be standalone/);
+      advance(root);
+      expect(caughtError?.error.message).toMatch(/.*home.*component must be standalone/);
     }));
 
     it('throws error when loadComponent is used with a module', fakeAsync(() => {
@@ -365,9 +379,16 @@ describe('standalone in Router API', () => {
         ],
       });
 
+      let caughtError: NavigationError | undefined;
+      TestBed.inject(Router).events.subscribe((e) => {
+        if (e instanceof NavigationError) {
+          caughtError = e;
+        }
+      });
       const root = TestBed.createComponent(RootCmp);
       TestBed.inject(Router).navigateByUrl('/home');
-      expect(() => advance(root)).toThrowError(/.*home.*Use 'loadChildren' instead/);
+      advance(root);
+      expect(caughtError?.error.message).toMatch(/.*home.*Use 'loadChildren' instead/);
     }));
   });
   describe('default export unwrapping', () => {
