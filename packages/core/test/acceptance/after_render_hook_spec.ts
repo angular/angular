@@ -1401,6 +1401,40 @@ describe('after render hooks', () => {
         appRef.tick();
       }).toThrowError(/NG0103.*(Infinite change detection while refreshing application views)/);
     });
+
+    it('should destroy after the hook has run', () => {
+      let hookRef: AfterRenderRef | null = null;
+      let afterRenderCount = 0;
+
+      @Component({selector: 'comp'})
+      class Comp {
+        constructor() {
+          hookRef = afterNextRender(() => {
+            afterRenderCount++;
+          });
+        }
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [Comp],
+        ...COMMON_CONFIGURATION,
+      });
+      createAndAttachComponent(Comp);
+      const appRef = TestBed.inject(ApplicationRef);
+      const destroySpy = spyOn(hookRef!, 'destroy').and.callThrough();
+      expect(afterRenderCount).toBe(0);
+      expect(destroySpy).not.toHaveBeenCalled();
+
+      // Run once and ensure that it was called and then cleaned up.
+      appRef.tick();
+      expect(afterRenderCount).toBe(1);
+      expect(destroySpy).toHaveBeenCalledTimes(1);
+
+      // Make sure we're not retaining it.
+      appRef.tick();
+      expect(afterRenderCount).toBe(1);
+      expect(destroySpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('server', () => {
