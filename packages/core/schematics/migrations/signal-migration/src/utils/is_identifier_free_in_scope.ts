@@ -10,9 +10,12 @@ import assert from 'assert';
 import ts from 'typescript';
 import {isNodeDescendantOf} from './is_descendant_of';
 
+/** Symbol that can be used to mark a variable as reserved, synthetically. */
+export const ReservedMarker = Symbol();
+
 // typescript/stable/src/compiler/types.ts;l=967;rcl=651008033
 export interface LocalsContainer extends ts.Node {
-  locals?: Map<string, ts.Symbol>;
+  locals?: Map<string, ts.Symbol | typeof ReservedMarker>;
   nextContainer?: LocalsContainer;
 }
 
@@ -71,9 +74,9 @@ function isIdentifierFreeInContainer(name: string, container: LocalsContainer): 
   // Note: This check is similar to the check by the TypeScript emitter.
   // typescript/stable/src/compiler/emitter.ts;l=5436;rcl=651008033
   const local = container.locals.get(name)!;
-  return !(
-    local.flags &
-    (ts.SymbolFlags.Value | ts.SymbolFlags.ExportValue | ts.SymbolFlags.Alias)
+  return (
+    local !== ReservedMarker &&
+    !(local.flags & (ts.SymbolFlags.Value | ts.SymbolFlags.ExportValue | ts.SymbolFlags.Alias))
   );
 }
 
