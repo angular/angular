@@ -14,6 +14,7 @@ exports_files([
     "scripts/ci/payload-size.js",
     "package.json",
     "angular.json",
+    "yarn.lock",
 ])
 
 filegroup(
@@ -63,13 +64,20 @@ config_setting(
 )
 
 nodejs_binary(
-    name = "yarn_vendored",
+    name = "yarn_classic_vendored",
     data = [".yarn/releases/yarn-1.22.19.cjs"],
     entry_point = ".yarn/releases/yarn-1.22.19.cjs",
     visibility = [
         "//integration:__subpackages__",
         "//modules/ssr-benchmarks:__subpackages__",
     ],
+)
+
+nodejs_binary(
+    name = "yarn_berry_vendored",
+    data = [".yarn/releases/yarn-4.5.0.cjs"],
+    entry_point = ".yarn/releases/yarn-4.5.0.cjs",
+    visibility = [],
 )
 
 alias(
