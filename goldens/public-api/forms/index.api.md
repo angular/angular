@@ -259,7 +259,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    push(control: TControl, options?: {
+    push(control: TControl | Array<TControl>, options?: {
         emitEvent?: boolean;
     }): void;
     removeAt(index: number, options?: {
