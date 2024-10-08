@@ -16,6 +16,8 @@ import {Component} from '@angular/core';
     <div *ngFor="let item of object | keyvalue">{{ item.key }}:{{ item.value }}</div>
     <p>Map</p>
     <div *ngFor="let item of map | keyvalue">{{ item.key }}:{{ item.value }}</div>
+    <p>Natural order</p>
+    <div *ngFor="let item of map | keyvalue: null">{{ item.key }}:{{ item.value }}</div>
   </span>`,
 })
 export class KeyValuePipeComponent {

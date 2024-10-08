@@ -61,6 +61,13 @@ describe('KeyValuePipe', () => {
         {key: 'b', value: 1},
       ]);
     });
+    it('should not order by alpha when compareFn is null', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform({'b': 1, 'a': 1}, null)).toEqual([
+        {key: 'b', value: 1},
+        {key: 'a', value: 1},
+      ]);
+    });
     it('should reorder when compareFn changes', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const input = {'b': 1, 'a': 2};
@@ -161,6 +168,21 @@ describe('KeyValuePipe', () => {
       ).toEqual([
         {key: {id: 0}, value: 1},
         {key: {id: 1}, value: 1},
+      ]);
+    });
+    it('should not order by alpha when compareFn is null', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(
+        pipe.transform(
+          new Map([
+            ['b', 1],
+            ['a', 1],
+          ]),
+          null,
+        ),
+      ).toEqual([
+        {key: 'b', value: 1},
+        {key: 'a', value: 1},
       ]);
     });
     it('should reorder when compareFn changes', () => {
