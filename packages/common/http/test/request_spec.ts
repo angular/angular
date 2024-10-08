@@ -77,6 +77,7 @@ describe('HttpRequest', () => {
       responseType: 'text',
       withCredentials: true,
       transferCache: true,
+      timeout: 1000,
     });
     it('in the base case', () => {
       const clone = req.clone();
@@ -89,6 +90,7 @@ describe('HttpRequest', () => {
 
       expect(clone.context).toBe(context);
       expect(clone.transferCache).toBe(true);
+      expect(clone.timeout).toBe(1000);
     });
     it('and updates the url', () => {
       expect(req.clone({url: '/changed'}).url).toBe('/changed');
@@ -105,6 +107,9 @@ describe('HttpRequest', () => {
     });
     it('and updates the transferCache', () => {
       expect(req.clone({transferCache: false}).transferCache).toBe(false);
+    });
+    it('and updates the timeout', () => {
+      expect(req.clone({timeout: 5000}).timeout).toBe(5000);
     });
   });
   describe('content type detection', () => {
