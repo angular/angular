@@ -86,7 +86,7 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
         environment = environment,
         toolchains = toolchains,
         tool_mappings = {
-            "//:yarn_vendored": "yarn",
+            "//:yarn_classic_vendored": "yarn",
             "@nodejs_toolchains//:resolved_toolchain": "node",
         },
         # 15-minute timeout

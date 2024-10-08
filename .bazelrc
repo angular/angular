@@ -53,11 +53,11 @@ build --enable_runfiles
 # Releases should always be stamped with version control info
 # This command assumes node on the path and is a workaround for
 # https://github.com/bazelbuild/bazel/issues/4802
-build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=release"
+build:release --workspace_status_command="yarn ng-dev release build-env-stamp --mode=release"
 build:release --stamp
 
 # Snapshots should also be stamped with version control information.
-build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
+build:snapshot-build --workspace_status_command="yarn ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
 
 # Angular DevTools for Firefox releases *cannot* be stamped and `--config snapshot-build-firefox` is a no-op.
