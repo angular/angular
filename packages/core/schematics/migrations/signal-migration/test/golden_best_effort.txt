@@ -1228,6 +1228,33 @@ export class MyComp {
     }
   }
 }
+@@@@@@ ternary_narrowing.ts @@@@@@
+
+// tslint:disable
+
+import {Component, input} from '@angular/core';
+
+@Component({
+  template: `
+    {{ narrowed() ? narrowed().substring(0, 1) : 'Empty' }}
+    {{ justChecked() ? 'true' : 'false' }}
+
+    {{ other?.safeRead() ? other.safeRead() : 'Empty' }}
+    {{ other?.safeRead2() ? other?.safeRead2() : 'Empty' }}
+  `,
+})
+export class TernaryNarrowing {
+  readonly narrowed = input<string>();
+  readonly justChecked = input(true);
+
+  other?: OtherComponent;
+}
+
+@Component({template: ''})
+export class OtherComponent {
+  readonly safeRead = input<string>('');
+  readonly safeRead2 = input<string>('');
+}
 @@@@@@ transform_functions.ts @@@@@@
 
 // tslint:disable
