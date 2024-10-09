@@ -54,6 +54,8 @@ function icuContainerIteratorNext(state: IcuIteratorState): RNode | null {
     }
   } else {
     if (state.stack.length === 0) {
+      // Clear the lView to prevent a memory leak until the next change detection cycle.
+      state.lView = undefined;
       return null;
     } else {
       state.removes = state.stack.pop();
